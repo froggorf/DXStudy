@@ -476,10 +476,29 @@ HRESULT InitVertexBuffer()
     }
     g_vVertexBuffer.push_back(vertexBuffer);
 
-    // 버텍스 버퍼 설정
-    //UINT stride = sizeof(SimpleVertex);
-    //UINT offset = 0;
-    //g_pImmediateContext->IASetVertexBuffers(0,1, &g_pVertexBuffer, (UINT*)(sizeof(SimpleVertex)), (UINT*)(0));
+    // 버텍스 생성 (사각형)
+	SimpleVertex vertices2[] = 
+    {
+        XMFLOAT3(-0.5f, 0.75f, 0.5f),
+        XMFLOAT3(-0.25f, 0.0f, 0.5f),
+        XMFLOAT3(-0.75f, -0.0f, 0.5f),
+	};
+
+    // 버퍼 DESC 생성
+    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    bufferDesc.ByteWidth = sizeof(vertices2);
+    bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    bufferDesc.CPUAccessFlags = 0;
+
+    
+    initData.pSysMem = vertices2;
+    ID3D11Buffer* vertexBuffer2;
+    hr = g_pd3dDevice->CreateBuffer(&bufferDesc, &initData, &vertexBuffer2);
+    if(FAILED(hr))
+    {
+	    return hr;
+    }
+    g_vVertexBuffer.push_back(vertexBuffer2);
 
     // 프리미티브 토폴로지 - Triangle List
     g_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -514,11 +533,6 @@ void Render()
 
     }
     
-
-
-    
-    
-
     g_pSwapChain->Present( 0, 0 );
 }
 
