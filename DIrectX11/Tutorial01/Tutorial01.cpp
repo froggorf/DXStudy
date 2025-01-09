@@ -15,12 +15,20 @@
 //--------------------------------------------------------------------------------------
 #include <windows.h>
 #include <d3d11_1.h>
+#include <d3dcompiler.h>
+#include <DirectXMath.h>
 #include <directxcolors.h>
 #include <iostream>
+#include <vector>
 
 #include "resource.h"
 
 using namespace DirectX;
+
+struct SimpleVertex
+{
+    XMFLOAT3 Pos;
+};
 
 //--------------------------------------------------------------------------------------
 // Global Variables
@@ -36,6 +44,11 @@ ID3D11DeviceContext1*   g_pImmediateContext1 = nullptr;
 IDXGISwapChain*         g_pSwapChain = nullptr;
 IDXGISwapChain1*        g_pSwapChain1 = nullptr;
 ID3D11RenderTargetView* g_pRenderTargetView = nullptr;
+// 0109 셰이더 관련 DXGI 오브젝트 추가
+ID3D11VertexShader*     g_pVertexShader = nullptr;
+ID3D11PixelShader*      g_pPixelShader = nullptr;
+ID3D11InputLayout*      g_pVertexInputLayout = nullptr;
+std::vector<ID3D11Buffer*> g_vVertexBuffer;
 
 
 //--------------------------------------------------------------------------------------
@@ -43,9 +56,12 @@ ID3D11RenderTargetView* g_pRenderTargetView = nullptr;
 //--------------------------------------------------------------------------------------
 HRESULT InitWindow( HINSTANCE hInstance, int nCmdShow );
 HRESULT InitDevice();
+HRESULT InitShader();
+HRESULT InitVertexBuffer();
 void CleanupDevice();
 LRESULT CALLBACK    WndProc( HWND, UINT, WPARAM, LPARAM );
 void Render();
+
 
 
 //--------------------------------------------------------------------------------------
@@ -67,6 +83,20 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     if( FAILED( InitDevice() ) )
     {
         CleanupDevice();
+        return 0;
+    }
+
+    // 25.01.09 셰이더 생성 코드 추가 (튜토리얼 - 2) 
+    if(FAILED(InitShader()))
+    {
+	    CleanupDevice();
+        return 0;
+    }
+
+    // 25.01.09 버텍스 버퍼 생성
+    if(FAILED(InitVertexBuffer()))
+    {
+	    CleanupDevice();
         return 0;
     }
 
@@ -129,6 +159,41 @@ HRESULT InitWindow( HINSTANCE hInstance, int nCmdShow )
     return S_OK;
 }
 
+//--------------------------------------------------------------------------------------
+// 셰이더 로드 함수
+//--------------------------------------------------------------------------------------
+HRESULT CompileShaderFromFile( const WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut )
+{
+    HRESULT hr = S_OK;
+    
+    DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+#ifdef _DEBUG
+    // Set the D3DCOMPILE_DEBUG flag to embed debug information in the shaders.
+    // Setting this flag improves the shader debugging experience, but still allows 
+    // the shaders to be optimized and to run exactly the way they will run in 
+    // the release configuration of this program.
+    dwShaderFlags |= D3DCOMPILE_DEBUG;
+
+    // Disable optimizations to further improve shader debugging
+    dwShaderFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
+#endif
+
+    ID3DBlob* pErrorBlob = nullptr;
+    hr = D3DCompileFromFile( szFileName, nullptr, nullptr, szEntryPoint, szShaderModel, 
+        dwShaderFlags, 0, ppBlobOut, &pErrorBlob );
+    if( FAILED(hr) )
+    {
+        if( pErrorBlob )
+        {
+            OutputDebugStringA( reinterpret_cast<const char*>( pErrorBlob->GetBufferPointer() ) );
+            pErrorBlob->Release();
+        }
+        return hr;
+    }
+    if( pErrorBlob ) pErrorBlob->Release();
+
+    return S_OK;
+}
 
 //--------------------------------------------------------------------------------------
 // Called every time the application receives a message
@@ -317,6 +382,111 @@ HRESULT InitDevice()
     return S_OK;
 }
 
+HRESULT InitShader()
+{
+    HRESULT hr;
+
+    // 25.01.09
+    // 튜토리얼2 버텍스 셰이더 컴파일
+    ID3DBlob* pVSBlob = nullptr;
+	hr = CompileShaderFromFile(L"Shader/Tutorial2/Tutorial02.fxh", "VS", "vs_4_0", &pVSBlob);
+    if(FAILED(hr))
+    {
+	    MessageBox( nullptr,
+                    L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK );
+        return hr;
+    }
+    
+    // 버텍스 셰이더 생성
+    hr = g_pd3dDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, &g_pVertexShader);
+    if(FAILED(hr))
+    {
+	    pVSBlob->Release();
+        return hr;
+    }
+
+    // 인풋 레이아웃 DESC
+    D3D11_INPUT_ELEMENT_DESC layout[] =
+	{
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
+	};
+    UINT numElements = ARRAYSIZE(layout);
+    // 인풋 레이아웃 생성
+    hr = g_pd3dDevice->CreateInputLayout(layout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), &g_pVertexInputLayout);
+    pVSBlob->Release();
+    if(FAILED(hr))
+    {
+	    return hr;
+    }
+
+    // 인풋 어셈블러 설정
+    g_pImmediateContext->IASetInputLayout(g_pVertexInputLayout);
+
+    // 픽셀 셰이더 컴파일
+    ID3DBlob* pPSBlob = nullptr;
+    hr = CompileShaderFromFile(L"Shader/Tutorial2/Tutorial02.fxh", "PS", "ps_4_0", &pPSBlob);
+    if(FAILED(hr))
+    {
+	    MessageBox( nullptr,
+                    L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK );
+        return hr;
+    }
+
+    // 픽셀 셰이더 생성
+    hr = g_pd3dDevice->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(),nullptr, &g_pPixelShader);
+    pPSBlob->Release();
+    if(FAILED(hr))
+    {
+	    return hr;
+    }
+
+    return hr;
+}
+
+HRESULT InitVertexBuffer()
+{
+    HRESULT hr;
+
+    // 버텍스 생성 (사각형)
+	SimpleVertex vertices[] = 
+    {
+        XMFLOAT3(0.75f, 0.0f, 0.5f),
+        XMFLOAT3(0.75f, -0.5f, 0.5f),
+        XMFLOAT3(-0.0f, -0.5f, 0.5f),
+
+        XMFLOAT3(0.75f, 0.0f, 0.5f),
+        XMFLOAT3(-0.0f, -0.5f, 0.5f),
+        XMFLOAT3(-0.0f, -0.0f, 0.5f),
+	};
+
+    // 버퍼 DESC 생성
+    D3D11_BUFFER_DESC bufferDesc = {};
+    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    bufferDesc.ByteWidth = sizeof(vertices);
+    bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    bufferDesc.CPUAccessFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA initData = {};
+    initData.pSysMem = vertices;
+    ID3D11Buffer* vertexBuffer;
+    hr = g_pd3dDevice->CreateBuffer(&bufferDesc, &initData, &vertexBuffer);
+    if(FAILED(hr))
+    {
+	    return hr;
+    }
+    g_vVertexBuffer.push_back(vertexBuffer);
+
+    // 버텍스 버퍼 설정
+    //UINT stride = sizeof(SimpleVertex);
+    //UINT offset = 0;
+    //g_pImmediateContext->IASetVertexBuffers(0,1, &g_pVertexBuffer, (UINT*)(sizeof(SimpleVertex)), (UINT*)(0));
+
+    // 프리미티브 토폴로지 - Triangle List
+    g_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    return hr;
+}
+
 
 //--------------------------------------------------------------------------------------
 // Render the frame
@@ -326,8 +496,28 @@ void Render()
     // Just clear the backbuffer
     g_pImmediateContext->ClearRenderTargetView( g_pRenderTargetView, Colors::DarkGray );
 
+    // Draw
+    {
+	    g_pImmediateContext->VSSetShader(g_pVertexShader, nullptr, 0);
+        g_pImmediateContext->PSSetShader(g_pPixelShader, nullptr, 0);
+        
+        UINT stride = sizeof(SimpleVertex);
+		UINT offset = 0;
+        for(auto vertexIter = g_vVertexBuffer.begin(); vertexIter < g_vVertexBuffer.end(); ++vertexIter)
+        {
+            D3D11_BUFFER_DESC vertexBufferDesc;
+            (*vertexIter)->GetDesc(&vertexBufferDesc);
+
+            g_pImmediateContext->IASetVertexBuffers(0,1, &(*vertexIter), &stride, &offset);
+            g_pImmediateContext->Draw(vertexBufferDesc.ByteWidth / stride,0);
+        }
+
+    }
+    
 
 
+    
+    
 
     g_pSwapChain->Present( 0, 0 );
 }
