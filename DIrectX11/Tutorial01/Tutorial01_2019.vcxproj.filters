@@ -5,6 +5,15 @@
       <UniqueIdentifier>{8e114980-c1a3-4ada-ad7c-83caadf5daeb}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{6526b61d-0db1-435f-afda-f8cd5cd507c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Tutorial2">
+      <UniqueIdentifier>{32e5d0a7-e2ef-4a48-9a76-cff8c5c4e129}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Tutorial4">
+      <UniqueIdentifier>{c348d152-b159-439e-9bfc-1188cec216a0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tutorial01.cpp" />
@@ -18,5 +27,13 @@
     <ResourceCompile Include="Tutorial01.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader\Tutorial2\Tutorial02.fxh">
+      <Filter>Shader\Tutorial2</Filter>
+    </None>
+    <None Include="Shader\Tutorial4\Tutorial04.fxh">
+      <Filter>Shader\Tutorial4</Filter>
+    </None>
   </ItemGroup>
 </Project>
