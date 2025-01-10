@@ -695,8 +695,16 @@ void Render()
         }
         t = (timeCur - timeStart) / 1000.0f;
 
-        // rotate cube
-        g_Obj1WorldMatrix = XMMatrixRotationY(t);	
+        // 1st Cube: Rotate around the origin
+	    g_Obj1WorldMatrix= XMMatrixRotationY( t );
+
+        // 2nd Cube:  Rotate around origin
+        XMMATRIX mSpin = XMMatrixRotationZ( -t );
+        XMMATRIX mOrbit = XMMatrixRotationY( -t * 2.0f );
+	    XMMATRIX mTranslate = XMMatrixTranslation( -4.0f, 0.0f, 0.0f );
+	    XMMATRIX mScale = XMMatrixScaling( 0.3f, 0.3f, 0.3f );
+
+	    g_Obj2WorldMatrix = mScale * mSpin * mTranslate * mOrbit;
 	}
 
     // Just clear the backbuffer, DepthStencilView
@@ -708,6 +716,8 @@ void Render()
 	    g_pImmediateContext->VSSetShader(g_pVertexShader, nullptr, 0);
         g_pImmediateContext->PSSetShader(g_pPixelShader, nullptr, 0);
 
+        
+		g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
 
         UINT stride = sizeof(SimpleVertex);
 		UINT offset = 0;
@@ -723,15 +733,19 @@ void Render()
 
             
             // update contant buffer
+            // Draw Obj 1
             MVPTransformBuffer constantBuffer;
             constantBuffer.mWorld = XMMatrixTranspose(g_Obj1WorldMatrix);
             constantBuffer.mView = XMMatrixTranspose(g_ViewMatrix);
             constantBuffer.mProjection = XMMatrixTranspose(g_ProjectionMatrix);
             g_pImmediateContext->UpdateSubresource(g_pConstantBuffer, 0, nullptr, &constantBuffer, 0, 0);
 
-            g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
-
             g_pImmediateContext->DrawIndexed(indexBufferDesc.ByteWidth / sizeof(WORD), 0, 0);
+
+            // DrawObj2
+            constantBuffer.mWorld = XMMatrixTranspose(g_Obj2WorldMatrix);
+            g_pImmediateContext->UpdateSubresource(g_pConstantBuffer, 0, nullptr, &constantBuffer, 0, 0);
+            g_pImmediateContext->DrawIndexed(36,0, 0);
             
         }
     }
