@@ -17,14 +17,19 @@
     <Filter Include="Shader\Tutorial6">
       <UniqueIdentifier>{1b772298-6cb4-4789-af59-7b10912a0e92}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader\Tutorial7">
+      <UniqueIdentifier>{7500887c-9cef-4426-9437-7e84c7a9ed45}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tutorial01.cpp" />
+    <ClCompile Include="DDSTextureLoader11.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CLInclude Include="resource.h">
       <Filter>Resource Files</Filter>
     </CLInclude>
+    <ClInclude Include="DDSTextureLoader11.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Tutorial01.rc">
@@ -40,6 +45,9 @@
     </None>
     <None Include="Shader\Tutorial6\Tutorial06.fxh">
       <Filter>Shader\Tutorial6</Filter>
+    </None>
+    <None Include="Shader\Tutorial7\Tutorial07.fxh">
+      <Filter>Shader\Tutorial7</Filter>
     </None>
   </ItemGroup>
 </Project>

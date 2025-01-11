@@ -13,22 +13,30 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License (MIT).
 //--------------------------------------------------------------------------------------
+
+
 #include <windows.h>
 #include <d3d11_1.h>
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
 #include <directxcolors.h>
+#include <DirectXTex/DirectXTex.h>
+#include <DirectXTex/DirectXTex.inl>
 #include <iostream>
 #include <vector>
+#include "DDSTextureLoader11.h"
+
 
 #include "resource.h"
 
 using namespace DirectX;
 
+
+
 struct SimpleVertex
 {
     XMFLOAT3 Pos;
-    XMFLOAT3 Normal;
+    XMFLOAT2 TexUV;
 };
 
 struct MyVertexBuffer
@@ -37,18 +45,16 @@ struct MyVertexBuffer
     ID3D11Buffer* indexBuffer;
 };
 
-struct MVPTransformBuffer
+struct FixConstantBuffer
 {
-	XMMATRIX mWorld;
     XMMATRIX mView;
     XMMATRIX mProjection;
 };
 
-struct LightConstantBuffer
+struct FrameConstantBuffer
 {
-	XMFLOAT4 vLightDir[2];
-    XMFLOAT4 vLightColor[2];
-    XMFLOAT4 vOutputColor;
+	XMMATRIX mWorld;
+    XMFLOAT4 vMeshColor;
 };
 
 //--------------------------------------------------------------------------------------
@@ -73,9 +79,11 @@ ID3D11PixelShader*      g_pPixelShader = nullptr;
 ID3D11InputLayout*      g_pVertexInputLayout = nullptr;
 std::vector<MyVertexBuffer> g_vVertexBuffer;
 ID3D11Buffer*           g_pConstantBuffer = nullptr;
-ID3D11Buffer*           g_pLightConstantBuffer = nullptr;
-XMMATRIX                g_Obj1WorldMatrix;
-XMMATRIX                g_Obj2WorldMatrix;
+ID3D11Buffer*           g_pFrameConstantBuffer = nullptr;
+ID3D11Texture2D*        g_pTexture = nullptr;
+ID3D11ShaderResourceView* g_pResourceView = nullptr;
+ID3D11SamplerState*     g_pSamplerState = nullptr;
+XMMATRIX                g_modelMatrix;
 XMMATRIX                g_ViewMatrix;
 XMMATRIX                g_ProjectionMatrix;
 
@@ -90,6 +98,9 @@ HRESULT InitMatrix();
 HRESULT InitVertexBufferForTutorial2();
 HRESULT InitVertexBufferForTutorial4();
 HRESULT InitVertexBufferForTutorial6();
+HRESULT InitVertexBufferForTutorial7();
+
+HRESULT InitTexture();
 
 void CleanupDevice();
 LRESULT CALLBACK    WndProc( HWND, UINT, WPARAM, LPARAM );
@@ -132,9 +143,16 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	    CleanupDevice();
         return 0;
     }
+    
 
     // 25.01.10 튜토 4 버텍스 버퍼 생성
-    if(FAILED(InitVertexBufferForTutorial6()))
+    if(FAILED(InitVertexBufferForTutorial7()))
+    {
+	    CleanupDevice();
+        return 0;
+    }
+
+    if(FAILED(InitTexture()))
     {
 	    CleanupDevice();
         return 0;
@@ -461,7 +479,7 @@ HRESULT InitShader()
     // 25.01.09
     // 튜토리얼2 버텍스 셰이더 컴파일
     ID3DBlob* pVSBlob = nullptr;
-	hr = CompileShaderFromFile(L"Shader/Tutorial6/Tutorial06.fxh", "VS", "vs_4_0", &pVSBlob);
+	hr = CompileShaderFromFile(L"Shader/Tutorial7/Tutorial07.fxh", "VS", "vs_4_0", &pVSBlob);
     if(FAILED(hr))
     {
 	    MessageBox( nullptr,
@@ -481,7 +499,7 @@ HRESULT InitShader()
     D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
     UINT numElements = ARRAYSIZE(layout);
 
@@ -498,7 +516,7 @@ HRESULT InitShader()
 
     // 픽셀 셰이더 컴파일
     ID3DBlob* pPSBlob = nullptr;
-    hr = CompileShaderFromFile(L"Shader/Tutorial6/Tutorial06.fxh", "PS", "ps_4_0", &pPSBlob);
+    hr = CompileShaderFromFile(L"Shader/Tutorial7/Tutorial07.fxh", "PS", "ps_4_0", &pPSBlob);
     if(FAILED(hr))
     {
 	    MessageBox( nullptr,
@@ -525,7 +543,7 @@ HRESULT InitMatrix()
     D3D11_BUFFER_DESC cbDesc;
 
     D3D11_BUFFER_DESC bufferDesc = {};
-    bufferDesc.ByteWidth = sizeof( MVPTransformBuffer );
+    bufferDesc.ByteWidth = sizeof( FixConstantBuffer );
     bufferDesc.Usage = D3D11_USAGE_DEFAULT;
     bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     bufferDesc.CPUAccessFlags = 0;
@@ -536,8 +554,6 @@ HRESULT InitMatrix()
 	    return hr;
     }
 
-    g_Obj1WorldMatrix = XMMatrixIdentity();
-    g_Obj2WorldMatrix = XMMatrixIdentity();
 
     XMVECTOR Eye = XMVectorSet(0.0f, 3.0f, -5.0f, 0.0f);
     XMVECTOR At = XMVectorSet(0.0f,0.0f,0.0f,0.0f);
@@ -550,15 +566,11 @@ HRESULT InitMatrix()
     UINT height = rc.bottom - rc.top;
     g_ProjectionMatrix = XMMatrixPerspectiveFovLH(XM_PIDIV2, (FLOAT)width / height, 0.01f, 100.0f);
     
+    
+    g_modelMatrix = XMMatrixIdentity();
 
-    // Light Constant Buffer
-    D3D11_BUFFER_DESC lightBufferDesc = {};
-    lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    lightBufferDesc.ByteWidth = sizeof(LightConstantBuffer);
-    lightBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    lightBufferDesc.CPUAccessFlags = 0;
-
-    hr = g_pd3dDevice->CreateBuffer(&lightBufferDesc, nullptr, &g_pLightConstantBuffer);
+    bufferDesc.ByteWidth = sizeof( FrameConstantBuffer );
+    hr = g_pd3dDevice->CreateBuffer(&bufferDesc, nullptr, &g_pFrameConstantBuffer);
     if(FAILED(hr))
     {
 	    return hr;
@@ -705,37 +717,128 @@ HRESULT InitVertexBufferForTutorial6()
 {
     HRESULT hr;
 
+ //   SimpleVertex vertices[] =
+ //   { { XMFLOAT3( -1.0f, 1.0f, -1.0f ), XMFLOAT3( 0.0f, 1.0f, 0.0f ) },
+ //       { XMFLOAT3( 1.0f, 1.0f, -1.0f ), XMFLOAT3( 0.0f, 1.0f, 0.0f ) },
+ //       { XMFLOAT3( 1.0f, 1.0f, 1.0f ), XMFLOAT3( 0.0f, 1.0f, 0.0f ) },
+ //       { XMFLOAT3( -1.0f, 1.0f, 1.0f ), XMFLOAT3( 0.0f, 1.0f, 0.0f ) },
+
+ //       { XMFLOAT3( -1.0f, -1.0f, -1.0f ), XMFLOAT3( 0.0f, -1.0f, 0.0f ) },
+ //       { XMFLOAT3( 1.0f, -1.0f, -1.0f ), XMFLOAT3( 0.0f, -1.0f, 0.0f ) },
+ //       { XMFLOAT3( 1.0f, -1.0f, 1.0f ), XMFLOAT3( 0.0f, -1.0f, 0.0f ) },
+ //       { XMFLOAT3( -1.0f, -1.0f, 1.0f ), XMFLOAT3( 0.0f, -1.0f, 0.0f ) },
+
+ //       { XMFLOAT3( -1.0f, -1.0f, 1.0f ), XMFLOAT3( -1.0f, 0.0f, 0.0f ) },
+ //       { XMFLOAT3( -1.0f, -1.0f, -1.0f ), XMFLOAT3( -1.0f, 0.0f, 0.0f ) },
+ //       { XMFLOAT3( -1.0f, 1.0f, -1.0f ), XMFLOAT3( -1.0f, 0.0f, 0.0f ) },
+ //       { XMFLOAT3( -1.0f, 1.0f, 1.0f ), XMFLOAT3( -1.0f, 0.0f, 0.0f ) },
+
+ //       { XMFLOAT3( 1.0f, -1.0f, 1.0f ), XMFLOAT3( 1.0f, 0.0f, 0.0f ) },
+ //       { XMFLOAT3( 1.0f, -1.0f, -1.0f ), XMFLOAT3( 1.0f, 0.0f, 0.0f ) },
+ //       { XMFLOAT3( 1.0f, 1.0f, -1.0f ), XMFLOAT3( 1.0f, 0.0f, 0.0f ) },
+ //       { XMFLOAT3( 1.0f, 1.0f, 1.0f ), XMFLOAT3( 1.0f, 0.0f, 0.0f ) },
+
+ //       { XMFLOAT3( -1.0f, -1.0f, -1.0f ), XMFLOAT3( 0.0f, 0.0f, -1.0f ) },
+ //       { XMFLOAT3( 1.0f, -1.0f, -1.0f ), XMFLOAT3( 0.0f, 0.0f, -1.0f ) },
+ //       { XMFLOAT3( 1.0f, 1.0f, -1.0f ), XMFLOAT3( 0.0f, 0.0f, -1.0f ) },
+ //       { XMFLOAT3( -1.0f, 1.0f, -1.0f ), XMFLOAT3( 0.0f, 0.0f, -1.0f ) },
+
+ //       { XMFLOAT3( -1.0f, -1.0f, 1.0f ), XMFLOAT3( 0.0f, 0.0f, 1.0f ) },
+ //       { XMFLOAT3( 1.0f, -1.0f, 1.0f ), XMFLOAT3( 0.0f, 0.0f, 1.0f ) },
+ //       { XMFLOAT3( 1.0f, 1.0f, 1.0f ), XMFLOAT3( 0.0f, 0.0f, 1.0f ) },
+ //       { XMFLOAT3( -1.0f, 1.0f, 1.0f ), XMFLOAT3( 0.0f, 0.0f, 1.0f ) },
+ //   };
+ //   D3D11_BUFFER_DESC bufferDesc = {};
+ //   bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+ //   bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+ //   bufferDesc.ByteWidth = sizeof(vertices);
+ //   bufferDesc.CPUAccessFlags = 0;
+
+ //   D3D11_SUBRESOURCE_DATA initData = {};
+ //   initData.pSysMem = vertices;
+
+ //   ID3D11Buffer* tempVertexBuffer;
+ //   hr = g_pd3dDevice->CreateBuffer(&bufferDesc, &initData, &tempVertexBuffer);
+ //   if(FAILED(hr))
+ //   {
+	//    return hr;
+ //   }
+
+ //   // 이전과 다르게 인덱스 버퍼를 추가 생성
+ //   WORD indices[] =
+ //   {
+ //       3,1,0,
+ //       2,1,3,
+
+ //       6,4,5,
+ //       7,4,6,
+
+ //       11,9,8,
+ //       10,9,11,
+
+ //       14,12,13,
+ //       15,12,14,
+
+ //       19,17,16,
+ //       18,17,19,
+
+ //       22,20,21,
+ //       23,20,22
+	//};
+ //   bufferDesc.ByteWidth = sizeof(indices);
+ //   bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+ //   initData.pSysMem = indices;
+
+ //   ID3D11Buffer* tempIndexBuffer;
+ //   hr = g_pd3dDevice->CreateBuffer(&bufferDesc, &initData, &tempIndexBuffer);
+ //   if(FAILED(hr))
+ //   {
+	//    return hr;
+ //   }
+ //   // 데이터 추가
+ //   g_vVertexBuffer.push_back(MyVertexBuffer{tempVertexBuffer, tempIndexBuffer});
+
+
+ //   g_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    return hr;
+}
+
+HRESULT InitVertexBufferForTutorial7()
+{
+    HRESULT hr;
+
     SimpleVertex vertices[] =
-    { { XMFLOAT3( -1.0f, 1.0f, -1.0f ), XMFLOAT3( 0.0f, 1.0f, 0.0f ) },
-        { XMFLOAT3( 1.0f, 1.0f, -1.0f ), XMFLOAT3( 0.0f, 1.0f, 0.0f ) },
-        { XMFLOAT3( 1.0f, 1.0f, 1.0f ), XMFLOAT3( 0.0f, 1.0f, 0.0f ) },
-        { XMFLOAT3( -1.0f, 1.0f, 1.0f ), XMFLOAT3( 0.0f, 1.0f, 0.0f ) },
+{
+    { XMFLOAT3( -1.0f, 1.0f, -1.0f ), XMFLOAT2( 0.0f, 0.0f ) },
+    { XMFLOAT3( 1.0f, 1.0f, -1.0f ), XMFLOAT2( 1.0f, 0.0f ) },
+    { XMFLOAT3( 1.0f, 1.0f, 1.0f ), XMFLOAT2( 1.0f, 1.0f ) },
+    { XMFLOAT3( -1.0f, 1.0f, 1.0f ), XMFLOAT2( 0.0f, 1.0f ) },
 
-        { XMFLOAT3( -1.0f, -1.0f, -1.0f ), XMFLOAT3( 0.0f, -1.0f, 0.0f ) },
-        { XMFLOAT3( 1.0f, -1.0f, -1.0f ), XMFLOAT3( 0.0f, -1.0f, 0.0f ) },
-        { XMFLOAT3( 1.0f, -1.0f, 1.0f ), XMFLOAT3( 0.0f, -1.0f, 0.0f ) },
-        { XMFLOAT3( -1.0f, -1.0f, 1.0f ), XMFLOAT3( 0.0f, -1.0f, 0.0f ) },
+    { XMFLOAT3( -1.0f, -1.0f, -1.0f ), XMFLOAT2( 0.0f, 0.0f ) },
+    { XMFLOAT3( 1.0f, -1.0f, -1.0f ), XMFLOAT2( 1.0f, 0.0f ) },
+    { XMFLOAT3( 1.0f, -1.0f, 1.0f ), XMFLOAT2( 1.0f, 1.0f ) },
+    { XMFLOAT3( -1.0f, -1.0f, 1.0f ), XMFLOAT2( 0.0f, 1.0f ) },
 
-        { XMFLOAT3( -1.0f, -1.0f, 1.0f ), XMFLOAT3( -1.0f, 0.0f, 0.0f ) },
-        { XMFLOAT3( -1.0f, -1.0f, -1.0f ), XMFLOAT3( -1.0f, 0.0f, 0.0f ) },
-        { XMFLOAT3( -1.0f, 1.0f, -1.0f ), XMFLOAT3( -1.0f, 0.0f, 0.0f ) },
-        { XMFLOAT3( -1.0f, 1.0f, 1.0f ), XMFLOAT3( -1.0f, 0.0f, 0.0f ) },
+    { XMFLOAT3( -1.0f, -1.0f, 1.0f ), XMFLOAT2( 0.0f, 0.0f ) },
+    { XMFLOAT3( -1.0f, -1.0f, -1.0f ), XMFLOAT2( 1.0f, 0.0f ) },
+    { XMFLOAT3( -1.0f, 1.0f, -1.0f ), XMFLOAT2( 1.0f, 1.0f ) },
+    { XMFLOAT3( -1.0f, 1.0f, 1.0f ), XMFLOAT2( 0.0f, 1.0f ) },
 
-        { XMFLOAT3( 1.0f, -1.0f, 1.0f ), XMFLOAT3( 1.0f, 0.0f, 0.0f ) },
-        { XMFLOAT3( 1.0f, -1.0f, -1.0f ), XMFLOAT3( 1.0f, 0.0f, 0.0f ) },
-        { XMFLOAT3( 1.0f, 1.0f, -1.0f ), XMFLOAT3( 1.0f, 0.0f, 0.0f ) },
-        { XMFLOAT3( 1.0f, 1.0f, 1.0f ), XMFLOAT3( 1.0f, 0.0f, 0.0f ) },
+    { XMFLOAT3( 1.0f, -1.0f, 1.0f ), XMFLOAT2( 0.0f, 0.0f ) },
+    { XMFLOAT3( 1.0f, -1.0f, -1.0f ), XMFLOAT2( 1.0f, 0.0f ) },
+    { XMFLOAT3( 1.0f, 1.0f, -1.0f ), XMFLOAT2( 1.0f, 1.0f ) },
+    { XMFLOAT3( 1.0f, 1.0f, 1.0f ), XMFLOAT2( 0.0f, 1.0f ) },
 
-        { XMFLOAT3( -1.0f, -1.0f, -1.0f ), XMFLOAT3( 0.0f, 0.0f, -1.0f ) },
-        { XMFLOAT3( 1.0f, -1.0f, -1.0f ), XMFLOAT3( 0.0f, 0.0f, -1.0f ) },
-        { XMFLOAT3( 1.0f, 1.0f, -1.0f ), XMFLOAT3( 0.0f, 0.0f, -1.0f ) },
-        { XMFLOAT3( -1.0f, 1.0f, -1.0f ), XMFLOAT3( 0.0f, 0.0f, -1.0f ) },
+    { XMFLOAT3( -1.0f, -1.0f, -1.0f ), XMFLOAT2( 0.0f, 0.0f ) },
+    { XMFLOAT3( 1.0f, -1.0f, -1.0f ), XMFLOAT2( 1.0f, 0.0f ) },
+    { XMFLOAT3( 1.0f, 1.0f, -1.0f ), XMFLOAT2( 1.0f, 1.0f ) },
+    { XMFLOAT3( -1.0f, 1.0f, -1.0f ), XMFLOAT2( 0.0f, 1.0f ) },
 
-        { XMFLOAT3( -1.0f, -1.0f, 1.0f ), XMFLOAT3( 0.0f, 0.0f, 1.0f ) },
-        { XMFLOAT3( 1.0f, -1.0f, 1.0f ), XMFLOAT3( 0.0f, 0.0f, 1.0f ) },
-        { XMFLOAT3( 1.0f, 1.0f, 1.0f ), XMFLOAT3( 0.0f, 0.0f, 1.0f ) },
-        { XMFLOAT3( -1.0f, 1.0f, 1.0f ), XMFLOAT3( 0.0f, 0.0f, 1.0f ) },
-    };
+    { XMFLOAT3( -1.0f, -1.0f, 1.0f ), XMFLOAT2( 0.0f, 0.0f ) },
+    { XMFLOAT3( 1.0f, -1.0f, 1.0f ), XMFLOAT2( 1.0f, 0.0f ) },
+    { XMFLOAT3( 1.0f, 1.0f, 1.0f ), XMFLOAT2( 1.0f, 1.0f ) },
+    { XMFLOAT3( -1.0f, 1.0f, 1.0f ), XMFLOAT2( 0.0f, 1.0f ) },
+};
     D3D11_BUFFER_DESC bufferDesc = {};
     bufferDesc.Usage = D3D11_USAGE_DEFAULT;
     bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -791,24 +894,63 @@ HRESULT InitVertexBufferForTutorial6()
     return hr;
 }
 
+HRESULT InitTexture()
+{
+    // https://algamja1027.tistory.com/18
+    HRESULT hr;
+    DirectX::ScratchImage image;
+    if(FAILED(LoadFromDDSFile(L"Resource/box.dds",DDS_FLAGS_NONE, nullptr, image)))
+    {
+	    return hr;
+    }
+
+    hr =CreateTexture(g_pd3dDevice, image.GetImages(), image.GetImageCount(), image.GetMetadata(), (ID3D11Resource**)&g_pTexture);
+    if(FAILED(hr))
+    {
+	    return hr;
+    }
+    D3D11_SHADER_RESOURCE_VIEW_DESC srcDesc = {};
+    srcDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    srcDesc.Texture2D.MostDetailedMip = 0;
+    srcDesc.Texture2D.MipLevels = 1;
+
+    D3D11_TEXTURE2D_DESC textureDesc;
+    g_pTexture->GetDesc(&textureDesc);
+
+    srcDesc.Format = textureDesc.Format;
+
+    hr = g_pd3dDevice->CreateShaderResourceView(g_pTexture, &srcDesc, &g_pResourceView);
+    if(FAILED(hr))
+    {
+	    return hr;
+    }
+
+
+    D3D11_SAMPLER_DESC sampDesc;
+    ZeroMemory(&sampDesc, sizeof(sampDesc));
+    sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+    sampDesc.MinLOD = 0;
+    sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+    hr = g_pd3dDevice->CreateSamplerState(&sampDesc, &g_pSamplerState);
+    if(FAILED(hr))
+    {
+	    return hr;
+    }
+
+    return hr;
+}
+
 
 //--------------------------------------------------------------------------------------
 // Render the frame
 //--------------------------------------------------------------------------------------
 void Render()
 {
-     // Setup our lighting parameters
-        XMFLOAT4 vLightDirs[2] =
-        {
-            XMFLOAT4( -0.577f, 0.577f, -0.577f, 1.0f ),
-            XMFLOAT4( 0.0f, 0.0f, -1.0f, 1.0f ),
-        };
-        XMFLOAT4 vLightColors[2] =
-        {
-            XMFLOAT4( 0.5f, 0.5f, 0.5f, 1.0f ),
-            XMFLOAT4( 0.5f, 0.0f, 0.0f, 1.0f )
-        };
-    // 튜토4 - 큐브 회전 업데이트
+    // 튜토7 - 큐브 회전 업데이트
 	{
         static float t = 0.0f;
         static ULONGLONG timeStart = 0;
@@ -820,16 +962,8 @@ void Render()
         t = (timeCur - timeStart) / 1000.0f;
 
         // 1st Cube: Rotate around the origin
-	    g_Obj1WorldMatrix= XMMatrixRotationY( 1.0f );
+	    g_modelMatrix = XMMatrixRotationY( 1.0f );
 
-        
-
-        // 2nd Light
-        XMMATRIX mRotate = XMMatrixRotationY(-2.0f * t);
-        XMVECTOR vLightDir = XMLoadFloat4(&vLightDirs[1]);
-        // 빛 방향 계산
-        vLightDir = XMVector3Transform(vLightDir, mRotate);
-        XMStoreFloat4(&vLightDirs[1], vLightDir);
 	}
 
     // Just clear the backbuffer, DepthStencilView
@@ -842,18 +976,11 @@ void Render()
         g_pImmediateContext->PSSetShader(g_pPixelShader, nullptr, 0);
 
 		g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
+        g_pImmediateContext->VSSetConstantBuffers(1,1, &g_pFrameConstantBuffer);
+        g_pImmediateContext->PSSetConstantBuffers(1,1, &g_pFrameConstantBuffer);
 
-        // tutorial 6
-	    {
-		    g_pImmediateContext->PSSetConstantBuffers(1,1,&g_pLightConstantBuffer);
-            LightConstantBuffer lcb;
-            lcb.vLightColor[0] = vLightColors[0];
-            lcb.vLightColor[1] = vLightColors[1];
-            lcb.vLightDir[0] = vLightDirs[0];
-            lcb.vLightDir[1] = vLightDirs[1];
-            lcb.vOutputColor = XMFLOAT4(0,0,0,0);
-            g_pImmediateContext->UpdateSubresource(g_pLightConstantBuffer,0,nullptr, &lcb, 0, 0);
-	    }
+        g_pImmediateContext->PSSetShaderResources(0,1,&g_pResourceView);
+        g_pImmediateContext->PSSetSamplers(0,1,&g_pSamplerState);
 
         UINT stride = sizeof(SimpleVertex);
 		UINT offset = 0;
@@ -870,11 +997,15 @@ void Render()
             
             // update contant buffer
             // Draw Obj 1
-            MVPTransformBuffer constantBuffer;
-            constantBuffer.mWorld = XMMatrixTranspose(g_Obj1WorldMatrix);
+            FixConstantBuffer constantBuffer;
             constantBuffer.mView = XMMatrixTranspose(g_ViewMatrix);
             constantBuffer.mProjection = XMMatrixTranspose(g_ProjectionMatrix);
             g_pImmediateContext->UpdateSubresource(g_pConstantBuffer, 0, nullptr, &constantBuffer, 0, 0);
+
+            FrameConstantBuffer frameConstantBuffer;
+            frameConstantBuffer.mWorld = XMMatrixTranspose(g_modelMatrix);
+            frameConstantBuffer.vMeshColor = XMFLOAT4{1.0f,1.0f,1.0f,1.0f};
+            g_pImmediateContext->UpdateSubresource(g_pFrameConstantBuffer,0, nullptr, &frameConstantBuffer, 0, 0);
 
             g_pImmediateContext->DrawIndexed(indexBufferDesc.ByteWidth / sizeof(WORD), 0, 0);
         }
