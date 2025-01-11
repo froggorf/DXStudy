@@ -359,6 +359,7 @@
   <ItemGroup>
     <None Include="Shader\Tutorial2\Tutorial02.fxh" />
     <None Include="Shader\Tutorial4\Tutorial04.fxh" />
+    <None Include="Shader\Tutorial6\Tutorial06.fxh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
