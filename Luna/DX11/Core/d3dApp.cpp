@@ -90,7 +90,7 @@ int D3DApp::Run()
 			if(!m_AppPaused)
 			{
 				CalculateFrameStats();
-				UpdateScene(m_Timer.DeltaTime());		//TODO: 임시 시간 처리
+				UpdateScene(m_Timer.DeltaTime());		
 				DrawScene();
 			}else
 			{
@@ -417,7 +417,7 @@ bool D3DApp::InitDirect3D()
 		MessageBox(0, L"dxgiAdapter->GetParent Failed.", 0, 0);
 		return false;
 	}
-	if(FAILED(dxgiFactory->CreateSwapChain(m_d3dDevice.Get(), &sd, &m_SwapChain)))
+	if(FAILED(dxgiFactory->CreateSwapChain(m_d3dDevice.Get(), &sd, m_SwapChain.GetAddressOf())))
 	{
 		MessageBox(0, L"dxgiFactory->CreateSwapChain Failed.", 0, 0);
 		return false;
@@ -458,3 +458,5 @@ void D3DApp::CalculateFrameStats()
 		timeElapsed += 1.0f;
 	}
 }
+
+

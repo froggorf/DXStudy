@@ -88,8 +88,6 @@ XMMATRIX                g_modelMatrix;
 XMMATRIX                g_ViewMatrix;
 XMMATRIX                g_ProjectionMatrix;
 
-ComPtr<ID3D11Device>    g_testDevice;
-
 
 //--------------------------------------------------------------------------------------
 // Forward declarations
@@ -324,7 +322,7 @@ HRESULT InitDevice()
     {
         g_driverType = driverTypes[driverTypeIndex];
         hr = D3D11CreateDevice( nullptr, g_driverType, nullptr, createDeviceFlags, featureLevels, numFeatureLevels,
-                                D3D11_SDK_VERSION, g_testDevice.GetAddressOf(), &g_featureLevel, &g_pImmediateContext );
+                                D3D11_SDK_VERSION, &g_pd3dDevice, &g_featureLevel, &g_pImmediateContext );
         
         if ( hr == E_INVALIDARG )
         {
@@ -477,7 +475,7 @@ HRESULT InitDevice()
 
 HRESULT InitShader()
 {
-    HRESULT hr;
+    HRESULT hr = S_OK;
 
     // 25.01.09
     // 튜토리얼2 버텍스 셰이더 컴파일
@@ -540,7 +538,7 @@ HRESULT InitShader()
 
 HRESULT InitMatrix()
 {
-    HRESULT hr;
+    HRESULT hr = S_OK;
 
 	// Constant Buffer 생성
     D3D11_BUFFER_DESC cbDesc;
@@ -648,7 +646,7 @@ HRESULT InitVertexBufferForTutorial2()
 
 HRESULT InitVertexBufferForTutorial4()
 {
-    HRESULT hr;
+    HRESULT hr = S_OK;
 
  //   SimpleVertex vertices[] =
  //   {
@@ -718,7 +716,7 @@ HRESULT InitVertexBufferForTutorial4()
 
 HRESULT InitVertexBufferForTutorial6()
 {
-    HRESULT hr;
+   HRESULT hr = S_OK;
 
  //   SimpleVertex vertices[] =
  //   { { XMFLOAT3( -1.0f, 1.0f, -1.0f ), XMFLOAT3( 0.0f, 1.0f, 0.0f ) },
@@ -808,7 +806,7 @@ HRESULT InitVertexBufferForTutorial6()
 
 HRESULT InitVertexBufferForTutorial7()
 {
-    HRESULT hr;
+    HRESULT hr = S_OK;
 
     SimpleVertex vertices[] =
 {
@@ -900,7 +898,7 @@ HRESULT InitVertexBufferForTutorial7()
 HRESULT InitTexture()
 {
     // https://algamja1027.tistory.com/18
-    HRESULT hr;
+   HRESULT hr = S_OK;
     DirectX::ScratchImage image;
     if(FAILED(LoadFromDDSFile(L"Resource/box.dds",DDS_FLAGS_NONE, nullptr, image)))
     {

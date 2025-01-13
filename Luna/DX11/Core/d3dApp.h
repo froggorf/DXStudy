@@ -8,6 +8,7 @@
 #include "d3dUtil.h"
 #include "GameTimer.h"
 
+
 using namespace Microsoft::WRL;
 
 class D3DApp
