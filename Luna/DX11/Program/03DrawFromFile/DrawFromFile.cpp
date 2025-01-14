@@ -52,14 +52,14 @@ private:
 	void TestLoadModel(const std::string& path);
 	void ProcessMesh(aiMesh* mesh, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices);
 	void ProcessScene(const aiScene* scene, std::vector<std::vector<Vertex>>& allVertices, std::vector<std::vector<unsigned int>>& allIndices);
-	void BuildGeometryBuffers();
+	
 	void BuildShader();
 
 
 
 private:
-	std::vector<ComPtr<ID3D11Buffer>>		m_BoxVertexBuffer;
-	std::vector<ComPtr<ID3D11Buffer>> 		m_BoxIndexBuffer;
+	std::vector<ComPtr<ID3D11Buffer>>		m_ModelVertexBuffer;
+	std::vector<ComPtr<ID3D11Buffer>> 		m_ModelIndexBuffer;
 
 	ComPtr<ID3D11VertexShader>	m_VertexShader;
 	ComPtr<ID3D11PixelShader>	m_PixelShader;
@@ -122,7 +122,6 @@ bool DrawFromFileApp::Init()
 		return false;
 
 	TestLoadModel("Model/0.obj");
-	BuildGeometryBuffers();
 	BuildShader();
 
 
@@ -172,26 +171,36 @@ void DrawFromFileApp::DrawScene()
 		m_d3dDeviceContext->IASetInputLayout(m_InputLayout.Get());
 		m_d3dDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		// 버텍스, 인덱스 버퍼
-		UINT stride = sizeof(Vertex);
-		UINT offset = 0;
-		m_d3dDeviceContext->IASetVertexBuffers(0,1, m_BoxVertexBuffer.GetAddressOf(), &stride, &offset);
-		m_d3dDeviceContext->IASetIndexBuffer(m_BoxIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-		
-
 		// Frame 상수 버퍼 설정
 		FrameConstantBuffer fcb;
 		fcb.View = XMMatrixTranspose(m_View);
 		fcb.Projection = XMMatrixTranspose(m_Proj);
 		m_d3dDeviceContext->UpdateSubresource(m_FrameConstantBuffer.Get(), 0, nullptr, &fcb, 0, 0);
-
+		
 		// 오브젝트 Draw
 		// Obj 상수 버퍼 설정
 		ObjConstantBuffer ocb;
-		ocb.World = XMMatrixTranspose(m_World);
+		float scaleSize = 2.0f;
+		XMMATRIX world = m_World * XMMatrixScaling(scaleSize,scaleSize,scaleSize);
+		ocb.World = XMMatrixTranspose(world);
 		m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);
 
-		m_d3dDeviceContext->DrawIndexed(36, 0, 0);
+		// 버텍스 버퍼에 맞춰 오브젝트 드로우
+		
+		for(int vertexCount = 0; vertexCount < m_ModelVertexBuffer.size(); ++vertexCount)
+		{
+			UINT stride = sizeof(Vertex);
+			UINT offset = 0;
+			m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_ModelVertexBuffer[vertexCount].GetAddressOf(), &stride, &offset);
+			m_d3dDeviceContext->IASetIndexBuffer(m_ModelIndexBuffer[vertexCount].Get(), DXGI_FORMAT_R32_UINT, 0);
+		
+			D3D11_BUFFER_DESC indexBufferDesc;
+			m_ModelIndexBuffer[vertexCount]->GetDesc(&indexBufferDesc);
+			UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
+			m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
+		}
+		
+
 	}
 
 	HR(m_SwapChain->Present(0, 0));
@@ -248,7 +257,7 @@ void DrawFromFileApp::TestLoadModel(const std::string& path)
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path, 
-	    aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_ConvertToLeftHanded);
+	    aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_ConvertToLeftHanded );
 	
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 	    std::cerr << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
@@ -259,18 +268,44 @@ void DrawFromFileApp::TestLoadModel(const std::string& path)
 	std::vector<std::vector<UINT>> allIndices;
 
 	ProcessScene(scene, allVertices, allIndices);
-
+	
 	// 결과 출력
     for (size_t i = 0; i < allVertices.size(); i++) {
         std::cout << "Mesh " << i << ":\n";
         std::cout << "  Vertices: " << allVertices[i].size() << "\n";
         std::cout << "  Indices: " << allIndices[i].size() << "\n";
     }
+	
 
     // 모델 로드 성공
     std::cout << "Model loaded successfully: " << path << std::endl;
 
-	
+	for(int i = 0; i < scene->mNumMeshes; ++i)
+	{
+		// 버텍스 버퍼
+		ComPtr<ID3D11Buffer> vertexBuffer;
+		D3D11_BUFFER_DESC vertexBufferDesc = {};
+		vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		vertexBufferDesc.CPUAccessFlags = 0;
+		vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+		vertexBufferDesc.ByteWidth = sizeof(Vertex) * allVertices[i].size();
+		D3D11_SUBRESOURCE_DATA initVertexData = {};
+		initVertexData.pSysMem = allVertices[i].data();
+		HR(m_d3dDevice->CreateBuffer(&vertexBufferDesc,&initVertexData, vertexBuffer.GetAddressOf()));
+		m_ModelVertexBuffer.push_back(vertexBuffer);
+
+		// 인덱스 버퍼
+		ComPtr<ID3D11Buffer> indexBuffer;
+		D3D11_BUFFER_DESC indexBufferDesc = {};
+		indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+		indexBufferDesc.ByteWidth = sizeof(UINT) * allIndices[i].size();
+		indexBufferDesc.CPUAccessFlags = 0;
+		indexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+		D3D11_SUBRESOURCE_DATA initIndexData = {};
+		initIndexData.pSysMem = allIndices[i].data();
+		HR(m_d3dDevice->CreateBuffer(&indexBufferDesc, &initIndexData, indexBuffer.GetAddressOf()));
+		m_ModelIndexBuffer.push_back(indexBuffer);
+	}
 }
 
 void DrawFromFileApp::ProcessMesh(aiMesh* mesh, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices)
@@ -278,7 +313,7 @@ void DrawFromFileApp::ProcessMesh(aiMesh* mesh, std::vector<Vertex>& vertices, s
 	// 1. 버텍스 데이터 추출
     for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
         Vertex vertex;
-
+		
         // 정점 위치
         vertex.Pos.x = mesh->mVertices[i].x;
         vertex.Pos.y = mesh->mVertices[i].y;
@@ -335,66 +370,6 @@ void DrawFromFileApp::ProcessScene(const aiScene* scene, std::vector<std::vector
         allVertices.push_back(vertices);
         allIndices.push_back(indices);
     }
-}
-
-
-void DrawFromFileApp::BuildGeometryBuffers()
-{
-	// 버텍스 버퍼
-	Vertex vertices[] =
-    {
-        { XMFLOAT3( -1.0f, 1.0f, -1.0f ), XMFLOAT4( 0.0f, 0.0f, 1.0f, 1.0f ) },
-        { XMFLOAT3( 1.0f, 1.0f, -1.0f ), XMFLOAT4( 0.0f, 1.0f, 0.0f, 1.0f ) },
-        { XMFLOAT3( 1.0f, 1.0f, 1.0f ), XMFLOAT4( 0.0f, 1.0f, 1.0f, 1.0f ) },
-        { XMFLOAT3( -1.0f, 1.0f, 1.0f ), XMFLOAT4( 1.0f, 0.0f, 0.0f, 1.0f ) },
-        { XMFLOAT3( -1.0f, -1.0f, -1.0f ), XMFLOAT4( 1.0f, 0.0f, 1.0f, 1.0f ) },
-        { XMFLOAT3( 1.0f, -1.0f, -1.0f ), XMFLOAT4( 1.0f, 1.0f, 0.0f, 1.0f ) },
-        { XMFLOAT3( 1.0f, -1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) },
-        { XMFLOAT3( -1.0f, -1.0f, 1.0f ), XMFLOAT4( 0.0f, 0.0f, 0.0f, 1.0f ) },
-    };
-	D3D11_BUFFER_DESC vbd = {};
-	vbd.Usage = D3D11_USAGE_DEFAULT;
-	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vbd.CPUAccessFlags = 0;
-	vbd.ByteWidth = sizeof(vertices);
-	D3D11_SUBRESOURCE_DATA vInitData;
-	vInitData.pSysMem = vertices;
-	HR(m_d3dDevice->CreateBuffer(&vbd, &vInitData, m_BoxVertexBuffer.GetAddressOf()));
-	
-	// 인덱스 버퍼
-	UINT indices[] =
-    {
-        3,1,0,
-        2,1,3,
-
-        0,5,4,
-        1,5,0,
-
-        3,4,7,
-        0,4,3,
-
-        1,6,5,
-        2,6,1,
-
-        2,7,6,
-        3,7,2,
-
-        6,4,5,
-        7,4,6,
-	};
-
-	D3D11_BUFFER_DESC ibd = {};
-	ibd.Usage = D3D11_USAGE_DEFAULT;
-	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	ibd.ByteWidth = sizeof(indices);
-	ibd.CPUAccessFlags = 0;
-	D3D11_SUBRESOURCE_DATA iInitData;
-	iInitData.pSysMem = indices;
-	HR(m_d3dDevice->CreateBuffer(&ibd,&iInitData, m_BoxIndexBuffer.GetAddressOf()));
-	D3D11_BUFFER_DESC test;
-	m_BoxIndexBuffer.Get()->GetDesc(&test);
-
-
 }
 
 void DrawFromFileApp::BuildShader()
