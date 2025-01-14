@@ -105,7 +105,7 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\Assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\ImGui;$(SolutionDir)ThirdParty\Assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -133,12 +133,26 @@
   <ItemGroup>
     <ClCompile Include="..\..\Core\d3dApp.cpp" />
     <ClCompile Include="..\..\Core\GameTimer.cpp" />
+    <ClCompile Include="..\..\ThirdParty\ImGui\backends\imgui_impl_dx11.cpp" />
+    <ClCompile Include="..\..\ThirdParty\ImGui\backends\imgui_impl_win32.cpp" />
+    <ClCompile Include="..\..\ThirdParty\ImGui\imgui.cpp" />
+    <ClCompile Include="..\..\ThirdParty\ImGui\imgui_draw.cpp" />
+    <ClCompile Include="..\..\ThirdParty\ImGui\imgui_tables.cpp" />
+    <ClCompile Include="..\..\ThirdParty\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="DrawFromFile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Core\d3dApp.h" />
     <ClInclude Include="..\..\Core\d3dUtil.h" />
     <ClInclude Include="..\..\Core\GameTimer.h" />
+    <ClInclude Include="..\..\ThirdParty\ImGui\backends\imgui_impl_dx11.h" />
+    <ClInclude Include="..\..\ThirdParty\ImGui\backends\imgui_impl_win32.h" />
+    <ClInclude Include="..\..\ThirdParty\ImGui\imconfig.h" />
+    <ClInclude Include="..\..\ThirdParty\ImGui\imgui.h" />
+    <ClInclude Include="..\..\ThirdParty\ImGui\imgui_internal.h" />
+    <ClInclude Include="..\..\ThirdParty\ImGui\imstb_rectpack.h" />
+    <ClInclude Include="..\..\ThirdParty\ImGui\imstb_textedit.h" />
+    <ClInclude Include="..\..\ThirdParty\ImGui\imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shader\color.fx">

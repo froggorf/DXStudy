@@ -11,6 +11,15 @@
     <Filter Include="Core">
       <UniqueIdentifier>{5c721575-3022-4ba5-a242-bd1f1d0aac60}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ThirdParty">
+      <UniqueIdentifier>{00aece8d-2b45-49a3-99cb-615a2a5f92d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\ImGui">
+      <UniqueIdentifier>{f508fba4-da79-4889-9b5d-58bd759c3567}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\ImGui\backends">
+      <UniqueIdentifier>{30e902fc-ab34-4f90-8d40-b002c8f0d3c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DrawFromFile.cpp">
@@ -22,6 +31,24 @@
     <ClCompile Include="..\..\Core\d3dApp.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGui\backends\imgui_impl_dx11.cpp">
+      <Filter>ThirdParty\ImGui\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGui\backends\imgui_impl_win32.cpp">
+      <Filter>ThirdParty\ImGui\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGui\imgui.cpp">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGui\imgui_draw.cpp">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGui\imgui_tables.cpp">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGui\imgui_widgets.cpp">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Core\d3dApp.h">
@@ -32,6 +59,30 @@
     </ClInclude>
     <ClInclude Include="..\..\Core\GameTimer.h">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGui\backends\imgui_impl_dx11.h">
+      <Filter>ThirdParty\ImGui\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGui\backends\imgui_impl_win32.h">
+      <Filter>ThirdParty\ImGui\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGui\imstb_textedit.h">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGui\imstb_truetype.h">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGui\imconfig.h">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGui\imgui.h">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGui\imgui_internal.h">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGui\imstb_rectpack.h">
+      <Filter>ThirdParty\ImGui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

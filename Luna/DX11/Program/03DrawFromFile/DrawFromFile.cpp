@@ -13,6 +13,11 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include "imgui.h"
+#include "imgui_internal.h"
+#include "backends/imgui_impl_dx11.h"
+#include "backends/imgui_impl_win32.h"
+
 using namespace DirectX;
 
 struct Vertex
@@ -42,13 +47,14 @@ public:
 	bool Init() override;
 	void OnResize() override;
 	void UpdateScene(float dt) override;
+	void DrawImGui() override;
 	void DrawScene() override;
 
 	void OnMouseDown(WPARAM btnState, int x, int y) override;
 	void OnMouseUp(WPARAM btnState, int x, int y) override;
 	void OnMouseMove(WPARAM btnState, int x, int y) override;
 
-private:	
+private:
 	void TestLoadModel(const std::string& path);
 	void ProcessMesh(aiMesh* mesh, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices);
 	void ProcessScene(const aiScene* scene, std::vector<std::vector<Vertex>>& allVertices, std::vector<std::vector<unsigned int>>& allIndices);
@@ -75,6 +81,8 @@ private:
 	float m_Theta;
 	float m_Phi;
 	float m_Radius;
+
+	float m_ModelScale = 1.0f;
 
 	POINT m_LastMousePos;
 };
@@ -124,7 +132,6 @@ bool DrawFromFileApp::Init()
 	TestLoadModel("Model/0.obj");
 	BuildShader();
 
-
 	return true;
 }
 
@@ -153,6 +160,25 @@ void DrawFromFileApp::UpdateScene(float dt)
 	
 }
 
+void DrawFromFileApp::DrawImGui()
+{
+	// (Your code process and dispatch Win32 messages)
+	// Start the Dear ImGui frame
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	// UI 코드 작성
+	ImGui::SetNextWindowSize(ImVec2(400,300));
+    ImGui::Begin("Scale Controller");
+    ImGui::SliderFloat("Scale", &m_ModelScale, 0.1f, 10.0f); // 슬라이더 추가
+    ImGui::End();
+
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+}
+
+
 void DrawFromFileApp::DrawScene()
 {
 	const float clearColor[] = {0.2f, 0.2f, 0.2f,1.0f};
@@ -160,6 +186,8 @@ void DrawFromFileApp::DrawScene()
 	m_d3dDeviceContext->ClearDepthStencilView(m_DepthStencilView.Get(), D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	{
+		DrawImGui();
+
 		// 셰이더 설정
 		m_d3dDeviceContext->VSSetShader(m_VertexShader.Get(), nullptr, 0);
 		m_d3dDeviceContext->PSSetShader(m_PixelShader.Get(), nullptr, 0);
@@ -180,8 +208,7 @@ void DrawFromFileApp::DrawScene()
 		// 오브젝트 Draw
 		// Obj 상수 버퍼 설정
 		ObjConstantBuffer ocb;
-		float scaleSize = 2.0f;
-		XMMATRIX world = m_World * XMMatrixScaling(scaleSize,scaleSize,scaleSize);
+		XMMATRIX world = m_World * XMMatrixScaling(m_ModelScale,m_ModelScale,m_ModelScale);
 		ocb.World = XMMatrixTranspose(world);
 		m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);
 
@@ -252,6 +279,8 @@ void DrawFromFileApp::OnMouseMove(WPARAM btnState, int x, int y)
 	m_LastMousePos.x = x;
 	m_LastMousePos.y = y;
 }
+
+
 
 void DrawFromFileApp::TestLoadModel(const std::string& path)
 {

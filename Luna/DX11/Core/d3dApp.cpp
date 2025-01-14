@@ -5,6 +5,10 @@
 
 #include <sstream>
 #include <Windows.h>
+#include <backends/imgui_impl_dx11.h>
+#include <backends/imgui_impl_win32.h>
+
+#include "imgui_internal.h"
 
 namespace
 {
@@ -51,6 +55,10 @@ D3DApp::~D3DApp()
 	{
 		m_d3dDeviceContext.Get()->ClearState();
 	}
+
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
 }
 
 HINSTANCE D3DApp::GetAppInstance() const
@@ -113,6 +121,28 @@ bool D3DApp::Init()
 	{
 		return false;
 	}
+
+	InitImGui();
+
+	return true;
+}
+
+bool D3DApp::InitImGui()
+{
+	// Setup Dear ImGui context
+	IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+
+	// Setup Platform/Renderer backends
+	ImGui_ImplWin32_Init(m_hMainWnd);
+	ImGui_ImplDX11_Init(m_d3dDevice.Get(), m_d3dDeviceContext.Get());
 
 	return true;
 }
@@ -182,8 +212,28 @@ void D3DApp::OnResize()
 	m_d3dDeviceContext->RSSetViewports(1, &m_ScreenViewport);
 }
 
+void D3DApp::DrawImGui()
+{
+}
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+	// ImGui 이벤트 처리
+	if(ImGui::GetCurrentContext())
+	{
+		 ImGuiIO& io = ImGui::GetIO();
+		if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam)) {
+		   return TRUE;
+		}
+		if(io.WantCaptureMouse || io.WantCaptureKeyboard)
+		{
+			return TRUE;
+		}
+	}
+	
+
+
 	switch( msg )
 	{
 	// WM_ACTIVATE is sent when the window is activated or deactivated.  
