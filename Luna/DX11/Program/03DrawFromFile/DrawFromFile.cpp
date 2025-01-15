@@ -37,11 +37,11 @@ struct ObjConstantBuffer
 	XMMATRIX World;
 };
  
-class DrawFromFileApp : public D3DApp
+class TextureToModelApp : public D3DApp
 {
 public:
-	DrawFromFileApp(HINSTANCE hInstance);
-	~DrawFromFileApp();
+	TextureToModelApp(HINSTANCE hInstance);
+	~TextureToModelApp();
 
 	// Init
 	bool Init() override;
@@ -98,7 +98,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
     freopen_s(&fp, "CONOUT$", "w", stdout);
 #endif
 
-	DrawFromFileApp theApp(hInstance);
+	TextureToModelApp theApp(hInstance);
 	
 	if( !theApp.Init() )
 		return 0;
@@ -106,7 +106,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 	return theApp.Run();
 }
 
-DrawFromFileApp::DrawFromFileApp(HINSTANCE hInstance)
+TextureToModelApp::TextureToModelApp(HINSTANCE hInstance)
 : D3DApp(hInstance) 
 {
 	m_MainWndTitle = L"Draw 3D Mesh";
@@ -119,12 +119,12 @@ DrawFromFileApp::DrawFromFileApp(HINSTANCE hInstance)
 		
 }
 
-DrawFromFileApp::~DrawFromFileApp()
+TextureToModelApp::~TextureToModelApp()
 {
 	// ComPtr
 }
 
-bool DrawFromFileApp::Init()
+bool TextureToModelApp::Init()
 {
 	if(!D3DApp::Init())
 		return false;
@@ -135,7 +135,7 @@ bool DrawFromFileApp::Init()
 	return true;
 }
 
-void DrawFromFileApp::OnResize()
+void TextureToModelApp::OnResize()
 {
 	D3DApp::OnResize();
 
@@ -143,7 +143,7 @@ void DrawFromFileApp::OnResize()
 	m_Proj = XMMatrixPerspectiveFovLH(0.5*XM_PI, GetWindowAspectRatio(), 1.0f, 1000.0f);
 }
 
-void DrawFromFileApp::UpdateScene(float dt)
+void TextureToModelApp::UpdateScene(float dt)
 {
 	// Convert Spherical to Cartesian coordinates.
 	float x = m_Radius*sinf(m_Phi)*cosf(m_Theta);
@@ -160,7 +160,7 @@ void DrawFromFileApp::UpdateScene(float dt)
 	
 }
 
-void DrawFromFileApp::DrawImGui()
+void TextureToModelApp::DrawImGui()
 {
 	// (Your code process and dispatch Win32 messages)
 	// Start the Dear ImGui frame
@@ -179,7 +179,7 @@ void DrawFromFileApp::DrawImGui()
 }
 
 
-void DrawFromFileApp::DrawScene()
+void TextureToModelApp::DrawScene()
 {
 	const float clearColor[] = {0.2f, 0.2f, 0.2f,1.0f};
 	m_d3dDeviceContext->ClearRenderTargetView(m_RenderTargetView.Get(), clearColor);
@@ -234,7 +234,7 @@ void DrawFromFileApp::DrawScene()
 }
 
 
-void DrawFromFileApp::OnMouseDown(WPARAM btnState, int x, int y)
+void TextureToModelApp::OnMouseDown(WPARAM btnState, int x, int y)
 {
 	m_LastMousePos.x = x;
 	m_LastMousePos.y = y;
@@ -242,12 +242,12 @@ void DrawFromFileApp::OnMouseDown(WPARAM btnState, int x, int y)
 	SetCapture(m_hMainWnd);
 }
 
-void DrawFromFileApp::OnMouseUp(WPARAM btnState, int x, int y)
+void TextureToModelApp::OnMouseUp(WPARAM btnState, int x, int y)
 {
 	ReleaseCapture();
 }
 
-void DrawFromFileApp::OnMouseMove(WPARAM btnState, int x, int y)
+void TextureToModelApp::OnMouseMove(WPARAM btnState, int x, int y)
 {
 	if( (btnState & MK_LBUTTON) != 0 )
 	{
@@ -282,7 +282,7 @@ void DrawFromFileApp::OnMouseMove(WPARAM btnState, int x, int y)
 
 
 
-void DrawFromFileApp::TestLoadModel(const std::string& path)
+void TextureToModelApp::TestLoadModel(const std::string& path)
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path, 
@@ -337,7 +337,7 @@ void DrawFromFileApp::TestLoadModel(const std::string& path)
 	}
 }
 
-void DrawFromFileApp::ProcessMesh(aiMesh* mesh, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices)
+void TextureToModelApp::ProcessMesh(aiMesh* mesh, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices)
 {
 	// 1. 버텍스 데이터 추출
     for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
@@ -382,7 +382,7 @@ void DrawFromFileApp::ProcessMesh(aiMesh* mesh, std::vector<Vertex>& vertices, s
     }
 }
 
-void DrawFromFileApp::ProcessScene(const aiScene* scene, std::vector<std::vector<Vertex>>& allVertices,
+void TextureToModelApp::ProcessScene(const aiScene* scene, std::vector<std::vector<Vertex>>& allVertices,
 	std::vector<std::vector<unsigned int>>& allIndices)
 {
 	for (unsigned int i = 0; i < scene->mNumMeshes; i++) {
@@ -401,7 +401,7 @@ void DrawFromFileApp::ProcessScene(const aiScene* scene, std::vector<std::vector
     }
 }
 
-void DrawFromFileApp::BuildShader()
+void TextureToModelApp::BuildShader()
 {
 	ComPtr<ID3DBlob> pVSBlob = nullptr;
 	HR(CompileShaderFromFile(L"Shader/color.fx", "VS", "vs_4_0", pVSBlob.GetAddressOf()));

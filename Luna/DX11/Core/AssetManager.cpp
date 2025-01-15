@@ -6,7 +6,7 @@
 
 using namespace Microsoft::WRL;
 
-#define ModelFolderDirectory "../../"
+#define ModelFolderDirectory "../../Resource/"
 void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Device> pDevice, std::vector<ComPtr<ID3D11Buffer>>& pVertexBuffer,
 	std::vector<ComPtr<ID3D11Buffer>>&pIndexBuffer)
 {

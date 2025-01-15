@@ -6,15 +6,17 @@
 //
 //***************************************************************************************
 #define _CRT_SECURE_NO_WARNINGS
+#include <vector>
+
 #include "../../Core/d3dApp.h"
+#include "../../Core/AssetManager.h"
+
+#include "imgui.h"
+#include "imgui_internal.h"
+#include "backends/imgui_impl_dx11.h"
+#include "backends/imgui_impl_win32.h"
 
 using namespace DirectX;
-
-struct Vertex
-{
-	XMFLOAT3 Pos;
-	XMFLOAT4 Color;
-};
 
 struct FrameConstantBuffer
 {
@@ -35,8 +37,10 @@ public:
 
 	// Init
 	bool Init() override;
+	void InitSamplerState();
 	void OnResize() override;
 	void UpdateScene(float dt) override;
+	void DrawImGui() override;
 	void DrawScene() override;
 
 	void OnMouseDown(WPARAM btnState, int x, int y) override;
@@ -44,22 +48,27 @@ public:
 	void OnMouseMove(WPARAM btnState, int x, int y) override;
 
 private:
-	void BuildGeometryBuffers();
+	
 	void BuildShader();
 
 
 
 private:
-	ComPtr<ID3D11Buffer>		m_BoxVertexBuffer;
-	ComPtr<ID3D11Buffer>		m_BoxIndexBuffer;
+	// 모델 정보
+	std::vector<ComPtr<ID3D11Buffer>>		m_ModelVertexBuffer;
+	std::vector<ComPtr<ID3D11Buffer>> 		m_ModelIndexBuffer;
 
+	// 파이프라인
 	ComPtr<ID3D11VertexShader>	m_VertexShader;
 	ComPtr<ID3D11PixelShader>	m_PixelShader;
 	ComPtr<ID3D11InputLayout>	m_InputLayout;
+	ComPtr<ID3D11SamplerState>	m_SamplerState;
 
+	// 상수버퍼
 	ComPtr<ID3D11Buffer>		m_FrameConstantBuffer;
 	ComPtr<ID3D11Buffer>		m_ObjConstantBuffer;
 
+	// 변환 행렬
 	XMMATRIX m_World;
 	XMMATRIX m_View;
 	XMMATRIX m_Proj;
@@ -67,8 +76,11 @@ private:
 	float m_Theta;
 	float m_Phi;
 	float m_Radius;
-
 	POINT m_LastMousePos;
+
+	float m_ModelScale = 0.02f;
+
+	
 };
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
@@ -77,8 +89,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 	// Enable run-time memory check for debug builds.
 #if defined(DEBUG) | defined(_DEBUG)
 	_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
-	
+	AllocConsole();
+	FILE* fp;
+    freopen_s(&fp, "CONOUT$", "w", stdout);
 #endif
+
 	TextureToModelApp theApp(hInstance);
 	
 	if( !theApp.Init() )
@@ -110,11 +125,24 @@ bool TextureToModelApp::Init()
 	if(!D3DApp::Init())
 		return false;
 
-	BuildGeometryBuffers();
+	AssetManager::LoadModelData("Model/chibi_cat.fbx", m_d3dDevice, m_ModelVertexBuffer, m_ModelIndexBuffer);
 	BuildShader();
 
-
 	return true;
+}
+
+void TextureToModelApp::InitSamplerState()
+{
+	D3D11_SAMPLER_DESC sampDesc;
+    ZeroMemory(&sampDesc, sizeof(sampDesc));
+    sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+    sampDesc.MinLOD = 0;
+    sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+    HR(m_d3dDevice->CreateSamplerState(&sampDesc, &m_SamplerState));
 }
 
 void TextureToModelApp::OnResize()
@@ -142,6 +170,25 @@ void TextureToModelApp::UpdateScene(float dt)
 	
 }
 
+void TextureToModelApp::DrawImGui()
+{
+	// (Your code process and dispatch Win32 messages)
+	// Start the Dear ImGui frame
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	// UI 코드 작성
+	ImGui::SetNextWindowSize(ImVec2(400,300));
+    ImGui::Begin("Scale Controller");
+    ImGui::SliderFloat("Scale", &m_ModelScale, 0.01f, 1.0f); // 슬라이더 추가
+    ImGui::End();
+
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+}
+
+
 void TextureToModelApp::DrawScene()
 {
 	const float clearColor[] = {0.2f, 0.2f, 0.2f,1.0f};
@@ -149,6 +196,8 @@ void TextureToModelApp::DrawScene()
 	m_d3dDeviceContext->ClearDepthStencilView(m_DepthStencilView.Get(), D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	{
+		DrawImGui();
+
 		// 셰이더 설정
 		m_d3dDeviceContext->VSSetShader(m_VertexShader.Get(), nullptr, 0);
 		m_d3dDeviceContext->PSSetShader(m_PixelShader.Get(), nullptr, 0);
@@ -160,26 +209,35 @@ void TextureToModelApp::DrawScene()
 		m_d3dDeviceContext->IASetInputLayout(m_InputLayout.Get());
 		m_d3dDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		// 버텍스, 인덱스 버퍼
-		UINT stride = sizeof(Vertex);
-		UINT offset = 0;
-		m_d3dDeviceContext->IASetVertexBuffers(0,1, m_BoxVertexBuffer.GetAddressOf(), &stride, &offset);
-		m_d3dDeviceContext->IASetIndexBuffer(m_BoxIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-		
-
 		// Frame 상수 버퍼 설정
 		FrameConstantBuffer fcb;
 		fcb.View = XMMatrixTranspose(m_View);
 		fcb.Projection = XMMatrixTranspose(m_Proj);
 		m_d3dDeviceContext->UpdateSubresource(m_FrameConstantBuffer.Get(), 0, nullptr, &fcb, 0, 0);
-
+		
 		// 오브젝트 Draw
 		// Obj 상수 버퍼 설정
 		ObjConstantBuffer ocb;
-		ocb.World = XMMatrixTranspose(m_World);
+		XMMATRIX world = m_World * XMMatrixScaling(m_ModelScale,m_ModelScale,m_ModelScale);
+		ocb.World = XMMatrixTranspose(world);
 		m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);
 
-		m_d3dDeviceContext->DrawIndexed(36, 0, 0);
+		// 버텍스 버퍼에 맞춰 오브젝트 드로우
+		
+		for(int vertexCount = 0; vertexCount < m_ModelVertexBuffer.size(); ++vertexCount)
+		{
+			UINT stride = sizeof(MyVertexData);
+			UINT offset = 0;
+			m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_ModelVertexBuffer[vertexCount].GetAddressOf(), &stride, &offset);
+			m_d3dDeviceContext->IASetIndexBuffer(m_ModelIndexBuffer[vertexCount].Get(), DXGI_FORMAT_R32_UINT, 0);
+		
+			D3D11_BUFFER_DESC indexBufferDesc;
+			m_ModelIndexBuffer[vertexCount]->GetDesc(&indexBufferDesc);
+			UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
+			m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
+		}
+		
+
 	}
 
 	HR(m_SwapChain->Present(0, 0));
@@ -232,65 +290,6 @@ void TextureToModelApp::OnMouseMove(WPARAM btnState, int x, int y)
 	m_LastMousePos.y = y;
 }
 
-void TextureToModelApp::BuildGeometryBuffers()
-{
-	// 버텍스 버퍼
-	Vertex vertices[] =
-    {
-        { XMFLOAT3( -1.0f, 1.0f, -1.0f ), XMFLOAT4( 0.0f, 0.0f, 1.0f, 1.0f ) },
-        { XMFLOAT3( 1.0f, 1.0f, -1.0f ), XMFLOAT4( 0.0f, 1.0f, 0.0f, 1.0f ) },
-        { XMFLOAT3( 1.0f, 1.0f, 1.0f ), XMFLOAT4( 0.0f, 1.0f, 1.0f, 1.0f ) },
-        { XMFLOAT3( -1.0f, 1.0f, 1.0f ), XMFLOAT4( 1.0f, 0.0f, 0.0f, 1.0f ) },
-        { XMFLOAT3( -1.0f, -1.0f, -1.0f ), XMFLOAT4( 1.0f, 0.0f, 1.0f, 1.0f ) },
-        { XMFLOAT3( 1.0f, -1.0f, -1.0f ), XMFLOAT4( 1.0f, 1.0f, 0.0f, 1.0f ) },
-        { XMFLOAT3( 1.0f, -1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) },
-        { XMFLOAT3( -1.0f, -1.0f, 1.0f ), XMFLOAT4( 0.0f, 0.0f, 0.0f, 1.0f ) },
-    };
-	D3D11_BUFFER_DESC vbd = {};
-	vbd.Usage = D3D11_USAGE_DEFAULT;
-	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vbd.CPUAccessFlags = 0;
-	vbd.ByteWidth = sizeof(vertices);
-	D3D11_SUBRESOURCE_DATA vInitData;
-	vInitData.pSysMem = vertices;
-	HR(m_d3dDevice->CreateBuffer(&vbd, &vInitData, m_BoxVertexBuffer.GetAddressOf()));
-	
-	// 인덱스 버퍼
-	UINT indices[] =
-    {
-        3,1,0,
-        2,1,3,
-
-        0,5,4,
-        1,5,0,
-
-        3,4,7,
-        0,4,3,
-
-        1,6,5,
-        2,6,1,
-
-        2,7,6,
-        3,7,2,
-
-        6,4,5,
-        7,4,6,
-	};
-
-	D3D11_BUFFER_DESC ibd = {};
-	ibd.Usage = D3D11_USAGE_DEFAULT;
-	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	ibd.ByteWidth = sizeof(indices);
-	ibd.CPUAccessFlags = 0;
-	D3D11_SUBRESOURCE_DATA iInitData;
-	iInitData.pSysMem = indices;
-	HR(m_d3dDevice->CreateBuffer(&ibd,&iInitData, m_BoxIndexBuffer.GetAddressOf()));
-	D3D11_BUFFER_DESC test;
-	m_BoxIndexBuffer.Get()->GetDesc(&test);
-
-
-}
-
 void TextureToModelApp::BuildShader()
 {
 	ComPtr<ID3DBlob> pVSBlob = nullptr;
@@ -300,7 +299,9 @@ void TextureToModelApp::BuildShader()
 	D3D11_INPUT_ELEMENT_DESC inputLayout[] =
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}
+		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,0,24,D3D11_INPUT_PER_VERTEX_DATA, 0}
+
 	};
 	UINT numElements = ARRAYSIZE(inputLayout);
 

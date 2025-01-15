@@ -9,10 +9,10 @@
 #include <vector>
 
 #include "../../Core/d3dApp.h"
+#include "../../Core/AssetManager.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"
-#include "../../Core/AssetManager.h"
 #include "backends/imgui_impl_dx11.h"
 #include "backends/imgui_impl_win32.h"
 
@@ -29,14 +29,15 @@ struct ObjConstantBuffer
 	XMMATRIX World;
 };
  
-class DrawFromFileApp : public D3DApp
+class TextureToModelApp : public D3DApp
 {
 public:
-	DrawFromFileApp(HINSTANCE hInstance);
-	~DrawFromFileApp();
+	TextureToModelApp(HINSTANCE hInstance);
+	~TextureToModelApp();
 
 	// Init
 	bool Init() override;
+	void InitSamplerState();
 	void OnResize() override;
 	void UpdateScene(float dt) override;
 	void DrawImGui() override;
@@ -53,16 +54,21 @@ private:
 
 
 private:
+	// 모델 정보
 	std::vector<ComPtr<ID3D11Buffer>>		m_ModelVertexBuffer;
 	std::vector<ComPtr<ID3D11Buffer>> 		m_ModelIndexBuffer;
 
+	// 파이프라인
 	ComPtr<ID3D11VertexShader>	m_VertexShader;
 	ComPtr<ID3D11PixelShader>	m_PixelShader;
 	ComPtr<ID3D11InputLayout>	m_InputLayout;
+	ComPtr<ID3D11SamplerState>	m_SamplerState;
 
+	// 상수버퍼
 	ComPtr<ID3D11Buffer>		m_FrameConstantBuffer;
 	ComPtr<ID3D11Buffer>		m_ObjConstantBuffer;
 
+	// 변환 행렬
 	XMMATRIX m_World;
 	XMMATRIX m_View;
 	XMMATRIX m_Proj;
@@ -70,10 +76,11 @@ private:
 	float m_Theta;
 	float m_Phi;
 	float m_Radius;
-
-	float m_ModelScale = 1.0f;
-
 	POINT m_LastMousePos;
+
+	float m_ModelScale = 0.02f;
+
+	
 };
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
@@ -87,7 +94,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
     freopen_s(&fp, "CONOUT$", "w", stdout);
 #endif
 
-	DrawFromFileApp theApp(hInstance);
+	TextureToModelApp theApp(hInstance);
 	
 	if( !theApp.Init() )
 		return 0;
@@ -95,10 +102,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 	return theApp.Run();
 }
 
-DrawFromFileApp::DrawFromFileApp(HINSTANCE hInstance)
+TextureToModelApp::TextureToModelApp(HINSTANCE hInstance)
 : D3DApp(hInstance) 
 {
-	m_MainWndTitle = L"Draw 3D Mesh";
+	m_MainWndTitle = L"Texture To Model";
 
 	m_Radius = 5.0f; m_Phi = 30.0f; m_Theta = 30.0f;
 	m_LastMousePos.x = 0; m_LastMousePos.y = 1;
@@ -108,23 +115,37 @@ DrawFromFileApp::DrawFromFileApp(HINSTANCE hInstance)
 		
 }
 
-DrawFromFileApp::~DrawFromFileApp()
+TextureToModelApp::~TextureToModelApp()
 {
 	// ComPtr
 }
 
-bool DrawFromFileApp::Init()
+bool TextureToModelApp::Init()
 {
 	if(!D3DApp::Init())
 		return false;
 
-	AssetManager::LoadModelData("Model/UEMannequin.obj", m_d3dDevice, m_ModelVertexBuffer, m_ModelIndexBuffer);
+	AssetManager::LoadModelData("Model/chibi_cat.fbx", m_d3dDevice, m_ModelVertexBuffer, m_ModelIndexBuffer);
 	BuildShader();
 
 	return true;
 }
 
-void DrawFromFileApp::OnResize()
+void TextureToModelApp::InitSamplerState()
+{
+	D3D11_SAMPLER_DESC sampDesc;
+    ZeroMemory(&sampDesc, sizeof(sampDesc));
+    sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+    sampDesc.MinLOD = 0;
+    sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+    HR(m_d3dDevice->CreateSamplerState(&sampDesc, &m_SamplerState));
+}
+
+void TextureToModelApp::OnResize()
 {
 	D3DApp::OnResize();
 
@@ -132,7 +153,7 @@ void DrawFromFileApp::OnResize()
 	m_Proj = XMMatrixPerspectiveFovLH(0.5*XM_PI, GetWindowAspectRatio(), 1.0f, 1000.0f);
 }
 
-void DrawFromFileApp::UpdateScene(float dt)
+void TextureToModelApp::UpdateScene(float dt)
 {
 	// Convert Spherical to Cartesian coordinates.
 	float x = m_Radius*sinf(m_Phi)*cosf(m_Theta);
@@ -149,7 +170,7 @@ void DrawFromFileApp::UpdateScene(float dt)
 	
 }
 
-void DrawFromFileApp::DrawImGui()
+void TextureToModelApp::DrawImGui()
 {
 	// (Your code process and dispatch Win32 messages)
 	// Start the Dear ImGui frame
@@ -160,7 +181,7 @@ void DrawFromFileApp::DrawImGui()
 	// UI 코드 작성
 	ImGui::SetNextWindowSize(ImVec2(400,300));
     ImGui::Begin("Scale Controller");
-    ImGui::SliderFloat("Scale", &m_ModelScale, 0.1f, 10.0f); // 슬라이더 추가
+    ImGui::SliderFloat("Scale", &m_ModelScale, 0.01f, 1.0f); // 슬라이더 추가
     ImGui::End();
 
 	ImGui::Render();
@@ -168,7 +189,7 @@ void DrawFromFileApp::DrawImGui()
 }
 
 
-void DrawFromFileApp::DrawScene()
+void TextureToModelApp::DrawScene()
 {
 	const float clearColor[] = {0.2f, 0.2f, 0.2f,1.0f};
 	m_d3dDeviceContext->ClearRenderTargetView(m_RenderTargetView.Get(), clearColor);
@@ -223,7 +244,7 @@ void DrawFromFileApp::DrawScene()
 }
 
 
-void DrawFromFileApp::OnMouseDown(WPARAM btnState, int x, int y)
+void TextureToModelApp::OnMouseDown(WPARAM btnState, int x, int y)
 {
 	m_LastMousePos.x = x;
 	m_LastMousePos.y = y;
@@ -231,12 +252,12 @@ void DrawFromFileApp::OnMouseDown(WPARAM btnState, int x, int y)
 	SetCapture(m_hMainWnd);
 }
 
-void DrawFromFileApp::OnMouseUp(WPARAM btnState, int x, int y)
+void TextureToModelApp::OnMouseUp(WPARAM btnState, int x, int y)
 {
 	ReleaseCapture();
 }
 
-void DrawFromFileApp::OnMouseMove(WPARAM btnState, int x, int y)
+void TextureToModelApp::OnMouseMove(WPARAM btnState, int x, int y)
 {
 	if( (btnState & MK_LBUTTON) != 0 )
 	{
@@ -269,7 +290,7 @@ void DrawFromFileApp::OnMouseMove(WPARAM btnState, int x, int y)
 	m_LastMousePos.y = y;
 }
 
-void DrawFromFileApp::BuildShader()
+void TextureToModelApp::BuildShader()
 {
 	ComPtr<ID3DBlob> pVSBlob = nullptr;
 	HR(CompileShaderFromFile(L"Shader/color.fx", "VS", "vs_4_0", pVSBlob.GetAddressOf()));

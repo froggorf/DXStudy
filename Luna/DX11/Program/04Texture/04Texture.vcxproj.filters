@@ -5,25 +5,30 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Shader">
-      <UniqueIdentifier>{c3517ba6-cedd-4213-8f33-7ba9a5d6aed2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core">
-      <UniqueIdentifier>{ff58dbcc-b8d2-4b96-9508-3af2eaadd131}</UniqueIdentifier>
+      <UniqueIdentifier>{0beafbdc-f778-45c8-8bdc-6aeef5213527}</UniqueIdentifier>
     </Filter>
     <Filter Include="ThirdParty">
-      <UniqueIdentifier>{3cd5c8f3-142c-4bc5-ba34-f87b4df1fc8d}</UniqueIdentifier>
+      <UniqueIdentifier>{2350bc80-1dc7-4e2b-b9fb-18f7f6d437fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{2419784c-17c0-41f3-b1f3-35989baace42}</UniqueIdentifier>
     </Filter>
     <Filter Include="ThirdParty\ImGui">
-      <UniqueIdentifier>{964155e6-98ff-417b-beb8-44b01442b814}</UniqueIdentifier>
+      <UniqueIdentifier>{24a87731-7eae-4e9f-b101-aac34417866c}</UniqueIdentifier>
     </Filter>
     <Filter Include="ThirdParty\ImGui\backends">
-      <UniqueIdentifier>{77c91642-682b-4392-bebf-d33e8699b7ee}</UniqueIdentifier>
+      <UniqueIdentifier>{545a2b0a-1a8a-4cc3-92bb-4d50fdcab6f5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="LightingToModel.cpp">
-      <Filter>Source Files</Filter>
+    <FxCompile Include="Shader\color.fx">
+      <Filter>Shader</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Core\AssetManager.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Core\d3dApp.cpp">
       <Filter>Core</Filter>
@@ -43,22 +48,20 @@
     <ClCompile Include="..\..\ThirdParty\ImGui\imgui_widgets.cpp">
       <Filter>ThirdParty\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\ThirdParty\ImGui\backends\imgui_impl_win32.cpp">
-      <Filter>ThirdParty\ImGui\backends</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\ThirdParty\ImGui\backends\imgui_impl_dx11.cpp">
       <Filter>ThirdParty\ImGui\backends</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Core\AssetManager.cpp">
-      <Filter>Core</Filter>
+    <ClCompile Include="..\..\ThirdParty\ImGui\backends\imgui_impl_win32.cpp">
+      <Filter>ThirdParty\ImGui\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureToModel.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shader\color.fx">
-      <Filter>Shader</Filter>
-    </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
+    <ClInclude Include="..\..\Core\AssetManager.h">
+      <Filter>Core</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Core\d3dApp.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -91,9 +94,6 @@
     </ClInclude>
     <ClInclude Include="..\..\ThirdParty\ImGui\backends\imgui_impl_win32.h">
       <Filter>ThirdParty\ImGui\backends</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Core\AssetManager.h">
-      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
