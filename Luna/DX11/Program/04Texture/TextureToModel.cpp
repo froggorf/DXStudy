@@ -126,9 +126,10 @@ bool TextureToModelApp::Init()
 	if(!D3DApp::Init())
 		return false;
 
+	InitSamplerState();
 	AssetManager::LoadModelData("Model/chibi_cat.fbx", m_d3dDevice, m_ModelVertexBuffer, m_ModelIndexBuffer);
-	AssetManager::LoadTextureFromTGA(L"Texture/T_Chibi_Cat_01.tga", m_d3dDevice, m_ModelShaderResourceView);
-	AssetManager::LoadTextureFromTGA(L"Texture/T_Chibi_Emo_01.tga", m_d3dDevice, m_ModelShaderResourceView);
+	AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Cat_01.png", m_d3dDevice, m_ModelShaderResourceView);
+	AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Emo_01.png", m_d3dDevice, m_ModelShaderResourceView);
 	BuildShader();
 
 	return true;
@@ -146,6 +147,27 @@ void TextureToModelApp::InitSamplerState()
     sampDesc.MinLOD = 0;
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
     HR(m_d3dDevice->CreateSamplerState(&sampDesc, &m_SamplerState));
+
+	D3D11_BLEND_DESC blendDesc = {};
+	blendDesc.AlphaToCoverageEnable = FALSE; // 알파 커버리지 비활성화
+	blendDesc.IndependentBlendEnable = FALSE; // 독립 블렌딩 비활성화
+	blendDesc.RenderTarget[0].BlendEnable = TRUE; // 블렌딩 활성화
+	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA; // 소스 알파값
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA; // 대상 알파값의 반대
+	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD; // 더하기 연산
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE; // 알파값 소스
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO; // 알파값 대상
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD; // 알파값 더하기 연산
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL; // RGBA 모두 활성화
+	
+	ID3D11BlendState* blendState = nullptr;
+	HR(m_d3dDevice->CreateBlendState(&blendDesc, &blendState));
+	
+	
+	// 파이프라인에 블렌딩 상태 설정
+	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f }; // 블렌드 팩터 (기본값)
+	UINT sampleMask = 0xFFFFFFFF; // 샘플 마스크 (기본값)
+	m_d3dDeviceContext->OMSetBlendState(blendState, blendFactor, sampleMask);
 }
 
 void TextureToModelApp::OnResize()

@@ -38,5 +38,6 @@ VS_OUTPUT VS( float4 Pos : POSITION, float3 Normal : NORMAL, float2 TexCoord : T
 //--------------------------------------------------------------------------------------
 float4 PS( VS_OUTPUT input ) : SV_Target
 {
-    return txDiffuse.Sample( samLinear, input.Tex );
+    float4 color = txDiffuse.Sample( samLinear, input.Tex );
+    return color;
 }

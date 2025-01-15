@@ -9,6 +9,8 @@
 #include <DirectXTex/DirectXTex.h>
 #include <DirectXTex/DirectXTex.inl>
 
+// std::filesystem path
+#include <filesystem>
 
 using namespace Microsoft::WRL;
 
@@ -72,23 +74,35 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
 	}
 }
 
-void AssetManager::LoadTextureFromTGA(const std::wstring& szFile, const Microsoft::WRL::ComPtr<ID3D11Device> pDevice,
+void AssetManager::LoadTextureFromFile(const std::wstring& szFile, const Microsoft::WRL::ComPtr<ID3D11Device> pDevice,
 	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>>& vTextureShaderResourceView)
 {
     DirectX::ScratchImage image;
     const std::wstring filePath = ResourceFolderDirectoryW + szFile;
-    HR(DirectX::LoadFromTGAFile(filePath.c_str(), DirectX::TGA_FLAGS_NONE, nullptr, image));
 
+    std::filesystem::path p(filePath.c_str());
+    std::wstring ext = p.extension();
+
+	if (ext == L".dds" || ext == L".DDS")
+		DirectX::LoadFromDDSFile(filePath.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, image);
+	else if (ext == L".tga" || ext == L".TGA")
+		DirectX::LoadFromTGAFile(filePath.c_str(), nullptr, image);
+	else // png, jpg, jpeg, bmp
+		DirectX::LoadFromWICFile(filePath.c_str(), DirectX::WIC_FLAGS_NONE, nullptr, image);
+
+    
     ID3D11Texture2D* pTexture = nullptr;
     HR(DirectX::CreateTexture(pDevice.Get(), image.GetImages(), image.GetImageCount(), image.GetMetadata(), (ID3D11Resource**)&pTexture));
-
+    
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
     srvDesc.Texture2D.MostDetailedMip = 0;
     srvDesc.Texture2D.MipLevels = 1;
+
     D3D11_TEXTURE2D_DESC textureDesc = {};
     pTexture->GetDesc(&textureDesc);
     srvDesc.Format = textureDesc.Format;
+    
 
     ComPtr<ID3D11ShaderResourceView> srv = nullptr;
 
