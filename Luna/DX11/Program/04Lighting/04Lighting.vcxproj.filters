@@ -49,6 +49,9 @@
     <ClCompile Include="..\..\ThirdParty\ImGui\backends\imgui_impl_dx11.cpp">
       <Filter>ThirdParty\ImGui\backends</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Core\AssetManager.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shader\color.fx">
@@ -88,6 +91,9 @@
     </ClInclude>
     <ClInclude Include="..\..\ThirdParty\ImGui\backends\imgui_impl_win32.h">
       <Filter>ThirdParty\ImGui\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\AssetManager.h">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -77,3 +77,10 @@ inline HRESULT CompileShaderFromFile( const WCHAR* szFileName, LPCSTR szEntryPoi
 }
 
 #endif  //COMPILE_SHADER_FROM_FILE
+
+struct MyVertexData
+{
+	DirectX::XMFLOAT3 Pos;
+	DirectX::XMFLOAT3 Normal;
+    DirectX::XMFLOAT2 TexCoords;
+};
