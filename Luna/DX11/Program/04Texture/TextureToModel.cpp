@@ -55,8 +55,9 @@ private:
 
 private:
 	// 모델 정보
-	std::vector<ComPtr<ID3D11Buffer>>		m_ModelVertexBuffer;
-	std::vector<ComPtr<ID3D11Buffer>> 		m_ModelIndexBuffer;
+	std::vector<ComPtr<ID3D11Buffer>>				m_ModelVertexBuffer;
+	std::vector<ComPtr<ID3D11Buffer>> 				m_ModelIndexBuffer;
+	std::vector<ComPtr<ID3D11ShaderResourceView>>	m_ModelShaderResourceView;
 
 	// 파이프라인
 	ComPtr<ID3D11VertexShader>	m_VertexShader;
@@ -126,6 +127,8 @@ bool TextureToModelApp::Init()
 		return false;
 
 	AssetManager::LoadModelData("Model/chibi_cat.fbx", m_d3dDevice, m_ModelVertexBuffer, m_ModelIndexBuffer);
+	AssetManager::LoadTextureFromTGA(L"Texture/T_Chibi_Cat_01.tga", m_d3dDevice, m_ModelShaderResourceView);
+	AssetManager::LoadTextureFromTGA(L"Texture/T_Chibi_Emo_01.tga", m_d3dDevice, m_ModelShaderResourceView);
 	BuildShader();
 
 	return true;
@@ -222,10 +225,15 @@ void TextureToModelApp::DrawScene()
 		ocb.World = XMMatrixTranspose(world);
 		m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);
 
+		// Sampler State 설정
+		m_d3dDeviceContext->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
+
 		// 버텍스 버퍼에 맞춰 오브젝트 드로우
-		
 		for(int vertexCount = 0; vertexCount < m_ModelVertexBuffer.size(); ++vertexCount)
 		{
+			// SRV 설정(텍스쳐)
+			m_d3dDeviceContext->PSSetShaderResources(0,1, m_ModelShaderResourceView[vertexCount].GetAddressOf());
+
 			UINT stride = sizeof(MyVertexData);
 			UINT offset = 0;
 			m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_ModelVertexBuffer[vertexCount].GetAddressOf(), &stride, &offset);

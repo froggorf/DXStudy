@@ -1,3 +1,6 @@
+Texture2D txDiffuse : register( t0 );
+SamplerState samLinear : register( s0 );
+
 cbuffer cbPerFrame : register(b0)
 {
 	matrix View;
@@ -12,7 +15,7 @@ cbuffer cbPerObject : register(b1)
 struct VS_OUTPUT
 {
     float4 Pos : SV_POSITION;
-    float4 Color : COLOR0;
+    float2 Tex : TEXCOORD;
 };
 
 //--------------------------------------------------------------------------------------
@@ -24,10 +27,9 @@ VS_OUTPUT VS( float4 Pos : POSITION, float3 Normal : NORMAL, float2 TexCoord : T
     output.Pos = mul( Pos, World );
     output.Pos = mul( output.Pos, View );
     output.Pos = mul( output.Pos, Projection );
-    output.Color.x = Normal.x;
-    output.Color.y = Normal.y;
-    output.Color.z = Normal.z;
-    output.Color.w = 1.0f;
+    output.Tex.x = TexCoord.x;
+    output.Tex.y = TexCoord.y;
+    
     return output;
 }
 
@@ -36,5 +38,5 @@ VS_OUTPUT VS( float4 Pos : POSITION, float3 Normal : NORMAL, float2 TexCoord : T
 //--------------------------------------------------------------------------------------
 float4 PS( VS_OUTPUT input ) : SV_Target
 {
-    return input.Color;
+    return txDiffuse.Sample( samLinear, input.Tex );
 }

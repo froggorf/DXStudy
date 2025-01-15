@@ -1,16 +1,23 @@
 #include "AssetManager.h"
 
+// Assimp
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
+// DirectXTex
+#include <DirectXTex/DirectXTex.h>
+#include <DirectXTex/DirectXTex.inl>
+
+
 using namespace Microsoft::WRL;
 
-#define ModelFolderDirectory "../../Resource/"
+#define ResourceFolderDirectory "../../Resource/"
+#define ResourceFolderDirectoryW L"../../Resource/"
 void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Device> pDevice, std::vector<ComPtr<ID3D11Buffer>>& pVertexBuffer,
 	std::vector<ComPtr<ID3D11Buffer>>&pIndexBuffer)
 {
-    std::string filePath = ModelFolderDirectory + path;
+    std::string filePath = ResourceFolderDirectory + path;
 
     Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(filePath, 
@@ -63,6 +70,30 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
         pIndexBuffer.push_back(indexBuffer);
 		
 	}
+}
+
+void AssetManager::LoadTextureFromTGA(const std::wstring& szFile, const Microsoft::WRL::ComPtr<ID3D11Device> pDevice,
+	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>>& vTextureShaderResourceView)
+{
+    DirectX::ScratchImage image;
+    const std::wstring filePath = ResourceFolderDirectoryW + szFile;
+    HR(DirectX::LoadFromTGAFile(filePath.c_str(), DirectX::TGA_FLAGS_NONE, nullptr, image));
+
+    ID3D11Texture2D* pTexture = nullptr;
+    HR(DirectX::CreateTexture(pDevice.Get(), image.GetImages(), image.GetImageCount(), image.GetMetadata(), (ID3D11Resource**)&pTexture));
+
+    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    srvDesc.Texture2D.MostDetailedMip = 0;
+    srvDesc.Texture2D.MipLevels = 1;
+    D3D11_TEXTURE2D_DESC textureDesc = {};
+    pTexture->GetDesc(&textureDesc);
+    srvDesc.Format = textureDesc.Format;
+
+    ComPtr<ID3D11ShaderResourceView> srv = nullptr;
+
+    HR(pDevice->CreateShaderResourceView(pTexture, &srvDesc, srv.ReleaseAndGetAddressOf()));
+    vTextureShaderResourceView.push_back(srv);
 }
 
 
