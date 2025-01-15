@@ -129,7 +129,7 @@ bool DrawFromFileApp::Init()
 	if(!D3DApp::Init())
 		return false;
 	
-	TestLoadModel("Model/0.obj");
+	TestLoadModel("../../Model/UEMannequin.obj");
 	BuildShader();
 
 	return true;
