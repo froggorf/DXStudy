@@ -28,13 +28,14 @@ struct ObjConstantBuffer
 {
 	XMMATRIX World;
 };
- 
+
 class TextureToModelApp : public D3DApp
 {
 public:
 	TextureToModelApp(HINSTANCE hInstance);
 	~TextureToModelApp();
 
+	
 	// Init
 	bool Init() override;
 	void InitSamplerState();
@@ -42,6 +43,8 @@ public:
 	void UpdateScene(float dt) override;
 	void DrawImGui() override;
 	void DrawScene() override;
+
+	void LoadModels();
 
 	void OnMouseDown(WPARAM btnState, int x, int y) override;
 	void OnMouseUp(WPARAM btnState, int x, int y) override;
@@ -51,13 +54,16 @@ private:
 	
 	void BuildShader();
 
-
+	void ChangeModelTexture(int bodyIndex, const ComPtr<ID3D11ShaderResourceView>& newSRV);
 
 private:
 	// 모델 정보
 	std::vector<ComPtr<ID3D11Buffer>>				m_ModelVertexBuffer;
 	std::vector<ComPtr<ID3D11Buffer>> 				m_ModelIndexBuffer;
 	std::vector<ComPtr<ID3D11ShaderResourceView>>	m_ModelShaderResourceView;
+
+	std::vector<ComPtr<ID3D11ShaderResourceView>>	m_BodyShaderResourceView;
+	std::vector<ComPtr<ID3D11ShaderResourceView>>	m_FaceShaderResourceView;
 
 	// 파이프라인
 	ComPtr<ID3D11VertexShader>	m_VertexShader;
@@ -108,7 +114,7 @@ TextureToModelApp::TextureToModelApp(HINSTANCE hInstance)
 {
 	m_MainWndTitle = L"Texture To Model";
 
-	m_Radius = 5.0f; m_Phi = 30.0f; m_Theta = 30.0f;
+	m_Radius = 5.0f; m_Phi = 180.0f; m_Theta = 0.0f;
 	m_LastMousePos.x = 0; m_LastMousePos.y = 1;
 	m_World = XMMatrixIdentity();
 	m_View = XMMatrixIdentity();
@@ -127,13 +133,31 @@ bool TextureToModelApp::Init()
 		return false;
 
 	InitSamplerState();
-	AssetManager::LoadModelData("Model/chibi_cat.fbx", m_d3dDevice, m_ModelVertexBuffer, m_ModelIndexBuffer);
-	AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Cat_01.png", m_d3dDevice, m_ModelShaderResourceView);
-	AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Emo_01.png", m_d3dDevice, m_ModelShaderResourceView);
+
+	LoadModels();
+
 	BuildShader();
 
 	return true;
 }
+
+void TextureToModelApp::LoadModels()
+{
+	AssetManager::LoadModelData("Model/chibi_cat.fbx", m_d3dDevice, m_ModelVertexBuffer, m_ModelIndexBuffer);
+
+	//AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Cat_01.png", m_d3dDevice, m_ModelShaderResourceView);
+	//AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Emo_01.png", m_d3dDevice, m_ModelShaderResourceView);
+
+	AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Cat_01.png", m_d3dDevice, m_BodyShaderResourceView);
+	AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Cat_02.png", m_d3dDevice, m_BodyShaderResourceView);
+	AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Cat_06.png", m_d3dDevice, m_BodyShaderResourceView);
+	AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Emo_01.png", m_d3dDevice, m_FaceShaderResourceView);
+	AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Emo_04.png", m_d3dDevice, m_FaceShaderResourceView);
+	AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Emo_25.png", m_d3dDevice, m_FaceShaderResourceView);
+	m_ModelShaderResourceView.push_back(m_BodyShaderResourceView[2]);
+	m_ModelShaderResourceView.push_back(m_FaceShaderResourceView[2]);
+}
+
 
 void TextureToModelApp::InitSamplerState()
 {
@@ -204,9 +228,39 @@ void TextureToModelApp::DrawImGui()
 	ImGui::NewFrame();
 
 	// UI 코드 작성
-	ImGui::SetNextWindowSize(ImVec2(400,300));
-    ImGui::Begin("Scale Controller");
+	ImGui::SetNextWindowSize(ImVec2(600,200));
+    ImGui::Begin("Controller");
     ImGui::SliderFloat("Scale", &m_ModelScale, 0.01f, 1.0f); // 슬라이더 추가
+	ImGui::Text("Body SRV Change");
+	if(ImGui::Button("Body1", ImVec2(150,25)))
+	{
+		ChangeModelTexture(0, m_BodyShaderResourceView[0]);
+	}
+	ImGui::SameLine();
+	if(ImGui::Button("Body2", ImVec2(150,25)))
+	{
+		ChangeModelTexture(0, m_BodyShaderResourceView[1]);
+	}
+	ImGui::SameLine();
+	if(ImGui::Button("Body3", ImVec2(150,25)))
+	{
+		ChangeModelTexture(0, m_BodyShaderResourceView[2]);
+	}
+	ImGui::Text("Face SRV Change");
+	if(ImGui::Button("Face1", ImVec2(150,25)))
+	{
+		ChangeModelTexture(1, m_FaceShaderResourceView[0]);
+	}
+	ImGui::SameLine();
+	if(ImGui::Button("Face2", ImVec2(150,25)))
+	{
+		ChangeModelTexture(1, m_FaceShaderResourceView[1]);
+	}
+	ImGui::SameLine();
+	if(ImGui::Button("Face3", ImVec2(150,25)))
+	{
+		ChangeModelTexture(1, m_FaceShaderResourceView[2]);
+	}
     ImGui::End();
 
 	ImGui::Render();
@@ -221,8 +275,6 @@ void TextureToModelApp::DrawScene()
 	m_d3dDeviceContext->ClearDepthStencilView(m_DepthStencilView.Get(), D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	{
-		DrawImGui();
-
 		// 셰이더 설정
 		m_d3dDeviceContext->VSSetShader(m_VertexShader.Get(), nullptr, 0);
 		m_d3dDeviceContext->PSSetShader(m_PixelShader.Get(), nullptr, 0);
@@ -244,6 +296,7 @@ void TextureToModelApp::DrawScene()
 		// Obj 상수 버퍼 설정
 		ObjConstantBuffer ocb;
 		XMMATRIX world = m_World * XMMatrixScaling(m_ModelScale,m_ModelScale,m_ModelScale);
+		world *= XMMatrixTranslation(0.0f, -2.5f, 0.0f);
 		ocb.World = XMMatrixTranspose(world);
 		m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);
 
@@ -267,8 +320,10 @@ void TextureToModelApp::DrawScene()
 			m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
 		}
 		
-
+		
+		DrawImGui();
 	}
+
 
 	HR(m_SwapChain->Present(0, 0));
 }
@@ -355,6 +410,14 @@ void TextureToModelApp::BuildShader()
 	bufferDesc.ByteWidth = sizeof(ObjConstantBuffer);
 	HR(m_d3dDevice->CreateBuffer(&bufferDesc, nullptr, m_ObjConstantBuffer.GetAddressOf()));
 
+}
+
+
+void TextureToModelApp::ChangeModelTexture(const int bodyIndex, const ComPtr<ID3D11ShaderResourceView>& newSRV)
+{
+	//m_ModelShaderResourceView[bodyIndex]->Release();
+
+	m_ModelShaderResourceView[bodyIndex] = newSRV;
 }
 
 
