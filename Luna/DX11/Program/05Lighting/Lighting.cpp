@@ -27,6 +27,7 @@ struct FrameConstantBuffer
 struct ObjConstantBuffer
 {
 	XMMATRIX World;
+	XMFLOAT3X3 InvTransposeMatrix;
 };
 
 class LightingApp : public D3DApp
@@ -298,6 +299,12 @@ void LightingApp::DrawScene()
 		XMMATRIX world = m_World * XMMatrixScaling(m_ModelScale,m_ModelScale,m_ModelScale);
 		world *= XMMatrixTranslation(0.0f, -2.5f, 0.0f);
 		ocb.World = XMMatrixTranspose(world);
+		
+
+		// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
+		XMMATRIX invMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, world));
+		XMStoreFloat3x3(&ocb.InvTransposeMatrix, invMatrix);
+
 		m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);
 
 		// Sampler State 설정
