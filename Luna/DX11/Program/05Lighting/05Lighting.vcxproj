@@ -71,6 +71,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -145,6 +148,7 @@
     <ClInclude Include="..\..\Core\d3dApp.h" />
     <ClInclude Include="..\..\Core\d3dUtil.h" />
     <ClInclude Include="..\..\Core\GameTimer.h" />
+    <ClInclude Include="..\..\Core\LightHelper.h" />
     <ClInclude Include="..\..\ThirdParty\ImGui\backends\imgui_impl_dx11.h" />
     <ClInclude Include="..\..\ThirdParty\ImGui\backends\imgui_impl_win32.h" />
     <ClInclude Include="..\..\ThirdParty\ImGui\imconfig.h" />
@@ -155,12 +159,15 @@
     <ClInclude Include="..\..\ThirdParty\ImGui\imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shader\color.fx">
+    <FxCompile Include="Shader\LightColor.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS</EntryPointName>
       <FileType>Document</FileType>
-    </None>
-    <None Include="Shader\LightHelper.fx">
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)%(Filename).pdb</ObjectFileOutput>
+    </FxCompile>
+    <None Include="Shader\LightHelper.hlsl">
       <FileType>Document</FileType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ComputeDirectionalLight</EntryPointName>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)%(Filename).pdb</ObjectFileOutput>
     </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

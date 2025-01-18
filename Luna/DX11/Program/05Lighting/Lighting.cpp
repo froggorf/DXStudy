@@ -27,7 +27,15 @@ struct FrameConstantBuffer
 struct ObjConstantBuffer
 {
 	XMMATRIX World;
-	XMFLOAT3X3 InvTransposeMatrix;
+	XMMATRIX InvTransposeMatrix;
+	Material ObjectMaterial;
+};
+
+struct LightFrameConstantBuffer
+{
+	DirectionalLight gDirLight;
+    XMFLOAT3 gEyePosW;
+    float pad;
 };
 
 class LightingApp : public D3DApp
@@ -62,9 +70,14 @@ private:
 	std::vector<ComPtr<ID3D11Buffer>>				m_ModelVertexBuffer;
 	std::vector<ComPtr<ID3D11Buffer>> 				m_ModelIndexBuffer;
 	std::vector<ComPtr<ID3D11ShaderResourceView>>	m_ModelShaderResourceView;
+	Material										m_ModelMaterial;
 
 	std::vector<ComPtr<ID3D11ShaderResourceView>>	m_BodyShaderResourceView;
 	std::vector<ComPtr<ID3D11ShaderResourceView>>	m_FaceShaderResourceView;
+
+	// 라이트
+	DirectionalLight								m_DirectionalLight;
+
 
 	// 파이프라인
 	ComPtr<ID3D11VertexShader>	m_VertexShader;
@@ -75,6 +88,7 @@ private:
 	// 상수버퍼
 	ComPtr<ID3D11Buffer>		m_FrameConstantBuffer;
 	ComPtr<ID3D11Buffer>		m_ObjConstantBuffer;
+	ComPtr<ID3D11Buffer>		m_LightConstantBuffer;
 
 	// 변환 행렬
 	XMMATRIX m_World;
@@ -120,7 +134,18 @@ LightingApp::LightingApp(HINSTANCE hInstance)
 	m_World = XMMatrixIdentity();
 	m_View = XMMatrixIdentity();
 	m_Proj = XMMatrixIdentity();
-		
+
+	
+	// Directional light.
+	m_DirectionalLight.Ambient  = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
+	m_DirectionalLight.Diffuse  = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	m_DirectionalLight.Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	m_DirectionalLight.Direction = XMFLOAT3(0.0f,-1.0f,0.0f);
+
+	// Material
+	m_ModelMaterial.Ambient  = XMFLOAT4(1.0f,1.0f,1.0f, 1.0f);
+	m_ModelMaterial.Diffuse  = XMFLOAT4(1.0f,1.0f,1.0f, 1.0f);
+	m_ModelMaterial.Specular = XMFLOAT4(0.1f, 0.1f, 0.1f, 64.0f);
 }
 
 LightingApp::~LightingApp()
@@ -264,6 +289,15 @@ void LightingApp::DrawImGui()
 	}
     ImGui::End();
 
+	ImGui::SetNextWindowSize(ImVec2{300.0f,100.0f});
+	ImGui::Begin("Color");
+	static float color[] = {1.0f,1.0f,1.0f,1.0f};
+	if(ImGui::ColorEdit4("test", color, 0))
+	{
+		m_DirectionalLight.Ambient = XMFLOAT4(color[0],color[1],color[2],color[3]);
+	}
+	ImGui::End();
+
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
@@ -282,30 +316,50 @@ void LightingApp::DrawScene()
 		// 상수버퍼 설정
 		m_d3dDeviceContext->VSSetConstantBuffers(0, 1, m_FrameConstantBuffer.GetAddressOf());
 		m_d3dDeviceContext->VSSetConstantBuffers(1, 1, m_ObjConstantBuffer.GetAddressOf());
+		m_d3dDeviceContext->PSSetConstantBuffers(1,1, m_ObjConstantBuffer.GetAddressOf());
+		m_d3dDeviceContext->PSSetConstantBuffers(2,1, m_LightConstantBuffer.GetAddressOf());
 
 		// 인풋 레이아웃
 		m_d3dDeviceContext->IASetInputLayout(m_InputLayout.Get());
 		m_d3dDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		// Frame 상수 버퍼 설정
-		FrameConstantBuffer fcb;
-		fcb.View = XMMatrixTranspose(m_View);
-		fcb.Projection = XMMatrixTranspose(m_Proj);
-		m_d3dDeviceContext->UpdateSubresource(m_FrameConstantBuffer.Get(), 0, nullptr, &fcb, 0, 0);
+		{
+			// 뷰, 프로젝션 행렬
+			{
+				FrameConstantBuffer fcb;
+				fcb.View = XMMatrixTranspose(m_View);
+				fcb.Projection = XMMatrixTranspose(m_Proj);
+				m_d3dDeviceContext->UpdateSubresource(m_FrameConstantBuffer.Get(), 0, nullptr, &fcb, 0, 0);
+			}
+
+			// 라이팅 관련
+			{
+				LightFrameConstantBuffer lfcb;
+				lfcb.gDirLight = m_DirectionalLight;
+				// Convert Spherical to Cartesian coordinates.
+				float x = m_Radius*sinf(m_Phi)*cosf(m_Theta);
+				float z = m_Radius*sinf(m_Phi)*sinf(m_Theta);
+				float y = m_Radius*cosf(m_Phi);
+				lfcb.gEyePosW = XMFLOAT3{x,y,z};
+				m_d3dDeviceContext->UpdateSubresource(m_LightConstantBuffer.Get(),0,nullptr,&lfcb, 0,0);
+			}
+		}
+		
 		
 		// 오브젝트 Draw
 		// Obj 상수 버퍼 설정
-		ObjConstantBuffer ocb;
-		XMMATRIX world = m_World * XMMatrixScaling(m_ModelScale,m_ModelScale,m_ModelScale);
-		world *= XMMatrixTranslation(0.0f, -2.5f, 0.0f);
-		ocb.World = XMMatrixTranspose(world);
+		{
+			ObjConstantBuffer ocb;
+			XMMATRIX world = m_World * XMMatrixScaling(m_ModelScale,m_ModelScale,m_ModelScale);
+			world *= XMMatrixTranslation(0.0f, -2.5f, 0.0f);
+			ocb.World = XMMatrixTranspose(world);
+			// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
+			ocb.InvTransposeMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, world));
+			ocb.ObjectMaterial = m_ModelMaterial;
+			m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);	
+		}
 		
-
-		// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
-		XMMATRIX invMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, world));
-		XMStoreFloat3x3(&ocb.InvTransposeMatrix, invMatrix);
-
-		m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);
 
 		// Sampler State 설정
 		m_d3dDeviceContext->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
@@ -314,8 +368,9 @@ void LightingApp::DrawScene()
 		for(int vertexCount = 0; vertexCount < m_ModelVertexBuffer.size(); ++vertexCount)
 		{
 			// SRV 설정(텍스쳐)
-			m_d3dDeviceContext->PSSetShaderResources(0,1, m_ModelShaderResourceView[vertexCount].GetAddressOf());
-
+			{
+				m_d3dDeviceContext->PSSetShaderResources(0,1, m_ModelShaderResourceView[vertexCount].GetAddressOf());	
+			}
 			UINT stride = sizeof(MyVertexData);
 			UINT offset = 0;
 			m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_ModelVertexBuffer[vertexCount].GetAddressOf(), &stride, &offset);
@@ -385,7 +440,7 @@ void LightingApp::OnMouseMove(WPARAM btnState, int x, int y)
 void LightingApp::BuildShader()
 {
 	ComPtr<ID3DBlob> pVSBlob = nullptr;
-	HR(CompileShaderFromFile(L"Shader/color.fx", "VS", "vs_4_0", pVSBlob.GetAddressOf()));
+	HR(CompileShaderFromFile(L"Shader/LightColor.hlsl", "VS", "vs_4_0", pVSBlob.GetAddressOf()));
 	HR(m_d3dDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, m_VertexShader.GetAddressOf()));
 
 	D3D11_INPUT_ELEMENT_DESC inputLayout[] =
@@ -401,7 +456,7 @@ void LightingApp::BuildShader()
 	m_d3dDeviceContext->IASetInputLayout(m_InputLayout.Get());
 
 	ComPtr<ID3DBlob> pPSBlob = nullptr;
-	HR(CompileShaderFromFile(L"Shader/color.fx", "PS", "ps_4_0", pPSBlob.GetAddressOf()));
+	HR(CompileShaderFromFile(L"Shader/LightColor.hlsl", "PS", "ps_4_0", pPSBlob.GetAddressOf()));
 
 	HR(m_d3dDevice->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, m_PixelShader.GetAddressOf()));
 
@@ -416,6 +471,9 @@ void LightingApp::BuildShader()
 
 	bufferDesc.ByteWidth = sizeof(ObjConstantBuffer);
 	HR(m_d3dDevice->CreateBuffer(&bufferDesc, nullptr, m_ObjConstantBuffer.GetAddressOf()));
+
+	bufferDesc.ByteWidth = sizeof(LightFrameConstantBuffer);
+	HR(m_d3dDevice->CreateBuffer(&bufferDesc, nullptr, m_LightConstantBuffer.GetAddressOf()))
 
 }
 

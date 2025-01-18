@@ -90,12 +90,17 @@
     <ClInclude Include="..\..\ThirdParty\ImGui\backends\imgui_impl_win32.h">
       <Filter>ThirdParty\ImGui\backends</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Core\LightHelper.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shader\LightHelper.fx">
+    <FxCompile Include="Shader\LightColor.hlsl">
       <Filter>Shader</Filter>
-    </None>
-    <None Include="Shader\color.fx">
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader\LightHelper.hlsl">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

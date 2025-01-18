@@ -8,6 +8,7 @@
 
 #include "d3dUtil.h"
 #include "GameTimer.h"
+#include "LightHelper.h"
 
 
 using namespace Microsoft::WRL;
