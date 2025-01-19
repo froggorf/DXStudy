@@ -95,12 +95,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shader\LightColor.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Shader\LightHelper.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\LightColor.hlsl">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

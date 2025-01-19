@@ -34,6 +34,7 @@ struct ObjConstantBuffer
 struct LightFrameConstantBuffer
 {
 	DirectionalLight gDirLight;
+	PointLight gPointLight;
     XMFLOAT3 gEyePosW;
     float pad;
 };
@@ -75,9 +76,14 @@ private:
 	std::vector<ComPtr<ID3D11ShaderResourceView>>	m_BodyShaderResourceView;
 	std::vector<ComPtr<ID3D11ShaderResourceView>>	m_FaceShaderResourceView;
 
+	// 라이트 출력 용
+	std::vector<ComPtr<ID3D11Buffer>>				m_SphereVertexBuffer;
+	std::vector<ComPtr<ID3D11Buffer>>				m_SphereIndexBuffer;
+
 	// 라이트
 	DirectionalLight								m_DirectionalLight;
-
+	PointLight										m_PointLight;
+	SpotLight										m_SpotLight;
 
 	// 파이프라인
 	ComPtr<ID3D11VertexShader>	m_VertexShader;
@@ -142,10 +148,19 @@ LightingApp::LightingApp(HINSTANCE hInstance)
 	m_DirectionalLight.Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	m_DirectionalLight.Direction = XMFLOAT3(0.0f,-1.0f,0.0f);
 
+	// Point Light
+	m_PointLight.Ambient  = XMFLOAT4(0.7f, 0.0f, 0.0f, 1.0f);
+	m_PointLight.Diffuse  = XMFLOAT4(0.7f, 0.0f, 0.0f, 1.0f);
+	m_PointLight.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	m_PointLight.Att      = XMFLOAT3(0.0f, 0.1f, 0.0f);
+	//m_PointLight.Position = XMFLOAT3(796.5f, 700.0f, 0.7549f);
+	m_PointLight.Position = XMFLOAT3(0.0f,-2.5f,0.0f);
+	m_PointLight.Range    = 100.0f;
+
 	// Material
 	m_ModelMaterial.Ambient  = XMFLOAT4(1.0f,1.0f,1.0f, 1.0f);
 	m_ModelMaterial.Diffuse  = XMFLOAT4(1.0f,1.0f,1.0f, 1.0f);
-	m_ModelMaterial.Specular = XMFLOAT4(0.1f, 0.1f, 0.1f, 64.0f);
+	m_ModelMaterial.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 128.0f);
 }
 
 LightingApp::~LightingApp()
@@ -169,19 +184,24 @@ bool LightingApp::Init()
 
 void LightingApp::LoadModels()
 {
-	AssetManager::LoadModelData("Model/chibi_cat.fbx", m_d3dDevice, m_ModelVertexBuffer, m_ModelIndexBuffer);
+	AssetManager::LoadModelData("Model/Racco.fbx", m_d3dDevice, m_ModelVertexBuffer, m_ModelIndexBuffer);
+
+	AssetManager::LoadModelData("Model/Sphere.obj", m_d3dDevice, m_SphereVertexBuffer, m_SphereIndexBuffer);
 
 	//AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Cat_01.png", m_d3dDevice, m_ModelShaderResourceView);
 	//AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Emo_01.png", m_d3dDevice, m_ModelShaderResourceView);
-
-	AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Cat_01.png", m_d3dDevice, m_BodyShaderResourceView);
-	AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Cat_02.png", m_d3dDevice, m_BodyShaderResourceView);
-	AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Cat_06.png", m_d3dDevice, m_BodyShaderResourceView);
-	AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Emo_01.png", m_d3dDevice, m_FaceShaderResourceView);
-	AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Emo_04.png", m_d3dDevice, m_FaceShaderResourceView);
-	AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Emo_25.png", m_d3dDevice, m_FaceShaderResourceView);
+	//AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Cat_01.png", m_d3dDevice, m_BodyShaderResourceView);
+	//AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Cat_02.png", m_d3dDevice, m_BodyShaderResourceView);
+	//AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Cat_06.png", m_d3dDevice, m_BodyShaderResourceView);
+	//AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Emo_01.png", m_d3dDevice, m_FaceShaderResourceView);
+	//AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Emo_04.png", m_d3dDevice, m_FaceShaderResourceView);
+	//AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Emo_25.png", m_d3dDevice, m_FaceShaderResourceView);
+	//m_ModelShaderResourceView.push_back(m_BodyShaderResourceView[2]);
+	//m_ModelShaderResourceView.push_back(m_FaceShaderResourceView[2]);
+	AssetManager::LoadTextureFromFile(L"Texture/T_Racco_A.png", m_d3dDevice,m_BodyShaderResourceView);
+	AssetManager::LoadTextureFromFile(L"Texture/T_Racco_B.png", m_d3dDevice,m_BodyShaderResourceView);
+	AssetManager::LoadTextureFromFile(L"Texture/T_Racco_C.png", m_d3dDevice,m_BodyShaderResourceView);
 	m_ModelShaderResourceView.push_back(m_BodyShaderResourceView[2]);
-	m_ModelShaderResourceView.push_back(m_FaceShaderResourceView[2]);
 }
 
 
@@ -242,7 +262,7 @@ void LightingApp::UpdateScene(float dt)
     XMVECTOR Up = XMVectorSet(0.0f,1.0f,0.0f,0.0f);
 
     m_View = XMMatrixLookAtLH(Pos, At, Up);
-	
+
 }
 
 void LightingApp::DrawImGui()
@@ -252,7 +272,7 @@ void LightingApp::DrawImGui()
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
-
+	
 	// UI 코드 작성
 	ImGui::SetNextWindowSize(ImVec2(600,200));
     ImGui::Begin("Controller");
@@ -272,29 +292,23 @@ void LightingApp::DrawImGui()
 	{
 		ChangeModelTexture(0, m_BodyShaderResourceView[2]);
 	}
-	ImGui::Text("Face SRV Change");
-	if(ImGui::Button("Face1", ImVec2(150,25)))
-	{
-		ChangeModelTexture(1, m_FaceShaderResourceView[0]);
-	}
-	ImGui::SameLine();
-	if(ImGui::Button("Face2", ImVec2(150,25)))
-	{
-		ChangeModelTexture(1, m_FaceShaderResourceView[1]);
-	}
-	ImGui::SameLine();
-	if(ImGui::Button("Face3", ImVec2(150,25)))
-	{
-		ChangeModelTexture(1, m_FaceShaderResourceView[2]);
-	}
     ImGui::End();
 
-	ImGui::SetNextWindowSize(ImVec2{300.0f,100.0f});
+	ImGui::SetNextWindowSize(ImVec2{600.0f,100.0f});
 	ImGui::Begin("Color");
 	static float color[] = {1.0f,1.0f,1.0f,1.0f};
-	if(ImGui::ColorEdit4("test", color, 0))
+	if(ImGui::ColorEdit4("Directional Light Color", color, 0))
 	{
 		m_DirectionalLight.Ambient = XMFLOAT4(color[0],color[1],color[2],color[3]);
+	}
+
+	ImGui::SliderFloat3("PointLight", (float*)&m_PointLight.Position, -5.0f,5.0f);
+	static float plColor[] = {m_PointLight.Ambient.x,m_PointLight.Ambient.y,m_PointLight.Ambient.z,1.0f};
+	if(ImGui::ColorEdit4("PointLight Color", plColor, 0))
+	{
+		m_PointLight.Ambient = XMFLOAT4(plColor[0],plColor[1],plColor[2],plColor[3]);
+		m_PointLight.Diffuse= XMFLOAT4(plColor[0],plColor[1],plColor[2],plColor[3]);
+		m_PointLight.Specular= XMFLOAT4(1.0f,1.0f,1.0f,1.0f);//XMFLOAT4(plColor[0],plColor[1],plColor[2],plColor[3]);
 	}
 	ImGui::End();
 
@@ -337,6 +351,7 @@ void LightingApp::DrawScene()
 			{
 				LightFrameConstantBuffer lfcb;
 				lfcb.gDirLight = m_DirectionalLight;
+				lfcb.gPointLight = m_PointLight;
 				// Convert Spherical to Cartesian coordinates.
 				float x = m_Radius*sinf(m_Phi)*cosf(m_Theta);
 				float z = m_Radius*sinf(m_Phi)*sinf(m_Theta);
@@ -381,11 +396,37 @@ void LightingApp::DrawScene()
 			UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
 			m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
 		}
+
+		// 테스트용 스피어 드로우
+
+		// Obj 상수 버퍼 설정
+		{
+			ObjConstantBuffer ocb;
+			XMMATRIX world = m_World * XMMatrixScaling(0.15f,0.15f,0.15f);
+			//world *= XMMatrixTranslation(0.0f, -2.5f, 0.0f);
+			world *= XMMatrixTranslation(m_PointLight.Position.x,m_PointLight.Position.y,m_PointLight.Position.z);
+			ocb.World = XMMatrixTranspose(world);
+			// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
+			ocb.InvTransposeMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, world));
+			ocb.ObjectMaterial = m_ModelMaterial;
+			m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);	
+		}
+
+		{
+			m_d3dDeviceContext->PSSetShaderResources(0,1,m_ModelShaderResourceView[0].GetAddressOf());
+			UINT stride = sizeof(MyVertexData);
+			UINT offset = 0;
+			m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_SphereVertexBuffer[0].GetAddressOf(), &stride, &offset);
+			m_d3dDeviceContext->IASetIndexBuffer(m_SphereIndexBuffer[0].Get(), DXGI_FORMAT_R32_UINT, 0);
 		
-		
+			D3D11_BUFFER_DESC indexBufferDesc;
+			m_SphereIndexBuffer[0]->GetDesc(&indexBufferDesc);
+			UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
+			m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
+		}
+
 		DrawImGui();
 	}
-
 
 	HR(m_SwapChain->Present(0, 0));
 }

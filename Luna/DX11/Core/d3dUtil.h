@@ -59,7 +59,7 @@ inline HRESULT CompileShaderFromFile( const WCHAR* szFileName, LPCSTR szEntryPoi
     dwShaderFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
 
 #endif
-
+    
     ID3DBlob* pErrorBlob = nullptr;
     hr = D3DCompileFromFile( szFileName, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, szEntryPoint, szShaderModel, 
         dwShaderFlags, 0, ppBlobOut, &pErrorBlob );

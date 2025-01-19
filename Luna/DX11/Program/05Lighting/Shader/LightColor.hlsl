@@ -1,3 +1,6 @@
+#pragma target 4.0
+#pragma enable_d3d11_debug_symbols
+
 #include "LightHelper.hlsl"
 
 
@@ -21,13 +24,15 @@ cbuffer cbPerObject : register(b1)
 cbuffer cbLight : register(b2)
 {
 	DirectionalLight gDirLight;
+    PointLight gPointLight;
     float3 gEyePosW;
     float pad;
 }
 
 struct VS_OUTPUT
 {
-    float4 Pos : SV_POSITION;
+    float4 PosScreen : SV_POSITION;
+    float3 PosWorld : POSITION;
     float3 NormalW : TEXCOORD1;
     float2 Tex : TEXCOORD;
 };
@@ -38,15 +43,20 @@ struct VS_OUTPUT
 VS_OUTPUT VS( float4 Pos : POSITION, float3 Normal : NORMAL, float2 TexCoord : TEXCOORD )
 {
     VS_OUTPUT output = (VS_OUTPUT)0;
-    output.Pos = mul( Pos, World );
-    output.Pos = mul( output.Pos, View );
-    output.Pos = mul( output.Pos, Projection );
+    output.PosScreen = mul( Pos, World );
+    // 픽셀 셰이더 내에서 사용하기 위해
+    output.PosWorld = output.PosScreen.xyz;
+
+    output.PosScreen = mul( output.PosScreen, View );
+    output.PosScreen = mul( output.PosScreen, Projection );
 
     // 노말벡터를 월드좌표계로
     output.NormalW = mul(Normal, (float3x3)WorldInvTranspose);
     output.NormalW = normalize(output.NormalW);
 
     output.Tex = TexCoord;
+
+    
     
 		
     return output;
@@ -64,10 +74,17 @@ float4 PS( VS_OUTPUT input ) : SV_Target
     float4 diffuse = 0;
     float4 spec    = 0;
 
-    float3 toEye = normalize(gEyePosW - input.Pos.xyz);
+    float3 toEye = normalize(gEyePosW - input.PosWorld);
 
-    // 디렉셔널 라이트 계산
-    ComputeDirectionalLight(ObjectMaterial, gDirLight, input.NormalW, toEye,ambient,diffuse,spec);
+    float4 A, D, S;
+
+    ComputeDirectionalLight(ObjectMaterial, gDirLight, input.NormalW, toEye,A,D,S);
+    ambient += A; diffuse += D; spec += S;
+
+    ComputePointLight(ObjectMaterial,gPointLight,input.PosWorld ,input.NormalW, toEye, A,D,S);
+    ambient += A;
+	diffuse += D;
+	spec += S;
 
     float4 finalColor = color * (ambient + diffuse) + spec;
     

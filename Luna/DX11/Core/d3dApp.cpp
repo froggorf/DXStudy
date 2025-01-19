@@ -442,7 +442,7 @@ bool D3DApp::InitDirect3D()
 		sd.SampleDesc.Quality	= 0;
 	}
 	sd.BufferUsage  = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	sd.BufferCount  = 1;
+	sd.BufferCount  = 2;
 	sd.OutputWindow = m_hMainWnd;
 	sd.Windowed     = true;
 	sd.SwapEffect   = DXGI_SWAP_EFFECT_DISCARD;
