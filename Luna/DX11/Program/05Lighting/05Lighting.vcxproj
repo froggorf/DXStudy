@@ -137,6 +137,11 @@
     <ClCompile Include="..\..\Core\AssetManager.cpp" />
     <ClCompile Include="..\..\Core\d3dApp.cpp" />
     <ClCompile Include="..\..\Core\GameTimer.cpp" />
+    <ClCompile Include="..\..\ThirdParty\ImGuizmo\GraphEditor.cpp" />
+    <ClCompile Include="..\..\ThirdParty\ImGuizmo\ImCurveEdit.cpp" />
+    <ClCompile Include="..\..\ThirdParty\ImGuizmo\ImGradient.cpp" />
+    <ClCompile Include="..\..\ThirdParty\ImGuizmo\ImGuizmo.cpp" />
+    <ClCompile Include="..\..\ThirdParty\ImGuizmo\ImSequencer.cpp" />
     <ClCompile Include="..\..\ThirdParty\ImGui\backends\imgui_impl_dx11.cpp" />
     <ClCompile Include="..\..\ThirdParty\ImGui\backends\imgui_impl_win32.cpp" />
     <ClCompile Include="..\..\ThirdParty\ImGui\imgui.cpp" />
@@ -151,6 +156,12 @@
     <ClInclude Include="..\..\Core\d3dUtil.h" />
     <ClInclude Include="..\..\Core\GameTimer.h" />
     <ClInclude Include="..\..\Core\LightHelper.h" />
+    <ClInclude Include="..\..\ThirdParty\ImGuizmo\GraphEditor.h" />
+    <ClInclude Include="..\..\ThirdParty\ImGuizmo\ImCurveEdit.h" />
+    <ClInclude Include="..\..\ThirdParty\ImGuizmo\ImGradient.h" />
+    <ClInclude Include="..\..\ThirdParty\ImGuizmo\ImGuizmo.h" />
+    <ClInclude Include="..\..\ThirdParty\ImGuizmo\ImSequencer.h" />
+    <ClInclude Include="..\..\ThirdParty\ImGuizmo\ImZoomSlider.h" />
     <ClInclude Include="..\..\ThirdParty\ImGui\backends\imgui_impl_dx11.h" />
     <ClInclude Include="..\..\ThirdParty\ImGui\backends\imgui_impl_win32.h" />
     <ClInclude Include="..\..\ThirdParty\ImGui\imconfig.h" />

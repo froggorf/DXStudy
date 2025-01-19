@@ -20,6 +20,9 @@
     <Filter Include="Shader">
       <UniqueIdentifier>{3c7db095-f128-4639-83bb-a2dbd9b1f6a4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ThirdParty\ImGuizmo">
+      <UniqueIdentifier>{3b2d84f8-0543-4ccc-bf93-cd81fb5ba98c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Lighting.cpp">
@@ -51,6 +54,21 @@
     </ClCompile>
     <ClCompile Include="..\..\ThirdParty\ImGui\backends\imgui_impl_win32.cpp">
       <Filter>ThirdParty\ImGui\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGuizmo\ImGuizmo.cpp">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGuizmo\ImSequencer.cpp">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGuizmo\GraphEditor.cpp">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGuizmo\ImCurveEdit.cpp">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGuizmo\ImGradient.cpp">
+      <Filter>ThirdParty\ImGuizmo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -92,6 +110,24 @@
     </ClInclude>
     <ClInclude Include="..\..\Core\LightHelper.h">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGuizmo\ImGuizmo.h">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGuizmo\ImSequencer.h">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGuizmo\ImZoomSlider.h">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGuizmo\GraphEditor.h">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGuizmo\ImCurveEdit.h">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGuizmo\ImGradient.h">
+      <Filter>ThirdParty\ImGuizmo</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
