@@ -4,6 +4,7 @@
 #pragma once
 
 #include <imgui.h>
+#include <ImGuizmo.h>
 #include <string>
 
 #include "d3dUtil.h"

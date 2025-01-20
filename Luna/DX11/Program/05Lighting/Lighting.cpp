@@ -76,9 +76,17 @@ private:
 	std::vector<ComPtr<ID3D11ShaderResourceView>>	m_BodyShaderResourceView;
 	std::vector<ComPtr<ID3D11ShaderResourceView>>	m_FaceShaderResourceView;
 
+	XMFLOAT3										m_ModelPosition;
+	XMFLOAT3										m_ModelRotation;
+	XMFLOAT3										m_ModelScale;
+
 	// 라이트 출력 용
 	std::vector<ComPtr<ID3D11Buffer>>				m_SphereVertexBuffer;
 	std::vector<ComPtr<ID3D11Buffer>>				m_SphereIndexBuffer;
+
+	// 카메라 정보
+	XMFLOAT3										m_CameraPosition;
+	XMFLOAT3										m_CameraViewVector;
 
 	// 라이트
 	DirectionalLight								m_DirectionalLight;
@@ -105,8 +113,6 @@ private:
 	float m_Phi;
 	float m_Radius;
 	POINT m_LastMousePos;
-
-	float m_ModelScale = 0.02f;
 
 	
 };
@@ -135,12 +141,17 @@ LightingApp::LightingApp(HINSTANCE hInstance)
 {
 	m_MainWndTitle = L"Texture To Model";
 
-	m_Radius = 5.0f; m_Phi = 180.0f; m_Theta = 0.0f;
 	m_LastMousePos.x = 0; m_LastMousePos.y = 1;
 	m_World = XMMatrixIdentity();
 	m_View = XMMatrixIdentity();
 	m_Proj = XMMatrixIdentity();
 
+	m_ModelPosition = XMFLOAT3(0.0f,0.0f,0.0f);
+	m_ModelRotation = XMFLOAT3(0.0f,0.0f,0.0f);
+	m_ModelScale = XMFLOAT3(0.0f,0.0f,0.0f);
+
+	m_CameraPosition = XMFLOAT3(0.0f,3.0f,-5.0f);
+	m_CameraViewVector = XMFLOAT3(0.0f,0.0f,1.0f);
 	
 	// Directional light.
 	m_DirectionalLight.Ambient  = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
@@ -149,8 +160,8 @@ LightingApp::LightingApp(HINSTANCE hInstance)
 	m_DirectionalLight.Direction = XMFLOAT3(0.0f,-1.0f,0.0f);
 
 	// Point Light
-	m_PointLight.Ambient  = XMFLOAT4(0.7f, 0.0f, 0.0f, 1.0f);
-	m_PointLight.Diffuse  = XMFLOAT4(0.7f, 0.0f, 0.0f, 1.0f);
+	m_PointLight.Ambient  = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	m_PointLight.Diffuse  = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 	m_PointLight.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	m_PointLight.Att      = XMFLOAT3(0.0f, 0.1f, 0.0f);
 	//m_PointLight.Position = XMFLOAT3(796.5f, 700.0f, 0.7549f);
@@ -160,7 +171,7 @@ LightingApp::LightingApp(HINSTANCE hInstance)
 	// Material
 	m_ModelMaterial.Ambient  = XMFLOAT4(1.0f,1.0f,1.0f, 1.0f);
 	m_ModelMaterial.Diffuse  = XMFLOAT4(1.0f,1.0f,1.0f, 1.0f);
-	m_ModelMaterial.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 128.0f);
+	m_ModelMaterial.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 32.0f);
 }
 
 LightingApp::~LightingApp()
@@ -187,6 +198,10 @@ void LightingApp::LoadModels()
 	AssetManager::LoadModelData("Model/Racco.fbx", m_d3dDevice, m_ModelVertexBuffer, m_ModelIndexBuffer);
 
 	AssetManager::LoadModelData("Model/Sphere.obj", m_d3dDevice, m_SphereVertexBuffer, m_SphereIndexBuffer);
+
+	m_ModelPosition = XMFLOAT3(0.0f,0.0f,0.0f);
+	m_ModelScale = XMFLOAT3(0.02f,0.02f,0.02f);
+	m_ModelRotation = XMFLOAT3(0.0f,0.0f,0.0f);
 
 	//AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Cat_01.png", m_d3dDevice, m_ModelShaderResourceView);
 	//AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Emo_01.png", m_d3dDevice, m_ModelShaderResourceView);
@@ -250,25 +265,11 @@ void LightingApp::OnResize()
 
 void LightingApp::UpdateScene(float dt)
 {
-	// Convert Spherical to Cartesian coordinates.
-	float x = m_Radius*sinf(m_Phi)*cosf(m_Theta);
-	float z = m_Radius*sinf(m_Phi)*sinf(m_Theta);
-	float y = m_Radius*cosf(m_Phi);
-
-	// 임시 테스트
-	
-	XMVECTOR Pos = XMVectorSet(x,y,z,1.0f);
-    XMVECTOR At = XMVectorSet(0.0f,0.0f,0.0f,0.0f);
-    XMVECTOR Up = XMVectorSet(0.0f,1.0f,0.0f,0.0f);
-
-    m_View = XMMatrixLookAtLH(Pos, At, Up);
-
+    m_View = XMMatrixLookAtLH(XMLoadFloat3(&m_CameraPosition), XMLoadFloat3(&m_CameraViewVector), XMVectorSet(0.0f,1.0f,0.0f,0.0f));
 }
 
 void LightingApp::DrawImGui()
 {
-	// (Your code process and dispatch Win32 messages)
-	// Start the Dear ImGui frame
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
@@ -276,7 +277,6 @@ void LightingApp::DrawImGui()
 	// UI 코드 작성
 	ImGui::SetNextWindowSize(ImVec2(600,200));
     ImGui::Begin("Controller");
-    ImGui::SliderFloat("Scale", &m_ModelScale, 0.01f, 1.0f); // 슬라이더 추가
 	ImGui::Text("Body SRV Change");
 	if(ImGui::Button("Body1", ImVec2(150,25)))
 	{
@@ -311,6 +311,50 @@ void LightingApp::DrawImGui()
 		m_PointLight.Specular= XMFLOAT4(1.0f,1.0f,1.0f,1.0f);//XMFLOAT4(plColor[0],plColor[1],plColor[2],plColor[3]);
 	}
 	ImGui::End();
+
+	// ImGuizmo
+	{
+		ImGuizmo::BeginFrame();
+		ImGuiIO& io = ImGui::GetIO();
+		
+		ImGui::SliderFloat3("Translation", (float*)&m_ModelPosition, -5.0f, 5.0f );
+		ImGui::SliderFloat3("Rotation", (float*)&m_ModelRotation, -5.0f, 5.0f);
+		ImGui::SliderFloat3("Scale", (float*)&m_ModelScale, -5.0f, 5.0f);
+		ImGuizmo::SetRect(0,0,io.DisplaySize.x,io.DisplaySize.y);
+		static bool bUseGizmo = false;
+		ImGui::Checkbox("Use Gizmo", &bUseGizmo);
+		XMMATRIX identityMat = XMMatrixIdentity();
+
+		if (bUseGizmo)
+		{
+			static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::ROTATE);
+			if (ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_Q))
+			{
+				std::cout << " Q" << std::endl;
+				mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+			}
+			if (ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_W))
+			{
+				std::cout << "R" << std::endl;
+				mCurrentGizmoOperation = ImGuizmo::ROTATE;
+			}
+			if (ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_E))
+			{
+				std::cout << "R" << std::endl;
+				mCurrentGizmoOperation = ImGuizmo::SCALE;
+			}
+
+			XMMATRIX objectMatrix;
+			ImGuizmo::RecomposeMatrixFromComponents(reinterpret_cast<float*>(&m_ModelPosition), reinterpret_cast<float*>(&m_ModelRotation), reinterpret_cast<float*>(&m_ModelScale), reinterpret_cast<float*>(&objectMatrix));
+
+			ImGuizmo::Manipulate(reinterpret_cast<float*>(&m_View), reinterpret_cast<float*>(&m_Proj),
+				mCurrentGizmoOperation, ImGuizmo::WORLD, reinterpret_cast<float*>(&objectMatrix), NULL, NULL);
+
+			ImGuizmo::DecomposeMatrixToComponents(reinterpret_cast<float*>(&objectMatrix), (float*)&m_ModelPosition, (float*)&m_ModelRotation, (float*)&m_ModelScale);
+		}
+
+	}
+
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -353,10 +397,7 @@ void LightingApp::DrawScene()
 				lfcb.gDirLight = m_DirectionalLight;
 				lfcb.gPointLight = m_PointLight;
 				// Convert Spherical to Cartesian coordinates.
-				float x = m_Radius*sinf(m_Phi)*cosf(m_Theta);
-				float z = m_Radius*sinf(m_Phi)*sinf(m_Theta);
-				float y = m_Radius*cosf(m_Phi);
-				lfcb.gEyePosW = XMFLOAT3{x,y,z};
+				lfcb.gEyePosW = XMFLOAT3{m_CameraPosition};
 				m_d3dDeviceContext->UpdateSubresource(m_LightConstantBuffer.Get(),0,nullptr,&lfcb, 0,0);
 			}
 		}
@@ -366,11 +407,13 @@ void LightingApp::DrawScene()
 		// Obj 상수 버퍼 설정
 		{
 			ObjConstantBuffer ocb;
-			XMMATRIX world = m_World * XMMatrixScaling(m_ModelScale,m_ModelScale,m_ModelScale);
-			world *= XMMatrixTranslation(0.0f, -2.5f, 0.0f);
-			ocb.World = XMMatrixTranspose(world);
+			XMMATRIX world = m_World * XMMatrixScaling(m_ModelScale.x,m_ModelScale.y,m_ModelScale.z);
+			world = world * XMMatrixRotationX(m_ModelRotation.x) * XMMatrixRotationY(m_ModelRotation.y) * XMMatrixRotationZ(m_ModelRotation.z);
+			world *= XMMatrixTranslation(m_ModelPosition.x,m_ModelPosition.y,m_ModelPosition.z);
 			// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
-			ocb.InvTransposeMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, world));
+			ocb.InvTransposeMatrix = (XMMatrixInverse(nullptr, world));
+			ocb.World = XMMatrixTranspose(world);
+
 			ocb.ObjectMaterial = m_ModelMaterial;
 			m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);	
 		}
