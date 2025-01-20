@@ -321,7 +321,17 @@ void LightingApp::DrawImGui()
 		ImGuiIO& io = ImGui::GetIO();
 		
 		ImGui::SliderFloat3("Translation", (float*)&m_ModelPosition, -5.0f, 5.0f );
-		//ImGui::SliderFloat3("Rotation", (float*)&m_ModelRotation, -5.0f, 5.0f);
+
+		static float rotationDegrees[] = {0.0f,0.0f,0.0f};
+		if(ImGui::SliderFloat3("Rotation", (float*)&rotationDegrees,-180.0f,180.0f))
+		{
+			
+			m_ModelQuat = XMQuaternionRotationRollPitchYaw(
+				XMConvertToRadians(rotationDegrees[0]),
+				XMConvertToRadians(rotationDegrees[1]),
+				XMConvertToRadians(rotationDegrees[2]));
+			XMQuaternionNormalize(m_ModelQuat);
+		}
 		ImGui::SliderFloat3("Scale", (float*)&m_ModelScale, -5.0f, 5.0f);
 		ImGuizmo::SetRect(0,0,io.DisplaySize.x,io.DisplaySize.y);
 		static bool bUseGizmo = false;
@@ -373,7 +383,10 @@ void LightingApp::DrawImGui()
 
 			XMFLOAT3 deltaRot;
 			ImGuizmo::DecomposeMatrixToComponents(reinterpret_cast<float*>(&deltaMatrix), nullptr, (float*)&deltaRot, nullptr);
-		
+
+			rotationDegrees[0] = std::fmod (rotationDegrees[0] + deltaRot.x , 180.0f);
+			rotationDegrees[1] = std::fmod (rotationDegrees[1] + deltaRot.y , 180.0f);
+			rotationDegrees[2] = std::fmod (rotationDegrees[2] + deltaRot.z , 180.0f);
 			XMVECTOR deltaQuat = XMQuaternionRotationRollPitchYaw( 
 									XMConvertToRadians(deltaRot.x),
 								XMConvertToRadians(deltaRot.y),
