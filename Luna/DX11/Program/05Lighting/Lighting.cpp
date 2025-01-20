@@ -6,6 +6,7 @@
 //
 //***************************************************************************************
 #define _CRT_SECURE_NO_WARNINGS
+#include <format>
 #include <vector>
 
 #include "../../Core/d3dApp.h"
@@ -77,7 +78,8 @@ private:
 	std::vector<ComPtr<ID3D11ShaderResourceView>>	m_FaceShaderResourceView;
 
 	XMFLOAT3										m_ModelPosition;
-	XMFLOAT3										m_ModelRotation;
+	//XMFLOAT3										m_ModelRotation;
+	XMVECTOR										m_ModelQuat;
 	XMFLOAT3										m_ModelScale;
 
 	// 라이트 출력 용
@@ -147,7 +149,8 @@ LightingApp::LightingApp(HINSTANCE hInstance)
 	m_Proj = XMMatrixIdentity();
 
 	m_ModelPosition = XMFLOAT3(0.0f,0.0f,0.0f);
-	m_ModelRotation = XMFLOAT3(0.0f,0.0f,0.0f);
+	//m_ModelRotation = XMFLOAT3(0.0f,0.0f,0.0f);
+	m_ModelQuat = XMQuaternionIdentity();
 	m_ModelScale = XMFLOAT3(0.0f,0.0f,0.0f);
 
 	m_CameraPosition = XMFLOAT3(0.0f,3.0f,-5.0f);
@@ -201,7 +204,7 @@ void LightingApp::LoadModels()
 
 	m_ModelPosition = XMFLOAT3(0.0f,0.0f,0.0f);
 	m_ModelScale = XMFLOAT3(0.02f,0.02f,0.02f);
-	m_ModelRotation = XMFLOAT3(0.0f,0.0f,0.0f);
+	//m_ModelRotation = XMFLOAT3(0.0f,0.0f,0.0f);
 
 	//AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Cat_01.png", m_d3dDevice, m_ModelShaderResourceView);
 	//AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Emo_01.png", m_d3dDevice, m_ModelShaderResourceView);
@@ -318,7 +321,7 @@ void LightingApp::DrawImGui()
 		ImGuiIO& io = ImGui::GetIO();
 		
 		ImGui::SliderFloat3("Translation", (float*)&m_ModelPosition, -5.0f, 5.0f );
-		ImGui::SliderFloat3("Rotation", (float*)&m_ModelRotation, -5.0f, 5.0f);
+		//ImGui::SliderFloat3("Rotation", (float*)&m_ModelRotation, -5.0f, 5.0f);
 		ImGui::SliderFloat3("Scale", (float*)&m_ModelScale, -5.0f, 5.0f);
 		ImGuizmo::SetRect(0,0,io.DisplaySize.x,io.DisplaySize.y);
 		static bool bUseGizmo = false;
@@ -328,6 +331,7 @@ void LightingApp::DrawImGui()
 		if (bUseGizmo)
 		{
 			static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::ROTATE);
+			static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
 			if (ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_Q))
 			{
 				std::cout << " Q" << std::endl;
@@ -343,14 +347,40 @@ void LightingApp::DrawImGui()
 				std::cout << "R" << std::endl;
 				mCurrentGizmoOperation = ImGuizmo::SCALE;
 			}
+			if(ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_1))
+			{
+				std::cout<<"WORLD"<<std::endl;
+				mCurrentGizmoMode = ImGuizmo::WORLD;
+			}
+			if(ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_2))
+			{
+				std::cout<<"Local"<<std::endl;
+				mCurrentGizmoMode = ImGuizmo::LOCAL;
+			}
 
 			XMMATRIX objectMatrix;
-			ImGuizmo::RecomposeMatrixFromComponents(reinterpret_cast<float*>(&m_ModelPosition), reinterpret_cast<float*>(&m_ModelRotation), reinterpret_cast<float*>(&m_ModelScale), reinterpret_cast<float*>(&objectMatrix));
+			XMMATRIX deltaMatrix;
+			XMFLOAT3 test {0.0f,0.0f,0.0f};
+			// Position, Rotation, Scale -> Matrix
+			ImGuizmo::RecomposeMatrixFromComponents(reinterpret_cast<float*>(&m_ModelPosition), reinterpret_cast<float*>(&test), reinterpret_cast<float*>(&m_ModelScale), reinterpret_cast<float*>(&objectMatrix));
 
+			// 이게 기즈모를 통한 트랜스레이션을 적용시켜주는 함수
+			//ImGuizmo::Manipulate(reinterpret_cast<float*>(&m_View), reinterpret_cast<float*>(&m_Proj), mCurrentGizmoOperation, mCurrentGizmoMode, reinterpret_cast<float*>(&objectMatrix), (float*)&deltaMatrix, NULL);
 			ImGuizmo::Manipulate(reinterpret_cast<float*>(&m_View), reinterpret_cast<float*>(&m_Proj),
-				mCurrentGizmoOperation, ImGuizmo::WORLD, reinterpret_cast<float*>(&objectMatrix), NULL, NULL);
+				mCurrentGizmoOperation, mCurrentGizmoMode, (float*)&objectMatrix, (float*)&deltaMatrix, nullptr);
 
-			ImGuizmo::DecomposeMatrixToComponents(reinterpret_cast<float*>(&objectMatrix), (float*)&m_ModelPosition, (float*)&m_ModelRotation, (float*)&m_ModelScale);
+			ImGuizmo::DecomposeMatrixToComponents(reinterpret_cast<float*>(&objectMatrix), (float*)&m_ModelPosition, nullptr, (float*)&m_ModelScale);
+
+			XMFLOAT3 deltaRot;
+			ImGuizmo::DecomposeMatrixToComponents(reinterpret_cast<float*>(&deltaMatrix), nullptr, (float*)&deltaRot, nullptr);
+		
+			XMVECTOR deltaQuat = XMQuaternionRotationRollPitchYaw( 
+									XMConvertToRadians(deltaRot.x),
+								XMConvertToRadians(deltaRot.y),
+								XMConvertToRadians(deltaRot.z));
+
+			m_ModelQuat = XMQuaternionMultiply(m_ModelQuat , deltaQuat) ;
+			XMQuaternionNormalize(m_ModelQuat);
 		}
 
 	}
@@ -408,7 +438,8 @@ void LightingApp::DrawScene()
 		{
 			ObjConstantBuffer ocb;
 			XMMATRIX world = m_World * XMMatrixScaling(m_ModelScale.x,m_ModelScale.y,m_ModelScale.z);
-			world = world * XMMatrixRotationX(m_ModelRotation.x) * XMMatrixRotationY(m_ModelRotation.y) * XMMatrixRotationZ(m_ModelRotation.z);
+			//world = world * XMMatrixRotationX(m_ModelRotation.x) * XMMatrixRotationY(m_ModelRotation.y) * XMMatrixRotationZ(m_ModelRotation.z);
+			world = world * XMMatrixRotationQuaternion(m_ModelQuat);
 			world *= XMMatrixTranslation(m_ModelPosition.x,m_ModelPosition.y,m_ModelPosition.z);
 			// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
 			ocb.InvTransposeMatrix = (XMMatrixInverse(nullptr, world));
