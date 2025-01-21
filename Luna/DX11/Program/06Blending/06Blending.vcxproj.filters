@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="ThirdParty">
+      <UniqueIdentifier>{5481e931-6e01-4106-8661-fe1ce1c049f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\ImGui">
+      <UniqueIdentifier>{219e96bf-9453-4849-b1d9-d7411e22b89c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\ImGui\backends">
+      <UniqueIdentifier>{0e38410e-56ff-47b3-8786-b5bee9675989}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\ImGuizmo">
+      <UniqueIdentifier>{8aa70a7d-fde5-4d8b-bed3-998a41425ef7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{29e96e7c-a639-4926-9c2e-2ba781928b7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{3685c341-060e-49b7-a9b9-e002308358e3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Blending.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGui\imgui.cpp">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGui\imgui_draw.cpp">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGui\imgui_tables.cpp">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGui\imgui_widgets.cpp">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGui\backends\imgui_impl_dx11.cpp">
+      <Filter>ThirdParty\ImGui\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGui\backends\imgui_impl_win32.cpp">
+      <Filter>ThirdParty\ImGui\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGuizmo\GraphEditor.cpp">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGuizmo\ImCurveEdit.cpp">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGuizmo\ImGradient.cpp">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGuizmo\ImGuizmo.cpp">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGuizmo\ImSequencer.cpp">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Core\AssetManager.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Core\d3dApp.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Core\GameTimer.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\ThirdParty\ImGui\imconfig.h">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGui\imgui.h">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGui\imgui_internal.h">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGui\imstb_rectpack.h">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGui\imstb_textedit.h">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGui\imstb_truetype.h">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGui\backends\imgui_impl_dx11.h">
+      <Filter>ThirdParty\ImGui\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGui\backends\imgui_impl_win32.h">
+      <Filter>ThirdParty\ImGui\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGuizmo\GraphEditor.h">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGuizmo\ImCurveEdit.h">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGuizmo\ImGradient.h">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGuizmo\ImGuizmo.h">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGuizmo\ImSequencer.h">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGuizmo\ImZoomSlider.h">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\AssetManager.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\d3dApp.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\d3dUtil.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\GameTimer.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\LightHelper.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader\LightColor.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\LightHelper.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+  </ItemGroup>
+</Project>

@@ -74,6 +74,64 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
 	}
 }
 
+void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11Buffer>& pVertexBuffer,
+	ComPtr<ID3D11Buffer>&pIndexBuffer)
+{
+    std::string filePath = ResourceFolderDirectory + path;
+
+    Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile(filePath, 
+	    aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_ConvertToLeftHanded );
+	
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+	    std::cerr << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
+	    return;
+	}
+
+	std::vector<std::vector<MyVertexData>> allVertices;
+	std::vector<std::vector<UINT>> allIndices;
+
+	ProcessScene(scene, allVertices, allIndices);
+	
+	// 결과 출력
+    for (size_t i = 0; i < allVertices.size(); i++) {
+        std::cout << "Mesh " << i << ":\n";
+        std::cout << "  Vertices: " << allVertices[i].size() << "\n";
+        std::cout << "  Indices: " << allIndices[i].size() << "\n";
+    }
+
+    // 모델 로드 성공
+    std::cout << "Model loaded successfully: " << filePath << std::endl;
+
+	// 버텍스 버퍼
+       ComPtr<ID3D11Buffer> vertexBuffer;
+	D3D11_BUFFER_DESC vertexBufferDesc = {};
+	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vertexBufferDesc.CPUAccessFlags = 0;
+	vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	vertexBufferDesc.ByteWidth = sizeof(MyVertexData) * allVertices[0].size();
+	D3D11_SUBRESOURCE_DATA initVertexData = {};
+	initVertexData.pSysMem = allVertices[0].data();
+	HR(pDevice->CreateBuffer(&vertexBufferDesc,&initVertexData, vertexBuffer.GetAddressOf()));
+    //   pVertexBuffer.push_back(vertexBuffer);
+    pVertexBuffer = (vertexBuffer.Get());
+
+	// 인덱스 버퍼
+       ComPtr<ID3D11Buffer> indexBuffer;
+	D3D11_BUFFER_DESC indexBufferDesc = {};
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufferDesc.ByteWidth = sizeof(UINT) * allIndices[0].size();
+	indexBufferDesc.CPUAccessFlags = 0;
+	indexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	D3D11_SUBRESOURCE_DATA initIndexData = {};
+	initIndexData.pSysMem = allIndices[0].data();
+	HR(pDevice->CreateBuffer(&indexBufferDesc, &initIndexData, indexBuffer.GetAddressOf()));
+	//pIndexBuffer.push_back(indexBuffer);
+    pIndexBuffer = (indexBuffer.Get());
+		
+	
+}
+
 void AssetManager::LoadTextureFromFile(const std::wstring& szFile, const Microsoft::WRL::ComPtr<ID3D11Device> pDevice,
 	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>>& vTextureShaderResourceView)
 {
@@ -108,6 +166,44 @@ void AssetManager::LoadTextureFromFile(const std::wstring& szFile, const Microso
 
     HR(pDevice->CreateShaderResourceView(pTexture, &srvDesc, srv.ReleaseAndGetAddressOf()));
     vTextureShaderResourceView.push_back(srv);
+}
+
+void AssetManager::LoadTextureFromFile(const std::wstring& szFile, const Microsoft::WRL::ComPtr<ID3D11Device> pDevice,
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& pTextureShaderResourceView)
+{
+    
+    DirectX::ScratchImage image;
+    const std::wstring filePath = ResourceFolderDirectoryW + szFile;
+
+    std::filesystem::path p(filePath.c_str());
+    std::wstring ext = p.extension();
+
+	if (ext == L".dds" || ext == L".DDS")
+		DirectX::LoadFromDDSFile(filePath.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, image);
+	else if (ext == L".tga" || ext == L".TGA")
+		DirectX::LoadFromTGAFile(filePath.c_str(), nullptr, image);
+	else // png, jpg, jpeg, bmp
+		DirectX::LoadFromWICFile(filePath.c_str(), DirectX::WIC_FLAGS_NONE, nullptr, image);
+
+    
+    ID3D11Texture2D* pTexture = nullptr;
+    HR(DirectX::CreateTexture(pDevice.Get(), image.GetImages(), image.GetImageCount(), image.GetMetadata(), (ID3D11Resource**)&pTexture));
+    
+    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    srvDesc.Texture2D.MostDetailedMip = 0;
+    srvDesc.Texture2D.MipLevels = 1;
+
+    D3D11_TEXTURE2D_DESC textureDesc = {};
+    pTexture->GetDesc(&textureDesc);
+    srvDesc.Format = textureDesc.Format;
+    
+
+    ComPtr<ID3D11ShaderResourceView> srv = nullptr;
+
+    HR(pDevice->CreateShaderResourceView(pTexture, &srvDesc, srv.ReleaseAndGetAddressOf()));
+    
+    pTextureShaderResourceView = (srv.Get());
 }
 
 

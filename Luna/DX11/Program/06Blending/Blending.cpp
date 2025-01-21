@@ -53,6 +53,8 @@ public:
 	void OnResize() override;
 	void UpdateScene(float dt) override;
 	void DrawImGui() override;
+	void DrawCube();
+
 	void DrawScene() override;
 
 	void LoadModels();
@@ -81,6 +83,15 @@ private:
 	//XMFLOAT3										m_ModelRotation;
 	XMVECTOR										m_ModelQuat;
 	XMFLOAT3										m_ModelScale;
+
+	// 큐브 출력용
+	ComPtr<ID3D11Buffer>							m_CubeVertexBuffer;
+	ComPtr<ID3D11Buffer>							m_CubeIndexBuffer;
+	ComPtr<ID3D11ShaderResourceView>				m_CubeWaterSRV;
+	ComPtr<ID3D11ShaderResourceView>				m_CubeWireSRV;
+	XMFLOAT3										m_WireCubePosition = XMFLOAT3(1.0f,2.0f,0.0f);
+	XMVECTOR										m_WireCubeQuat = XMQuaternionIdentity();
+	XMFLOAT3										m_WireCubeScale = XMFLOAT3(0.25f,0.25f,0.25f);;
 
 	// 라이트 출력 용
 	std::vector<ComPtr<ID3D11Buffer>>				m_SphereVertexBuffer;
@@ -220,6 +231,11 @@ void BlendingApp::LoadModels()
 	AssetManager::LoadTextureFromFile(L"Texture/T_Racco_B.png", m_d3dDevice,m_BodyShaderResourceView);
 	AssetManager::LoadTextureFromFile(L"Texture/T_Racco_C.png", m_d3dDevice,m_BodyShaderResourceView);
 	m_ModelShaderResourceView.push_back(m_BodyShaderResourceView[2]);
+
+	AssetManager::LoadModelData("Model/cube.obj", m_d3dDevice, m_CubeVertexBuffer,m_CubeIndexBuffer);
+	AssetManager::LoadTextureFromFile(L"Texture/Water.png", m_d3dDevice, m_CubeWaterSRV);
+	AssetManager::LoadTextureFromFile(L"Texture/WireFence.dds", m_d3dDevice, m_CubeWireSRV);
+
 }
 
 
@@ -336,6 +352,11 @@ void BlendingApp::DrawImGui()
 		ImGuizmo::SetRect(0,0,io.DisplaySize.x,io.DisplaySize.y);
 		static bool bUseGizmo = false;
 		ImGui::Checkbox("Use Gizmo", &bUseGizmo);
+		static int moveObjIndex = 0;
+		ImGui::Text("Gizmo Select Obj");
+		ImGui::RadioButton("Object", &moveObjIndex, 0);
+		ImGui::SameLine();
+		ImGui::RadioButton("WireCube", &moveObjIndex, 1);
 		XMMATRIX identityMat = XMMatrixIdentity();
 
 		if (bUseGizmo)
@@ -372,14 +393,28 @@ void BlendingApp::DrawImGui()
 			XMMATRIX deltaMatrix;
 			XMFLOAT3 test {0.0f,0.0f,0.0f};
 			// Position, Rotation, Scale -> Matrix
-			ImGuizmo::RecomposeMatrixFromComponents(reinterpret_cast<float*>(&m_ModelPosition), reinterpret_cast<float*>(&test), reinterpret_cast<float*>(&m_ModelScale), reinterpret_cast<float*>(&objectMatrix));
+			if(moveObjIndex == 0)
+			{
+				ImGuizmo::RecomposeMatrixFromComponents(reinterpret_cast<float*>(&m_ModelPosition), reinterpret_cast<float*>(&test), reinterpret_cast<float*>(&m_ModelScale), reinterpret_cast<float*>(&objectMatrix));	
+			}else if(moveObjIndex == 1)
+			{
+				ImGuizmo::RecomposeMatrixFromComponents(reinterpret_cast<float*>(&m_WireCubePosition), reinterpret_cast<float*>(&test), reinterpret_cast<float*>(&m_WireCubeScale), reinterpret_cast<float*>(&objectMatrix));	
+			}
+			
 
 			// 이게 기즈모를 통한 트랜스레이션을 적용시켜주는 함수
 			//ImGuizmo::Manipulate(reinterpret_cast<float*>(&m_View), reinterpret_cast<float*>(&m_Proj), mCurrentGizmoOperation, mCurrentGizmoMode, reinterpret_cast<float*>(&objectMatrix), (float*)&deltaMatrix, NULL);
 			ImGuizmo::Manipulate(reinterpret_cast<float*>(&m_View), reinterpret_cast<float*>(&m_Proj),
 				mCurrentGizmoOperation, mCurrentGizmoMode, (float*)&objectMatrix, (float*)&deltaMatrix, nullptr);
 
-			ImGuizmo::DecomposeMatrixToComponents(reinterpret_cast<float*>(&objectMatrix), (float*)&m_ModelPosition, nullptr, (float*)&m_ModelScale);
+			if(moveObjIndex == 0)
+			{
+				ImGuizmo::DecomposeMatrixToComponents(reinterpret_cast<float*>(&objectMatrix), (float*)&m_ModelPosition, nullptr, (float*)&m_ModelScale);
+			}else if(moveObjIndex == 1)
+			{
+				ImGuizmo::DecomposeMatrixToComponents(reinterpret_cast<float*>(&objectMatrix), (float*)&m_WireCubePosition, nullptr, (float*)&m_WireCubeScale);
+			}
+			//ImGuizmo::DecomposeMatrixToComponents(reinterpret_cast<float*>(&objectMatrix), (float*)&m_ModelPosition, nullptr, (float*)&m_ModelScale);
 
 			XMFLOAT3 deltaRot;
 			ImGuizmo::DecomposeMatrixToComponents(reinterpret_cast<float*>(&deltaMatrix), nullptr, (float*)&deltaRot, nullptr);
@@ -392,8 +427,15 @@ void BlendingApp::DrawImGui()
 								XMConvertToRadians(deltaRot.y),
 								XMConvertToRadians(deltaRot.z));
 
-			m_ModelQuat = XMQuaternionMultiply(m_ModelQuat , deltaQuat) ;
-			XMQuaternionNormalize(m_ModelQuat);
+			if(moveObjIndex == 0)
+			{
+				m_ModelQuat = XMQuaternionMultiply(m_ModelQuat , deltaQuat) ;
+				XMQuaternionNormalize(m_ModelQuat);
+			}else if(moveObjIndex == 1)
+			{
+				m_WireCubeQuat = XMQuaternionMultiply(m_WireCubeQuat , deltaQuat) ;
+				XMQuaternionNormalize(m_WireCubeQuat);
+			}
 		}
 
 	}
@@ -401,6 +443,62 @@ void BlendingApp::DrawImGui()
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+}
+
+void BlendingApp::DrawCube()
+{
+	// 테스트용 Cube Draw
+	// Wire Rect 드로우
+	{
+		ObjConstantBuffer ocb;
+		XMMATRIX world = m_World * XMMatrixScaling(m_WireCubeScale.x,m_WireCubeScale.y,m_WireCubeScale.z);
+		//world *= XMMatrixTranslation(0.0f, -2.5f, 0.0f);
+		world *= XMMatrixRotationQuaternion(m_WireCubeQuat);
+		world *= XMMatrixTranslation(m_WireCubePosition.x,m_WireCubePosition.y,m_WireCubePosition.z);
+		ocb.World = XMMatrixTranspose(world);
+		// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
+		ocb.InvTransposeMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, world));
+		ocb.ObjectMaterial = m_ModelMaterial;
+		m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);	
+	}
+
+	{
+		m_d3dDeviceContext->PSSetShaderResources(0,1,m_CubeWireSRV.GetAddressOf());
+		UINT stride = sizeof(MyVertexData);
+		UINT offset = 0;
+		m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_CubeVertexBuffer.GetAddressOf(), &stride, &offset);
+		m_d3dDeviceContext->IASetIndexBuffer(m_CubeIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+
+		D3D11_BUFFER_DESC indexBufferDesc;
+		m_CubeIndexBuffer->GetDesc(&indexBufferDesc);
+		UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
+		m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
+	}
+
+	// Water 드로우
+	{
+		ObjConstantBuffer ocb;
+		XMMATRIX world = m_World * XMMatrixScaling(10.0f,0.2f,10.0f);
+		world *= XMMatrixTranslation(0.0f,0.0f,0.0f);
+		ocb.World = XMMatrixTranspose(world);
+		// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
+		ocb.InvTransposeMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, world));
+		ocb.ObjectMaterial = m_ModelMaterial;
+		m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);	
+	}
+
+	{
+		m_d3dDeviceContext->PSSetShaderResources(0,1,m_CubeWaterSRV.GetAddressOf());
+		UINT stride = sizeof(MyVertexData);
+		UINT offset = 0;
+		//m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_CubeVertexBuffer.GetAddressOf(), &stride, &offset);
+		//m_d3dDeviceContext->IASetIndexBuffer(m_CubeIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+
+		D3D11_BUFFER_DESC indexBufferDesc;
+		m_CubeIndexBuffer->GetDesc(&indexBufferDesc);
+		UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
+		m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
+	}
 }
 
 
@@ -485,7 +583,6 @@ void BlendingApp::DrawScene()
 		}
 
 		// 테스트용 스피어 드로우
-
 		// Obj 상수 버퍼 설정
 		{
 			ObjConstantBuffer ocb;
@@ -511,6 +608,8 @@ void BlendingApp::DrawScene()
 			UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
 			m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
 		}
+
+		DrawCube();
 
 		DrawImGui();
 	}

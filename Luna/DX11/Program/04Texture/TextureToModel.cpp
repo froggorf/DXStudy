@@ -29,11 +29,11 @@ struct ObjConstantBuffer
 	XMMATRIX World;
 };
 
-class LightingApp : public D3DApp
+class BlendingApp : public D3DApp
 {
 public:
-	LightingApp(HINSTANCE hInstance);
-	~LightingApp();
+	BlendingApp(HINSTANCE hInstance);
+	~BlendingApp();
 
 	
 	// Init
@@ -101,7 +101,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
     freopen_s(&fp, "CONOUT$", "w", stdout);
 #endif
 
-	LightingApp theApp(hInstance);
+	BlendingApp theApp(hInstance);
 	
 	if( !theApp.Init() )
 		return 0;
@@ -109,7 +109,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 	return theApp.Run();
 }
 
-LightingApp::LightingApp(HINSTANCE hInstance)
+BlendingApp::BlendingApp(HINSTANCE hInstance)
 : D3DApp(hInstance) 
 {
 	m_MainWndTitle = L"Texture To Model";
@@ -122,12 +122,12 @@ LightingApp::LightingApp(HINSTANCE hInstance)
 		
 }
 
-LightingApp::~LightingApp()
+BlendingApp::~BlendingApp()
 {
 	// ComPtr
 }
 
-bool LightingApp::Init()
+bool BlendingApp::Init()
 {
 	if(!D3DApp::Init())
 		return false;
@@ -141,7 +141,7 @@ bool LightingApp::Init()
 	return true;
 }
 
-void LightingApp::LoadModels()
+void BlendingApp::LoadModels()
 {
 	AssetManager::LoadModelData("Model/chibi_cat.fbx", m_d3dDevice, m_ModelVertexBuffer, m_ModelIndexBuffer);
 
@@ -159,7 +159,7 @@ void LightingApp::LoadModels()
 }
 
 
-void LightingApp::InitSamplerState()
+void BlendingApp::InitSamplerState()
 {
 	D3D11_SAMPLER_DESC sampDesc;
     ZeroMemory(&sampDesc, sizeof(sampDesc));
@@ -194,7 +194,7 @@ void LightingApp::InitSamplerState()
 	m_d3dDeviceContext->OMSetBlendState(blendState, blendFactor, sampleMask);
 }
 
-void LightingApp::OnResize()
+void BlendingApp::OnResize()
 {
 	D3DApp::OnResize();
 
@@ -202,7 +202,7 @@ void LightingApp::OnResize()
 	m_Proj = XMMatrixPerspectiveFovLH(0.5*XM_PI, GetWindowAspectRatio(), 1.0f, 1000.0f);
 }
 
-void LightingApp::UpdateScene(float dt)
+void BlendingApp::UpdateScene(float dt)
 {
 	// Convert Spherical to Cartesian coordinates.
 	float x = m_Radius*sinf(m_Phi)*cosf(m_Theta);
@@ -219,7 +219,7 @@ void LightingApp::UpdateScene(float dt)
 	
 }
 
-void LightingApp::DrawImGui()
+void BlendingApp::DrawImGui()
 {
 	// (Your code process and dispatch Win32 messages)
 	// Start the Dear ImGui frame
@@ -268,7 +268,7 @@ void LightingApp::DrawImGui()
 }
 
 
-void LightingApp::DrawScene()
+void BlendingApp::DrawScene()
 {
 	const float clearColor[] = {0.2f, 0.2f, 0.2f,1.0f};
 	m_d3dDeviceContext->ClearRenderTargetView(m_RenderTargetView.Get(), clearColor);
@@ -329,7 +329,7 @@ void LightingApp::DrawScene()
 }
 
 
-void LightingApp::OnMouseDown(WPARAM btnState, int x, int y)
+void BlendingApp::OnMouseDown(WPARAM btnState, int x, int y)
 {
 	m_LastMousePos.x = x;
 	m_LastMousePos.y = y;
@@ -337,12 +337,12 @@ void LightingApp::OnMouseDown(WPARAM btnState, int x, int y)
 	SetCapture(m_hMainWnd);
 }
 
-void LightingApp::OnMouseUp(WPARAM btnState, int x, int y)
+void BlendingApp::OnMouseUp(WPARAM btnState, int x, int y)
 {
 	ReleaseCapture();
 }
 
-void LightingApp::OnMouseMove(WPARAM btnState, int x, int y)
+void BlendingApp::OnMouseMove(WPARAM btnState, int x, int y)
 {
 	if( (btnState & MK_LBUTTON) != 0 )
 	{
@@ -375,7 +375,7 @@ void LightingApp::OnMouseMove(WPARAM btnState, int x, int y)
 	m_LastMousePos.y = y;
 }
 
-void LightingApp::BuildShader()
+void BlendingApp::BuildShader()
 {
 	ComPtr<ID3DBlob> pVSBlob = nullptr;
 	HR(CompileShaderFromFile(L"Shader/color.fx", "VS", "vs_4_0", pVSBlob.GetAddressOf()));
@@ -413,7 +413,7 @@ void LightingApp::BuildShader()
 }
 
 
-void LightingApp::ChangeModelTexture(const int bodyIndex, const ComPtr<ID3D11ShaderResourceView>& newSRV)
+void BlendingApp::ChangeModelTexture(const int bodyIndex, const ComPtr<ID3D11ShaderResourceView>& newSRV)
 {
 	//m_ModelShaderResourceView[bodyIndex]->Release();
 
