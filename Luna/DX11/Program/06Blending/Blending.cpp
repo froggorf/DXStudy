@@ -40,6 +40,15 @@ struct LightFrameConstantBuffer
     float pad;
 };
 
+struct FogFrameBuffer
+{
+	XMFLOAT4 FogColor;
+	float FogStart;
+	float FogEnd;
+	float pad1;
+	float pad2;
+};
+
 class BlendingApp : public D3DApp
 {
 public:
@@ -97,6 +106,9 @@ private:
 	std::vector<ComPtr<ID3D11Buffer>>				m_SphereVertexBuffer;
 	std::vector<ComPtr<ID3D11Buffer>>				m_SphereIndexBuffer;
 
+	// Fog
+	FogFrameBuffer									m_FogBuffer;
+
 	// 카메라 정보
 	XMFLOAT3										m_CameraPosition;
 	XMFLOAT3										m_CameraViewVector;
@@ -116,6 +128,7 @@ private:
 	ComPtr<ID3D11Buffer>		m_FrameConstantBuffer;
 	ComPtr<ID3D11Buffer>		m_ObjConstantBuffer;
 	ComPtr<ID3D11Buffer>		m_LightConstantBuffer;
+	ComPtr<ID3D11Buffer>		m_FogConstantBuffer;
 
 	// 변환 행렬
 	XMMATRIX m_World;
@@ -152,7 +165,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 BlendingApp::BlendingApp(HINSTANCE hInstance)
 : D3DApp(hInstance) 
 {
-	m_MainWndTitle = L"Texture To Model";
+	m_MainWndTitle = L"Blending And Fog";
 
 	m_LastMousePos.x = 0; m_LastMousePos.y = 1;
 	m_World = XMMatrixIdentity();
@@ -186,6 +199,11 @@ BlendingApp::BlendingApp(HINSTANCE hInstance)
 	m_ModelMaterial.Ambient  = XMFLOAT4(1.0f,1.0f,1.0f, 1.0f);
 	m_ModelMaterial.Diffuse  = XMFLOAT4(1.0f,1.0f,1.0f, 1.0f);
 	m_ModelMaterial.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 32.0f);
+
+	// Fog
+	m_FogBuffer.FogColor = XMFLOAT4(1.0f,1.0f,1.0f,1.0f);
+	m_FogBuffer.FogStart = 2.0f;
+	m_FogBuffer.FogEnd = 10.0f;
 }
 
 BlendingApp::~BlendingApp()
@@ -234,7 +252,7 @@ void BlendingApp::LoadModels()
 
 	AssetManager::LoadModelData("Model/cube.obj", m_d3dDevice, m_CubeVertexBuffer,m_CubeIndexBuffer);
 	AssetManager::LoadTextureFromFile(L"Texture/Water.png", m_d3dDevice, m_CubeWaterSRV);
-	AssetManager::LoadTextureFromFile(L"Texture/WireFence.dds", m_d3dDevice, m_CubeWireSRV);
+	AssetManager::LoadTextureFromFile(L"Texture/WireFence.png", m_d3dDevice, m_CubeWireSRV);
 
 }
 
@@ -448,37 +466,15 @@ void BlendingApp::DrawImGui()
 void BlendingApp::DrawCube()
 {
 	// 테스트용 Cube Draw
-	// Wire Rect 드로우
-	{
-		ObjConstantBuffer ocb;
-		XMMATRIX world = m_World * XMMatrixScaling(m_WireCubeScale.x,m_WireCubeScale.y,m_WireCubeScale.z);
-		//world *= XMMatrixTranslation(0.0f, -2.5f, 0.0f);
-		world *= XMMatrixRotationQuaternion(m_WireCubeQuat);
-		world *= XMMatrixTranslation(m_WireCubePosition.x,m_WireCubePosition.y,m_WireCubePosition.z);
-		ocb.World = XMMatrixTranspose(world);
-		// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
-		ocb.InvTransposeMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, world));
-		ocb.ObjectMaterial = m_ModelMaterial;
-		m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);	
-	}
-
-	{
-		m_d3dDeviceContext->PSSetShaderResources(0,1,m_CubeWireSRV.GetAddressOf());
-		UINT stride = sizeof(MyVertexData);
-		UINT offset = 0;
-		m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_CubeVertexBuffer.GetAddressOf(), &stride, &offset);
-		m_d3dDeviceContext->IASetIndexBuffer(m_CubeIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-
-		D3D11_BUFFER_DESC indexBufferDesc;
-		m_CubeIndexBuffer->GetDesc(&indexBufferDesc);
-		UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
-		m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
-	}
-
+	
+	UINT stride = sizeof(MyVertexData);
+	UINT offset = 0;
+	m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_CubeVertexBuffer.GetAddressOf(), &stride, &offset);
+	m_d3dDeviceContext->IASetIndexBuffer(m_CubeIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 	// Water 드로우
 	{
 		ObjConstantBuffer ocb;
-		XMMATRIX world = m_World * XMMatrixScaling(10.0f,0.2f,10.0f);
+		XMMATRIX world = m_World * XMMatrixScaling(15.0f,0.2f,15.0f);
 		world *= XMMatrixTranslation(0.0f,0.0f,0.0f);
 		ocb.World = XMMatrixTranspose(world);
 		// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
@@ -489,8 +485,7 @@ void BlendingApp::DrawCube()
 
 	{
 		m_d3dDeviceContext->PSSetShaderResources(0,1,m_CubeWaterSRV.GetAddressOf());
-		UINT stride = sizeof(MyVertexData);
-		UINT offset = 0;
+		
 		//m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_CubeVertexBuffer.GetAddressOf(), &stride, &offset);
 		//m_d3dDeviceContext->IASetIndexBuffer(m_CubeIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 
@@ -499,6 +494,7 @@ void BlendingApp::DrawCube()
 		UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
 		m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
 	}
+
 }
 
 
@@ -517,6 +513,7 @@ void BlendingApp::DrawScene()
 		m_d3dDeviceContext->VSSetConstantBuffers(1, 1, m_ObjConstantBuffer.GetAddressOf());
 		m_d3dDeviceContext->PSSetConstantBuffers(1,1, m_ObjConstantBuffer.GetAddressOf());
 		m_d3dDeviceContext->PSSetConstantBuffers(2,1, m_LightConstantBuffer.GetAddressOf());
+		m_d3dDeviceContext->PSSetConstantBuffers(3,1, m_FogConstantBuffer.GetAddressOf());
 
 		// 인풋 레이아웃
 		m_d3dDeviceContext->IASetInputLayout(m_InputLayout.Get());
@@ -540,6 +537,15 @@ void BlendingApp::DrawScene()
 				// Convert Spherical to Cartesian coordinates.
 				lfcb.gEyePosW = XMFLOAT3{m_CameraPosition};
 				m_d3dDeviceContext->UpdateSubresource(m_LightConstantBuffer.Get(),0,nullptr,&lfcb, 0,0);
+			}
+
+			// Fog 관련
+			{
+				FogFrameBuffer ffb;
+				ffb.FogStart = m_FogBuffer.FogStart;
+				ffb.FogColor = m_FogBuffer.FogColor;
+				ffb.FogEnd = m_FogBuffer.FogEnd;
+				m_d3dDeviceContext->UpdateSubresource(m_FogConstantBuffer.Get(), 0, nullptr, &ffb, 0, 0);
 			}
 		}
 		
@@ -702,6 +708,9 @@ void BlendingApp::BuildShader()
 	bufferDesc.ByteWidth = sizeof(LightFrameConstantBuffer);
 	HR(m_d3dDevice->CreateBuffer(&bufferDesc, nullptr, m_LightConstantBuffer.GetAddressOf()))
 
+	bufferDesc.ByteWidth = sizeof(FogFrameBuffer);
+	HR(m_d3dDevice->CreateBuffer(&bufferDesc, nullptr, m_FogConstantBuffer.GetAddressOf()))
+	
 }
 
 

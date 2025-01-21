@@ -29,12 +29,22 @@ cbuffer cbLight : register(b2)
     float pad;
 }
 
+cbuffer cbFog : register(b3)
+{
+	float4 fogColor;
+    float fogStart;
+    float fogEnd;
+    float pad1;
+    float pad2;
+}
+
 struct VS_OUTPUT
 {
     float4 PosScreen : SV_POSITION;
     float3 PosWorld : POSITION;
     float3 NormalW : TEXCOORD1;
     float2 Tex : TEXCOORD;
+    float Depth : TEXCOORD2;
 };
 
 //--------------------------------------------------------------------------------------
@@ -48,6 +58,7 @@ VS_OUTPUT VS( float4 Pos : POSITION, float3 Normal : NORMAL, float2 TexCoord : T
     output.PosWorld = output.PosScreen.xyz;
 
     output.PosScreen = mul( output.PosScreen, View );
+    output.Depth = output.PosScreen.z;
     output.PosScreen = mul( output.PosScreen, Projection );
 
     // 노말벡터를 월드좌표계로
@@ -87,8 +98,10 @@ float4 PS( VS_OUTPUT input ) : SV_Target
 	spec += S;
 
     float4 finalColor = color * (ambient + diffuse) + spec;
-    
 
+    float fogFactor = saturate((input.Depth - fogStart) / (fogEnd - fogStart));
+
+    finalColor = lerp(finalColor, fogColor, fogFactor);
 
     return finalColor;
 }
