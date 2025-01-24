@@ -14,6 +14,7 @@
 
 #include "imgui.h"
 #include "imgui_internal.h"
+#include "../../Core/ShadowMap.h"
 #include "backends/imgui_impl_dx11.h"
 #include "backends/imgui_impl_win32.h"
 
@@ -40,15 +41,6 @@ struct LightFrameConstantBuffer
     float pad;
 };
 
-struct FogFrameBuffer
-{
-	XMFLOAT4 FogColor;
-	float FogStart;
-	float FogEnd;
-	float pad1;
-	float pad2;
-};
-
 class ShadowApp : public D3DApp
 {
 public:
@@ -63,8 +55,10 @@ public:
 	void UpdateScene(float dt) override;
 	void DrawImGui() override;
 	void DrawCube();
-
 	void DrawScene() override;
+
+	// Shadow Map
+	void DrawShadowMap();
 
 	void LoadModels();
 
@@ -77,6 +71,9 @@ private:
 	void BuildShader();
 
 	void ChangeModelTexture(int bodyIndex, const ComPtr<ID3D11ShaderResourceView>& newSRV);
+
+	// DirectionalLight Matrix 반환하는 함수
+	void BuildShadowTransform();
 
 private:
 	// 모델 정보
@@ -98,16 +95,18 @@ private:
 	ComPtr<ID3D11Buffer>							m_CubeIndexBuffer;
 	ComPtr<ID3D11ShaderResourceView>				m_CubeWaterSRV;
 	ComPtr<ID3D11ShaderResourceView>				m_CubeWireSRV;
-	XMFLOAT3										m_WireCubePosition = XMFLOAT3(1.0f,2.0f,0.0f);
-	XMVECTOR										m_WireCubeQuat = XMQuaternionIdentity();
-	XMFLOAT3										m_WireCubeScale = XMFLOAT3(0.25f,0.25f,0.25f);;
 
 	// 라이트 출력 용
 	std::vector<ComPtr<ID3D11Buffer>>				m_SphereVertexBuffer;
 	std::vector<ComPtr<ID3D11Buffer>>				m_SphereIndexBuffer;
 
-	// Fog
-	FogFrameBuffer									m_FogBuffer;
+	// 그림자 맵 관련
+	std::unique_ptr<ShadowMap>						m_ShadowMap;
+	XMFLOAT4X4										m_LightView;
+	XMFLOAT4X4										m_LightProj;
+	XMFLOAT4X4										m_ShadowTransform;
+	ComPtr<ID3D11VertexShader>						m_ShadowMapVertexShader;
+	ComPtr<ID3D11PixelShader>						m_ShadowMapPixelShader;
 
 	// 카메라 정보
 	XMFLOAT3										m_CameraPosition;
@@ -128,16 +127,12 @@ private:
 	ComPtr<ID3D11Buffer>		m_FrameConstantBuffer;
 	ComPtr<ID3D11Buffer>		m_ObjConstantBuffer;
 	ComPtr<ID3D11Buffer>		m_LightConstantBuffer;
-	ComPtr<ID3D11Buffer>		m_FogConstantBuffer;
 
 	// 변환 행렬
 	XMMATRIX m_World;
 	XMMATRIX m_View;
 	XMMATRIX m_Proj;
 
-	float m_Theta;
-	float m_Phi;
-	float m_Radius;
 	POINT m_LastMousePos;
 
 	
@@ -200,10 +195,6 @@ ShadowApp::ShadowApp(HINSTANCE hInstance)
 	m_ModelMaterial.Diffuse  = XMFLOAT4(1.0f,1.0f,1.0f, 1.0f);
 	m_ModelMaterial.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 32.0f);
 
-	// Fog
-	m_FogBuffer.FogColor = XMFLOAT4(1.0f,1.0f,1.0f,1.0f);
-	m_FogBuffer.FogStart = 2.0f;
-	m_FogBuffer.FogEnd = 10.0f;
 }
 
 ShadowApp::~ShadowApp()
@@ -221,6 +212,10 @@ bool ShadowApp::Init()
 	LoadModels();
 
 	BuildShader();
+
+
+	// 그림자 맵
+	m_ShadowMap = std::make_unique<ShadowMap>(m_d3dDevice, 2048,2048);
 
 	return true;
 }
@@ -251,7 +246,7 @@ void ShadowApp::LoadModels()
 	m_ModelShaderResourceView.push_back(m_BodyShaderResourceView[2]);
 
 	AssetManager::LoadModelData("Model/cube.obj", m_d3dDevice, m_CubeVertexBuffer,m_CubeIndexBuffer);
-	AssetManager::LoadTextureFromFile(L"Texture/Water.png", m_d3dDevice, m_CubeWaterSRV);
+	AssetManager::LoadTextureFromFile(L"Texture/cardboard.png", m_d3dDevice, m_CubeWaterSRV);
 	AssetManager::LoadTextureFromFile(L"Texture/WireFence.png", m_d3dDevice, m_CubeWireSRV);
 
 }
@@ -303,6 +298,15 @@ void ShadowApp::OnResize()
 void ShadowApp::UpdateScene(float dt)
 {
     m_View = XMMatrixLookAtLH(XMLoadFloat3(&m_CameraPosition), XMLoadFloat3(&m_CameraViewVector), XMVectorSet(0.0f,1.0f,0.0f,0.0f));
+
+}
+
+
+void ShadowApp::DrawShadowMap()
+{
+	// 디렉셔널 라이트의 변환행렬 생성
+	BuildShadowTransform();
+	m_ShadowMap->BindDsvAndSetNullRenderTarget(m_d3dDeviceContext);
 }
 
 void ShadowApp::DrawImGui()
@@ -370,11 +374,6 @@ void ShadowApp::DrawImGui()
 		ImGuizmo::SetRect(0,0,io.DisplaySize.x,io.DisplaySize.y);
 		static bool bUseGizmo = false;
 		ImGui::Checkbox("Use Gizmo", &bUseGizmo);
-		static int moveObjIndex = 0;
-		ImGui::Text("Gizmo Select Obj");
-		ImGui::RadioButton("Object", &moveObjIndex, 0);
-		ImGui::SameLine();
-		ImGui::RadioButton("WireCube", &moveObjIndex, 1);
 		XMMATRIX identityMat = XMMatrixIdentity();
 
 		if (bUseGizmo)
@@ -411,13 +410,7 @@ void ShadowApp::DrawImGui()
 			XMMATRIX deltaMatrix;
 			XMFLOAT3 test {0.0f,0.0f,0.0f};
 			// Position, Rotation, Scale -> Matrix
-			if(moveObjIndex == 0)
-			{
-				ImGuizmo::RecomposeMatrixFromComponents(reinterpret_cast<float*>(&m_ModelPosition), reinterpret_cast<float*>(&test), reinterpret_cast<float*>(&m_ModelScale), reinterpret_cast<float*>(&objectMatrix));	
-			}else if(moveObjIndex == 1)
-			{
-				ImGuizmo::RecomposeMatrixFromComponents(reinterpret_cast<float*>(&m_WireCubePosition), reinterpret_cast<float*>(&test), reinterpret_cast<float*>(&m_WireCubeScale), reinterpret_cast<float*>(&objectMatrix));	
-			}
+			ImGuizmo::RecomposeMatrixFromComponents(reinterpret_cast<float*>(&m_ModelPosition), reinterpret_cast<float*>(&test), reinterpret_cast<float*>(&m_ModelScale), reinterpret_cast<float*>(&objectMatrix));	
 			
 
 			// 이게 기즈모를 통한 트랜스레이션을 적용시켜주는 함수
@@ -425,13 +418,8 @@ void ShadowApp::DrawImGui()
 			ImGuizmo::Manipulate(reinterpret_cast<float*>(&m_View), reinterpret_cast<float*>(&m_Proj),
 				mCurrentGizmoOperation, mCurrentGizmoMode, (float*)&objectMatrix, (float*)&deltaMatrix, nullptr);
 
-			if(moveObjIndex == 0)
-			{
-				ImGuizmo::DecomposeMatrixToComponents(reinterpret_cast<float*>(&objectMatrix), (float*)&m_ModelPosition, nullptr, (float*)&m_ModelScale);
-			}else if(moveObjIndex == 1)
-			{
-				ImGuizmo::DecomposeMatrixToComponents(reinterpret_cast<float*>(&objectMatrix), (float*)&m_WireCubePosition, nullptr, (float*)&m_WireCubeScale);
-			}
+			ImGuizmo::DecomposeMatrixToComponents(reinterpret_cast<float*>(&objectMatrix), (float*)&m_ModelPosition, nullptr, (float*)&m_ModelScale);
+			
 			//ImGuizmo::DecomposeMatrixToComponents(reinterpret_cast<float*>(&objectMatrix), (float*)&m_ModelPosition, nullptr, (float*)&m_ModelScale);
 
 			XMFLOAT3 deltaRot;
@@ -445,15 +433,9 @@ void ShadowApp::DrawImGui()
 								XMConvertToRadians(deltaRot.y),
 								XMConvertToRadians(deltaRot.z));
 
-			if(moveObjIndex == 0)
-			{
-				m_ModelQuat = XMQuaternionMultiply(m_ModelQuat , deltaQuat) ;
-				XMQuaternionNormalize(m_ModelQuat);
-			}else if(moveObjIndex == 1)
-			{
-				m_WireCubeQuat = XMQuaternionMultiply(m_WireCubeQuat , deltaQuat) ;
-				XMQuaternionNormalize(m_WireCubeQuat);
-			}
+			m_ModelQuat = XMQuaternionMultiply(m_ModelQuat , deltaQuat) ;
+			XMQuaternionNormalize(m_ModelQuat);
+			
 		}
 
 	}
@@ -485,9 +467,6 @@ void ShadowApp::DrawCube()
 
 	{
 		m_d3dDeviceContext->PSSetShaderResources(0,1,m_CubeWaterSRV.GetAddressOf());
-		
-		//m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_CubeVertexBuffer.GetAddressOf(), &stride, &offset);
-		//m_d3dDeviceContext->IASetIndexBuffer(m_CubeIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 
 		D3D11_BUFFER_DESC indexBufferDesc;
 		m_CubeIndexBuffer->GetDesc(&indexBufferDesc);
@@ -513,7 +492,6 @@ void ShadowApp::DrawScene()
 		m_d3dDeviceContext->VSSetConstantBuffers(1, 1, m_ObjConstantBuffer.GetAddressOf());
 		m_d3dDeviceContext->PSSetConstantBuffers(1,1, m_ObjConstantBuffer.GetAddressOf());
 		m_d3dDeviceContext->PSSetConstantBuffers(2,1, m_LightConstantBuffer.GetAddressOf());
-		m_d3dDeviceContext->PSSetConstantBuffers(3,1, m_FogConstantBuffer.GetAddressOf());
 
 		// 인풋 레이아웃
 		m_d3dDeviceContext->IASetInputLayout(m_InputLayout.Get());
@@ -537,15 +515,6 @@ void ShadowApp::DrawScene()
 				// Convert Spherical to Cartesian coordinates.
 				lfcb.gEyePosW = XMFLOAT3{m_CameraPosition};
 				m_d3dDeviceContext->UpdateSubresource(m_LightConstantBuffer.Get(),0,nullptr,&lfcb, 0,0);
-			}
-
-			// Fog 관련
-			{
-				FogFrameBuffer ffb;
-				ffb.FogStart = m_FogBuffer.FogStart;
-				ffb.FogColor = m_FogBuffer.FogColor;
-				ffb.FogEnd = m_FogBuffer.FogEnd;
-				m_d3dDeviceContext->UpdateSubresource(m_FogConstantBuffer.Get(), 0, nullptr, &ffb, 0, 0);
 			}
 		}
 		
@@ -639,33 +608,6 @@ void ShadowApp::OnMouseUp(WPARAM btnState, int x, int y)
 
 void ShadowApp::OnMouseMove(WPARAM btnState, int x, int y)
 {
-	if( (btnState & MK_LBUTTON) != 0 )
-	{
-		// Make each pixel correspond to a quarter of a degree.
-		float dx = XMConvertToRadians(0.25f*static_cast<float>(x - m_LastMousePos.x));
-		float dy = XMConvertToRadians(0.25f*static_cast<float>(y - m_LastMousePos.y));
-
-		// Update angles based on input to orbit camera around box.
-		m_Theta += dx;
-		m_Phi   += dy;
-
-		// Restrict the angle mPhi.
-		m_Phi = std::clamp(m_Phi, 0.1f, XM_PI-0.1f);
-		
-	}
-	else if( (btnState & MK_RBUTTON) != 0 )
-	{
-		// Make each pixel correspond to 0.005 unit in the scene.
-		float dx = 0.005f*static_cast<float>(x - m_LastMousePos.x);
-		float dy = 0.005f*static_cast<float>(y - m_LastMousePos.y);
-
-		// Update the camera radius based on input.
-		m_Radius += dx - dy;
-
-		// Restrict the radius.
-		m_Radius = std::clamp(m_Radius, 3.0f, 15.0f);
-	}
-
 	m_LastMousePos.x = x;
 	m_LastMousePos.y = y;
 }
@@ -707,10 +649,6 @@ void ShadowApp::BuildShader()
 
 	bufferDesc.ByteWidth = sizeof(LightFrameConstantBuffer);
 	HR(m_d3dDevice->CreateBuffer(&bufferDesc, nullptr, m_LightConstantBuffer.GetAddressOf()))
-
-	bufferDesc.ByteWidth = sizeof(FogFrameBuffer);
-	HR(m_d3dDevice->CreateBuffer(&bufferDesc, nullptr, m_FogConstantBuffer.GetAddressOf()))
-	
 }
 
 
@@ -721,4 +659,36 @@ void ShadowApp::ChangeModelTexture(const int bodyIndex, const ComPtr<ID3D11Shade
 	m_ModelShaderResourceView[bodyIndex] = newSRV;
 }
 
+void ShadowApp::BuildShadowTransform()
+{
+	float sceneRadius = 1000.0f;
+	// Light View Matrix
+	XMVECTOR lightDir = XMLoadFloat3(&m_DirectionalLight.Direction);
+	XMVECTOR lightPos = -2.0f* sceneRadius * lightDir ;
+	XMVECTOR targetPos = XMVectorSet(0.0f,0.0f,0.0f,0.0f);
+	XMVECTOR up = XMVectorSet(0.0f,1.0f,0.0f,0.0f);
+	XMMATRIX view = XMMatrixLookAtLH(lightPos, targetPos,up);
 
+	// Light Proj
+	float left = -sceneRadius;
+	float right = sceneRadius;
+	float bottom = -sceneRadius;
+	float top = sceneRadius;
+	float nearZ = -sceneRadius;
+	float farZ = sceneRadius;
+	XMMATRIX proj = XMMatrixOrthographicOffCenterLH(left,right,bottom,top,nearZ,farZ);
+
+	// NDC 공간으로 변환 ([-1,+1]^2 의 공간을 텍스쳐 공간인 [0,1]^2 로)
+	static XMMATRIX texMat
+	{
+		0.5f,0.0f,0.0f,0.0f,
+		0.0f,-0.5f,0.0f,0.0f,
+		0.0f,0.0f,1.0f,0.0f,
+		0.5f,0.5f,0.0f,1.0f
+	};
+	XMMATRIX shadowMatrix = view*proj*texMat;
+
+	XMStoreFloat4x4(&m_LightView, view);
+	XMStoreFloat4x4(&m_LightProj, proj);
+	XMStoreFloat4x4(&m_ShadowTransform, shadowMatrix);
+}

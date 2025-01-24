@@ -27,11 +27,11 @@ struct ObjConstantBuffer
 	XMMATRIX World;
 };
  
-class BlendingApp : public D3DApp
+class ShadowApp : public D3DApp
 {
 public:
-	BlendingApp(HINSTANCE hInstance);
-	~BlendingApp();
+	ShadowApp(HINSTANCE hInstance);
+	~ShadowApp();
 
 	// Init
 	bool Init() override;
@@ -79,7 +79,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 	_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 	
 #endif
-	BlendingApp theApp(hInstance);
+	ShadowApp theApp(hInstance);
 	
 	if( !theApp.Init() )
 		return 0;
@@ -87,7 +87,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 	return theApp.Run();
 }
 
-BlendingApp::BlendingApp(HINSTANCE hInstance)
+ShadowApp::ShadowApp(HINSTANCE hInstance)
 : D3DApp(hInstance) 
 {
 	m_MainWndTitle = L"Draw 3D Mesh";
@@ -100,12 +100,12 @@ BlendingApp::BlendingApp(HINSTANCE hInstance)
 		
 }
 
-BlendingApp::~BlendingApp()
+ShadowApp::~ShadowApp()
 {
 	// ComPtr
 }
 
-bool BlendingApp::Init()
+bool ShadowApp::Init()
 {
 	if(!D3DApp::Init())
 		return false;
@@ -117,7 +117,7 @@ bool BlendingApp::Init()
 	return true;
 }
 
-void BlendingApp::OnResize()
+void ShadowApp::OnResize()
 {
 	D3DApp::OnResize();
 
@@ -125,7 +125,7 @@ void BlendingApp::OnResize()
 	m_Proj = XMMatrixPerspectiveFovLH(0.5*XM_PI, GetWindowAspectRatio(), 1.0f, 1000.0f);
 }
 
-void BlendingApp::UpdateScene(float dt)
+void ShadowApp::UpdateScene(float dt)
 {
 	// Convert Spherical to Cartesian coordinates.
 	float x = m_Radius*sinf(m_Phi)*cosf(m_Theta);
@@ -142,7 +142,7 @@ void BlendingApp::UpdateScene(float dt)
 	
 }
 
-void BlendingApp::DrawScene()
+void ShadowApp::DrawScene()
 {
 	const float clearColor[] = {0.2f, 0.2f, 0.2f,1.0f};
 	m_d3dDeviceContext->ClearRenderTargetView(m_RenderTargetView.Get(), clearColor);
@@ -186,7 +186,7 @@ void BlendingApp::DrawScene()
 }
 
 
-void BlendingApp::OnMouseDown(WPARAM btnState, int x, int y)
+void ShadowApp::OnMouseDown(WPARAM btnState, int x, int y)
 {
 	m_LastMousePos.x = x;
 	m_LastMousePos.y = y;
@@ -194,12 +194,12 @@ void BlendingApp::OnMouseDown(WPARAM btnState, int x, int y)
 	SetCapture(m_hMainWnd);
 }
 
-void BlendingApp::OnMouseUp(WPARAM btnState, int x, int y)
+void ShadowApp::OnMouseUp(WPARAM btnState, int x, int y)
 {
 	ReleaseCapture();
 }
 
-void BlendingApp::OnMouseMove(WPARAM btnState, int x, int y)
+void ShadowApp::OnMouseMove(WPARAM btnState, int x, int y)
 {
 	if( (btnState & MK_LBUTTON) != 0 )
 	{
@@ -232,7 +232,7 @@ void BlendingApp::OnMouseMove(WPARAM btnState, int x, int y)
 	m_LastMousePos.y = y;
 }
 
-void BlendingApp::BuildGeometryBuffers()
+void ShadowApp::BuildGeometryBuffers()
 {
 	// 버텍스 버퍼
 	Vertex vertices[] =
@@ -291,7 +291,7 @@ void BlendingApp::BuildGeometryBuffers()
 
 }
 
-void BlendingApp::BuildShader()
+void ShadowApp::BuildShader()
 {
 	ComPtr<ID3DBlob> pVSBlob = nullptr;
 	HR(CompileShaderFromFile(L"Shader/color.fx", "VS", "vs_4_0", pVSBlob.GetAddressOf()));

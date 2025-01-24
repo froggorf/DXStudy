@@ -40,11 +40,11 @@ struct LightFrameConstantBuffer
     float pad;
 };
 
-class BlendingApp : public D3DApp
+class ShadowApp : public D3DApp
 {
 public:
-	BlendingApp(HINSTANCE hInstance);
-	~BlendingApp();
+	ShadowApp(HINSTANCE hInstance);
+	~ShadowApp();
 
 	
 	// Init
@@ -130,7 +130,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
     freopen_s(&fp, "CONOUT$", "w", stdout);
 #endif
 
-	BlendingApp theApp(hInstance);
+	ShadowApp theApp(hInstance);
 	
 	if( !theApp.Init() )
 		return 0;
@@ -138,7 +138,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 	return theApp.Run();
 }
 
-BlendingApp::BlendingApp(HINSTANCE hInstance)
+ShadowApp::ShadowApp(HINSTANCE hInstance)
 : D3DApp(hInstance) 
 {
 	m_MainWndTitle = L"Texture To Model";
@@ -177,12 +177,12 @@ BlendingApp::BlendingApp(HINSTANCE hInstance)
 	m_ModelMaterial.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 32.0f);
 }
 
-BlendingApp::~BlendingApp()
+ShadowApp::~ShadowApp()
 {
 	// ComPtr
 }
 
-bool BlendingApp::Init()
+bool ShadowApp::Init()
 {
 	if(!D3DApp::Init())
 		return false;
@@ -196,7 +196,7 @@ bool BlendingApp::Init()
 	return true;
 }
 
-void BlendingApp::LoadModels()
+void ShadowApp::LoadModels()
 {
 	AssetManager::LoadModelData("Model/Racco.fbx", m_d3dDevice, m_ModelVertexBuffer, m_ModelIndexBuffer);
 
@@ -223,7 +223,7 @@ void BlendingApp::LoadModels()
 }
 
 
-void BlendingApp::InitSamplerState()
+void ShadowApp::InitSamplerState()
 {
 	D3D11_SAMPLER_DESC sampDesc;
     ZeroMemory(&sampDesc, sizeof(sampDesc));
@@ -258,7 +258,7 @@ void BlendingApp::InitSamplerState()
 	m_d3dDeviceContext->OMSetBlendState(blendState, blendFactor, sampleMask);
 }
 
-void BlendingApp::OnResize()
+void ShadowApp::OnResize()
 {
 	D3DApp::OnResize();
 
@@ -266,12 +266,12 @@ void BlendingApp::OnResize()
 	m_Proj = XMMatrixPerspectiveFovLH(0.5*XM_PI, GetWindowAspectRatio(), 1.0f, 1000.0f);
 }
 
-void BlendingApp::UpdateScene(float dt)
+void ShadowApp::UpdateScene(float dt)
 {
     m_View = XMMatrixLookAtLH(XMLoadFloat3(&m_CameraPosition), XMLoadFloat3(&m_CameraViewVector), XMVectorSet(0.0f,1.0f,0.0f,0.0f));
 }
 
-void BlendingApp::DrawImGui()
+void ShadowApp::DrawImGui()
 {
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
@@ -404,7 +404,7 @@ void BlendingApp::DrawImGui()
 }
 
 
-void BlendingApp::DrawScene()
+void ShadowApp::DrawScene()
 {
 	const float clearColor[] = {0.2f, 0.2f, 0.2f,1.0f};
 	m_d3dDeviceContext->ClearRenderTargetView(m_RenderTargetView.Get(), clearColor);
@@ -519,7 +519,7 @@ void BlendingApp::DrawScene()
 }
 
 
-void BlendingApp::OnMouseDown(WPARAM btnState, int x, int y)
+void ShadowApp::OnMouseDown(WPARAM btnState, int x, int y)
 {
 	m_LastMousePos.x = x;
 	m_LastMousePos.y = y;
@@ -527,12 +527,12 @@ void BlendingApp::OnMouseDown(WPARAM btnState, int x, int y)
 	SetCapture(m_hMainWnd);
 }
 
-void BlendingApp::OnMouseUp(WPARAM btnState, int x, int y)
+void ShadowApp::OnMouseUp(WPARAM btnState, int x, int y)
 {
 	ReleaseCapture();
 }
 
-void BlendingApp::OnMouseMove(WPARAM btnState, int x, int y)
+void ShadowApp::OnMouseMove(WPARAM btnState, int x, int y)
 {
 	if( (btnState & MK_LBUTTON) != 0 )
 	{
@@ -565,7 +565,7 @@ void BlendingApp::OnMouseMove(WPARAM btnState, int x, int y)
 	m_LastMousePos.y = y;
 }
 
-void BlendingApp::BuildShader()
+void ShadowApp::BuildShader()
 {
 	ComPtr<ID3DBlob> pVSBlob = nullptr;
 	HR(CompileShaderFromFile(L"Shader/LightColor.hlsl", "VS", "vs_4_0", pVSBlob.GetAddressOf()));
@@ -606,7 +606,7 @@ void BlendingApp::BuildShader()
 }
 
 
-void BlendingApp::ChangeModelTexture(const int bodyIndex, const ComPtr<ID3D11ShaderResourceView>& newSRV)
+void ShadowApp::ChangeModelTexture(const int bodyIndex, const ComPtr<ID3D11ShaderResourceView>& newSRV)
 {
 	//m_ModelShaderResourceView[bodyIndex]->Release();
 
