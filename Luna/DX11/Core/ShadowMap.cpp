@@ -54,7 +54,7 @@ ShadowMap::~ShadowMap()
 	// ComPtr
 }
 
-void ShadowMap::BindDsvAndSetNullRenderTarget(Microsoft::WRL::ComPtr<ID3D11DeviceContext> deviceContext)
+void ShadowMap::BindDsvAndSetNullRenderTarget(const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& deviceContext)
 {
 	deviceContext->RSSetViewports(1, &m_Viewport);
 

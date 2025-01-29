@@ -41,6 +41,16 @@ struct LightFrameConstantBuffer
     float pad;
 };
 
+struct ShadowLightMatrixConstantBuffer
+{
+	XMMATRIX LightViewProj;
+};
+
+struct ShadowObjConstantBuffer
+{
+	XMMATRIX ObjWorld;
+};
+
 class ShadowApp : public D3DApp
 {
 public:
@@ -48,10 +58,10 @@ public:
 	~ShadowApp();
 
 
-	
 	// Init
 	bool Init() override;
 	void InitSamplerState();
+	void InitForShadowMap();
 	void OnResize() override;
 	void UpdateScene(float dt) override;
 	void DrawImGui() override;
@@ -103,12 +113,13 @@ private:
 
 	// 그림자 맵 관련
 	std::unique_ptr<ShadowMap>						m_ShadowMap;
-	XMFLOAT4X4										m_LightView;
-	XMFLOAT4X4										m_LightProj;
-	XMFLOAT4X4										m_ShadowTransform;
+	XMMATRIX										m_LightView;
+	XMMATRIX										m_LightProj;
+	XMMATRIX										m_ShadowTransform;
 	ComPtr<ID3D11VertexShader>						m_ShadowMapVertexShader;
 	ComPtr<ID3D11PixelShader>						m_ShadowMapPixelShader;
-	
+	ComPtr<ID3D11Buffer>							m_ShadowObjConstantBuffer;
+	ComPtr<ID3D11Buffer>							m_ShadowLightMatrixConstantBuffer;
 
 	// 카메라 정보
 	XMFLOAT3										m_CameraPosition;
@@ -129,6 +140,8 @@ private:
 	ComPtr<ID3D11Buffer>		m_FrameConstantBuffer;
 	ComPtr<ID3D11Buffer>		m_ObjConstantBuffer;
 	ComPtr<ID3D11Buffer>		m_LightConstantBuffer;
+
+	
 
 	// 변환 행렬
 	XMMATRIX m_World;
@@ -162,7 +175,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 ShadowApp::ShadowApp(HINSTANCE hInstance)
 : D3DApp(hInstance) 
 {
-	m_MainWndTitle = L"Blending And Fog";
+	m_MainWndTitle = L"Directional Light Shadow Mapping";
 
 	m_LastMousePos.x = 0; m_LastMousePos.y = 1;
 	m_World = XMMatrixIdentity();
@@ -217,7 +230,7 @@ bool ShadowApp::Init()
 	BuildShader();
 
 	// 그림자 맵
-	m_ShadowMap = std::make_unique<ShadowMap>(m_d3dDevice, 2048,2048);
+	InitForShadowMap();
 
 	return true;
 }
@@ -230,18 +243,7 @@ void ShadowApp::LoadModels()
 
 	m_ModelPosition = XMFLOAT3(0.0f,0.0f,0.0f);
 	m_ModelScale = XMFLOAT3(0.02f,0.02f,0.02f);
-	//m_ModelRotation = XMFLOAT3(0.0f,0.0f,0.0f);
 
-	//AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Cat_01.png", m_d3dDevice, m_ModelShaderResourceView);
-	//AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Emo_01.png", m_d3dDevice, m_ModelShaderResourceView);
-	//AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Cat_01.png", m_d3dDevice, m_BodyShaderResourceView);
-	//AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Cat_02.png", m_d3dDevice, m_BodyShaderResourceView);
-	//AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Cat_06.png", m_d3dDevice, m_BodyShaderResourceView);
-	//AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Emo_01.png", m_d3dDevice, m_FaceShaderResourceView);
-	//AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Emo_04.png", m_d3dDevice, m_FaceShaderResourceView);
-	//AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Emo_25.png", m_d3dDevice, m_FaceShaderResourceView);
-	//m_ModelShaderResourceView.push_back(m_BodyShaderResourceView[2]);
-	//m_ModelShaderResourceView.push_back(m_FaceShaderResourceView[2]);
 	AssetManager::LoadTextureFromFile(L"Texture/T_Racco_A.png", m_d3dDevice,m_BodyShaderResourceView);
 	AssetManager::LoadTextureFromFile(L"Texture/T_Racco_B.png", m_d3dDevice,m_BodyShaderResourceView);
 	AssetManager::LoadTextureFromFile(L"Texture/T_Racco_C.png", m_d3dDevice,m_BodyShaderResourceView);
@@ -289,6 +291,37 @@ void ShadowApp::InitSamplerState()
 	m_d3dDeviceContext->OMSetBlendState(blendState, blendFactor, sampleMask);
 }
 
+
+void ShadowApp::InitForShadowMap()
+{
+	m_ShadowMap = std::make_unique<ShadowMap>(m_d3dDevice, 2048,2048);
+
+	// 그림자맵 렌더링을 위한 VS/PS 추가
+	{
+		ComPtr<ID3DBlob> pVSBlob = nullptr;
+		HR(CompileShaderFromFile(L"Shader/BuildShadowMap.hlsl", "VS", "vs_4_0", pVSBlob.GetAddressOf()));
+		HR(m_d3dDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, m_ShadowMapVertexShader.GetAddressOf()));
+
+		D3D11_INPUT_ELEMENT_DESC inputLayout[] =
+		{
+			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA,0},
+			{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,0,24,D3D11_INPUT_PER_VERTEX_DATA, 0}
+
+		};
+		UINT numElements = ARRAYSIZE(inputLayout);
+
+		HR(m_d3dDevice->CreateInputLayout(inputLayout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), m_InputLayout.GetAddressOf()));
+		m_d3dDeviceContext->IASetInputLayout(m_InputLayout.Get());
+
+		ComPtr<ID3DBlob> pPSBlob = nullptr;
+		HR(CompileShaderFromFile(L"Shader/BuildShadowMap.hlsl", "PS", "ps_4_0", pPSBlob.GetAddressOf()));
+
+		HR(m_d3dDevice->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, m_ShadowMapPixelShader.GetAddressOf()));
+	}
+	
+}
+
 void ShadowApp::OnResize()
 {
 	D3DApp::OnResize();
@@ -309,6 +342,76 @@ void ShadowApp::DrawShadowMap()
 	// 디렉셔널 라이트의 변환행렬 생성
 	BuildShadowTransform();
 	m_ShadowMap->BindDsvAndSetNullRenderTarget(m_d3dDeviceContext);
+
+	// 큐브 그림자맵 뎁스 렌더링
+	{
+		m_d3dDeviceContext->IASetInputLayout(m_InputLayout.Get());
+		{
+			// 셰이더 설정
+			m_d3dDeviceContext->VSSetShader(m_ShadowMapVertexShader.Get(), nullptr, 0);
+			m_d3dDeviceContext->PSSetShader(m_ShadowMapPixelShader.Get(), nullptr, 0);
+			// 상수버퍼 설정
+			m_d3dDeviceContext->VSSetConstantBuffers(0, 1, m_ShadowLightMatrixConstantBuffer.GetAddressOf());
+			m_d3dDeviceContext->VSSetConstantBuffers(1, 1, m_ShadowObjConstantBuffer.GetAddressOf());
+
+			// 인풋 레이아웃
+			m_d3dDeviceContext->IASetInputLayout(m_InputLayout.Get());
+			m_d3dDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		}
+
+		UINT stride = sizeof(MyVertexData);
+		UINT offset = 0;
+		m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_CubeVertexBuffer.GetAddressOf(), &stride, &offset);
+		m_d3dDeviceContext->IASetIndexBuffer(m_CubeIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+
+		// cb 설정 - ShadowLightMatrixConstantBuffer
+		{
+			ShadowLightMatrixConstantBuffer slcb;
+			slcb.LightViewProj= XMMatrixTranspose(m_LightView*m_LightProj);
+			
+			m_d3dDeviceContext->UpdateSubresource(m_ShadowLightMatrixConstantBuffer.Get(), 0, nullptr, &slcb, 0, 0);	
+		}
+
+
+		// cb 설정 - ShadowObjConstantBuffer
+		{
+			ShadowObjConstantBuffer socb;
+			XMMATRIX world = m_World * XMMatrixScaling(15.0f,0.2f,15.0f);
+			world *= XMMatrixTranslation(0.0f,0.0f,0.0f);
+			socb.ObjWorld = XMMatrixTranspose(world);
+			
+			m_d3dDeviceContext->UpdateSubresource(m_ShadowObjConstantBuffer.Get(), 0, nullptr, &socb, 0, 0);	
+		}
+
+		// 렌더링
+		{
+			D3D11_BUFFER_DESC indexBufferDesc;
+			m_CubeIndexBuffer->GetDesc(&indexBufferDesc);
+			UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
+			m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
+		}
+
+		// cb 설정 - ShadowObjConstantBuffer
+		{
+			ShadowObjConstantBuffer socb;
+			XMMATRIX world = m_World * XMMatrixScaling(1.0f,1.0f,1.0f) ;
+			world *= XMMatrixRotationQuaternion(m_ModelQuat);
+			world *= XMMatrixTranslation(m_ModelPosition.x,m_ModelPosition.y,m_ModelPosition.z);
+			socb.ObjWorld = XMMatrixTranspose(world);
+
+			m_d3dDeviceContext->UpdateSubresource(m_ShadowObjConstantBuffer.Get(), 0, nullptr, &socb, 0, 0);	
+		}
+
+		// 렌더링
+		{
+			m_d3dDeviceContext->PSSetShaderResources(0,1,m_CubeWaterSRV.GetAddressOf());
+
+			D3D11_BUFFER_DESC indexBufferDesc;
+			m_CubeIndexBuffer->GetDesc(&indexBufferDesc);
+			UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
+			m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
+		}
+	}
 }
 
 void ShadowApp::DrawImGui()
@@ -441,8 +544,6 @@ void ShadowApp::DrawImGui()
 		}
 
 	}
-
-
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
@@ -455,7 +556,7 @@ void ShadowApp::DrawCube()
 	UINT offset = 0;
 	m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_CubeVertexBuffer.GetAddressOf(), &stride, &offset);
 	m_d3dDeviceContext->IASetIndexBuffer(m_CubeIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-	// Water 드로우
+	// cb 설정
 	{
 		ObjConstantBuffer ocb;
 		XMMATRIX world = m_World * XMMatrixScaling(15.0f,0.2f,15.0f);
@@ -467,6 +568,30 @@ void ShadowApp::DrawCube()
 		m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);	
 	}
 
+	// 렌더링
+	{
+		m_d3dDeviceContext->PSSetShaderResources(0,1,m_CubeWaterSRV.GetAddressOf());
+
+		D3D11_BUFFER_DESC indexBufferDesc;
+		m_CubeIndexBuffer->GetDesc(&indexBufferDesc);
+		UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
+		m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
+	}
+
+	// cb 설정
+	{
+		ObjConstantBuffer ocb;
+		XMMATRIX world = m_World * XMMatrixScaling(1.0f,1.0f,1.0f) ;
+		world *= XMMatrixRotationQuaternion(m_ModelQuat);
+		world *= XMMatrixTranslation(m_ModelPosition.x,m_ModelPosition.y,m_ModelPosition.z);
+		ocb.World = XMMatrixTranspose(world);
+		// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
+		ocb.InvTransposeMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, world));
+		ocb.ObjectMaterial = m_ModelMaterial;
+		m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);	
+	}
+
+	// 렌더링
 	{
 		m_d3dDeviceContext->PSSetShaderResources(0,1,m_CubeWaterSRV.GetAddressOf());
 
@@ -482,6 +607,9 @@ void ShadowApp::DrawCube()
 
 void ShadowApp::DrawScene()
 {
+	DrawShadowMap();
+
+	m_d3dDeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), m_DepthStencilView.Get());
 	m_d3dDeviceContext->RSSetViewports(1, &m_ScreenViewport);
 
 	const float clearColor[] = {0.2f, 0.2f, 0.2f,1.0f};
@@ -546,22 +674,23 @@ void ShadowApp::DrawScene()
 		m_d3dDeviceContext->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
 
 		// 버텍스 버퍼에 맞춰 오브젝트 드로우
-		for(int vertexCount = 0; vertexCount < m_ModelVertexBuffer.size(); ++vertexCount)
-		{
-			// SRV 설정(텍스쳐)
-			{
-				m_d3dDeviceContext->PSSetShaderResources(0,1, m_ModelShaderResourceView[vertexCount].GetAddressOf());	
-			}
-			UINT stride = sizeof(MyVertexData);
-			UINT offset = 0;
-			m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_ModelVertexBuffer[vertexCount].GetAddressOf(), &stride, &offset);
-			m_d3dDeviceContext->IASetIndexBuffer(m_ModelIndexBuffer[vertexCount].Get(), DXGI_FORMAT_R32_UINT, 0);
-		
-			D3D11_BUFFER_DESC indexBufferDesc;
-			m_ModelIndexBuffer[vertexCount]->GetDesc(&indexBufferDesc);
-			UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
-			m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
-		}
+		// 01.29 그림자 매핑시 큐브만으로 기능을 테스트 하기위해 임시 제거
+		//for(int vertexCount = 0; vertexCount < m_ModelVertexBuffer.size(); ++vertexCount)
+		//{
+		//	// SRV 설정(텍스쳐)
+		//	{
+		//		m_d3dDeviceContext->PSSetShaderResources(0,1, m_ModelShaderResourceView[vertexCount].GetAddressOf());	
+		//	}
+		//	UINT stride = sizeof(MyVertexData);
+		//	UINT offset = 0;
+		//	m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_ModelVertexBuffer[vertexCount].GetAddressOf(), &stride, &offset);
+		//	m_d3dDeviceContext->IASetIndexBuffer(m_ModelIndexBuffer[vertexCount].Get(), DXGI_FORMAT_R32_UINT, 0);
+		//
+		//	D3D11_BUFFER_DESC indexBufferDesc;
+		//	m_ModelIndexBuffer[vertexCount]->GetDesc(&indexBufferDesc);
+		//	UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
+		//	m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
+		//}
 
 		// 테스트용 스피어 드로우
 		// Obj 상수 버퍼 설정
@@ -595,8 +724,8 @@ void ShadowApp::DrawScene()
 		DebuggingSRV::DrawDebuggingTexture(
 				m_d3dDeviceContext,
 				m_ClientWidth - 500.0f, m_ClientHeight - 500.0f,
-				500.0f, 500.0f,
-				m_CubeWaterSRV
+				450.0f, 450.0f,
+				m_ShadowMap->GetShaderResourceViewComPtr()
 				);
 #endif
 
@@ -663,6 +792,12 @@ void ShadowApp::BuildShader()
 
 	bufferDesc.ByteWidth = sizeof(LightFrameConstantBuffer);
 	HR(m_d3dDevice->CreateBuffer(&bufferDesc, nullptr, m_LightConstantBuffer.GetAddressOf()))
+
+	bufferDesc.ByteWidth = sizeof(ShadowLightMatrixConstantBuffer);
+	HR(m_d3dDevice->CreateBuffer(&bufferDesc, nullptr, m_ShadowLightMatrixConstantBuffer.GetAddressOf()))
+
+	bufferDesc.ByteWidth = sizeof(ShadowObjConstantBuffer);
+	HR(m_d3dDevice->CreateBuffer(&bufferDesc, nullptr, m_ShadowObjConstantBuffer.GetAddressOf()))
 }
 
 
@@ -675,22 +810,25 @@ void ShadowApp::ChangeModelTexture(const int bodyIndex, const ComPtr<ID3D11Shade
 
 void ShadowApp::BuildShadowTransform()
 {
-	float sceneRadius = 1000.0f;
+	float sceneRadius = 10.0f;
 	// Light View Matrix
 	XMVECTOR lightDir = XMLoadFloat3(&m_DirectionalLight.Direction);
 	XMVECTOR lightPos = -2.0f* sceneRadius * lightDir ;
 	XMVECTOR targetPos = XMVectorSet(0.0f,0.0f,0.0f,0.0f);
-	XMVECTOR up = XMVectorSet(0.0f,1.0f,0.0f,0.0f);
-	XMMATRIX view = XMMatrixLookAtLH(lightPos, targetPos,up);
 
+	// 업벡터를 구하는 연산을 진행
+	XMVECTOR up = ComputeUpVector(lightPos,targetPos);
+	m_LightView = XMMatrixLookAtLH(lightPos, targetPos,up);
+	
+	
 	// Light Proj
 	float left = -sceneRadius;
 	float right = sceneRadius;
 	float bottom = -sceneRadius;
 	float top = sceneRadius;
-	float nearZ = -sceneRadius;
-	float farZ = sceneRadius;
-	XMMATRIX proj = XMMatrixOrthographicOffCenterLH(left,right,bottom,top,nearZ,farZ);
+	float nearZ = 0.01f;
+	float farZ = sceneRadius*2;
+	m_LightProj = XMMatrixOrthographicOffCenterLH(left,right,bottom,top,nearZ,farZ);
 
 	// NDC 공간으로 변환 ([-1,+1]^2 의 공간을 텍스쳐 공간인 [0,1]^2 로)
 	static XMMATRIX texMat
@@ -700,9 +838,8 @@ void ShadowApp::BuildShadowTransform()
 		0.0f,0.0f,1.0f,0.0f,
 		0.5f,0.5f,0.0f,1.0f
 	};
-	XMMATRIX shadowMatrix = view*proj*texMat;
+	//XMMATRIX shadowMatrix = view*proj*texMat;
 
-	XMStoreFloat4x4(&m_LightView, view);
-	XMStoreFloat4x4(&m_LightProj, proj);
-	XMStoreFloat4x4(&m_ShadowTransform, shadowMatrix);
+	
+	//XMStoreFloat4x4(&m_ShadowTransform, shadowMatrix);
 }

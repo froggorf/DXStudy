@@ -11,8 +11,9 @@ public:
 
 	ID3D11ShaderResourceView*	GetShaderResourceView() const {return m_DepthMapSRV.Get();}
 	ID3D11DepthStencilView*		GetDepthStencilView() const {return m_DepthMapDSV.Get();}
+	const Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>&  GetShaderResourceViewComPtr() const {return m_DepthMapSRV; }
 
-	void BindDsvAndSetNullRenderTarget(Microsoft::WRL::ComPtr<ID3D11DeviceContext> deviceContext);
+	void BindDsvAndSetNullRenderTarget(const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& deviceContext);
 
 private:
 	UINT m_Width;

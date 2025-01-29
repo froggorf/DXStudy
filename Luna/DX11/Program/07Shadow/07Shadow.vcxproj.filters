@@ -154,5 +154,8 @@
     <FxCompile Include="Shader\DebuggingTexture.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="Shader\BuildShadowMap.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

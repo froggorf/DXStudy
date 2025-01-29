@@ -85,3 +85,28 @@ struct MyVertexData
 	DirectX::XMFLOAT3 Normal;
     DirectX::XMFLOAT2 TexCoords;
 };
+
+
+inline DirectX::XMVECTOR ComputeUpVector(const DirectX::XMVECTOR& cameraPos, const DirectX::XMVECTOR& targetPos)
+{
+    // 바라보는 방향(Look Direction)
+    DirectX::XMVECTOR lookDir = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(targetPos, cameraPos));
+
+    // 월드 공간의 참조 Up 벡터
+    DirectX::XMVECTOR worldUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+    float dotProduct = fabs(DirectX::XMVectorGetX(DirectX::XMVector3Dot(lookDir, worldUp)));
+
+    if (dotProduct > 0.999f) // 평행 또는 거의 평행
+    {
+	    return DirectX::XMVectorSet(0.0f, 0.0f,-1.0f,0.0f);
+    }
+
+    // 오른쪽 벡터(Right Vector)
+    DirectX::XMVECTOR right = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(worldUp, lookDir));
+
+    // Up 벡터 계산
+    DirectX::XMVECTOR up = DirectX::XMVector3Cross(lookDir, right);
+
+    return up;
+}
