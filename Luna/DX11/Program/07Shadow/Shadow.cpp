@@ -176,15 +176,15 @@ ShadowApp::ShadowApp(HINSTANCE hInstance)
 	m_CameraViewVector = XMFLOAT3(0.0f,0.0f,1.0f);
 	
 	// Directional light.
-	m_DirectionalLight.Ambient  = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
-	m_DirectionalLight.Diffuse  = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	m_DirectionalLight.Ambient  = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
+	m_DirectionalLight.Diffuse  = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
 	m_DirectionalLight.Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	m_DirectionalLight.Direction = XMFLOAT3(0.0f,-1.0f,0.0f);
 
 	// Point Light
-	m_PointLight.Ambient  = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-	m_PointLight.Diffuse  = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-	m_PointLight.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	m_PointLight.Ambient  = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	m_PointLight.Diffuse  = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	m_PointLight.Specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	m_PointLight.Att      = XMFLOAT3(0.0f, 0.1f, 0.0f);
 	//m_PointLight.Position = XMFLOAT3(796.5f, 700.0f, 0.7549f);
 	m_PointLight.Position = XMFLOAT3(0.0f,-2.5f,0.0f);
