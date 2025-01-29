@@ -11,6 +11,7 @@
 #include "GameTimer.h"
 #include "LightHelper.h"
 
+#include "DebuggingSRV.h"
 
 using namespace Microsoft::WRL;
 class D3DApp

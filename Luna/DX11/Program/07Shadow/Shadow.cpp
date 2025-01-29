@@ -52,12 +52,10 @@ public:
 	// Init
 	bool Init() override;
 	void InitSamplerState();
-	void InitForDebuggingTexture();
 	void OnResize() override;
 	void UpdateScene(float dt) override;
 	void DrawImGui() override;
 	void DrawCube();
-	void DrawDebuggingTexture();
 	void DrawScene() override;
 
 	// Shadow Map
@@ -110,14 +108,6 @@ private:
 	XMFLOAT4X4										m_ShadowTransform;
 	ComPtr<ID3D11VertexShader>						m_ShadowMapVertexShader;
 	ComPtr<ID3D11PixelShader>						m_ShadowMapPixelShader;
-
-	// 그림자맵 디버깅을 위한 변수
-	D3D11_VIEWPORT									m_DebuggingTextureScreenViewPort;
-	ComPtr<ID3D11VertexShader>						m_DebuggingTextureVertexShader;
-	ComPtr<ID3D11PixelShader>						m_DebuggingTexturePixelShader;
-	ComPtr<ID3D11InputLayout>						m_DebuggingTextureInputLayout;
-	ComPtr<ID3D11Buffer>							m_DebuggingTextureVertexBuffer;
-	ComPtr<ID3D11Buffer>							m_DebuggingTextureIndexBuffer;
 	
 
 	// 카메라 정보
@@ -226,8 +216,6 @@ bool ShadowApp::Init()
 
 	BuildShader();
 
-	InitForDebuggingTexture();
-
 	// 그림자 맵
 	m_ShadowMap = std::make_unique<ShadowMap>(m_d3dDevice, 2048,2048);
 
@@ -277,7 +265,7 @@ void ShadowApp::InitSamplerState()
     sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
     sampDesc.MinLOD = 0;
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-    HR(m_d3dDevice->CreateSamplerState(&sampDesc, &m_SamplerState));
+    HR(m_d3dDevice->CreateSamplerState(&sampDesc, m_SamplerState.GetAddressOf()));
 
 	D3D11_BLEND_DESC blendDesc = {};
 	blendDesc.AlphaToCoverageEnable = FALSE; // 알파 커버리지 비활성화
@@ -299,77 +287,6 @@ void ShadowApp::InitSamplerState()
 	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f }; // 블렌드 팩터 (기본값)
 	UINT sampleMask = 0xFFFFFFFF; // 샘플 마스크 (기본값)
 	m_d3dDeviceContext->OMSetBlendState(blendState, blendFactor, sampleMask);
-}
-
-
-void ShadowApp::InitForDebuggingTexture()
-{
-	// Screen View Port 설정
-	{
-		m_DebuggingTextureScreenViewPort.Width = 500;
-		m_DebuggingTextureScreenViewPort.Height = 500;
-		m_DebuggingTextureScreenViewPort.TopLeftX = static_cast<float>(m_ClientWidth)-500.0f;
-		m_DebuggingTextureScreenViewPort.TopLeftY = static_cast<float>(m_ClientHeight)-500.0f;
-		m_DebuggingTextureScreenViewPort.MinDepth = 0.0f;
-		m_DebuggingTextureScreenViewPort.MaxDepth = 1.0f;	
-	}
-
-	// VS, PS 컴파일
-	{
-		ComPtr<ID3DBlob> pVSBlob = nullptr;
-		HR(CompileShaderFromFile(L"Shader/DebuggingTexture.hlsl", "VS", "vs_4_0", pVSBlob.ReleaseAndGetAddressOf()));
-		HR(m_d3dDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, m_DebuggingTextureVertexShader.GetAddressOf()));
-
-		D3D11_INPUT_ELEMENT_DESC inputLayout[] =
-		{
-			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA,0},
-			{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,0,24,D3D11_INPUT_PER_VERTEX_DATA, 0}
-
-		};
-		UINT numElements = ARRAYSIZE(inputLayout);
-
-		HR(m_d3dDevice->CreateInputLayout(inputLayout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), m_DebuggingTextureInputLayout.GetAddressOf()));
-
-		ComPtr<ID3DBlob> pPSBlob = nullptr;
-		HR(CompileShaderFromFile(L"Shader/DebuggingTexture.hlsl", "PS", "ps_4_0", pPSBlob.GetAddressOf()));
-
-		HR(m_d3dDevice->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, m_DebuggingTexturePixelShader.GetAddressOf()));
-	}
-
-	// VertexBuffer, IndexBuffer
-	{
-		MyVertexData vertices[] =
-		{
-			{{-1.0f,1.0f,0.0f}, {0.0f,0.0f,0.0f}, {0.0f,0.0f}},
-			{{1.0f,1.0f,0.0f}, {0.0f,0.0f,0.0f}, {1.0f,0.0f}},
-			{{-1.0f,-1.0f,0.0f}, {0.0f,0.0f,0.0f}, {0.0f,1.0f}},
-			{{1.0f,-1.0f,0.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f}},
-		};
-
-		UINT indices[] =
-		{
-			0,1,2,
-			2,1,3
-		};
-
-		// VertexBuffer
-		D3D11_BUFFER_DESC vbDesc{};
-		vbDesc.Usage = D3D11_USAGE_DEFAULT;
-		vbDesc.ByteWidth = sizeof(vertices);
-		vbDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		D3D11_SUBRESOURCE_DATA initData{};
-		initData.pSysMem = vertices;
-		HR(m_d3dDevice->CreateBuffer(&vbDesc, &initData, m_DebuggingTextureVertexBuffer.GetAddressOf()));
-
-		// IndexBuffer
-		D3D11_BUFFER_DESC ibDesc{};
-		ibDesc.Usage = D3D11_USAGE_DEFAULT;
-		ibDesc.ByteWidth = sizeof(indices);
-		ibDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-		initData.pSysMem = indices;
-		HR(m_d3dDevice->CreateBuffer(&ibDesc, &initData, m_DebuggingTextureIndexBuffer.GetAddressOf()));
-	}
 }
 
 void ShadowApp::OnResize()
@@ -562,29 +479,6 @@ void ShadowApp::DrawCube()
 }
 
 
-void ShadowApp::DrawDebuggingTexture()
-{
-	m_d3dDeviceContext->RSSetViewports(1, &m_DebuggingTextureScreenViewPort);
-	const float clearColor[] = {0.2f, 0.2f, 0.2f,1.0f};
-	m_d3dDeviceContext->IASetInputLayout(m_DebuggingTextureInputLayout.Get());
-
-	// 셰이더 설정
-	m_d3dDeviceContext->VSSetShader(m_DebuggingTextureVertexShader.Get(), nullptr, 0);
-	m_d3dDeviceContext->PSSetShader(m_DebuggingTexturePixelShader.Get(), nullptr, 0);
-
-	// 디버깅 텍스쳐 설정
-	m_d3dDeviceContext->PSSetShaderResources(0,1,m_CubeWaterSRV.GetAddressOf());
-	m_d3dDeviceContext->PSSetSamplers(0,1,m_SamplerState.GetAddressOf());
-
-	UINT stride = sizeof(MyVertexData);
-	UINT offset = 0;
-	m_d3dDeviceContext->IASetVertexBuffers(0,1, m_DebuggingTextureVertexBuffer.GetAddressOf(), &stride, &offset);
-	m_d3dDeviceContext->IASetIndexBuffer(m_DebuggingTextureIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-	m_d3dDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	m_d3dDeviceContext->DrawIndexed(6,0,0);
-}
-
 
 void ShadowApp::DrawScene()
 {
@@ -593,7 +487,6 @@ void ShadowApp::DrawScene()
 	const float clearColor[] = {0.2f, 0.2f, 0.2f,1.0f};
 	m_d3dDeviceContext->ClearRenderTargetView(m_RenderTargetView.Get(), clearColor);
 	m_d3dDeviceContext->ClearDepthStencilView(m_DepthStencilView.Get(), D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
-
 
 	m_d3dDeviceContext->IASetInputLayout(m_InputLayout.Get());
 	{
@@ -697,7 +590,16 @@ void ShadowApp::DrawScene()
 			m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
 		}
 		DrawCube();
-		DrawDebuggingTexture();
+
+#if defined(DEBUG) || defined(_DEBUG)
+		DebuggingSRV::DrawDebuggingTexture(
+				m_d3dDeviceContext,
+				m_ClientWidth - 500.0f, m_ClientHeight - 500.0f,
+				500.0f, 500.0f,
+				m_CubeWaterSRV
+				);
+#endif
+
 		DrawImGui();
 	}
 

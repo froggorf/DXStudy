@@ -73,6 +73,9 @@
     <ClCompile Include="..\..\Core\ShadowMap.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Core\DebuggingSRV.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\ThirdParty\ImGui\imconfig.h">
@@ -133,6 +136,9 @@
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Core\ShadowMap.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\DebuggingSRV.h">
       <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
