@@ -66,6 +66,12 @@
     <ClInclude Include="..\..\ThirdParty\ImGui\imstb_textedit.h" />
     <ClInclude Include="..\..\ThirdParty\ImGui\imstb_truetype.h" />
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shader\DebuggingTexture.hlsl">
+      <FileType>Document</FileType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS</EntryPointName>
+    </FxCompile>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

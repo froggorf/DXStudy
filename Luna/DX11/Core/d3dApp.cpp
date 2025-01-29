@@ -210,6 +210,7 @@ void D3DApp::OnResize()
 	m_ScreenViewport.MaxDepth	= 1.0f;
 
 	m_d3dDeviceContext->RSSetViewports(1, &m_ScreenViewport);
+	
 }
 
 void D3DApp::DrawImGui()
