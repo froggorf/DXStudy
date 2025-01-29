@@ -1,3 +1,5 @@
+#pragma target 4.0
+#pragma enable_d3d11_debug_symbols
 
 Texture2D gTexture : register( t0 );
 SamplerState samLinear : register( s0 );

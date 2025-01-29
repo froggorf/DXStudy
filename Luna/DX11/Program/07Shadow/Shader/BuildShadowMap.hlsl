@@ -1,3 +1,6 @@
+#pragma target 4.0
+#pragma enable_d3d11_debug_symbols
+
 cbuffer cbLightMatrix : register(b0)
 {
     matrix LightViewProj;

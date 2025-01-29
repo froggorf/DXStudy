@@ -24,6 +24,9 @@ struct FrameConstantBuffer
 {
 	XMMATRIX View;
 	XMMATRIX Projection;
+
+	XMMATRIX LightView;
+	XMMATRIX LightProj;
 };
 
 struct ObjConstantBuffer
@@ -120,6 +123,8 @@ private:
 	ComPtr<ID3D11PixelShader>						m_ShadowMapPixelShader;
 	ComPtr<ID3D11Buffer>							m_ShadowObjConstantBuffer;
 	ComPtr<ID3D11Buffer>							m_ShadowLightMatrixConstantBuffer;
+	ComPtr<ID3D11SamplerState>						m_ShadowSamplerState;
+	float											m_ShadowBias;
 
 	// 카메라 정보
 	XMFLOAT3										m_CameraPosition;
@@ -194,7 +199,9 @@ ShadowApp::ShadowApp(HINSTANCE hInstance)
 	m_DirectionalLight.Ambient  = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
 	m_DirectionalLight.Diffuse  = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
 	m_DirectionalLight.Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-	m_DirectionalLight.Direction = XMFLOAT3(0.0f,-1.0f,0.0f);
+	XMStoreFloat3(&m_DirectionalLight.Direction, XMVector3Normalize(XMVectorSet(0.57735f, -0.57735f, 0.57735f,0.0f)));
+	
+	//m_DirectionalLight.Direction =  ;
 
 	// Point Light
 	m_PointLight.Ambient  = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -269,6 +276,18 @@ void ShadowApp::InitSamplerState()
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
     HR(m_d3dDevice->CreateSamplerState(&sampDesc, m_SamplerState.GetAddressOf()));
 
+	D3D11_SAMPLER_DESC samplerDesc = {};
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.BorderColor[0] = 0.0f; // Border 색상(흰색)
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	HR(m_d3dDevice->CreateSamplerState(&samplerDesc, m_ShadowSamplerState.GetAddressOf()))
+
+
 	D3D11_BLEND_DESC blendDesc = {};
 	blendDesc.AlphaToCoverageEnable = FALSE; // 알파 커버리지 비활성화
 	blendDesc.IndependentBlendEnable = FALSE; // 독립 블렌딩 비활성화
@@ -294,6 +313,13 @@ void ShadowApp::InitSamplerState()
 
 void ShadowApp::InitForShadowMap()
 {
+
+#if defined(DEBUG) || defined(_DEBUG)
+	DebuggingSRV::InitializeDebuggingSRV(m_d3dDevice);
+#endif
+
+	m_ShadowBias = 0.001f;
+
 	m_ShadowMap = std::make_unique<ShadowMap>(m_d3dDevice, 2048,2048);
 
 	// 그림자맵 렌더링을 위한 VS/PS 추가
@@ -542,7 +568,12 @@ void ShadowApp::DrawImGui()
 			XMQuaternionNormalize(m_ModelQuat);
 			
 		}
-
+		static float inputvalue = m_ShadowBias;
+		if(ImGui::InputFloat("shadow bias value", &inputvalue))
+		{
+			m_ShadowBias = inputvalue;
+			std::cout << "변경 후 : " << m_ShadowBias << std::endl;
+		}
 	}
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -551,7 +582,11 @@ void ShadowApp::DrawImGui()
 void ShadowApp::DrawCube()
 {
 	// 테스트용 Cube Draw
-	
+
+	// 그림자맵 SRV, Sampler 설정
+	m_d3dDeviceContext->PSSetShaderResources(1,1, m_ShadowMap->GetShaderResourceViewComPtr().GetAddressOf());
+	m_d3dDeviceContext->PSSetSamplers(1,1,m_ShadowSamplerState.GetAddressOf());
+
 	UINT stride = sizeof(MyVertexData);
 	UINT offset = 0;
 	m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_CubeVertexBuffer.GetAddressOf(), &stride, &offset);
@@ -574,8 +609,9 @@ void ShadowApp::DrawCube()
 
 		D3D11_BUFFER_DESC indexBufferDesc;
 		m_CubeIndexBuffer->GetDesc(&indexBufferDesc);
-		UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
-		m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
+		int indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
+		m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);	
+		
 	}
 
 	// cb 설정
@@ -597,8 +633,7 @@ void ShadowApp::DrawCube()
 
 		D3D11_BUFFER_DESC indexBufferDesc;
 		m_CubeIndexBuffer->GetDesc(&indexBufferDesc);
-		UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
-		m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
+		m_d3dDeviceContext->DrawIndexed(indexBufferDesc.ByteWidth / sizeof(UINT), 0, 0);
 	}
 
 }
@@ -623,9 +658,11 @@ void ShadowApp::DrawScene()
 		m_d3dDeviceContext->PSSetShader(m_PixelShader.Get(), nullptr, 0);
 		// 상수버퍼 설정
 		m_d3dDeviceContext->VSSetConstantBuffers(0, 1, m_FrameConstantBuffer.GetAddressOf());
+		m_d3dDeviceContext->PSSetConstantBuffers(0,1,m_FrameConstantBuffer.GetAddressOf());
 		m_d3dDeviceContext->VSSetConstantBuffers(1, 1, m_ObjConstantBuffer.GetAddressOf());
 		m_d3dDeviceContext->PSSetConstantBuffers(1,1, m_ObjConstantBuffer.GetAddressOf());
 		m_d3dDeviceContext->PSSetConstantBuffers(2,1, m_LightConstantBuffer.GetAddressOf());
+
 
 		// 인풋 레이아웃
 		m_d3dDeviceContext->IASetInputLayout(m_InputLayout.Get());
@@ -638,7 +675,10 @@ void ShadowApp::DrawScene()
 				FrameConstantBuffer fcb;
 				fcb.View = XMMatrixTranspose(m_View);
 				fcb.Projection = XMMatrixTranspose(m_Proj);
+				fcb.LightView = XMMatrixTranspose(m_LightView);
+				fcb.LightProj = XMMatrixTranspose(m_LightProj);
 				m_d3dDeviceContext->UpdateSubresource(m_FrameConstantBuffer.Get(), 0, nullptr, &fcb, 0, 0);
+
 			}
 
 			// 라이팅 관련
@@ -692,32 +732,32 @@ void ShadowApp::DrawScene()
 		//	m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
 		//}
 
-		// 테스트용 스피어 드로우
-		// Obj 상수 버퍼 설정
-		{
-			ObjConstantBuffer ocb;
-			XMMATRIX world = m_World * XMMatrixScaling(0.15f,0.15f,0.15f);
-			//world *= XMMatrixTranslation(0.0f, -2.5f, 0.0f);
-			world *= XMMatrixTranslation(m_PointLight.Position.x,m_PointLight.Position.y,m_PointLight.Position.z);
-			ocb.World = XMMatrixTranspose(world);
-			// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
-			ocb.InvTransposeMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, world));
-			ocb.ObjectMaterial = m_ModelMaterial;
-			m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);	
-		}
+		//// 테스트용 스피어 드로우
+		//// Obj 상수 버퍼 설정
+		//{
+		//	ObjConstantBuffer ocb;
+		//	XMMATRIX world = m_World * XMMatrixScaling(0.15f,0.15f,0.15f);
+		//	//world *= XMMatrixTranslation(0.0f, -2.5f, 0.0f);
+		//	world *= XMMatrixTranslation(m_PointLight.Position.x,m_PointLight.Position.y,m_PointLight.Position.z);
+		//	ocb.World = XMMatrixTranspose(world);
+		//	// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
+		//	ocb.InvTransposeMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, world));
+		//	ocb.ObjectMaterial = m_ModelMaterial;
+		//	m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);	
+		//}
 
-		{
-			m_d3dDeviceContext->PSSetShaderResources(0,1,m_ModelShaderResourceView[0].GetAddressOf());
-			UINT stride = sizeof(MyVertexData);
-			UINT offset = 0;
-			m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_SphereVertexBuffer[0].GetAddressOf(), &stride, &offset);
-			m_d3dDeviceContext->IASetIndexBuffer(m_SphereIndexBuffer[0].Get(), DXGI_FORMAT_R32_UINT, 0);
-		
-			D3D11_BUFFER_DESC indexBufferDesc;
-			m_SphereIndexBuffer[0]->GetDesc(&indexBufferDesc);
-			UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
-			m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
-		}
+		//{
+		//	m_d3dDeviceContext->PSSetShaderResources(0,1,m_ModelShaderResourceView[0].GetAddressOf());
+		//	UINT stride = sizeof(MyVertexData);
+		//	UINT offset = 0;
+		//	m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_SphereVertexBuffer[0].GetAddressOf(), &stride, &offset);
+		//	m_d3dDeviceContext->IASetIndexBuffer(m_SphereIndexBuffer[0].Get(), DXGI_FORMAT_R32_UINT, 0);
+		//
+		//	D3D11_BUFFER_DESC indexBufferDesc;
+		//	m_SphereIndexBuffer[0]->GetDesc(&indexBufferDesc);
+		//	UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
+		//	m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
+		//}
 		DrawCube();
 
 #if defined(DEBUG) || defined(_DEBUG)
@@ -817,7 +857,7 @@ void ShadowApp::BuildShadowTransform()
 	XMVECTOR targetPos = XMVectorSet(0.0f,0.0f,0.0f,0.0f);
 
 	// 업벡터를 구하는 연산을 진행
-	XMVECTOR up = ComputeUpVector(lightPos,targetPos);
+	XMVECTOR up = XMVectorSet(0.0f,1.0f,0.0f,0.0f);//ComputeUpVector(lightPos,targetPos);
 	m_LightView = XMMatrixLookAtLH(lightPos, targetPos,up);
 	
 	
@@ -827,19 +867,6 @@ void ShadowApp::BuildShadowTransform()
 	float bottom = -sceneRadius;
 	float top = sceneRadius;
 	float nearZ = 0.01f;
-	float farZ = sceneRadius*2;
-	m_LightProj = XMMatrixOrthographicOffCenterLH(left,right,bottom,top,nearZ,farZ);
-
-	// NDC 공간으로 변환 ([-1,+1]^2 의 공간을 텍스쳐 공간인 [0,1]^2 로)
-	static XMMATRIX texMat
-	{
-		0.5f,0.0f,0.0f,0.0f,
-		0.0f,-0.5f,0.0f,0.0f,
-		0.0f,0.0f,1.0f,0.0f,
-		0.5f,0.5f,0.0f,1.0f
-	};
-	//XMMATRIX shadowMatrix = view*proj*texMat;
-
-	
-	//XMStoreFloat4x4(&m_ShadowTransform, shadowMatrix);
+	float farZ = sceneRadius*10;
+	m_LightProj = XMMatrixOrthographicLH(sceneRadius*2, sceneRadius*2, nearZ,farZ);
 }

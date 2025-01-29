@@ -3,15 +3,18 @@
 
 #include "LightHelper.hlsl"
 
-
-
 Texture2D txDiffuse : register( t0 );
 SamplerState samLinear : register( s0 );
+
+Texture2D gShadowMap : register(t1);
+SamplerState gShadowSampler : register(s1);
 
 cbuffer cbPerFrame : register(b0)
 {
 	matrix View;
 	matrix Projection;
+    matrix LightView;
+    matrix LightProj;
 }
 
 cbuffer cbPerObject : register(b1)
@@ -34,6 +37,7 @@ struct VS_OUTPUT
 {
     float4 PosScreen : SV_POSITION;
     float3 PosWorld : POSITION;
+    float4 PosLightSpace : POSITION1;
     float3 NormalW : TEXCOORD1;
     float2 Tex : TEXCOORD;
     float Depth : TEXCOORD2;
@@ -46,7 +50,7 @@ VS_OUTPUT VS( float4 Pos : POSITION, float3 Normal : NORMAL, float2 TexCoord : T
 {
     VS_OUTPUT output = (VS_OUTPUT)0;
     output.PosScreen = mul( Pos, World );
-    // 픽셀 셰이더 내에서 사용하기 위해
+    // 픽셀 셰이더 내에서 라이팅을 위해 
     output.PosWorld = output.PosScreen.xyz;
 
     output.PosScreen = mul( output.PosScreen, View );
@@ -59,6 +63,11 @@ VS_OUTPUT VS( float4 Pos : POSITION, float3 Normal : NORMAL, float2 TexCoord : T
 
     output.Tex = TexCoord;
 
+
+    // light source에서 버텍스로의 position
+    output.PosLightSpace = mul(Pos, World);
+	output.PosLightSpace = mul(output.PosLightSpace, LightView);
+	output.PosLightSpace = mul(output.PosLightSpace, LightProj);
     
     
 		
@@ -70,6 +79,8 @@ VS_OUTPUT VS( float4 Pos : POSITION, float3 Normal : NORMAL, float2 TexCoord : T
 //--------------------------------------------------------------------------------------
 float4 PS( VS_OUTPUT input ) : SV_Target
 {
+	
+
     float4 color = txDiffuse.Sample( samLinear, input.Tex );
 
     // 조명 계산시 사용될 변수 초기화
@@ -89,7 +100,28 @@ float4 PS( VS_OUTPUT input ) : SV_Target
 	diffuse += D;
 	spec += S;
 
-    float4 finalColor = color * (ambient + diffuse) + spec;
+    // 조명 적용
+    color = color * (ambient + diffuse) + spec;
 
-    return finalColor;
+
+    // 그림자 매핑
+    float3 shadowCoord = input.PosLightSpace.xyz/ input.PosLightSpace.w;
+    // [-1~1] -> [0~1] 텍스쳐 NDC
+    shadowCoord.x = shadowCoord / 2 + 0.5f;
+	shadowCoord.y = -shadowCoord.y / 2 + 0.5f;
+    if((saturate(shadowCoord.x) == shadowCoord.x) && (saturate(shadowCoord.y) == shadowCoord.y))
+    {
+		float depthValue = gShadowMap.Sample(gShadowSampler, shadowCoord.xy).r;
+
+        float bias = 0.0001f;
+        float lightDepthValue = shadowCoord.z - bias;
+
+        if(lightDepthValue > depthValue)
+        {
+			float shadowfactor = 0.5f;
+			color = color * shadowfactor;
+        }
+    }
+
+    return color;
 }

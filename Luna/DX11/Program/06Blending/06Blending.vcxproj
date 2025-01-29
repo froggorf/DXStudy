@@ -131,6 +131,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\Core\AssetManager.cpp" />
     <ClCompile Include="..\..\Core\d3dApp.cpp" />
+    <ClCompile Include="..\..\Core\DebuggingSRV.cpp" />
     <ClCompile Include="..\..\Core\GameTimer.cpp" />
     <ClCompile Include="..\..\ThirdParty\ImGuizmo\GraphEditor.cpp" />
     <ClCompile Include="..\..\ThirdParty\ImGuizmo\ImCurveEdit.cpp" />
@@ -149,6 +150,7 @@
     <ClInclude Include="..\..\Core\AssetManager.h" />
     <ClInclude Include="..\..\Core\d3dApp.h" />
     <ClInclude Include="..\..\Core\d3dUtil.h" />
+    <ClInclude Include="..\..\Core\DebuggingSRV.h" />
     <ClInclude Include="..\..\Core\GameTimer.h" />
     <ClInclude Include="..\..\Core\LightHelper.h" />
     <ClInclude Include="..\..\ThirdParty\ImGuizmo\GraphEditor.h" />

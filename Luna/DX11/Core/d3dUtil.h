@@ -99,7 +99,7 @@ inline DirectX::XMVECTOR ComputeUpVector(const DirectX::XMVECTOR& cameraPos, con
 
     if (dotProduct > 0.999f) // 평행 또는 거의 평행
     {
-	    return DirectX::XMVectorSet(0.0f, 0.0f,-1.0f,0.0f);
+	    return DirectX::XMVectorSet(0.0f, 0.0f,1.0f,0.0f);
     }
 
     // 오른쪽 벡터(Right Vector)

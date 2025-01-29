@@ -479,9 +479,6 @@ bool D3DApp::InitDirect3D()
 	OnResize();
 
 
-#if defined(DEBUG) || defined(_DEBUG)
-	DebuggingSRV::InitializeDebuggingSRV(m_d3dDevice);
-#endif
 
 	return true;
 }
