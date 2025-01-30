@@ -37,11 +37,11 @@ struct ObjConstantBuffer
 	XMMATRIX World;
 };
  
-class ShadowApp : public D3DApp
+class AnimationApp : public D3DApp
 {
 public:
-	ShadowApp(HINSTANCE hInstance);
-	~ShadowApp();
+	AnimationApp(HINSTANCE hInstance);
+	~AnimationApp();
 
 	// Init
 	bool Init() override;
@@ -98,7 +98,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
     freopen_s(&fp, "CONOUT$", "w", stdout);
 #endif
 
-	ShadowApp theApp(hInstance);
+	AnimationApp theApp(hInstance);
 	
 	if( !theApp.Init() )
 		return 0;
@@ -106,7 +106,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 	return theApp.Run();
 }
 
-ShadowApp::ShadowApp(HINSTANCE hInstance)
+AnimationApp::AnimationApp(HINSTANCE hInstance)
 : D3DApp(hInstance) 
 {
 	m_MainWndTitle = L"Draw 3D Mesh";
@@ -119,12 +119,12 @@ ShadowApp::ShadowApp(HINSTANCE hInstance)
 		
 }
 
-ShadowApp::~ShadowApp()
+AnimationApp::~AnimationApp()
 {
 	// ComPtr
 }
 
-bool ShadowApp::Init()
+bool AnimationApp::Init()
 {
 	if(!D3DApp::Init())
 		return false;
@@ -135,7 +135,7 @@ bool ShadowApp::Init()
 	return true;
 }
 
-void ShadowApp::OnResize()
+void AnimationApp::OnResize()
 {
 	D3DApp::OnResize();
 
@@ -143,7 +143,7 @@ void ShadowApp::OnResize()
 	m_Proj = XMMatrixPerspectiveFovLH(0.5*XM_PI, GetWindowAspectRatio(), 1.0f, 1000.0f);
 }
 
-void ShadowApp::UpdateScene(float dt)
+void AnimationApp::UpdateScene(float dt)
 {
 	// Convert Spherical to Cartesian coordinates.
 	float x = m_Radius*sinf(m_Phi)*cosf(m_Theta);
@@ -160,7 +160,7 @@ void ShadowApp::UpdateScene(float dt)
 	
 }
 
-void ShadowApp::DrawImGui()
+void AnimationApp::DrawImGui()
 {
 	// (Your code process and dispatch Win32 messages)
 	// Start the Dear ImGui frame
@@ -179,7 +179,7 @@ void ShadowApp::DrawImGui()
 }
 
 
-void ShadowApp::DrawScene()
+void AnimationApp::DrawScene()
 {
 	const float clearColor[] = {0.2f, 0.2f, 0.2f,1.0f};
 	m_d3dDeviceContext->ClearRenderTargetView(m_RenderTargetView.Get(), clearColor);
@@ -234,7 +234,7 @@ void ShadowApp::DrawScene()
 }
 
 
-void ShadowApp::OnMouseDown(WPARAM btnState, int x, int y)
+void AnimationApp::OnMouseDown(WPARAM btnState, int x, int y)
 {
 	m_LastMousePos.x = x;
 	m_LastMousePos.y = y;
@@ -242,12 +242,12 @@ void ShadowApp::OnMouseDown(WPARAM btnState, int x, int y)
 	SetCapture(m_hMainWnd);
 }
 
-void ShadowApp::OnMouseUp(WPARAM btnState, int x, int y)
+void AnimationApp::OnMouseUp(WPARAM btnState, int x, int y)
 {
 	ReleaseCapture();
 }
 
-void ShadowApp::OnMouseMove(WPARAM btnState, int x, int y)
+void AnimationApp::OnMouseMove(WPARAM btnState, int x, int y)
 {
 	if( (btnState & MK_LBUTTON) != 0 )
 	{
@@ -282,7 +282,7 @@ void ShadowApp::OnMouseMove(WPARAM btnState, int x, int y)
 
 
 
-void ShadowApp::TestLoadModel(const std::string& path)
+void AnimationApp::TestLoadModel(const std::string& path)
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path, 
@@ -337,7 +337,7 @@ void ShadowApp::TestLoadModel(const std::string& path)
 	}
 }
 
-void ShadowApp::ProcessMesh(aiMesh* mesh, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices)
+void AnimationApp::ProcessMesh(aiMesh* mesh, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices)
 {
 	// 1. 버텍스 데이터 추출
     for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
@@ -382,7 +382,7 @@ void ShadowApp::ProcessMesh(aiMesh* mesh, std::vector<Vertex>& vertices, std::ve
     }
 }
 
-void ShadowApp::ProcessScene(const aiScene* scene, std::vector<std::vector<Vertex>>& allVertices,
+void AnimationApp::ProcessScene(const aiScene* scene, std::vector<std::vector<Vertex>>& allVertices,
 	std::vector<std::vector<unsigned int>>& allIndices)
 {
 	for (unsigned int i = 0; i < scene->mNumMeshes; i++) {
@@ -401,7 +401,7 @@ void ShadowApp::ProcessScene(const aiScene* scene, std::vector<std::vector<Verte
     }
 }
 
-void ShadowApp::BuildShader()
+void AnimationApp::BuildShader()
 {
 	ComPtr<ID3DBlob> pVSBlob = nullptr;
 	HR(CompileShaderFromFile(L"Shader/color.fx", "VS", "vs_4_0", pVSBlob.GetAddressOf()));

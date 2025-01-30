@@ -54,11 +54,11 @@ struct ShadowObjConstantBuffer
 	XMMATRIX ObjWorld;
 };
 
-class ShadowApp : public D3DApp
+class AnimationApp : public D3DApp
 {
 public:
-	ShadowApp(HINSTANCE hInstance);
-	~ShadowApp();
+	AnimationApp(HINSTANCE hInstance);
+	~AnimationApp();
 
 
 	// Init
@@ -169,7 +169,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
     freopen_s(&fp, "CONOUT$", "w", stdout);
 #endif
 
-	ShadowApp theApp(hInstance);
+	AnimationApp theApp(hInstance);
 	
 	if( !theApp.Init() )
 		return 0;
@@ -177,7 +177,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 	return theApp.Run();
 }
 
-ShadowApp::ShadowApp(HINSTANCE hInstance)
+AnimationApp::AnimationApp(HINSTANCE hInstance)
 : D3DApp(hInstance) 
 {
 	m_MainWndTitle = L"Directional Light Shadow Mapping";
@@ -220,12 +220,12 @@ ShadowApp::ShadowApp(HINSTANCE hInstance)
 
 }
 
-ShadowApp::~ShadowApp()
+AnimationApp::~AnimationApp()
 {
 	// ComPtr
 }
 
-bool ShadowApp::Init()
+bool AnimationApp::Init()
 {
 	if(!D3DApp::Init())
 		return false;
@@ -242,7 +242,7 @@ bool ShadowApp::Init()
 	return true;
 }
 
-void ShadowApp::LoadModels()
+void AnimationApp::LoadModels()
 {
 	AssetManager::LoadModelData("Model/Racco.fbx", m_d3dDevice, m_ModelVertexBuffer, m_ModelIndexBuffer);
 
@@ -263,7 +263,7 @@ void ShadowApp::LoadModels()
 }
 
 
-void ShadowApp::InitSamplerState()
+void AnimationApp::InitSamplerState()
 {
 	D3D11_SAMPLER_DESC sampDesc;
     ZeroMemory(&sampDesc, sizeof(sampDesc));
@@ -311,7 +311,7 @@ void ShadowApp::InitSamplerState()
 }
 
 
-void ShadowApp::InitForShadowMap()
+void AnimationApp::InitForShadowMap()
 {
 
 #if defined(DEBUG) || defined(_DEBUG)
@@ -348,7 +348,7 @@ void ShadowApp::InitForShadowMap()
 	
 }
 
-void ShadowApp::OnResize()
+void AnimationApp::OnResize()
 {
 	D3DApp::OnResize();
 
@@ -356,14 +356,14 @@ void ShadowApp::OnResize()
 	m_Proj = XMMatrixPerspectiveFovLH(0.5*XM_PI, GetWindowAspectRatio(), 1.0f, 1000.0f);
 }
 
-void ShadowApp::UpdateScene(float dt)
+void AnimationApp::UpdateScene(float dt)
 {
     m_View = XMMatrixLookAtLH(XMLoadFloat3(&m_CameraPosition), XMLoadFloat3(&m_CameraViewVector), XMVectorSet(0.0f,1.0f,0.0f,0.0f));
 
 }
 
 
-void ShadowApp::DrawShadowMap()
+void AnimationApp::DrawShadowMap()
 {
 	// 디렉셔널 라이트의 변환행렬 생성
 	BuildShadowTransform();
@@ -440,7 +440,7 @@ void ShadowApp::DrawShadowMap()
 	}
 }
 
-void ShadowApp::DrawImGui()
+void AnimationApp::DrawImGui()
 {
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
@@ -579,7 +579,7 @@ void ShadowApp::DrawImGui()
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
 
-void ShadowApp::DrawCube()
+void AnimationApp::DrawCube()
 {
 	// 테스트용 Cube Draw
 
@@ -640,7 +640,7 @@ void ShadowApp::DrawCube()
 
 
 
-void ShadowApp::DrawScene()
+void AnimationApp::DrawScene()
 {
 	DrawShadowMap();
 
@@ -776,7 +776,7 @@ void ShadowApp::DrawScene()
 }
 
 
-void ShadowApp::OnMouseDown(WPARAM btnState, int x, int y)
+void AnimationApp::OnMouseDown(WPARAM btnState, int x, int y)
 {
 	m_LastMousePos.x = x;
 	m_LastMousePos.y = y;
@@ -784,18 +784,18 @@ void ShadowApp::OnMouseDown(WPARAM btnState, int x, int y)
 	SetCapture(m_hMainWnd);
 }
 
-void ShadowApp::OnMouseUp(WPARAM btnState, int x, int y)
+void AnimationApp::OnMouseUp(WPARAM btnState, int x, int y)
 {
 	ReleaseCapture();
 }
 
-void ShadowApp::OnMouseMove(WPARAM btnState, int x, int y)
+void AnimationApp::OnMouseMove(WPARAM btnState, int x, int y)
 {
 	m_LastMousePos.x = x;
 	m_LastMousePos.y = y;
 }
 
-void ShadowApp::BuildShader()
+void AnimationApp::BuildShader()
 {
 	ComPtr<ID3DBlob> pVSBlob = nullptr;
 	HR(CompileShaderFromFile(L"Shader/LightColor.hlsl", "VS", "vs_4_0", pVSBlob.GetAddressOf()));
@@ -841,14 +841,14 @@ void ShadowApp::BuildShader()
 }
 
 
-void ShadowApp::ChangeModelTexture(const int bodyIndex, const ComPtr<ID3D11ShaderResourceView>& newSRV)
+void AnimationApp::ChangeModelTexture(const int bodyIndex, const ComPtr<ID3D11ShaderResourceView>& newSRV)
 {
 	//m_ModelShaderResourceView[bodyIndex]->Release();
 
 	m_ModelShaderResourceView[bodyIndex] = newSRV;
 }
 
-void ShadowApp::BuildShadowTransform()
+void AnimationApp::BuildShadowTransform()
 {
 	float sceneRadius = 10.0f;
 	// Light View Matrix
