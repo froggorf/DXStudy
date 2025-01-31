@@ -244,17 +244,17 @@ bool AnimationApp::Init()
 
 void AnimationApp::LoadModels()
 {
-	AssetManager::LoadModelData("Model/Racco.fbx", m_d3dDevice, m_ModelVertexBuffer, m_ModelIndexBuffer);
+	AssetManager::LoadModelData("Model/Paladin.fbx", m_d3dDevice, m_ModelVertexBuffer, m_ModelIndexBuffer);
 
 	AssetManager::LoadModelData("Model/Sphere.obj", m_d3dDevice, m_SphereVertexBuffer, m_SphereIndexBuffer);
 
 	m_ModelPosition = XMFLOAT3(0.0f,0.0f,0.0f);
 	m_ModelScale = XMFLOAT3(0.02f,0.02f,0.02f);
 
-	AssetManager::LoadTextureFromFile(L"Texture/T_Racco_A.png", m_d3dDevice,m_BodyShaderResourceView);
-	AssetManager::LoadTextureFromFile(L"Texture/T_Racco_B.png", m_d3dDevice,m_BodyShaderResourceView);
-	AssetManager::LoadTextureFromFile(L"Texture/T_Racco_C.png", m_d3dDevice,m_BodyShaderResourceView);
-	m_ModelShaderResourceView.push_back(m_BodyShaderResourceView[2]);
+	AssetManager::LoadTextureFromFile(L"Texture/Paladin_diffuse.png", m_d3dDevice,m_BodyShaderResourceView);
+	//AssetManager::LoadTextureFromFile(L"Texture/T_Racco_B.png", m_d3dDevice,m_BodyShaderResourceView);
+	//AssetManager::LoadTextureFromFile(L"Texture/T_Racco_C.png", m_d3dDevice,m_BodyShaderResourceView);
+	m_ModelShaderResourceView.push_back(m_BodyShaderResourceView[0]);
 
 	AssetManager::LoadModelData("Model/cube.obj", m_d3dDevice, m_CubeVertexBuffer,m_CubeIndexBuffer);
 	AssetManager::LoadTextureFromFile(L"Texture/cardboard.png", m_d3dDevice, m_CubeWaterSRV);
@@ -420,7 +420,7 @@ void AnimationApp::DrawShadowMap()
 		// cb 설정 - ShadowObjConstantBuffer
 		{
 			ShadowObjConstantBuffer socb;
-			XMMATRIX world = m_World * XMMatrixScaling(1.0f,1.0f,1.0f) ;
+			XMMATRIX world = m_World * XMMatrixScaling(m_ModelScale.x,m_ModelScale.y,m_ModelScale.z) ;
 			world *= XMMatrixRotationQuaternion(m_ModelQuat);
 			world *= XMMatrixTranslation(m_ModelPosition.x,m_ModelPosition.y,m_ModelPosition.z);
 			socb.ObjWorld = XMMatrixTranspose(world);
@@ -430,12 +430,23 @@ void AnimationApp::DrawShadowMap()
 
 		// 렌더링
 		{
-			m_d3dDeviceContext->PSSetShaderResources(0,1,m_CubeWaterSRV.GetAddressOf());
+			// 버텍스 버퍼에 맞춰 오브젝트 드로우
+			for(int vertexCount = 0; vertexCount < m_ModelVertexBuffer.size(); ++vertexCount)
+			{
+				// SRV 설정(텍스쳐)
+				{
+					m_d3dDeviceContext->PSSetShaderResources(0,1, m_ModelShaderResourceView[0].GetAddressOf());	
+				}
+				UINT stride = sizeof(MyVertexData);
+				UINT offset = 0;
+				m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_ModelVertexBuffer[vertexCount].GetAddressOf(), &stride, &offset);
+				m_d3dDeviceContext->IASetIndexBuffer(m_ModelIndexBuffer[vertexCount].Get(), DXGI_FORMAT_R32_UINT, 0);
 
-			D3D11_BUFFER_DESC indexBufferDesc;
-			m_CubeIndexBuffer->GetDesc(&indexBufferDesc);
-			UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
-			m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
+				D3D11_BUFFER_DESC indexBufferDesc;
+				m_ModelIndexBuffer[vertexCount]->GetDesc(&indexBufferDesc);
+				UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
+				m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
+			}
 		}
 	}
 }
@@ -615,26 +626,27 @@ void AnimationApp::DrawCube()
 	}
 
 	// cb 설정
-	{
-		ObjConstantBuffer ocb;
-		XMMATRIX world = m_World * XMMatrixScaling(1.0f,1.0f,1.0f) ;
-		world *= XMMatrixRotationQuaternion(m_ModelQuat);
-		world *= XMMatrixTranslation(m_ModelPosition.x,m_ModelPosition.y,m_ModelPosition.z);
-		ocb.World = XMMatrixTranspose(world);
-		// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
-		ocb.InvTransposeMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, world));
-		ocb.ObjectMaterial = m_ModelMaterial;
-		m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);	
-	}
-
-	// 렌더링
-	{
-		m_d3dDeviceContext->PSSetShaderResources(0,1,m_CubeWaterSRV.GetAddressOf());
-
-		D3D11_BUFFER_DESC indexBufferDesc;
-		m_CubeIndexBuffer->GetDesc(&indexBufferDesc);
-		m_d3dDeviceContext->DrawIndexed(indexBufferDesc.ByteWidth / sizeof(UINT), 0, 0);
-	}
+	// 01.31 애니메이션을 위해 모델 변경
+	//{
+	//	ObjConstantBuffer ocb;
+	//	XMMATRIX world = m_World * XMMatrixScaling(1.0f,1.0f,1.0f) ;
+	//	world *= XMMatrixRotationQuaternion(m_ModelQuat);
+	//	world *= XMMatrixTranslation(m_ModelPosition.x,m_ModelPosition.y,m_ModelPosition.z);
+	//	ocb.World = XMMatrixTranspose(world);
+	//	// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
+	//	ocb.InvTransposeMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, world));
+	//	ocb.ObjectMaterial = m_ModelMaterial;
+	//	m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);	
+	//}
+	//
+	//// 렌더링
+	//{
+	//	m_d3dDeviceContext->PSSetShaderResources(0,1,m_CubeWaterSRV.GetAddressOf());
+	//
+	//	D3D11_BUFFER_DESC indexBufferDesc;
+	//	m_CubeIndexBuffer->GetDesc(&indexBufferDesc);
+	//	m_d3dDeviceContext->DrawIndexed(indexBufferDesc.ByteWidth / sizeof(UINT), 0, 0);
+	//}
 
 }
 
@@ -714,23 +726,22 @@ void AnimationApp::DrawScene()
 		m_d3dDeviceContext->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
 
 		// 버텍스 버퍼에 맞춰 오브젝트 드로우
-		// 01.29 그림자 매핑시 큐브만으로 기능을 테스트 하기위해 임시 제거
-		//for(int vertexCount = 0; vertexCount < m_ModelVertexBuffer.size(); ++vertexCount)
-		//{
-		//	// SRV 설정(텍스쳐)
-		//	{
-		//		m_d3dDeviceContext->PSSetShaderResources(0,1, m_ModelShaderResourceView[vertexCount].GetAddressOf());	
-		//	}
-		//	UINT stride = sizeof(MyVertexData);
-		//	UINT offset = 0;
-		//	m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_ModelVertexBuffer[vertexCount].GetAddressOf(), &stride, &offset);
-		//	m_d3dDeviceContext->IASetIndexBuffer(m_ModelIndexBuffer[vertexCount].Get(), DXGI_FORMAT_R32_UINT, 0);
-		//
-		//	D3D11_BUFFER_DESC indexBufferDesc;
-		//	m_ModelIndexBuffer[vertexCount]->GetDesc(&indexBufferDesc);
-		//	UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
-		//	m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
-		//}
+		for(int vertexCount = 0; vertexCount < m_ModelVertexBuffer.size(); ++vertexCount)
+		{
+			// SRV 설정(텍스쳐)
+			{
+				m_d3dDeviceContext->PSSetShaderResources(0,1, m_ModelShaderResourceView[0].GetAddressOf());	
+			}
+			UINT stride = sizeof(MyVertexData);
+			UINT offset = 0;
+			m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_ModelVertexBuffer[vertexCount].GetAddressOf(), &stride, &offset);
+			m_d3dDeviceContext->IASetIndexBuffer(m_ModelIndexBuffer[vertexCount].Get(), DXGI_FORMAT_R32_UINT, 0);
+		
+			D3D11_BUFFER_DESC indexBufferDesc;
+			m_ModelIndexBuffer[vertexCount]->GetDesc(&indexBufferDesc);
+			UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
+			m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
+		}
 
 		//// 테스트용 스피어 드로우
 		//// Obj 상수 버퍼 설정
