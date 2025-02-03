@@ -12,6 +12,8 @@
 // std::filesystem path
 #include <filesystem>
 
+#include <map>
+
 using namespace Microsoft::WRL;
 
 #define ResourceFolderDirectory "../../Resource/"
@@ -131,6 +133,65 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
 		
 	
 }
+
+
+void AssetManager::LoadSkeletalModelData(const std::string& path, const Microsoft::WRL::ComPtr<ID3D11Device> pDevice,
+    std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>>& pVertexBuffer,
+    std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>>& pIndexBuffer, std::map<std::string, BoneInfo>& modelBoneInfoMap)
+{
+    // https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
+    std::string filePath = ResourceFolderDirectory + path;
+
+    Assimp::Importer importer;
+    const aiScene* scene = importer.ReadFile(filePath, 
+        aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_ConvertToLeftHanded );
+
+    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+        std::cerr << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
+        return;
+    }
+
+    std::vector<std::vector<MyVertexData>> allVertices;
+    std::vector<std::vector<UINT>> allIndices;
+
+    ProcessScene(scene, allVertices, allIndices);
+
+    // 결과 출력
+    for (size_t i = 0; i < allVertices.size(); i++) {
+        std::cout << "Mesh " << i << ":\n";
+        std::cout << "  Vertices: " << allVertices[i].size() << "\n";
+        std::cout << "  Indices: " << allIndices[i].size() << "\n";
+    }
+
+    // VertexData를 SkeletalVertexData로 변환
+    std::vector<std::vector<MySkeletalMeshVertexData>> allSkeletalVertices(scene->mNumMeshes);
+    for(int meshIndex = 0; meshIndex < allVertices.size(); ++meshIndex)
+    {
+		allSkeletalVertices[meshIndex].resize(allVertices[meshIndex].size());
+        for (int vertexIndex = 0; vertexIndex < allVertices[meshIndex].size(); ++vertexIndex)
+        {
+            allSkeletalVertices[meshIndex][vertexIndex].Pos = allVertices[meshIndex][vertexIndex].Pos;
+            allSkeletalVertices[meshIndex][vertexIndex].Normal = allVertices[meshIndex][vertexIndex].Normal;
+            allSkeletalVertices[meshIndex][vertexIndex].TexCoords = allVertices[meshIndex][vertexIndex].TexCoords;
+            for(int maxBoneInfluenceCount = 0; maxBoneInfluenceCount < MAX_BONE_INFLUENCE; ++maxBoneInfluenceCount)
+            {
+                allSkeletalVertices[meshIndex][vertexIndex].m_Weights[maxBoneInfluenceCount] = 0.0f;
+                allSkeletalVertices[meshIndex][vertexIndex].m_BoneIDs[maxBoneInfluenceCount] = -1;
+            }
+        }
+    }
+
+    for(int meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex)
+    {
+        ExtractBoneWeightForVertices(allSkeletalVertices[meshIndex], scene->mMeshes[meshIndex], modelBoneInfoMap);
+    }
+
+
+
+    // 모델 로드 성공
+    std::cout << " Skeletal Model loaded successfully: " << filePath << std::endl;
+}
+
 
 void AssetManager::LoadTextureFromFile(const std::wstring& szFile, const Microsoft::WRL::ComPtr<ID3D11Device> pDevice,
 	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>>& vTextureShaderResourceView)
@@ -264,3 +325,57 @@ void AssetManager::ProcessMesh(aiMesh* mesh, std::vector<MyVertexData>& vertices
         }
     }	
 }
+
+void AssetManager::SetVertexBoneData(MySkeletalMeshVertexData& vertexData, int boneID, float weight)
+{
+    for(int i = 0; i< MAX_BONE_INFLUENCE; ++i)
+    {
+        if(vertexData.m_BoneIDs[i] < 0)
+        {
+            vertexData.m_Weights[i] = weight;
+            vertexData.m_BoneIDs[i] = boneID;
+            break;
+        }
+    }
+}
+
+void AssetManager::ExtractBoneWeightForVertices(std::vector<MySkeletalMeshVertexData>& vVertexData, aiMesh* mesh,
+	std::map<std::string, BoneInfo>& modelBoneInfoMap)
+{
+    for (int boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex)
+    {
+        std::string boneName = mesh->mBones[boneIndex]->mName.C_Str();
+        int boneID = -1;
+        if (modelBoneInfoMap.find(boneName) == modelBoneInfoMap.end())
+        {
+            BoneInfo newBoneInfo;
+            newBoneInfo.id = boneIndex;
+            aiMatrix4x4 aiMat = mesh->mBones[boneIndex]->mOffsetMatrix;
+            newBoneInfo.offset = DirectX::XMMATRIX(
+                aiMat.a1, aiMat.b1, aiMat.c1, aiMat.d1,  // 1열
+                aiMat.a2, aiMat.b2, aiMat.c2, aiMat.d2,  // 2열
+                aiMat.a3, aiMat.b3, aiMat.c3, aiMat.d3,  // 3열
+                aiMat.a4, aiMat.b4, aiMat.c4, aiMat.d4   // 4열
+            );
+            //ConvertAiMatrixToXMMATRIX(mesh->mBones[boneIndex]->mOffsetMatrix);
+            modelBoneInfoMap[boneName] = newBoneInfo;
+            boneID = boneIndex;
+        }
+        else
+        {
+            boneID = modelBoneInfoMap[boneName].id;
+        }
+        assert(boneID != -1);
+
+
+        auto weights = mesh->mBones[boneIndex]->mWeights;
+        int numWeights = mesh->mBones[boneIndex]->mNumWeights;
+        for (int weightIndex = 0; weightIndex < numWeights; ++weightIndex)
+        {
+            int vertexID = weights[weightIndex].mVertexId;
+            float weight = weights[weightIndex].mWeight;
+            SetVertexBoneData(vVertexData[vertexID], boneID, weight);
+        }
+    }
+}
+

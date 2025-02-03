@@ -11,6 +11,10 @@
 #include <algorithm>
 #include <cmath>
 
+#include <map>
+#include <string>
+#include <vector>
+
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
@@ -79,6 +83,7 @@ inline HRESULT CompileShaderFromFile( const WCHAR* szFileName, LPCSTR szEntryPoi
 
 #endif  //COMPILE_SHADER_FROM_FILE
 
+// ======================== Mesh Data ========================
 struct MyVertexData
 {
 	DirectX::XMFLOAT3 Pos;
@@ -86,6 +91,22 @@ struct MyVertexData
     DirectX::XMFLOAT2 TexCoords;
 };
 
+#define MAX_BONE_INFLUENCE 4
+struct MySkeletalMeshVertexData
+{
+    DirectX::XMFLOAT3 Pos;
+    DirectX::XMFLOAT3 Normal;
+    DirectX::XMFLOAT2 TexCoords;
+
+    int m_BoneIDs[MAX_BONE_INFLUENCE];
+    float m_Weights[MAX_BONE_INFLUENCE];
+};
+struct BoneInfo
+{
+    int id;							// 최종 본 매트릭스 내 해당 본의 ID
+    DirectX::XMMATRIX offset;       // 모델 root 로부터의 해당 본의 offset matrix
+};
+// ============================================================
 
 inline DirectX::XMVECTOR ComputeUpVector(const DirectX::XMVECTOR& cameraPos, const DirectX::XMVECTOR& targetPos)
 {
@@ -110,3 +131,4 @@ inline DirectX::XMVECTOR ComputeUpVector(const DirectX::XMVECTOR& cameraPos, con
 
     return up;
 }
+

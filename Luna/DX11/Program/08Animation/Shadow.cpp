@@ -6,11 +6,15 @@
 //
 //***************************************************************************************
 #define _CRT_SECURE_NO_WARNINGS
+
+
 #include <format>
+#include <map>
 #include <vector>
 
 #include "../../Core/d3dApp.h"
-#include "../../Core/AssetManager.h"
+#include "AssetManager.h"
+//#include "../../Core/AssetManager.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -19,6 +23,8 @@
 #include "backends/imgui_impl_win32.h"
 
 using namespace DirectX;
+
+
 
 struct FrameConstantBuffer
 {
@@ -33,6 +39,14 @@ struct ObjConstantBuffer
 {
 	XMMATRIX World;
 	XMMATRIX InvTransposeMatrix;
+	Material ObjectMaterial;
+};
+
+struct SkeletalMeshConstantBuffer
+{
+	XMMATRIX World;
+	XMMATRIX InvTransposeMatrix;
+
 	Material ObjectMaterial;
 };
 
@@ -75,6 +89,7 @@ public:
 	void DrawShadowMap();
 
 	void LoadModels();
+	void LoadAnimations();
 
 	void OnMouseDown(WPARAM btnState, int x, int y) override;
 	void OnMouseUp(WPARAM btnState, int x, int y) override;
@@ -103,6 +118,12 @@ private:
 	//XMFLOAT3										m_ModelRotation;
 	XMVECTOR										m_ModelQuat;
 	XMFLOAT3										m_ModelScale;
+
+	// 기사 오브젝트의 본 정보		// TODO: 모듈화 시 getter 제작
+	std::vector<ComPtr<ID3D11Buffer>>				m_PaladinVertexBuffer;
+	std::vector<ComPtr<ID3D11Buffer>> 				m_PaladinIndexBuffer;
+	std::map<std::string, BoneInfo>					m_BoneInfoMap;
+	int 											m_BoneCounter = 0;
 
 	// 큐브 출력용
 	ComPtr<ID3D11Buffer>							m_CubeVertexBuffer;
@@ -217,7 +238,6 @@ AnimationApp::AnimationApp(HINSTANCE hInstance)
 	m_ModelMaterial.Diffuse  = XMFLOAT4(1.0f,1.0f,1.0f, 1.0f);
 	m_ModelMaterial.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 32.0f);
 
-
 }
 
 AnimationApp::~AnimationApp()
@@ -234,6 +254,8 @@ bool AnimationApp::Init()
 
 	LoadModels();
 
+	LoadAnimations();
+
 	BuildShader();
 
 	// 그림자 맵
@@ -247,7 +269,7 @@ void AnimationApp::LoadModels()
 	AssetManager::LoadModelData("Model/Paladin.fbx", m_d3dDevice, m_ModelVertexBuffer, m_ModelIndexBuffer);
 
 	AssetManager::LoadModelData("Model/Sphere.obj", m_d3dDevice, m_SphereVertexBuffer, m_SphereIndexBuffer);
-
+	AssetManager::LoadSkeletalModelData("Model/Paladin.fbx", m_d3dDevice, m_PaladinVertexBuffer, m_PaladinIndexBuffer,m_BoneInfoMap);
 	m_ModelPosition = XMFLOAT3(0.0f,0.0f,0.0f);
 	m_ModelScale = XMFLOAT3(0.02f,0.02f,0.02f);
 
@@ -259,6 +281,12 @@ void AnimationApp::LoadModels()
 	AssetManager::LoadModelData("Model/cube.obj", m_d3dDevice, m_CubeVertexBuffer,m_CubeIndexBuffer);
 	AssetManager::LoadTextureFromFile(L"Texture/cardboard.png", m_d3dDevice, m_CubeWaterSRV);
 	AssetManager::LoadTextureFromFile(L"Texture/WireFence.png", m_d3dDevice, m_CubeWireSRV);
+
+}
+
+void AnimationApp::LoadAnimations()
+{
+	// TODO: 추후 모델 관련 데이터 오브젝트로 모듈화
 
 }
 
