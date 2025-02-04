@@ -186,8 +186,6 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const Microsof
         ExtractBoneWeightForVertices(allSkeletalVertices[meshIndex], scene->mMeshes[meshIndex], modelBoneInfoMap);
     }
 
-
-
     // 모델 로드 성공
     std::cout << " Skeletal Model loaded successfully: " << filePath << std::endl;
 }

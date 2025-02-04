@@ -20,6 +20,12 @@
     <Filter Include="Core">
       <UniqueIdentifier>{8f646ba8-126f-4c05-ae12-dd2eb88deda1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Animation">
+      <UniqueIdentifier>{af5fea11-c136-476e-9a45-61dff50cb4c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{06c75c41-b30f-4ad8-9b68-db2edc332857}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shadow.cpp">
@@ -72,6 +78,15 @@
     </ClCompile>
     <ClCompile Include="..\..\Core\ShadowMap.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Core\Animation\Bone.cpp">
+      <Filter>Core\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Core\Animation\Animation.cpp">
+      <Filter>Core\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Core\Animation\Animator.cpp">
+      <Filter>Core\Animation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -138,5 +153,33 @@
     <ClInclude Include="..\..\Core\ShadowMap.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Core\Animation\Bone.h">
+      <Filter>Core\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\Animation\Animation.h">
+      <Filter>Core\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\Animation\Animator.h">
+      <Filter>Core\Animation</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader\BuildShadowMap.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\DebuggingTexture.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\LightColor.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\LightHelper.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shader\SkeletalMesh.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

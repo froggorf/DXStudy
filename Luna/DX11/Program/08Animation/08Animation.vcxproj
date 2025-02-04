@@ -129,6 +129,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Core\Animation\Animation.cpp" />
+    <ClCompile Include="..\..\Core\Animation\Animator.cpp" />
+    <ClCompile Include="..\..\Core\Animation\Bone.cpp" />
     <ClCompile Include="..\..\Core\AssetManager.cpp" />
     <ClCompile Include="..\..\Core\d3dApp.cpp" />
     <ClCompile Include="..\..\Core\DebuggingSRV.cpp" />
@@ -148,6 +151,9 @@
     <ClCompile Include="Shadow.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Core\Animation\Animation.h" />
+    <ClInclude Include="..\..\Core\Animation\Animator.h" />
+    <ClInclude Include="..\..\Core\Animation\Bone.h" />
     <ClInclude Include="..\..\Core\AssetManager.h" />
     <ClInclude Include="..\..\Core\d3dApp.h" />
     <ClInclude Include="..\..\Core\d3dUtil.h" />
@@ -169,6 +175,23 @@
     <ClInclude Include="..\..\ThirdParty\ImGui\imstb_rectpack.h" />
     <ClInclude Include="..\..\ThirdParty\ImGui\imstb_textedit.h" />
     <ClInclude Include="..\..\ThirdParty\ImGui\imstb_truetype.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader\BuildShadowMap.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Shader\DebuggingTexture.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Shader\LightColor.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Shader\LightHelper.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shader\SkeletalMesh.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

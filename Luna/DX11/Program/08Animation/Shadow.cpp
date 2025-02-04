@@ -19,6 +19,8 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "../../Core/ShadowMap.h"
+#include "Animation/Animation.h"
+#include "Animation/Animator.h"
 #include "backends/imgui_impl_dx11.h"
 #include "backends/imgui_impl_win32.h"
 
@@ -124,6 +126,8 @@ private:
 	std::vector<ComPtr<ID3D11Buffer>> 				m_PaladinIndexBuffer;
 	std::map<std::string, BoneInfo>					m_BoneInfoMap;
 	int 											m_BoneCounter = 0;
+	std::unique_ptr<Animation>						m_Anim_Paladin_Dance;
+	std::unique_ptr<Animator>						m_PaladinAnimator;
 
 	// 큐브 출력용
 	ComPtr<ID3D11Buffer>							m_CubeVertexBuffer;
@@ -237,6 +241,10 @@ AnimationApp::AnimationApp(HINSTANCE hInstance)
 	m_ModelMaterial.Ambient  = XMFLOAT4(1.0f,1.0f,1.0f, 1.0f);
 	m_ModelMaterial.Diffuse  = XMFLOAT4(1.0f,1.0f,1.0f, 1.0f);
 	m_ModelMaterial.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 32.0f);
+
+
+	m_Anim_Paladin_Dance = std::make_unique<Animation>("Animation/Paladin_Anim_Dancing.fbx", m_BoneInfoMap);
+	m_PaladinAnimator = std::make_unique<Animator>(m_Anim_Paladin_Dance.get()) ;
 
 }
 
