@@ -16,6 +16,8 @@
 #include "AssetManager.h"
 //#include "../../Core/AssetManager.h"
 
+#include <chrono>
+
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "../../Core/ShadowMap.h"
@@ -50,6 +52,7 @@ struct SkeletalMeshConstantBuffer
 	XMMATRIX InvTransposeMatrix;
 
 	Material ObjectMaterial;
+	XMMATRIX BoneFinalTransforms[MAX_BONES];
 };
 
 struct LightFrameConstantBuffer
@@ -85,6 +88,7 @@ public:
 	void UpdateScene(float dt) override;
 	void DrawImGui() override;
 	void DrawCube();
+	void DrawSkeletalMesh();
 	void DrawScene() override;
 
 	// Shadow Map
@@ -103,6 +107,7 @@ private:
 
 	void ChangeModelTexture(int bodyIndex, const ComPtr<ID3D11ShaderResourceView>& newSRV);
 
+	void BuildShaderForSkeletalMesh();
 	// DirectionalLight Matrix 반환하는 함수
 	void BuildShadowTransform();
 
@@ -126,8 +131,14 @@ private:
 	std::vector<ComPtr<ID3D11Buffer>> 				m_PaladinIndexBuffer;
 	std::map<std::string, BoneInfo>					m_BoneInfoMap;
 	int 											m_BoneCounter = 0;
-	std::unique_ptr<Animation>						m_Anim_Paladin_Dance;
+	std::unique_ptr<Animation>						m_Anim_Cat_Idle;
+	std::unique_ptr<Animation>						m_Anim_Cat_HI;
+	std::unique_ptr<Animation>						m_Anim_Cat_DIG;
 	std::unique_ptr<Animator>						m_PaladinAnimator;
+	ComPtr<ID3D11VertexShader>						m_SkeletalMeshVertexShader;
+	ComPtr<ID3D11InputLayout>						m_SkeletalMeshInputLayout;
+	ComPtr<ID3D11Buffer>							m_SkeletalMeshConstantBuffer;
+	
 
 	// 큐브 출력용
 	ComPtr<ID3D11Buffer>							m_CubeVertexBuffer;
@@ -214,7 +225,7 @@ AnimationApp::AnimationApp(HINSTANCE hInstance)
 
 	m_ModelPosition = XMFLOAT3(0.0f,0.0f,0.0f);
 	//m_ModelRotation = XMFLOAT3(0.0f,0.0f,0.0f);
-	m_ModelQuat = XMQuaternionIdentity();
+	m_ModelQuat = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(90.0f),0.0f,0.0f);
 	m_ModelScale = XMFLOAT3(0.0f,0.0f,0.0f);
 
 	m_CameraPosition = XMFLOAT3(0.0f,3.0f,-5.0f);
@@ -235,17 +246,12 @@ AnimationApp::AnimationApp(HINSTANCE hInstance)
 	m_PointLight.Att      = XMFLOAT3(0.0f, 0.1f, 0.0f);
 	//m_PointLight.Position = XMFLOAT3(796.5f, 700.0f, 0.7549f);
 	m_PointLight.Position = XMFLOAT3(0.0f,-2.5f,0.0f);
-	m_PointLight.Range    = 100.0f;
+	m_PointLight.Range    = 0.0f;
 
 	// Material
 	m_ModelMaterial.Ambient  = XMFLOAT4(1.0f,1.0f,1.0f, 1.0f);
 	m_ModelMaterial.Diffuse  = XMFLOAT4(1.0f,1.0f,1.0f, 1.0f);
 	m_ModelMaterial.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 32.0f);
-
-
-	m_Anim_Paladin_Dance = std::make_unique<Animation>("Animation/Paladin_Anim_Dancing.fbx", m_BoneInfoMap);
-	m_PaladinAnimator = std::make_unique<Animator>(m_Anim_Paladin_Dance.get()) ;
-
 }
 
 AnimationApp::~AnimationApp()
@@ -266,6 +272,8 @@ bool AnimationApp::Init()
 
 	BuildShader();
 
+	BuildShaderForSkeletalMesh();
+
 	// 그림자 맵
 	InitForShadowMap();
 
@@ -274,21 +282,30 @@ bool AnimationApp::Init()
 
 void AnimationApp::LoadModels()
 {
-	AssetManager::LoadModelData("Model/Paladin.fbx", m_d3dDevice, m_ModelVertexBuffer, m_ModelIndexBuffer);
+	AssetManager::LoadModelData("Model/Chibi_Cat.fbx", m_d3dDevice, m_ModelVertexBuffer, m_ModelIndexBuffer);
 
 	AssetManager::LoadModelData("Model/Sphere.obj", m_d3dDevice, m_SphereVertexBuffer, m_SphereIndexBuffer);
-	AssetManager::LoadSkeletalModelData("Model/Paladin.fbx", m_d3dDevice, m_PaladinVertexBuffer, m_PaladinIndexBuffer,m_BoneInfoMap);
+	//AssetManager::LoadSkeletalModelData("Model/Paladin.fbx", m_d3dDevice, m_PaladinVertexBuffer, m_PaladinIndexBuffer,m_BoneInfoMap);
+	AssetManager::LoadSkeletalModelData("Model/Chibi_Cat.FBX", m_d3dDevice, m_PaladinVertexBuffer, m_PaladinIndexBuffer,m_BoneInfoMap);
 	m_ModelPosition = XMFLOAT3(0.0f,0.0f,0.0f);
 	m_ModelScale = XMFLOAT3(0.02f,0.02f,0.02f);
 
-	AssetManager::LoadTextureFromFile(L"Texture/Paladin_diffuse.png", m_d3dDevice,m_BodyShaderResourceView);
+	AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Cat_06.png", m_d3dDevice,m_BodyShaderResourceView);
+	AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Emo_25.png", m_d3dDevice,m_FaceShaderResourceView);
 	//AssetManager::LoadTextureFromFile(L"Texture/T_Racco_B.png", m_d3dDevice,m_BodyShaderResourceView);
 	//AssetManager::LoadTextureFromFile(L"Texture/T_Racco_C.png", m_d3dDevice,m_BodyShaderResourceView);
 	m_ModelShaderResourceView.push_back(m_BodyShaderResourceView[0]);
+	m_ModelShaderResourceView.push_back(m_FaceShaderResourceView[0]);
 
 	AssetManager::LoadModelData("Model/cube.obj", m_d3dDevice, m_CubeVertexBuffer,m_CubeIndexBuffer);
 	AssetManager::LoadTextureFromFile(L"Texture/cardboard.png", m_d3dDevice, m_CubeWaterSRV);
 	AssetManager::LoadTextureFromFile(L"Texture/WireFence.png", m_d3dDevice, m_CubeWireSRV);
+
+
+	m_Anim_Cat_Idle = std::make_unique<Animation>("Animation/Anim_Chibi_Alert.fbx", m_BoneInfoMap);
+	m_Anim_Cat_DIG= std::make_unique<Animation>("Animation/Anim_Chibi_DigA.fbx", m_BoneInfoMap);
+	m_Anim_Cat_HI = std::make_unique<Animation>("Animation/Anim_Chibi_Hi.fbx", m_BoneInfoMap);
+	m_PaladinAnimator = std::make_unique<Animator>(m_Anim_Cat_Idle.get()) ;
 
 }
 
@@ -396,6 +413,8 @@ void AnimationApp::UpdateScene(float dt)
 {
     m_View = XMMatrixLookAtLH(XMLoadFloat3(&m_CameraPosition), XMLoadFloat3(&m_CameraViewVector), XMVectorSet(0.0f,1.0f,0.0f,0.0f));
 
+	m_PaladinAnimator->UpdateAnimation(m_Timer.DeltaTime());
+	
 }
 
 
@@ -538,7 +557,8 @@ void AnimationApp::DrawImGui()
 		
 		ImGui::SliderFloat3("Translation", (float*)&m_ModelPosition, -5.0f, 5.0f );
 
-		static float rotationDegrees[] = {0.0f,0.0f,0.0f};
+		
+		static float rotationDegrees[] = {90.0f,0.0f,0.0f};
 		if(ImGui::SliderFloat3("Rotation", (float*)&rotationDegrees,-180.0f,180.0f))
 		{
 			
@@ -615,12 +635,22 @@ void AnimationApp::DrawImGui()
 			XMQuaternionNormalize(m_ModelQuat);
 			
 		}
-		static float inputvalue = m_ShadowBias;
-		if(ImGui::InputFloat("shadow bias value", &inputvalue))
+		static int animationSelect = 0;
+		if(ImGui::RadioButton("IDLE", &animationSelect, 0))
 		{
-			m_ShadowBias = inputvalue;
-			std::cout << "변경 후 : " << m_ShadowBias << std::endl;
+			m_PaladinAnimator->PlayAnimation(m_Anim_Cat_Idle.get());
 		}
+		if(ImGui::RadioButton("DIG", &animationSelect, 1))
+		{
+			m_PaladinAnimator->PlayAnimation(m_Anim_Cat_DIG.get());
+		}
+		if(ImGui::RadioButton("HI", &animationSelect, 2))
+		{
+			m_PaladinAnimator->PlayAnimation(m_Anim_Cat_HI.get());
+		}
+		
+
+
 	}
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -686,7 +716,91 @@ void AnimationApp::DrawCube()
 
 }
 
+void AnimationApp::DrawSkeletalMesh()
+{
+	//// 인풋 레이아웃
+	m_d3dDeviceContext->IASetInputLayout(m_SkeletalMeshInputLayout.Get());
+	m_d3dDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	// 버텍스 셰이더 (픽셀셰이더는 동일)
+	m_d3dDeviceContext->VSSetShader(m_SkeletalMeshVertexShader.Get(), nullptr, 0);
+	m_d3dDeviceContext->PSSetShader(m_PixelShader.Get(),nullptr,0);
+	// ConstantBuffer
+	m_d3dDeviceContext->VSSetConstantBuffers(0, 1, m_FrameConstantBuffer.GetAddressOf());
+	m_d3dDeviceContext->PSSetConstantBuffers(0,1,m_FrameConstantBuffer.GetAddressOf());
+	m_d3dDeviceContext->VSSetConstantBuffers(1, 1, m_SkeletalMeshConstantBuffer.GetAddressOf());
+	m_d3dDeviceContext->PSSetConstantBuffers(1,1, m_SkeletalMeshConstantBuffer.GetAddressOf());
+	m_d3dDeviceContext->PSSetConstantBuffers(2,1, m_LightConstantBuffer.GetAddressOf());
 
+	// Frame 상수 버퍼 설정
+	{
+		// 뷰, 프로젝션 행렬
+		{
+			FrameConstantBuffer fcb;
+			fcb.View = XMMatrixTranspose(m_View);
+			fcb.Projection = XMMatrixTranspose(m_Proj);
+			fcb.LightView = XMMatrixTranspose(m_LightView);
+			fcb.LightProj = XMMatrixTranspose(m_LightProj);
+			m_d3dDeviceContext->UpdateSubresource(m_FrameConstantBuffer.Get(), 0, nullptr, &fcb, 0, 0);
+
+		}
+
+		// 라이팅 관련
+		{
+			LightFrameConstantBuffer lfcb;
+			lfcb.gDirLight = m_DirectionalLight;
+			lfcb.gPointLight = m_PointLight;
+			// Convert Spherical to Cartesian coordinates.
+			lfcb.gEyePosW = XMFLOAT3{m_CameraPosition};
+			m_d3dDeviceContext->UpdateSubresource(m_LightConstantBuffer.Get(),0,nullptr,&lfcb, 0,0);
+		}
+	}
+	// 오브젝트 Draw
+	// Obj 상수 버퍼 설정
+	{
+		SkeletalMeshConstantBuffer ocb;
+		XMMATRIX world = m_World * XMMatrixScaling(m_ModelScale.x,m_ModelScale.y,m_ModelScale.z);
+		//world = world * XMMatrixRotationX(m_ModelRotation.x) * XMMatrixRotationY(m_ModelRotation.y) * XMMatrixRotationZ(m_ModelRotation.z);
+		world = world * XMMatrixRotationQuaternion(m_ModelQuat);
+		world *= XMMatrixTranslation(m_ModelPosition.x,m_ModelPosition.y,m_ModelPosition.z);
+		// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
+		ocb.InvTransposeMatrix = (XMMatrixInverse(nullptr, world));
+		ocb.World = XMMatrixTranspose(world);
+
+		ocb.ObjectMaterial = m_ModelMaterial;
+
+		auto boneFinalTransforms = m_PaladinAnimator->GetFinalBoneMatrices();
+		for(int i = 0; i < MAX_BONES; ++i)
+		{
+			ocb.BoneFinalTransforms[i] = XMMatrixTranspose(boneFinalTransforms[i]);
+		}
+		
+		m_d3dDeviceContext->UpdateSubresource(m_SkeletalMeshConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);	
+	}
+
+
+	// Sampler State 설정
+	m_d3dDeviceContext->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
+
+	// 버텍스 버퍼에 맞춰 오브젝트 드로우
+	for(int vertexCount = 0; vertexCount < m_PaladinVertexBuffer.size(); ++vertexCount)
+	{
+		// SRV 설정(텍스쳐)
+		{
+			m_d3dDeviceContext->PSSetShaderResources(0,1, m_ModelShaderResourceView[vertexCount].GetAddressOf());	
+		}
+		UINT stride = sizeof(MySkeletalMeshVertexData);
+		UINT offset = 0;
+		m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_PaladinVertexBuffer[vertexCount].GetAddressOf(), &stride, &offset);
+		m_d3dDeviceContext->IASetIndexBuffer(m_PaladinIndexBuffer[vertexCount].Get(), DXGI_FORMAT_R32_UINT, 0);
+		
+		D3D11_BUFFER_DESC indexBufferDesc;
+		m_PaladinIndexBuffer[vertexCount]->GetDesc(&indexBufferDesc);
+		UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
+		m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
+	}
+
+
+}
 
 void AnimationApp::DrawScene()
 {
@@ -748,7 +862,7 @@ void AnimationApp::DrawScene()
 			XMMATRIX world = m_World * XMMatrixScaling(m_ModelScale.x,m_ModelScale.y,m_ModelScale.z);
 			//world = world * XMMatrixRotationX(m_ModelRotation.x) * XMMatrixRotationY(m_ModelRotation.y) * XMMatrixRotationZ(m_ModelRotation.z);
 			world = world * XMMatrixRotationQuaternion(m_ModelQuat);
-			world *= XMMatrixTranslation(m_ModelPosition.x,m_ModelPosition.y,m_ModelPosition.z);
+			world *= XMMatrixTranslation(m_ModelPosition.x + 3.0f,m_ModelPosition.y,m_ModelPosition.z);
 			// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
 			ocb.InvTransposeMatrix = (XMMatrixInverse(nullptr, world));
 			ocb.World = XMMatrixTranspose(world);
@@ -761,23 +875,24 @@ void AnimationApp::DrawScene()
 		// Sampler State 설정
 		m_d3dDeviceContext->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
 
-		// 버텍스 버퍼에 맞춰 오브젝트 드로우
-		for(int vertexCount = 0; vertexCount < m_ModelVertexBuffer.size(); ++vertexCount)
-		{
-			// SRV 설정(텍스쳐)
-			{
-				m_d3dDeviceContext->PSSetShaderResources(0,1, m_ModelShaderResourceView[0].GetAddressOf());	
-			}
-			UINT stride = sizeof(MyVertexData);
-			UINT offset = 0;
-			m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_ModelVertexBuffer[vertexCount].GetAddressOf(), &stride, &offset);
-			m_d3dDeviceContext->IASetIndexBuffer(m_ModelIndexBuffer[vertexCount].Get(), DXGI_FORMAT_R32_UINT, 0);
-		
-			D3D11_BUFFER_DESC indexBufferDesc;
-			m_ModelIndexBuffer[vertexCount]->GetDesc(&indexBufferDesc);
-			UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
-			m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
-		}
+		//// 버텍스 버퍼에 맞춰 오브젝트 드로우
+		//for(int vertexCount = 0; vertexCount < m_ModelVertexBuffer.size(); ++vertexCount)
+		//{
+		//	// SRV 설정(텍스쳐)
+		//	{
+		//		m_d3dDeviceContext->PSSetShaderResources(0,1, m_ModelShaderResourceView[0].GetAddressOf());	
+		//	}
+		//	UINT stride = sizeof(MyVertexData);
+		//	UINT offset = 0;
+		//	m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_ModelVertexBuffer[vertexCount].GetAddressOf(), &stride, &offset);
+		//	m_d3dDeviceContext->IASetIndexBuffer(m_ModelIndexBuffer[vertexCount].Get(), DXGI_FORMAT_R32_UINT, 0);
+		//
+		//	D3D11_BUFFER_DESC indexBufferDesc;
+		//	m_ModelIndexBuffer[vertexCount]->GetDesc(&indexBufferDesc);
+		//	UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
+		//	m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
+		//}
+
 
 		//// 테스트용 스피어 드로우
 		//// Obj 상수 버퍼 설정
@@ -805,7 +920,8 @@ void AnimationApp::DrawScene()
 		//	UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
 		//	m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
 		//}
-		DrawCube();
+		//DrawCube();
+		DrawSkeletalMesh();
 
 #if defined(DEBUG) || defined(_DEBUG)
 		DebuggingSRV::DrawDebuggingTexture(
@@ -885,6 +1001,9 @@ void AnimationApp::BuildShader()
 
 	bufferDesc.ByteWidth = sizeof(ShadowObjConstantBuffer);
 	HR(m_d3dDevice->CreateBuffer(&bufferDesc, nullptr, m_ShadowObjConstantBuffer.GetAddressOf()))
+
+	bufferDesc.ByteWidth = sizeof(SkeletalMeshConstantBuffer);
+	HR(m_d3dDevice->CreateBuffer(&bufferDesc, nullptr, m_SkeletalMeshConstantBuffer.GetAddressOf()));
 }
 
 
@@ -893,6 +1012,29 @@ void AnimationApp::ChangeModelTexture(const int bodyIndex, const ComPtr<ID3D11Sh
 	//m_ModelShaderResourceView[bodyIndex]->Release();
 
 	m_ModelShaderResourceView[bodyIndex] = newSRV;
+}
+
+void AnimationApp::BuildShaderForSkeletalMesh()
+{
+	ComPtr<ID3DBlob> pVSBlob = nullptr;
+	HR(CompileShaderFromFile(L"Shader/SkeletalMesh.hlsl", "VS", "vs_4_0", pVSBlob.GetAddressOf()));
+	HR(m_d3dDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, m_SkeletalMeshVertexShader.GetAddressOf()));
+
+	D3D11_INPUT_ELEMENT_DESC inputLayout[] =
+	{
+		{"BONEIDS", 0, DXGI_FORMAT_R32G32B32A32_SINT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"BONEWEIGHTS",0,DXGI_FORMAT_R32G32B32A32_FLOAT, 0,16, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 44, D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,0,56,D3D11_INPUT_PER_VERTEX_DATA, 0},
+
+	};
+	UINT numElements = ARRAYSIZE(inputLayout);
+
+	HR(m_d3dDevice->CreateInputLayout(inputLayout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), m_SkeletalMeshInputLayout.GetAddressOf()));
+	//m_d3dDeviceContext->IASetInputLayout(m_InputLayout.Get());
+
+
 }
 
 void AnimationApp::BuildShadowTransform()

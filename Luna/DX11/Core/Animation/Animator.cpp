@@ -27,6 +27,7 @@ void Animator::UpdateAnimation(float dt)
 		m_CurrentTime = fmod(m_CurrentTime, m_CurrentAnimation->GetDuration());
 		CalculateBoneTransform(&m_CurrentAnimation->GetRootNode(), DirectX::XMMatrixIdentity());
 	}
+
 }
 
 void Animator::PlayAnimation(Animation* pAnimation)
@@ -47,15 +48,16 @@ void Animator::CalculateBoneTransform(const AssimpNodeData* node, DirectX::XMMAT
 		nodeTransform = bone->GetLocalTransform();
 	}
 
-	DirectX::XMMATRIX globalTransform = nodeTransform * parentTransform;
+	DirectX::XMMATRIX globalTransform = DirectX::XMMatrixMultiply(nodeTransform,parentTransform);
 
 	auto boneInfoMap = m_CurrentAnimation->GetBoneIDMap();
 	if (boneInfoMap.find(nodeName) != boneInfoMap.end())
 	{
 		int index = boneInfoMap[nodeName].id;
 		DirectX::XMMATRIX offset = boneInfoMap[nodeName].offset;
-		m_FinalBoneMatrices[index] = globalTransform * offset;
+		m_FinalBoneMatrices[index] =  DirectX::XMMatrixMultiply(offset,globalTransform);
 	}
+	
 
 	for (int i = 0; i < node->childrenCount; ++i)
 	{

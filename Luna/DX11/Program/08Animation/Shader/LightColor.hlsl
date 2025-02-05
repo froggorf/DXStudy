@@ -101,8 +101,7 @@ float4 PS( VS_OUTPUT input ) : SV_Target
 	spec += S;
 
     // 조명 적용
-    color = color * (ambient + diffuse) + spec;
-
+    color.rgb = color.rgb * (ambient + diffuse) + spec;
 
     // 그림자 매핑
     float3 shadowCoord = input.PosLightSpace.xyz/ input.PosLightSpace.w;
@@ -119,7 +118,7 @@ float4 PS( VS_OUTPUT input ) : SV_Target
         if(lightDepthValue > depthValue)
         {
 			float shadowfactor = 0.5f;
-			color = color * shadowfactor;
+			color.rgb = color.rgb * shadowfactor;
         }
     }
 

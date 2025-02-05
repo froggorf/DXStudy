@@ -191,7 +191,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shader\SkeletalMesh.hlsl" />
+    <None Include="Shader\SkeletalMesh.hlsl">
+      <FileType>Document</FileType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS</EntryPointName>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

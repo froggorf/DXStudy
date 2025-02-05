@@ -14,7 +14,9 @@ Animation::Animation(const std::string& animationPath, std::map<std::string, Bon
 {
 	std::string path = ResourceFolderDirectory + animationPath;
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_ConvertToLeftHanded);
+	const aiScene* scene = importer.ReadFile(path,
+		aiProcess_Triangulate |
+		aiProcess_ConvertToLeftHanded );
 	if(!scene || !scene->mRootNode)
 	{
 		std::cerr << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
@@ -22,8 +24,8 @@ Animation::Animation(const std::string& animationPath, std::map<std::string, Bon
 	aiAnimation* animation = scene->mAnimations[0];
 	m_Duration = animation->mDuration;
 	m_TicksPerSecond = animation->mTicksPerSecond;
-	ReadMissingBones(animation, modelBoneInfoMap);
 	ReadHierarchyData(m_RootNode, scene->mRootNode);
+	ReadMissingBones(animation, modelBoneInfoMap);
 
 }
 
@@ -64,6 +66,7 @@ void Animation::ReadMissingBones(const aiAnimation* animation, std::map<std::str
 			modelBoneInfoMap[boneName] = { boneCount, DirectX::XMMatrixIdentity() };
 			modelBoneInfoMap[boneName].id = boneCount;
 			++boneCount;
+			std::cout << "Missing Bone Added: " << boneName << std::endl;
 		}
 		m_Bones.push_back(Bone(boneName, modelBoneInfoMap[boneName].id, channel));
 	}
@@ -76,12 +79,12 @@ void Animation::ReadHierarchyData(AssimpNodeData& dest, const aiNode* src)
 
 	dest.name = src->mName.C_Str();
 	aiMatrix4x4 aiMat = src->mTransformation;
-	dest.transformation = DirectX::XMMATRIX(
-			aiMat.a1, aiMat.b1, aiMat.c1, aiMat.d1,  // 1열
-			aiMat.a2, aiMat.b2, aiMat.c2, aiMat.d2,  // 2열
-			aiMat.a3, aiMat.b3, aiMat.c3, aiMat.d3,  // 3열
-			aiMat.a4, aiMat.b4, aiMat.c4, aiMat.d4   // 4열
-		);
+	dest.transformation = 	DirectX::XMMATRIX(
+		aiMat.a1, aiMat.b1, aiMat.c1, aiMat.d1,  // 1열
+		aiMat.a2, aiMat.b2, aiMat.c2, aiMat.d2,  // 2열
+		aiMat.a3, aiMat.b3, aiMat.c3, aiMat.d3,  // 3열
+		aiMat.a4, aiMat.b4, aiMat.c4, aiMat.d4   // 4열
+	);
 	dest.childrenCount = src->mNumChildren;
 
 	for(int i = 0; i < dest.childrenCount; ++i)

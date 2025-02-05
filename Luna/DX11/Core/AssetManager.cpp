@@ -25,7 +25,12 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
 
     Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(filePath, 
-	    aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_ConvertToLeftHanded );
+        aiProcess_Triangulate |
+        aiProcess_JoinIdenticalVertices |
+        aiProcess_CalcTangentSpace |
+        aiProcess_GenNormals |
+        aiProcess_ConvertToLeftHanded |
+        aiProcess_FlipWindingOrder );
 	
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 	    std::cerr << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
@@ -83,7 +88,12 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
 
     Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(filePath, 
-	    aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_ConvertToLeftHanded );
+        aiProcess_Triangulate |
+        aiProcess_JoinIdenticalVertices |
+        aiProcess_CalcTangentSpace |
+        aiProcess_GenNormals |
+        aiProcess_ConvertToLeftHanded |
+        aiProcess_FlipWindingOrder );
 	
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 	    std::cerr << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
@@ -144,7 +154,12 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const Microsof
 
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(filePath, 
-        aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_ConvertToLeftHanded );
+        aiProcess_Triangulate |
+        aiProcess_JoinIdenticalVertices |
+        aiProcess_CalcTangentSpace |
+        aiProcess_GenNormals |
+        aiProcess_ConvertToLeftHanded |
+        aiProcess_FlipWindingOrder );
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
         std::cerr << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
@@ -167,10 +182,12 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const Microsof
     std::vector<std::vector<MySkeletalMeshVertexData>> allSkeletalVertices(scene->mNumMeshes);
     for(int meshIndex = 0; meshIndex < allVertices.size(); ++meshIndex)
     {
+        
 		allSkeletalVertices[meshIndex].resize(allVertices[meshIndex].size());
+        
         for (int vertexIndex = 0; vertexIndex < allVertices[meshIndex].size(); ++vertexIndex)
         {
-            allSkeletalVertices[meshIndex][vertexIndex].Pos = allVertices[meshIndex][vertexIndex].Pos;
+            allSkeletalVertices[meshIndex][vertexIndex].Pos =  allVertices[meshIndex][vertexIndex].Pos;
             allSkeletalVertices[meshIndex][vertexIndex].Normal = allVertices[meshIndex][vertexIndex].Normal;
             allSkeletalVertices[meshIndex][vertexIndex].TexCoords = allVertices[meshIndex][vertexIndex].TexCoords;
             for(int maxBoneInfluenceCount = 0; maxBoneInfluenceCount < MAX_BONE_INFLUENCE; ++maxBoneInfluenceCount)
@@ -180,6 +197,7 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const Microsof
             }
         }
     }
+    
 
     for(int meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex)
     {
@@ -188,6 +206,35 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const Microsof
 
     // 모델 로드 성공
     std::cout << " Skeletal Model loaded successfully: " << filePath << std::endl;
+
+    for(int i = 0; i < scene->mNumMeshes; ++i)
+    {
+        // 버텍스 버퍼
+        ComPtr<ID3D11Buffer> vertexBuffer;
+        D3D11_BUFFER_DESC vertexBufferDesc = {};
+        vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+        vertexBufferDesc.CPUAccessFlags = 0;
+        vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+        vertexBufferDesc.ByteWidth = sizeof(MySkeletalMeshVertexData) * allSkeletalVertices[i].size();
+        std::cout << "sizeof: " << sizeof(MySkeletalMeshVertexData)<<std::endl;
+        D3D11_SUBRESOURCE_DATA initVertexData = {};
+        initVertexData.pSysMem = allSkeletalVertices[i].data();
+        HR(pDevice->CreateBuffer(&vertexBufferDesc,&initVertexData, vertexBuffer.GetAddressOf()));
+        pVertexBuffer.push_back(vertexBuffer);
+
+        // 인덱스 버퍼
+        ComPtr<ID3D11Buffer> indexBuffer;
+        D3D11_BUFFER_DESC indexBufferDesc = {};
+        indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+        indexBufferDesc.ByteWidth = sizeof(UINT) * allIndices[i].size();
+        indexBufferDesc.CPUAccessFlags = 0;
+        indexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+        D3D11_SUBRESOURCE_DATA initIndexData = {};
+        initIndexData.pSysMem = allIndices[i].data();
+        HR(pDevice->CreateBuffer(&indexBufferDesc, &initIndexData, indexBuffer.GetAddressOf()));
+        pIndexBuffer.push_back(indexBuffer);
+
+    }
 }
 
 
