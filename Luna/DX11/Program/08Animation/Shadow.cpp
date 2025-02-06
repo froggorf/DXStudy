@@ -50,12 +50,8 @@ struct ObjConstantBuffer
 	Material ObjectMaterial;
 };
 
-struct SkeletalMeshConstantBuffer
+struct SkeletalMeshBoneTransformConstantBuffer
 {
-	XMMATRIX World;
-	XMMATRIX InvTransposeMatrix;
-
-	Material ObjectMaterial;
 	XMMATRIX BoneFinalTransforms[MAX_BONES];
 };
 
@@ -142,8 +138,7 @@ private:
 	std::unique_ptr<Animator>						m_PaladinAnimator;
 	ComPtr<ID3D11VertexShader>						m_SkeletalMeshVertexShader;
 	ComPtr<ID3D11InputLayout>						m_SkeletalMeshInputLayout;
-	ComPtr<ID3D11Buffer>							m_SkeletalMeshConstantBuffer;
-	
+	ComPtr<ID3D11Buffer>							m_SkeletalBoneMatrixConstantBuffer;
 
 	// 큐브 출력용
 	ComPtr<ID3D11Buffer>							m_CubeVertexBuffer;
@@ -166,6 +161,8 @@ private:
 	ComPtr<ID3D11Buffer>							m_ShadowLightMatrixConstantBuffer;
 	ComPtr<ID3D11SamplerState>						m_ShadowSamplerState;
 	float											m_ShadowBias;
+	ComPtr<ID3D11VertexShader>						m_ShadowMapSkeletalMeshVertexShader;
+	
 
 	// 카메라 정보
 	XMFLOAT3										m_CameraPosition;
@@ -383,7 +380,7 @@ void AnimationApp::InitForShadowMap()
 	// 그림자맵 렌더링을 위한 VS/PS 추가
 	{
 		ComPtr<ID3DBlob> pVSBlob = nullptr;
-		HR(CompileShaderFromFile(L"Shader/BuildShadowMap.hlsl", "VS", "vs_4_0", pVSBlob.GetAddressOf()));
+		HR(CompileShaderFromFile(L"Shader/BuildShadowMap.hlsl", "VS_StaticMesh_ShadowMap", "vs_4_0", pVSBlob.GetAddressOf()));
 		HR(m_d3dDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, m_ShadowMapVertexShader.GetAddressOf()));
 
 		D3D11_INPUT_ELEMENT_DESC inputLayout[] =
@@ -402,6 +399,12 @@ void AnimationApp::InitForShadowMap()
 		HR(CompileShaderFromFile(L"Shader/BuildShadowMap.hlsl", "PS", "ps_4_0", pPSBlob.GetAddressOf()));
 
 		HR(m_d3dDevice->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, m_ShadowMapPixelShader.GetAddressOf()));
+
+
+		// 스켈레탈 메시를 위한 세이더 추가
+		pVSBlob->Release();		
+		HR(CompileShaderFromFile(L"Shader/BuildShadowMap.hlsl", "VS_SkeletalMesh_ShadowMap", "vs_4_0", pVSBlob.GetAddressOf()));
+		HR(m_d3dDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, m_ShadowMapSkeletalMeshVertexShader.GetAddressOf()));
 	}
 	
 }
@@ -469,13 +472,19 @@ void AnimationApp::DrawShadowMap()
 			m_d3dDeviceContext->UpdateSubresource(m_ShadowObjConstantBuffer.Get(), 0, nullptr, &socb, 0, 0);	
 		}
 
-		// 렌더링
+		// 큐브 렌더링
 		{
 			D3D11_BUFFER_DESC indexBufferDesc;
 			m_CubeIndexBuffer->GetDesc(&indexBufferDesc);
 			UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
 			m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
 		}
+
+		// 스켈레탈 메시 버텍스 셰이더 설정
+		m_d3dDeviceContext->IASetInputLayout(m_SkeletalMeshInputLayout.Get());
+		m_d3dDeviceContext->VSSetShader(m_ShadowMapSkeletalMeshVertexShader.Get(),nullptr, 0);
+		// 상수버퍼 설정
+		m_d3dDeviceContext->VSSetConstantBuffers(2, 1, m_SkeletalBoneMatrixConstantBuffer.GetAddressOf());
 
 		// cb 설정 - ShadowObjConstantBuffer
 		{
@@ -488,25 +497,34 @@ void AnimationApp::DrawShadowMap()
 			m_d3dDeviceContext->UpdateSubresource(m_ShadowObjConstantBuffer.Get(), 0, nullptr, &socb, 0, 0);	
 		}
 
+
+		// cb 설정 - BoneFinalMatrices
+		{
+			SkeletalMeshBoneTransformConstantBuffer cb;
+			auto boneFinalTransforms = m_PaladinAnimator->GetFinalBoneMatrices();
+			for(int i = 0; i < MAX_BONES; ++i)
+			{
+				cb.BoneFinalTransforms[i] = XMMatrixTranspose(boneFinalTransforms[i]);
+			}
+			m_d3dDeviceContext->UpdateSubresource(m_SkeletalBoneMatrixConstantBuffer.Get(),0, nullptr, &cb, 0,0);
+		}
+
 		// 렌더링
 		{
 			// 버텍스 버퍼에 맞춰 오브젝트 드로우
-			for(int vertexCount = 0; vertexCount < m_ModelVertexBuffer.size(); ++vertexCount)
+			for(int vertexCount = 0; vertexCount < m_PaladinVertexBuffer.size(); ++vertexCount)
 			{
-				// SRV 설정(텍스쳐)
-				{
-					m_d3dDeviceContext->PSSetShaderResources(0,1, m_ModelShaderResourceView[0].GetAddressOf());	
-				}
-				UINT stride = sizeof(MyVertexData);
+				UINT stride = sizeof(MySkeletalMeshVertexData);
 				UINT offset = 0;
-				m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_ModelVertexBuffer[vertexCount].GetAddressOf(), &stride, &offset);
-				m_d3dDeviceContext->IASetIndexBuffer(m_ModelIndexBuffer[vertexCount].Get(), DXGI_FORMAT_R32_UINT, 0);
+				m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_PaladinVertexBuffer[vertexCount].GetAddressOf(), &stride, &offset);
+				m_d3dDeviceContext->IASetIndexBuffer(m_PaladinIndexBuffer[vertexCount].Get(), DXGI_FORMAT_R32_UINT, 0);
 
 				D3D11_BUFFER_DESC indexBufferDesc;
-				m_ModelIndexBuffer[vertexCount]->GetDesc(&indexBufferDesc);
+				m_PaladinIndexBuffer[vertexCount]->GetDesc(&indexBufferDesc);
 				UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
 				m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
 			}
+			
 		}
 	}
 }
@@ -732,8 +750,9 @@ void AnimationApp::DrawSkeletalMesh()
 	// ConstantBuffer
 	m_d3dDeviceContext->VSSetConstantBuffers(0, 1, m_FrameConstantBuffer.GetAddressOf());
 	m_d3dDeviceContext->PSSetConstantBuffers(0,1,m_FrameConstantBuffer.GetAddressOf());
-	m_d3dDeviceContext->VSSetConstantBuffers(1, 1, m_SkeletalMeshConstantBuffer.GetAddressOf());
-	m_d3dDeviceContext->PSSetConstantBuffers(1,1, m_SkeletalMeshConstantBuffer.GetAddressOf());
+	m_d3dDeviceContext->VSSetConstantBuffers(1, 1, m_ObjConstantBuffer.GetAddressOf());
+	m_d3dDeviceContext->VSSetConstantBuffers(3, 1, m_SkeletalBoneMatrixConstantBuffer.GetAddressOf());
+	m_d3dDeviceContext->PSSetConstantBuffers(1,1, m_ObjConstantBuffer.GetAddressOf());
 	m_d3dDeviceContext->PSSetConstantBuffers(2,1, m_LightConstantBuffer.GetAddressOf());
 
 	// Frame 상수 버퍼 설정
@@ -762,7 +781,7 @@ void AnimationApp::DrawSkeletalMesh()
 	// 오브젝트 Draw
 	// Obj 상수 버퍼 설정
 	{
-		SkeletalMeshConstantBuffer ocb;
+		ObjConstantBuffer ocb;
 		XMMATRIX world = m_World * XMMatrixScaling(m_ModelScale.x,m_ModelScale.y,m_ModelScale.z);
 		//world = world * XMMatrixRotationX(m_ModelRotation.x) * XMMatrixRotationY(m_ModelRotation.y) * XMMatrixRotationZ(m_ModelRotation.z);
 		world = world * XMMatrixRotationQuaternion(m_ModelQuat);
@@ -773,13 +792,17 @@ void AnimationApp::DrawSkeletalMesh()
 
 		ocb.ObjectMaterial = m_ModelMaterial;
 
+		m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);	
+	}
+	{
+		SkeletalMeshBoneTransformConstantBuffer cb;
 		auto boneFinalTransforms = m_PaladinAnimator->GetFinalBoneMatrices();
 		for(int i = 0; i < MAX_BONES; ++i)
 		{
-			ocb.BoneFinalTransforms[i] = XMMatrixTranspose(boneFinalTransforms[i]);
+			cb.BoneFinalTransforms[i] = XMMatrixTranspose(boneFinalTransforms[i]);
 		}
+		m_d3dDeviceContext->UpdateSubresource(m_SkeletalBoneMatrixConstantBuffer.Get(),0,nullptr,&cb, 0,0);
 		
-		m_d3dDeviceContext->UpdateSubresource(m_SkeletalMeshConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);	
 	}
 
 
@@ -925,7 +948,7 @@ void AnimationApp::DrawScene()
 		//	UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
 		//	m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
 		//}
-		//DrawCube();
+		DrawCube();
 		DrawSkeletalMesh();
 
 #if defined(DEBUG) || defined(_DEBUG)
@@ -1007,8 +1030,9 @@ void AnimationApp::BuildShader()
 	bufferDesc.ByteWidth = sizeof(ShadowObjConstantBuffer);
 	HR(m_d3dDevice->CreateBuffer(&bufferDesc, nullptr, m_ShadowObjConstantBuffer.GetAddressOf()))
 
-	bufferDesc.ByteWidth = sizeof(SkeletalMeshConstantBuffer);
-	HR(m_d3dDevice->CreateBuffer(&bufferDesc, nullptr, m_SkeletalMeshConstantBuffer.GetAddressOf()));
+
+	bufferDesc.ByteWidth = sizeof(SkeletalMeshBoneTransformConstantBuffer);
+	HR(m_d3dDevice->CreateBuffer(&bufferDesc, nullptr, m_SkeletalBoneMatrixConstantBuffer.GetAddressOf()));
 }
 
 
