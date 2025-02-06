@@ -2,6 +2,7 @@
 #pragma enable_d3d11_debug_symbols
 
 #include "LightHelper.hlsl"
+#include "TransformHelpers.hlsl"
 
 Texture2D txDiffuse : register( t0 );
 SamplerState samLinear : register( s0 );
@@ -49,13 +50,13 @@ struct VS_OUTPUT
 VS_OUTPUT VS( float4 Pos : POSITION, float3 Normal : NORMAL, float2 TexCoord : TEXCOORD )
 {
     VS_OUTPUT output = (VS_OUTPUT)0;
-    output.PosScreen = mul( Pos, World );
-    // 픽셀 셰이더 내에서 라이팅을 위해 
-    output.PosWorld = output.PosScreen.xyz;
 
-    output.PosScreen = mul( output.PosScreen, View );
+    // 픽셀 셰이더 내에서 라이팅을 위해 
+    output.PosWorld =  mul( Pos, World ).xyz;
+
+    // PosScreen
+    output.PosScreen = CalculateScreenPosition(Pos, World,View,Projection);
     output.Depth = output.PosScreen.z;
-    output.PosScreen = mul( output.PosScreen, Projection );
 
     // 노말벡터를 월드좌표계로
     output.NormalW = mul(Normal, (float3x3)WorldInvTranspose);
@@ -63,13 +64,8 @@ VS_OUTPUT VS( float4 Pos : POSITION, float3 Normal : NORMAL, float2 TexCoord : T
 
     output.Tex = TexCoord;
 
-
     // light source에서 버텍스로의 position
-    output.PosLightSpace = mul(Pos, World);
-	output.PosLightSpace = mul(output.PosLightSpace, LightView);
-	output.PosLightSpace = mul(output.PosLightSpace, LightProj);
-    
-    
+    output.PosLightSpace = CalculateScreenPosition(Pos, World,LightView,LightProj);
 		
     return output;
 }
@@ -112,7 +108,7 @@ float4 PS( VS_OUTPUT input ) : SV_Target
     {
 		float depthValue = gShadowMap.Sample(gShadowSampler, shadowCoord.xy).r;
 
-        float bias = 0.0001f;
+        float bias = 0.001f;
         float lightDepthValue = shadowCoord.z - bias;
 
         if(lightDepthValue > depthValue)
