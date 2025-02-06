@@ -7,6 +7,11 @@
 //***************************************************************************************
 #define _CRT_SECURE_NO_WARNINGS
 
+// TODO: (02.05) 다음 번
+// Mesh 모듈화
+// Animation 목록도 Mesh에 넣기
+// Skeletal Mesh도 그림자 반영되도록 하기
+
 
 #include <format>
 #include <map>
@@ -16,7 +21,6 @@
 #include "AssetManager.h"
 //#include "../../Core/AssetManager.h"
 
-#include <chrono>
 
 #include "imgui.h"
 #include "imgui_internal.h"
