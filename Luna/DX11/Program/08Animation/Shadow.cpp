@@ -69,7 +69,8 @@ struct LightFrameConstantBuffer
 
 struct ShadowLightMatrixConstantBuffer
 {
-	XMMATRIX LightViewProj;
+	XMMATRIX LightView;
+	XMMATRIX LightProj;
 };
 
 struct ShadowObjConstantBuffer
@@ -452,8 +453,8 @@ void AnimationApp::DrawShadowMap()
 		// cb 설정 - ShadowLightMatrixConstantBuffer
 		{
 			ShadowLightMatrixConstantBuffer slcb;
-			slcb.LightViewProj= XMMatrixTranspose(m_LightView*m_LightProj);
-			
+			slcb.LightView = XMMatrixTranspose(m_LightView);
+			slcb.LightProj = XMMatrixTranspose(m_LightProj);
 			m_d3dDeviceContext->UpdateSubresource(m_ShadowLightMatrixConstantBuffer.Get(), 0, nullptr, &slcb, 0, 0);	
 		}
 

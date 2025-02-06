@@ -179,5 +179,8 @@
     <None Include="Shader\SkeletalMesh.hlsl">
       <Filter>Shader</Filter>
     </None>
+    <None Include="Shader\TransformHelpers.hlsl">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

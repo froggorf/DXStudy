@@ -1,9 +1,12 @@
 #pragma target 4.0
 #pragma enable_d3d11_debug_symbols
 
+#include "TransformHelpers.hlsl"
+
 cbuffer cbLightMatrix : register(b0)
 {
-    matrix LightViewProj;
+    matrix LightView;
+    matrix LightProj;
 }
 
 cbuffer cbPerObject : register(b1)
@@ -23,8 +26,9 @@ VS_OUTPUT VS( float4 Pos: POSITION, float3 Normal:NORMAL, float2 Tex : TEXCOORD 
 {
     VS_OUTPUT output = (VS_OUTPUT)0;
 
-    Pos = mul(Pos, World);
-    output.PosScreen = mul(Pos, LightViewProj);
+    //Pos = mul(Pos, World);
+    //output.PosScreen = mul(Pos, LightViewProj);
+    output.PosScreen = CalculateScreenPosition(Pos, World, LightView, LightProj);
 
     return output;
 }
