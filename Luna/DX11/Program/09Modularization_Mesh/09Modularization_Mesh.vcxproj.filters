@@ -1,0 +1,236 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{7edc595d-595c-4032-973b-194c7831f520}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Animation">
+      <UniqueIdentifier>{93ee5f77-500d-43f7-b013-1fcff700c948}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{79d9d274-f769-4faf-b8e5-8331be36d333}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty">
+      <UniqueIdentifier>{00d5e8e8-72a4-471b-a93f-1eeef273c5e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\ImGui">
+      <UniqueIdentifier>{0c68609b-d338-42c4-9982-28bc05d81ff3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\ImGui\backends">
+      <UniqueIdentifier>{475fcf29-e8cc-453e-9983-931d1571e295}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\ImGuizmo">
+      <UniqueIdentifier>{45804cef-981d-4bab-a365-4a37e9e870f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Engine">
+      <UniqueIdentifier>{a8d259ac-1657-460c-bb63-af7fbe80c773}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Engine\UObject">
+      <UniqueIdentifier>{caf3f8ef-0a6a-4741-8b56-6a050e28f2c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Engine\Components">
+      <UniqueIdentifier>{ebef0f4a-e56f-4402-af70-5b20dfce85a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Engine\GameFramework">
+      <UniqueIdentifier>{93b09f01-0a7c-4bb0-9085-02c0b05bdcef}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Core\AssetManager.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Core\d3dApp.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Core\DebuggingSRV.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Core\GameTimer.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Core\ShadowMap.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Core\Animation\Animation.cpp">
+      <Filter>Core\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Core\Animation\Animator.cpp">
+      <Filter>Core\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Core\Animation\Bone.cpp">
+      <Filter>Core\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGui\imgui.cpp">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGui\imgui_draw.cpp">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGui\imgui_tables.cpp">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGui\imgui_widgets.cpp">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGui\backends\imgui_impl_dx11.cpp">
+      <Filter>ThirdParty\ImGui\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGui\backends\imgui_impl_win32.cpp">
+      <Filter>ThirdParty\ImGui\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGuizmo\GraphEditor.cpp">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGuizmo\ImCurveEdit.cpp">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGuizmo\ImGradient.cpp">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGuizmo\ImGuizmo.cpp">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGuizmo\ImSequencer.cpp">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="Modularization.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Core\Engine\UObject\UObject.cpp">
+      <Filter>Core\Engine\UObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Core\Engine\GameFramework\AActor.cpp">
+      <Filter>Core\Engine\GameFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Core\Engine\Components\USceneComponent.cpp">
+      <Filter>Core\Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Core\Engine\Components\UActorComponent.cpp">
+      <Filter>Core\Engine\Components</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Core\AssetManager.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\d3dApp.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\d3dUtil.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\DebuggingSRV.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\GameTimer.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\LightHelper.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\ShadowMap.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\Animation\Animation.h">
+      <Filter>Core\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\Animation\Animator.h">
+      <Filter>Core\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\Animation\Bone.h">
+      <Filter>Core\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGui\imconfig.h">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGui\imgui.h">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGui\imgui_internal.h">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGui\imstb_rectpack.h">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGui\imstb_textedit.h">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGui\imstb_truetype.h">
+      <Filter>ThirdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGui\backends\imgui_impl_dx11.h">
+      <Filter>ThirdParty\ImGui\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGui\backends\imgui_impl_win32.h">
+      <Filter>ThirdParty\ImGui\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGuizmo\GraphEditor.h">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGuizmo\ImCurveEdit.h">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGuizmo\ImGradient.h">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGuizmo\ImGuizmo.h">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGuizmo\ImSequencer.h">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGuizmo\ImZoomSlider.h">
+      <Filter>ThirdParty\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\Engine\UObject\UObject.h">
+      <Filter>Core\Engine\UObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\Engine\Components\UActorComponent.h">
+      <Filter>Core\Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\Engine\Components\USceneComponent.h">
+      <Filter>Core\Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\Engine\GameFramework\AActor.h">
+      <Filter>Core\Engine\GameFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\Engine\MyEngineUtils.h">
+      <Filter>Core\Engine</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader\AnimationHelpers.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\BuildShadowMap.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\DebuggingTexture.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\LightColor.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\LightHelper.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\SkeletalMesh.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\TransformHelpers.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+  </ItemGroup>
+</Project>
