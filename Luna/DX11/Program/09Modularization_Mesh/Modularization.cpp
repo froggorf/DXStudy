@@ -29,6 +29,7 @@
 #include "Animation/Animator.h"
 #include "backends/imgui_impl_dx11.h"
 #include "backends/imgui_impl_win32.h"
+#include "Engine/UEngine.h"
 
 using namespace DirectX;
 
@@ -193,7 +194,7 @@ private:
 
 	POINT m_LastMousePos;
 
-	
+	UEngine GEngine;
 };
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
@@ -263,6 +264,7 @@ bool AnimationApp::Init()
 	if(!D3DApp::Init())
 		return false;
 
+	GEngine.InitEngine();
 	InitSamplerState();
 
 	LoadModels();
@@ -416,6 +418,7 @@ void AnimationApp::OnResize()
 
 void AnimationApp::UpdateScene(float dt)
 {
+	GEngine.Tick(dt);
     m_View = XMMatrixLookAtLH(XMLoadFloat3(&m_CameraPosition), XMLoadFloat3(&m_CameraViewVector), XMVectorSet(0.0f,1.0f,0.0f,0.0f));
 
 	m_PaladinAnimator->UpdateAnimation(m_Timer.DeltaTime());
@@ -829,6 +832,7 @@ void AnimationApp::DrawSkeletalMesh()
 
 void AnimationApp::DrawScene()
 {
+	GEngine.Draw();
 	DrawShadowMap();
 
 	m_d3dDeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), m_DepthStencilView.Get());

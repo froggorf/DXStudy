@@ -46,6 +46,12 @@
     <Filter Include="Core\Engine\GameFramework">
       <UniqueIdentifier>{93b09f01-0a7c-4bb0-9085-02c0b05bdcef}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Engine\ULevel">
+      <UniqueIdentifier>{848886be-67e4-4efd-8a44-c663ba0d89ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Engine\UWorld">
+      <UniqueIdentifier>{8cbd5c59-fd31-4b84-9283-d6db71d2abdc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Core\AssetManager.cpp">
@@ -119,6 +125,15 @@
     </ClCompile>
     <ClCompile Include="..\..\Core\Engine\Components\UActorComponent.cpp">
       <Filter>Core\Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Core\Engine\Level\ULevel.cpp">
+      <Filter>Core\Engine\ULevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Core\Engine\World\UWorld.cpp">
+      <Filter>Core\Engine\UWorld</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Core\Engine\UEngine.cpp">
+      <Filter>Core\Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -207,6 +222,15 @@
       <Filter>Core\Engine\GameFramework</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Core\Engine\MyEngineUtils.h">
+      <Filter>Core\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\Engine\Level\ULevel.h">
+      <Filter>Core\Engine\ULevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\Engine\World\UWorld.h">
+      <Filter>Core\Engine\UWorld</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\Engine\UEngine.h">
       <Filter>Core\Engine</Filter>
     </ClInclude>
   </ItemGroup>

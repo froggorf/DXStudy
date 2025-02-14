@@ -138,7 +138,10 @@
     <ClCompile Include="..\..\Core\Engine\Components\UActorComponent.cpp" />
     <ClCompile Include="..\..\Core\Engine\Components\USceneComponent.cpp" />
     <ClCompile Include="..\..\Core\Engine\GameFramework\AActor.cpp" />
+    <ClCompile Include="..\..\Core\Engine\Level\ULevel.cpp" />
+    <ClCompile Include="..\..\Core\Engine\UEngine.cpp" />
     <ClCompile Include="..\..\Core\Engine\UObject\UObject.cpp" />
+    <ClCompile Include="..\..\Core\Engine\World\UWorld.cpp" />
     <ClCompile Include="..\..\Core\GameTimer.cpp" />
     <ClCompile Include="..\..\Core\ShadowMap.cpp" />
     <ClCompile Include="..\..\ThirdParty\ImGuizmo\GraphEditor.cpp" />
@@ -165,8 +168,11 @@
     <ClInclude Include="..\..\Core\Engine\Components\UActorComponent.h" />
     <ClInclude Include="..\..\Core\Engine\Components\USceneComponent.h" />
     <ClInclude Include="..\..\Core\Engine\GameFramework\AActor.h" />
+    <ClInclude Include="..\..\Core\Engine\Level\ULevel.h" />
     <ClInclude Include="..\..\Core\Engine\MyEngineUtils.h" />
+    <ClInclude Include="..\..\Core\Engine\UEngine.h" />
     <ClInclude Include="..\..\Core\Engine\UObject\UObject.h" />
+    <ClInclude Include="..\..\Core\Engine\World\UWorld.h" />
     <ClInclude Include="..\..\Core\GameTimer.h" />
     <ClInclude Include="..\..\Core\LightHelper.h" />
     <ClInclude Include="..\..\Core\ShadowMap.h" />
