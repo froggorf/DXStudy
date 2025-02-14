@@ -139,6 +139,7 @@
     <ClCompile Include="..\..\Core\Engine\Components\USceneComponent.cpp" />
     <ClCompile Include="..\..\Core\Engine\GameFramework\AActor.cpp" />
     <ClCompile Include="..\..\Core\Engine\Level\ULevel.cpp" />
+    <ClCompile Include="..\..\Core\Engine\Mesh\UStaticMesh.cpp" />
     <ClCompile Include="..\..\Core\Engine\UEngine.cpp" />
     <ClCompile Include="..\..\Core\Engine\UObject\UObject.cpp" />
     <ClCompile Include="..\..\Core\Engine\World\UWorld.cpp" />
@@ -169,6 +170,8 @@
     <ClInclude Include="..\..\Core\Engine\Components\USceneComponent.h" />
     <ClInclude Include="..\..\Core\Engine\GameFramework\AActor.h" />
     <ClInclude Include="..\..\Core\Engine\Level\ULevel.h" />
+    <ClInclude Include="..\..\Core\Engine\Mesh\StaticMeshResources.h" />
+    <ClInclude Include="..\..\Core\Engine\Mesh\UStaticMesh.h" />
     <ClInclude Include="..\..\Core\Engine\MyEngineUtils.h" />
     <ClInclude Include="..\..\Core\Engine\UEngine.h" />
     <ClInclude Include="..\..\Core\Engine\UObject\UObject.h" />

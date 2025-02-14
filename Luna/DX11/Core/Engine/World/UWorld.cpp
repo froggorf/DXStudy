@@ -9,9 +9,6 @@ UWorld::UWorld()
 {
 }
 
-UWorld::~UWorld()
-{
-}
 
 void UWorld::Init()
 {

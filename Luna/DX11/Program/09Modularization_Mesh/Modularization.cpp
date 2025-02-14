@@ -208,7 +208,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 	AnimationApp theApp(hInstance);
 	
 	if( !theApp.Init() )
-		return 0;
+		return -1;
 	
 	return theApp.Run();
 }
@@ -265,6 +265,7 @@ bool AnimationApp::Init()
 		return false;
 
 	GEngine.InitEngine();
+
 	InitSamplerState();
 
 	LoadModels();

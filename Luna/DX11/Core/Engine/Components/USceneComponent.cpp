@@ -10,11 +10,7 @@ USceneComponent::USceneComponent()
 {
 }
 
-USceneComponent::~USceneComponent()
-{
-}
-
-void USceneComponent::SetupAttachment(USceneComponent* InParent, std::string InSocketName)
+void USceneComponent::SetupAttachment(USceneComponent* InParent, std::string_view InSocketName)
 {
 	if( InParent == AttachParent.get() && InSocketName == AttachSocketName)
 	{
@@ -51,7 +47,12 @@ void USceneComponent::SetAttachSocketName(std::string NewSocketName)
 	// 언리얼 엔진에서는 MARK_PROPERTY_DIRTY_FROM_NAME 를 통해 리플렉션 시스템을 적용
 }
 
-void USceneComponent::UpdateComponentToWorldWithParent(USceneComponent* Parent, std::string SocketName,
+void USceneComponent::UpdateComponentToWorldWithParent(USceneComponent* Parent, std::string_view SocketName,
 	const DirectX::XMVECTOR& RelativeRotationQuat)
 {
+	// 부모의 위치 받아와서
+	// 내 Relative Transform 곱해줘서
+	// 내 ComponentToWorld에 갱신해주기
+
+	//자식들 loop 돌면서 자식들 ComponentToWorld 갱신
 }

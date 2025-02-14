@@ -14,7 +14,6 @@ class AActor : public UObject
 {
 public:
 	AActor();
-	~AActor();
 
 
 	USceneComponent* GetRootComponent() const { return RootComponent.get(); }

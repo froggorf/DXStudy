@@ -3,6 +3,8 @@
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
 
+
+// VFX 업데이트, Subsystem업데이트, 레벨 업데이트 같은 전체적인 역할을 관리하는 클래스
 #pragma once
 
 #include "Engine/MyEngineUtils.h"
@@ -15,7 +17,6 @@ class UWorld : public UObject
 {
 public:
 	UWorld();
-	~UWorld();
 
 	void Init() override;
 	void PostLoad() override;
@@ -23,10 +24,11 @@ public:
 	void TickWorld(float DeltaSeconds);
 	void Tick();
 
-	ULevel* GetPersistentLevel() const { return PersistentLevel.get(); }
+
+	std::shared_ptr<ULevel> GetPersistentLevel() const { return PersistentLevel; }
 	void SetPersistentLevel(ULevel* NewLevel) { PersistentLevel = std::make_shared<ULevel>(*NewLevel); }
 
-
+	
 protected:
 private:
 public:

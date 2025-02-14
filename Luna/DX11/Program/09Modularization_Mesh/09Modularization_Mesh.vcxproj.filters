@@ -52,6 +52,9 @@
     <Filter Include="Core\Engine\UWorld">
       <UniqueIdentifier>{8cbd5c59-fd31-4b84-9283-d6db71d2abdc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Engine\Mesh">
+      <UniqueIdentifier>{b9f54710-8b40-465c-b78b-7b118bf2d86b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Core\AssetManager.cpp">
@@ -134,6 +137,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Core\Engine\UEngine.cpp">
       <Filter>Core\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Core\Engine\Mesh\UStaticMesh.cpp">
+      <Filter>Core\Engine\Mesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -232,6 +238,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Core\Engine\UEngine.h">
       <Filter>Core\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\Engine\Mesh\StaticMeshResources.h">
+      <Filter>Core\Engine\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\Engine\Mesh\UStaticMesh.h">
+      <Filter>Core\Engine\Mesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

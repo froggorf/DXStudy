@@ -17,12 +17,14 @@ public:
 	void TickLevel(float DeltaSeconds);
 
 	void SetOwningWorld(UWorld* NewOwningWorld){ OwningWorld = std::make_shared<UWorld>(*NewOwningWorld); }
-	UWorld* GetWorld() const { return OwningWorld.get(); }
+	std::shared_ptr<UWorld> GetWorld() const { return OwningWorld; }
+
 protected:
 private:
 public:
 protected:
 private:
 	std::shared_ptr<UWorld>	OwningWorld;
+
 	std::vector<std::shared_ptr<AActor>> Actors;
 };
