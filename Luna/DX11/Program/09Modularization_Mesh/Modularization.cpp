@@ -899,7 +899,7 @@ void AnimationApp::DrawScene()
 			XMMATRIX world = m_World * XMMatrixScaling(m_ModelScale.x,m_ModelScale.y,m_ModelScale.z);
 			//world = world * XMMatrixRotationX(m_ModelRotation.x) * XMMatrixRotationY(m_ModelRotation.y) * XMMatrixRotationZ(m_ModelRotation.z);
 			world = world * XMMatrixRotationQuaternion(m_ModelQuat);
-			world *= XMMatrixTranslation(m_ModelPosition.x + 3.0f,m_ModelPosition.y,m_ModelPosition.z);
+			world *= XMMatrixTranslation(m_ModelPosition.x,m_ModelPosition.y,m_ModelPosition.z);
 			// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
 			ocb.InvTransposeMatrix = (XMMatrixInverse(nullptr, world));
 			ocb.World = XMMatrixTranspose(world);
@@ -912,6 +912,7 @@ void AnimationApp::DrawScene()
 		// Sampler State 설정
 		m_d3dDeviceContext->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
 
+		TestCubeObj->TestDraw(m_d3dDeviceContext);
 		//// 버텍스 버퍼에 맞춰 오브젝트 드로우
 		//for(int vertexCount = 0; vertexCount < m_ModelVertexBuffer.size(); ++vertexCount)
 		//{

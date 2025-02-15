@@ -8,8 +8,6 @@
 #include "Engine/MyEngineUtils.h"
 #include "Engine/UObject/UObject.h"
 
-class FStaticMeshRenderData;
-
 class UStaticMesh : public UObject
 {
 public:
@@ -21,6 +19,27 @@ public:
 	}
 
 	unsigned int GetStaticMeshMeshCount() const {return RenderData.get()->MeshCount; }
+
+	void TestDraw(const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& DeviceContext)
+	{
+		int MeshCount = RenderData->MeshCount;
+		for(int MeshIndex= 0; MeshIndex < MeshCount; ++MeshIndex)
+		{
+			// SRV 설정(텍스쳐)
+			{
+				DeviceContext->PSSetShaderResources(0,1, RenderData->TextureSRV[0].GetAddressOf());	
+			}
+			UINT stride = sizeof(MyVertexData);
+			UINT offset = 0;
+			DeviceContext->IASetVertexBuffers(0, 1, RenderData->VertexBuffer[MeshIndex].GetAddressOf(), &stride, &offset);
+			DeviceContext->IASetIndexBuffer(RenderData->IndexBuffer[MeshIndex].Get(), DXGI_FORMAT_R32_UINT, 0);
+		
+			D3D11_BUFFER_DESC indexBufferDesc;
+			RenderData->IndexBuffer[MeshIndex]->GetDesc(&indexBufferDesc);
+			UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
+			DeviceContext->DrawIndexed(indexSize, 0, 0);
+		}
+	}
 protected:
 private:
 
