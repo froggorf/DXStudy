@@ -16,6 +16,8 @@ public:
 
 	virtual void Init();
 	virtual void PostLoad();
+
+	virtual void LoadDataFromFileData(const std::vector<std::string>& StaticMeshAssetData);
 protected:
 private:
 public:

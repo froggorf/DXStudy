@@ -4,6 +4,9 @@
 // 이윤석
 
 #pragma once
+#ifndef USTATICMESH_H
+#define USTATICMESH_H
+
 #include "StaticMeshResources.h"
 #include "Engine/MyEngineUtils.h"
 #include "Engine/UEngine.h"
@@ -12,7 +15,7 @@
 class UStaticMesh : public UObject
 {
 public:
-	UStaticMesh(const std::vector<std::string>& StaticMeshAssetData, const Microsoft::WRL::ComPtr<ID3D11Device>& DeviceObject);
+	UStaticMesh();
 	~UStaticMesh();
 	UStaticMesh(const UStaticMesh& other)
 	{
@@ -42,6 +45,8 @@ public:
 			DeviceContext->DrawIndexed(indexSize, 0, 0);
 		}
 	}
+
+	virtual void LoadDataFromFileData(const std::vector<std::string>& StaticMeshAssetData) override;
 protected:
 private:
 
@@ -53,3 +58,4 @@ private:
 	std::unique_ptr<FStaticMeshRenderData> RenderData;
 	
 };
+#endif

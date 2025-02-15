@@ -8,13 +8,20 @@
 #include "d3dApp.h"
 #include "StaticMeshResources.h"
 
-UStaticMesh::UStaticMesh(const std::vector<std::string>& StaticMeshAssetData, const ComPtr<ID3D11Device>& DeviceObject)
+UStaticMesh::UStaticMesh()
 {
-	RenderData = std::make_unique<FStaticMeshRenderData>(StaticMeshAssetData, DeviceObject);
-
-	std::cout<< "Load UStaticMesh - " + StaticMeshAssetData[0] + " Complete!" << std::endl;
+	
 }
 
 UStaticMesh::~UStaticMesh()
 {
+}
+
+void UStaticMesh::LoadDataFromFileData(const std::vector<std::string>& StaticMeshAssetData)
+{
+	UObject::LoadDataFromFileData(StaticMeshAssetData);
+
+	RenderData = std::make_unique<FStaticMeshRenderData>(StaticMeshAssetData, GEngine->GetDevice());
+
+	std::cout<< "Load UStaticMesh - " + StaticMeshAssetData[0] + " Complete!" << std::endl;
 }

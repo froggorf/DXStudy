@@ -21,3 +21,7 @@ void UObject::Init()
 void UObject::PostLoad()
 {
 }
+
+void UObject::LoadDataFromFileData(const std::vector<std::string>& StaticMeshAssetData)
+{
+}

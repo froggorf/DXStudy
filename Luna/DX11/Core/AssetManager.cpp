@@ -318,54 +318,6 @@ void AssetManager::LoadTextureFromFile(const std::wstring& szFile, const Microso
     pTextureShaderResourceView = (srv.Get());
 }
 
-
-UObject* AssetManager::ReadMyAsset(const std::string& FilePath, Microsoft::WRL::ComPtr<ID3D11Device>& DeviceObject)
-{
-    if(AssetCache.find(FilePath.data()) != AssetCache.end())
-    {
-        return AssetCache[FilePath.data()].get();
-    }
-    std::string FinalFilePath = AssetFolderDirectory + FilePath;
-    std::ifstream AssetFile(FinalFilePath.data());
-    if(!AssetFile.is_open())
-    {
-	    throw std::runtime_error("(AssetManager::ReadMyAsset) Failed open file: " + std::string(FilePath.data()));
-    }
-
-    int assetType;
-    AssetFile >> assetType;
-    EAssetDataType AssetType = static_cast<EAssetDataType>(assetType);
-
-    std::vector<std::string> RemainingAssetData;
-    std::string data;
-    while(AssetFile>>data)
-    {
-        RemainingAssetData.push_back(data);
-    }
-
-    UObject* Object = nullptr;
-    switch (AssetType)
-    {
-    case EAssetDataType::EADT_StaticMesh:
-		Object = new UStaticMesh(RemainingAssetData, DeviceObject);
-		break;
-    case EAssetDataType::EADT_SkeletalMesh:
-		break;
-    default:
-        throw std::runtime_error("(AssetManager::ReadMyAsset) Error AssetDataType: " + std::string(FilePath.data()) + std::to_string(assetType));
-        break;
-    }
-
-    if(nullptr == Object)
-    {
-	    throw std::runtime_error("(AssetManager::ReadMyAsset) Error Read Asset");
-    }
-    AssetCache[FilePath.data()] = std::make_unique<UObject>(*Object);
-    return Object;
-
-}
-
-
 void AssetManager::ProcessScene(const aiScene* scene, std::vector<std::vector<MyVertexData>>& allVertices,
                                 std::vector<std::vector<UINT>>& allIndices)
 {

@@ -281,9 +281,7 @@ bool AnimationApp::Init()
 	// 그림자 맵
 	InitForShadowMap();
 
-	//TestCubeObj = std::make_shared<UStaticMesh>(*AssetManager::ReadMyAsset<UStaticMesh>("Asset/StaticMesh/Racco.myasset", m_d3dDevice));
-	TestCubeObj = std::make_shared<UStaticMesh>(*dynamic_cast<UStaticMesh*>(AssetManager::ReadMyAsset("Asset/StaticMesh/Racco.myasset", m_d3dDevice)));
-	
+	TestCubeObj = std::make_shared<UStaticMesh>(*AssetManager::ReadMyAsset<UStaticMesh>("Asset/StaticMesh/Racco.myasset"));
 	
 	return true;
 }

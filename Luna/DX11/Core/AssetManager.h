@@ -1,8 +1,10 @@
 // assimp 라이브러리와 텍스쳐 로드 라이브러리를 활용하여
 // 모델, 텍스쳐 등의 오브젝트 (에셋)을 관리하는 매니저 클래스
 #pragma once
-
 #include "d3dUtil.h"
+
+#include <type_traits>
+#include <fstream>
 class UObject;
 struct aiScene;
 struct aiMesh;
@@ -13,6 +15,9 @@ enum class EAssetDataType
 	EADT_StaticMesh = 0,
 	EADT_SkeletalMesh,
 };
+
+template <typename T>
+concept DerivedFromUObject = std::is_base_of_v<UObject, T>;
 
 class AssetManager
 {
@@ -35,9 +40,12 @@ public:
 
 	// myasset 파일 읽기
 	// myasset을 통해 읽은 UObject 데이터를 unique_ptr를 통해 관리하고 반환
-	static UObject* ReadMyAsset(const std::string& FilePath, Microsoft::WRL::ComPtr<ID3D11Device>& DeviceObject);
+	//static UObject* ReadMyAsset(const std::string& FilePath, Microsoft::WRL::ComPtr<ID3D11Device>& DeviceObject);
 	//template<typename T>
 	//static T* ReadMyAsset(const std::string& FilePath, Microsoft::WRL::ComPtr<ID3D11Device>& DeviceObject);
+
+	template <DerivedFromUObject T>
+	static T* ReadMyAsset(const std::string& FilePath);
 
 private:
 	// 파일 데이터로 얻은 aiScene 클래스로부터 메쉬 정보 얻는 함수
@@ -57,4 +65,37 @@ protected:
 private:
 	static std::unordered_map<std::string, std::unique_ptr<UObject>> AssetCache;
 };
+
+
+template <DerivedFromUObject T = UObject>
+T* AssetManager::ReadMyAsset(const std::string& FilePath)
+{
+	if(AssetCache.find(FilePath.data())!= AssetCache.end())
+	{
+		return reinterpret_cast<T*>(AssetCache[FilePath.data()].get());
+	}
+
+	std::string FinalFilePath = "../../" + FilePath;
+	std::ifstream AssetFile(FinalFilePath.data());
+	if(!AssetFile.is_open())
+	{
+		throw std::runtime_error("(AssetManager::ReadMyAsset) Failed open file: " + std::string(FilePath.data()));
+	}
+
+	int assetType;
+	AssetFile >> assetType;
+	EAssetDataType AssetType = static_cast<EAssetDataType>(assetType);
+
+	std::vector<std::string> RemainingAssetData;
+	std::string data;
+	while(AssetFile>>data)
+	{
+		RemainingAssetData.push_back(data);
+	}
+
+	T* Object = new T();
+	Object->LoadDataFromFileData(RemainingAssetData);
+	
+	return Object;
+}
 
