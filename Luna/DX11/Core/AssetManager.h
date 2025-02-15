@@ -2,10 +2,19 @@
 // 모델, 텍스쳐 등의 오브젝트 (에셋)을 관리하는 매니저 클래스
 #pragma once
 
+
 #include "d3dUtil.h"
 
+class UObject;
 struct aiScene;
 struct aiMesh;
+
+
+enum class EAssetDataType
+{
+	EADT_StaticMesh = 0,
+	EADT_SkeletalMesh,
+};
 
 class AssetManager
 {
@@ -26,6 +35,9 @@ public:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& vTextureShaderResourceView);
 
 
+	// myasset 파일 읽기
+	// myasset을 통해 읽은 UObject 데이터를 unique_ptr를 통해 관리하고 반환
+	static UObject* ReadMyAsset(const std::string& FilePath, Microsoft::WRL::ComPtr<ID3D11Device>& DeviceObject);
 
 private:
 	// 파일 데이터로 얻은 aiScene 클래스로부터 메쉬 정보 얻는 함수
@@ -39,5 +51,10 @@ private:
 	static void SetVertexBoneData(MySkeletalMeshVertexData& vertexData, int boneID, float weight);
 	// 버텍스의 BoneWeight 정보를 추출하는 함수
 	static void ExtractBoneWeightForVertices(std::vector<MySkeletalMeshVertexData>& vVertexData, aiMesh* mesh, std::map<std::string, BoneInfo>& modelBoneInfoMap);
+
+public:
+protected:
+private:
+	static std::unordered_map<std::string, std::unique_ptr<UObject>> AssetCache;
 };
 

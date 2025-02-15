@@ -6,10 +6,59 @@
 #pragma once
 
 
+#include "AssetManager.h"
 #include "Engine/MyEngineUtils.h"
 
 class FStaticMeshRenderData
 {
+public:
+	FStaticMeshRenderData(const std::vector<std::string>& StaticMeshFilePathData, const Microsoft::WRL::ComPtr<ID3D11Device>& DeviceObject)
+	{
+		for(auto& p : VertexBuffer)
+		{
+			p->Release();
+		}
+		for(auto& p : IndexBuffer)
+		{
+			p->Release();
+		}
+		for(auto& p : TextureSRV)
+		{
+			p->Release();
+		}
+
+		AssetManager::LoadModelData(StaticMeshFilePathData[0], DeviceObject,VertexBuffer,IndexBuffer);
+		MeshCount = VertexBuffer.size();
+
+		for(int count = 0; count < MeshCount; ++count)
+		{
+			if(StaticMeshFilePathData.size() <= 1+count)
+			{
+				std::cout<< "Warning: Texture count not match with mesh count"<<std::endl;
+				break;
+			}
+
+			Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> SRV;
+			AssetManager::LoadTextureFromFile(std::wstring().assign(StaticMeshFilePathData[1+count].begin(),StaticMeshFilePathData[1+count].end()), DeviceObject, SRV);
+			TextureSRV.push_back(SRV);
+		}
+
+		if(TextureSRV.size() == 0)
+		{
+			throw std::runtime_error("In Static Mesh.myasset File, texture data no valid");
+		}
+
+		int currentTextureCount = TextureSRV.size();
+		for(; currentTextureCount < MeshCount; ++currentTextureCount)
+		{
+			TextureSRV.push_back(TextureSRV[0]);
+		}
+	}
+
+
+protected:
+private:
+public:
 	unsigned int MeshCount;
 
 	// Buffer[MeshCount]

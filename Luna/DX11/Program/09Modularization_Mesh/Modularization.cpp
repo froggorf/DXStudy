@@ -30,6 +30,7 @@
 #include "backends/imgui_impl_dx11.h"
 #include "backends/imgui_impl_win32.h"
 #include "Engine/UEngine.h"
+#include "Engine/Mesh/UStaticMesh.h"
 
 using namespace DirectX;
 
@@ -195,6 +196,9 @@ private:
 	POINT m_LastMousePos;
 
 	UEngine GEngine;
+
+	// TODO: TEST: DELETE LATER
+	std::shared_ptr<UStaticMesh> TestCubeObj;
 };
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
@@ -279,6 +283,9 @@ bool AnimationApp::Init()
 	// 그림자 맵
 	InitForShadowMap();
 
+	// 
+	TestCubeObj = std::make_shared<UStaticMesh>(*dynamic_cast<UStaticMesh*>(AssetManager::ReadMyAsset("Asset/StaticMesh/Racco.myasset", m_d3dDevice)));
+	
 	return true;
 }
 
@@ -834,7 +841,7 @@ void AnimationApp::DrawSkeletalMesh()
 void AnimationApp::DrawScene()
 {
 	GEngine.Draw();
-	DrawShadowMap();
+	//DrawShadowMap();
 
 	m_d3dDeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), m_DepthStencilView.Get());
 	m_d3dDeviceContext->RSSetViewports(1, &m_ScreenViewport);
@@ -950,8 +957,8 @@ void AnimationApp::DrawScene()
 		//	UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
 		//	m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
 		//}
-		DrawCube();
-		DrawSkeletalMesh();
+		//DrawCube();
+		//DrawSkeletalMesh();
 
 #if defined(DEBUG) || defined(_DEBUG)
 		DebuggingSRV::DrawDebuggingTexture(

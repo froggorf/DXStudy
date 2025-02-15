@@ -1,5 +1,5 @@
 #include "AssetManager.h"
-
+#include <fstream>
 // Assimp
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
@@ -14,10 +14,16 @@
 
 #include <map>
 
+#include "Engine/Mesh/UStaticMesh.h"
+
 using namespace Microsoft::WRL;
+
+
+std::unordered_map<std::string, std::unique_ptr<UObject>> AssetManager::AssetCache;
 
 #define ResourceFolderDirectory "../../Resource/"
 #define ResourceFolderDirectoryW L"../../Resource/"
+#define AssetFolderDirectory "../../"
 void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Device> pDevice, std::vector<ComPtr<ID3D11Buffer>>& pVertexBuffer,
 	std::vector<ComPtr<ID3D11Buffer>>&pIndexBuffer)
 {
@@ -310,6 +316,52 @@ void AssetManager::LoadTextureFromFile(const std::wstring& szFile, const Microso
     HR(pDevice->CreateShaderResourceView(pTexture, &srvDesc, srv.ReleaseAndGetAddressOf()));
     
     pTextureShaderResourceView = (srv.Get());
+}
+
+UObject* AssetManager::ReadMyAsset(const std::string& FilePath, Microsoft::WRL::ComPtr<ID3D11Device>& DeviceObject)
+{
+    if(AssetCache.find(FilePath.data()) != AssetCache.end())
+    {
+        return AssetCache[FilePath.data()].get();
+    }
+    std::string FinalFilePath = AssetFolderDirectory + FilePath;
+    std::ifstream AssetFile(FinalFilePath.data());
+    if(!AssetFile.is_open())
+    {
+	    throw std::runtime_error("(AssetManager::ReadMyAsset) Failed open file: " + std::string(FilePath.data()));
+    }
+
+    int assetType;
+    AssetFile >> assetType;
+    EAssetDataType AssetType = static_cast<EAssetDataType>(assetType);
+
+    std::vector<std::string> RemainingAssetData;
+    std::string data;
+    while(AssetFile>>data)
+    {
+        RemainingAssetData.push_back(data);
+    }
+
+    UObject* Object = nullptr;
+    switch (AssetType)
+    {
+    case EAssetDataType::EADT_StaticMesh:
+		Object = new UStaticMesh(RemainingAssetData, DeviceObject);
+		break;
+    case EAssetDataType::EADT_SkeletalMesh:
+		break;
+    default:
+        throw std::runtime_error("(AssetManager::ReadMyAsset) Error AssetDataType: " + std::string(FilePath.data()) + std::to_string(assetType));
+        break;
+    }
+
+    if(nullptr == Object)
+    {
+	    throw std::runtime_error("(AssetManager::ReadMyAsset) Error Read Asset");
+    }
+    AssetCache[FilePath.data()] = std::make_unique<UObject>(*Object);
+    return Object;
+
 }
 
 
