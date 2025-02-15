@@ -7,6 +7,7 @@
 
 #include "World/UWorld.h"
 
+UEngine* GEngine = nullptr;
 void UEngine::InitEngine()
 {
 	CurrentWorld = std::make_shared<UWorld>();

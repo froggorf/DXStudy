@@ -8,5 +8,14 @@
 
 class UActorComponent : public UObject
 {
+public:
+	UActorComponent();
 	virtual void UpdateComponentToWorld() {}
+protected:
+private:
+public:
+	UINT ComponentID;
+protected:
+private:
+	
 };

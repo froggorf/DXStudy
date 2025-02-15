@@ -9,6 +9,8 @@
 #include <backends/imgui_impl_win32.h>
 
 #include "imgui_internal.h"
+#include "Engine/MyEngineUtils.h"
+#include "Engine/UEngine.h"
 
 namespace
 {
@@ -59,6 +61,8 @@ D3DApp::~D3DApp()
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
+
+	delete GEngine;
 }
 
 HINSTANCE D3DApp::GetAppInstance() const
@@ -121,6 +125,8 @@ bool D3DApp::Init()
 	{
 		return false;
 	}
+
+	GEngine = new UEngine(this);
 
 	InitImGui();
 

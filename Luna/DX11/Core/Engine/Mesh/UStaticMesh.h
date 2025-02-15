@@ -6,6 +6,7 @@
 #pragma once
 #include "StaticMeshResources.h"
 #include "Engine/MyEngineUtils.h"
+#include "Engine/UEngine.h"
 #include "Engine/UObject/UObject.h"
 
 class UStaticMesh : public UObject
@@ -20,11 +21,12 @@ public:
 
 	unsigned int GetStaticMeshMeshCount() const {return RenderData.get()->MeshCount; }
 
-	void TestDraw(const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& DeviceContext)
+	void TestDraw()
 	{
 		int MeshCount = RenderData->MeshCount;
 		for(int MeshIndex= 0; MeshIndex < MeshCount; ++MeshIndex)
 		{
+			ID3D11DeviceContext* DeviceContext = GEngine->GetDeviceContext();
 			// SRV 설정(텍스쳐)
 			{
 				DeviceContext->PSSetShaderResources(0,1, RenderData->TextureSRV[0].GetAddressOf());	

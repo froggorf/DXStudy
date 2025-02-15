@@ -9,7 +9,6 @@
 
 #include "d3dUtil.h"
 
-
 // 언리얼 엔진에서는 템플릿으로 설정 후 double을 건네주지만 float로 고정하여 작성
 struct FTransform
 {
@@ -27,3 +26,7 @@ struct FTransform
 	const DirectX::XMFLOAT3& GetScale3D() const { return Scale3D; }
 	
 };
+
+
+
+extern class UEngine* GEngine;

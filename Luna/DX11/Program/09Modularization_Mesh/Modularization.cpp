@@ -35,7 +35,6 @@
 using namespace DirectX;
 
 
-
 struct FrameConstantBuffer
 {
 	XMMATRIX View;
@@ -195,9 +194,7 @@ private:
 
 	POINT m_LastMousePos;
 
-	UEngine GEngine;
-
-	// TODO: TEST: DELETE LATER
+	
 	std::shared_ptr<UStaticMesh> TestCubeObj;
 };
 
@@ -268,7 +265,8 @@ bool AnimationApp::Init()
 	if(!D3DApp::Init())
 		return false;
 
-	GEngine.InitEngine();
+	
+	GEngine->InitEngine();
 
 	InitSamplerState();
 
@@ -283,8 +281,9 @@ bool AnimationApp::Init()
 	// 그림자 맵
 	InitForShadowMap();
 
-	// 
+	//TestCubeObj = std::make_shared<UStaticMesh>(*AssetManager::ReadMyAsset<UStaticMesh>("Asset/StaticMesh/Racco.myasset", m_d3dDevice));
 	TestCubeObj = std::make_shared<UStaticMesh>(*dynamic_cast<UStaticMesh*>(AssetManager::ReadMyAsset("Asset/StaticMesh/Racco.myasset", m_d3dDevice)));
+	
 	
 	return true;
 }
@@ -426,7 +425,7 @@ void AnimationApp::OnResize()
 
 void AnimationApp::UpdateScene(float dt)
 {
-	GEngine.Tick(dt);
+	GEngine->Tick(dt);
     m_View = XMMatrixLookAtLH(XMLoadFloat3(&m_CameraPosition), XMLoadFloat3(&m_CameraViewVector), XMVectorSet(0.0f,1.0f,0.0f,0.0f));
 
 	m_PaladinAnimator->UpdateAnimation(m_Timer.DeltaTime());
@@ -840,7 +839,7 @@ void AnimationApp::DrawSkeletalMesh()
 
 void AnimationApp::DrawScene()
 {
-	GEngine.Draw();
+	GEngine->Draw();
 	//DrawShadowMap();
 
 	m_d3dDeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), m_DepthStencilView.Get());
@@ -912,7 +911,7 @@ void AnimationApp::DrawScene()
 		// Sampler State 설정
 		m_d3dDeviceContext->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
 
-		TestCubeObj->TestDraw(m_d3dDeviceContext);
+		TestCubeObj->TestDraw();
 		//// 버텍스 버퍼에 맞춰 오브젝트 드로우
 		//for(int vertexCount = 0; vertexCount < m_ModelVertexBuffer.size(); ++vertexCount)
 		//{

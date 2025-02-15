@@ -4,3 +4,10 @@
 // 이윤석
 
 #include "UActorComponent.h"
+
+static UINT ComponentIDCount = 0;
+UActorComponent::UActorComponent()
+{
+	ComponentID = ComponentIDCount++;
+
+}

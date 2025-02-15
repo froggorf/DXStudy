@@ -5,21 +5,32 @@
 
 #pragma once
 
+#include "d3dApp.h"
 #include "Engine/MyEngineUtils.h"
 #include "Engine/UObject/UObject.h"
+
+class D3DApp;
 
 class UEngine : public UObject
 {
 public:
+	UEngine(D3DApp* CurrentApplication)
+	{
+		Application = CurrentApplication;
+	}
 	void InitEngine();
 	void PostLoad() override;
 	void Tick(float DeltaSeconds);
 	void Draw();
+
+	ID3D11Device* GetDevice() const {return Application->GetDevice();}
+	ID3D11DeviceContext* GetDeviceContext() const {return Application->GetDeviceContext();}
 protected:
 private:
 public:
 protected:
 private:
+	D3DApp* Application;
 	std::shared_ptr<UWorld> CurrentWorld;
-
+	
 };

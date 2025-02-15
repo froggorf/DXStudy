@@ -318,6 +318,7 @@ void AssetManager::LoadTextureFromFile(const std::wstring& szFile, const Microso
     pTextureShaderResourceView = (srv.Get());
 }
 
+
 UObject* AssetManager::ReadMyAsset(const std::string& FilePath, Microsoft::WRL::ComPtr<ID3D11Device>& DeviceObject)
 {
     if(AssetCache.find(FilePath.data()) != AssetCache.end())

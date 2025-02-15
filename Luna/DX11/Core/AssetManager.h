@@ -2,9 +2,7 @@
 // 모델, 텍스쳐 등의 오브젝트 (에셋)을 관리하는 매니저 클래스
 #pragma once
 
-
 #include "d3dUtil.h"
-
 class UObject;
 struct aiScene;
 struct aiMesh;
@@ -38,6 +36,8 @@ public:
 	// myasset 파일 읽기
 	// myasset을 통해 읽은 UObject 데이터를 unique_ptr를 통해 관리하고 반환
 	static UObject* ReadMyAsset(const std::string& FilePath, Microsoft::WRL::ComPtr<ID3D11Device>& DeviceObject);
+	//template<typename T>
+	//static T* ReadMyAsset(const std::string& FilePath, Microsoft::WRL::ComPtr<ID3D11Device>& DeviceObject);
 
 private:
 	// 파일 데이터로 얻은 aiScene 클래스로부터 메쉬 정보 얻는 함수

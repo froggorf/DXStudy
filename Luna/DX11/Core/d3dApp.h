@@ -41,6 +41,9 @@ public:
 	virtual void OnMouseUp(WPARAM btnState, int x, int y)  { }
 	virtual void OnMouseMove(WPARAM btnState, int x, int y){ }
 
+	ID3D11Device* GetDevice() const {return m_d3dDevice.Get(); }
+	ID3D11DeviceContext* GetDeviceContext() const {return m_d3dDeviceContext.Get(); }
+	
 protected:
 	bool InitMainWindow();
 	bool InitDirect3D();
