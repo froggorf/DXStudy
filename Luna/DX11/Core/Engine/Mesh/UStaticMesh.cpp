@@ -50,4 +50,6 @@ void UStaticMesh::LoadDataFromFileData(std::vector<std::string>& StaticMeshAsset
 
 	StaticMeshCache[Name] = std::make_shared<UStaticMesh>(*this);
 	std::cout<< "Load UStaticMesh - " + StaticMeshAssetData[0] + " Complete!" << std::endl;
+
+	std::cout<< StaticMeshCache[Name].use_count()<<std::endl;
 }

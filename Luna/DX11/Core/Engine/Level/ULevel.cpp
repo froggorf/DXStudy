@@ -8,10 +8,17 @@
 #include "../../../content/Actor/ATestCube.h"
 #include "Engine/GameFramework/AActor.h"
 
-ULevel::ULevel()
+
+ULevel::ULevel(UWorld* World)
 {
+	OwningWorld = std::make_shared<UWorld>(*World);
+
 	std::shared_ptr<AActor> TestActor = std::make_shared<ATestCube>();
 	Actors.push_back(TestActor);
+}
+
+ULevel::~ULevel()
+{
 }
 
 void ULevel::TickLevel(float DeltaSeconds)

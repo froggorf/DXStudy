@@ -9,6 +9,10 @@ UWorld::UWorld()
 {
 }
 
+UWorld::~UWorld()
+{
+}
+
 
 void UWorld::Init()
 {
@@ -16,7 +20,7 @@ void UWorld::Init()
 
 	if(!PersistentLevel)
 	{
-		PersistentLevel = std::make_shared<ULevel>();
+		PersistentLevel = std::make_shared<ULevel>(this);
 	}
 }
 

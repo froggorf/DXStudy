@@ -13,8 +13,8 @@ class UWorld;
 class ULevel : public UObject
 {
 public:
-	ULevel();
-
+	ULevel(UWorld* World);
+	~ULevel() override;
 	void TickLevel(float DeltaSeconds);
 
 	void SetOwningWorld(UWorld* NewOwningWorld){ OwningWorld = std::make_shared<UWorld>(*NewOwningWorld); }

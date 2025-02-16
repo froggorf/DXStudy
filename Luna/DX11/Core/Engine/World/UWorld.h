@@ -17,7 +17,7 @@ class UWorld : public UObject
 {
 public:
 	UWorld();
-
+	~UWorld() override;
 	void Init() override;
 	void PostLoad() override;
 

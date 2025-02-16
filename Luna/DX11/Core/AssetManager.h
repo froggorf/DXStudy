@@ -60,7 +60,7 @@ private:
 public:
 protected:
 private:
-	static std::unordered_map<std::string, std::unique_ptr<UObject>> AssetCache;
+	static std::unordered_map<std::string, std::shared_ptr<UObject>> AssetCache;
 };
 
 
@@ -90,9 +90,11 @@ T* AssetManager::ReadMyAsset(const std::string& FilePath)
 		RemainingAssetData.push_back(data);
 	}
 
-	T* Object = new T();
+	std::shared_ptr<T> Object = std::make_shared<T>();
 	Object->LoadDataFromFileData(RemainingAssetData);
+
+	AssetCache[FilePath.data()] = Object;
 	
-	return Object;
+	return Object.get();
 }
 

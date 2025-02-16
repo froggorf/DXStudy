@@ -18,6 +18,7 @@ public:
 	{
 		Application = CurrentApplication;
 	}
+	~UEngine() override;
 	void InitEngine();
 	void PostLoad() override;
 	void Tick(float DeltaSeconds);

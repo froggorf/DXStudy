@@ -24,7 +24,7 @@ public:
 	const FStaticMeshRenderData* GetStaticMeshRenderData() const {return RenderData.get();}
 
 	static const std::map<std::string, std::shared_ptr<UStaticMesh>>& GetStaticMeshCache() {return StaticMeshCache;}
-	static std::shared_ptr<UStaticMesh> GetStaticMesh(const std::string& StaticMeshName) { return StaticMeshCache[StaticMeshName]; }
+	static UStaticMesh* GetStaticMesh(const std::string& StaticMeshName) { return StaticMeshCache[StaticMeshName].get(); }
 
 
 

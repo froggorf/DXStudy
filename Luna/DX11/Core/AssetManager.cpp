@@ -19,7 +19,7 @@
 using namespace Microsoft::WRL;
 
 
-std::unordered_map<std::string, std::unique_ptr<UObject>> AssetManager::AssetCache;
+std::unordered_map<std::string, std::shared_ptr<UObject>> AssetManager::AssetCache;
 
 #define ResourceFolderDirectory "../../Resource/"
 #define ResourceFolderDirectoryW L"../../Resource/"
