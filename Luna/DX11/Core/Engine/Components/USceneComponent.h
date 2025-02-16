@@ -9,16 +9,16 @@
 
 #include "UActorComponent.h"
 
-class USceneComponent : public UActorComponent
+class USceneComponent : public UActorComponent, public std::enable_shared_from_this<USceneComponent>
 {
 public:
 	USceneComponent();
 
-	USceneComponent* GetAttachParent() const { return AttachParent.get(); }
+	const std::shared_ptr<USceneComponent>& GetAttachParent() const { return AttachParent; }
 	std::string GetAttachSocketName() const { return AttachSocketName; }
 
 	// 월드 내 배치 되기 전 컴퍼넌트를 붙이는 함수
-	void SetupAttachment(USceneComponent* InParent, std::string_view InSocketName = "");
+	void SetupAttachment(const std::shared_ptr<USceneComponent>& InParent, std::string_view InSocketName = "");
 
 	// Relative Transform 과 부모 변환행렬을 이용해 월드 Transform을 만들어내는 함수
 	virtual void UpdateComponentToWorld() override final
@@ -27,19 +27,19 @@ public:
 	}
 
 	virtual void TestDraw();
-	virtual void TestDrawComponent() {};
+	virtual void TestDrawComponent();
 protected:
 private:
-	void SetAttachParent(USceneComponent* NewAttachParent);
+	void SetAttachParent(const std::shared_ptr<USceneComponent>& NewAttachParent);
 	void SetAttachSocketName(std::string_view NewSocketName);
 
-	void UpdateComponentToWorldWithParent(USceneComponent* Parent, std::string_view SocketName, const DirectX::XMVECTOR& RelativeRotationQuat);
+	void UpdateComponentToWorldWithParent(const std::shared_ptr<USceneComponent>& Parent, std::string_view SocketName, const DirectX::XMVECTOR& RelativeRotationQuat);
 public:
 protected:
 private:
 	// Relative Transform
-	DirectX::XMFLOAT3 RelativeLocation;
-	DirectX::XMFLOAT3 RelativeRotation;
+	DirectX::XMFLOAT3 RelativeLocation = DirectX::XMFLOAT3(0.0f,0.0f,0.0f);
+	DirectX::XMFLOAT3 RelativeRotation = DirectX::XMFLOAT3(0.0f,0.0f,0.0f);
 	DirectX::XMFLOAT3 RelativeScale3D = DirectX::XMFLOAT3(1.0f,1.0f,1.0f);
 
 	// 컴퍼넌트 월드 좌표

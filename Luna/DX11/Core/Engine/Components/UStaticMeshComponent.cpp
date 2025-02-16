@@ -7,26 +7,30 @@
 
 #include "Engine/Mesh/UStaticMesh.h"
 
-UStaticMeshComponent::UStaticMeshComponent()
-{
-}
 
-bool UStaticMeshComponent::SetStaticMesh(UStaticMesh* NewMesh)
+bool UStaticMeshComponent::SetStaticMesh(const std::shared_ptr<UStaticMesh>& NewMesh)
 {
-	if(NewMesh == GetStaticMesh().get())
+	if(NewMesh.get() == GetStaticMesh().get())
 	{
 		return false;
 	}
 
-	StaticMesh = std::shared_ptr<UStaticMesh>(NewMesh);
+	StaticMesh = NewMesh;
 
 	return true;
 }
 
+void UStaticMeshComponent::TestDraw()
+{
+	USceneComponent::TestDraw();
+}
+
 void UStaticMeshComponent::TestDrawComponent()
 {
+	USceneComponent::TestDrawComponent();
+
 	const FStaticMeshRenderData* RenderData = GetStaticMesh()->GetStaticMeshRenderData();
-	int MeshCount = RenderData->MeshCount;
+	unsigned int MeshCount = RenderData->MeshCount;
 	for(int MeshIndex= 0; MeshIndex < MeshCount; ++MeshIndex)
 	{
 		ID3D11DeviceContext* DeviceContext = GEngine->GetDeviceContext();

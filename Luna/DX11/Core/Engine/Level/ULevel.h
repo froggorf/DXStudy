@@ -13,11 +13,12 @@ class UWorld;
 class ULevel : public UObject
 {
 public:
-	ULevel(UWorld* World);
+	ULevel() = default;
+	ULevel(const std::shared_ptr<UWorld>& World);
 	~ULevel() override;
 	void TickLevel(float DeltaSeconds);
 
-	void SetOwningWorld(UWorld* NewOwningWorld){ OwningWorld = std::make_shared<UWorld>(*NewOwningWorld); }
+	void SetOwningWorld(const std::shared_ptr<UWorld>& NewOwningWorld){ OwningWorld = NewOwningWorld; }
 	std::shared_ptr<UWorld> GetWorld() const { return OwningWorld; }
 
 

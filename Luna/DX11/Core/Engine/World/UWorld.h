@@ -13,7 +13,7 @@
 
 class ULevel;
 
-class UWorld : public UObject
+class UWorld : public UObject, public std::enable_shared_from_this<UWorld>
 {
 public:
 	UWorld();
@@ -26,7 +26,7 @@ public:
 
 
 	std::shared_ptr<ULevel> GetPersistentLevel() const { return PersistentLevel; }
-	void SetPersistentLevel(ULevel* NewLevel) { PersistentLevel = std::make_shared<ULevel>(*NewLevel); }
+	void SetPersistentLevel(const std::shared_ptr<ULevel> NewLevel) { PersistentLevel = NewLevel; }
 
 	void TestDrawWorld();
 	

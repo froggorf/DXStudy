@@ -3,20 +3,20 @@
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
 #pragma once
-#include "USceneComponent.h"
 #include "Engine/MyEngineUtils.h"
+#include "USceneComponent.h"
 
 class UStaticMesh;
 
 class UStaticMeshComponent : public USceneComponent
 {
 public:
-	UStaticMeshComponent();
+	UStaticMeshComponent() = default;
 
-	virtual bool SetStaticMesh(UStaticMesh* NewMesh);
-	std::shared_ptr<UStaticMesh> GetStaticMesh() const { return StaticMesh; }
+	virtual bool SetStaticMesh(const std::shared_ptr<UStaticMesh>& NewMesh);
+	const std::shared_ptr<UStaticMesh>& GetStaticMesh() const { return StaticMesh; }
 
-
+	virtual void TestDraw() override;
 	virtual void TestDrawComponent() override;
 protected:
 private:

@@ -903,7 +903,7 @@ void AnimationApp::DrawScene()
 		m_d3dDeviceContext->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
 
 
-		//GEngine->Draw();
+		GEngine->Draw();
 		//// 버텍스 버퍼에 맞춰 오브젝트 드로우
 		//for(int vertexCount = 0; vertexCount < m_ModelVertexBuffer.size(); ++vertexCount)
 		//{

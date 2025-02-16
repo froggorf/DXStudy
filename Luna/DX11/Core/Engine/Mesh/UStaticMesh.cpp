@@ -20,11 +20,6 @@ UStaticMesh::~UStaticMesh()
 {
 }
 
-UStaticMesh::UStaticMesh(const UStaticMesh& other)
-{
-	RenderData = std::make_unique<FStaticMeshRenderData>(*other.RenderData.get());
-}
-
 
 enum class EStaticMeshAssetData
 {
@@ -48,7 +43,7 @@ void UStaticMesh::LoadDataFromFileData(std::vector<std::string>& StaticMeshAsset
 	RenderData = std::make_unique<FStaticMeshRenderData>(StaticMeshAssetData, GEngine->GetDevice());
 
 
-	StaticMeshCache[Name] = std::make_shared<UStaticMesh>(*this);
+	StaticMeshCache[Name] = shared_from_this();
 	std::cout<< "Load UStaticMesh - " + StaticMeshAssetData[0] + " Complete!" << std::endl;
 
 	std::cout<< StaticMeshCache[Name].use_count()<<std::endl;

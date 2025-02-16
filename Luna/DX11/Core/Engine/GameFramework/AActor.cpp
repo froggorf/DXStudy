@@ -10,11 +10,12 @@
 AActor::AActor()
 {
 	RootComponent = std::make_shared<USceneComponent>();
+	std::cout<<RootComponent.use_count();
 }
 
 void AActor::TestDraw()
 {
-	if(USceneComponent* RootComponent = GetRootComponent())
+	if(std::shared_ptr<USceneComponent> RootComponent  = GetRootComponent())
 	{
 		RootComponent->TestDraw();
 	}

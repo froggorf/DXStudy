@@ -9,9 +9,9 @@
 #include "Engine/GameFramework/AActor.h"
 
 
-ULevel::ULevel(UWorld* World)
+ULevel::ULevel(const std::shared_ptr<UWorld>& World)
 {
-	OwningWorld = std::make_shared<UWorld>(*World);
+	OwningWorld = World;
 
 	std::shared_ptr<AActor> TestActor = std::make_shared<ATestCube>();
 	Actors.push_back(TestActor);

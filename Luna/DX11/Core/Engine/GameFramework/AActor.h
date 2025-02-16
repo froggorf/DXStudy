@@ -16,7 +16,7 @@ public:
 	AActor();
 
 
-	USceneComponent* GetRootComponent() const { return RootComponent.get(); }
+	const std::shared_ptr<USceneComponent>& GetRootComponent() const { return RootComponent; }
 
 	virtual void TestDraw();
 protected:

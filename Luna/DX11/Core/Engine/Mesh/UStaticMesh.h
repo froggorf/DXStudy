@@ -12,43 +12,21 @@
 #include "Engine/UEngine.h"
 #include "Engine/UObject/UObject.h"
 
-class UStaticMesh : public UObject
+class UStaticMesh : public UObject, public std::enable_shared_from_this<UStaticMesh>
 {
 public:
 	UStaticMesh();
 	~UStaticMesh();
-	UStaticMesh(const UStaticMesh& other);
 
 	unsigned int GetStaticMeshMeshCount() const {return RenderData.get()->MeshCount; }
 
+	// unique_ptr 로 관리되는 RenderData
+	// Render 시 잠깐 사용하므로 로우 포인터를 반환
 	const FStaticMeshRenderData* GetStaticMeshRenderData() const {return RenderData.get();}
 
 	static const std::map<std::string, std::shared_ptr<UStaticMesh>>& GetStaticMeshCache() {return StaticMeshCache;}
-	static UStaticMesh* GetStaticMesh(const std::string& StaticMeshName) { return StaticMeshCache[StaticMeshName].get(); }
+	static const std::shared_ptr<UStaticMesh>& GetStaticMesh(const std::string& StaticMeshName) { return StaticMeshCache[StaticMeshName]; }
 
-
-
-	void TestDraw()
-	{
-		int MeshCount = RenderData->MeshCount;
-		for(int MeshIndex= 0; MeshIndex < MeshCount; ++MeshIndex)
-		{
-			ID3D11DeviceContext* DeviceContext = GEngine->GetDeviceContext();
-			// SRV 설정(텍스쳐)
-			{
-				DeviceContext->PSSetShaderResources(0,1, RenderData->TextureSRV[0].GetAddressOf());	
-			}
-			UINT stride = sizeof(MyVertexData);
-			UINT offset = 0;
-			DeviceContext->IASetVertexBuffers(0, 1, RenderData->VertexBuffer[MeshIndex].GetAddressOf(), &stride, &offset);
-			DeviceContext->IASetIndexBuffer(RenderData->IndexBuffer[MeshIndex].Get(), DXGI_FORMAT_R32_UINT, 0);
-		
-			D3D11_BUFFER_DESC indexBufferDesc;
-			RenderData->IndexBuffer[MeshIndex]->GetDesc(&indexBufferDesc);
-			UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
-			DeviceContext->DrawIndexed(indexSize, 0, 0);
-		}
-	}
 
 	virtual void LoadDataFromFileData(std::vector<std::string>& StaticMeshAssetData) override;
 protected:

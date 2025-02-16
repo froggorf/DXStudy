@@ -10,15 +10,15 @@ USceneComponent::USceneComponent()
 {
 }
 
-void USceneComponent::SetupAttachment(USceneComponent* InParent, std::string_view InSocketName)
+void USceneComponent::SetupAttachment(const std::shared_ptr<USceneComponent>& InParent, std::string_view InSocketName)
 {
-	if( InParent == AttachParent.get() && InSocketName == AttachSocketName)
+	if( InParent.get() == AttachParent.get() && InSocketName == AttachSocketName)
 	{
 		// 이미 부착된 상태
 		return;
 	}
 
-	if(InParent == this)
+	if(InParent.get() == this)
 	{
 #if defined(DEBUG) || defined(_DEBUG)
 		std::cout << "Warning : can't attach to itself" << std::endl;
@@ -37,7 +37,7 @@ void USceneComponent::SetupAttachment(USceneComponent* InParent, std::string_vie
 	SetAttachParent(InParent);
 	SetAttachSocketName(InSocketName);
 	const std::vector<std::shared_ptr<USceneComponent>>& ParentAttachChildren = InParent->AttachChildren;
-	std::shared_ptr<USceneComponent> thisPtr = std::make_shared<USceneComponent>(*this);
+	std::shared_ptr<USceneComponent> thisPtr = shared_from_this(); // std::enable_shared_from_this<USceneComponent>
 	if(std::find(AttachChildren.begin(),AttachChildren.end(), thisPtr) == AttachChildren.end())
 	{
 		InParent->AttachChildren.push_back(thisPtr);	
@@ -46,17 +46,28 @@ void USceneComponent::SetupAttachment(USceneComponent* InParent, std::string_vie
 
 void USceneComponent::TestDraw()
 {
+	std::cout << typeid(this).name() << std::endl;
 	TestDrawComponent();
 
+	//int ComponentCount = AttachChildren.size();
+	//for(int index = 0; index < ComponentCount; ++index)
+	//{
+	//	AttachChildren[index]->TestDraw();
+	//}
 	for(const auto& ChildComponent : AttachChildren)
 	{
 		ChildComponent->TestDraw();
 	}
 }
 
-void USceneComponent::SetAttachParent(USceneComponent* NewAttachParent)
+void USceneComponent::TestDrawComponent()
 {
-	AttachParent = std::make_shared<USceneComponent>(*NewAttachParent);
+}
+
+void USceneComponent::SetAttachParent(const std::shared_ptr<USceneComponent>& NewAttachParent)
+{
+	AttachParent = NewAttachParent;
+	std::cout << AttachParent.use_count();
 	// 언리얼 엔진에서는 MARK_PROPERTY_DIRTY_FROM_NAME 를 통해 리플렉션 시스템을 적용
 }
 
@@ -66,8 +77,8 @@ void USceneComponent::SetAttachSocketName(std::string_view NewSocketName)
 	// 언리얼 엔진에서는 MARK_PROPERTY_DIRTY_FROM_NAME 를 통해 리플렉션 시스템을 적용
 }
 
-void USceneComponent::UpdateComponentToWorldWithParent(USceneComponent* Parent, std::string_view SocketName,
-	const DirectX::XMVECTOR& RelativeRotationQuat)
+void USceneComponent::UpdateComponentToWorldWithParent(const std::shared_ptr<USceneComponent>& Parent,
+	std::string_view SocketName, const DirectX::XMVECTOR& RelativeRotationQuat)
 {
 	// 부모의 위치 받아와서
 	// 내 Relative Transform 곱해줘서
