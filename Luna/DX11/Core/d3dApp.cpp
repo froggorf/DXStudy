@@ -62,10 +62,10 @@ D3DApp::~D3DApp()
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 
-	if(GEngine)
-	{
-		delete GEngine;	
-	}
+	//if(GEngine)
+	//{
+	//	delete GEngine;	
+	//}
 	
 
 	std::cout<<"??";
@@ -132,7 +132,7 @@ bool D3DApp::Init()
 		return false;
 	}
 
-	GEngine = new UEngine(this);
+	GEngine = std::make_unique<UEngine>(this);//new UEngine(this);
 	GEngine->InitEngine();
 
 	InitImGui();

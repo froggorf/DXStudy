@@ -8,7 +8,7 @@
 #include "Mesh/UStaticMesh.h"
 #include "World/UWorld.h"
 
-UEngine* GEngine = nullptr;
+std::unique_ptr<UEngine> GEngine = nullptr;
 
 UEngine::~UEngine()
 {

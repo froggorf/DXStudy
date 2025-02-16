@@ -8,7 +8,7 @@
 ATestCube::ATestCube()
 {
 	TestCubeStaticMeshComp = std::make_shared<UStaticMeshComponent>();
-	TestCubeStaticMeshComp->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Racco"));
+	//TestCubeStaticMeshComp->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Racco"));
 	TestCubeStaticMeshComp->SetupAttachment(GetRootComponent());
 
 }

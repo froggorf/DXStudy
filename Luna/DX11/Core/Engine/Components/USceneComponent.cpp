@@ -56,7 +56,7 @@ void USceneComponent::TestDraw()
 
 void USceneComponent::SetAttachParent(USceneComponent* NewAttachParent)
 {
-	AttachParent = std::shared_ptr<USceneComponent>(NewAttachParent);
+	AttachParent = std::make_shared<USceneComponent>(*NewAttachParent);
 	// 언리얼 엔진에서는 MARK_PROPERTY_DIRTY_FROM_NAME 를 통해 리플렉션 시스템을 적용
 }
 

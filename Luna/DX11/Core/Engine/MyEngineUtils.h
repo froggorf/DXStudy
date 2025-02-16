@@ -29,4 +29,4 @@ struct FTransform
 
 
 
-extern class UEngine* GEngine;
+extern std::unique_ptr<class UEngine> GEngine;
