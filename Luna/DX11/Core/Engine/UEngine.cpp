@@ -38,7 +38,10 @@ void UEngine::Tick(float DeltaSeconds)
 
 void UEngine::Draw()
 {
-	std::cout << "UEngine::Draw()"<<std::endl;
+	if(CurrentWorld)
+	{
+		CurrentWorld->TestDrawWorld();
+	}
 }
 
 void UEngine::LoadAllObjectsFromFile()

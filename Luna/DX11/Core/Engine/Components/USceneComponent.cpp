@@ -33,6 +33,25 @@ void USceneComponent::SetupAttachment(USceneComponent* InParent, std::string_vie
 		return;
 #endif
 	}
+
+	SetAttachParent(InParent);
+	SetAttachSocketName(InSocketName);
+	const std::vector<std::shared_ptr<USceneComponent>>& ParentAttachChildren = InParent->AttachChildren;
+	std::shared_ptr<USceneComponent> thisPtr = std::make_shared<USceneComponent>(*this);
+	if(std::find(AttachChildren.begin(),AttachChildren.end(), thisPtr) == AttachChildren.end())
+	{
+		InParent->AttachChildren.push_back(thisPtr);	
+	}
+}
+
+void USceneComponent::TestDraw()
+{
+	TestDrawComponent();
+
+	for(const auto& ChildComponent : AttachChildren)
+	{
+		ChildComponent->TestDraw();
+	}
 }
 
 void USceneComponent::SetAttachParent(USceneComponent* NewAttachParent)
@@ -41,9 +60,9 @@ void USceneComponent::SetAttachParent(USceneComponent* NewAttachParent)
 	// 언리얼 엔진에서는 MARK_PROPERTY_DIRTY_FROM_NAME 를 통해 리플렉션 시스템을 적용
 }
 
-void USceneComponent::SetAttachSocketName(std::string NewSocketName)
+void USceneComponent::SetAttachSocketName(std::string_view NewSocketName)
 {
-	AttachSocketName = NewSocketName;
+	AttachSocketName = NewSocketName.data();
 	// 언리얼 엔진에서는 MARK_PROPERTY_DIRTY_FROM_NAME 를 통해 리플렉션 시스템을 적용
 }
 

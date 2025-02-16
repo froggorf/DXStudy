@@ -192,9 +192,6 @@ private:
 	XMMATRIX m_Proj;
 
 	POINT m_LastMousePos;
-
-	
-	std::shared_ptr<UStaticMesh> TestCubeObj;
 };
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
@@ -279,7 +276,6 @@ bool AnimationApp::Init()
 	// 그림자 맵
 	InitForShadowMap();
 
-	TestCubeObj = UStaticMesh::GetStaticMesh("SM_Racco");
 	
 	return true;
 }
@@ -835,7 +831,6 @@ void AnimationApp::DrawSkeletalMesh()
 
 void AnimationApp::DrawScene()
 {
-	GEngine->Draw();
 	//DrawShadowMap();
 
 	m_d3dDeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), m_DepthStencilView.Get());
@@ -907,7 +902,8 @@ void AnimationApp::DrawScene()
 		// Sampler State 설정
 		m_d3dDeviceContext->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
 
-		TestCubeObj->TestDraw();
+
+		//GEngine->Draw();
 		//// 버텍스 버퍼에 맞춰 오브젝트 드로우
 		//for(int vertexCount = 0; vertexCount < m_ModelVertexBuffer.size(); ++vertexCount)
 		//{

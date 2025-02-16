@@ -4,3 +4,19 @@
 // 이윤석
 
 #include "AActor.h"
+
+#include "Engine/Components/USceneComponent.h"
+
+AActor::AActor()
+{
+	RootComponent = std::make_shared<USceneComponent>();
+}
+
+void AActor::TestDraw()
+{
+	if(USceneComponent* RootComponent = GetRootComponent())
+	{
+		RootComponent->TestDraw();
+	}
+	
+}

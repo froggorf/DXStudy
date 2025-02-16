@@ -18,6 +18,7 @@ public:
 
 	USceneComponent* GetRootComponent() const { return RootComponent.get(); }
 
+	virtual void TestDraw();
 protected:
 
 private:

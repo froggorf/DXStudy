@@ -3,18 +3,18 @@
 
 #pragma once
 
-#include "Engine/MyEngineUtils.h"
 #include "Engine/GameFramework/AActor.h"
+
+class UStaticMeshComponent;
 
 class ATestCube : public AActor
 {
 public:
-	//ATestCube();
-
-
+	ATestCube();
 protected:
 private:
 public:
 protected:
 private:
+	std::shared_ptr<UStaticMeshComponent> TestCubeStaticMeshComp;
 };

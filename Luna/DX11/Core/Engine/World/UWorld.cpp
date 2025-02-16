@@ -37,3 +37,11 @@ void UWorld::TickWorld(float DeltaSeconds)
 void UWorld::Tick()
 {
 }
+
+void UWorld::TestDrawWorld()
+{
+	if(PersistentLevel)
+	{
+		PersistentLevel->TestDrawLevel();
+	}
+}

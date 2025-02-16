@@ -138,6 +138,7 @@
     <ClCompile Include="..\..\Core\DebuggingSRV.cpp" />
     <ClCompile Include="..\..\Core\Engine\Components\UActorComponent.cpp" />
     <ClCompile Include="..\..\Core\Engine\Components\USceneComponent.cpp" />
+    <ClCompile Include="..\..\Core\Engine\Components\UStaticMeshComponent.cpp" />
     <ClCompile Include="..\..\Core\Engine\GameFramework\AActor.cpp" />
     <ClCompile Include="..\..\Core\Engine\Level\ULevel.cpp" />
     <ClCompile Include="..\..\Core\Engine\Mesh\UStaticMesh.cpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="..\..\Core\DebuggingSRV.h" />
     <ClInclude Include="..\..\Core\Engine\Components\UActorComponent.h" />
     <ClInclude Include="..\..\Core\Engine\Components\USceneComponent.h" />
+    <ClInclude Include="..\..\Core\Engine\Components\UStaticMeshComponent.h" />
     <ClInclude Include="..\..\Core\Engine\GameFramework\AActor.h" />
     <ClInclude Include="..\..\Core\Engine\Level\ULevel.h" />
     <ClInclude Include="..\..\Core\Engine\Mesh\StaticMeshResources.h" />

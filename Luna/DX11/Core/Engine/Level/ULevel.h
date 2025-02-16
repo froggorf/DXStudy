@@ -20,6 +20,8 @@ public:
 	void SetOwningWorld(UWorld* NewOwningWorld){ OwningWorld = std::make_shared<UWorld>(*NewOwningWorld); }
 	std::shared_ptr<UWorld> GetWorld() const { return OwningWorld; }
 
+
+	void TestDrawLevel();
 protected:
 private:
 public:

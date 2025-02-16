@@ -5,12 +5,26 @@
 
 #include "ULevel.h"
 
+#include "../../../content/Actor/ATestCube.h"
+#include "Engine/GameFramework/AActor.h"
+
 ULevel::ULevel()
 {
-	
+	std::shared_ptr<AActor> TestActor = std::make_shared<ATestCube>();
+	Actors.push_back(TestActor);
 }
 
 void ULevel::TickLevel(float DeltaSeconds)
 {
 	std::cout<< "tick level" << std::endl;
 }
+
+void ULevel::TestDrawLevel()
+{
+	for(const auto& Actor : Actors)
+	{
+		Actor->TestDraw();
+	}
+}
+
+

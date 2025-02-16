@@ -150,6 +150,9 @@
     <ClCompile Include="..\..\content\Actor\ATestCube.cpp">
       <Filter>Content\Actor</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Core\Engine\Components\UStaticMeshComponent.cpp">
+      <Filter>Core\Engine\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Core\AssetManager.h">
@@ -256,6 +259,9 @@
     </ClInclude>
     <ClInclude Include="..\..\content\Actor\ATestCube.h">
       <Filter>Content\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\Engine\Components\UStaticMeshComponent.h">
+      <Filter>Core\Engine\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

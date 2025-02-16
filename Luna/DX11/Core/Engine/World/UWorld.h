@@ -28,6 +28,7 @@ public:
 	std::shared_ptr<ULevel> GetPersistentLevel() const { return PersistentLevel; }
 	void SetPersistentLevel(ULevel* NewLevel) { PersistentLevel = std::make_shared<ULevel>(*NewLevel); }
 
+	void TestDrawWorld();
 	
 protected:
 private:
