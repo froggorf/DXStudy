@@ -13,6 +13,7 @@ class UWorld;
 class ULevel : public UObject
 {
 public:
+	ULevel();
 
 	void TickLevel(float DeltaSeconds);
 

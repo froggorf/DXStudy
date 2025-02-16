@@ -15,9 +15,11 @@ public:
 	virtual ~UObject();
 
 	virtual void Init();
+
+	// 디스크에서 로드될 때 실행될 함수
 	virtual void PostLoad();
 
-	virtual void LoadDataFromFileData(const std::vector<std::string>& StaticMeshAssetData);
+	virtual void LoadDataFromFileData(std::vector<std::string>& StaticMeshAssetData);
 protected:
 private:
 public:

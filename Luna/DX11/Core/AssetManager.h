@@ -40,10 +40,7 @@ public:
 
 	// myasset 파일 읽기
 	// myasset을 통해 읽은 UObject 데이터를 unique_ptr를 통해 관리하고 반환
-	//static UObject* ReadMyAsset(const std::string& FilePath, Microsoft::WRL::ComPtr<ID3D11Device>& DeviceObject);
-	//template<typename T>
-	//static T* ReadMyAsset(const std::string& FilePath, Microsoft::WRL::ComPtr<ID3D11Device>& DeviceObject);
-
+	// UObject에 계승된 클래스만 템플릿의 타입으로 들어갈 수 있도록 컨셉 사용
 	template <DerivedFromUObject T>
 	static T* ReadMyAsset(const std::string& FilePath);
 

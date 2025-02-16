@@ -55,6 +55,12 @@
     <Filter Include="Core\Engine\Mesh">
       <UniqueIdentifier>{b9f54710-8b40-465c-b78b-7b118bf2d86b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Content">
+      <UniqueIdentifier>{340ff587-5e27-4c4b-922c-682f1ebaaeec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Content\Actor">
+      <UniqueIdentifier>{45d9136c-32db-4ccc-a0ce-a24b035744b2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Core\AssetManager.cpp">
@@ -140,6 +146,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Core\Engine\Mesh\UStaticMesh.cpp">
       <Filter>Core\Engine\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\content\Actor\ATestCube.cpp">
+      <Filter>Content\Actor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -244,6 +253,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Core\Engine\Mesh\UStaticMesh.h">
       <Filter>Core\Engine\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\content\Actor\ATestCube.h">
+      <Filter>Content\Actor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -89,7 +89,6 @@ public:
 	void OnResize() override;
 	void UpdateScene(float dt) override;
 	void DrawImGui() override;
-	void DrawCube();
 	void DrawSkeletalMesh();
 	void DrawScene() override;
 
@@ -266,7 +265,6 @@ bool AnimationApp::Init()
 		return false;
 
 	
-	GEngine->InitEngine();
 
 	InitSamplerState();
 
@@ -281,7 +279,7 @@ bool AnimationApp::Init()
 	// 그림자 맵
 	InitForShadowMap();
 
-	TestCubeObj = std::make_shared<UStaticMesh>(*AssetManager::ReadMyAsset<UStaticMesh>("Asset/StaticMesh/Racco.myasset"));
+	TestCubeObj = UStaticMesh::GetStaticMesh("SM_Racco");
 	
 	return true;
 }
@@ -683,66 +681,66 @@ void AnimationApp::DrawImGui()
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
-
-void AnimationApp::DrawCube()
-{
-	// 테스트용 Cube Draw
-
-	// 그림자맵 SRV, Sampler 설정
-	m_d3dDeviceContext->PSSetShaderResources(1,1, m_ShadowMap->GetShaderResourceViewComPtr().GetAddressOf());
-	m_d3dDeviceContext->PSSetSamplers(1,1,m_ShadowSamplerState.GetAddressOf());
-
-	UINT stride = sizeof(MyVertexData);
-	UINT offset = 0;
-	m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_CubeVertexBuffer.GetAddressOf(), &stride, &offset);
-	m_d3dDeviceContext->IASetIndexBuffer(m_CubeIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-	// cb 설정
-	{
-		ObjConstantBuffer ocb;
-		XMMATRIX world = m_World * XMMatrixScaling(15.0f,0.2f,15.0f);
-		world *= XMMatrixTranslation(0.0f,0.0f,0.0f);
-		ocb.World = XMMatrixTranspose(world);
-		// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
-		ocb.InvTransposeMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, world));
-		ocb.ObjectMaterial = m_ModelMaterial;
-		m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);	
-	}
-
-	// 렌더링
-	{
-		m_d3dDeviceContext->PSSetShaderResources(0,1,m_CubeWaterSRV.GetAddressOf());
-
-		D3D11_BUFFER_DESC indexBufferDesc;
-		m_CubeIndexBuffer->GetDesc(&indexBufferDesc);
-		int indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
-		m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);	
-		
-	}
-
-	// cb 설정
-	// 01.31 애니메이션을 위해 모델 변경
-	//{
-	//	ObjConstantBuffer ocb;
-	//	XMMATRIX world = m_World * XMMatrixScaling(1.0f,1.0f,1.0f) ;
-	//	world *= XMMatrixRotationQuaternion(m_ModelQuat);
-	//	world *= XMMatrixTranslation(m_ModelPosition.x,m_ModelPosition.y,m_ModelPosition.z);
-	//	ocb.World = XMMatrixTranspose(world);
-	//	// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
-	//	ocb.InvTransposeMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, world));
-	//	ocb.ObjectMaterial = m_ModelMaterial;
-	//	m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);	
-	//}
-	//
-	//// 렌더링
-	//{
-	//	m_d3dDeviceContext->PSSetShaderResources(0,1,m_CubeWaterSRV.GetAddressOf());
-	//
-	//	D3D11_BUFFER_DESC indexBufferDesc;
-	//	m_CubeIndexBuffer->GetDesc(&indexBufferDesc);
-	//	m_d3dDeviceContext->DrawIndexed(indexBufferDesc.ByteWidth / sizeof(UINT), 0, 0);
-	//}
-
-}
+//
+//void AnimationApp::DrawCube()
+//{
+//	// 테스트용 Cube Draw
+//
+//	// 그림자맵 SRV, Sampler 설정
+//	m_d3dDeviceContext->PSSetShaderResources(1,1, m_ShadowMap->GetShaderResourceViewComPtr().GetAddressOf());
+//	m_d3dDeviceContext->PSSetSamplers(1,1,m_ShadowSamplerState.GetAddressOf());
+//
+//	UINT stride = sizeof(MyVertexData);
+//	UINT offset = 0;
+//	m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_CubeVertexBuffer.GetAddressOf(), &stride, &offset);
+//	m_d3dDeviceContext->IASetIndexBuffer(m_CubeIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+//	// cb 설정
+//	{
+//		ObjConstantBuffer ocb;
+//		XMMATRIX world = m_World * XMMatrixScaling(15.0f,0.2f,15.0f);
+//		world *= XMMatrixTranslation(0.0f,0.0f,0.0f);
+//		ocb.World = XMMatrixTranspose(world);
+//		// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
+//		ocb.InvTransposeMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, world));
+//		ocb.ObjectMaterial = m_ModelMaterial;
+//		m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);	
+//	}
+//
+//	// 렌더링
+//	{
+//		m_d3dDeviceContext->PSSetShaderResources(0,1,m_CubeWaterSRV.GetAddressOf());
+//
+//		D3D11_BUFFER_DESC indexBufferDesc;
+//		m_CubeIndexBuffer->GetDesc(&indexBufferDesc);
+//		int indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
+//		m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);	
+//		
+//	}
+//
+//	// cb 설정
+//	// 01.31 애니메이션을 위해 모델 변경
+//	//{
+//	//	ObjConstantBuffer ocb;
+//	//	XMMATRIX world = m_World * XMMatrixScaling(1.0f,1.0f,1.0f) ;
+//	//	world *= XMMatrixRotationQuaternion(m_ModelQuat);
+//	//	world *= XMMatrixTranslation(m_ModelPosition.x,m_ModelPosition.y,m_ModelPosition.z);
+//	//	ocb.World = XMMatrixTranspose(world);
+//	//	// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
+//	//	ocb.InvTransposeMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, world));
+//	//	ocb.ObjectMaterial = m_ModelMaterial;
+//	//	m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);	
+//	//}
+//	//
+//	//// 렌더링
+//	//{
+//	//	m_d3dDeviceContext->PSSetShaderResources(0,1,m_CubeWaterSRV.GetAddressOf());
+//	//
+//	//	D3D11_BUFFER_DESC indexBufferDesc;
+//	//	m_CubeIndexBuffer->GetDesc(&indexBufferDesc);
+//	//	m_d3dDeviceContext->DrawIndexed(indexBufferDesc.ByteWidth / sizeof(UINT), 0, 0);
+//	//}
+//
+//}
 
 void AnimationApp::DrawSkeletalMesh()
 {

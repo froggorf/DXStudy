@@ -127,6 +127,7 @@ bool D3DApp::Init()
 	}
 
 	GEngine = new UEngine(this);
+	GEngine->InitEngine();
 
 	InitImGui();
 

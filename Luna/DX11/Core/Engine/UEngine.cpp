@@ -5,6 +5,7 @@
 
 #include "UEngine.h"
 
+#include "Mesh/UStaticMesh.h"
 #include "World/UWorld.h"
 
 UEngine* GEngine = nullptr;
@@ -21,6 +22,8 @@ void UEngine::PostLoad()
 {
 	UObject::PostLoad();
 
+	LoadAllObjectsFromFile();
+
 	// TODO: 추후엔 Level을 직렬화를 통해 저장 및 로드를 할 수 있는 기능을 만드는게 낫지 않을까?
 	// 그렇다면 여기에서 로드를 진행하기
 }
@@ -36,4 +39,13 @@ void UEngine::Tick(float DeltaSeconds)
 void UEngine::Draw()
 {
 	std::cout << "UEngine::Draw()"<<std::endl;
+}
+
+void UEngine::LoadAllObjectsFromFile()
+{
+	// 디스크에 내에 있는 모든 myasset 파일을 로드하는 함수
+	// TODO: 추후 디스크 읽는 라이브러리를 사용하기
+	AssetManager::ReadMyAsset<UStaticMesh>("Asset/StaticMesh/SM_Racco.myasset");
+
+	std::cout<< "StaticMesh Size -> "<<UStaticMesh::GetStaticMeshCache().size()<<std::endl;
 }

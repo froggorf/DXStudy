@@ -27,6 +27,7 @@ public:
 	ID3D11DeviceContext* GetDeviceContext() const {return Application->GetDeviceContext();}
 protected:
 private:
+	void LoadAllObjectsFromFile();
 public:
 protected:
 private:

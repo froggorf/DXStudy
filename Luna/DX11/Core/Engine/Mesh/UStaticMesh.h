@@ -17,12 +17,12 @@ class UStaticMesh : public UObject
 public:
 	UStaticMesh();
 	~UStaticMesh();
-	UStaticMesh(const UStaticMesh& other)
-	{
-		RenderData = std::make_unique<FStaticMeshRenderData>(*other.RenderData.get());
-	}
+	UStaticMesh(const UStaticMesh& other);
 
 	unsigned int GetStaticMeshMeshCount() const {return RenderData.get()->MeshCount; }
+
+	static const std::map<std::string, std::shared_ptr<UStaticMesh>>& GetStaticMeshCache() {return StaticMeshCache;}
+	static std::shared_ptr<UStaticMesh> GetStaticMesh(const std::string& StaticMeshName) { return StaticMeshCache[StaticMeshName]; }
 
 	void TestDraw()
 	{
@@ -46,13 +46,16 @@ public:
 		}
 	}
 
-	virtual void LoadDataFromFileData(const std::vector<std::string>& StaticMeshAssetData) override;
+	virtual void LoadDataFromFileData(std::vector<std::string>& StaticMeshAssetData) override;
 protected:
 private:
 
 public:
 protected:
 private:
+	static std::map<std::string, std::shared_ptr<UStaticMesh>> StaticMeshCache;
+
+
 	// TODO: LOD 데이터가 필요한 경우 std::map<UINT, std::unique_ptr<FStaticMeshRenderData> LODRenderData; 로 변경 예정
 	// StaticMesh의 버텍스, 인덱스 버퍼 등 렌더링에 필요한 데이터를 관리
 	std::unique_ptr<FStaticMeshRenderData> RenderData;

@@ -8,6 +8,9 @@
 #include "d3dApp.h"
 #include "StaticMeshResources.h"
 
+
+std::map<std::string, std::shared_ptr<UStaticMesh>> UStaticMesh::StaticMeshCache;
+
 UStaticMesh::UStaticMesh()
 {
 	
@@ -17,11 +20,34 @@ UStaticMesh::~UStaticMesh()
 {
 }
 
-void UStaticMesh::LoadDataFromFileData(const std::vector<std::string>& StaticMeshAssetData)
+UStaticMesh::UStaticMesh(const UStaticMesh& other)
+{
+	RenderData = std::make_unique<FStaticMeshRenderData>(*other.RenderData.get());
+}
+
+
+enum class EStaticMeshAssetData
+{
+	ESMAD_Name = 0, ESMAD_ModelDataFilePath, ESMAD_TextureDataFilePath
+};
+
+void UStaticMesh::LoadDataFromFileData(std::vector<std::string>& StaticMeshAssetData)
 {
 	UObject::LoadDataFromFileData(StaticMeshAssetData);
 
+
+	const std::string Name = StaticMeshAssetData[static_cast<unsigned int>(EStaticMeshAssetData::ESMAD_Name)];
+	StaticMeshAssetData.erase(StaticMeshAssetData.begin());
+
+	if(StaticMeshCache.contains(Name))
+	{
+		std::cout << "already load this StaticMesh -> " << Name << std::endl;
+		return;
+	}
+
 	RenderData = std::make_unique<FStaticMeshRenderData>(StaticMeshAssetData, GEngine->GetDevice());
 
+
+	StaticMeshCache[Name] = std::make_shared<UStaticMesh>(*this);
 	std::cout<< "Load UStaticMesh - " + StaticMeshAssetData[0] + " Complete!" << std::endl;
 }
