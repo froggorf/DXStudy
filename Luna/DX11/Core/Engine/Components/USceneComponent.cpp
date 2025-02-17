@@ -8,6 +8,7 @@
 
 USceneComponent::USceneComponent()
 {
+	UpdateComponentToWorld();
 }
 
 void USceneComponent::SetupAttachment(const std::shared_ptr<USceneComponent>& InParent, std::string_view InSocketName)
@@ -42,6 +43,26 @@ void USceneComponent::SetupAttachment(const std::shared_ptr<USceneComponent>& In
 	{
 		InParent->AttachChildren.push_back(thisPtr);	
 	}
+
+	UpdateComponentToWorld();
+}
+
+void USceneComponent::SetRelativeLocation(const DirectX::XMFLOAT3& NewRelLocation)
+{
+	RelativeLocation = NewRelLocation;
+	UpdateComponentToWorld();
+}
+
+void USceneComponent::SetRelativeRotation(const DirectX::XMFLOAT3& NewRelRotation)
+{
+	RelativeRotation = NewRelRotation;
+	UpdateComponentToWorld();
+}
+
+void USceneComponent::SetRelativeScale3D(const DirectX::XMFLOAT3& NewRelScale3D)
+{
+	RelativeScale3D = NewRelScale3D;
+	UpdateComponentToWorld();
 }
 
 void USceneComponent::TestDraw()
@@ -78,11 +99,27 @@ void USceneComponent::SetAttachSocketName(std::string_view NewSocketName)
 }
 
 void USceneComponent::UpdateComponentToWorldWithParent(const std::shared_ptr<USceneComponent>& Parent,
-	std::string_view SocketName, const DirectX::XMVECTOR& RelativeRotationQuat)
+	std::string_view SocketName)
 {
-	// 부모의 위치 받아와서
-	// 내 Relative Transform 곱해줘서
-	// 내 ComponentToWorld에 갱신해주기
+	// 언리얼엔진의 내부에선
+	// 행렬을 통한 위치 계산이 아닌
+	// FTransform * 연산자를 통해 부분적인 연산을 적용하므로 해당 방식을 채용
+	FTransform RelTransform = FTransform{DirectX::XMQuaternionRotationRollPitchYaw(RelativeRotation.x,RelativeRotation.y,RelativeRotation.z)
+		, RelativeLocation,RelativeScale3D};
 
-	//자식들 loop 돌면서 자식들 ComponentToWorld 갱신
+	if(nullptr == Parent)
+	{
+		ComponentToWorld = RelTransform;
+	}
+	else
+	{
+		ComponentToWorld = Parent->ComponentToWorld * RelTransform;	
+	}
+
+	
+
+	for(const auto& Child : AttachChildren)
+	{
+		Child->UpdateComponentToWorld();
+	}
 }

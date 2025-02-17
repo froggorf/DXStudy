@@ -16,6 +16,8 @@
 #include <string>
 #include <vector>
 
+#include "LightHelper.h"
+
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
@@ -108,6 +110,14 @@ struct BoneInfo
     DirectX::XMMATRIX offset;       // 모델 root 로부터의 해당 본의 offset matrix
 };
 // ============================================================
+
+
+struct ObjConstantBuffer
+{
+    XMMATRIX World;
+    XMMATRIX InvTransposeMatrix;
+    Material ObjectMaterial;
+};
 
 inline DirectX::XMVECTOR ComputeUpVector(const DirectX::XMVECTOR& cameraPos, const DirectX::XMVECTOR& targetPos)
 {

@@ -13,6 +13,10 @@ AActor::AActor()
 	std::cout<<RootComponent.use_count();
 }
 
+void AActor::Tick(float DeltaSeconds)
+{
+}
+
 void AActor::TestDraw()
 {
 	if(std::shared_ptr<USceneComponent> RootComponent  = GetRootComponent())

@@ -43,6 +43,7 @@ public:
 
 	ID3D11Device* GetDevice() const {return m_d3dDevice.Get(); }
 	ID3D11DeviceContext* GetDeviceContext() const {return m_d3dDeviceContext.Get(); }
+	virtual ID3D11Buffer* Test_DeleteLater_GetObjectConstantBuffer() const{ return nullptr	;}
 	
 protected:
 	bool InitMainWindow();

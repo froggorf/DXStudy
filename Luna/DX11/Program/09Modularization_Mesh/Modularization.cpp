@@ -44,12 +44,6 @@ struct FrameConstantBuffer
 	XMMATRIX LightProj;
 };
 
-struct ObjConstantBuffer
-{
-	XMMATRIX World;
-	XMMATRIX InvTransposeMatrix;
-	Material ObjectMaterial;
-};
 
 struct SkeletalMeshBoneTransformConstantBuffer
 {
@@ -101,6 +95,12 @@ public:
 	void OnMouseDown(WPARAM btnState, int x, int y) override;
 	void OnMouseUp(WPARAM btnState, int x, int y) override;
 	void OnMouseMove(WPARAM btnState, int x, int y) override;
+
+	virtual ID3D11Buffer* Test_DeleteLater_GetObjectConstantBuffer() const override
+	{
+
+		return m_ObjConstantBuffer.Get();
+	}
 
 private:
 	

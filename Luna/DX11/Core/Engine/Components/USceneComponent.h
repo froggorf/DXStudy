@@ -23,8 +23,15 @@ public:
 	// Relative Transform 과 부모 변환행렬을 이용해 월드 Transform을 만들어내는 함수
 	virtual void UpdateComponentToWorld() override final
 	{
-		//UpdateComponentToWorldWithParent(GetAttachParent(), GetAttachSocketName(), )8
+		UpdateComponentToWorldWithParent(GetAttachParent(), GetAttachSocketName());
 	}
+
+	void SetRelativeLocation(const DirectX::XMFLOAT3& NewRelLocation);
+	void SetRelativeRotation(const DirectX::XMFLOAT3& NewRelRotation);
+	void SetRelativeScale3D(const DirectX::XMFLOAT3& NewRelScale3D);
+
+	// 언리얼엔진에서 FTransform 값 복사를 통해 반환하도록 구현 (값을 받아 적용시킬 일이 존재할 것으로 추측)
+	FTransform GetComponentToWorld() const {return ComponentToWorld;}
 
 	virtual void TestDraw();
 	virtual void TestDrawComponent();
@@ -33,7 +40,7 @@ private:
 	void SetAttachParent(const std::shared_ptr<USceneComponent>& NewAttachParent);
 	void SetAttachSocketName(std::string_view NewSocketName);
 
-	void UpdateComponentToWorldWithParent(const std::shared_ptr<USceneComponent>& Parent, std::string_view SocketName, const DirectX::XMVECTOR& RelativeRotationQuat);
+	void UpdateComponentToWorldWithParent(const std::shared_ptr<USceneComponent>& Parent, std::string_view SocketName);
 public:
 protected:
 private:

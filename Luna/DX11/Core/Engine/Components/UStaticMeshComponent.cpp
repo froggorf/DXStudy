@@ -29,6 +29,20 @@ void UStaticMeshComponent::TestDrawComponent()
 {
 	USceneComponent::TestDrawComponent();
 
+	{
+		ObjConstantBuffer ocb;
+		XMMATRIX world = GetComponentToWorld().ToMatrixWithScale();
+		// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
+		ocb.InvTransposeMatrix = (XMMatrixInverse(nullptr, world));
+		ocb.World = XMMatrixTranspose(world);
+
+		ocb.ObjectMaterial.Ambient  = XMFLOAT4(1.0f,1.0f,1.0f, 1.0f);
+		ocb.ObjectMaterial.Diffuse  = XMFLOAT4(1.0f,1.0f,1.0f, 1.0f);
+		ocb.ObjectMaterial.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 32.0f);
+
+		GEngine->GetDeviceContext()->UpdateSubresource(GEngine->TestDeleteLater_GetObjConstantBuffer(), 0, nullptr, &ocb, 0, 0);
+	}
+
 	const FStaticMeshRenderData* RenderData = GetStaticMesh()->GetStaticMeshRenderData();
 	unsigned int MeshCount = RenderData->MeshCount;
 	for(int MeshIndex= 0; MeshIndex < MeshCount; ++MeshIndex)

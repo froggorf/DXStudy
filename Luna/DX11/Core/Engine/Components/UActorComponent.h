@@ -11,6 +11,8 @@ class UActorComponent : public UObject
 public:
 	UActorComponent();
 	virtual void UpdateComponentToWorld() {}
+
+	virtual void TickComponent(float DeltaSeconds);
 protected:
 private:
 public:

@@ -11,3 +11,7 @@ UActorComponent::UActorComponent()
 	ComponentID = ComponentIDCount++;
 
 }
+
+void UActorComponent::TickComponent(float DeltaSeconds)
+{
+}

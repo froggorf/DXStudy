@@ -26,6 +26,7 @@ public:
 
 	ID3D11Device* GetDevice() const {return Application->GetDevice();}
 	ID3D11DeviceContext* GetDeviceContext() const {return Application->GetDeviceContext();}
+	ID3D11Buffer* TestDeleteLater_GetObjConstantBuffer() const {return Application->Test_DeleteLater_GetObjectConstantBuffer();}
 protected:
 private:
 	void LoadAllObjectsFromFile();

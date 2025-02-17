@@ -23,7 +23,7 @@ ULevel::~ULevel()
 
 void ULevel::TickLevel(float DeltaSeconds)
 {
-	std::cout<< "tick level" << std::endl;
+	
 }
 
 void ULevel::TestDrawLevel()
