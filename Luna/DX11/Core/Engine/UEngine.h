@@ -26,7 +26,7 @@ public:
 	void Tick(float DeltaSeconds);
 	void Draw();
 
-	void AddImGuiRenderFunction(const std::function<void>& NewRenderFunction);
+	void AddImGuiRenderFunction(const std::function<void()>& NewRenderFunction);
 
 	ID3D11Device* GetDevice() const {return Application->GetDevice();}
 	ID3D11DeviceContext* GetDeviceContext() const {return Application->GetDeviceContext();}
@@ -44,6 +44,8 @@ private:
 	D3DApp* Application;
 	std::shared_ptr<UWorld> CurrentWorld;
 
-	//std::vector<std::function<void>> ImGuiRenderFunctions;
+	std::vector<std::function<void()>> ImGuiRenderFunctions;
+
+	void Test1();
 	
 };

@@ -29,9 +29,14 @@ public:
 	void SetPersistentLevel(const std::shared_ptr<ULevel> NewLevel) { PersistentLevel = NewLevel; }
 
 	void TestDrawWorld();
+
+	void ImguiRender_WorldOutliner();
 	
 protected:
 private:
+	// ImGui의 World Outliner 패널을 보여주기 위한 변수를 초기화 하는 함수
+	// TODO: PersistentLevel이 변경될 때 마다 값을 갱신할 수 있도록 해당 함수 호출 필요
+	void InitWorldOutliner();
 public:
 protected:
 private:
@@ -40,4 +45,5 @@ private:
 
 	// 콜렉션에 있는 모든 레벨정보
 	std::set<std::shared_ptr<ULevel>> Levels;
+
 };

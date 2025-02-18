@@ -26,6 +26,10 @@ public:
 		UpdateComponentToWorldWithParent(GetAttachParent(), GetAttachSocketName());
 	}
 
+	XMFLOAT3 GetRelativeLocation() const {return RelativeLocation;}
+	XMFLOAT3 GetRelativeRotation() const {return RelativeRotation;}
+	XMFLOAT3 GetRelativeScale3D() const {return RelativeScale3D;}
+
 	void SetRelativeLocation(const DirectX::XMFLOAT3& NewRelLocation);
 	void SetRelativeRotation(const DirectX::XMFLOAT3& NewRelRotation);
 	void SetRelativeScale3D(const DirectX::XMFLOAT3& NewRelScale3D);

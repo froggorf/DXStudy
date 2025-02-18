@@ -25,6 +25,7 @@ void UEngine::InitEngine()
 	PostLoad();
 
 	CurrentWorld->Init();
+
 }
 
 void UEngine::PostLoad()
@@ -55,10 +56,12 @@ void UEngine::Draw()
 	DrawImGui();
 }
 
-void UEngine::AddImGuiRenderFunction(const std::function<void>& NewRenderFunction)
+void UEngine::AddImGuiRenderFunction(const std::function<void()>& NewRenderFunction)
 {
-	
+	// TODO: 중복 체크에 대한 부분이 필요
+	ImGuiRenderFunctions.push_back(NewRenderFunction);
 }
+
 
 void UEngine::InitImGui()
 {
@@ -82,14 +85,19 @@ void UEngine::InitImGui()
 
 void UEngine::DrawImGui()
 {
+	if(ImGuiRenderFunctions.size() == 0)
+	{
+		return;
+	}
+
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 
-	ImGui::NewFrame();
-	ImGui::Begin("Test");
-	ImGui::Button("test", ImVec2(100,100));
-	ImGui::End();
-
+	for(const auto& Func : ImGuiRenderFunctions)
+	{
+		Func();
+	}
+	
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
@@ -101,4 +109,9 @@ void UEngine::LoadAllObjectsFromFile()
 	AssetManager::ReadMyAsset<UStaticMesh>("Asset/StaticMesh/SM_Racco.myasset");
 
 	std::cout<< "StaticMesh Size -> "<<UStaticMesh::GetStaticMeshCache().size()<<std::endl;
+}
+
+void UEngine::Test1()
+{
+	std::cout<< 1<< std::endl;
 }

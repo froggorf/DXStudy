@@ -17,6 +17,25 @@ AActor::AActor()
 	Rename("Actor_" + std::to_string(ActorID));
 }
 
+XMFLOAT3 AActor::GetActorLocation() const
+{
+	XMFLOAT3 RetLoc = XMFLOAT3{0.0f,0.0f,0.0f};
+	if(RootComponent)
+	{
+		RetLoc = RootComponent->GetRelativeLocation();
+	}
+	return RetLoc;
+}
+
+void AActor::SetActorLocation(const XMFLOAT3& NewLocation) const
+{
+	if(RootComponent)
+	{
+		// TODO: 언리얼엔진에서는 MoveComponent를 통한 이동을 진행
+		RootComponent->SetRelativeLocation(NewLocation);
+	}
+}
+
 void AActor::Tick(float DeltaSeconds)
 {
 }

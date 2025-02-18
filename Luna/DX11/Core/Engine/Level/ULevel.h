@@ -21,8 +21,10 @@ public:
 	void SetOwningWorld(const std::shared_ptr<UWorld>& NewOwningWorld){ OwningWorld = NewOwningWorld; }
 	std::shared_ptr<UWorld> GetWorld() const { return OwningWorld; }
 
+	const std::vector<std::shared_ptr<AActor>>& GetLevelActors() const {return Actors;};
 
 	void TestDrawLevel();
+	
 protected:
 private:
 public:

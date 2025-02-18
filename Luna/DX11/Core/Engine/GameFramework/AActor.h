@@ -18,7 +18,8 @@ public:
 
 	const std::shared_ptr<USceneComponent>& GetRootComponent() const { return RootComponent; }
 
-
+	XMFLOAT3 GetActorLocation() const;
+	void SetActorLocation(const XMFLOAT3& NewLocation) const;
 	virtual void Tick(float DeltaSeconds);
 	virtual void TestDraw();
 protected:
