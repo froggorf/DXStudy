@@ -135,30 +135,10 @@ bool D3DApp::Init()
 	GEngine = std::make_unique<UEngine>(this);//new UEngine(this);
 	GEngine->InitEngine();
 
-	InitImGui();
 
 	return true;
 }
 
-bool D3DApp::InitImGui()
-{
-	// Setup Dear ImGui context
-	IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-
-	// Setup Platform/Renderer backends
-	ImGui_ImplWin32_Init(m_hMainWnd);
-	ImGui_ImplDX11_Init(m_d3dDevice.Get(), m_d3dDeviceContext.Get());
-
-	return true;
-}
 
 void D3DApp::OnResize()
 {
@@ -224,10 +204,6 @@ void D3DApp::OnResize()
 
 	m_d3dDeviceContext->RSSetViewports(1, &m_ScreenViewport);
 	
-}
-
-void D3DApp::DrawImGui()
-{
 }
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);

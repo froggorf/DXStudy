@@ -7,10 +7,14 @@
 
 #include "Engine/Components/USceneComponent.h"
 
+unsigned int ActorIDCount = 0;
+
 AActor::AActor()
 {
 	RootComponent = std::make_shared<USceneComponent>();
-	std::cout<<RootComponent.use_count();
+	
+	ActorID = ActorIDCount++;
+	Rename("Actor_" + std::to_string(ActorID));
 }
 
 void AActor::Tick(float DeltaSeconds)

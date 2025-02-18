@@ -19,6 +19,12 @@ public:
 	// 디스크에서 로드될 때 실행될 함수
 	virtual void PostLoad();
 
+	std::string GetName() const
+	{
+		return NamePrivate;
+	}
+
+	void Rename(const std::string& NewName);
 
 	virtual void LoadDataFromFileData(std::vector<std::string>& StaticMeshAssetData);
 protected:
@@ -26,5 +32,6 @@ private:
 public:
 protected:
 private:
+	std::string NamePrivate;
 	
 };

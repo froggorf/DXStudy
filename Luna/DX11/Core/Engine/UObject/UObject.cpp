@@ -22,6 +22,11 @@ void UObject::PostLoad()
 {
 }
 
+void UObject::Rename(const std::string& NewName)
+{
+	NamePrivate = NewName;
+}
+
 void UObject::LoadDataFromFileData(std::vector<std::string>& StaticMeshAssetData)
 {
 }

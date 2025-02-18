@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <functional>
+
 #include "d3dApp.h"
 #include "Engine/MyEngineUtils.h"
 #include "Engine/UObject/UObject.h"
@@ -24,16 +26,24 @@ public:
 	void Tick(float DeltaSeconds);
 	void Draw();
 
+	void AddImGuiRenderFunction(const std::function<void>& NewRenderFunction);
+
 	ID3D11Device* GetDevice() const {return Application->GetDevice();}
 	ID3D11DeviceContext* GetDeviceContext() const {return Application->GetDeviceContext();}
 	ID3D11Buffer* TestDeleteLater_GetObjConstantBuffer() const {return Application->Test_DeleteLater_GetObjectConstantBuffer();}
 protected:
 private:
+	// ============= ImGui =============
+	void InitImGui();
+	void DrawImGui();
+	// =================================
 	void LoadAllObjectsFromFile();
 public:
 protected:
 private:
 	D3DApp* Application;
 	std::shared_ptr<UWorld> CurrentWorld;
+
+	//std::vector<std::function<void>> ImGuiRenderFunctions;
 	
 };

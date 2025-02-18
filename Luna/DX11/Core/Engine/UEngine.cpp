@@ -5,6 +5,8 @@
 
 #include "UEngine.h"
 
+#include "backends/imgui_impl_dx11.h"
+#include "backends/imgui_impl_win32.h"
 #include "Mesh/UStaticMesh.h"
 #include "World/UWorld.h"
 
@@ -17,6 +19,8 @@ UEngine::~UEngine()
 void UEngine::InitEngine()
 {
 	CurrentWorld = std::make_shared<UWorld>();
+
+	InitImGui();
 
 	PostLoad();
 
@@ -47,6 +51,47 @@ void UEngine::Draw()
 	{
 		CurrentWorld->TestDrawWorld();
 	}
+
+	DrawImGui();
+}
+
+void UEngine::AddImGuiRenderFunction(const std::function<void>& NewRenderFunction)
+{
+	
+}
+
+void UEngine::InitImGui()
+{
+	// Setup Dear ImGui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+
+	// Setup Platform/Renderer backends
+	
+	ImGui_ImplWin32_Init(Application->GetMainWnd());
+	ImGui_ImplDX11_Init(GetDevice(), GetDeviceContext());
+
+}
+
+void UEngine::DrawImGui()
+{
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+
+	ImGui::NewFrame();
+	ImGui::Begin("Test");
+	ImGui::Button("test", ImVec2(100,100));
+	ImGui::End();
+
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
 
 void UEngine::LoadAllObjectsFromFile()

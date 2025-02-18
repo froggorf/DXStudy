@@ -33,4 +33,5 @@ protected:
 	std::shared_ptr<USceneComponent>		RootComponent;
 
 private:
+	unsigned int ActorID = 0;
 };

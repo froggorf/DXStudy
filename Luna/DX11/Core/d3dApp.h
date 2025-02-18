@@ -28,10 +28,10 @@ public:
 
 	// 각 프로그램에 필요한 기능들 오버라이드
 	virtual bool Init();
-	bool InitImGui();
+	//bool InitImGui();
 	virtual void OnResize();
 	virtual void UpdateScene(float dt) = 0;
-	virtual void DrawImGui();
+	//virtual void DrawImGui();
 	virtual void DrawScene() = 0;
 	
 	virtual LRESULT MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
