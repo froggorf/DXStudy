@@ -8,6 +8,11 @@
 #include "Engine/Mesh/UStaticMesh.h"
 
 
+UStaticMeshComponent::UStaticMeshComponent()
+{
+	Rename("StaticMeshComponent_" + std::to_string(ComponentID));
+}
+
 bool UStaticMeshComponent::SetStaticMesh(const std::shared_ptr<UStaticMesh>& NewMesh)
 {
 	if(NewMesh.get() == GetStaticMesh().get())

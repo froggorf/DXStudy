@@ -44,7 +44,8 @@ public:
 	ID3D11Device* GetDevice() const {return m_d3dDevice.Get(); }
 	ID3D11DeviceContext* GetDeviceContext() const {return m_d3dDeviceContext.Get(); }
 	virtual ID3D11Buffer* Test_DeleteLater_GetObjectConstantBuffer() const{ return nullptr	;}
-	
+	virtual XMMATRIX Test_DeleteLater_GetViewMatrix() const {return XMMATRIX();}
+	virtual XMMATRIX Test_DeleteLater_GetProjectionMatrix() const {return XMMATRIX();}
 protected:
 	bool InitMainWindow();
 	bool InitDirect3D();

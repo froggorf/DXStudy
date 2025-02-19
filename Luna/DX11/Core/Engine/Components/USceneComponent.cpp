@@ -67,7 +67,6 @@ void USceneComponent::SetRelativeScale3D(const DirectX::XMFLOAT3& NewRelScale3D)
 
 void USceneComponent::TestDraw()
 {
-	std::cout << typeid(this).name() << std::endl;
 	TestDrawComponent();
 
 	//int ComponentCount = AttachChildren.size();

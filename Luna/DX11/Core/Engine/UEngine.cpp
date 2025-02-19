@@ -62,6 +62,11 @@ void UEngine::AddImGuiRenderFunction(const std::function<void()>& NewRenderFunct
 	ImGuiRenderFunctions.push_back(NewRenderFunction);
 }
 
+void UEngine::AddImGuizmoRenderFunction(const std::function<void()>& NewRenderFunction)
+{
+	ImGuizmoRenderFunctions.push_back(NewRenderFunction);
+}
+
 
 void UEngine::InitImGui()
 {
@@ -93,11 +98,24 @@ void UEngine::DrawImGui()
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 
+	ImGui::NewFrame();
+
+	// ImGui
 	for(const auto& Func : ImGuiRenderFunctions)
 	{
 		Func();
 	}
-	
+
+
+	// ImGuizmo
+	ImGuizmo::BeginFrame();
+	ImGuiIO& io = ImGui::GetIO();
+	ImGuizmo::SetRect(0,0,io.DisplaySize.x,io.DisplaySize.y);
+	for(const auto& Func : ImGuizmoRenderFunctions)
+	{
+		Func();
+	}
+
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
@@ -107,11 +125,8 @@ void UEngine::LoadAllObjectsFromFile()
 	// 디스크에 내에 있는 모든 myasset 파일을 로드하는 함수
 	// TODO: 추후 디스크 읽는 라이브러리를 사용하기
 	AssetManager::ReadMyAsset<UStaticMesh>("Asset/StaticMesh/SM_Racco.myasset");
+	AssetManager::ReadMyAsset<UStaticMesh>("Asset/StaticMesh/SM_Cube.myasset");
+	AssetManager::ReadMyAsset<UStaticMesh>("Asset/StaticMesh/SM_Sphere.myasset");
 
 	std::cout<< "StaticMesh Size -> "<<UStaticMesh::GetStaticMeshCache().size()<<std::endl;
-}
-
-void UEngine::Test1()
-{
-	std::cout<< 1<< std::endl;
 }

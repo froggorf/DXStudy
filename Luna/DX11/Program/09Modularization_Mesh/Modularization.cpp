@@ -96,11 +96,21 @@ public:
 	void OnMouseUp(WPARAM btnState, int x, int y) override;
 	void OnMouseMove(WPARAM btnState, int x, int y) override;
 
+
+	// TODO: DELETE_LATER
 	virtual ID3D11Buffer* Test_DeleteLater_GetObjectConstantBuffer() const override
 	{
-
 		return m_ObjConstantBuffer.Get();
 	}
+	virtual XMMATRIX Test_DeleteLater_GetViewMatrix() const override
+	{
+		return m_View;
+	}
+	virtual XMMATRIX Test_DeleteLater_GetProjectionMatrix() const override
+	{
+		return m_Proj;
+	}
+	void DrawImGui();
 
 private:
 	
@@ -528,155 +538,155 @@ void AnimationApp::DrawShadowMap()
 	}
 }
 //
-//void AnimationApp::DrawImGui()
-//{
-//	ImGui_ImplDX11_NewFrame();
-//	ImGui_ImplWin32_NewFrame();
-//	ImGui::NewFrame();
-//	
-//	// UI 코드 작성
-//	ImGui::SetNextWindowSize(ImVec2(600,200));
-//    ImGui::Begin("Controller");
-//	ImGui::Text("Body SRV Change");
-//	if(ImGui::Button("Body1", ImVec2(150,25)))
-//	{
-//		ChangeModelTexture(0, m_BodyShaderResourceView[0]);
-//	}
-//	ImGui::SameLine();
-//	if(ImGui::Button("Body2", ImVec2(150,25)))
-//	{
-//		ChangeModelTexture(0, m_BodyShaderResourceView[1]);
-//	}
-//	ImGui::SameLine();
-//	if(ImGui::Button("Body3", ImVec2(150,25)))
-//	{
-//		ChangeModelTexture(0, m_BodyShaderResourceView[2]);
-//	}
-//    ImGui::End();
-//
-//	ImGui::SetNextWindowSize(ImVec2{600.0f,100.0f});
-//	ImGui::Begin("Color");
-//	static float color[] = {1.0f,1.0f,1.0f,1.0f};
-//	if(ImGui::ColorEdit4("Directional Light Color", color, 0))
-//	{
-//		m_DirectionalLight.Ambient = XMFLOAT4(color[0],color[1],color[2],color[3]);
-//	}
-//
-//	ImGui::SliderFloat3("PointLight", (float*)&m_PointLight.Position, -5.0f,5.0f);
-//	static float plColor[] = {m_PointLight.Ambient.x,m_PointLight.Ambient.y,m_PointLight.Ambient.z,1.0f};
-//	if(ImGui::ColorEdit4("PointLight Color", plColor, 0))
-//	{
-//		m_PointLight.Ambient = XMFLOAT4(plColor[0],plColor[1],plColor[2],plColor[3]);
-//		m_PointLight.Diffuse= XMFLOAT4(plColor[0],plColor[1],plColor[2],plColor[3]);
-//		m_PointLight.Specular= XMFLOAT4(1.0f,1.0f,1.0f,1.0f);//XMFLOAT4(plColor[0],plColor[1],plColor[2],plColor[3]);
-//	}
-//	ImGui::End();
-//
-//	// ImGuizmo
-//	{
-//		ImGuizmo::BeginFrame();
-//		ImGuiIO& io = ImGui::GetIO();
-//		
-//		ImGui::SliderFloat3("Translation", (float*)&m_ModelPosition, -5.0f, 5.0f );
-//
-//		
-//		static float rotationDegrees[] = {90.0f,0.0f,0.0f};
-//		if(ImGui::SliderFloat3("Rotation", (float*)&rotationDegrees,-180.0f,180.0f))
-//		{
-//			
-//			m_ModelQuat = XMQuaternionRotationRollPitchYaw(
-//				XMConvertToRadians(rotationDegrees[0]),
-//				XMConvertToRadians(rotationDegrees[1]),
-//				XMConvertToRadians(rotationDegrees[2]));
-//			XMQuaternionNormalize(m_ModelQuat);
-//		}
-//		ImGui::SliderFloat3("Scale", (float*)&m_ModelScale, -5.0f, 5.0f);
-//		ImGuizmo::SetRect(0,0,io.DisplaySize.x,io.DisplaySize.y);
-//		static bool bUseGizmo = false;
-//		ImGui::Checkbox("Use Gizmo", &bUseGizmo);
-//		XMMATRIX identityMat = XMMatrixIdentity();
-//
-//		if (bUseGizmo)
-//		{
-//			static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::ROTATE);
-//			static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
-//			if (ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_Q))
-//			{
-//				std::cout << " Q" << std::endl;
-//				mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
-//			}
-//			if (ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_W))
-//			{
-//				std::cout << "R" << std::endl;
-//				mCurrentGizmoOperation = ImGuizmo::ROTATE;
-//			}
-//			if (ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_E))
-//			{
-//				std::cout << "R" << std::endl;
-//				mCurrentGizmoOperation = ImGuizmo::SCALE;
-//			}
-//			if(ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_1))
-//			{
-//				std::cout<<"WORLD"<<std::endl;
-//				mCurrentGizmoMode = ImGuizmo::WORLD;
-//			}
-//			if(ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_2))
-//			{
-//				std::cout<<"Local"<<std::endl;
-//				mCurrentGizmoMode = ImGuizmo::LOCAL;
-//			}
-//
-//			XMMATRIX objectMatrix;
-//			XMMATRIX deltaMatrix;
-//			XMFLOAT3 test {0.0f,0.0f,0.0f};
-//			// Position, Rotation, Scale -> Matrix
-//			ImGuizmo::RecomposeMatrixFromComponents(reinterpret_cast<float*>(&m_ModelPosition), reinterpret_cast<float*>(&test), reinterpret_cast<float*>(&m_ModelScale), reinterpret_cast<float*>(&objectMatrix));	
-//			
-//
-//			// 이게 기즈모를 통한 트랜스레이션을 적용시켜주는 함수
-//			//ImGuizmo::Manipulate(reinterpret_cast<float*>(&m_View), reinterpret_cast<float*>(&m_Proj), mCurrentGizmoOperation, mCurrentGizmoMode, reinterpret_cast<float*>(&objectMatrix), (float*)&deltaMatrix, NULL);
-//			ImGuizmo::Manipulate(reinterpret_cast<float*>(&m_View), reinterpret_cast<float*>(&m_Proj),
-//				mCurrentGizmoOperation, mCurrentGizmoMode, (float*)&objectMatrix, (float*)&deltaMatrix, nullptr);
-//
-//			ImGuizmo::DecomposeMatrixToComponents(reinterpret_cast<float*>(&objectMatrix), (float*)&m_ModelPosition, nullptr, (float*)&m_ModelScale);
-//			
-//			//ImGuizmo::DecomposeMatrixToComponents(reinterpret_cast<float*>(&objectMatrix), (float*)&m_ModelPosition, nullptr, (float*)&m_ModelScale);
-//
-//			XMFLOAT3 deltaRot;
-//			ImGuizmo::DecomposeMatrixToComponents(reinterpret_cast<float*>(&deltaMatrix), nullptr, (float*)&deltaRot, nullptr);
-//
-//			rotationDegrees[0] = std::fmod (rotationDegrees[0] + deltaRot.x , 180.0f);
-//			rotationDegrees[1] = std::fmod (rotationDegrees[1] + deltaRot.y , 180.0f);
-//			rotationDegrees[2] = std::fmod (rotationDegrees[2] + deltaRot.z , 180.0f);
-//			XMVECTOR deltaQuat = XMQuaternionRotationRollPitchYaw( 
-//									XMConvertToRadians(deltaRot.x),
-//								XMConvertToRadians(deltaRot.y),
-//								XMConvertToRadians(deltaRot.z));
-//
-//			m_ModelQuat = XMQuaternionMultiply(m_ModelQuat , deltaQuat) ;
-//			XMQuaternionNormalize(m_ModelQuat);
-//			
-//		}
-//		static int animationSelect = 0;
-//		if(ImGui::RadioButton("IDLE", &animationSelect, 0))
-//		{
-//			m_PaladinAnimator->PlayAnimation(m_Anim_Cat_Idle.get());
-//		}
-//		if(ImGui::RadioButton("DIG", &animationSelect, 1))
-//		{
-//			m_PaladinAnimator->PlayAnimation(m_Anim_Cat_DIG.get());
-//		}
-//		if(ImGui::RadioButton("HI", &animationSelect, 2))
-//		{
-//			m_PaladinAnimator->PlayAnimation(m_Anim_Cat_HI.get());
-//		}
-//		
-//
-//
-//	}
-//	ImGui::Render();
-//	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-//}
+void AnimationApp::DrawImGui()
+{
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+	
+	// UI 코드 작성
+	ImGui::SetNextWindowSize(ImVec2(600,200));
+    ImGui::Begin("Controller");
+	ImGui::Text("Body SRV Change");
+	if(ImGui::Button("Body1", ImVec2(150,25)))
+	{
+		ChangeModelTexture(0, m_BodyShaderResourceView[0]);
+	}
+	ImGui::SameLine();
+	if(ImGui::Button("Body2", ImVec2(150,25)))
+	{
+		ChangeModelTexture(0, m_BodyShaderResourceView[1]);
+	}
+	ImGui::SameLine();
+	if(ImGui::Button("Body3", ImVec2(150,25)))
+	{
+		ChangeModelTexture(0, m_BodyShaderResourceView[2]);
+	}
+    ImGui::End();
+
+	ImGui::SetNextWindowSize(ImVec2{600.0f,100.0f});
+	ImGui::Begin("Color");
+	static float color[] = {1.0f,1.0f,1.0f,1.0f};
+	if(ImGui::ColorEdit4("Directional Light Color", color, 0))
+	{
+		m_DirectionalLight.Ambient = XMFLOAT4(color[0],color[1],color[2],color[3]);
+	}
+
+	ImGui::SliderFloat3("PointLight", (float*)&m_PointLight.Position, -5.0f,5.0f);
+	static float plColor[] = {m_PointLight.Ambient.x,m_PointLight.Ambient.y,m_PointLight.Ambient.z,1.0f};
+	if(ImGui::ColorEdit4("PointLight Color", plColor, 0))
+	{
+		m_PointLight.Ambient = XMFLOAT4(plColor[0],plColor[1],plColor[2],plColor[3]);
+		m_PointLight.Diffuse= XMFLOAT4(plColor[0],plColor[1],plColor[2],plColor[3]);
+		m_PointLight.Specular= XMFLOAT4(1.0f,1.0f,1.0f,1.0f);//XMFLOAT4(plColor[0],plColor[1],plColor[2],plColor[3]);
+	}
+	ImGui::End();
+
+	// ImGuizmo
+	{
+		ImGuizmo::BeginFrame();
+		ImGuiIO& io = ImGui::GetIO();
+		
+		ImGui::SliderFloat3("Translation", (float*)&m_ModelPosition, -5.0f, 5.0f );
+
+		
+		static float rotationDegrees[] = {90.0f,0.0f,0.0f};
+		if(ImGui::SliderFloat3("Rotation", (float*)&rotationDegrees,-180.0f,180.0f))
+		{
+			
+			m_ModelQuat = XMQuaternionRotationRollPitchYaw(
+				XMConvertToRadians(rotationDegrees[0]),
+				XMConvertToRadians(rotationDegrees[1]),
+				XMConvertToRadians(rotationDegrees[2]));
+			XMQuaternionNormalize(m_ModelQuat);
+		}
+		ImGui::SliderFloat3("Scale", (float*)&m_ModelScale, -5.0f, 5.0f);
+		ImGuizmo::SetRect(0,0,io.DisplaySize.x,io.DisplaySize.y);
+		static bool bUseGizmo = false;
+		ImGui::Checkbox("Use Gizmo", &bUseGizmo);
+		XMMATRIX identityMat = XMMatrixIdentity();
+
+		if (bUseGizmo)
+		{
+			static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::ROTATE);
+			static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
+			if (ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_Q))
+			{
+				std::cout << " Q" << std::endl;
+				mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+			}
+			if (ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_W))
+			{
+				std::cout << "R" << std::endl;
+				mCurrentGizmoOperation = ImGuizmo::ROTATE;
+			}
+			if (ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_E))
+			{
+				std::cout << "R" << std::endl;
+				mCurrentGizmoOperation = ImGuizmo::SCALE;
+			}
+			if(ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_1))
+			{
+				std::cout<<"WORLD"<<std::endl;
+				mCurrentGizmoMode = ImGuizmo::WORLD;
+			}
+			if(ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_2))
+			{
+				std::cout<<"Local"<<std::endl;
+				mCurrentGizmoMode = ImGuizmo::LOCAL;
+			}
+
+			XMMATRIX objectMatrix;
+			XMMATRIX deltaMatrix;
+			XMFLOAT3 test {0.0f,0.0f,0.0f};
+			// Position, Rotation, Scale -> Matrix
+			ImGuizmo::RecomposeMatrixFromComponents(reinterpret_cast<float*>(&m_ModelPosition), reinterpret_cast<float*>(&test), reinterpret_cast<float*>(&m_ModelScale), reinterpret_cast<float*>(&objectMatrix));	
+			
+
+			// 이게 기즈모를 통한 트랜스레이션을 적용시켜주는 함수
+			//ImGuizmo::Manipulate(reinterpret_cast<float*>(&m_View), reinterpret_cast<float*>(&m_Proj), mCurrentGizmoOperation, mCurrentGizmoMode, reinterpret_cast<float*>(&objectMatrix), (float*)&deltaMatrix, NULL);
+			ImGuizmo::Manipulate(reinterpret_cast<float*>(&m_View), reinterpret_cast<float*>(&m_Proj),
+				mCurrentGizmoOperation, mCurrentGizmoMode, (float*)&objectMatrix, (float*)&deltaMatrix, nullptr);
+
+			ImGuizmo::DecomposeMatrixToComponents(reinterpret_cast<float*>(&objectMatrix), (float*)&m_ModelPosition, nullptr, (float*)&m_ModelScale);
+			
+			//ImGuizmo::DecomposeMatrixToComponents(reinterpret_cast<float*>(&objectMatrix), (float*)&m_ModelPosition, nullptr, (float*)&m_ModelScale);
+
+			XMFLOAT3 deltaRot;
+			ImGuizmo::DecomposeMatrixToComponents(reinterpret_cast<float*>(&deltaMatrix), nullptr, (float*)&deltaRot, nullptr);
+
+			rotationDegrees[0] = std::fmod (rotationDegrees[0] + deltaRot.x , 180.0f);
+			rotationDegrees[1] = std::fmod (rotationDegrees[1] + deltaRot.y , 180.0f);
+			rotationDegrees[2] = std::fmod (rotationDegrees[2] + deltaRot.z , 180.0f);
+			XMVECTOR deltaQuat = XMQuaternionRotationRollPitchYaw( 
+									XMConvertToRadians(deltaRot.x),
+								XMConvertToRadians(deltaRot.y),
+								XMConvertToRadians(deltaRot.z));
+
+			m_ModelQuat = XMQuaternionMultiply(m_ModelQuat , deltaQuat) ;
+			XMQuaternionNormalize(m_ModelQuat);
+			
+		}
+		static int animationSelect = 0;
+		if(ImGui::RadioButton("IDLE", &animationSelect, 0))
+		{
+			m_PaladinAnimator->PlayAnimation(m_Anim_Cat_Idle.get());
+		}
+		if(ImGui::RadioButton("DIG", &animationSelect, 1))
+		{
+			m_PaladinAnimator->PlayAnimation(m_Anim_Cat_DIG.get());
+		}
+		if(ImGui::RadioButton("HI", &animationSelect, 2))
+		{
+			m_PaladinAnimator->PlayAnimation(m_Anim_Cat_HI.get());
+		}
+		
+
+
+	}
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+}
 //
 //void AnimationApp::DrawCube()
 //{

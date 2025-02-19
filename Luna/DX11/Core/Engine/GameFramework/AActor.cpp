@@ -12,7 +12,8 @@ unsigned int ActorIDCount = 0;
 AActor::AActor()
 {
 	RootComponent = std::make_shared<USceneComponent>();
-	
+	RootComponent->Rename("RootComponent");
+
 	ActorID = ActorIDCount++;
 	Rename("Actor_" + std::to_string(ActorID));
 }

@@ -11,7 +11,7 @@ class UStaticMesh;
 class UStaticMeshComponent : public USceneComponent
 {
 public:
-	UStaticMeshComponent() = default;
+	UStaticMeshComponent();
 
 	virtual bool SetStaticMesh(const std::shared_ptr<UStaticMesh>& NewMesh);
 	const std::shared_ptr<UStaticMesh>& GetStaticMesh() const { return StaticMesh; }

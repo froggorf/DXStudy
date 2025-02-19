@@ -27,10 +27,13 @@ public:
 	void Draw();
 
 	void AddImGuiRenderFunction(const std::function<void()>& NewRenderFunction);
+	void AddImGuizmoRenderFunction(const std::function<void()>& NewRenderFunction);
 
 	ID3D11Device* GetDevice() const {return Application->GetDevice();}
 	ID3D11DeviceContext* GetDeviceContext() const {return Application->GetDeviceContext();}
 	ID3D11Buffer* TestDeleteLater_GetObjConstantBuffer() const {return Application->Test_DeleteLater_GetObjectConstantBuffer();}
+	XMMATRIX Test_DeleteLater_GetViewMatrix() const {return Application->Test_DeleteLater_GetViewMatrix();}
+	XMMATRIX Test_DeleteLater_GetProjectionMatrix() const {return Application->Test_DeleteLater_GetProjectionMatrix();}
 protected:
 private:
 	// ============= ImGui =============
@@ -45,7 +48,5 @@ private:
 	std::shared_ptr<UWorld> CurrentWorld;
 
 	std::vector<std::function<void()>> ImGuiRenderFunctions;
-
-	void Test1();
-	
+	std::vector<std::function<void()>> ImGuizmoRenderFunctions;
 };

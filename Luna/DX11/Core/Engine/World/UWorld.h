@@ -11,7 +11,9 @@
 #include "Engine/Level/ULevel.h"
 #include "Engine/UObject/UObject.h"
 
+class USceneComponent;
 class ULevel;
+class AActor;
 
 class UWorld : public UObject, public std::enable_shared_from_this<UWorld>
 {
@@ -31,12 +33,14 @@ public:
 	void TestDrawWorld();
 
 	void ImguiRender_WorldOutliner();
+	void ImGuiAction_SelectActor(const std::shared_ptr<AActor>& NewSelectActor);
+	// 타겟 컴퍼넌트의 정보와 해당 타겟 컴퍼넌트의 자식들의 정보를 저장
+	void ImGuiAction_FindActorComponentsAndNames(const std::shared_ptr<USceneComponent>& TargetComponent, int CurrentHierarchyDepth);
+	void ImGuiRender_ActorDetail();
+	void ImGuizmoRender_SelectComponentGizmo();
 	
 protected:
 private:
-	// ImGui의 World Outliner 패널을 보여주기 위한 변수를 초기화 하는 함수
-	// TODO: PersistentLevel이 변경될 때 마다 값을 갱신할 수 있도록 해당 함수 호출 필요
-	void InitWorldOutliner();
 public:
 protected:
 private:
@@ -46,4 +50,10 @@ private:
 	// 콜렉션에 있는 모든 레벨정보
 	std::set<std::shared_ptr<ULevel>> Levels;
 
+	// 현재 선택된 액터
+	// TODO: 추후 에디터 기능으로 분리하기
+	std::shared_ptr<AActor> CurrentSelectedActor;
+	std::vector<std::shared_ptr<USceneComponent>> SelectActorComponents;
+	std::vector<std::string> SelectActorComponentNames;
+	int CurrentSelectedComponentIndex = -1;
 };

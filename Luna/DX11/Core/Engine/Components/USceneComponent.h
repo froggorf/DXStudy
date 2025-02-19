@@ -37,6 +37,8 @@ public:
 	// 언리얼엔진에서 FTransform 값 복사를 통해 반환하도록 구현 (값을 받아 적용시킬 일이 존재할 것으로 추측)
 	FTransform GetComponentToWorld() const {return ComponentToWorld;}
 
+	const std::vector<std::shared_ptr<USceneComponent>>& GetAttachChildren() const {return AttachChildren;}
+
 	virtual void TestDraw();
 	virtual void TestDrawComponent();
 protected:
