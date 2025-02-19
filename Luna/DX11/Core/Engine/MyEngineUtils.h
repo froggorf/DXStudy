@@ -35,9 +35,9 @@ struct FTransform
 	// 3D Scale (로컬 공간에서만 적용)
 	DirectX::XMFLOAT3 Scale3D = DirectX::XMFLOAT3(1.0f,1.0f,1.0f);
 
-	const DirectX::XMFLOAT3& GetLocation() const { return Translation; }
-	const DirectX::XMFLOAT4& GetRotationQuat() const { return Rotation; }
-	const DirectX::XMFLOAT3& GetScale3D() const { return Scale3D; }
+	DirectX::XMFLOAT3 GetTranslation() const { return Translation; }
+	DirectX::XMFLOAT4 GetRotationQuat() const { return Rotation; }
+	DirectX::XMFLOAT3 GetScale3D() const { return Scale3D; }
 
 	DirectX::XMMATRIX ToMatrixWithScale() const
 	{
@@ -86,7 +86,7 @@ struct FTransform
 		return Result;
 	}
 
-	XMFLOAT3 GetEulerRotation()
+	XMFLOAT3 GetEulerRotation() const
 	{
 		//02.19 임시 코드
 		// 쿼터니언 성분 추출
@@ -120,6 +120,16 @@ struct FTransform
 		euler.z *= (180.0f / XM_PI);
 
 		return euler;
+	}
+
+	// 월드 좌표 -> 로컬좌표 위치
+	XMFLOAT3 InverseTransformPosition(const XMFLOAT3& WorldTranslation) const
+	{
+		XMVECTOR WorldTranslationVec = XMLoadFloat3(&WorldTranslation);
+		XMFLOAT3 RetVal;
+		XMStoreFloat3(&RetVal, XMVector3Transform(WorldTranslationVec, XMMatrixInverse(nullptr, ToMatrixWithScale())));
+		
+		return RetVal;
 	}
 };
 

@@ -36,7 +36,7 @@ void UStaticMeshComponent::TestDrawComponent()
 
 	{
 		ObjConstantBuffer ocb;
-		XMMATRIX world = GetComponentToWorld().ToMatrixWithScale();
+		XMMATRIX world = GetComponentTransform().ToMatrixWithScale();
 		// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
 		ocb.InvTransposeMatrix = (XMMatrixInverse(nullptr, world));
 		ocb.World = XMMatrixTranspose(world);

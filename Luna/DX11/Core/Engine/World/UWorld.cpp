@@ -186,16 +186,26 @@ void UWorld::ImGuizmoRender_SelectComponentGizmo()
 	}
 
 	const std::shared_ptr<USceneComponent>& CurrentSelectedComponent = SelectActorComponents[CurrentSelectedComponentIndex];
-	FTransform ComponentTransform = CurrentSelectedComponent->GetComponentToWorld();
+	FTransform ComponentTransform = CurrentSelectedComponent->GetComponentTransform();
 
 	XMFLOAT3 RotationEuler = ComponentTransform.GetEulerRotation();
 	XMMATRIX ComponentMatrix;// = ComponentTransform.ToMatrixWithScale();
 	ImGuizmo::RecomposeMatrixFromComponents(reinterpret_cast<float*>(&ComponentTransform.Translation), reinterpret_cast<float*>(&RotationEuler), reinterpret_cast<float*>(&ComponentTransform.Scale3D), reinterpret_cast<float*>(&ComponentMatrix));
-	XMMATRIX DeltaMatrix = XMMatrixIdentity();
+	XMMATRIX DeltaMatrixTemp = XMMatrixIdentity();
+	float* DeltaMatrix = reinterpret_cast<float*>(&DeltaMatrixTemp);
 
 	XMMATRIX ViewMat = GEngine->Test_DeleteLater_GetViewMatrix();
 	XMMATRIX ProjMat = GEngine->Test_DeleteLater_GetProjectionMatrix();
-	
-	ImGuizmo::Manipulate(reinterpret_cast<float*>(&ViewMat), reinterpret_cast<float*>(&ProjMat),CurrentGizmoOperation,CurrentGizmoMode,reinterpret_cast<float*>(&ComponentMatrix),reinterpret_cast<float*>(&DeltaMatrix));
 
+	ImGuizmo::Manipulate(reinterpret_cast<float*>(&ViewMat), reinterpret_cast<float*>(&ProjMat),CurrentGizmoOperation,CurrentGizmoMode,reinterpret_cast<float*>(&ComponentMatrix),DeltaMatrix);
+
+	XMFLOAT3 DeltaTranslation;
+	XMFLOAT3 DeltaRot;
+	XMFLOAT3 DeltaScale;
+	ImGuizmo::DecomposeMatrixToComponents(DeltaMatrix, reinterpret_cast<float*>(&DeltaTranslation),reinterpret_cast<float*>(&DeltaRot),reinterpret_cast<float*>(&DeltaScale) );
+	CurrentSelectedComponent->AddWorldOffset(DeltaTranslation);
+
+	// TODO: 02.19 Scale, Rotation 모두 적용하기
+
+	
 }

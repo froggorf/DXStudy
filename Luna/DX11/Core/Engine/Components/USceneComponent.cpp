@@ -65,6 +65,34 @@ void USceneComponent::SetRelativeScale3D(const DirectX::XMFLOAT3& NewRelScale3D)
 	UpdateComponentToWorld();
 }
 
+void USceneComponent::AddWorldOffset(const XMFLOAT3& DeltaLocation) 
+{
+	XMFLOAT3 CurrentComponentTranslation = GetComponentTransform().GetTranslation();
+	XMVECTOR NewWorldLocationVec = XMVectorAdd(XMLoadFloat3(&DeltaLocation), XMLoadFloat3(&CurrentComponentTranslation)); 
+	XMFLOAT3 NewWorldLocation;
+	
+	XMStoreFloat3(&NewWorldLocation, NewWorldLocationVec);
+	SetWorldLocation(NewWorldLocation);
+}
+
+void USceneComponent::SetWorldLocation(const XMFLOAT3& NewLocation)
+{
+	XMFLOAT3 NewRelLocation = NewLocation;
+
+	if(GetAttachParent())
+	{
+		// TODO: 
+		FTransform ParentToWorld = GetAttachParent()->GetSocketTransform(GetAttachSocketName());
+		NewRelLocation = ParentToWorld.InverseTransformPosition(NewLocation);
+	}
+	SetRelativeLocation(NewRelLocation);
+}
+
+FTransform& USceneComponent::GetSocketTransform(const std::string& InSocketName)
+{
+	return ComponentToWorld;
+}
+
 void USceneComponent::TestDraw()
 {
 	TestDrawComponent();

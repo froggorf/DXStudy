@@ -34,8 +34,13 @@ public:
 	void SetRelativeRotation(const DirectX::XMFLOAT3& NewRelRotation);
 	void SetRelativeScale3D(const DirectX::XMFLOAT3& NewRelScale3D);
 
-	// 언리얼엔진에서 FTransform 값 복사를 통해 반환하도록 구현 (값을 받아 적용시킬 일이 존재할 것으로 추측)
-	FTransform GetComponentToWorld() const {return ComponentToWorld;}
+	void AddWorldOffset(const XMFLOAT3& DeltaLocation);
+	void SetWorldLocation(const XMFLOAT3& NewLocation);
+
+
+	const FTransform& GetComponentTransform() const {return ComponentToWorld;}
+	// TODO: Socket 기능 추가 시 해당 기능 수정 필요
+	virtual FTransform& GetSocketTransform(const std::string& InSocketName);
 
 	const std::vector<std::shared_ptr<USceneComponent>>& GetAttachChildren() const {return AttachChildren;}
 
