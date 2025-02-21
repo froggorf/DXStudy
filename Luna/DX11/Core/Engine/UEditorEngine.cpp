@@ -40,11 +40,11 @@ void UEditorEngine::DrawDebugConsole()
 
 	char* CurrentText = DebugConsoleSearchText.data();
 	ImGui::Text("Search: ");
-	ImGui::SameLine(10.0f);
-	if(ImGui::InputText("Search",CurrentText,100))
+	ImGui::SameLine();
+	if(ImGui::InputText(" ",CurrentText,100))
 	{
 		DebugConsoleSearchText = CurrentText;
-		MY_LOG("SEARCH", EDebugLogLevel::DLL_Display, DebugConsoleSearchText);
+		SearchDebugConsole();
 	}
 	
 	ImGui::BeginListBox(" ", ImVec2(-FLT_MIN, -FLT_MIN));
@@ -52,10 +52,9 @@ void UEditorEngine::DrawDebugConsole()
 	bool bWhileSearching = DebugConsoleSearchText.size() != 0;
 	if(bWhileSearching)
 	{
-		for(const DebugText& Text : DebugConsoleText)
+		for(const DebugText& Text : SearchingDebugConsoleText)
 		{
 			ImGui::TextColored(DebugText::Color[Text.Level], Text.Text.data());
-
 		}	
 	}
 	else
@@ -69,4 +68,23 @@ void UEditorEngine::DrawDebugConsole()
 	ImGui::EndListBox();
 
 	ImGui::End();
+}
+
+void UEditorEngine::SearchDebugConsole()
+{
+	SearchingDebugConsoleText.clear();
+
+	if(DebugConsoleSearchText.size() == 0)
+	{
+		return;
+	}
+
+	for(const auto& Text : DebugConsoleText)
+	{
+		const std::string& LogText = Text.Text;
+		if(LogText.contains(DebugConsoleSearchText))
+		{
+			SearchingDebugConsoleText.push_back(Text);
+		}
+	}
 }

@@ -38,7 +38,7 @@ public:
 protected:
 private:
 	void DrawDebugConsole();
-
+	void SearchDebugConsole();
 public:
 protected:
 private:
