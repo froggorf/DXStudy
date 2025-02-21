@@ -184,12 +184,21 @@ void UWorld::ImGuizmoRender_SelectComponentGizmo()
 		CurrentGizmoOperation = ImGuizmo::SCALE;
 	}
 
+	if(ImGui::IsKeyPressed(ImGuiKey_1))
+	{
+		CurrentGizmoMode = ImGuizmo::WORLD;
+	}
+	if(ImGui::IsKeyPressed(ImGuiKey_2))
+	{
+		CurrentGizmoMode = ImGuizmo::LOCAL;
+	}
+
 	const std::shared_ptr<USceneComponent>& CurrentSelectedComponent = SelectActorComponents[CurrentSelectedComponentIndex];
 	FTransform ComponentTransform = CurrentSelectedComponent->GetComponentTransform();
 
 	XMFLOAT3 RotationEuler = ComponentTransform.GetEulerRotation();
-	XMMATRIX ComponentMatrix;// = ComponentTransform.ToMatrixWithScale();
-	ImGuizmo::RecomposeMatrixFromComponents(reinterpret_cast<float*>(&ComponentTransform.Translation), reinterpret_cast<float*>(&RotationEuler), reinterpret_cast<float*>(&ComponentTransform.Scale3D), reinterpret_cast<float*>(&ComponentMatrix));
+	XMMATRIX ComponentMatrix = ComponentTransform.ToMatrixWithScale();
+	//ImGuizmo::RecomposeMatrixFromComponents(reinterpret_cast<float*>(&ComponentTransform.Translation), reinterpret_cast<float*>(&RotationEuler), reinterpret_cast<float*>(&ComponentTransform.Scale3D), reinterpret_cast<float*>(&ComponentMatrix));
 	XMMATRIX DeltaMatrixTemp = XMMatrixIdentity();
 	float* DeltaMatrix = reinterpret_cast<float*>(&DeltaMatrixTemp);
 
@@ -206,8 +215,15 @@ void UWorld::ImGuizmoRender_SelectComponentGizmo()
 	{
 		CurrentSelectedComponent->AddWorldOffset(DeltaTranslation);	
 	}
-	
-
+	if (CurrentGizmoOperation == ImGuizmo::ROTATE && CurrentGizmoMode == ImGuizmo::LOCAL)
+	{
+		XMFLOAT3 test = CurrentSelectedComponent->GetRelativeRotation();
+		
+		test.x+=DeltaRot.x;
+		test.y+=DeltaRot.y;
+		test.z+=DeltaRot.z;
+		CurrentSelectedComponent->SetRelativeRotation(test);
+	}
 	// TODO: 02.19 Scale, Rotation 모두 적용하기
 
 	

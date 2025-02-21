@@ -21,8 +21,8 @@ void ATestCube::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
 
-	XMFLOAT3 rr = GetRootComponent()->GetRelativeRotation();
-	rr.y += 0.01f;
-
-	GetRootComponent()->SetRelativeRotation( rr);
+	//XMFLOAT3 rr = GetRootComponent()->GetRelativeRotation();
+	//rr.y += 0.01f;
+	//
+	//GetRootComponent()->SetRelativeRotation( rr);
 }
