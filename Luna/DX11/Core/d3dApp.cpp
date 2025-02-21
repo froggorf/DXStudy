@@ -133,7 +133,11 @@ bool D3DApp::Init()
 		return false;
 	}
 
-	GEngine = std::make_unique<UEditorEngine>(this);//new UEngine(this);
+	GEngine = std::make_shared<UEditorEngine>(this);//new UEngine(this);
+#ifdef MYENGINE_BUILD_DEBUG || MYENGINE_BUILD_DEVELOPMENT
+	GEditorEngine = std::dynamic_pointer_cast<UEditorEngine>(GEngine);
+#endif
+
 	GEngine->InitEngine();
 
 

@@ -30,7 +30,16 @@
 	#endif
 #endif
 
+extern std::shared_ptr<class UEngine> GEngine;
+extern std::shared_ptr<class UEditorEngine> GEditorEngine;
 
+#define MY_LOG(Category, DebugLevel, DebugText) \
+	{\
+		if(GEditorEngine)\
+		{\
+			GEditorEngine->AddConsoleText(Category, DebugLevel, DebugText);\
+		}\
+	}
 
 
 
@@ -159,5 +168,3 @@ struct FTransform
 };
 
 
-
-extern std::unique_ptr<class UEngine> GEngine;

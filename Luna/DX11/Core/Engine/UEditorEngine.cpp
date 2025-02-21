@@ -6,6 +6,10 @@
 #include "UEditorEngine.h"
 
 #include "imgui_internal.h"
+
+
+std::shared_ptr<UEditorEngine> GEditorEngine = nullptr;
+
 std::map<EDebugLogLevel, ImVec4> DebugText::Color = std::map<EDebugLogLevel, ImVec4>
 {
 	{EDebugLogLevel::DLL_Error, ImVec4(0.77f,0.26f,0.26f,1.0f)},
@@ -20,32 +24,48 @@ void UEditorEngine::InitEngine()
 
 	AddImGuiRenderFunction(std::bind(&UEditorEngine::DrawDebugConsole, this));
 
-	AddConsoleText("TEST", EDebugLogLevel::DLL_Warning, "123123123, warning");
-	AddConsoleText("TEST", EDebugLogLevel::DLL_Fatal, "fatal error");
-	AddConsoleText("TEST", EDebugLogLevel::DLL_Display, "normal display");
-	AddConsoleText("TEST", EDebugLogLevel::DLL_Error, "error ~~");
+	MY_LOG("TEST", EDebugLogLevel::DLL_Warning, "123123123, warning");
+	MY_LOG("TEST", EDebugLogLevel::DLL_Fatal, "fatal error");
+	MY_LOG("TEST", EDebugLogLevel::DLL_Display, "normal display");
+	MY_LOG("TEST", EDebugLogLevel::DLL_Error, "error ~~");
+	for(int i = 0; i < 1100; ++i)
+	{
+		MY_LOG("test", EDebugLogLevel::DLL_Display, "TEST"+std::to_string(i));
+	}
 }
 
 void UEditorEngine::DrawDebugConsole()
 {
 	ImGui::Begin("Debug Console");
 
+	char* CurrentText = DebugConsoleSearchText.data();
+	ImGui::Text("Search: ");
+	ImGui::SameLine(10.0f);
+	if(ImGui::InputText("Search",CurrentText,100))
+	{
+		DebugConsoleSearchText = CurrentText;
+		MY_LOG("SEARCH", EDebugLogLevel::DLL_Display, DebugConsoleSearchText);
+	}
 	
 	ImGui::BeginListBox(" ", ImVec2(-FLT_MIN, -FLT_MIN));
 
 	bool bWhileSearching = DebugConsoleSearchText.size() != 0;
 	if(bWhileSearching)
 	{
+		for(const DebugText& Text : DebugConsoleText)
+		{
+			ImGui::TextColored(DebugText::Color[Text.Level], Text.Text.data());
 
+		}	
 	}
 	else
 	{
 		for(const DebugText& Text : DebugConsoleText)
 		{
 			ImGui::TextColored(DebugText::Color[Text.Level], Text.Text.data());
+			
 		}	
 	}
-	
 	ImGui::EndListBox();
 
 	ImGui::End();

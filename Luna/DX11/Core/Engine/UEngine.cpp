@@ -10,7 +10,7 @@
 #include "Mesh/UStaticMesh.h"
 #include "World/UWorld.h"
 
-std::unique_ptr<UEngine> GEngine = nullptr;
+std::shared_ptr<UEngine> GEngine = nullptr;
 
 UEngine::~UEngine()
 {
