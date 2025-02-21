@@ -21,7 +21,7 @@ public:
 		Application = CurrentApplication;
 	}
 	~UEngine() override;
-	void InitEngine();
+	virtual void InitEngine();
 	void PostLoad() override;
 	void Tick(float DeltaSeconds);
 	void Draw();

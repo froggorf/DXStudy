@@ -9,6 +9,31 @@
 
 #include "d3dUtil.h"
 
+// 디버그 레벨
+// DEBUG(0) - 모든 콘솔 문구 출력
+// DEVELOPMENT(1) - 구현 관련 콘솔 문구 및 디버그 드로우
+// SHIP(2) - 게임 출시 빌드
+// 0 - DEBUG / 1 - DEVELOPMENT / 2 - SHIP
+#define DEBUG_LEVEL 0
+	
+#if (DEBUG_LEVEL == 0)
+	#ifndef MYENGINE_BUILD_DEBUG
+		#define MYENGINE_BUILD_DEBUG 0
+	#endif
+#elif (DEBUG_LEVEL == 1)
+	#ifndef MYENGINE_BUILD_DEVELOPMENT
+		#define MYENGINE_BUILD_DEVELOPMENT 0
+	#endif
+#elif (DEBUG_LEVEL == 2)
+	#ifndef MYENGINE_BUILD_SHIP
+		#define MYENGINE_BUILD_SHIP
+	#endif
+#endif
+
+
+
+
+
 // 언리얼 엔진에서는 템플릿으로 설정 후 double을 건네주지만 float로 고정하여 작성
 struct FTransform
 {

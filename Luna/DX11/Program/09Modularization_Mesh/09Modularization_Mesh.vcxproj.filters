@@ -153,6 +153,9 @@
     <ClCompile Include="..\..\Core\Engine\Components\UStaticMeshComponent.cpp">
       <Filter>Core\Engine\Components</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Core\Engine\UEditorEngine.cpp">
+      <Filter>Core\Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Core\AssetManager.h">
@@ -262,6 +265,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Core\Engine\Components\UStaticMeshComponent.h">
       <Filter>Core\Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\Engine\UEditorEngine.h">
+      <Filter>Core\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

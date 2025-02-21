@@ -10,6 +10,7 @@
 
 #include "imgui_internal.h"
 #include "Engine/MyEngineUtils.h"
+#include "Engine/UEditorEngine.h"
 #include "Engine/UEngine.h"
 
 namespace
@@ -132,7 +133,7 @@ bool D3DApp::Init()
 		return false;
 	}
 
-	GEngine = std::make_unique<UEngine>(this);//new UEngine(this);
+	GEngine = std::make_unique<UEditorEngine>(this);//new UEngine(this);
 	GEngine->InitEngine();
 
 

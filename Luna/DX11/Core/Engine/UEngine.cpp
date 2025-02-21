@@ -25,7 +25,6 @@ void UEngine::InitEngine()
 	PostLoad();
 
 	CurrentWorld->Init();
-
 }
 
 void UEngine::PostLoad()
