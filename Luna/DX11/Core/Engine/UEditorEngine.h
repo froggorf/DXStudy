@@ -6,6 +6,21 @@
 #pragma once
 #include "UEngine.h"
 
+enum class EDebugLogLevel
+{
+	DLL_Fatal, DLL_Error, DLL_Warning, DLL_Display, 
+};
+struct DebugText
+{
+	DebugText(const std::string& Text, EDebugLogLevel Level)
+	{
+		this->Text = Text;
+		this->Level = Level;
+	}
+	std::string Text;
+	EDebugLogLevel Level;
+	static std::map<EDebugLogLevel, ImVec4> Color;
+};
 
 class UEditorEngine : public UEngine
 {
@@ -14,8 +29,10 @@ public:
 
 	virtual void InitEngine() override;
 
-	void AddConsoleText(const std::string& NewDebugText)
+	void AddConsoleText(const std::string& Category, EDebugLogLevel DebugLevel, const std::string& InDebugText)
 	{
+		std::string NewText = Category + " : " + InDebugText;
+		DebugText NewDebugText{NewText, DebugLevel};
 		DebugConsoleText.push_back(NewDebugText);
 	}
 protected:
@@ -25,6 +42,8 @@ private:
 public:
 protected:
 private:
-	std::vector<std::string> DebugConsoleText;
 	
+	std::vector<DebugText> DebugConsoleText;
+	std::vector<DebugText> SearchingDebugConsoleText;
+	std::string DebugConsoleSearchText;
 };
