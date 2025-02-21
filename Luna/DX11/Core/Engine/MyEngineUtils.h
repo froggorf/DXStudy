@@ -70,7 +70,7 @@ struct FTransform
 		// rot
 		DirectX::XMVECTOR ThisRotation = DirectX::XMLoadFloat4(&Rotation);
 		DirectX::XMVECTOR OtherRotation = DirectX::XMLoadFloat4(&OtherTransform.Rotation);
-		DirectX::XMVECTOR RetRotation = DirectX::XMQuaternionMultiply(ThisRotation,OtherRotation);
+		DirectX::XMVECTOR RetRotation = DirectX::XMQuaternionMultiply(OtherRotation,ThisRotation);
 		//DirectX::XMVector4Normalize(RetRotation);
 		DirectX::XMStoreFloat4(&Result.Rotation, RetRotation);
 
