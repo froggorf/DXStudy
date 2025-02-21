@@ -16,9 +16,6 @@ ULevel::ULevel(const std::shared_ptr<UWorld>& World)
 	std::shared_ptr<AActor> TestActor = std::make_shared<ATestCube>();
 	Actors.push_back(TestActor);
 
-	std::shared_ptr<AActor> TestActor2 = std::make_shared<ATestCube>();
-	Actors.push_back(TestActor2);
-	TestActor2->SetActorLocation(XMFLOAT3{-3.0f,0.0f,0.0f});
 }
 
 ULevel::~ULevel()
@@ -27,7 +24,11 @@ ULevel::~ULevel()
 
 void ULevel::TickLevel(float DeltaSeconds)
 {
-	
+
+	for(const auto& Actor : Actors)
+	{
+		Actor->Tick(DeltaSeconds);
+	}
 }
 
 void ULevel::TestDrawLevel()

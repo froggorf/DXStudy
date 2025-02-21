@@ -11,6 +11,8 @@ class ATestCube : public AActor
 {
 public:
 	ATestCube();
+
+	virtual void Tick(float DeltaSeconds) override;
 protected:
 private:
 public:

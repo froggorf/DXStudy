@@ -42,7 +42,6 @@ void UWorld::PostLoad()
 
 void UWorld::TickWorld(float DeltaSeconds)
 {
-	std::cout<< "tick world" << std::endl;
 	if(PersistentLevel)
 	{
 		PersistentLevel->TickLevel(DeltaSeconds);
@@ -203,7 +202,11 @@ void UWorld::ImGuizmoRender_SelectComponentGizmo()
 	XMFLOAT3 DeltaRot;
 	XMFLOAT3 DeltaScale;
 	ImGuizmo::DecomposeMatrixToComponents(DeltaMatrix, reinterpret_cast<float*>(&DeltaTranslation),reinterpret_cast<float*>(&DeltaRot),reinterpret_cast<float*>(&DeltaScale) );
-	CurrentSelectedComponent->AddWorldOffset(DeltaTranslation);
+	if(CurrentGizmoOperation == ImGuizmo::TRANSLATE)
+	{
+		CurrentSelectedComponent->AddWorldOffset(DeltaTranslation);	
+	}
+	
 
 	// TODO: 02.19 Scale, Rotation 모두 적용하기
 
