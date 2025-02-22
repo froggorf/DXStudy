@@ -142,6 +142,7 @@
     <ClCompile Include="..\..\Core\Engine\GameFramework\AActor.cpp" />
     <ClCompile Include="..\..\Core\Engine\Level\ULevel.cpp" />
     <ClCompile Include="..\..\Core\Engine\Mesh\UStaticMesh.cpp" />
+    <ClCompile Include="..\..\Core\Engine\MyEngineUtils.cpp" />
     <ClCompile Include="..\..\Core\Engine\UEditorEngine.cpp" />
     <ClCompile Include="..\..\Core\Engine\UEngine.cpp" />
     <ClCompile Include="..\..\Core\Engine\UObject\UObject.cpp" />

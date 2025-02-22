@@ -71,7 +71,8 @@ struct FTransform
 	DirectX::XMFLOAT3 Scale3D = DirectX::XMFLOAT3(1.0f,1.0f,1.0f);
 
 	DirectX::XMFLOAT3 GetTranslation() const { return Translation; }
-	DirectX::XMFLOAT4 GetRotationQuat() const { return Rotation; }
+	DirectX::XMFLOAT4 GetRotation() const { return Rotation; }
+	DirectX::XMVECTOR GetRotationQuat() const {return XMLoadFloat4(&Rotation);}
 	DirectX::XMFLOAT3 GetScale3D() const { return Scale3D; }
 
 	DirectX::XMMATRIX ToMatrixWithScale() const
@@ -121,41 +122,6 @@ struct FTransform
 		return Result;
 	}
 
-	XMFLOAT3 GetEulerRotation() const
-	{
-		//02.19 임시 코드
-		// 쿼터니언 성분 추출
-		XMVECTOR RotationQuat = XMLoadFloat4(&Rotation);
-		float x = XMVectorGetX(RotationQuat);
-		float y = XMVectorGetY(RotationQuat);
-		float z = XMVectorGetZ(RotationQuat);
-		float w = XMVectorGetW(RotationQuat);
-
-		// 오일러 각 계산
-		XMFLOAT3 euler;
-
-		// Pitch (X축 회전)
-		float sinPitch = 2.0f * (w * y - z * x);
-		if (std::abs(sinPitch) >= 1.0f) {
-			// Gimbal Lock: Pitch가 ±90도일 때
-			euler.x = std::copysign(XM_PI / 2, sinPitch); // ±90도 (라디안)
-		} else {
-			euler.x = std::asin(sinPitch); // 라디안
-		}
-
-		// Yaw (Y축 회전)
-		euler.y = std::atan2(2.0f * (w * z + x * y), 1.0f - 2.0f * (y * y + z * z));
-
-		// Roll (Z축 회전)
-		euler.z = std::atan2(2.0f * (w * x + y * z), 1.0f - 2.0f * (x * x + y * y));
-
-		// 라디안 -> 도(degree) 변환
-		euler.x *= (180.0f / XM_PI);
-		euler.y *= (180.0f / XM_PI);
-		euler.z *= (180.0f / XM_PI);
-
-		return euler;
-	}
 
 	// 월드 좌표 -> 로컬좌표 위치
 	XMFLOAT3 InverseTransformPosition(const XMFLOAT3& WorldTranslation) const
@@ -169,3 +135,26 @@ struct FTransform
 };
 
 
+// UE Rotator.h 694 ~
+inline float ClampAxis(float Angle)
+{
+	// (-360, 360)
+	Angle = std::fmod(Angle, 360.0f);
+	if(Angle < 0.0f)
+	{
+		// [0, 360)
+		Angle += 360.0f;
+	}
+	return Angle;
+}
+
+inline float NormalizeAxis(float Angle)
+{
+	Angle = ClampAxis(Angle);
+	if(Angle > 180.0f)
+	{
+		// shift to (-180,180]
+		Angle -= 360.0f;
+	}
+	return Angle;
+}

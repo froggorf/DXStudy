@@ -208,19 +208,9 @@ void UWorld::ImGuizmoRender_SelectComponentGizmo()
 	const std::shared_ptr<USceneComponent>& CurrentSelectedComponent = SelectActorComponents[CurrentSelectedComponentIndex];
 	FTransform ComponentTransform = CurrentSelectedComponent->GetComponentTransform();
 
-	XMFLOAT3 RotationEuler = ComponentTransform.GetEulerRotation();
 	XMMATRIX ComponentMatrix;
-	if(CurrentGizmoMode == ImGuizmo::WORLD)
-	{
-		ComponentMatrix = ComponentTransform.ToMatrixWithScale();
-	}
-	else
-	{
-		XMFLOAT3 CurrentComponentRelRot = CurrentSelectedComponent->GetRelativeRotation();
-		XMFLOAT3 CurrentComponentRelScale = CurrentSelectedComponent->GetRelativeScale3D();
-		ImGuizmo::RecomposeMatrixFromComponents(reinterpret_cast<float*>(&ComponentTransform.Translation), reinterpret_cast<float*>(&CurrentComponentRelRot), reinterpret_cast<float*>(&CurrentComponentRelScale),reinterpret_cast<float*>(&ComponentMatrix));
-	}
-	//ImGuizmo::RecomposeMatrixFromComponents(reinterpret_cast<float*>(&ComponentTransform.Translation), reinterpret_cast<float*>(&RotationEuler), reinterpret_cast<float*>(&ComponentTransform.Scale3D), reinterpret_cast<float*>(&ComponentMatrix));
+	ComponentMatrix = ComponentTransform.ToMatrixWithScale();
+
 	XMMATRIX DeltaMatrixTemp = XMMatrixIdentity();
 	float* DeltaMatrix = reinterpret_cast<float*>(&DeltaMatrixTemp);
 
@@ -239,17 +229,13 @@ void UWorld::ImGuizmoRender_SelectComponentGizmo()
 	{
 		CurrentSelectedComponent->AddWorldOffset(DeltaTranslation);	
 	}
-	if (CurrentGizmoOperation == ImGuizmo::ROTATE && CurrentGizmoMode == ImGuizmo::LOCAL)
+
+	if ((CurrentGizmoOperation == ImGuizmo::ROTATE))
 	{
 		if(XMVectorGetX(XMVector3Length(XMLoadFloat3(&DeltaRot))) > FLT_EPSILON)
 		{
-			XMFLOAT3 test = CurrentSelectedComponent->GetRelativeRotation();
-			XMFLOAT3 newData;
-			ImGuizmo::DecomposeMatrixToComponents(reinterpret_cast<float*>(&ComponentMatrix), nullptr, reinterpret_cast<float*>(&newData),nullptr);
-			test.x+=DeltaRot.x;
-			test.y+=DeltaRot.y;
-			test.z+=DeltaRot.z;
-			CurrentSelectedComponent->SetRelativeRotation(newData);	
+			MY_LOG("DeltaRot", EDebugLogLevel::DLL_Warning, XMFLOAT3_TO_TEXT(DeltaRot));
+			CurrentSelectedComponent->AddWorldRotation(DeltaRot);
 		}
 		
 	}

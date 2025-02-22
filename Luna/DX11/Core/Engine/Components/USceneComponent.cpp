@@ -4,7 +4,9 @@
 // 이윤석
 
 #include "USceneComponent.h"
-
+#include "imgui.h"
+#include "ImGuizmo.h"
+#include "Engine/UEditorEngine.h"
 
 USceneComponent::USceneComponent()
 {
@@ -56,8 +58,12 @@ void USceneComponent::SetRelativeLocation(const DirectX::XMFLOAT3& NewRelLocatio
 void USceneComponent::SetRelativeRotation(const DirectX::XMFLOAT3& NewRelRotation)
 {
 	RelativeRotation = NewRelRotation;
+	RelativeRotation.x = NormalizeAxis(RelativeRotation.x);
+	RelativeRotation.y = NormalizeAxis(RelativeRotation.y);
+	RelativeRotation.z = NormalizeAxis(RelativeRotation.z);
 	UpdateComponentToWorld();
 }
+
 
 void USceneComponent::SetRelativeScale3D(const DirectX::XMFLOAT3& NewRelScale3D)
 {
@@ -75,6 +81,21 @@ void USceneComponent::AddWorldOffset(const XMFLOAT3& DeltaLocation)
 	SetWorldLocation(NewWorldLocation);
 }
 
+void USceneComponent::AddWorldRotation(const XMFLOAT3& DeltaRotation)
+{
+	XMVECTOR DeltaRotationQuat = XMQuaternionRotationRollPitchYaw(
+			 XMConvertToRadians(DeltaRotation.x),
+		 XMConvertToRadians(DeltaRotation.y),
+		XMConvertToRadians(DeltaRotation.z)
+	);
+
+	XMVECTOR ComponentRotationQuat =GetComponentTransform().GetRotationQuat();
+
+	XMVECTOR NewWorldRotationQuat = XMQuaternionMultiply(DeltaRotationQuat,ComponentRotationQuat);
+
+	SetWorldRotation(NewWorldRotationQuat);
+}
+
 void USceneComponent::SetWorldLocation(const XMFLOAT3& NewLocation)
 {
 	XMFLOAT3 NewRelLocation = NewLocation;
@@ -86,6 +107,20 @@ void USceneComponent::SetWorldLocation(const XMFLOAT3& NewLocation)
 		NewRelLocation = ParentToWorld.InverseTransformPosition(NewLocation);
 	}
 	SetRelativeLocation(NewRelLocation);
+}
+
+void USceneComponent::SetWorldRotation(const XMVECTOR& NewRotation)
+{
+	//XMVECTOR NewRelRotation = GetRelativeRotationFromWorld(NewRotation);
+	//SetRelativeRotation(NewRelRotation);
+	SetUsingAbsoluteRotation(true);
+	XMStoreFloat4(&AbsoluteComponentToWorld.Rotation, NewRotation);
+	UpdateComponentToWorld();
+}
+
+void USceneComponent::SetUsingAbsoluteRotation(bool bInAbsoluteRotation)
+{
+	bAbsoluteRotation = bInAbsoluteRotation;
 }
 
 FTransform& USceneComponent::GetSocketTransform(const std::string& InSocketName)
@@ -146,10 +181,32 @@ void USceneComponent::UpdateComponentToWorldWithParent(const std::shared_ptr<USc
 		ComponentToWorld = Parent->ComponentToWorld * RelTransform;	
 	}
 
+	if(IsUsingAbsoluteRotation())
+	{
+		ComponentToWorld.Rotation = AbsoluteComponentToWorld.Rotation;
+	}
 	
 
 	for(const auto& Child : AttachChildren)
 	{
 		Child->UpdateComponentToWorld();
 	}
+}
+
+XMVECTOR USceneComponent::GetRelativeRotationFromWorld(const XMVECTOR& Rotation)
+{
+	XMVECTOR NewRelRotation = Rotation;
+
+	if(GetAttachParent())
+	{
+		const FTransform ParentToWorld = GetAttachParent()->GetSocketTransform(GetAttachSocketName());
+
+		// TODO: 언리얼엔진 에서는 NegativeScale 에 대한 처리도 진행
+
+		const XMVECTOR ParentToWorldQuat = ParentToWorld.GetRotationQuat();
+		const XMVECTOR NewRelQuat =  XMQuaternionMultiply(XMQuaternionInverse(ParentToWorldQuat), NewRelRotation);
+		NewRelRotation = NewRelQuat;
+	}
+
+	return NewRelRotation;
 }

@@ -156,6 +156,9 @@
     <ClCompile Include="..\..\Core\Engine\UEditorEngine.cpp">
       <Filter>Core\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Core\Engine\MyEngineUtils.cpp">
+      <Filter>Core\Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Core\AssetManager.h">

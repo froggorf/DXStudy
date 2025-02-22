@@ -13,7 +13,7 @@ ATestCube::ATestCube()
 
 	TestCubeStaticMeshComp->SetRelativeLocation(XMFLOAT3(1.0f,0.0f,0.0f));
 	//TestCubeStaticMeshComp->SetRelativeRotation(XMFLOAT3(0.0f,0.0f,0.0f));
-	TestCubeStaticMeshComp->SetRelativeRotation(XMFLOAT3(0.0f,-45.0f,0.0f));
+	TestCubeStaticMeshComp->SetRelativeRotation(XMFLOAT3(0.0f,45.0f,0.0f));
 	TestCubeStaticMeshComp->SetRelativeScale3D(XMFLOAT3(0.02f,0.02f,0.02f));
 
 }
