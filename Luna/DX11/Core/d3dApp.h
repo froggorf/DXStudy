@@ -69,6 +69,7 @@ protected:
 	ComPtr<ID3D11DeviceContext>		m_d3dDeviceContext;
 	ComPtr<IDXGISwapChain>			m_SwapChain;
 	ComPtr<ID3D11Texture2D>			m_DepthStencilBuffer;
+	
 	ComPtr<ID3D11RenderTargetView>	m_RenderTargetView;
 	ComPtr<ID3D11DepthStencilView>	m_DepthStencilView;
 	D3D11_VIEWPORT					m_ScreenViewport;

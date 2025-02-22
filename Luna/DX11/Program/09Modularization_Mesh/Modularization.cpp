@@ -235,8 +235,9 @@ AnimationApp::AnimationApp(HINSTANCE hInstance)
 	m_ModelQuat = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(90.0f),0.0f,0.0f);
 	m_ModelScale = XMFLOAT3(0.0f,0.0f,0.0f);
 
-	m_CameraPosition = XMFLOAT3(0.0f,3.0f,-5.0f);
-	m_CameraViewVector = XMFLOAT3(0.0f,0.0f,1.0f);
+	m_CameraPosition = XMFLOAT3(0.0f,5.0f,-5.0f);
+	m_CameraViewVector = XMFLOAT3(0.0f,-1.0f,1.0f);
+	XMStoreFloat3(&m_CameraViewVector, XMVector3Normalize(XMLoadFloat3(&m_CameraViewVector)));
 	
 	// Directional light.
 	m_DirectionalLight.Ambient  = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
@@ -428,7 +429,7 @@ void AnimationApp::OnResize()
 void AnimationApp::UpdateScene(float dt)
 {
 	GEngine->Tick(dt);
-    m_View = XMMatrixLookAtLH(XMLoadFloat3(&m_CameraPosition), XMLoadFloat3(&m_CameraViewVector), XMVectorSet(0.0f,1.0f,0.0f,0.0f));
+    m_View = XMMatrixLookToLH(XMLoadFloat3(&m_CameraPosition), XMLoadFloat3(&m_CameraViewVector), XMVectorSet(0.0f,1.0f,0.0f,0.0f));
 
 	m_PaladinAnimator->UpdateAnimation(m_Timer.DeltaTime());
 	

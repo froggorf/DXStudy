@@ -5,6 +5,7 @@
 
 #include "UWorld.h"
 
+#include "AssetManager.h"
 #include "imgui.h"
 #include "Engine/UEditorEngine.h"
 #include "Engine/UEngine.h"
@@ -165,12 +166,21 @@ void UWorld::ImGuiRender_ActorDetail()
 
 void UWorld::ImGuizmoRender_SelectComponentGizmo()
 {
+	//// test
+	//{
+	//	XMMATRIX ViewMat = GEngine->Test_DeleteLater_GetViewMatrix();
+	//	XMMATRIX ProjMat = GEngine->Test_DeleteLater_GetProjectionMatrix();
+	//	ImGui::Begin("Scene Editor");
+	//	ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(),ImGui::GetWindowHeight());
+	//	
+	//	ImGui::End();
+	//}
+
 	if(!CurrentSelectedActor)
 	{
 		return;
 	}
 
-	ImGuizmo::AllowAxisFlip(true);
 	static ImGuizmo::OPERATION CurrentGizmoOperation(ImGuizmo::TRANSLATE);
 	static ImGuizmo::MODE CurrentGizmoMode(ImGuizmo::WORLD);
 	if(ImGui::IsKeyPressed(ImGuiKey_Q))
@@ -217,6 +227,8 @@ void UWorld::ImGuizmoRender_SelectComponentGizmo()
 	XMMATRIX ViewMat = GEngine->Test_DeleteLater_GetViewMatrix();
 	XMMATRIX ProjMat = GEngine->Test_DeleteLater_GetProjectionMatrix();
 
+	//ProjMat = XMMatrixPerspectiveFovRH(0.5*XM_PI, 1600.0f/1200.0f, 1.0f, 1000.0f);;
+	//ImGuizmo::AllowAxisFlip(true);
 	ImGuizmo::Manipulate(reinterpret_cast<float*>(&ViewMat), reinterpret_cast<float*>(&ProjMat),CurrentGizmoOperation,CurrentGizmoMode,reinterpret_cast<float*>(&ComponentMatrix),DeltaMatrix);
 
 	XMFLOAT3 DeltaTranslation;
@@ -232,16 +244,15 @@ void UWorld::ImGuizmoRender_SelectComponentGizmo()
 		if(XMVectorGetX(XMVector3Length(XMLoadFloat3(&DeltaRot))) > FLT_EPSILON)
 		{
 			XMFLOAT3 test = CurrentSelectedComponent->GetRelativeRotation();
-
-			MY_LOG("Rotate", EDebugLogLevel::DLL_Display, XMFLOAT3_TO_TEXT(DeltaRot));
+			XMFLOAT3 newData;
+			ImGuizmo::DecomposeMatrixToComponents(reinterpret_cast<float*>(&ComponentMatrix), nullptr, reinterpret_cast<float*>(&newData),nullptr);
 			test.x+=DeltaRot.x;
 			test.y+=DeltaRot.y;
 			test.z+=DeltaRot.z;
-			//CurrentSelectedComponent->SetRelativeRotation(test);	
+			CurrentSelectedComponent->SetRelativeRotation(newData);	
 		}
 		
 	}
 	// TODO: 02.19 Scale, Rotation 모두 적용하기
-
 	
 }

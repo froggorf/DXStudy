@@ -161,8 +161,7 @@ void D3DApp::OnResize()
 	{
 	}
 	
-
-	ComPtr<ID3D11Texture2D> backBuffer;
+	ComPtr<ID3D11Texture2D>			backBuffer;
 	m_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(backBuffer.GetAddressOf()));
 	m_d3dDevice->CreateRenderTargetView(backBuffer.Get(), 0, m_RenderTargetView.GetAddressOf());
 
