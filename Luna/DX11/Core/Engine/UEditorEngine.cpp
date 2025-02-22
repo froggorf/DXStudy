@@ -23,14 +23,10 @@ void UEditorEngine::InitEngine()
 	UEngine::InitEngine();
 
 	AddImGuiRenderFunction(std::bind(&UEditorEngine::DrawDebugConsole, this));
-
-	MY_LOG("TEST", EDebugLogLevel::DLL_Warning, "123123123, warning");
-	MY_LOG("TEST", EDebugLogLevel::DLL_Fatal, "fatal error");
-	MY_LOG("TEST", EDebugLogLevel::DLL_Display, "normal display");
-	MY_LOG("TEST", EDebugLogLevel::DLL_Error, "error ~~");
-	for(int i = 0; i < 1100; ++i)
+	MY_LOG("Init", EDebugLogLevel::DLL_Display, "UEditorEngine init");
+	for(int i = 0; i < 1024; ++i)
 	{
-		MY_LOG("test", EDebugLogLevel::DLL_Display, "TEST"+std::to_string(i));
+		MY_LOG("Test", EDebugLogLevel::DLL_Display, "Test"+std::to_string(i));
 	}
 }
 
@@ -49,6 +45,11 @@ void UEditorEngine::DrawDebugConsole()
 	
 	ImGui::BeginListBox(" ", ImVec2(-FLT_MIN, -FLT_MIN));
 
+	// 디버그 리스트 박스의 맨 아래를 볼 시 맨 아래로 고정
+	bool bIsFixListBox = ImGui::GetScrollMaxY() == ImGui::GetScrollY();
+	
+
+	// 검색 중 체크
 	bool bWhileSearching = DebugConsoleSearchText.size() != 0;
 	if(bWhileSearching)
 	{
@@ -57,6 +58,7 @@ void UEditorEngine::DrawDebugConsole()
 			ImGui::TextColored(DebugText::Color[Text.Level], Text.Text.data());
 		}	
 	}
+	// 검색 아닐 시
 	else
 	{
 		for(const DebugText& Text : DebugConsoleText)
@@ -65,6 +67,12 @@ void UEditorEngine::DrawDebugConsole()
 			
 		}	
 	}
+
+	if(bIsFixListBox)
+	{
+		ImGui::SetScrollHereY(1.0f);
+	}
+
 	ImGui::EndListBox();
 
 	ImGui::End();
