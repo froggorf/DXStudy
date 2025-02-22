@@ -40,7 +40,8 @@ extern std::shared_ptr<class UEditorEngine> GEditorEngine;
 			GEditorEngine->AddConsoleText(Category, DebugLevel, DebugText);\
 		}\
 	}
-
+#define XMFLOAT3_TO_TEXT(Data)\
+	std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}", Data.x,Data.y,Data.z)
 
 
 // 언리얼 엔진에서는 템플릿으로 설정 후 double을 건네주지만 float로 고정하여 작성

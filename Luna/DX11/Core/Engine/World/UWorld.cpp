@@ -6,6 +6,7 @@
 #include "UWorld.h"
 
 #include "imgui.h"
+#include "Engine/UEditorEngine.h"
 #include "Engine/UEngine.h"
 #include "Engine/Components/USceneComponent.h"
 #include "Engine/GameFramework/AActor.h"
@@ -169,6 +170,7 @@ void UWorld::ImGuizmoRender_SelectComponentGizmo()
 		return;
 	}
 
+	ImGuizmo::AllowAxisFlip(true);
 	static ImGuizmo::OPERATION CurrentGizmoOperation(ImGuizmo::TRANSLATE);
 	static ImGuizmo::MODE CurrentGizmoMode(ImGuizmo::WORLD);
 	if(ImGui::IsKeyPressed(ImGuiKey_Q))
@@ -197,7 +199,17 @@ void UWorld::ImGuizmoRender_SelectComponentGizmo()
 	FTransform ComponentTransform = CurrentSelectedComponent->GetComponentTransform();
 
 	XMFLOAT3 RotationEuler = ComponentTransform.GetEulerRotation();
-	XMMATRIX ComponentMatrix = ComponentTransform.ToMatrixWithScale();
+	XMMATRIX ComponentMatrix;
+	if(CurrentGizmoMode == ImGuizmo::WORLD)
+	{
+		ComponentMatrix = ComponentTransform.ToMatrixWithScale();
+	}
+	else
+	{
+		XMFLOAT3 CurrentComponentRelRot = CurrentSelectedComponent->GetRelativeRotation();
+		XMFLOAT3 CurrentComponentRelScale = CurrentSelectedComponent->GetRelativeScale3D();
+		ImGuizmo::RecomposeMatrixFromComponents(reinterpret_cast<float*>(&ComponentTransform.Translation), reinterpret_cast<float*>(&CurrentComponentRelRot), reinterpret_cast<float*>(&CurrentComponentRelScale),reinterpret_cast<float*>(&ComponentMatrix));
+	}
 	//ImGuizmo::RecomposeMatrixFromComponents(reinterpret_cast<float*>(&ComponentTransform.Translation), reinterpret_cast<float*>(&RotationEuler), reinterpret_cast<float*>(&ComponentTransform.Scale3D), reinterpret_cast<float*>(&ComponentMatrix));
 	XMMATRIX DeltaMatrixTemp = XMMatrixIdentity();
 	float* DeltaMatrix = reinterpret_cast<float*>(&DeltaMatrixTemp);
@@ -217,12 +229,17 @@ void UWorld::ImGuizmoRender_SelectComponentGizmo()
 	}
 	if (CurrentGizmoOperation == ImGuizmo::ROTATE && CurrentGizmoMode == ImGuizmo::LOCAL)
 	{
-		XMFLOAT3 test = CurrentSelectedComponent->GetRelativeRotation();
+		if(XMVectorGetX(XMVector3Length(XMLoadFloat3(&DeltaRot))) > FLT_EPSILON)
+		{
+			XMFLOAT3 test = CurrentSelectedComponent->GetRelativeRotation();
+
+			MY_LOG("Rotate", EDebugLogLevel::DLL_Display, XMFLOAT3_TO_TEXT(DeltaRot));
+			test.x+=DeltaRot.x;
+			test.y+=DeltaRot.y;
+			test.z+=DeltaRot.z;
+			//CurrentSelectedComponent->SetRelativeRotation(test);	
+		}
 		
-		test.x+=DeltaRot.x;
-		test.y+=DeltaRot.y;
-		test.z+=DeltaRot.z;
-		CurrentSelectedComponent->SetRelativeRotation(test);
 	}
 	// TODO: 02.19 Scale, Rotation 모두 적용하기
 

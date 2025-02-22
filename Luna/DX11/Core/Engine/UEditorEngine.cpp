@@ -24,16 +24,14 @@ void UEditorEngine::InitEngine()
 
 	AddImGuiRenderFunction(std::bind(&UEditorEngine::DrawDebugConsole, this));
 	MY_LOG("Init", EDebugLogLevel::DLL_Display, "UEditorEngine init");
-	for(int i = 0; i < 1024; ++i)
-	{
-		MY_LOG("Test", EDebugLogLevel::DLL_Display, "Test"+std::to_string(i));
-	}
+	
 }
 
 void UEditorEngine::DrawDebugConsole()
 {
 	ImGui::Begin("Debug Console");
 
+	// EditBox
 	char* CurrentText = DebugConsoleSearchText.data();
 	ImGui::Text("Search: ");
 	ImGui::SameLine();
@@ -68,6 +66,7 @@ void UEditorEngine::DrawDebugConsole()
 		}	
 	}
 
+	// 리스트 맨 아래였을 시 고정
 	if(bIsFixListBox)
 	{
 		ImGui::SetScrollHereY(1.0f);

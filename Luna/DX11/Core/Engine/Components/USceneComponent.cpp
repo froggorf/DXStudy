@@ -131,7 +131,10 @@ void USceneComponent::UpdateComponentToWorldWithParent(const std::shared_ptr<USc
 	// 언리얼엔진의 내부에선
 	// 행렬을 통한 위치 계산이 아닌
 	// FTransform * 연산자를 통해 부분적인 연산을 적용하므로 해당 방식을 채용
-	FTransform RelTransform = FTransform{DirectX::XMQuaternionRotationRollPitchYaw(RelativeRotation.x,RelativeRotation.y,RelativeRotation.z)
+	FTransform RelTransform = FTransform{DirectX::XMQuaternionRotationRollPitchYaw(
+	XMConvertToRadians( RelativeRotation.x),
+	XMConvertToRadians( RelativeRotation.y),
+	XMConvertToRadians( RelativeRotation.z))
 		, RelativeLocation,RelativeScale3D};
 
 	if(nullptr == Parent)
