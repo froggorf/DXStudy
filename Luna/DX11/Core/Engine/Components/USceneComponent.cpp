@@ -113,15 +113,9 @@ void USceneComponent::SetWorldRotation(const XMVECTOR& NewRotation)
 {
 	//XMVECTOR NewRelRotation = GetRelativeRotationFromWorld(NewRotation);
 	//SetRelativeRotation(NewRelRotation);
-	SetUsingAbsoluteRotation(true);
-	XMStoreFloat4(&AbsoluteComponentToWorld.Rotation, NewRotation);
 	UpdateComponentToWorld();
 }
 
-void USceneComponent::SetUsingAbsoluteRotation(bool bInAbsoluteRotation)
-{
-	bAbsoluteRotation = bInAbsoluteRotation;
-}
 
 FTransform& USceneComponent::GetSocketTransform(const std::string& InSocketName)
 {
@@ -171,20 +165,28 @@ void USceneComponent::UpdateComponentToWorldWithParent(const std::shared_ptr<USc
 	XMConvertToRadians( RelativeRotation.y),
 	XMConvertToRadians( RelativeRotation.z))
 		, RelativeLocation,RelativeScale3D};
-
+	
 	if(nullptr == Parent)
 	{
 		ComponentToWorld = RelTransform;
+		if(IsUsingAbsoluteRotation())
+		{
+			ComponentToWorld.Rotation = AbsoluteComponentToWorld.Rotation;
+		}
 	}
 	else
 	{
+		if(IsUsingAbsoluteRotation())
+		{
+			XMVECTOR ParentRotQuat = Parent->ComponentToWorld.GetRotationQuat();
+			XMVECTOR AbsoluteRotQuat = AbsoluteComponentToWorld.GetRotationQuat();
+			XMVECTOR RelRotQuat = XMQuaternionMultiply(AbsoluteRotQuat,XMQuaternionInverse(ParentRotQuat));
+			XMStoreFloat4(&RelTransform.Rotation,RelRotQuat);
+		}
 		ComponentToWorld = Parent->ComponentToWorld * RelTransform;	
 	}
 
-	if(IsUsingAbsoluteRotation())
-	{
-		ComponentToWorld.Rotation = AbsoluteComponentToWorld.Rotation;
-	}
+	
 	
 
 	for(const auto& Child : AttachChildren)

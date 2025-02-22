@@ -234,8 +234,12 @@ void UWorld::ImGuizmoRender_SelectComponentGizmo()
 	{
 		if(XMVectorGetX(XMVector3Length(XMLoadFloat3(&DeltaRot))) > FLT_EPSILON)
 		{
+			static XMFLOAT3 Test = XMFLOAT3(0.0f,0.0f,0.0f);
+			Test.x += DeltaRot.x;
+			Test.y += DeltaRot.y;
+			Test.z += DeltaRot.z;
 			MY_LOG("DeltaRot", EDebugLogLevel::DLL_Warning, XMFLOAT3_TO_TEXT(DeltaRot));
-			CurrentSelectedComponent->AddWorldRotation(DeltaRot);
+			//CurrentSelectedComponent->AddWorldRotation(DeltaRot);
 		}
 		
 	}

@@ -40,8 +40,6 @@ public:
 	void SetWorldLocation(const XMFLOAT3& NewLocation);
 	void SetWorldRotation(const XMVECTOR& NewRotation);
 
-	void SetUsingAbsoluteRotation(bool bInAbsoluteRotation);
-	bool IsUsingAbsoluteRotation() const { return bAbsoluteRotation;}
 
 	const FTransform& GetComponentTransform() const {return ComponentToWorld;}
 	// TODO: Socket 기능 추가 시 해당 기능 수정 필요
@@ -70,8 +68,6 @@ private:
 
 	// 컴퍼넌트 월드 좌표
 	FTransform ComponentToWorld;
-	FTransform AbsoluteComponentToWorld;
-	bool bAbsoluteRotation = false;
 
 	// 현재 부착된 부모 컴퍼넌트
 	std::shared_ptr<USceneComponent> AttachParent;
