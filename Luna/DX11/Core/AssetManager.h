@@ -5,6 +5,9 @@
 
 #include <type_traits>
 #include <fstream>
+
+#include "Engine/MyEngineUtils.h"
+#include "Engine/UEditorEngine.h"
 class UObject;
 struct aiScene;
 struct aiMesh;
@@ -94,7 +97,9 @@ T* AssetManager::ReadMyAsset(const std::string& FilePath)
 	Object->LoadDataFromFileData(RemainingAssetData);
 
 	AssetCache[FilePath.data()] = Object;
-	
+	MY_LOG("AssetLoad", EDebugLogLevel::DLL_Display, FilePath+" Load Success");
 	return Object.get();
+
+	
 }
 

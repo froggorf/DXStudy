@@ -85,6 +85,7 @@ void UEngine::InitImGui()
 	ImGui_ImplWin32_Init(Application->GetMainWnd());
 	ImGui_ImplDX11_Init(GetDevice(), GetDeviceContext());
 
+	MY_LOG("Init",EDebugLogLevel::DLL_Display, "Imgui init success");
 }
 
 void UEngine::DrawImGui()
@@ -127,5 +128,6 @@ void UEngine::LoadAllObjectsFromFile()
 	AssetManager::ReadMyAsset<UStaticMesh>("Asset/StaticMesh/SM_Cube.myasset");
 	AssetManager::ReadMyAsset<UStaticMesh>("Asset/StaticMesh/SM_Sphere.myasset");
 
-	std::cout<< "StaticMesh Size -> "<<UStaticMesh::GetStaticMeshCache().size()<<std::endl;
+
+	MY_LOG("Load",EDebugLogLevel::DLL_Display, "Load All Objects From File Success");
 }

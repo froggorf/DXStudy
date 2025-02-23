@@ -56,8 +56,7 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
     }
 
     // 모델 로드 성공
-    std::cout << "Model loaded successfully: " << filePath << std::endl;
-
+    MY_LOG("AssetLoad", EDebugLogLevel::DLL_Display, "Model - " + filePath+" Load Success");
 	for(int i = 0; i < scene->mNumMeshes; ++i)
 	{
 		// 버텍스 버퍼
@@ -119,7 +118,7 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
     }
 
     // 모델 로드 성공
-    std::cout << "Model loaded successfully: " << filePath << std::endl;
+    MY_LOG("AssetLoad", EDebugLogLevel::DLL_Display, "Model - " + filePath+" Load Success");
 
 	// 버텍스 버퍼
        ComPtr<ID3D11Buffer> vertexBuffer;
@@ -211,7 +210,7 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const Microsof
     }
 
     // 모델 로드 성공
-    std::cout << " Skeletal Model loaded successfully: " << filePath << std::endl;
+    MY_LOG("AssetLoad", EDebugLogLevel::DLL_Display, "SkeletalModel - " + filePath+" Load Success");
 
     for(int i = 0; i < scene->mNumMeshes; ++i)
     {
@@ -278,6 +277,8 @@ void AssetManager::LoadTextureFromFile(const std::wstring& szFile, const Microso
 
     HR(pDevice->CreateShaderResourceView(pTexture, &srvDesc, srv.ReleaseAndGetAddressOf()));
     vTextureShaderResourceView.push_back(srv);
+    
+    MY_LOG("TextureLoad", EDebugLogLevel::DLL_Display, "Texture Load Success");
 }
 
 void AssetManager::LoadTextureFromFile(const std::wstring& szFile, const Microsoft::WRL::ComPtr<ID3D11Device> pDevice,
@@ -316,6 +317,7 @@ void AssetManager::LoadTextureFromFile(const std::wstring& szFile, const Microso
     HR(pDevice->CreateShaderResourceView(pTexture, &srvDesc, srv.ReleaseAndGetAddressOf()));
     
     pTextureShaderResourceView = (srv.Get());
+    MY_LOG("TextureLoad", EDebugLogLevel::DLL_Display, "Texture Load Success");
 }
 
 void AssetManager::ProcessScene(const aiScene* scene, std::vector<std::vector<MyVertexData>>& allVertices,

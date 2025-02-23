@@ -963,14 +963,14 @@ void AnimationApp::DrawScene()
 		//DrawCube();
 		//DrawSkeletalMesh();
 
-#if defined(DEBUG) || defined(_DEBUG)
-		DebuggingSRV::DrawDebuggingTexture(
-				m_d3dDeviceContext,
-				m_ClientWidth - 500.0f, m_ClientHeight - 500.0f,
-				450.0f, 450.0f,
-				m_ShadowMap->GetShaderResourceViewComPtr()
-				);
-#endif
+//#if defined(DEBUG) || defined(_DEBUG)
+//		DebuggingSRV::DrawDebuggingTexture(
+//				m_d3dDeviceContext,
+//				m_ClientWidth - 500.0f, m_ClientHeight - 500.0f,
+//				450.0f, 450.0f,
+//				m_ShadowMap->GetShaderResourceViewComPtr()
+//				);
+//#endif
 
 		//DrawImGui();
 	}

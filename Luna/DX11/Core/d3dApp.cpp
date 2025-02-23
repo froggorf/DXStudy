@@ -63,13 +63,7 @@ D3DApp::~D3DApp()
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 
-	//if(GEngine)
-	//{
-	//	delete GEngine;	
-	//}
-	
 
-	std::cout<<"??";
 }
 
 HINSTANCE D3DApp::GetAppInstance() const
