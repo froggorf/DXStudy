@@ -13,6 +13,8 @@ USceneComponent::USceneComponent()
 	UpdateComponentToWorld();
 }
 
+
+
 void USceneComponent::SetupAttachment(const std::shared_ptr<USceneComponent>& InParent, std::string_view InSocketName)
 {
 	if( InParent.get() == AttachParent.get() && InSocketName == AttachSocketName)
@@ -77,6 +79,7 @@ void USceneComponent::SetRelativeRotation(const DirectX::XMVECTOR& NewRelRotatio
 {
 	XMQuaternionNormalize(NewRelRotation);
 	XMStoreFloat4(&RelativeRotation,NewRelRotation);
+
 	UpdateComponentToWorld();
 }
 
@@ -105,10 +108,18 @@ void USceneComponent::AddWorldRotation(const XMFLOAT3& DeltaRotation)
 		XMConvertToRadians(DeltaRotation.z)
 	);
 
-	XMVECTOR ComponentRotationQuat =GetComponentTransform().GetRotationQuat();
+	XMVECTOR ComponentRotationQuat = XMQuaternionIdentity();
+	//if(GetAttachParent())
+	//{
+	//	ComponentRotationQuat = GetAttachParent()->GetSocketTransform(GetAttachSocketName()).GetRotationQuat//();
+	//}
+	//else
+	//{
+	//	ComponentRotationQuat = XMQuaternionIdentity();//XMLoadFloat4(&RelativeRotation);
+	//}
 
-	XMVECTOR NewWorldRotationQuat = XMQuaternionMultiply(DeltaRotationQuat,ComponentRotationQuat);
-
+	XMVECTOR NewDeltaWorldRotationQuat = XMQuaternionMultiply(ComponentRotationQuat,DeltaRotationQuat);
+	XMVECTOR NewWorldRotationQuat = XMQuaternionMultiply(GetComponentTransform().GetRotationQuat(),NewDeltaWorldRotationQuat);
 	SetWorldRotation(NewWorldRotationQuat);
 }
 
@@ -130,7 +141,7 @@ void USceneComponent::SetWorldRotation(const XMVECTOR& NewRotation)
 	XMVECTOR NewRelRotation = GetRelativeRotationFromWorld(NewRotation);
 	
 	SetRelativeRotation(NewRelRotation);
-
+	
 }
 
 
@@ -210,8 +221,11 @@ XMVECTOR USceneComponent::GetRelativeRotationFromWorld(const XMVECTOR& NewWorldR
 		// TODO: 언리얼엔진 에서는 NegativeScale 에 대한 처리도 진행
 
 		const XMVECTOR ParentToWorldQuat = ParentToWorld.GetRotationQuat();
+		XMVECTOR Inv = XMQuaternionInverse(ParentToWorldQuat);
+		XMVECTOR NewRelQuat =  (XMQuaternionMultiply(NewWorldRotation,Inv)) ;
 
-		const XMVECTOR NewRelQuat = (XMQuaternionMultiply(XMQuaternionInverse(ParentToWorldQuat),NewWorldRotation)) ;
+		// Rel 연산 확인용
+		//XMVECTOR WorldTest = XMQuaternionMultiply(ParentToWorldQuat, NewRelQuat);
 
 		NewRelRotation = NewRelQuat;
 	}

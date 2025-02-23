@@ -664,7 +664,7 @@ void AnimationApp::DrawImGui()
 								XMConvertToRadians(deltaRot.y),
 								XMConvertToRadians(deltaRot.z));
 
-			m_ModelQuat = XMQuaternionMultiply(m_ModelQuat , deltaQuat) ;
+			//m_ModelQuat = XMQuaternionMultiply(m_ModelQuat , deltaQuat) ;
 			XMQuaternionNormalize(m_ModelQuat);
 			
 		}

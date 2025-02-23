@@ -9,6 +9,8 @@
 
 #include "UActorComponent.h"
 
+
+
 class USceneComponent : public UActorComponent, public std::enable_shared_from_this<USceneComponent>
 {
 public:
@@ -51,6 +53,8 @@ public:
 
 	virtual void TestDraw();
 	virtual void TestDrawComponent();
+
+	
 protected:
 private:
 	void SetAttachParent(const std::shared_ptr<USceneComponent>& NewAttachParent);
