@@ -41,9 +41,12 @@ extern std::shared_ptr<class UEditorEngine> GEditorEngine;
 			GEditorEngine->AddConsoleText(Category, DebugLogLevel, DebugText);\
 		}\
 	}
-#define XMFLOAT3_TO_TEXT(Data)\
-	std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}", Data.x,Data.y,Data.z)
 
+#define XMFLOAT3_TO_TEXT(Data) std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}", Data.x,Data.y,Data.z)
+
+#define XMFLOAT4_TO_TEXT(Data) std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}, w = {:.3f}", Data.x,Data.y,Data.z, Data.w)
+
+#define XMVECTOR_TO_TEXT(Data) std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}, w = {:.3f}", DirectX::XMVectorGetX(Data),DirectX::XMVectorGetY(Data),DirectX::XMVectorGetZ(Data),DirectX::XMVectorGetW(Data))
 
 // 언리얼 엔진에서는 템플릿으로 설정 후 double을 건네주지만 float로 고정하여 작성
 struct FTransform
