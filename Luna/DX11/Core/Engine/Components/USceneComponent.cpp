@@ -55,12 +55,28 @@ void USceneComponent::SetRelativeLocation(const DirectX::XMFLOAT3& NewRelLocatio
 	UpdateComponentToWorld();
 }
 
-void USceneComponent::SetRelativeRotation(const DirectX::XMFLOAT3& NewRelRotation)
+void USceneComponent::SetRelativeRotation(const DirectX::XMFLOAT3& NewRelRotationPitchYawRoll)
 {
-	RelativeRotation = NewRelRotation;
-	RelativeRotation.x = NormalizeAxis(RelativeRotation.x);
-	RelativeRotation.y = NormalizeAxis(RelativeRotation.y);
-	RelativeRotation.z = NormalizeAxis(RelativeRotation.z);
+	
+	XMVECTOR NewQuat = XMQuaternionRotationRollPitchYaw(
+		XMConvertToRadians(NewRelRotationPitchYawRoll.x),
+		XMConvertToRadians(NewRelRotationPitchYawRoll.y),
+		XMConvertToRadians(NewRelRotationPitchYawRoll.z)
+	);
+	SetRelativeRotation(NewQuat);
+}
+
+void USceneComponent::SetRelativeRotation(const DirectX::XMFLOAT4& NewRotation)
+{
+	RelativeRotation = NewRotation;
+
+	UpdateComponentToWorld();
+}
+
+void USceneComponent::SetRelativeRotation(const DirectX::XMVECTOR& NewRelRotation)
+{
+	XMQuaternionNormalize(NewRelRotation);
+	XMStoreFloat4(&RelativeRotation,NewRelRotation);
 	UpdateComponentToWorld();
 }
 
@@ -111,9 +127,10 @@ void USceneComponent::SetWorldLocation(const XMFLOAT3& NewLocation)
 
 void USceneComponent::SetWorldRotation(const XMVECTOR& NewRotation)
 {
-	//XMVECTOR NewRelRotation = GetRelativeRotationFromWorld(NewRotation);
-	//SetRelativeRotation(NewRelRotation);
-	UpdateComponentToWorld();
+	XMVECTOR NewRelRotation = GetRelativeRotationFromWorld(NewRotation);
+	
+	SetRelativeRotation(NewRelRotation);
+
 }
 
 
@@ -160,29 +177,16 @@ void USceneComponent::UpdateComponentToWorldWithParent(const std::shared_ptr<USc
 	// 언리얼엔진의 내부에선
 	// 행렬을 통한 위치 계산이 아닌
 	// FTransform * 연산자를 통해 부분적인 연산을 적용하므로 해당 방식을 채용
-	FTransform RelTransform = FTransform{DirectX::XMQuaternionRotationRollPitchYaw(
-	XMConvertToRadians( RelativeRotation.x),
-	XMConvertToRadians( RelativeRotation.y),
-	XMConvertToRadians( RelativeRotation.z))
+	FTransform RelTransform = FTransform{XMLoadFloat4(&RelativeRotation)
 		, RelativeLocation,RelativeScale3D};
 	
 	if(nullptr == Parent)
 	{
 		ComponentToWorld = RelTransform;
-		if(IsUsingAbsoluteRotation())
-		{
-			ComponentToWorld.Rotation = AbsoluteComponentToWorld.Rotation;
-		}
 	}
 	else
 	{
-		if(IsUsingAbsoluteRotation())
-		{
-			XMVECTOR ParentRotQuat = Parent->ComponentToWorld.GetRotationQuat();
-			XMVECTOR AbsoluteRotQuat = AbsoluteComponentToWorld.GetRotationQuat();
-			XMVECTOR RelRotQuat = XMQuaternionMultiply(AbsoluteRotQuat,XMQuaternionInverse(ParentRotQuat));
-			XMStoreFloat4(&RelTransform.Rotation,RelRotQuat);
-		}
+		
 		ComponentToWorld = Parent->ComponentToWorld * RelTransform;	
 	}
 
@@ -195,9 +199,9 @@ void USceneComponent::UpdateComponentToWorldWithParent(const std::shared_ptr<USc
 	}
 }
 
-XMVECTOR USceneComponent::GetRelativeRotationFromWorld(const XMVECTOR& Rotation)
+XMVECTOR USceneComponent::GetRelativeRotationFromWorld(const XMVECTOR& NewWorldRotation)
 {
-	XMVECTOR NewRelRotation = Rotation;
+	XMVECTOR NewRelRotation = NewWorldRotation;
 
 	if(GetAttachParent())
 	{
@@ -206,7 +210,9 @@ XMVECTOR USceneComponent::GetRelativeRotationFromWorld(const XMVECTOR& Rotation)
 		// TODO: 언리얼엔진 에서는 NegativeScale 에 대한 처리도 진행
 
 		const XMVECTOR ParentToWorldQuat = ParentToWorld.GetRotationQuat();
-		const XMVECTOR NewRelQuat =  XMQuaternionMultiply(XMQuaternionInverse(ParentToWorldQuat), NewRelRotation);
+
+		const XMVECTOR NewRelQuat = (XMQuaternionMultiply(XMQuaternionInverse(ParentToWorldQuat),NewWorldRotation)) ;
+
 		NewRelRotation = NewRelQuat;
 	}
 

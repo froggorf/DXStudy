@@ -238,8 +238,15 @@ void UWorld::ImGuizmoRender_SelectComponentGizmo()
 			Test.x += DeltaRot.x;
 			Test.y += DeltaRot.y;
 			Test.z += DeltaRot.z;
-			MY_LOG("DeltaRot", EDebugLogLevel::DLL_Warning, XMFLOAT3_TO_TEXT(DeltaRot));
+			XMVECTOR quat = XMQuaternionRotationRollPitchYaw(
+			XMConvertToRadians(Test.x),XMConvertToRadians(Test.y),XMConvertToRadians(Test.z)
+			);
+			XMFLOAT3 check = FTransform::CalculateEulerRotationFromQuaternion(quat);
+			MY_LOG("CurrentRot", EDebugLogLevel::DLL_Display, XMFLOAT3_TO_TEXT(Test));
+			MY_LOG("CheckRot", EDebugLogLevel::DLL_Warning, XMFLOAT3_TO_TEXT(check));
+			CurrentSelectedComponent->AddWorldRotation(DeltaRot);
 			//CurrentSelectedComponent->AddWorldRotation(DeltaRot);
+			
 		}
 		
 	}

@@ -9,6 +9,7 @@
 
 #include "d3dUtil.h"
 
+
 // 디버그 레벨
 // DEBUG(0) - 모든 콘솔 문구 출력
 // DEVELOPMENT(1) - 구현 관련 콘솔 문구 및 디버그 드로우
@@ -33,11 +34,11 @@
 extern std::shared_ptr<class UEngine> GEngine;
 extern std::shared_ptr<class UEditorEngine> GEditorEngine;
 
-#define MY_LOG(Category, DebugLevel, DebugText) \
+#define MY_LOG(Category, DebugLogLevel, DebugText) \
 	{\
 		if(GEditorEngine)\
 		{\
-			GEditorEngine->AddConsoleText(Category, DebugLevel, DebugText);\
+			GEditorEngine->AddConsoleText(Category, DebugLogLevel, DebugText);\
 		}\
 	}
 #define XMFLOAT3_TO_TEXT(Data)\
@@ -93,34 +94,7 @@ struct FTransform
 		return OutMatrix;
 	}
 
-	FTransform operator*(const FTransform& OtherTransform)
-	{
-		FTransform Result{};
-
-		// scale
-		DirectX::XMVECTOR ThisScale = DirectX::XMLoadFloat3(&Scale3D);
-		DirectX::XMVECTOR OtherScale = DirectX::XMLoadFloat3(&OtherTransform.Scale3D);
-
-		DirectX::XMStoreFloat3(&Result.Scale3D, DirectX::XMVectorMultiply(ThisScale, OtherScale));
-
-		// rot
-		DirectX::XMVECTOR ThisRotation = DirectX::XMLoadFloat4(&Rotation);
-		DirectX::XMVECTOR OtherRotation = DirectX::XMLoadFloat4(&OtherTransform.Rotation);
-		DirectX::XMVECTOR RetRotation = DirectX::XMQuaternionMultiply(OtherRotation,ThisRotation);
-		//DirectX::XMVector4Normalize(RetRotation);
-		DirectX::XMStoreFloat4(&Result.Rotation, RetRotation);
-
-		// Translation
-		DirectX::XMVECTOR ThisTranslation = DirectX::XMLoadFloat3(&Translation);
-		DirectX::XMVECTOR OtherTranslation = DirectX::XMLoadFloat3(&OtherTransform.Translation);
-
-		DirectX::XMVECTOR ScaledOtherTranslation = DirectX::XMVectorMultiply(ThisScale, OtherTranslation);
-		DirectX::XMVECTOR RotatedOtherTranslation = DirectX::XMVector3Rotate(ScaledOtherTranslation, ThisRotation);
-
-		DirectX::XMStoreFloat3(&Result.Translation, DirectX::XMVectorAdd(ThisTranslation, RotatedOtherTranslation));
-
-		return Result;
-	}
+	FTransform operator*(const FTransform& OtherTransform);
 
 
 	// 월드 좌표 -> 로컬좌표 위치
@@ -132,6 +106,8 @@ struct FTransform
 		
 		return RetVal;
 	}
+
+	static XMFLOAT3 CalculateEulerRotationFromQuaternion(const XMVECTOR& Quaternion);
 };
 
 

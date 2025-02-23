@@ -2,10 +2,13 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup>
+    <IncludePath>A:\Study\Luna\DX11\ThirdParty\Eigen;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\ImGuizmo;$(SolutionDir)ThirdParty\DirectXTex;$(SolutionDir)ThirdParty\ImGui;$(SolutionDir)Core;$(SolutionDir)ThirdParty\Assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\Eigen;$(SolutionDir)ThirdParty\ImGuizmo;$(SolutionDir)ThirdParty\DirectXTex;$(SolutionDir)ThirdParty\ImGui;$(SolutionDir)Core;$(SolutionDir)ThirdParty\Assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_SILENCE_CXX23_DENORM_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>A:\Study\Luna\DX11\ThirdParty\DirectXTex\lib\Debug;$(SolutionDir)\ThirdParty\Assimp\lib\Debug</AdditionalLibraryDirectories>

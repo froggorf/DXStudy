@@ -27,11 +27,13 @@ public:
 	}
 
 	XMFLOAT3 GetRelativeLocation() const {return RelativeLocation;}
-	XMFLOAT3 GetRelativeRotation() const {return RelativeRotation;}
+	XMFLOAT4 GetRelativeRotation() const {return RelativeRotation;}
 	XMFLOAT3 GetRelativeScale3D() const {return RelativeScale3D;}
 
 	void SetRelativeLocation(const DirectX::XMFLOAT3& NewRelLocation);
-	void SetRelativeRotation(const DirectX::XMFLOAT3& NewRelRotation);
+	void SetRelativeRotation(const DirectX::XMFLOAT3& NewRelRotationPitchYawRoll);
+	void SetRelativeRotation(const DirectX::XMFLOAT4& NewRelRotation);
+	void SetRelativeRotation(const DirectX::XMVECTOR& NewRelRotation);
 	void SetRelativeScale3D(const DirectX::XMFLOAT3& NewRelScale3D);
 
 	void AddWorldOffset(const XMFLOAT3& DeltaLocation);
@@ -57,13 +59,14 @@ private:
 	void UpdateComponentToWorldWithParent(const std::shared_ptr<USceneComponent>& Parent, std::string_view SocketName);
 
 	// 월드 Rotation으로부터 Relative Rotation 계산
-	XMVECTOR GetRelativeRotationFromWorld(const XMVECTOR& Rotation);
+	XMVECTOR GetRelativeRotationFromWorld(const XMVECTOR& NewWorldRotation);
 public:
 protected:
 private:
 	// Relative Transform
 	DirectX::XMFLOAT3 RelativeLocation = DirectX::XMFLOAT3(0.0f,0.0f,0.0f);
-	DirectX::XMFLOAT3 RelativeRotation = DirectX::XMFLOAT3(0.0f,0.0f,0.0f);
+	DirectX::XMFLOAT4 RelativeRotation = DirectX::XMFLOAT4(0.0f,0.0f,0.0f,1.0f);
+	//DirectX::XMFLOAT3 RelativeRotation = DirectX::XMFLOAT3(0.0f,0.0f,0.0f);
 	DirectX::XMFLOAT3 RelativeScale3D = DirectX::XMFLOAT3(1.0f,1.0f,1.0f);
 
 	// 컴퍼넌트 월드 좌표
