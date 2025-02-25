@@ -26,25 +26,19 @@ enum class EStaticMeshAssetData
 	ESMAD_Name = 0, ESMAD_ModelDataFilePath, ESMAD_TextureDataFilePath
 };
 
-void UStaticMesh::LoadDataFromFileData(std::vector<std::string>& StaticMeshAssetData)
+void UStaticMesh::LoadDataFromFileData(std::map<std::string, std::string>& StaticMeshAssetData)
 {
-	UObject::LoadDataFromFileData(StaticMeshAssetData);
-
-
-	const std::string Name = StaticMeshAssetData[static_cast<unsigned int>(EStaticMeshAssetData::ESMAD_Name)];
-	StaticMeshAssetData.erase(StaticMeshAssetData.begin());
-
-	if(StaticMeshCache.contains(Name))
+	if(StaticMeshCache.contains(GetName()))
 	{
-		std::cout << "already load this StaticMesh -> " << Name << std::endl;
+		MY_LOG("LoadData", EDebugLogLevel::DLL_Warning, "already load this StaticMesh -> " + GetName());
 		return;
 	}
 
+	UObject::LoadDataFromFileData(StaticMeshAssetData);
+
 	RenderData = std::make_unique<FStaticMeshRenderData>(StaticMeshAssetData, GEngine->GetDevice());
 
+	StaticMeshCache[GetName()] = shared_from_this();
 
-	StaticMeshCache[Name] = shared_from_this();
-	std::cout<< "Load UStaticMesh - " + StaticMeshAssetData[0] + " Complete!" << std::endl;
-
-	std::cout<< StaticMeshCache[Name].use_count()<<std::endl;
+	MY_LOG("Load", EDebugLogLevel::DLL_Display, "Load UStaticMesh - "+GetName() + " Complete!");
 }

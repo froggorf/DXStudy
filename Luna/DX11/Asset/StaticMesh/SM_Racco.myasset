@@ -1,4 +1,4 @@
-0
-SM_Racco
-Model/Racco.fbx
-Texture/T_Racco_B.png
+TypeID = 0
+Name = SM_Racco
+ModelData = Model/Racco.fbx
+TextureData0 = Texture/T_Racco_B.png

@@ -1,4 +1,4 @@
-0
-SM_Sphere
-Model/Sphere.obj
-Texture/cardboard.png
+TypeID = 0
+Name = SM_Sphere
+ModelData = Model/Sphere.obj
+TextureData0 = Texture/cardboard.png
