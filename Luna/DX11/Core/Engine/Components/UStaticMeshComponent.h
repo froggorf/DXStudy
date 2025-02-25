@@ -10,6 +10,7 @@ class UStaticMesh;
 
 class UStaticMeshComponent : public USceneComponent
 {
+	MY_GENERATED_BODY(UStaticMeshComponent)
 public:
 	UStaticMeshComponent();
 

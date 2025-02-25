@@ -33,6 +33,7 @@ void UEngine::PostLoad()
 
 	LoadAllObjectsFromFile();
 
+	
 	// TODO: 추후엔 Level을 직렬화를 통해 저장 및 로드를 할 수 있는 기능을 만드는게 낫지 않을까?
 	// 그렇다면 여기에서 로드를 진행하기
 }
@@ -124,10 +125,15 @@ void UEngine::LoadAllObjectsFromFile()
 {
 	// 디스크에 내에 있는 모든 myasset 파일을 로드하는 함수
 	// TODO: 추후 디스크 읽는 라이브러리를 사용하기
+
+	// Mesh
 	AssetManager::ReadMyAsset<UStaticMesh>("Asset/StaticMesh/SM_Racco.myasset");
 	AssetManager::ReadMyAsset<UStaticMesh>("Asset/StaticMesh/SM_Cube.myasset");
 	AssetManager::ReadMyAsset<UStaticMesh>("Asset/StaticMesh/SM_Sphere.myasset");
 
+	// Level
+	AssetManager::ReadMyAsset<ULevel>("Asset/Level/TestLevel.myasset");
 
-	MY_LOG("Load",EDebugLogLevel::DLL_Display, "Load All Objects From File Success");
+
+	MY_LOG("Load",EDebugLogLevel::DLL_Warning, "Load All Objects From File Success");
 }

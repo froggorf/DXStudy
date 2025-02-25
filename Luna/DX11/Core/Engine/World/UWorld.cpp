@@ -14,22 +14,17 @@
 
 UWorld::UWorld()
 {
-	
 }
 
 UWorld::~UWorld()
 {
+
 }
 
 
 void UWorld::Init()
 {
 	UObject::Init();
-
-	if(!PersistentLevel)
-	{
-		PersistentLevel = std::make_shared<ULevel>(shared_from_this());
-	}
 
 	GEngine->AddImGuiRenderFunction(std::bind(&UWorld::ImguiRender_WorldOutliner, this));
 	GEngine->AddImGuiRenderFunction(std::bind(&UWorld::ImGuiRender_ActorDetail, this));
@@ -52,6 +47,12 @@ void UWorld::TickWorld(float DeltaSeconds)
 
 void UWorld::Tick()
 {
+}
+
+void UWorld::AddLevel(const std::shared_ptr<ULevel>& NewLevel)
+{
+	// Set으로 설정하여 중복 추가 x
+	Levels.emplace(NewLevel);
 }
 
 void UWorld::TestDrawWorld()

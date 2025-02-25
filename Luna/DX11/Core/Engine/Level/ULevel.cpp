@@ -8,6 +8,12 @@
 #include "../../../content/Actor/ATestCube.h"
 #include "Engine/GameFramework/AActor.h"
 
+static int LevelCount = 0;
+
+ULevel::ULevel()
+{
+	Rename("Level"+ LevelCount++);
+}
 
 ULevel::ULevel(const std::shared_ptr<UWorld>& World)
 {
@@ -37,5 +43,10 @@ void ULevel::TestDrawLevel()
 	{
 		Actor->TestDraw();
 	}
+}
+
+void ULevel::LoadDataFromFileData(std::map<std::string, std::string>& AssetData)
+{
+	UObject::LoadDataFromFileData(AssetData);
 }
 

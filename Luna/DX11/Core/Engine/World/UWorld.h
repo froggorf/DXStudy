@@ -17,6 +17,7 @@ class AActor;
 
 class UWorld : public UObject, public std::enable_shared_from_this<UWorld>
 {
+	MY_GENERATED_BODY(UWorld)
 public:
 	UWorld();
 	~UWorld() override;
@@ -28,16 +29,20 @@ public:
 
 
 	std::shared_ptr<ULevel> GetPersistentLevel() const { return PersistentLevel; }
-	void SetPersistentLevel(const std::shared_ptr<ULevel> NewLevel) { PersistentLevel = NewLevel; }
+	void SetPersistentLevel(const std::shared_ptr<ULevel>& NewLevel) { PersistentLevel = NewLevel; }
 
+	void AddLevel(const std::shared_ptr<ULevel>& NewLevel);
+	void RemoveLevel(const std::shared_ptr<ULevel>& Level);
 	void TestDrawWorld();
 
+	// ========================== ImGui && ImGuizmo ==========================
 	void ImguiRender_WorldOutliner();
 	void ImGuiAction_SelectActor(const std::shared_ptr<AActor>& NewSelectActor);
 	// 타겟 컴퍼넌트의 정보와 해당 타겟 컴퍼넌트의 자식들의 정보를 저장
 	void ImGuiAction_FindActorComponentsAndNames(const std::shared_ptr<USceneComponent>& TargetComponent, int CurrentHierarchyDepth);
 	void ImGuiRender_ActorDetail();
 	void ImGuizmoRender_SelectComponentGizmo();
+	// =======================================================================
 	
 protected:
 private:

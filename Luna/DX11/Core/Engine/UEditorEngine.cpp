@@ -4,8 +4,12 @@
 // 이윤석
 
 #include "UEditorEngine.h"
+#include <fstream>
+#include <memory>
 
+#include "AssetManager.h"
 #include "imgui_internal.h"
+#include "World/UWorld.h"
 
 
 std::shared_ptr<UEditorEngine> GEditorEngine = nullptr;
@@ -25,6 +29,37 @@ void UEditorEngine::InitEngine()
 	AddImGuiRenderFunction(std::bind(&UEditorEngine::DrawDebugConsole, this));
 	MY_LOG("Init", EDebugLogLevel::DLL_Display, "UEditorEngine init");
 	
+}
+
+void UEditorEngine::PostLoad()
+{
+	UEngine::PostLoad();
+
+	// Default Engine Map
+	if(GetWorld())
+	{
+		//std::shared_ptr<ULevel> NewLevel = std::make_shared<ULevel>(*AssetManager::ReadMyAsset<ULevel>(EngineData["EditorStartupMap"]));
+		//GetWorld()->SetPersistentLevel(NewLevel);
+		std::shared_ptr<ULevel> NewLevel = std::make_shared<ULevel>(GetWorld());
+		GetWorld()->SetPersistentLevel(NewLevel);
+	}
+
+}
+
+void UEditorEngine::LoadDataFromDefaultEngineIni()
+{
+	// DefaultEngine.ini
+	std::string FinalFilePath = "../../Config/DefaultEngine.ini";
+
+	std::ifstream DataFile(FinalFilePath.data());
+	std::string DataName;
+	while (DataFile >> DataName)
+	{
+		std::string Data;
+		DataFile >> Data;	// =
+		DataFile >> Data;
+		EngineData[DataName] = Data;
+	}
 }
 
 void UEditorEngine::DrawDebugConsole()

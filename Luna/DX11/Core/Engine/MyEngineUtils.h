@@ -34,6 +34,7 @@
 extern std::shared_ptr<class UEngine> GEngine;
 extern std::shared_ptr<class UEditorEngine> GEditorEngine;
 
+// ================================ 디버깅 로그 ================================
 #define MY_LOG(Category, DebugLogLevel, DebugText) \
 	{\
 		if(GEditorEngine)\
@@ -47,6 +48,12 @@ extern std::shared_ptr<class UEditorEngine> GEditorEngine;
 #define XMFLOAT4_TO_TEXT(Data) std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}, w = {:.3f}", Data.x,Data.y,Data.z, Data.w)
 
 #define XMVECTOR_TO_TEXT(Data) std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}, w = {:.3f}", DirectX::XMVectorGetX(Data),DirectX::XMVectorGetY(Data),DirectX::XMVectorGetZ(Data),DirectX::XMVectorGetW(Data))
+
+// typeid와 __func__ 를 쓰기위해 매크로로 설정
+#define GetFunctionName std::format("{}::{}", typeid(*this).name(), __func__)
+// ============================================================================
+
+
 
 // 언리얼 엔진에서는 템플릿으로 설정 후 double을 건네주지만 float로 고정하여 작성
 struct FTransform

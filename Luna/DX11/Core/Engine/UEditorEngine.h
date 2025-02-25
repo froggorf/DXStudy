@@ -24,10 +24,15 @@ struct DebugText
 
 class UEditorEngine : public UEngine
 {
+	MY_GENERATED_BODY(UEditorEngine)
 public:
+	UEditorEngine() : UEngine(nullptr) {};
 	UEditorEngine(D3DApp* Application) : UEngine(Application){};
 
 	virtual void InitEngine() override;
+	virtual void PostLoad() override;
+	virtual void LoadDataFromDefaultEngineIni();
+
 
 	void AddConsoleText(const std::string& Category, EDebugLogLevel DebugLevel, const std::string& InDebugText)
 	{
@@ -42,7 +47,10 @@ private:
 public:
 protected:
 private:
-	
+	// Default Engine ini Data
+	std::map<std::string, std::string> EngineData;
+
+	// 디버깅 콘솔
 	std::vector<DebugText> DebugConsoleText;
 	std::vector<DebugText> SearchingDebugConsoleText;
 	std::string DebugConsoleSearchText;

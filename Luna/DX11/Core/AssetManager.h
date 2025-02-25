@@ -16,6 +16,7 @@ struct aiMesh;
 enum class EAssetDataType
 {
 	EADT_StaticMesh = 0,
+	EADT_Level,
 	EADT_SkeletalMesh,
 };
 
@@ -82,19 +83,21 @@ T* AssetManager::ReadMyAsset(const std::string& FilePath)
 		throw std::runtime_error("(AssetManager::ReadMyAsset) Failed open file: " + std::string(FilePath.data()));
 	}
 
-	int assetType;
-	AssetFile >> assetType;
-	EAssetDataType AssetType = static_cast<EAssetDataType>(assetType);
 
-	std::vector<std::string> RemainingAssetData;
-	std::string data;
-	while(AssetFile>>data)
+	//std::vector<std::string> RemainingAssetData;
+	std::map<std::string, std::string> AssetData;
+	std::string DataName;
+	while(AssetFile>>DataName)
 	{
-		RemainingAssetData.push_back(data);
+		//RemainingAssetData.push_back(data);
+		std::string Data;
+		AssetFile >> Data; // = Dummy
+		AssetFile>>Data;
+		AssetData[DataName] = Data;
 	}
 
 	std::shared_ptr<T> Object = std::make_shared<T>();
-	Object->LoadDataFromFileData(RemainingAssetData);
+	Object->LoadDataFromFileData(AssetData);
 
 	AssetCache[FilePath.data()] = Object;
 	MY_LOG("AssetLoad", EDebugLogLevel::DLL_Display, FilePath+" Load Success");

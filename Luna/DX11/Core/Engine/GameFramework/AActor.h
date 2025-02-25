@@ -12,9 +12,10 @@ class USceneComponent;
 
 class AActor : public UObject
 {
+	MY_GENERATED_BODY(AActor)
+
 public:
 	AActor();
-
 
 	const std::shared_ptr<USceneComponent>& GetRootComponent() const { return RootComponent; }
 
@@ -35,4 +36,6 @@ protected:
 
 private:
 	unsigned int ActorID = 0;
+	
+	
 };

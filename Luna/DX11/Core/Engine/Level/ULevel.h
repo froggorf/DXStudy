@@ -12,8 +12,9 @@ class UWorld;
 
 class ULevel : public UObject
 {
+	MY_GENERATED_BODY(ULevel)
 public:
-	ULevel() = default;
+	ULevel();
 	ULevel(const std::shared_ptr<UWorld>& World);
 	~ULevel() override;
 	void TickLevel(float DeltaSeconds);
@@ -24,7 +25,8 @@ public:
 	const std::vector<std::shared_ptr<AActor>>& GetLevelActors() const {return Actors;};
 
 	void TestDrawLevel();
-	
+
+	void LoadDataFromFileData(std::map<std::string, std::string>& AssetData) override;
 protected:
 private:
 public:

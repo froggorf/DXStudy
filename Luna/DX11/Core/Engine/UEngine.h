@@ -15,7 +15,9 @@ class D3DApp;
 
 class UEngine : public UObject
 {
+	MY_GENERATED_BODY(UEngine)
 public:
+	UEngine() = default;
 	UEngine(D3DApp* CurrentApplication)
 	{
 		Application = CurrentApplication;
@@ -25,6 +27,7 @@ public:
 	void PostLoad() override;
 	void Tick(float DeltaSeconds);
 	void Draw();
+	const std::shared_ptr<UWorld>& GetWorld() const {return CurrentWorld;}
 
 	void AddImGuiRenderFunction(const std::function<void()>& NewRenderFunction);
 	void AddImGuizmoRenderFunction(const std::function<void()>& NewRenderFunction);
