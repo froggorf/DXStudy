@@ -1,4 +1,5 @@
-TypeID = 0
-Name = SM_Cube
-ModelData = Model/cube.obj
-TextureData0 = Texture/cardboard.png
+{
+    "Name": "SM_Cube",
+    "ModelData": "Model/cube.obj",
+    "TextureData": [ "Texture/cardboard.png" ]
+}

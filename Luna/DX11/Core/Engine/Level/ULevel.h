@@ -26,7 +26,7 @@ public:
 
 	void TestDrawLevel();
 
-	void LoadDataFromFileData(std::map<std::string, std::string>& AssetData) override;
+	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 protected:
 private:
 public:

@@ -1,4 +1,5 @@
-TypeID = 0
-Name = SM_Racco
-ModelData = Model/Racco.fbx
-TextureData0 = Texture/T_Racco_B.png
+{
+    "Name": "SM_Racco",
+    "ModelData": "Model/Racco.fbx",
+    "TextureData": [ "Texture/T_Racco_B.png" ]
+}

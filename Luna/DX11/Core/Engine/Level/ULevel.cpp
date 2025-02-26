@@ -49,7 +49,7 @@ void ULevel::TestDrawLevel()
 	}
 }
 
-void ULevel::LoadDataFromFileData(std::map<std::string, std::string>& AssetData)
+void ULevel::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
 	UObject::LoadDataFromFileData(AssetData);
 }

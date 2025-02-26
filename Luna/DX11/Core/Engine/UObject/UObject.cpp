@@ -5,6 +5,7 @@
 
 #include "UObject.h"
 
+
 //std::unordered_map<std::string, std::unique_ptr<UObject>> UObject::ClassDefaultObject;
 
 UObject::UObject()
@@ -29,7 +30,7 @@ void UObject::Rename(const std::string& NewName)
 	NamePrivate = NewName;
 }
 
-void UObject::LoadDataFromFileData(std::map<std::string, std::string>& AssetData)
+void UObject::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
 	Rename(AssetData["Name"]);
 	

@@ -6,6 +6,8 @@
 #pragma once
 #include "Engine/MyEngineUtils.h"
 
+#include "nlohmann/json.hpp"
+
 #define MY_GENERATED_BODY(CLASS)\
 class MakeCDO\
 {\
@@ -40,7 +42,7 @@ public:
 	void Rename(const std::string& NewName);
 
 	// .myasset으로 부터 읽은 데이터를 각 상속된 클래스에서 재해석하여 데이터 읽기
-	virtual void LoadDataFromFileData(std::map<std::string, std::string>& AssetData);
+	virtual void LoadDataFromFileData(const nlohmann::json& AssetData);
 
 
 protected:

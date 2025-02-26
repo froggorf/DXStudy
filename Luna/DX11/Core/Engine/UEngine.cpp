@@ -132,7 +132,7 @@ void UEngine::LoadAllObjectsFromFile()
 	AssetManager::ReadMyAsset<UStaticMesh>("Asset/StaticMesh/SM_Sphere.myasset");
 
 	// Level
-	AssetManager::ReadMyAsset<ULevel>("Asset/Level/TestLevel.myasset");
+	//AssetManager::ReadMyAsset<ULevel>("Asset/Level/TestLevel.myasset");
 
 
 	MY_LOG("Load",EDebugLogLevel::DLL_Warning, "Load All Objects From File Success");

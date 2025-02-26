@@ -8,6 +8,7 @@
 
 #include "Engine/MyEngineUtils.h"
 #include "Engine/UEditorEngine.h"
+#include "nlohmann/json.hpp"
 class UObject;
 struct aiScene;
 struct aiMesh;
@@ -80,21 +81,21 @@ T* AssetManager::ReadMyAsset(const std::string& FilePath)
 	std::ifstream AssetFile(FinalFilePath.data());
 	if(!AssetFile.is_open())
 	{
-		throw std::runtime_error("(AssetManager::ReadMyAsset) Failed open file: " + std::string(FilePath.data()));
+			throw std::runtime_error("(AssetManager::ReadMyAsset) Failed open file: " + std::string(FilePath.data()));
 	}
-
+	nlohmann::json AssetData = nlohmann::json::parse(AssetFile);
 
 	//std::vector<std::string> RemainingAssetData;
-	std::map<std::string, std::string> AssetData;
-	std::string DataName;
-	while(AssetFile>>DataName)
-	{
-		//RemainingAssetData.push_back(data);
-		std::string Data;
-		AssetFile >> Data; // = Dummy
-		AssetFile>>Data;
-		AssetData[DataName] = Data;
-	}
+	//std::map<std::string, std::string> AssetData;
+	//std::string DataName;
+	//while(AssetFile>>DataName)
+	//{
+	//	//RemainingAssetData.push_back(data);
+	//	std::string Data;
+	//	AssetFile >> Data; // = Dummy
+	//	AssetFile>>Data;
+	//	AssetData[DataName] = Data;
+	//}
 
 	std::shared_ptr<T> Object = std::make_shared<T>();
 	Object->LoadDataFromFileData(AssetData);

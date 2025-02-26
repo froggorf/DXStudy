@@ -12,7 +12,7 @@
 class FStaticMeshRenderData
 {
 public:
-	FStaticMeshRenderData(std::map<std::string, std::string>& StaticMeshFilePathData, const Microsoft::WRL::ComPtr<ID3D11Device>& DeviceObject)
+	FStaticMeshRenderData(const nlohmann::json& StaticMeshFilePathData, const Microsoft::WRL::ComPtr<ID3D11Device>& DeviceObject)
 	{
 		for(auto& p : VertexBuffer)
 		{
@@ -29,17 +29,17 @@ public:
 
 		AssetManager::LoadModelData(StaticMeshFilePathData["ModelData"], DeviceObject,VertexBuffer,IndexBuffer);
 		MeshCount = VertexBuffer.size();
-
+		int TextureArraySize = StaticMeshFilePathData["TextureData"].size();
 		for(int count = 0; count < MeshCount; ++count)
 		{
-			if(!StaticMeshFilePathData.contains("TextureData"+std::to_string(count)))
+			if(TextureArraySize < count)
 			{
 				MY_LOG(StaticMeshFilePathData["Name"], EDebugLogLevel::DLL_Warning, "Texture count not match with mesh count! ");
 				break;
 			}
 
 			Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> SRV;
-			const std::string TextureFilePath = StaticMeshFilePathData["TextureData"+std::to_string(count)];
+			const std::string TextureFilePath = StaticMeshFilePathData["TextureData"][count];
 			AssetManager::LoadTextureFromFile(std::wstring().assign(TextureFilePath.begin(),TextureFilePath.end()), DeviceObject, SRV);
 			TextureSRV.push_back(SRV);
 		}

@@ -26,7 +26,7 @@ enum class EStaticMeshAssetData
 	ESMAD_Name = 0, ESMAD_ModelDataFilePath, ESMAD_TextureDataFilePath
 };
 
-void UStaticMesh::LoadDataFromFileData(std::map<std::string, std::string>& StaticMeshAssetData)
+void UStaticMesh::LoadDataFromFileData(const nlohmann::json& StaticMeshAssetData)
 {
 	if(StaticMeshCache.contains(GetName()))
 	{

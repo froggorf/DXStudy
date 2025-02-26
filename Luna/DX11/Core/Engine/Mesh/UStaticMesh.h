@@ -29,7 +29,7 @@ public:
 	static const std::shared_ptr<UStaticMesh>& GetStaticMesh(const std::string& StaticMeshName) { return StaticMeshCache[StaticMeshName]; }
 
 
-	virtual void LoadDataFromFileData(std::map<std::string, std::string>& AssetData) override;
+	virtual void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 protected:
 private:
 
