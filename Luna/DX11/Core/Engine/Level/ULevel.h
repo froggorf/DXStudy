@@ -35,4 +35,5 @@ private:
 	std::shared_ptr<UWorld>	OwningWorld;
 
 	std::vector<std::shared_ptr<AActor>> Actors;
+
 };
