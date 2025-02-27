@@ -15,9 +15,6 @@ class AActor : public UObject
 	MY_GENERATED_BODY(AActor)
 
 public:
-
-	//virtual const std::shared_ptr<UObject>& CreateInstance() const { return std::make_shared<AActor>(); } override;
-public:
 	AActor();
 	
 	
@@ -27,7 +24,12 @@ public:
 	const std::shared_ptr<USceneComponent>& GetRootComponent() const { return RootComponent; }
 
 	XMFLOAT3 GetActorLocation() const;
+	XMFLOAT4 GetActorRotation() const;
+	XMFLOAT3 GetActorScale3D() const;
 	void SetActorLocation(const XMFLOAT3& NewLocation) const;
+	void SetActorRotation(const XMFLOAT4& NewRotation) const;
+	void SetActorScale3D(const XMFLOAT3& NewScale3D) const;
+
 	virtual void Tick(float DeltaSeconds);
 	virtual void TestDraw();
 protected:
@@ -41,7 +43,7 @@ protected:
 	// 모든 다른 컴퍼넌트는 해당 컴퍼넌트에 부착해야함
 	std::shared_ptr<USceneComponent>		RootComponent;
 
-private:
+protected:
 	unsigned int ActorID = 0;
 	
 	

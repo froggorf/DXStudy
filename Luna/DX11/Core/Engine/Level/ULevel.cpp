@@ -10,6 +10,7 @@
 
 #include <fstream>
 
+#include "Engine/UEditorEngine.h"
 #include "nlohmann/json.hpp"
 
 static int LevelCount = 0;
@@ -19,17 +20,40 @@ ULevel::ULevel()
 	Rename("Level"+ LevelCount++);
 }
 
-ULevel::ULevel(const std::shared_ptr<UWorld>& World)
+ULevel::ULevel(const ULevel* LevelInstance)
 {
-	OwningWorld = World;
+	OwningWorld = GEngine->GetWorld();
 
-	std::shared_ptr<AActor> TestActor = std::make_shared<ATestCube>();
-	Actors.push_back(TestActor);
-
+	int ActorCount = LevelInstance->GetLevelActors().size();
+	const auto& LevelActors = LevelInstance->GetLevelActors();
+	Actors.reserve(ActorCount);
+	for(const auto& Actor : LevelActors)
+	{
+		std::shared_ptr<AActor> NewActor = std::dynamic_pointer_cast<AActor>(Actor->CreateInstance());
+		NewActor->Rename(Actor->GetName());
+		NewActor->SetActorLocation(Actor->GetActorLocation());
+		NewActor->SetActorRotation(Actor->GetActorRotation());
+		NewActor->SetActorScale3D(Actor->GetActorScale3D());
+		Actors.push_back(NewActor);
+	}
 }
+
+//ULevel::ULevel(const std::shared_ptr<UWorld>& World)
+//{
+//	OwningWorld = World;
+//
+//	std::shared_ptr<AActor> TestActor = std::make_shared<ATestCube>();
+//	Actors.push_back(TestActor);
+//
+//}
 
 ULevel::~ULevel()
 {
+}
+
+void ULevel::PostLoad()
+{
+	UObject::PostLoad();
 }
 
 void ULevel::TickLevel(float DeltaSeconds)
@@ -51,13 +75,37 @@ void ULevel::TestDrawLevel()
 
 void ULevel::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
+	std::string LevelName = AssetData["Name"];
+	if(GetLevelInstanceMap().contains(LevelName))
+	{
+		MY_LOG("LoadLevel",EDebugLogLevel::DLL_Warning, "Already exist level");
+		return;
+	}
+
 	UObject::LoadDataFromFileData(AssetData);
 
-	auto Actors = AssetData["Actor"];
-	int ActorCount = Actors.size();
+	auto ActorsData = AssetData["Actor"];
+	int ActorCount = ActorsData.size();
+	Actors.reserve(ActorCount);
 	for(int i = 0; i < ActorCount; ++i)
 	{
-		
+		auto ActorData = ActorsData[i];
+		std::string ClassName = ActorData["Class"];
+		std::shared_ptr<AActor> NewActor = std::dynamic_pointer_cast<AActor>(GetDefaultObject(ClassName)->CreateInstance());
+		if(NewActor)
+		{
+			NewActor->Rename(ActorData["Name"]);
+			int X = 0, Y = 1, Z = 2, W =3;
+			auto LocationData = ActorData["Location"];
+			NewActor->SetActorLocation(XMFLOAT3(LocationData[X],LocationData[Y],LocationData[Z]));
+			auto RotationData = ActorData["Rotation"];
+			NewActor->SetActorRotation(XMFLOAT4(RotationData[X],RotationData[Y],RotationData[Z],RotationData[W]));
+			auto ScaleData = ActorData["Scale"];
+			NewActor->SetActorScale3D(XMFLOAT3(ScaleData[X],ScaleData[Y],ScaleData[Z]));
+			Actors.push_back(NewActor);
+		}
 	}
+
+	GetLevelInstanceMap()[LevelName] = std::make_unique<ULevel>(*this);
 }
 

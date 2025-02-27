@@ -162,6 +162,9 @@
     <ClCompile Include="..\..\Core\Engine\MyEngineUtils.cpp">
       <Filter>Core\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\content\Actor\ATestActor2.cpp">
+      <Filter>Content\Actor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Core\AssetManager.h">
@@ -277,6 +280,9 @@
     </ClInclude>
     <ClInclude Include="..\..\ThirdParty\nlohmannJson\nlohmann\json.hpp">
       <Filter>ThirdParty\nlohmann</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\content\Actor\ATestActor2.h">
+      <Filter>Content\Actor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

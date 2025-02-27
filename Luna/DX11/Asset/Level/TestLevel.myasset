@@ -1,29 +1,20 @@
 {
     "Name": "TestLevel",
-    "Actor": {
+    "Actor": [
         { 
             "Class": "ATestCube",
-            "Location":
-                {
-	      "x": 2.3333,
-	      "y": 1.22222,
-	      "z": 0.88888
-                },
-            "Rotation":
-                {
-	      "x": 2.3333,
-	      "y": 1.22222,
-	      "z": 0.88888
-                },
-            "Scale":
-                {
-	      "x": 2.3333,
-	      "y": 1.22222,
-	      "z": 0.88888
-                }
-                            
+            "Name": "ATestCube1",
+            "Location": [ 2.3333,1.22222,0.88888 ],
+            "Rotation": [ 0.8509035, 0, 0, 0.525322 ],
+            "Scale": [ 1.0, 1.0, 1.0]
+        },
+        { 
+            "Class": "ATestActor2",
+            "Name": "ATestActor2",
+            "Location": [ 0.0,0.0,0.0],
+            "Rotation": [ 0.0,0.0,0.0,1.0 ],
+            "Scale": [ 1.0, 1.0, 1.0]
         }
-
-    }
+    ]
 
 }

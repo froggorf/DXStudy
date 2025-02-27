@@ -16,6 +16,12 @@ UStaticMeshComponent::UStaticMeshComponent()
 
 bool UStaticMeshComponent::SetStaticMesh(const std::shared_ptr<UStaticMesh>& NewMesh)
 {
+	if(nullptr == NewMesh)
+	{
+		MY_LOG("SetStaticMesh", EDebugLogLevel::DLL_Warning, "nullptr StaticMesh");
+		return false;
+	}
+
 	if(NewMesh.get() == GetStaticMesh().get())
 	{
 		return false;

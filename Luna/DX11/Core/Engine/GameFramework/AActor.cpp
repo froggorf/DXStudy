@@ -36,12 +36,50 @@ XMFLOAT3 AActor::GetActorLocation() const
 	return RetLoc;
 }
 
+XMFLOAT4 AActor::GetActorRotation() const
+{
+	XMFLOAT4 RetRotQuat = XMFLOAT4(0.0f,0.0f,0.0f,1.0f);
+	if(RootComponent)
+	{
+		RetRotQuat = RootComponent->GetRelativeRotation();
+	}
+	return RetRotQuat;
+}
+
+XMFLOAT3 AActor::GetActorScale3D() const
+{
+	XMFLOAT3 RetScale = XMFLOAT3(1.0f,1.0f,1.0f);
+	if(RootComponent)
+	{
+		RetScale = RootComponent->GetRelativeScale3D();
+	}
+	return RetScale;
+}
+
 void AActor::SetActorLocation(const XMFLOAT3& NewLocation) const
 {
 	if(RootComponent)
 	{
 		// TODO: 언리얼엔진에서는 MoveComponent를 통한 이동을 진행
 		RootComponent->SetRelativeLocation(NewLocation);
+	}
+}
+
+void AActor::SetActorRotation(const XMFLOAT4& NewRotation) const
+{
+	if(RootComponent)
+	{
+		// TODO: 언리얼엔진에서는 MoveComponent를 통한 이동을 진행
+		RootComponent->SetRelativeRotation(NewRotation);
+	}
+}
+
+void AActor::SetActorScale3D(const XMFLOAT3& NewScale3D) const
+{
+	if(RootComponent)
+	{
+		// TODO: 언리얼엔진에서는 MoveComponent를 통한 이동을 진행
+		RootComponent->SetRelativeScale3D(NewScale3D);
 	}
 }
 

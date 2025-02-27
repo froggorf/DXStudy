@@ -25,6 +25,9 @@ public:
 	~UEngine() override;
 	virtual void InitEngine();
 	void PostLoad() override;
+	virtual void LoadDataFromDefaultEngineIni();
+	virtual void LoadDefaultMap();
+	virtual const std::string& GetDefaultMapName();
 	void Tick(float DeltaSeconds);
 	void Draw();
 	const std::shared_ptr<UWorld>& GetWorld() const {return CurrentWorld;}
@@ -46,9 +49,12 @@ private:
 	void LoadAllObjectsFromFile();
 public:
 protected:
+	// Default Engine ini Data
+	std::map<std::string, std::string> EngineData;
 private:
 	D3DApp* Application;
 	std::shared_ptr<UWorld> CurrentWorld;
+
 
 	std::vector<std::function<void()>> ImGuiRenderFunctions;
 	std::vector<std::function<void()>> ImGuizmoRenderFunctions;

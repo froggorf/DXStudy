@@ -9,7 +9,7 @@
 #include "StaticMeshResources.h"
 
 
-std::map<std::string, std::shared_ptr<UStaticMesh>> UStaticMesh::StaticMeshCache;
+//std::map<std::string, std::shared_ptr<UStaticMesh>> UStaticMesh::StaticMeshCache;
 
 UStaticMesh::UStaticMesh()
 {
@@ -28,7 +28,7 @@ enum class EStaticMeshAssetData
 
 void UStaticMesh::LoadDataFromFileData(const nlohmann::json& StaticMeshAssetData)
 {
-	if(StaticMeshCache.contains(GetName()))
+	if(GetStaticMeshCacheMap().contains(GetName()))
 	{
 		MY_LOG("LoadData", EDebugLogLevel::DLL_Warning, "already load this StaticMesh -> " + GetName());
 		return;
@@ -38,7 +38,7 @@ void UStaticMesh::LoadDataFromFileData(const nlohmann::json& StaticMeshAssetData
 
 	RenderData = std::make_unique<FStaticMeshRenderData>(StaticMeshAssetData, GEngine->GetDevice());
 
-	StaticMeshCache[GetName()] = shared_from_this();
+	GetStaticMeshCacheMap()[GetName()] = shared_from_this();
 
 	MY_LOG("Load", EDebugLogLevel::DLL_Display, "Load UStaticMesh - "+GetName() + " Complete!");
 }

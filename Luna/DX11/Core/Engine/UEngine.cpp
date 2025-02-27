@@ -22,7 +22,11 @@ void UEngine::InitEngine()
 
 	InitImGui();
 
+	LoadDataFromDefaultEngineIni();
+
 	PostLoad();
+
+	LoadDefaultMap();
 
 	CurrentWorld->Init();
 }
@@ -36,6 +40,34 @@ void UEngine::PostLoad()
 	
 	// TODO: 추후엔 Level을 직렬화를 통해 저장 및 로드를 할 수 있는 기능을 만드는게 낫지 않을까?
 	// 그렇다면 여기에서 로드를 진행하기
+}
+
+void UEngine::LoadDataFromDefaultEngineIni()
+{
+	// DefaultEngine.ini
+	std::string FinalFilePath = "../../Config/DefaultEngine.ini";
+
+	std::ifstream DataFile(FinalFilePath.data());
+	std::string DataName;
+	while (DataFile >> DataName)
+	{
+		std::string Data;
+		DataFile >> Data;	// =
+		DataFile >> Data;
+		EngineData[DataName] = Data;
+	}
+}
+
+void UEngine::LoadDefaultMap()
+{
+	const ULevel* DefaultLevelInstance = ULevel::GetLevelInstanceByName(GetDefaultMapName());
+	std::shared_ptr<ULevel> LoadLevel = std::make_shared<ULevel>(DefaultLevelInstance);
+	CurrentWorld->SetPersistentLevel(LoadLevel);
+}
+
+const std::string& UEngine::GetDefaultMapName()
+{
+	return EngineData["GameDefaultMap"];
 }
 
 void UEngine::Tick(float DeltaSeconds)
@@ -132,7 +164,7 @@ void UEngine::LoadAllObjectsFromFile()
 	AssetManager::ReadMyAsset<UStaticMesh>("Asset/StaticMesh/SM_Sphere.myasset");
 
 	// Level
-	//AssetManager::ReadMyAsset<ULevel>("Asset/Level/TestLevel.myasset");
+	AssetManager::ReadMyAsset<ULevel>("Asset/Level/TestLevel.myasset");
 
 
 	MY_LOG("Load",EDebugLogLevel::DLL_Warning, "Load All Objects From File Success");

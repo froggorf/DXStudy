@@ -31,6 +31,8 @@ public:
 	std::shared_ptr<ULevel> GetPersistentLevel() const { return PersistentLevel; }
 	void SetPersistentLevel(const std::shared_ptr<ULevel>& NewLevel) { PersistentLevel = NewLevel; }
 
+	void LoadLevelInstanceByName(const std::string& NewLevelName);
+
 	void AddLevel(const std::shared_ptr<ULevel>& NewLevel);
 	void RemoveLevel(const std::shared_ptr<ULevel>& Level);
 	void TestDrawWorld();

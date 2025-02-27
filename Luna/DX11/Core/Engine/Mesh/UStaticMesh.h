@@ -25,8 +25,8 @@ public:
 	// Render 시 잠깐 사용하므로 로우 포인터를 반환
 	const FStaticMeshRenderData* GetStaticMeshRenderData() const {return RenderData.get();}
 
-	static const std::map<std::string, std::shared_ptr<UStaticMesh>>& GetStaticMeshCache() {return StaticMeshCache;}
-	static const std::shared_ptr<UStaticMesh>& GetStaticMesh(const std::string& StaticMeshName) { return StaticMeshCache[StaticMeshName]; }
+	static const std::map<std::string, std::shared_ptr<UStaticMesh>>& GetStaticMeshCache() {return GetStaticMeshCacheMap();}
+	static const std::shared_ptr<UStaticMesh>& GetStaticMesh(const std::string& StaticMeshName) { return GetStaticMeshCacheMap()[StaticMeshName]; }
 
 
 	virtual void LoadDataFromFileData(const nlohmann::json& AssetData) override;
@@ -36,7 +36,12 @@ private:
 public:
 protected:
 private:
-	static std::map<std::string, std::shared_ptr<UStaticMesh>> StaticMeshCache;
+	static std::map<std::string, std::shared_ptr<UStaticMesh>>& GetStaticMeshCacheMap()
+	{
+		static std::map<std::string, std::shared_ptr<UStaticMesh>> StaticMeshCache;
+		return StaticMeshCache;
+	}
+	
 
 
 	// TODO: LOD 데이터가 필요한 경우 std::map<UINT, std::unique_ptr<FStaticMeshRenderData> LODRenderData; 로 변경 예정

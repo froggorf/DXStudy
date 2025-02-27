@@ -15,8 +15,11 @@ class ULevel : public UObject
 	MY_GENERATED_BODY(ULevel)
 public:
 	ULevel();
-	ULevel(const std::shared_ptr<UWorld>& World);
+	//ULevel(const std::shared_ptr<UWorld>& World);
+	ULevel(const ULevel* LevelInstance);
 	~ULevel() override;
+
+	virtual void PostLoad() override;
 	void TickLevel(float DeltaSeconds);
 
 	void SetOwningWorld(const std::shared_ptr<UWorld>& NewOwningWorld){ OwningWorld = NewOwningWorld; }
@@ -27,8 +30,15 @@ public:
 	void TestDrawLevel();
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
+
+	static const ULevel* GetLevelInstanceByName(const std::string& LevelName) {return GetLevelInstanceMap()[LevelName].get();}
 protected:
 private:
+	static std::map<std::string, std::unique_ptr<ULevel>>& GetLevelInstanceMap()
+	{
+		static std::map<std::string, std::unique_ptr<ULevel>> LevelInstanceMap;
+		return LevelInstanceMap;
+	}
 public:
 protected:
 private:

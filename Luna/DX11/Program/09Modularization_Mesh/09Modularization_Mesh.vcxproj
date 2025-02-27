@@ -129,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\content\Actor\ATestActor2.cpp" />
     <ClCompile Include="..\..\content\Actor\ATestCube.cpp" />
     <ClCompile Include="..\..\Core\Animation\Animation.cpp" />
     <ClCompile Include="..\..\Core\Animation\Animator.cpp" />
@@ -163,6 +164,7 @@
     <ClCompile Include="Modularization.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\content\Actor\ATestActor2.h" />
     <ClInclude Include="..\..\content\Actor\ATestCube.h" />
     <ClInclude Include="..\..\Core\Animation\Animation.h" />
     <ClInclude Include="..\..\Core\Animation\Animator.h" />

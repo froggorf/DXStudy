@@ -23,7 +23,7 @@ inline static MakeCDO _initializer;
 #define MY_GENERATED_BODY(CLASS)\
 GENERATE_UOBJECT_DERIVED_CLASS(CLASS)\
 public:\
-	//virtual const std::shared_ptr<UObject>& CreateInstance() const { return std::make_shared<CLASS>(); } override;
+	std::shared_ptr<UObject> CreateInstance() const override { return std::make_shared<CLASS>();}
 
 
 class UWorld;
@@ -33,8 +33,8 @@ class UObject
 	GENERATE_UOBJECT_DERIVED_CLASS(UObject)
 	
 public:
-	virtual const std::shared_ptr<UObject>& CreateInstance() const { return std::make_shared<UObject>(); }
-	virtual void A() {};
+	virtual std::shared_ptr<UObject> CreateInstance() const { return std::make_shared<UObject>(); }
+	
 	UObject();
 	UObject(const UObject& other) {};
 	virtual ~UObject();
@@ -67,15 +67,16 @@ private:
 private:
 	//MY_GENERATED_BODY(UObject)
 	// Class Default Object 보관
-	static std::unordered_map<std::string, std::unique_ptr<UObject>>& GetMap(){
+	static std::unordered_map<std::string, std::unique_ptr<UObject>>& GetCODMap(){
 		static std::unordered_map<std::string, std::unique_ptr<UObject>> ClassDefaultObjectMap;
 		return ClassDefaultObjectMap;
 	}
 public:
 	static void AddClassDefaultObject(const std::string& ClassName, std::unique_ptr<UObject>&& DefaultObject)
 	{
-		GetMap()[ClassName] = std::move(DefaultObject);
+		GetCODMap()[ClassName] = std::move(DefaultObject);
 	}
+	static const UObject* GetDefaultObject(const std::string& ClassName) {return GetCODMap()[ClassName].get();}
 
 };
 

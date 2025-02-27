@@ -9,6 +9,7 @@ class UStaticMeshComponent;
 
 class ATestCube : public AActor
 {
+	MY_GENERATED_BODY(ATestCube)
 public:
 	ATestCube();
 
@@ -17,8 +18,8 @@ protected:
 private:
 public:
 protected:
-private:
 	std::shared_ptr<UStaticMeshComponent> TestCubeStaticMeshComp;
+private:
 	std::shared_ptr<UStaticMeshComponent> TestCube2;
 	std::shared_ptr<UStaticMeshComponent> TestCube3;
 	std::shared_ptr<UStaticMeshComponent> TestCube4;

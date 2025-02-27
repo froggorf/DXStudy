@@ -35,6 +35,11 @@ void UWorld::Init()
 void UWorld::PostLoad()
 {
 	UObject::PostLoad();
+
+	if(PersistentLevel)
+	{
+		PersistentLevel->PostLoad();
+	}
 }
 
 void UWorld::TickWorld(float DeltaSeconds)
@@ -47,6 +52,12 @@ void UWorld::TickWorld(float DeltaSeconds)
 
 void UWorld::Tick()
 {
+}
+
+
+void UWorld::LoadLevelInstanceByName(const std::string& NewLevelName)
+{
+	
 }
 
 void UWorld::AddLevel(const std::shared_ptr<ULevel>& NewLevel)

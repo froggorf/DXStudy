@@ -36,31 +36,21 @@ void UEditorEngine::PostLoad()
 	UEngine::PostLoad();
 
 	// Default Engine Map
-	if(GetWorld())
-	{
-		//std::shared_ptr<ULevel> NewLevel = std::make_shared<ULevel>(*AssetManager::ReadMyAsset<ULevel>(EngineData["EditorStartupMap"]));
-		//GetWorld()->SetPersistentLevel(NewLevel);
-		std::shared_ptr<ULevel> NewLevel = std::make_shared<ULevel>(GetWorld());
-		GetWorld()->SetPersistentLevel(NewLevel);
-	}
+	//if(GetWorld())
+	//{
+	//	//std::shared_ptr<ULevel> NewLevel = std::make_shared<ULevel>(*AssetManager::ReadMyAsset<ULevel>(EngineData["EditorStartupMap"]));
+	//	//GetWorld()->SetPersistentLevel(NewLevel);
+	//	std::shared_ptr<ULevel> NewLevel = std::make_shared<ULevel>(GetWorld());
+	//	GetWorld()->SetPersistentLevel(NewLevel);
+	//}
 
 }
 
-void UEditorEngine::LoadDataFromDefaultEngineIni()
+const std::string& UEditorEngine::GetDefaultMapName()
 {
-	// DefaultEngine.ini
-	std::string FinalFilePath = "../../Config/DefaultEngine.ini";
-
-	std::ifstream DataFile(FinalFilePath.data());
-	std::string DataName;
-	while (DataFile >> DataName)
-	{
-		std::string Data;
-		DataFile >> Data;	// =
-		DataFile >> Data;
-		EngineData[DataName] = Data;
-	}
+	return EngineData["EditorStartupMap"];
 }
+
 
 void UEditorEngine::DrawDebugConsole()
 {

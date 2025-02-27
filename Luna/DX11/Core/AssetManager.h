@@ -85,18 +85,6 @@ T* AssetManager::ReadMyAsset(const std::string& FilePath)
 	}
 	nlohmann::json AssetData = nlohmann::json::parse(AssetFile);
 
-	//std::vector<std::string> RemainingAssetData;
-	//std::map<std::string, std::string> AssetData;
-	//std::string DataName;
-	//while(AssetFile>>DataName)
-	//{
-	//	//RemainingAssetData.push_back(data);
-	//	std::string Data;
-	//	AssetFile >> Data; // = Dummy
-	//	AssetFile>>Data;
-	//	AssetData[DataName] = Data;
-	//}
-
 	std::shared_ptr<T> Object = std::make_shared<T>();
 	Object->LoadDataFromFileData(AssetData);
 
