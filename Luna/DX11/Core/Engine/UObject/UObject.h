@@ -8,7 +8,7 @@
 
 #include "nlohmann/json.hpp"
 
-#define MY_GENERATED_BODY(CLASS)\
+#define GENERATE_UOBJECT_DERIVED_CLASS(CLASS)\
 class MakeCDO\
 {\
 public:\
@@ -20,12 +20,21 @@ public:\
 inline static MakeCDO _initializer;
 
 
+#define MY_GENERATED_BODY(CLASS)\
+GENERATE_UOBJECT_DERIVED_CLASS(CLASS)\
+public:\
+	//virtual const std::shared_ptr<UObject>& CreateInstance() const { return std::make_shared<CLASS>(); } override;
+
+
 class UWorld;
 
 class UObject
 {
-	MY_GENERATED_BODY(UObject)
+	GENERATE_UOBJECT_DERIVED_CLASS(UObject)
+	
 public:
+	virtual const std::shared_ptr<UObject>& CreateInstance() const { return std::make_shared<UObject>(); }
+	virtual void A() {};
 	UObject();
 	UObject(const UObject& other) {};
 	virtual ~UObject();

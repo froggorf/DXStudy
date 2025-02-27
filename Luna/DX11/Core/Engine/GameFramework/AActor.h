@@ -15,6 +15,9 @@ class AActor : public UObject
 	MY_GENERATED_BODY(AActor)
 
 public:
+
+	//virtual const std::shared_ptr<UObject>& CreateInstance() const { return std::make_shared<AActor>(); } override;
+public:
 	AActor();
 	
 	
