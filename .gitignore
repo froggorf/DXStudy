@@ -361,3 +361,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# 라이브러리 제외
+!Luna/DX11/ThirdParty/Assimp/lib/Debug/
+!Luna/DX11/ThirdParty/Assimp/lib/Release/
+!Luna/DX11/ThirdParty/DirectXTex/lib/Debug/
+!Luna/DX11/ThirdParty/DirectXTex/lib/Release/
