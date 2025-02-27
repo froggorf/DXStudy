@@ -16,6 +16,10 @@ class AActor : public UObject
 
 public:
 	AActor();
+	
+	
+
+	virtual void Init() override;
 
 	const std::shared_ptr<USceneComponent>& GetRootComponent() const { return RootComponent; }
 

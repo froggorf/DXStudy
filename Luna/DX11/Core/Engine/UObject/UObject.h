@@ -27,6 +27,7 @@ class UObject
 	MY_GENERATED_BODY(UObject)
 public:
 	UObject();
+	UObject(const UObject& other) {};
 	virtual ~UObject();
 
 	virtual void Init();

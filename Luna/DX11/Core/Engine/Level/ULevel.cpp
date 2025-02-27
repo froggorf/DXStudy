@@ -52,5 +52,12 @@ void ULevel::TestDrawLevel()
 void ULevel::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
 	UObject::LoadDataFromFileData(AssetData);
+
+	auto Actors = AssetData["Actor"];
+	int ActorCount = Actors.size();
+	for(int i = 0; i < ActorCount; ++i)
+	{
+		
+	}
 }
 
