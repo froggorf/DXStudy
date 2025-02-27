@@ -367,3 +367,6 @@ FodyWeavers.xsd
 !Luna/DX11/ThirdParty/Assimp/lib/Release/
 !Luna/DX11/ThirdParty/DirectXTex/lib/Debug/
 !Luna/DX11/ThirdParty/DirectXTex/lib/Release/
+
+#리소스 제외
+!Luna/DX11/Resource/Model/*.[Oo]bj
