@@ -1,0 +1,5 @@
+{
+    "Name": "SM_Racco",
+    "ModelData": "Model/Racco.fbx",
+    "TextureData": [ "Texture/T_Racco_B.png" ]
+}

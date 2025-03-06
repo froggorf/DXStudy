@@ -1,0 +1,5 @@
+{
+    "Name": "SM_Sphere",
+    "ModelData": "Model/Sphere.obj",
+    "TextureData": [ "Texture/cardboard.png" ]
+}

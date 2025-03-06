@@ -1,0 +1,5 @@
+{
+    "Name": "SM_Cube",
+    "ModelData": "Model/cube.obj",
+    "TextureData": [ "Texture/cardboard.png" ]
+}

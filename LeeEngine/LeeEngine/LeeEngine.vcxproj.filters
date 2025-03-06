@@ -1,13 +1,168 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="소스 파일">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="Source">
+      <UniqueIdentifier>{1e07cf89-0139-4de9-931a-c58357fead5e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="헤더 파일">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    <Filter Include="Source\Animation">
+      <UniqueIdentifier>{f58a78a5-a6f2-4766-9e32-d9bdc8811513}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\DirectX">
+      <UniqueIdentifier>{fb0ee873-fad1-4776-89a9-cff9b63ab717}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine">
+      <UniqueIdentifier>{f7155f88-3f01-476a-b507-8913b7d982ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine\AssetManager">
+      <UniqueIdentifier>{f91d25a4-9e71-4ee1-9d17-88b59fece177}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine\Components">
+      <UniqueIdentifier>{12a252f5-22a6-4bf0-82cd-ccee296402e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine\GameFramework">
+      <UniqueIdentifier>{0a9a35de-3e54-4321-96e5-d40679a98abd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine\Level">
+      <UniqueIdentifier>{ae169ecf-c9a8-486b-8367-ee2bec81eb94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine\Mesh">
+      <UniqueIdentifier>{a905da28-b83f-4630-8c2c-7be269f80323}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine\Proxy">
+      <UniqueIdentifier>{2f7ad7b2-f0ca-46ef-82ab-7862f12666a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine\UObject">
+      <UniqueIdentifier>{2eb0b4ab-5ff9-44ee-b57a-004b5d9e1f21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine\World">
+      <UniqueIdentifier>{b4ed6131-32fc-4784-aff3-130f70886de7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Animation\Bone.cpp">
+      <Filter>Source\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Animation\Animation.cpp">
+      <Filter>Source\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Animation\Animator.cpp">
+      <Filter>Source\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectX\ShadowMap.cpp">
+      <Filter>Source\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectX\d3dApp.cpp">
+      <Filter>Source\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectX\DebuggingSRV.cpp">
+      <Filter>Source\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectX\GameTimer.cpp">
+      <Filter>Source\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\UEngine.cpp">
+      <Filter>Source\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\MyEngineUtils.cpp">
+      <Filter>Source\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\UEditorEngine.cpp">
+      <Filter>Source\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\AssetManager\AssetManager.cpp">
+      <Filter>Source\Engine\AssetManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\World\UWorld.cpp">
+      <Filter>Source\Engine\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\UObject\UObject.cpp">
+      <Filter>Source\Engine\UObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Mesh\UStaticMesh.cpp">
+      <Filter>Source\Engine\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Level\ULevel.cpp">
+      <Filter>Source\Engine\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\GameFramework\AActor.cpp">
+      <Filter>Source\Engine\GameFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Components\UActorComponent.cpp">
+      <Filter>Source\Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Components\USceneComponent.cpp">
+      <Filter>Source\Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Components\UStaticMeshComponent.cpp">
+      <Filter>Source\Engine\Components</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\Animation\Bone.h">
+      <Filter>Source\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Animation\Animation.h">
+      <Filter>Source\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Animation\Animator.h">
+      <Filter>Source\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DirectX\ShadowMap.h">
+      <Filter>Source\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DirectX\d3dApp.h">
+      <Filter>Source\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DirectX\d3dUtil.h">
+      <Filter>Source\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DirectX\DebuggingSRV.h">
+      <Filter>Source\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DirectX\GameTimer.h">
+      <Filter>Source\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DirectX\LightHelper.h">
+      <Filter>Source\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\UEngine.h">
+      <Filter>Source\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\MyEngineUtils.h">
+      <Filter>Source\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\UEditorEngine.h">
+      <Filter>Source\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\AssetManager\AssetManager.h">
+      <Filter>Source\Engine\AssetManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\World\UWorld.h">
+      <Filter>Source\Engine\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\UObject\UObject.h">
+      <Filter>Source\Engine\UObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Mesh\StaticMeshResources.h">
+      <Filter>Source\Engine\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Mesh\UStaticMesh.h">
+      <Filter>Source\Engine\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Level\ULevel.h">
+      <Filter>Source\Engine\Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\GameFramework\AActor.h">
+      <Filter>Source\Engine\GameFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Components\UActorComponent.h">
+      <Filter>Source\Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Components\USceneComponent.h">
+      <Filter>Source\Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Components\UStaticMeshComponent.h">
+      <Filter>Source\Engine\Components</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

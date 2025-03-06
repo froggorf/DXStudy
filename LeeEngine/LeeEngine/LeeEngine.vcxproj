@@ -18,6 +18,51 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Animation\Animation.cpp" />
+    <ClCompile Include="Source\Animation\Animator.cpp" />
+    <ClCompile Include="Source\Animation\Bone.cpp" />
+    <ClCompile Include="Source\DirectX\d3dApp.cpp" />
+    <ClCompile Include="Source\DirectX\DebuggingSRV.cpp" />
+    <ClCompile Include="Source\DirectX\GameTimer.cpp" />
+    <ClCompile Include="Source\DirectX\ShadowMap.cpp" />
+    <ClCompile Include="Source\Engine\AssetManager\AssetManager.cpp" />
+    <ClCompile Include="Source\Engine\Components\UActorComponent.cpp" />
+    <ClCompile Include="Source\Engine\Components\USceneComponent.cpp" />
+    <ClCompile Include="Source\Engine\Components\UStaticMeshComponent.cpp" />
+    <ClCompile Include="Source\Engine\GameFramework\AActor.cpp" />
+    <ClCompile Include="Source\Engine\Level\ULevel.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\UStaticMesh.cpp" />
+    <ClCompile Include="Source\Engine\MyEngineUtils.cpp" />
+    <ClCompile Include="Source\Engine\UEditorEngine.cpp" />
+    <ClCompile Include="Source\Engine\UEngine.cpp" />
+    <ClCompile Include="Source\Engine\UObject\UObject.cpp" />
+    <ClCompile Include="Source\Engine\World\UWorld.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\Animation\Animation.h" />
+    <ClInclude Include="Source\Animation\Animator.h" />
+    <ClInclude Include="Source\Animation\Bone.h" />
+    <ClInclude Include="Source\DirectX\d3dApp.h" />
+    <ClInclude Include="Source\DirectX\d3dUtil.h" />
+    <ClInclude Include="Source\DirectX\DebuggingSRV.h" />
+    <ClInclude Include="Source\DirectX\GameTimer.h" />
+    <ClInclude Include="Source\DirectX\LightHelper.h" />
+    <ClInclude Include="Source\DirectX\ShadowMap.h" />
+    <ClInclude Include="Source\Engine\AssetManager\AssetManager.h" />
+    <ClInclude Include="Source\Engine\Components\UActorComponent.h" />
+    <ClInclude Include="Source\Engine\Components\USceneComponent.h" />
+    <ClInclude Include="Source\Engine\Components\UStaticMeshComponent.h" />
+    <ClInclude Include="Source\Engine\GameFramework\AActor.h" />
+    <ClInclude Include="Source\Engine\Level\ULevel.h" />
+    <ClInclude Include="Source\Engine\Mesh\StaticMeshResources.h" />
+    <ClInclude Include="Source\Engine\Mesh\UStaticMesh.h" />
+    <ClInclude Include="Source\Engine\MyEngineUtils.h" />
+    <ClInclude Include="Source\Engine\UEditorEngine.h" />
+    <ClInclude Include="Source\Engine\UEngine.h" />
+    <ClInclude Include="Source\Engine\UObject\UObject.h" />
+    <ClInclude Include="Source\Engine\World\UWorld.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
