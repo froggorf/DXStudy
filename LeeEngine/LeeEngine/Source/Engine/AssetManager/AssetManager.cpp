@@ -21,13 +21,10 @@ using namespace Microsoft::WRL;
 
 std::unordered_map<std::string, std::shared_ptr<UObject>> AssetManager::AssetCache;
 
-#define ResourceFolderDirectory "../../Resource/"
-#define ResourceFolderDirectoryW L"../../Resource/"
-#define AssetFolderDirectory "../../"
 void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Device> pDevice, std::vector<ComPtr<ID3D11Buffer>>& pVertexBuffer,
 	std::vector<ComPtr<ID3D11Buffer>>&pIndexBuffer)
 {
-    std::string filePath = ResourceFolderDirectory + path;
+    std::string filePath = GEngine->GetDirectoryPath() + path;
 
     Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(filePath, 
@@ -89,7 +86,7 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
 void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11Buffer>& pVertexBuffer,
 	ComPtr<ID3D11Buffer>&pIndexBuffer)
 {
-    std::string filePath = ResourceFolderDirectory + path;
+    std::string filePath = GEngine->GetDirectoryPath() + path;
 
     Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(filePath, 
@@ -155,7 +152,7 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const Microsof
     std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>>& pIndexBuffer, std::map<std::string, BoneInfo>& modelBoneInfoMap)
 {
     // https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
-    std::string filePath = ResourceFolderDirectory + path;
+    std::string filePath = GEngine->GetDirectoryPath() + path;
 
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(filePath, 
@@ -247,7 +244,8 @@ void AssetManager::LoadTextureFromFile(const std::wstring& szFile, const Microso
 	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>>& vTextureShaderResourceView)
 {
     DirectX::ScratchImage image;
-    const std::wstring filePath = ResourceFolderDirectoryW + szFile;
+    std::string DirectoryPath = GEngine->GetDirectoryPath();
+    const std::wstring filePath = std::wstring(DirectoryPath.begin(),DirectoryPath.end())  + szFile;
 
     std::filesystem::path p(filePath.c_str());
     std::wstring ext = p.extension();
@@ -286,7 +284,8 @@ void AssetManager::LoadTextureFromFile(const std::wstring& szFile, const Microso
 {
     
     DirectX::ScratchImage image;
-    const std::wstring filePath = ResourceFolderDirectoryW + szFile;
+    std::string DirectoryPath = GEngine->GetDirectoryPath();
+    const std::wstring filePath = std::wstring(DirectoryPath.begin(),DirectoryPath.end())  + szFile;
 
     std::filesystem::path p(filePath.c_str());
     std::wstring ext = p.extension();

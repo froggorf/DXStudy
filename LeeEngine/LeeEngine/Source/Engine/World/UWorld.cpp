@@ -5,8 +5,9 @@
 
 #include "UWorld.h"
 
-#include "AssetManager.h"
+#include "Engine/AssetManager/AssetManager.h"
 #include "imgui.h"
+#include "ImGuizmo.h"
 #include "Engine/UEditorEngine.h"
 #include "Engine/UEngine.h"
 #include "Engine/Components/USceneComponent.h"

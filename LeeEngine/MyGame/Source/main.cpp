@@ -17,18 +17,22 @@
 #include <map>
 #include <vector>
 
-#include "../../Core/d3dApp.h"
-#include "AssetManager.h"
+#include "DirectX/d3dApp.h"
+//#include "../../Core/d3dApp.h"
+#include "Engine/AssetManager/AssetManager.h"
 //#include "../../Core/AssetManager.h"
 
 
-#include "imgui.h"
-#include "imgui_internal.h"
-#include "ShadowMap.h"
+
+#include "ThirdParty/ImGui/imgui.h"
+
+#include "ThirdParty/ImGuizmo/ImGuizmo.h"
+#include "ThirdParty/ImGui/imgui_internal.h"
+#include "DirectX/ShadowMap.h"
 #include "Animation/Animation.h"
 #include "Animation/Animator.h"
-#include "backends/imgui_impl_dx11.h"
-#include "backends/imgui_impl_win32.h"
+#include "ThirdParty/ImGui/backends/imgui_impl_dx11.h"
+#include "ThirdParty/ImGui/backends/imgui_impl_win32.h"
 #include "Engine/UEngine.h"
 #include "Engine/Mesh/UStaticMesh.h"
 
@@ -293,30 +297,30 @@ bool AnimationApp::Init()
 
 void AnimationApp::LoadModels()
 {
-	AssetManager::LoadModelData("Model/Chibi_Cat.fbx", m_d3dDevice, m_ModelVertexBuffer, m_ModelIndexBuffer);
+	//AssetManager::LoadModelData("Model/Chibi_Cat.fbx", m_d3dDevice, m_ModelVertexBuffer, m_ModelIndexBuffer);
 
-	AssetManager::LoadModelData("Model/Sphere.obj", m_d3dDevice, m_SphereVertexBuffer, m_SphereIndexBuffer);
-	//AssetManager::LoadSkeletalModelData("Model/Paladin.fbx", m_d3dDevice, m_PaladinVertexBuffer, m_PaladinIndexBuffer,m_BoneInfoMap);
-	AssetManager::LoadSkeletalModelData("Model/Chibi_Cat.FBX", m_d3dDevice, m_PaladinVertexBuffer, m_PaladinIndexBuffer,m_BoneInfoMap);
-	m_ModelPosition = XMFLOAT3(0.0f,0.0f,0.0f);
-	m_ModelScale = XMFLOAT3(0.02f,0.02f,0.02f);
+	//AssetManager::LoadModelData("Model/Sphere.obj", m_d3dDevice, m_SphereVertexBuffer, m_SphereIndexBuffer);
+	////AssetManager::LoadSkeletalModelData("Model/Paladin.fbx", m_d3dDevice, m_PaladinVertexBuffer, m_PaladinIndexBuffer,m_BoneInfoMap);
+	//AssetManager::LoadSkeletalModelData("Model/Chibi_Cat.FBX", m_d3dDevice, m_PaladinVertexBuffer, m_PaladinIndexBuffer,m_BoneInfoMap);
+	//m_ModelPosition = XMFLOAT3(0.0f,0.0f,0.0f);
+	//m_ModelScale = XMFLOAT3(0.02f,0.02f,0.02f);
 
-	AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Cat_06.png", m_d3dDevice,m_BodyShaderResourceView);
-	AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Emo_25.png", m_d3dDevice,m_FaceShaderResourceView);
-	//AssetManager::LoadTextureFromFile(L"Texture/T_Racco_B.png", m_d3dDevice,m_BodyShaderResourceView);
-	//AssetManager::LoadTextureFromFile(L"Texture/T_Racco_C.png", m_d3dDevice,m_BodyShaderResourceView);
-	m_ModelShaderResourceView.push_back(m_BodyShaderResourceView[0]);
-	m_ModelShaderResourceView.push_back(m_FaceShaderResourceView[0]);
+	//AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Cat_06.png", m_d3dDevice,m_BodyShaderResourceView);
+	//AssetManager::LoadTextureFromFile(L"Texture/T_Chibi_Emo_25.png", m_d3dDevice,m_FaceShaderResourceView);
+	////AssetManager::LoadTextureFromFile(L"Texture/T_Racco_B.png", m_d3dDevice,m_BodyShaderResourceView);
+	////AssetManager::LoadTextureFromFile(L"Texture/T_Racco_C.png", m_d3dDevice,m_BodyShaderResourceView);
+	//m_ModelShaderResourceView.push_back(m_BodyShaderResourceView[0]);
+	//m_ModelShaderResourceView.push_back(m_FaceShaderResourceView[0]);
 
-	AssetManager::LoadModelData("Model/cube.obj", m_d3dDevice, m_CubeVertexBuffer,m_CubeIndexBuffer);
-	AssetManager::LoadTextureFromFile(L"Texture/cardboard.png", m_d3dDevice, m_CubeWaterSRV);
-	AssetManager::LoadTextureFromFile(L"Texture/WireFence.png", m_d3dDevice, m_CubeWireSRV);
+	//AssetManager::LoadModelData("Model/cube.obj", m_d3dDevice, m_CubeVertexBuffer,m_CubeIndexBuffer);
+	//AssetManager::LoadTextureFromFile(L"Texture/cardboard.png", m_d3dDevice, m_CubeWaterSRV);
+	//AssetManager::LoadTextureFromFile(L"Texture/WireFence.png", m_d3dDevice, m_CubeWireSRV);
 
 
-	m_Anim_Cat_Idle = std::make_unique<Animation>("Animation/Anim_Chibi_Alert.fbx", m_BoneInfoMap);
-	m_Anim_Cat_DIG= std::make_unique<Animation>("Animation/Anim_Chibi_DigA.fbx", m_BoneInfoMap);
-	m_Anim_Cat_HI = std::make_unique<Animation>("Animation/Anim_Chibi_Hi.fbx", m_BoneInfoMap);
-	m_PaladinAnimator = std::make_unique<Animator>(m_Anim_Cat_Idle.get()) ;
+	//m_Anim_Cat_Idle = std::make_unique<Animation>("Animation/Anim_Chibi_Alert.fbx", m_BoneInfoMap);
+	//m_Anim_Cat_DIG= std::make_unique<Animation>("Animation/Anim_Chibi_DigA.fbx", m_BoneInfoMap);
+	//m_Anim_Cat_HI = std::make_unique<Animation>("Animation/Anim_Chibi_Hi.fbx", m_BoneInfoMap);
+	//m_PaladinAnimator = std::make_unique<Animator>(m_Anim_Cat_Idle.get()) ;
 
 }
 
@@ -431,7 +435,7 @@ void AnimationApp::UpdateScene(float dt)
 	GEngine->Tick(dt);
     m_View = XMMatrixLookToLH(XMLoadFloat3(&m_CameraPosition), XMLoadFloat3(&m_CameraViewVector), XMVectorSet(0.0f,1.0f,0.0f,0.0f));
 
-	m_PaladinAnimator->UpdateAnimation(m_Timer.DeltaTime());
+	//m_PaladinAnimator->UpdateAnimation(m_Timer.DeltaTime());
 	
 }
 
@@ -602,6 +606,7 @@ void AnimationApp::DrawImGui()
 			XMQuaternionNormalize(m_ModelQuat);
 		}
 		ImGui::SliderFloat3("Scale", (float*)&m_ModelScale, -5.0f, 5.0f);
+		
 		ImGuizmo::SetRect(0,0,io.DisplaySize.x,io.DisplaySize.y);
 		static bool bUseGizmo = false;
 		ImGui::Checkbox("Use Gizmo", &bUseGizmo);
@@ -1001,7 +1006,11 @@ void AnimationApp::OnMouseMove(WPARAM btnState, int x, int y)
 void AnimationApp::BuildShader()
 {
 	ComPtr<ID3DBlob> pVSBlob = nullptr;
-	HR(CompileShaderFromFile(L"Shader/LightColor.hlsl", "VS", "vs_4_0", pVSBlob.GetAddressOf()));
+
+	/*TODO: 02.07 추후 셰이더도 엔진 위치로 옮길 수 있도록 수정예정*/
+	std::string TempDirectoryPath =  GEngine->GetDirectoryPath();
+	std::wstring TempShaderPath = std::wstring(TempDirectoryPath.begin(), TempDirectoryPath.end());
+	HR(CompileShaderFromFile((TempShaderPath +  L"/Shader/LightColor.hlsl").c_str(), "VS", "vs_4_0", pVSBlob.GetAddressOf()));
 	HR(m_d3dDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, m_VertexShader.GetAddressOf()));
 
 	D3D11_INPUT_ELEMENT_DESC inputLayout[] =

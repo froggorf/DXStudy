@@ -5,7 +5,7 @@
 
 #include "UStaticMesh.h"
 
-#include "d3dApp.h"
+#include "DirectX/d3dApp.h"
 #include "StaticMeshResources.h"
 
 
@@ -33,6 +33,7 @@ void UStaticMesh::LoadDataFromFileData(const nlohmann::json& StaticMeshAssetData
 		MY_LOG("LoadData", EDebugLogLevel::DLL_Warning, "already load this StaticMesh -> " + GetName());
 		return;
 	}
+
 
 	UObject::LoadDataFromFileData(StaticMeshAssetData);
 

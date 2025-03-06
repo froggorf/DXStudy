@@ -7,7 +7,7 @@
 #include <fstream>
 #include <memory>
 
-#include "AssetManager.h"
+#include "Engine/AssetManager/AssetManager.h"
 #include "imgui_internal.h"
 #include "World/UWorld.h"
 
@@ -66,39 +66,42 @@ void UEditorEngine::DrawDebugConsole()
 		SearchDebugConsole();
 	}
 	
-	ImGui::BeginListBox(" ", ImVec2(-FLT_MIN, -FLT_MIN));
+	if(ImGui::BeginListBox(" ", ImVec2(-FLT_MIN, -FLT_MIN)))
+	{
+		// 디버그 리스트 박스의 맨 아래를 볼 시 맨 아래로 고정
+		bool bIsFixListBox = ImGui::GetScrollMaxY() == ImGui::GetScrollY();
 
-	// 디버그 리스트 박스의 맨 아래를 볼 시 맨 아래로 고정
-	bool bIsFixListBox = ImGui::GetScrollMaxY() == ImGui::GetScrollY();
+
+		// 검색 중 체크
+		bool bWhileSearching = DebugConsoleSearchText.size() != 0;
+		if(bWhileSearching)
+		{
+			for(const DebugText& Text : SearchingDebugConsoleText)
+			{
+				ImGui::TextColored(DebugText::Color[Text.Level], Text.Text.data());
+			}	
+		}
+		// 검색 아닐 시
+		else
+		{
+			for(const DebugText& Text : DebugConsoleText)
+			{
+				ImGui::TextColored(DebugText::Color[Text.Level], Text.Text.data());
+
+			}	
+		}
+
+		// 리스트 맨 아래였을 시 고정
+		if(bIsFixListBox)
+		{
+			ImGui::SetScrollHereY(1.0f);
+		}
+
+		ImGui::EndListBox();
+
+	}
+
 	
-
-	// 검색 중 체크
-	bool bWhileSearching = DebugConsoleSearchText.size() != 0;
-	if(bWhileSearching)
-	{
-		for(const DebugText& Text : SearchingDebugConsoleText)
-		{
-			ImGui::TextColored(DebugText::Color[Text.Level], Text.Text.data());
-		}	
-	}
-	// 검색 아닐 시
-	else
-	{
-		for(const DebugText& Text : DebugConsoleText)
-		{
-			ImGui::TextColored(DebugText::Color[Text.Level], Text.Text.data());
-			
-		}	
-	}
-
-	// 리스트 맨 아래였을 시 고정
-	if(bIsFixListBox)
-	{
-		ImGui::SetScrollHereY(1.0f);
-	}
-
-	ImGui::EndListBox();
-
 	ImGui::End();
 }
 

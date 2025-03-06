@@ -37,6 +37,18 @@
     <Filter Include="Source\Engine\World">
       <UniqueIdentifier>{b4ed6131-32fc-4784-aff3-130f70886de7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\ThirdParty">
+      <UniqueIdentifier>{459c0dd6-263e-4b5a-bff4-a769b54438ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\ThirdParty\Imgui">
+      <UniqueIdentifier>{28deae59-ff98-45bf-a4d4-e558c0182609}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\ThirdParty\Imguizmo">
+      <UniqueIdentifier>{631feac2-9533-48ce-b860-fbb9baf214c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\ThirdParty\nlohmannJson">
+      <UniqueIdentifier>{a82b4cbd-9403-4934-b6eb-aace2120ec38}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Animation\Bone.cpp">
@@ -95,6 +107,39 @@
     </ClCompile>
     <ClCompile Include="Source\Engine\Components\UStaticMeshComponent.cpp">
       <Filter>Source\Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\ImGui\backends\imgui_impl_dx11.cpp">
+      <Filter>Source\ThirdParty\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\ImGui\backends\imgui_impl_win32.cpp">
+      <Filter>Source\ThirdParty\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\ImGui\imgui.cpp">
+      <Filter>Source\ThirdParty\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\ImGui\imgui_draw.cpp">
+      <Filter>Source\ThirdParty\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\ImGui\imgui_tables.cpp">
+      <Filter>Source\ThirdParty\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\ImGui\imgui_widgets.cpp">
+      <Filter>Source\ThirdParty\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\ImGuizmo\GraphEditor.cpp">
+      <Filter>Source\ThirdParty\Imguizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\ImGuizmo\ImCurveEdit.cpp">
+      <Filter>Source\ThirdParty\Imguizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\ImGuizmo\ImGradient.cpp">
+      <Filter>Source\ThirdParty\Imguizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\ImGuizmo\ImGuizmo.cpp">
+      <Filter>Source\ThirdParty\Imguizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\ImGuizmo\ImSequencer.cpp">
+      <Filter>Source\ThirdParty\Imguizmo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -163,6 +208,51 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\Components\UStaticMeshComponent.h">
       <Filter>Source\Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\ImGui\backends\imgui_impl_dx11.h">
+      <Filter>Source\ThirdParty\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\ImGui\backends\imgui_impl_win32.h">
+      <Filter>Source\ThirdParty\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\ImGui\imconfig.h">
+      <Filter>Source\ThirdParty\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\ImGui\imgui.h">
+      <Filter>Source\ThirdParty\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\ImGui\imgui_internal.h">
+      <Filter>Source\ThirdParty\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\ImGui\imstb_rectpack.h">
+      <Filter>Source\ThirdParty\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\ImGui\imstb_textedit.h">
+      <Filter>Source\ThirdParty\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\ImGui\imstb_truetype.h">
+      <Filter>Source\ThirdParty\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\ImGuizmo\GraphEditor.h">
+      <Filter>Source\ThirdParty\Imguizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\ImGuizmo\ImCurveEdit.h">
+      <Filter>Source\ThirdParty\Imguizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\ImGuizmo\ImGradient.h">
+      <Filter>Source\ThirdParty\Imguizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\ImGuizmo\ImGuizmo.h">
+      <Filter>Source\ThirdParty\Imguizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\ImGuizmo\ImSequencer.h">
+      <Filter>Source\ThirdParty\Imguizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\ImGuizmo\ImZoomSlider.h">
+      <Filter>Source\ThirdParty\Imguizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\nlohmannJson\nlohmann\json.hpp">
+      <Filter>Source\ThirdParty\nlohmannJson</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

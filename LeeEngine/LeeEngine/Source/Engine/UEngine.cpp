@@ -5,6 +5,8 @@
 
 #include "UEngine.h"
 
+#include <ImGuizmo.h>
+
 #include "backends/imgui_impl_dx11.h"
 #include "backends/imgui_impl_win32.h"
 #include "Mesh/UStaticMesh.h"
@@ -18,6 +20,21 @@ UEngine::~UEngine()
 
 void UEngine::InitEngine()
 {
+	TCHAR test[100];
+	GetCurrentDirectory(100,test);
+	std::wstring temp = test;
+	CurrentDirectory = std::string(temp.begin(),temp.end());
+	while(true)
+	{
+		auto p = CurrentDirectory.find("\\");
+		if (p == std::string::npos)
+		{
+			break;
+		}
+		CurrentDirectory.replace(p,1, "/");
+	}
+
+
 	CurrentWorld = std::make_shared<UWorld>();
 
 	InitImGui();
@@ -45,7 +62,7 @@ void UEngine::PostLoad()
 void UEngine::LoadDataFromDefaultEngineIni()
 {
 	// DefaultEngine.ini
-	std::string FinalFilePath = "../../Config/DefaultEngine.ini";
+	std::string FinalFilePath = GetDirectoryPath() + "/Config/DefaultEngine.ini";
 
 	std::ifstream DataFile(FinalFilePath.data());
 	std::string DataName;
@@ -158,13 +175,20 @@ void UEngine::LoadAllObjectsFromFile()
 	// 디스크에 내에 있는 모든 myasset 파일을 로드하는 함수
 	// TODO: 추후 디스크 읽는 라이브러리를 사용하기
 
+	/*
+	 *디스크를 읽는것 자체는 문제가 없으나,
+	 *지금 그 게 Level인지, StaticMesh인지 그걸 모르잖아.
+	 *그러니까 ...
+	 *파일들 첫글자에
+	 */
+
 	// Mesh
-	AssetManager::ReadMyAsset<UStaticMesh>("Asset/StaticMesh/SM_Racco.myasset");
-	AssetManager::ReadMyAsset<UStaticMesh>("Asset/StaticMesh/SM_Cube.myasset");
-	AssetManager::ReadMyAsset<UStaticMesh>("Asset/StaticMesh/SM_Sphere.myasset");
+	AssetManager::ReadMyAsset(CurrentDirectory + "/Content/StaticMesh/SM_Racco.myasset");
+	AssetManager::ReadMyAsset(CurrentDirectory+"/Content/StaticMesh/SM_Cube.myasset");
+	AssetManager::ReadMyAsset(CurrentDirectory+"/Content/StaticMesh/SM_Sphere.myasset");
 
 	// Level
-	AssetManager::ReadMyAsset<ULevel>("Asset/Level/TestLevel.myasset");
+	AssetManager::ReadMyAsset(CurrentDirectory+"/Content/Level/TestLevel.myasset");
 
 
 	MY_LOG("Load",EDebugLogLevel::DLL_Warning, "Load All Objects From File Success");

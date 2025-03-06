@@ -38,6 +38,17 @@
     <ClCompile Include="Source\Engine\UEngine.cpp" />
     <ClCompile Include="Source\Engine\UObject\UObject.cpp" />
     <ClCompile Include="Source\Engine\World\UWorld.cpp" />
+    <ClCompile Include="Source\ThirdParty\ImGuizmo\GraphEditor.cpp" />
+    <ClCompile Include="Source\ThirdParty\ImGuizmo\ImCurveEdit.cpp" />
+    <ClCompile Include="Source\ThirdParty\ImGuizmo\ImGradient.cpp" />
+    <ClCompile Include="Source\ThirdParty\ImGuizmo\ImGuizmo.cpp" />
+    <ClCompile Include="Source\ThirdParty\ImGuizmo\ImSequencer.cpp" />
+    <ClCompile Include="Source\ThirdParty\ImGui\backends\imgui_impl_dx11.cpp" />
+    <ClCompile Include="Source\ThirdParty\ImGui\backends\imgui_impl_win32.cpp" />
+    <ClCompile Include="Source\ThirdParty\ImGui\imgui.cpp" />
+    <ClCompile Include="Source\ThirdParty\ImGui\imgui_draw.cpp" />
+    <ClCompile Include="Source\ThirdParty\ImGui\imgui_tables.cpp" />
+    <ClCompile Include="Source\ThirdParty\ImGui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Animation\Animation.h" />
@@ -62,6 +73,21 @@
     <ClInclude Include="Source\Engine\UEngine.h" />
     <ClInclude Include="Source\Engine\UObject\UObject.h" />
     <ClInclude Include="Source\Engine\World\UWorld.h" />
+    <ClInclude Include="Source\ThirdParty\ImGuizmo\GraphEditor.h" />
+    <ClInclude Include="Source\ThirdParty\ImGuizmo\ImCurveEdit.h" />
+    <ClInclude Include="Source\ThirdParty\ImGuizmo\ImGradient.h" />
+    <ClInclude Include="Source\ThirdParty\ImGuizmo\ImGuizmo.h" />
+    <ClInclude Include="Source\ThirdParty\ImGuizmo\ImSequencer.h" />
+    <ClInclude Include="Source\ThirdParty\ImGuizmo\ImZoomSlider.h" />
+    <ClInclude Include="Source\ThirdParty\ImGui\backends\imgui_impl_dx11.h" />
+    <ClInclude Include="Source\ThirdParty\ImGui\backends\imgui_impl_win32.h" />
+    <ClInclude Include="Source\ThirdParty\ImGui\imconfig.h" />
+    <ClInclude Include="Source\ThirdParty\ImGui\imgui.h" />
+    <ClInclude Include="Source\ThirdParty\ImGui\imgui_internal.h" />
+    <ClInclude Include="Source\ThirdParty\ImGui\imstb_rectpack.h" />
+    <ClInclude Include="Source\ThirdParty\ImGui\imstb_textedit.h" />
+    <ClInclude Include="Source\ThirdParty\ImGui\imstb_truetype.h" />
+    <ClInclude Include="Source\ThirdParty\nlohmannJson\nlohmann\json.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -115,6 +141,17 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(ProjectDir)Library\Lib\LeeEngine\$(Configuration)\</OutDir>
+    <TargetName>$(ProjectName)</TargetName>
+    <IncludePath>$(ProjectDir)ThirdParty\Assimp;$(ProjectDir)ThirdParty\ImGui;$(ProjectDir)ThirdParty\DirectXTex;$(ProjectDir)ThirdParty\ImGuizmo;$(ProjectDir)ThirdParty\nlohmannJson\;$(ProjectDir)Source\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)ThirdParty\Assimp\lib\Debug;$(ProjectDir)ThirdParty\DirectXTex\lib\Debug;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(ProjectDir)Library\Lib\LeeEngine\$(Configuration)\</OutDir>
+    <IncludePath>$(ProjectDir)Source\;$(ProjectDir)ThirdParty\nlohmannJson\;$(ProjectDir)ThirdParty\ImGuizmo;$(ProjectDir)ThirdParty\DirectXTex;$(ProjectDir)ThirdParty\ImGui;$(ProjectDir)ThirdParty\Assimp;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)ThirdParty\DirectXTex\lib\Release;$(ProjectDir)ThirdParty\Assimp\lib\Release;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -155,14 +192,19 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
       </SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PreBuildEvent>
+      <Command>cd $(ProjectDir)
+call EngineHeaderCopy.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -174,6 +216,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -182,6 +225,10 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PreBuildEvent>
+      <Command>cd $(ProjectDir)
+call EngineHeaderCopy.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

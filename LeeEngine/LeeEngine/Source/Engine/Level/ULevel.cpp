@@ -5,7 +5,6 @@
 
 #include "ULevel.h"
 
-#include "../../../content/Actor/ATestCube.h"
 #include "Engine/GameFramework/AActor.h"
 
 #include <fstream>

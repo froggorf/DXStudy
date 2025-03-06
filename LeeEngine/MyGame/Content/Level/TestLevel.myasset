@@ -1,4 +1,5 @@
 {
+    "Class": "ULevel",
     "Name": "TestLevel",
     "Actor": [
         { 
