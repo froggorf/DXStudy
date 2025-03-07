@@ -3,12 +3,12 @@
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
 #pragma once
+#include "UMeshComponent.h"
 #include "Engine/MyEngineUtils.h"
-#include "USceneComponent.h"
 
 class UStaticMesh;
 
-class UStaticMeshComponent : public USceneComponent
+class UStaticMeshComponent : public UMeshComponent
 {
 	MY_GENERATED_BODY(UStaticMeshComponent)
 public:

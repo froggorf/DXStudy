@@ -28,6 +28,8 @@
     <ClCompile Include="Source\DirectX\ShadowMap.cpp" />
     <ClCompile Include="Source\Engine\AssetManager\AssetManager.cpp" />
     <ClCompile Include="Source\Engine\Components\UActorComponent.cpp" />
+    <ClCompile Include="Source\Engine\Components\UMeshComponent.cpp" />
+    <ClCompile Include="Source\Engine\Components\UPrimitiveComponent.cpp" />
     <ClCompile Include="Source\Engine\Components\USceneComponent.cpp" />
     <ClCompile Include="Source\Engine\Components\UStaticMeshComponent.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\AActor.cpp" />
@@ -62,6 +64,8 @@
     <ClInclude Include="Source\DirectX\ShadowMap.h" />
     <ClInclude Include="Source\Engine\AssetManager\AssetManager.h" />
     <ClInclude Include="Source\Engine\Components\UActorComponent.h" />
+    <ClInclude Include="Source\Engine\Components\UMeshComponent.h" />
+    <ClInclude Include="Source\Engine\Components\UPrimitiveComponent.h" />
     <ClInclude Include="Source\Engine\Components\USceneComponent.h" />
     <ClInclude Include="Source\Engine\Components\UStaticMeshComponent.h" />
     <ClInclude Include="Source\Engine\GameFramework\AActor.h" />

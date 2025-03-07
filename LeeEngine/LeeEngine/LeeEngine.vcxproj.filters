@@ -141,6 +141,12 @@
     <ClCompile Include="Source\ThirdParty\ImGuizmo\ImSequencer.cpp">
       <Filter>Source\ThirdParty\Imguizmo</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Components\UPrimitiveComponent.cpp">
+      <Filter>Source\Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Components\UMeshComponent.cpp">
+      <Filter>Source\Engine\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Animation\Bone.h">
@@ -253,6 +259,12 @@
     </ClInclude>
     <ClInclude Include="Source\ThirdParty\nlohmannJson\nlohmann\json.hpp">
       <Filter>Source\ThirdParty\nlohmannJson</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Components\UPrimitiveComponent.h">
+      <Filter>Source\Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Components\UMeshComponent.h">
+      <Filter>Source\Engine\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
