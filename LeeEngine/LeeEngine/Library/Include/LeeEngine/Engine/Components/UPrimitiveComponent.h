@@ -12,5 +12,14 @@ public:
 	UPrimitiveComponent();
 	~UPrimitiveComponent() override;
 
+protected:
+	
+private:
+
+public:
+protected:
+private:
+	UINT PrimitiveID = -1;
+
 
 };

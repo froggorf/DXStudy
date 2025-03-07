@@ -12,5 +12,19 @@ public:
 	UPrimitiveComponent();
 	~UPrimitiveComponent() override;
 
+	virtual FPrimitiveSceneProxy* CreateSceneProxy() const
+	{
+		return nullptr;
+	}
+
+protected:
+	
+private:
+
+public:
+protected:
+private:
+	UINT PrimitiveID = -1;
+
 
 };

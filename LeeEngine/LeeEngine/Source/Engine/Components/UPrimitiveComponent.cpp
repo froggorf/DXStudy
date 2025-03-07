@@ -5,10 +5,16 @@
 
 #include "UPrimitiveComponent.h"
 
+UINT PrimitiveIDCount = 0;
+
 UPrimitiveComponent::UPrimitiveComponent()
 {
+	PrimitiveID = PrimitiveIDCount++;
+
+
 }
 
 UPrimitiveComponent::~UPrimitiveComponent()
 {
+
 }
