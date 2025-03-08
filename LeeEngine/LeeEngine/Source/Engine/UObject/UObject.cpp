@@ -10,6 +10,7 @@
 
 UObject::UObject()
 {
+	
 }
 
 UObject::~UObject()
