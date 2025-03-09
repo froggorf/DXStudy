@@ -46,6 +46,8 @@ void UEngine::InitEngine()
 	LoadDefaultMap();
 
 	CurrentWorld->Init();
+
+	//RenderThread = std::thread()
 }
 
 void UEngine::PostLoad()
@@ -97,6 +99,7 @@ void UEngine::Tick(float DeltaSeconds)
 
 void UEngine::Draw()
 {
+
 	if(CurrentWorld)
 	{
 		CurrentWorld->TestDrawWorld();

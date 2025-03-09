@@ -23,7 +23,8 @@ inline static MakeCDO _initializer;
 #define MY_GENERATED_BODY(CLASS)\
 GENERATE_UOBJECT_DERIVED_CLASS(CLASS)\
 public:\
-	std::shared_ptr<UObject> CreateInstance() const override { return std::make_shared<CLASS>();}
+	std::shared_ptr<UObject> CreateInstance() const override { return std::make_shared<CLASS>();}\
+	std::string GetClass() const { return #CLASS; }\
 
 
 class UWorld;
@@ -32,9 +33,9 @@ class UObject
 {
 	GENERATE_UOBJECT_DERIVED_CLASS(UObject)
 	
+	
 public:
 	virtual std::shared_ptr<UObject> CreateInstance() const { return std::make_shared<UObject>(); }
-	
 	UObject();
 	UObject(const UObject& other) {};
 	virtual ~UObject();

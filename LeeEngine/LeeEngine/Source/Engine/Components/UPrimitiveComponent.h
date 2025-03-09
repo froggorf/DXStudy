@@ -13,10 +13,10 @@ public:
 	UPrimitiveComponent();
 	~UPrimitiveComponent() override;
 
-	virtual FPrimitiveSceneProxy* CreateSceneProxy() const
+	/*virtual FPrimitiveSceneProxy* CreateSceneProxy() const
 	{
 		return nullptr;
-	}
+	}*/
 
 protected:
 	
