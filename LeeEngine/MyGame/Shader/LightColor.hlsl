@@ -108,14 +108,15 @@ float4 PS( VS_OUTPUT input ) : SV_Target
     {
 		float depthValue = gShadowMap.Sample(gShadowSampler, shadowCoord.xy).r;
 
+        // TODO: 03.09 임시적 수정 추후 꼭 정상화하기
         float bias = 0.001f;
         float lightDepthValue = shadowCoord.z - bias;
 
-        if(lightDepthValue > depthValue)
-        {
-			float shadowfactor = 0.5f;
-			color.rgb = color.rgb * shadowfactor;
-        }
+        //if(lightDepthValue > depthValue)
+        //{
+		//	float shadowfactor = 0.5f;
+		//	color.rgb = color.rgb * shadowfactor;
+        //}
     }
 
     return color;
