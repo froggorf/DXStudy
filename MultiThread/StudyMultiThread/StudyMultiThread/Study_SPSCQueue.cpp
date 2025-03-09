@@ -80,6 +80,7 @@ void ThreadFunc2()
             int expected = value-1;
 			if(std::atomic_compare_exchange_strong(&LastValue, &expected, value))
 			{
+				std::cout << value << std::endl;
 			} else
 			{
 				std::cout << "Error: " << value << std::endl;
@@ -103,9 +104,11 @@ void ThreadFunc2()
 int main() {
 
 	std::thread t1(ThreadFunc1);
+    //std::thread t3(ThreadFunc1);
 	std::thread t2(ThreadFunc2);
 
 	t1.join();
+	//t3.join();
 	t2.join();
 
     return 0;
