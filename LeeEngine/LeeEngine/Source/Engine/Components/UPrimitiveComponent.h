@@ -8,6 +8,7 @@
 class UPrimitiveComponent : public USceneComponent
 {
 	MY_GENERATED_BODY(UPrimitiveComponent)
+
 public:
 	UPrimitiveComponent();
 	~UPrimitiveComponent() override;

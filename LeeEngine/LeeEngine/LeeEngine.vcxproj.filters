@@ -28,9 +28,6 @@
     <Filter Include="Source\Engine\Mesh">
       <UniqueIdentifier>{a905da28-b83f-4630-8c2c-7be269f80323}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Engine\Proxy">
-      <UniqueIdentifier>{2f7ad7b2-f0ca-46ef-82ab-7862f12666a7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Engine\UObject">
       <UniqueIdentifier>{2eb0b4ab-5ff9-44ee-b57a-004b5d9e1f21}</UniqueIdentifier>
     </Filter>
@@ -48,6 +45,12 @@
     </Filter>
     <Filter Include="Source\ThirdParty\nlohmannJson">
       <UniqueIdentifier>{a82b4cbd-9403-4934-b6eb-aace2120ec38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine\SceneProxy">
+      <UniqueIdentifier>{8d2df0e1-360a-466c-9ee7-5e3d857f3aba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine\RenderCore">
+      <UniqueIdentifier>{48af9780-744f-4378-b43c-77ac1b6a56a3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -146,6 +149,12 @@
     </ClCompile>
     <ClCompile Include="Source\Engine\Components\UMeshComponent.cpp">
       <Filter>Source\Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\SceneProxy\FPrimitiveSceneProxy.cpp">
+      <Filter>Source\Engine\SceneProxy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\RenderCore\RenderingThread.cpp">
+      <Filter>Source\Engine\RenderCore</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -265,6 +274,12 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\Components\UMeshComponent.h">
       <Filter>Source\Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\SceneProxy\FPrimitiveSceneProxy.h">
+      <Filter>Source\Engine\SceneProxy</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\RenderCore\RenderingThread.h">
+      <Filter>Source\Engine\RenderCore</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

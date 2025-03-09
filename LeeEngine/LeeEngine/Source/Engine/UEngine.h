@@ -6,6 +6,7 @@
 #pragma once
 
 #include <functional>
+#include <thread>
 
 #include "DirectX/d3dApp.h"
 #include "Engine/MyEngineUtils.h"
@@ -56,6 +57,9 @@ protected:
 private:
 	D3DApp* Application;
 	std::shared_ptr<UWorld> CurrentWorld;
+
+	std::vector<std::thread>		GameThreads;
+	std::thread						RenderThread;
 
 
 	std::vector<std::function<void()>> ImGuiRenderFunctions;

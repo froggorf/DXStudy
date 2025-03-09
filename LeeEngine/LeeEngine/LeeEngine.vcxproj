@@ -36,6 +36,8 @@
     <ClCompile Include="Source\Engine\Level\ULevel.cpp" />
     <ClCompile Include="Source\Engine\Mesh\UStaticMesh.cpp" />
     <ClCompile Include="Source\Engine\MyEngineUtils.cpp" />
+    <ClCompile Include="Source\Engine\RenderCore\RenderingThread.cpp" />
+    <ClCompile Include="Source\Engine\SceneProxy\FPrimitiveSceneProxy.cpp" />
     <ClCompile Include="Source\Engine\UEditorEngine.cpp" />
     <ClCompile Include="Source\Engine\UEngine.cpp" />
     <ClCompile Include="Source\Engine\UObject\UObject.cpp" />
@@ -73,6 +75,8 @@
     <ClInclude Include="Source\Engine\Mesh\StaticMeshResources.h" />
     <ClInclude Include="Source\Engine\Mesh\UStaticMesh.h" />
     <ClInclude Include="Source\Engine\MyEngineUtils.h" />
+    <ClInclude Include="Source\Engine\RenderCore\RenderingThread.h" />
+    <ClInclude Include="Source\Engine\SceneProxy\FPrimitiveSceneProxy.h" />
     <ClInclude Include="Source\Engine\UEditorEngine.h" />
     <ClInclude Include="Source\Engine\UEngine.h" />
     <ClInclude Include="Source\Engine\UObject\UObject.h" />
