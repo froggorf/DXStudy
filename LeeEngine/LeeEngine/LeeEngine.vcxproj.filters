@@ -52,6 +52,9 @@
     <Filter Include="Source\Engine\RenderCore">
       <UniqueIdentifier>{48af9780-744f-4378-b43c-77ac1b6a56a3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Engine\DirectX">
+      <UniqueIdentifier>{49f77e73-e848-46eb-beb8-96e8b375953f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Animation\Bone.cpp">
@@ -155,6 +158,9 @@
     </ClCompile>
     <ClCompile Include="Source\Engine\RenderCore\RenderingThread.cpp">
       <Filter>Source\Engine\RenderCore</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\DirectX\Device.cpp">
+      <Filter>Source\Engine\DirectX</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -280,6 +286,9 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\RenderCore\RenderingThread.h">
       <Filter>Source\Engine\RenderCore</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\DirectX\Device.h">
+      <Filter>Source\Engine\DirectX</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -37,7 +37,7 @@ void UStaticMesh::LoadDataFromFileData(const nlohmann::json& StaticMeshAssetData
 
 	UObject::LoadDataFromFileData(StaticMeshAssetData);
 
-	RenderData = std::make_unique<FStaticMeshRenderData>(StaticMeshAssetData, GEngine->GetDevice());
+	RenderData = std::make_unique<FStaticMeshRenderData>(StaticMeshAssetData);
 
 	GetStaticMeshCacheMap()[GetName()] = shared_from_this();
 

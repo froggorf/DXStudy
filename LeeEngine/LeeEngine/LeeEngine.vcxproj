@@ -32,6 +32,7 @@
     <ClCompile Include="Source\Engine\Components\UPrimitiveComponent.cpp" />
     <ClCompile Include="Source\Engine\Components\USceneComponent.cpp" />
     <ClCompile Include="Source\Engine\Components\UStaticMeshComponent.cpp" />
+    <ClCompile Include="Source\Engine\DirectX\Device.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\AActor.cpp" />
     <ClCompile Include="Source\Engine\Level\ULevel.cpp" />
     <ClCompile Include="Source\Engine\Mesh\UStaticMesh.cpp" />
@@ -70,6 +71,7 @@
     <ClInclude Include="Source\Engine\Components\UPrimitiveComponent.h" />
     <ClInclude Include="Source\Engine\Components\USceneComponent.h" />
     <ClInclude Include="Source\Engine\Components\UStaticMeshComponent.h" />
+    <ClInclude Include="Source\Engine\DirectX\Device.h" />
     <ClInclude Include="Source\Engine\GameFramework\AActor.h" />
     <ClInclude Include="Source\Engine\Level\ULevel.h" />
     <ClInclude Include="Source\Engine\Mesh\StaticMeshResources.h" />

@@ -42,14 +42,11 @@ public:
 	virtual void OnMouseUp(WPARAM btnState, int x, int y)  { }
 	virtual void OnMouseMove(WPARAM btnState, int x, int y){ }
 
-	ID3D11Device* GetDevice() const {return m_d3dDevice.Get(); }
-	ID3D11DeviceContext* GetDeviceContext() const {return m_d3dDeviceContext.Get(); }
 	virtual ID3D11Buffer* Test_DeleteLater_GetObjectConstantBuffer() const{ return nullptr	;}
 	virtual XMMATRIX Test_DeleteLater_GetViewMatrix() const {return XMMATRIX();}
 	virtual XMMATRIX Test_DeleteLater_GetProjectionMatrix() const {return XMMATRIX();}
 protected:
 	bool InitMainWindow();
-	bool InitDirect3D();
 
 	void CalculateFrameStats();				// TimeManager
 
@@ -61,26 +58,14 @@ protected:
 	bool		m_Minimized;
 	bool		m_Maximized;
 	bool		m_Resizing;
-	UINT		m_4xMsaaQuality;
 
 	GameTimer	m_Timer;
 
-	// 다렉 관련
-	ComPtr<ID3D11Device>			m_d3dDevice;
-	ComPtr<ID3D11DeviceContext>		m_d3dDeviceContext;
-	ComPtr<IDXGISwapChain>			m_SwapChain;
-	ComPtr<ID3D11Texture2D>			m_DepthStencilBuffer;
-	
-	ComPtr<ID3D11RenderTargetView>	m_RenderTargetView;
-	ComPtr<ID3D11DepthStencilView>	m_DepthStencilView;
-	D3D11_VIEWPORT					m_ScreenViewport;
 
 	// 시작 값을 위해 상속받은 클래스 시작 시 값 설정 필요
 	std::wstring m_MainWndTitle;
-	D3D_DRIVER_TYPE m_d3dDriverType;
 	int m_ClientWidth;
 	int m_ClientHeight;
-	bool m_Enable4xMsaa;
 	
 };
 

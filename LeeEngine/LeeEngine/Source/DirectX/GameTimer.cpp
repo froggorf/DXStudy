@@ -5,6 +5,9 @@
 #include <windows.h>
 #include "GameTimer.h"
 
+#include "Engine/MyEngineUtils.h"
+#include "Engine/DirectX/Device.h"
+
 GameTimer::GameTimer()
 : mSecondsPerCount(0.0), mDeltaTime(-1.0), mBaseTime(0), 
   mPausedTime(0), mPrevTime(0), mCurrTime(0), mStopped(false)
@@ -84,6 +87,7 @@ void GameTimer::Start()
 		mStopTime = 0;
 		mStopped  = false;
 	}
+
 }
 
 void GameTimer::Stop()

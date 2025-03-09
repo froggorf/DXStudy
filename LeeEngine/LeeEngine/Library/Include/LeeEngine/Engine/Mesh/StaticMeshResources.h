@@ -8,11 +8,12 @@
 
 #include "Engine/MyEngineUtils.h"
 #include "Engine/AssetManager/AssetManager.h"
+#include "Engine/DirectX/Device.h"
 
 class FStaticMeshRenderData
 {
 public:
-	FStaticMeshRenderData(const nlohmann::json& StaticMeshFilePathData, const Microsoft::WRL::ComPtr<ID3D11Device>& DeviceObject)
+	FStaticMeshRenderData(const nlohmann::json& StaticMeshFilePathData)
 	{
 		for(auto& p : VertexBuffer)
 		{
@@ -27,7 +28,7 @@ public:
 			p->Release();
 		}
 
-		AssetManager::LoadModelData(StaticMeshFilePathData["ModelData"], DeviceObject,VertexBuffer,IndexBuffer);
+		AssetManager::LoadModelData(StaticMeshFilePathData["ModelData"],GDirectXDevice->GetDevice(),VertexBuffer,IndexBuffer);
 		MeshCount = VertexBuffer.size();
 		int TextureArraySize = StaticMeshFilePathData["TextureData"].size();
 		for(int count = 0; count < MeshCount; ++count)
@@ -40,7 +41,7 @@ public:
 
 			Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> SRV;
 			const std::string TextureFilePath = StaticMeshFilePathData["TextureData"][count];
-			AssetManager::LoadTextureFromFile(std::wstring().assign(TextureFilePath.begin(),TextureFilePath.end()), DeviceObject, SRV);
+			AssetManager::LoadTextureFromFile(std::wstring().assign(TextureFilePath.begin(),TextureFilePath.end()), GDirectXDevice->GetDevice(), SRV);
 			TextureSRV.push_back(SRV);
 		}
 

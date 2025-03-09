@@ -52,14 +52,14 @@ void UStaticMeshComponent::TestDrawComponent()
 		ocb.ObjectMaterial.Diffuse  = XMFLOAT4(1.0f,1.0f,1.0f, 1.0f);
 		ocb.ObjectMaterial.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 32.0f);
 
-		GEngine->GetDeviceContext()->UpdateSubresource(GEngine->TestDeleteLater_GetObjConstantBuffer(), 0, nullptr, &ocb, 0, 0);
+		GDirectXDevice->GetDeviceContext()->UpdateSubresource(GEngine->TestDeleteLater_GetObjConstantBuffer(), 0, nullptr, &ocb, 0, 0);
 	}
 
 	const FStaticMeshRenderData* RenderData = GetStaticMesh()->GetStaticMeshRenderData();
 	unsigned int MeshCount = RenderData->MeshCount;
 	for(int MeshIndex= 0; MeshIndex < MeshCount; ++MeshIndex)
 	{
-		ID3D11DeviceContext* DeviceContext = GEngine->GetDeviceContext();
+		ID3D11DeviceContext* DeviceContext = GDirectXDevice->GetDeviceContext().Get();
 		// SRV 설정(텍스쳐)
 		{
 			DeviceContext->PSSetShaderResources(0,1, RenderData->TextureSRV[0].GetAddressOf());	

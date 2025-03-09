@@ -34,6 +34,8 @@
 extern std::shared_ptr<class UEngine> GEngine;
 extern std::shared_ptr<class UEditorEngine> GEditorEngine;
 
+extern std::unique_ptr<class FDirectXDevice> GDirectXDevice;
+
 // ================================ 디버깅 로그 ================================
 #define MY_LOG(Category, DebugLogLevel, DebugText) \
 	{\

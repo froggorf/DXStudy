@@ -11,6 +11,7 @@
 #include "Engine/UEditorEngine.h"
 #include "Engine/UEngine.h"
 #include "Engine/Components/USceneComponent.h"
+#include "Engine/DirectX/Device.h"
 #include "Engine/GameFramework/AActor.h"
 
 UWorld::UWorld()

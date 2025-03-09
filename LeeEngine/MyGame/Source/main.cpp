@@ -119,7 +119,6 @@ private:
 	
 	void BuildShader();
 
-	void ChangeModelTexture(int bodyIndex, const ComPtr<ID3D11ShaderResourceView>& newSRV);
 
 	void BuildShaderForSkeletalMesh();
 	// DirectionalLight Matrix 반환하는 함수
@@ -341,7 +340,7 @@ void AnimationApp::InitSamplerState()
     sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
     sampDesc.MinLOD = 0;
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-    HR(m_d3dDevice->CreateSamplerState(&sampDesc, m_SamplerState.GetAddressOf()));
+    HR(GDirectXDevice->GetDevice()->CreateSamplerState(&sampDesc, m_SamplerState.GetAddressOf()));
 
 	D3D11_SAMPLER_DESC samplerDesc = {};
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -352,7 +351,7 @@ void AnimationApp::InitSamplerState()
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	samplerDesc.MinLOD = 0;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	HR(m_d3dDevice->CreateSamplerState(&samplerDesc, m_ShadowSamplerState.GetAddressOf()))
+	HR(GDirectXDevice->GetDevice()->CreateSamplerState(&samplerDesc, m_ShadowSamplerState.GetAddressOf()))
 
 
 	D3D11_BLEND_DESC blendDesc = {};
@@ -368,13 +367,13 @@ void AnimationApp::InitSamplerState()
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL; // RGBA 모두 활성화
 	
 	ID3D11BlendState* blendState = nullptr;
-	HR(m_d3dDevice->CreateBlendState(&blendDesc, &blendState));
+	HR(GDirectXDevice->GetDevice()->CreateBlendState(&blendDesc, &blendState));
 	
 	
 	// 파이프라인에 블렌딩 상태 설정
 	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f }; // 블렌드 팩터 (기본값)
 	UINT sampleMask = 0xFFFFFFFF; // 샘플 마스크 (기본값)
-	m_d3dDeviceContext->OMSetBlendState(blendState, blendFactor, sampleMask);
+	GDirectXDevice->GetDeviceContext()->OMSetBlendState(blendState, blendFactor, sampleMask);
 }
 
 
@@ -382,18 +381,18 @@ void AnimationApp::InitForShadowMap()
 {
 
 #if defined(DEBUG) || defined(_DEBUG)
-	DebuggingSRV::InitializeDebuggingSRV(m_d3dDevice);
+	DebuggingSRV::InitializeDebuggingSRV(GDirectXDevice->GetDevice());
 #endif
 
 	m_ShadowBias = 0.001f;
 
-	m_ShadowMap = std::make_unique<ShadowMap>(m_d3dDevice, 2048,2048);
+	m_ShadowMap = std::make_unique<ShadowMap>(GDirectXDevice->GetDevice(), 2048,2048);
 
 	// 그림자맵 렌더링을 위한 VS/PS 추가
 	{
 		ComPtr<ID3DBlob> pVSBlob = nullptr;
 		HR(CompileShaderFromFile(L"Shader/BuildShadowMap.hlsl", "VS_StaticMesh_ShadowMap", "vs_4_0", pVSBlob.GetAddressOf()));
-		HR(m_d3dDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, m_ShadowMapVertexShader.GetAddressOf()));
+		HR(GDirectXDevice->GetDevice()->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, m_ShadowMapVertexShader.GetAddressOf()));
 
 		D3D11_INPUT_ELEMENT_DESC inputLayout[] =
 		{
@@ -404,19 +403,19 @@ void AnimationApp::InitForShadowMap()
 		};
 		UINT numElements = ARRAYSIZE(inputLayout);
 
-		HR(m_d3dDevice->CreateInputLayout(inputLayout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), m_InputLayout.GetAddressOf()));
-		m_d3dDeviceContext->IASetInputLayout(m_InputLayout.Get());
+		HR(GDirectXDevice->GetDevice()->CreateInputLayout(inputLayout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), m_InputLayout.GetAddressOf()));
+		GDirectXDevice->GetDeviceContext()->IASetInputLayout(m_InputLayout.Get());
 
 		ComPtr<ID3DBlob> pPSBlob = nullptr;
 		HR(CompileShaderFromFile(L"Shader/BuildShadowMap.hlsl", "PS", "ps_4_0", pPSBlob.GetAddressOf()));
 
-		HR(m_d3dDevice->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, m_ShadowMapPixelShader.GetAddressOf()));
+		HR(GDirectXDevice->GetDevice()->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, m_ShadowMapPixelShader.GetAddressOf()));
 
 
 		// 스켈레탈 메시를 위한 세이더 추가
 		pVSBlob->Release();		
 		HR(CompileShaderFromFile(L"Shader/BuildShadowMap.hlsl", "VS_SkeletalMesh_ShadowMap", "vs_4_0", pVSBlob.GetAddressOf()));
-		HR(m_d3dDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, m_ShadowMapSkeletalMeshVertexShader.GetAddressOf()));
+		HR(GDirectXDevice->GetDevice()->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, m_ShadowMapSkeletalMeshVertexShader.GetAddressOf()));
 	}
 	
 }
@@ -443,35 +442,36 @@ void AnimationApp::DrawShadowMap()
 {
 	// 디렉셔널 라이트의 변환행렬 생성
 	BuildShadowTransform();
-	m_ShadowMap->BindDsvAndSetNullRenderTarget(m_d3dDeviceContext);
+	m_ShadowMap->BindDsvAndSetNullRenderTarget(GDirectXDevice->GetDeviceContext());
 
 	// 큐브 그림자맵 뎁스 렌더링
 	{
-		m_d3dDeviceContext->IASetInputLayout(m_InputLayout.Get());
+		
+		GDirectXDevice->GetDeviceContext()->IASetInputLayout(m_InputLayout.Get());
 		{
 			// 셰이더 설정
-			m_d3dDeviceContext->VSSetShader(m_ShadowMapVertexShader.Get(), nullptr, 0);
-			m_d3dDeviceContext->PSSetShader(m_ShadowMapPixelShader.Get(), nullptr, 0);
+			GDirectXDevice->GetDeviceContext()->VSSetShader(m_ShadowMapVertexShader.Get(), nullptr, 0);
+			GDirectXDevice->GetDeviceContext()->PSSetShader(m_ShadowMapPixelShader.Get(), nullptr, 0);
 			// 상수버퍼 설정
-			m_d3dDeviceContext->VSSetConstantBuffers(0, 1, m_ShadowLightMatrixConstantBuffer.GetAddressOf());
-			m_d3dDeviceContext->VSSetConstantBuffers(1, 1, m_ShadowObjConstantBuffer.GetAddressOf());
+			GDirectXDevice->GetDeviceContext()->VSSetConstantBuffers(0, 1, m_ShadowLightMatrixConstantBuffer.GetAddressOf());
+			GDirectXDevice->GetDeviceContext()->VSSetConstantBuffers(1, 1, m_ShadowObjConstantBuffer.GetAddressOf());
 
 			// 인풋 레이아웃
-			m_d3dDeviceContext->IASetInputLayout(m_InputLayout.Get());
-			m_d3dDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			GDirectXDevice->GetDeviceContext()->IASetInputLayout(m_InputLayout.Get());
+			GDirectXDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		}
 
 		UINT stride = sizeof(MyVertexData);
 		UINT offset = 0;
-		m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_CubeVertexBuffer.GetAddressOf(), &stride, &offset);
-		m_d3dDeviceContext->IASetIndexBuffer(m_CubeIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+		GDirectXDevice->GetDeviceContext()->IASetVertexBuffers(0, 1, m_CubeVertexBuffer.GetAddressOf(), &stride, &offset);
+		GDirectXDevice->GetDeviceContext()->IASetIndexBuffer(m_CubeIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 
 		// cb 설정 - ShadowLightMatrixConstantBuffer
 		{
 			ShadowLightMatrixConstantBuffer slcb;
 			slcb.LightView = XMMatrixTranspose(m_LightView);
 			slcb.LightProj = XMMatrixTranspose(m_LightProj);
-			m_d3dDeviceContext->UpdateSubresource(m_ShadowLightMatrixConstantBuffer.Get(), 0, nullptr, &slcb, 0, 0);	
+			GDirectXDevice->GetDeviceContext()->UpdateSubresource(m_ShadowLightMatrixConstantBuffer.Get(), 0, nullptr, &slcb, 0, 0);	
 		}
 
 
@@ -482,7 +482,7 @@ void AnimationApp::DrawShadowMap()
 			world *= XMMatrixTranslation(0.0f,0.0f,0.0f);
 			socb.ObjWorld = XMMatrixTranspose(world);
 			
-			m_d3dDeviceContext->UpdateSubresource(m_ShadowObjConstantBuffer.Get(), 0, nullptr, &socb, 0, 0);	
+			GDirectXDevice->GetDeviceContext()->UpdateSubresource(m_ShadowObjConstantBuffer.Get(), 0, nullptr, &socb, 0, 0);	
 		}
 
 		// 큐브 렌더링
@@ -490,14 +490,14 @@ void AnimationApp::DrawShadowMap()
 			D3D11_BUFFER_DESC indexBufferDesc;
 			m_CubeIndexBuffer->GetDesc(&indexBufferDesc);
 			UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
-			m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
+			GDirectXDevice->GetDeviceContext()->DrawIndexed(indexSize, 0, 0);
 		}
 
 		// 스켈레탈 메시 버텍스 셰이더 설정
-		m_d3dDeviceContext->IASetInputLayout(m_SkeletalMeshInputLayout.Get());
-		m_d3dDeviceContext->VSSetShader(m_ShadowMapSkeletalMeshVertexShader.Get(),nullptr, 0);
+		GDirectXDevice->GetDeviceContext()->IASetInputLayout(m_SkeletalMeshInputLayout.Get());
+		GDirectXDevice->GetDeviceContext()->VSSetShader(m_ShadowMapSkeletalMeshVertexShader.Get(),nullptr, 0);
 		// 상수버퍼 설정
-		m_d3dDeviceContext->VSSetConstantBuffers(2, 1, m_SkeletalBoneMatrixConstantBuffer.GetAddressOf());
+		GDirectXDevice->GetDeviceContext()->VSSetConstantBuffers(2, 1, m_SkeletalBoneMatrixConstantBuffer.GetAddressOf());
 
 		// cb 설정 - ShadowObjConstantBuffer
 		{
@@ -507,7 +507,7 @@ void AnimationApp::DrawShadowMap()
 			world *= XMMatrixTranslation(m_ModelPosition.x,m_ModelPosition.y,m_ModelPosition.z);
 			socb.ObjWorld = XMMatrixTranspose(world);
 
-			m_d3dDeviceContext->UpdateSubresource(m_ShadowObjConstantBuffer.Get(), 0, nullptr, &socb, 0, 0);	
+			GDirectXDevice->GetDeviceContext()->UpdateSubresource(m_ShadowObjConstantBuffer.Get(), 0, nullptr, &socb, 0, 0);	
 		}
 
 
@@ -519,7 +519,7 @@ void AnimationApp::DrawShadowMap()
 			{
 				cb.BoneFinalTransforms[i] = XMMatrixTranspose(boneFinalTransforms[i]);
 			}
-			m_d3dDeviceContext->UpdateSubresource(m_SkeletalBoneMatrixConstantBuffer.Get(),0, nullptr, &cb, 0,0);
+			GDirectXDevice->GetDeviceContext()->UpdateSubresource(m_SkeletalBoneMatrixConstantBuffer.Get(),0, nullptr, &cb, 0,0);
 		}
 
 		// 렌더링
@@ -529,13 +529,13 @@ void AnimationApp::DrawShadowMap()
 			{
 				UINT stride = sizeof(MySkeletalMeshVertexData);
 				UINT offset = 0;
-				m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_PaladinVertexBuffer[vertexCount].GetAddressOf(), &stride, &offset);
-				m_d3dDeviceContext->IASetIndexBuffer(m_PaladinIndexBuffer[vertexCount].Get(), DXGI_FORMAT_R32_UINT, 0);
+				GDirectXDevice->GetDeviceContext()->IASetVertexBuffers(0, 1, m_PaladinVertexBuffer[vertexCount].GetAddressOf(), &stride, &offset);
+				GDirectXDevice->GetDeviceContext()->IASetIndexBuffer(m_PaladinIndexBuffer[vertexCount].Get(), DXGI_FORMAT_R32_UINT, 0);
 
 				D3D11_BUFFER_DESC indexBufferDesc;
 				m_PaladinIndexBuffer[vertexCount]->GetDesc(&indexBufferDesc);
 				UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
-				m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
+				GDirectXDevice->GetDeviceContext()->DrawIndexed(indexSize, 0, 0);
 			}
 			
 		}
@@ -545,18 +545,18 @@ void AnimationApp::DrawShadowMap()
 void AnimationApp::DrawSkeletalMesh()
 {
 	//// 인풋 레이아웃
-	m_d3dDeviceContext->IASetInputLayout(m_SkeletalMeshInputLayout.Get());
-	m_d3dDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	GDirectXDevice->GetDeviceContext()->IASetInputLayout(m_SkeletalMeshInputLayout.Get());
+	GDirectXDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// 버텍스 셰이더 (픽셀셰이더는 동일)
-	m_d3dDeviceContext->VSSetShader(m_SkeletalMeshVertexShader.Get(), nullptr, 0);
-	m_d3dDeviceContext->PSSetShader(m_PixelShader.Get(),nullptr,0);
+	GDirectXDevice->GetDeviceContext()->VSSetShader(m_SkeletalMeshVertexShader.Get(), nullptr, 0);
+	GDirectXDevice->GetDeviceContext()->PSSetShader(m_PixelShader.Get(),nullptr,0);
 	// ConstantBuffer
-	m_d3dDeviceContext->VSSetConstantBuffers(0, 1, m_FrameConstantBuffer.GetAddressOf());
-	m_d3dDeviceContext->PSSetConstantBuffers(0,1,m_FrameConstantBuffer.GetAddressOf());
-	m_d3dDeviceContext->VSSetConstantBuffers(1, 1, m_ObjConstantBuffer.GetAddressOf());
-	m_d3dDeviceContext->VSSetConstantBuffers(3, 1, m_SkeletalBoneMatrixConstantBuffer.GetAddressOf());
-	m_d3dDeviceContext->PSSetConstantBuffers(1,1, m_ObjConstantBuffer.GetAddressOf());
-	m_d3dDeviceContext->PSSetConstantBuffers(2,1, m_LightConstantBuffer.GetAddressOf());
+	GDirectXDevice->GetDeviceContext()->VSSetConstantBuffers(0, 1, m_FrameConstantBuffer.GetAddressOf());
+	GDirectXDevice->GetDeviceContext()->PSSetConstantBuffers(0,1,m_FrameConstantBuffer.GetAddressOf());
+	GDirectXDevice->GetDeviceContext()->VSSetConstantBuffers(1, 1, m_ObjConstantBuffer.GetAddressOf());
+	GDirectXDevice->GetDeviceContext()->VSSetConstantBuffers(3, 1, m_SkeletalBoneMatrixConstantBuffer.GetAddressOf());
+	GDirectXDevice->GetDeviceContext()->PSSetConstantBuffers(1,1, m_ObjConstantBuffer.GetAddressOf());
+	GDirectXDevice->GetDeviceContext()->PSSetConstantBuffers(2,1, m_LightConstantBuffer.GetAddressOf());
 
 	// Frame 상수 버퍼 설정
 	{
@@ -567,7 +567,7 @@ void AnimationApp::DrawSkeletalMesh()
 			fcb.Projection = XMMatrixTranspose(m_Proj);
 			fcb.LightView = XMMatrixTranspose(m_LightView);
 			fcb.LightProj = XMMatrixTranspose(m_LightProj);
-			m_d3dDeviceContext->UpdateSubresource(m_FrameConstantBuffer.Get(), 0, nullptr, &fcb, 0, 0);
+			GDirectXDevice->GetDeviceContext()->UpdateSubresource(m_FrameConstantBuffer.Get(), 0, nullptr, &fcb, 0, 0);
 
 		}
 
@@ -578,7 +578,7 @@ void AnimationApp::DrawSkeletalMesh()
 			lfcb.gPointLight = m_PointLight;
 			// Convert Spherical to Cartesian coordinates.
 			lfcb.gEyePosW = XMFLOAT3{m_CameraPosition};
-			m_d3dDeviceContext->UpdateSubresource(m_LightConstantBuffer.Get(),0,nullptr,&lfcb, 0,0);
+			GDirectXDevice->GetDeviceContext()->UpdateSubresource(m_LightConstantBuffer.Get(),0,nullptr,&lfcb, 0,0);
 		}
 	}
 	// 오브젝트 Draw
@@ -595,7 +595,7 @@ void AnimationApp::DrawSkeletalMesh()
 
 		ocb.ObjectMaterial = m_ModelMaterial;
 
-		m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);	
+		GDirectXDevice->GetDeviceContext()->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);	
 	}
 	{
 		SkeletalMeshBoneTransformConstantBuffer cb;
@@ -604,30 +604,30 @@ void AnimationApp::DrawSkeletalMesh()
 		{
 			cb.BoneFinalTransforms[i] = XMMatrixTranspose(boneFinalTransforms[i]);
 		}
-		m_d3dDeviceContext->UpdateSubresource(m_SkeletalBoneMatrixConstantBuffer.Get(),0,nullptr,&cb, 0,0);
+		GDirectXDevice->GetDeviceContext()->UpdateSubresource(m_SkeletalBoneMatrixConstantBuffer.Get(),0,nullptr,&cb, 0,0);
 		
 	}
 
 
 	// Sampler State 설정
-	m_d3dDeviceContext->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
+	GDirectXDevice->GetDeviceContext()->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
 
 	// 버텍스 버퍼에 맞춰 오브젝트 드로우
 	for(int vertexCount = 0; vertexCount < m_PaladinVertexBuffer.size(); ++vertexCount)
 	{
 		// SRV 설정(텍스쳐)
 		{
-			m_d3dDeviceContext->PSSetShaderResources(0,1, m_ModelShaderResourceView[vertexCount].GetAddressOf());	
+			GDirectXDevice->GetDeviceContext()->PSSetShaderResources(0,1, m_ModelShaderResourceView[vertexCount].GetAddressOf());	
 		}
 		UINT stride = sizeof(MySkeletalMeshVertexData);
 		UINT offset = 0;
-		m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_PaladinVertexBuffer[vertexCount].GetAddressOf(), &stride, &offset);
-		m_d3dDeviceContext->IASetIndexBuffer(m_PaladinIndexBuffer[vertexCount].Get(), DXGI_FORMAT_R32_UINT, 0);
+		GDirectXDevice->GetDeviceContext()->IASetVertexBuffers(0, 1, m_PaladinVertexBuffer[vertexCount].GetAddressOf(), &stride, &offset);
+		GDirectXDevice->GetDeviceContext()->IASetIndexBuffer(m_PaladinIndexBuffer[vertexCount].Get(), DXGI_FORMAT_R32_UINT, 0);
 		
 		D3D11_BUFFER_DESC indexBufferDesc;
 		m_PaladinIndexBuffer[vertexCount]->GetDesc(&indexBufferDesc);
 		UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
-		m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
+		GDirectXDevice->GetDeviceContext()->DrawIndexed(indexSize, 0, 0);
 	}
 
 
@@ -637,29 +637,30 @@ void AnimationApp::DrawScene()
 {
 	//DrawShadowMap();
 
-	m_d3dDeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), m_DepthStencilView.Get());
-	m_d3dDeviceContext->RSSetViewports(1, &m_ScreenViewport);
+	//GDirectXDevice->GetDeviceContext()->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), m_DepthStencilView.Get());
+	GDirectXDevice->GetDeviceContext()->OMSetRenderTargets(1, GDirectXDevice->GetRenderTargetView().GetAddressOf(),  GDirectXDevice->GetDepthStencilView().Get());
+	GDirectXDevice->GetDeviceContext()->RSSetViewports(1, GDirectXDevice->GetScreenViewport());
 
 	const float clearColor[] = {0.2f, 0.2f, 0.2f,1.0f};
-	m_d3dDeviceContext->ClearRenderTargetView(m_RenderTargetView.Get(), clearColor);
-	m_d3dDeviceContext->ClearDepthStencilView(m_DepthStencilView.Get(), D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
+	GDirectXDevice->GetDeviceContext()->ClearRenderTargetView( GDirectXDevice->GetRenderTargetView().Get(), clearColor);
+	GDirectXDevice->GetDeviceContext()->ClearDepthStencilView( GDirectXDevice->GetDepthStencilView().Get(), D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	m_d3dDeviceContext->IASetInputLayout(m_InputLayout.Get());
+	GDirectXDevice->GetDeviceContext()->IASetInputLayout(m_InputLayout.Get());
 	{
 		// 셰이더 설정
-		m_d3dDeviceContext->VSSetShader(m_VertexShader.Get(), nullptr, 0);
-		m_d3dDeviceContext->PSSetShader(m_PixelShader.Get(), nullptr, 0);
+		GDirectXDevice->GetDeviceContext()->VSSetShader(m_VertexShader.Get(), nullptr, 0);
+		GDirectXDevice->GetDeviceContext()->PSSetShader(m_PixelShader.Get(), nullptr, 0);
 		// 상수버퍼 설정
-		m_d3dDeviceContext->VSSetConstantBuffers(0, 1, m_FrameConstantBuffer.GetAddressOf());
-		m_d3dDeviceContext->PSSetConstantBuffers(0,1,m_FrameConstantBuffer.GetAddressOf());
-		m_d3dDeviceContext->VSSetConstantBuffers(1, 1, m_ObjConstantBuffer.GetAddressOf());
-		m_d3dDeviceContext->PSSetConstantBuffers(1,1, m_ObjConstantBuffer.GetAddressOf());
-		m_d3dDeviceContext->PSSetConstantBuffers(2,1, m_LightConstantBuffer.GetAddressOf());
+		GDirectXDevice->GetDeviceContext()->VSSetConstantBuffers(0, 1, m_FrameConstantBuffer.GetAddressOf());
+		GDirectXDevice->GetDeviceContext()->PSSetConstantBuffers(0,1,m_FrameConstantBuffer.GetAddressOf());
+		GDirectXDevice->GetDeviceContext()->VSSetConstantBuffers(1, 1, m_ObjConstantBuffer.GetAddressOf());
+		GDirectXDevice->GetDeviceContext()->PSSetConstantBuffers(1,1, m_ObjConstantBuffer.GetAddressOf());
+		GDirectXDevice->GetDeviceContext()->PSSetConstantBuffers(2,1, m_LightConstantBuffer.GetAddressOf());
 
 
 		// 인풋 레이아웃
-		m_d3dDeviceContext->IASetInputLayout(m_InputLayout.Get());
-		m_d3dDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		GDirectXDevice->GetDeviceContext()->IASetInputLayout(m_InputLayout.Get());
+		GDirectXDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		// Frame 상수 버퍼 설정
 		{
@@ -670,8 +671,8 @@ void AnimationApp::DrawScene()
 				fcb.Projection = XMMatrixTranspose(m_Proj);
 				fcb.LightView = XMMatrixTranspose(m_LightView);
 				fcb.LightProj = XMMatrixTranspose(m_LightProj);
-				m_d3dDeviceContext->UpdateSubresource(m_FrameConstantBuffer.Get(), 0, nullptr, &fcb, 0, 0);
-
+				GDirectXDevice->GetDeviceContext()->UpdateSubresource(m_FrameConstantBuffer.Get(), 0, nullptr, &fcb, 0, 0);
+				
 			}
 
 			// 라이팅 관련
@@ -681,7 +682,7 @@ void AnimationApp::DrawScene()
 				lfcb.gPointLight = m_PointLight;
 				// Convert Spherical to Cartesian coordinates.
 				lfcb.gEyePosW = XMFLOAT3{m_CameraPosition};
-				m_d3dDeviceContext->UpdateSubresource(m_LightConstantBuffer.Get(),0,nullptr,&lfcb, 0,0);
+				GDirectXDevice->GetDeviceContext()->UpdateSubresource(m_LightConstantBuffer.Get(),0,nullptr,&lfcb, 0,0);
 			}
 		}
 		
@@ -689,7 +690,7 @@ void AnimationApp::DrawScene()
 		
 
 		// Sampler State 설정
-		m_d3dDeviceContext->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
+		GDirectXDevice->GetDeviceContext()->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
 
 
 		GEngine->Draw();
@@ -705,7 +706,7 @@ void AnimationApp::DrawScene()
 
 	}
 
-	HR(m_SwapChain->Present(0, 0));
+	HR(GDirectXDevice->GetSwapChain()->Present(0, 0));
 }
 
 
@@ -736,7 +737,7 @@ void AnimationApp::BuildShader()
 	std::string TempDirectoryPath =  GEngine->GetDirectoryPath();
 	std::wstring TempShaderPath = std::wstring(TempDirectoryPath.begin(), TempDirectoryPath.end());
 	HR(CompileShaderFromFile((TempShaderPath +  L"/Shader/LightColor.hlsl").c_str(), "VS", "vs_4_0", pVSBlob.GetAddressOf()));
-	HR(m_d3dDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, m_VertexShader.GetAddressOf()));
+	HR(GDirectXDevice->GetDevice()->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, m_VertexShader.GetAddressOf()));
 
 	D3D11_INPUT_ELEMENT_DESC inputLayout[] =
 	{
@@ -746,14 +747,14 @@ void AnimationApp::BuildShader()
 
 	};
 	UINT numElements = ARRAYSIZE(inputLayout);
-
-	HR(m_d3dDevice->CreateInputLayout(inputLayout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), m_InputLayout.GetAddressOf()));
-	m_d3dDeviceContext->IASetInputLayout(m_InputLayout.Get());
+	
+	HR(GDirectXDevice->GetDevice()->CreateInputLayout(inputLayout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), m_InputLayout.GetAddressOf()));
+	GDirectXDevice->GetDeviceContext()->IASetInputLayout(m_InputLayout.Get());
 
 	ComPtr<ID3DBlob> pPSBlob = nullptr;
 	HR(CompileShaderFromFile(L"Shader/LightColor.hlsl", "PS", "ps_4_0", pPSBlob.GetAddressOf()));
 
-	HR(m_d3dDevice->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, m_PixelShader.GetAddressOf()));
+	HR(GDirectXDevice->GetDevice()->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, m_PixelShader.GetAddressOf()));
 
 
 	// Constant Buffer 생성
@@ -762,38 +763,31 @@ void AnimationApp::BuildShader()
     bufferDesc.Usage = D3D11_USAGE_DEFAULT;
     bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     bufferDesc.CPUAccessFlags = 0;
-	HR(m_d3dDevice->CreateBuffer(&bufferDesc, nullptr, m_FrameConstantBuffer.GetAddressOf()));
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_FrameConstantBuffer.GetAddressOf()));
 
 	bufferDesc.ByteWidth = sizeof(ObjConstantBuffer);
-	HR(m_d3dDevice->CreateBuffer(&bufferDesc, nullptr, m_ObjConstantBuffer.GetAddressOf()));
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_ObjConstantBuffer.GetAddressOf()));
 
 	bufferDesc.ByteWidth = sizeof(LightFrameConstantBuffer);
-	HR(m_d3dDevice->CreateBuffer(&bufferDesc, nullptr, m_LightConstantBuffer.GetAddressOf()))
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_LightConstantBuffer.GetAddressOf()))
 
 	bufferDesc.ByteWidth = sizeof(ShadowLightMatrixConstantBuffer);
-	HR(m_d3dDevice->CreateBuffer(&bufferDesc, nullptr, m_ShadowLightMatrixConstantBuffer.GetAddressOf()))
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_ShadowLightMatrixConstantBuffer.GetAddressOf()))
 
 	bufferDesc.ByteWidth = sizeof(ShadowObjConstantBuffer);
-	HR(m_d3dDevice->CreateBuffer(&bufferDesc, nullptr, m_ShadowObjConstantBuffer.GetAddressOf()))
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_ShadowObjConstantBuffer.GetAddressOf()))
 
 
 	bufferDesc.ByteWidth = sizeof(SkeletalMeshBoneTransformConstantBuffer);
-	HR(m_d3dDevice->CreateBuffer(&bufferDesc, nullptr, m_SkeletalBoneMatrixConstantBuffer.GetAddressOf()));
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_SkeletalBoneMatrixConstantBuffer.GetAddressOf()));
 }
 
-
-void AnimationApp::ChangeModelTexture(const int bodyIndex, const ComPtr<ID3D11ShaderResourceView>& newSRV)
-{
-	//m_ModelShaderResourceView[bodyIndex]->Release();
-
-	m_ModelShaderResourceView[bodyIndex] = newSRV;
-}
 
 void AnimationApp::BuildShaderForSkeletalMesh()
 {
 	ComPtr<ID3DBlob> pVSBlob = nullptr;
 	HR(CompileShaderFromFile(L"Shader/SkeletalMesh.hlsl", "VS", "vs_4_0", pVSBlob.GetAddressOf()));
-	HR(m_d3dDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, m_SkeletalMeshVertexShader.GetAddressOf()));
+	HR(GDirectXDevice->GetDevice()->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, m_SkeletalMeshVertexShader.GetAddressOf()));
 
 	D3D11_INPUT_ELEMENT_DESC inputLayout[] =
 	{
@@ -806,7 +800,7 @@ void AnimationApp::BuildShaderForSkeletalMesh()
 	};
 	UINT numElements = ARRAYSIZE(inputLayout);
 
-	HR(m_d3dDevice->CreateInputLayout(inputLayout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), m_SkeletalMeshInputLayout.GetAddressOf()));
+	HR(GDirectXDevice->GetDevice()->CreateInputLayout(inputLayout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), m_SkeletalMeshInputLayout.GetAddressOf()));
 	//m_d3dDeviceContext->IASetInputLayout(m_InputLayout.Get());
 
 
