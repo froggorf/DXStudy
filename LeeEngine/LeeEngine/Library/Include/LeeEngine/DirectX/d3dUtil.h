@@ -123,6 +123,41 @@ struct ObjConstantBuffer
     Material ObjectMaterial;
 };
 
+struct FrameConstantBuffer
+{
+    XMMATRIX View;
+    XMMATRIX Projection;
+
+    XMMATRIX LightView;
+    XMMATRIX LightProj;
+};
+
+
+struct SkeletalMeshBoneTransformConstantBuffer
+{
+    XMMATRIX BoneFinalTransforms[MAX_BONES];
+};
+
+struct LightFrameConstantBuffer
+{
+    DirectionalLight gDirLight;
+    PointLight gPointLight;
+    XMFLOAT3 gEyePosW;
+    float pad;
+};
+
+struct ShadowLightMatrixConstantBuffer
+{
+    XMMATRIX LightView;
+    XMMATRIX LightProj;
+};
+
+struct ShadowObjConstantBuffer
+{
+    XMMATRIX ObjWorld;
+};
+
+
 inline DirectX::XMVECTOR ComputeUpVector(const DirectX::XMVECTOR& cameraPos, const DirectX::XMVECTOR& targetPos)
 {
     // 바라보는 방향(Look Direction)

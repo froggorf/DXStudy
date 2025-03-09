@@ -17,6 +17,9 @@ public:
 	~FDirectXDevice() = default;
 
 	bool InitDirect3D();
+
+	// 엔진 초기화 시 호출
+	void BuildAllShaders();
 	void OnWindowResize();
 
 	const Microsoft::WRL::ComPtr<ID3D11Device>& GetDevice() const { return m_d3dDevice; }
@@ -25,9 +28,23 @@ public:
 	const Microsoft::WRL::ComPtr<ID3D11RenderTargetView>& GetRenderTargetView() const { return m_RenderTargetView; }
 	const Microsoft::WRL::ComPtr<ID3D11DepthStencilView>& GetDepthStencilView() const { return m_DepthStencilView; }
 	const D3D11_VIEWPORT* GetScreenViewport() const { return &m_ScreenViewport; }
+	const Microsoft::WRL::ComPtr<ID3D11VertexShader>& GetStaticMeshVertexShader() const {return m_StaticMeshVertexShader;}
+	const Microsoft::WRL::ComPtr<ID3D11PixelShader>& GetTexturePixelShader() const {return m_TexturePixelShader;}
+	const Microsoft::WRL::ComPtr<ID3D11InputLayout>& GetInputLayout() const {return m_InputLayout;}
+	const Microsoft::WRL::ComPtr<ID3D11SamplerState>& GetSamplerState() const {return m_SamplerState;}
+
+	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetFrameConstantBuffer() const {return m_FrameConstantBuffer;}
+	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetObjConstantBuffer() const {return m_ObjConstantBuffer;}
+	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetLightConstantBuffer() const {return m_LightConstantBuffer;}
+	
 
 protected:
 private:
+
+	void InitSamplerState();
+
+	void BuildStaticMeshShader();
+	void CreateBuffers();
 public:
 protected:
 private:
@@ -40,6 +57,18 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>		m_DepthStencilView;
 	D3D11_VIEWPORT										m_ScreenViewport;
 
+	// 파이프라인
+	Microsoft::WRL::ComPtr<ID3D11VertexShader>	m_StaticMeshVertexShader;
+	Microsoft::WRL::ComPtr<ID3D11PixelShader>	m_TexturePixelShader;
+	Microsoft::WRL::ComPtr<ID3D11InputLayout>	m_InputLayout;
+	Microsoft::WRL::ComPtr<ID3D11SamplerState>	m_SamplerState;
+
+
+	// 상수버퍼
+	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_FrameConstantBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_ObjConstantBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_LightConstantBuffer;
+
 	int* m_ClientWidth;
 	int* m_ClientHeight;
 	UINT		m_4xMsaaQuality;
@@ -48,4 +77,5 @@ private:
 
 
 	HWND* m_hWnd;
+
 };

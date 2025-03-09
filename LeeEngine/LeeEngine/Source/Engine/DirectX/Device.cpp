@@ -10,6 +10,10 @@
 #include <windows.h>
 #include <memory>
 
+#include "DirectX/d3dUtil.h"
+#include "Engine/MyEngineUtils.h"
+#include "Engine/UEngine.h"
+
 std::unique_ptr<FDirectXDevice> GDirectXDevice = nullptr;
 
 
@@ -110,9 +114,76 @@ bool FDirectXDevice::InitDirect3D()
 	dxgiDevice->Release();	dxgiAdapter->Release();	dxgiFactory->Release();
 
 
-
+	InitSamplerState();
+	CreateBuffers();
 
 	return true;
+}
+
+void FDirectXDevice::InitSamplerState()
+{
+	D3D11_SAMPLER_DESC sampDesc;
+	ZeroMemory(&sampDesc, sizeof(sampDesc));
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sampDesc.MinLOD = 0;
+	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	HR(GDirectXDevice->GetDevice()->CreateSamplerState(&sampDesc, m_SamplerState.GetAddressOf()));
+}
+
+void FDirectXDevice::BuildStaticMeshShader()
+{
+	Microsoft::WRL::ComPtr<ID3DBlob> pVSBlob = nullptr;
+
+	/*TODO: 02.07 추후 셰이더도 엔진 위치로 옮길 수 있도록 수정예정*/
+
+	std::string TempDirectoryPath =  GEngine->GetDirectoryPath();
+	std::wstring TempShaderPath = std::wstring(TempDirectoryPath.begin(), TempDirectoryPath.end());
+	HR(CompileShaderFromFile((TempShaderPath +  L"/Shader/LightColor.hlsl").c_str(), "VS", "vs_4_0", pVSBlob.GetAddressOf()));
+	HR(GDirectXDevice->GetDevice()->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, m_StaticMeshVertexShader.GetAddressOf()));
+
+	D3D11_INPUT_ELEMENT_DESC inputLayout[] =
+	{
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,0,24,D3D11_INPUT_PER_VERTEX_DATA, 0}
+
+	};
+	UINT numElements = ARRAYSIZE(inputLayout);
+
+	HR(GDirectXDevice->GetDevice()->CreateInputLayout(inputLayout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), m_InputLayout.GetAddressOf()));
+	GDirectXDevice->GetDeviceContext()->IASetInputLayout(m_InputLayout.Get());
+
+	ComPtr<ID3DBlob> pPSBlob = nullptr;
+	HR(CompileShaderFromFile((TempShaderPath + L"/Shader/LightColor.hlsl").c_str(), "PS", "ps_4_0", pPSBlob.GetAddressOf()));
+
+	HR(GDirectXDevice->GetDevice()->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, m_TexturePixelShader.GetAddressOf()));
+}
+
+void FDirectXDevice::CreateBuffers()
+{
+	// Constant Buffer 생성
+	D3D11_BUFFER_DESC bufferDesc = {};
+	bufferDesc.ByteWidth = sizeof( FrameConstantBuffer );
+	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bufferDesc.CPUAccessFlags = 0;
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_FrameConstantBuffer.GetAddressOf()));
+
+	bufferDesc.ByteWidth = sizeof(ObjConstantBuffer);
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_ObjConstantBuffer.GetAddressOf()));
+
+	bufferDesc.ByteWidth = sizeof(LightFrameConstantBuffer);
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_LightConstantBuffer.GetAddressOf()))
+
+}
+
+void FDirectXDevice::BuildAllShaders()
+{
+	BuildStaticMeshShader();
 }
 
 void FDirectXDevice::OnWindowResize()

@@ -12,7 +12,6 @@
 #include "Engine/MyEngineUtils.h"
 #include "Engine/UObject/UObject.h"
 
-class D3DApp;
 
 class UEngine : public UObject
 {
@@ -38,9 +37,9 @@ public:
 	void AddImGuiRenderFunction(const std::function<void()>& NewRenderFunction);
 	void AddImGuizmoRenderFunction(const std::function<void()>& NewRenderFunction);
 
-	ID3D11Buffer* TestDeleteLater_GetObjConstantBuffer() const {return Application->Test_DeleteLater_GetObjectConstantBuffer();}
 	XMMATRIX Test_DeleteLater_GetViewMatrix() const {return Application->Test_DeleteLater_GetViewMatrix();}
 	XMMATRIX Test_DeleteLater_GetProjectionMatrix() const {return Application->Test_DeleteLater_GetProjectionMatrix();}
+	XMFLOAT3 Test_DeleteLater_GetCameraPosition() const {return Application->Test_DELETELATER_GetCameraPosition();}
 protected:
 private:
 	// ============= ImGui =============

@@ -34,6 +34,8 @@ void UEngine::InitEngine()
 		CurrentDirectory.replace(p,1, "/");
 	}
 
+	PostLoad();
+
 
 	CurrentWorld = std::make_shared<UWorld>();
 
@@ -41,7 +43,6 @@ void UEngine::InitEngine()
 
 	LoadDataFromDefaultEngineIni();
 
-	PostLoad();
 
 	LoadDefaultMap();
 
@@ -56,6 +57,7 @@ void UEngine::PostLoad()
 
 	LoadAllObjectsFromFile();
 
+	GDirectXDevice->BuildAllShaders();
 	
 	// TODO: 추후엔 Level을 직렬화를 통해 저장 및 로드를 할 수 있는 기능을 만드는게 낫지 않을까?
 	// 그렇다면 여기에서 로드를 진행하기
@@ -101,12 +103,83 @@ void UEngine::Tick(float DeltaSeconds)
 
 void UEngine::Draw()
 {
+	GDirectXDevice->GetDeviceContext()->OMSetRenderTargets(1, GDirectXDevice->GetRenderTargetView().GetAddressOf(),  GDirectXDevice->GetDepthStencilView().Get());
+	GDirectXDevice->GetDeviceContext()->RSSetViewports(1, GDirectXDevice->GetScreenViewport());
 
-	if(CurrentWorld)
+	const float clearColor[] = {0.2f, 0.2f, 0.2f,1.0f};
+	GDirectXDevice->GetDeviceContext()->ClearRenderTargetView( GDirectXDevice->GetRenderTargetView().Get(), clearColor);
+	GDirectXDevice->GetDeviceContext()->ClearDepthStencilView( GDirectXDevice->GetDepthStencilView().Get(), D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
+	
+	GDirectXDevice->GetDeviceContext()->IASetInputLayout(GDirectXDevice->GetInputLayout().Get());
 	{
-		CurrentWorld->TestDrawWorld();
+		// 셰이더 설정
+		GDirectXDevice->GetDeviceContext()->VSSetShader(GDirectXDevice->GetStaticMeshVertexShader().Get(), nullptr, 0);
+		GDirectXDevice->GetDeviceContext()->PSSetShader(GDirectXDevice->GetTexturePixelShader().Get(), nullptr, 0);
+		// 상수버퍼 설정
+		GDirectXDevice->GetDeviceContext()->VSSetConstantBuffers(0, 1, GDirectXDevice->GetFrameConstantBuffer().GetAddressOf());
+		GDirectXDevice->GetDeviceContext()->PSSetConstantBuffers(0,1,GDirectXDevice->GetFrameConstantBuffer().GetAddressOf());
+		GDirectXDevice->GetDeviceContext()->VSSetConstantBuffers(1, 1, GDirectXDevice->GetObjConstantBuffer().GetAddressOf());
+		GDirectXDevice->GetDeviceContext()->PSSetConstantBuffers(1,1, GDirectXDevice->GetObjConstantBuffer().GetAddressOf());
+		GDirectXDevice->GetDeviceContext()->PSSetConstantBuffers(2,1, GDirectXDevice->GetLightConstantBuffer().GetAddressOf());
+
+
+		// 인풋 레이아웃
+		GDirectXDevice->GetDeviceContext()->IASetInputLayout(GDirectXDevice->GetInputLayout().Get());
+		GDirectXDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		// Frame 상수 버퍼 설정
+		{
+			// 뷰, 프로젝션 행렬
+			{
+				FrameConstantBuffer fcb;
+				fcb.View = XMMatrixTranspose(Test_DeleteLater_GetViewMatrix());
+				fcb.Projection = XMMatrixTranspose(Test_DeleteLater_GetProjectionMatrix());
+				fcb.LightView = XMMatrixTranspose(XMMatrixIdentity());//m_LightView
+				fcb.LightProj = XMMatrixTranspose(XMMatrixIdentity()); //m_LightProj
+				GDirectXDevice->GetDeviceContext()->UpdateSubresource(GDirectXDevice->GetFrameConstantBuffer().Get(), 0, nullptr, &fcb, 0, 0);
+
+			}
+
+			// 라이팅 관련
+			{
+				LightFrameConstantBuffer lfcb;
+				DirectionalLight TempDirectionalLight;
+				TempDirectionalLight.Ambient  = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
+				TempDirectionalLight.Diffuse  = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
+				TempDirectionalLight.Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+				XMStoreFloat3(&TempDirectionalLight.Direction, XMVector3Normalize(XMVectorSet(0.57735f, -0.57735f, 0.57735f,0.0f)));
+				lfcb.gDirLight = TempDirectionalLight;
+
+				PointLight TempPointLight;
+				TempPointLight.Ambient  = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+				TempPointLight.Diffuse  = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+				TempPointLight.Specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+				TempPointLight.Att      = XMFLOAT3(0.0f, 0.1f, 0.0f);
+				//m_PointLight.Position = XMFLOAT3(796.5f, 700.0f, 0.7549f);
+				TempPointLight.Position = XMFLOAT3(0.0f,-2.5f,0.0f);
+				TempPointLight.Range    = 0.0f;
+				lfcb.gPointLight = TempPointLight;
+				// Convert Spherical to Cartesian coordinates.
+				lfcb.gEyePosW = XMFLOAT3{GEngine->Test_DeleteLater_GetCameraPosition()};
+				GDirectXDevice->GetDeviceContext()->UpdateSubresource(GDirectXDevice->GetLightConstantBuffer().Get(),0,nullptr,&lfcb, 0,0);
+			}
+		}
+
+
+
+
+		// Sampler State 설정
+		GDirectXDevice->GetDeviceContext()->PSSetSamplers(0, 1, GDirectXDevice->GetSamplerState().GetAddressOf());
+
+		if(CurrentWorld)
+		{
+			CurrentWorld->TestDrawWorld();
+		}
+		DrawImGui();
+
+
 	}
-	DrawImGui();
+	HR(GDirectXDevice->GetSwapChain()->Present(0, 0));
 }
 
 void UEngine::AddImGuiRenderFunction(const std::function<void()>& NewRenderFunction)

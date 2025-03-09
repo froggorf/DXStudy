@@ -52,7 +52,7 @@ void UStaticMeshComponent::TestDrawComponent()
 		ocb.ObjectMaterial.Diffuse  = XMFLOAT4(1.0f,1.0f,1.0f, 1.0f);
 		ocb.ObjectMaterial.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 32.0f);
 
-		GDirectXDevice->GetDeviceContext()->UpdateSubresource(GEngine->TestDeleteLater_GetObjConstantBuffer(), 0, nullptr, &ocb, 0, 0);
+		GDirectXDevice->GetDeviceContext()->UpdateSubresource(GDirectXDevice->GetObjConstantBuffer().Get(), 0, nullptr, &ocb, 0, 0);
 	}
 
 	const FStaticMeshRenderData* RenderData = GetStaticMesh()->GetStaticMeshRenderData();

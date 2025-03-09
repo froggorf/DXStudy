@@ -9,7 +9,6 @@
 
 #include "DirectX/d3dUtil.h"
 
-
 // 디버그 레벨
 // DEBUG(0) - 모든 콘솔 문구 출력
 // DEVELOPMENT(1) - 구현 관련 콘솔 문구 및 디버그 드로우

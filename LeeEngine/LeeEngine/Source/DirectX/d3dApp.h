@@ -42,9 +42,9 @@ public:
 	virtual void OnMouseUp(WPARAM btnState, int x, int y)  { }
 	virtual void OnMouseMove(WPARAM btnState, int x, int y){ }
 
-	virtual ID3D11Buffer* Test_DeleteLater_GetObjectConstantBuffer() const{ return nullptr	;}
 	virtual XMMATRIX Test_DeleteLater_GetViewMatrix() const {return XMMATRIX();}
 	virtual XMMATRIX Test_DeleteLater_GetProjectionMatrix() const {return XMMATRIX();}
+	virtual XMFLOAT3 Test_DELETELATER_GetCameraPosition() const {return XMFLOAT3{};	}
 protected:
 	bool InitMainWindow();
 
