@@ -114,7 +114,6 @@ public:
 	{
 		return m_Proj;
 	}
-	void DrawImGui();
 
 private:
 	
@@ -542,217 +541,6 @@ void AnimationApp::DrawShadowMap()
 		}
 	}
 }
-//
-void AnimationApp::DrawImGui()
-{
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
-	
-	// UI 코드 작성
-	ImGui::SetNextWindowSize(ImVec2(600,200));
-    ImGui::Begin("Controller");
-	ImGui::Text("Body SRV Change");
-	if(ImGui::Button("Body1", ImVec2(150,25)))
-	{
-		ChangeModelTexture(0, m_BodyShaderResourceView[0]);
-	}
-	ImGui::SameLine();
-	if(ImGui::Button("Body2", ImVec2(150,25)))
-	{
-		ChangeModelTexture(0, m_BodyShaderResourceView[1]);
-	}
-	ImGui::SameLine();
-	if(ImGui::Button("Body3", ImVec2(150,25)))
-	{
-		ChangeModelTexture(0, m_BodyShaderResourceView[2]);
-	}
-    ImGui::End();
-
-	ImGui::SetNextWindowSize(ImVec2{600.0f,100.0f});
-	ImGui::Begin("Color");
-	static float color[] = {1.0f,1.0f,1.0f,1.0f};
-	if(ImGui::ColorEdit4("Directional Light Color", color, 0))
-	{
-		m_DirectionalLight.Ambient = XMFLOAT4(color[0],color[1],color[2],color[3]);
-	}
-
-	ImGui::SliderFloat3("PointLight", (float*)&m_PointLight.Position, -5.0f,5.0f);
-	static float plColor[] = {m_PointLight.Ambient.x,m_PointLight.Ambient.y,m_PointLight.Ambient.z,1.0f};
-	if(ImGui::ColorEdit4("PointLight Color", plColor, 0))
-	{
-		m_PointLight.Ambient = XMFLOAT4(plColor[0],plColor[1],plColor[2],plColor[3]);
-		m_PointLight.Diffuse= XMFLOAT4(plColor[0],plColor[1],plColor[2],plColor[3]);
-		m_PointLight.Specular= XMFLOAT4(1.0f,1.0f,1.0f,1.0f);//XMFLOAT4(plColor[0],plColor[1],plColor[2],plColor[3]);
-	}
-	ImGui::End();
-
-	// ImGuizmo
-	{
-		ImGuizmo::BeginFrame();
-		ImGuiIO& io = ImGui::GetIO();
-		
-		ImGui::SliderFloat3("Translation", (float*)&m_ModelPosition, -5.0f, 5.0f );
-
-		
-		static float rotationDegrees[] = {90.0f,0.0f,0.0f};
-		if(ImGui::SliderFloat3("Rotation", (float*)&rotationDegrees,-180.0f,180.0f))
-		{
-			
-			m_ModelQuat = XMQuaternionRotationRollPitchYaw(
-				XMConvertToRadians(rotationDegrees[0]),
-				XMConvertToRadians(rotationDegrees[1]),
-				XMConvertToRadians(rotationDegrees[2]));
-			XMQuaternionNormalize(m_ModelQuat);
-		}
-		ImGui::SliderFloat3("Scale", (float*)&m_ModelScale, -5.0f, 5.0f);
-		
-		ImGuizmo::SetRect(0,0,io.DisplaySize.x,io.DisplaySize.y);
-		static bool bUseGizmo = false;
-		ImGui::Checkbox("Use Gizmo", &bUseGizmo);
-		XMMATRIX identityMat = XMMatrixIdentity();
-
-		if (bUseGizmo)
-		{
-			static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::ROTATE);
-			static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
-			if (ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_Q))
-			{
-				std::cout << " Q" << std::endl;
-				mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
-			}
-			if (ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_W))
-			{
-				std::cout << "R" << std::endl;
-				mCurrentGizmoOperation = ImGuizmo::ROTATE;
-			}
-			if (ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_E))
-			{
-				std::cout << "R" << std::endl;
-				mCurrentGizmoOperation = ImGuizmo::SCALE;
-			}
-			if(ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_1))
-			{
-				std::cout<<"WORLD"<<std::endl;
-				mCurrentGizmoMode = ImGuizmo::WORLD;
-			}
-			if(ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_2))
-			{
-				std::cout<<"Local"<<std::endl;
-				mCurrentGizmoMode = ImGuizmo::LOCAL;
-			}
-
-			XMMATRIX objectMatrix;
-			XMMATRIX deltaMatrix;
-			XMFLOAT3 test {0.0f,0.0f,0.0f};
-			// Position, Rotation, Scale -> Matrix
-			ImGuizmo::RecomposeMatrixFromComponents(reinterpret_cast<float*>(&m_ModelPosition), reinterpret_cast<float*>(&test), reinterpret_cast<float*>(&m_ModelScale), reinterpret_cast<float*>(&objectMatrix));	
-			
-
-			// 이게 기즈모를 통한 트랜스레이션을 적용시켜주는 함수
-			//ImGuizmo::Manipulate(reinterpret_cast<float*>(&m_View), reinterpret_cast<float*>(&m_Proj), mCurrentGizmoOperation, mCurrentGizmoMode, reinterpret_cast<float*>(&objectMatrix), (float*)&deltaMatrix, NULL);
-			ImGuizmo::Manipulate(reinterpret_cast<float*>(&m_View), reinterpret_cast<float*>(&m_Proj),
-				mCurrentGizmoOperation, mCurrentGizmoMode, (float*)&objectMatrix, (float*)&deltaMatrix, nullptr);
-
-			ImGuizmo::DecomposeMatrixToComponents(reinterpret_cast<float*>(&objectMatrix), (float*)&m_ModelPosition, nullptr, (float*)&m_ModelScale);
-			
-			//ImGuizmo::DecomposeMatrixToComponents(reinterpret_cast<float*>(&objectMatrix), (float*)&m_ModelPosition, nullptr, (float*)&m_ModelScale);
-
-			XMFLOAT3 deltaRot;
-			ImGuizmo::DecomposeMatrixToComponents(reinterpret_cast<float*>(&deltaMatrix), nullptr, (float*)&deltaRot, nullptr);
-
-			rotationDegrees[0] = std::fmod (rotationDegrees[0] + deltaRot.x , 180.0f);
-			rotationDegrees[1] = std::fmod (rotationDegrees[1] + deltaRot.y , 180.0f);
-			rotationDegrees[2] = std::fmod (rotationDegrees[2] + deltaRot.z , 180.0f);
-			XMVECTOR deltaQuat = XMQuaternionRotationRollPitchYaw( 
-									XMConvertToRadians(deltaRot.x),
-								XMConvertToRadians(deltaRot.y),
-								XMConvertToRadians(deltaRot.z));
-
-			//m_ModelQuat = XMQuaternionMultiply(m_ModelQuat , deltaQuat) ;
-			XMQuaternionNormalize(m_ModelQuat);
-			
-		}
-		static int animationSelect = 0;
-		if(ImGui::RadioButton("IDLE", &animationSelect, 0))
-		{
-			m_PaladinAnimator->PlayAnimation(m_Anim_Cat_Idle.get());
-		}
-		if(ImGui::RadioButton("DIG", &animationSelect, 1))
-		{
-			m_PaladinAnimator->PlayAnimation(m_Anim_Cat_DIG.get());
-		}
-		if(ImGui::RadioButton("HI", &animationSelect, 2))
-		{
-			m_PaladinAnimator->PlayAnimation(m_Anim_Cat_HI.get());
-		}
-		
-
-
-	}
-	ImGui::Render();
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-}
-//
-//void AnimationApp::DrawCube()
-//{
-//	// 테스트용 Cube Draw
-//
-//	// 그림자맵 SRV, Sampler 설정
-//	m_d3dDeviceContext->PSSetShaderResources(1,1, m_ShadowMap->GetShaderResourceViewComPtr().GetAddressOf());
-//	m_d3dDeviceContext->PSSetSamplers(1,1,m_ShadowSamplerState.GetAddressOf());
-//
-//	UINT stride = sizeof(MyVertexData);
-//	UINT offset = 0;
-//	m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_CubeVertexBuffer.GetAddressOf(), &stride, &offset);
-//	m_d3dDeviceContext->IASetIndexBuffer(m_CubeIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-//	// cb 설정
-//	{
-//		ObjConstantBuffer ocb;
-//		XMMATRIX world = m_World * XMMatrixScaling(15.0f,0.2f,15.0f);
-//		world *= XMMatrixTranslation(0.0f,0.0f,0.0f);
-//		ocb.World = XMMatrixTranspose(world);
-//		// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
-//		ocb.InvTransposeMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, world));
-//		ocb.ObjectMaterial = m_ModelMaterial;
-//		m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);	
-//	}
-//
-//	// 렌더링
-//	{
-//		m_d3dDeviceContext->PSSetShaderResources(0,1,m_CubeWaterSRV.GetAddressOf());
-//
-//		D3D11_BUFFER_DESC indexBufferDesc;
-//		m_CubeIndexBuffer->GetDesc(&indexBufferDesc);
-//		int indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
-//		m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);	
-//		
-//	}
-//
-//	// cb 설정
-//	// 01.31 애니메이션을 위해 모델 변경
-//	//{
-//	//	ObjConstantBuffer ocb;
-//	//	XMMATRIX world = m_World * XMMatrixScaling(1.0f,1.0f,1.0f) ;
-//	//	world *= XMMatrixRotationQuaternion(m_ModelQuat);
-//	//	world *= XMMatrixTranslation(m_ModelPosition.x,m_ModelPosition.y,m_ModelPosition.z);
-//	//	ocb.World = XMMatrixTranspose(world);
-//	//	// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
-//	//	ocb.InvTransposeMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, world));
-//	//	ocb.ObjectMaterial = m_ModelMaterial;
-//	//	m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);	
-//	//}
-//	//
-//	//// 렌더링
-//	//{
-//	//	m_d3dDeviceContext->PSSetShaderResources(0,1,m_CubeWaterSRV.GetAddressOf());
-//	//
-//	//	D3D11_BUFFER_DESC indexBufferDesc;
-//	//	m_CubeIndexBuffer->GetDesc(&indexBufferDesc);
-//	//	m_d3dDeviceContext->DrawIndexed(indexBufferDesc.ByteWidth / sizeof(UINT), 0, 0);
-//	//}
-//
-//}
 
 void AnimationApp::DrawSkeletalMesh()
 {
@@ -898,21 +686,6 @@ void AnimationApp::DrawScene()
 		}
 		
 		
-		// 오브젝트 Draw
-		// Obj 상수 버퍼 설정
-		{
-			ObjConstantBuffer ocb;
-			XMMATRIX world = m_World * XMMatrixScaling(m_ModelScale.x,m_ModelScale.y,m_ModelScale.z);
-			//world = world * XMMatrixRotationX(m_ModelRotation.x) * XMMatrixRotationY(m_ModelRotation.y) * XMMatrixRotationZ(m_ModelRotation.z);
-			world = world * XMMatrixRotationQuaternion(m_ModelQuat);
-			world *= XMMatrixTranslation(m_ModelPosition.x,m_ModelPosition.y,m_ModelPosition.z);
-			// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
-			ocb.InvTransposeMatrix = (XMMatrixInverse(nullptr, world));
-			ocb.World = XMMatrixTranspose(world);
-
-			ocb.ObjectMaterial = m_ModelMaterial;
-			m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);	
-		}
 		
 
 		// Sampler State 설정
@@ -920,54 +693,7 @@ void AnimationApp::DrawScene()
 
 
 		GEngine->Draw();
-		//// 버텍스 버퍼에 맞춰 오브젝트 드로우
-		//for(int vertexCount = 0; vertexCount < m_ModelVertexBuffer.size(); ++vertexCount)
-		//{
-		//	// SRV 설정(텍스쳐)
-		//	{
-		//		m_d3dDeviceContext->PSSetShaderResources(0,1, m_ModelShaderResourceView[0].GetAddressOf());	
-		//	}
-		//	UINT stride = sizeof(MyVertexData);
-		//	UINT offset = 0;
-		//	m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_ModelVertexBuffer[vertexCount].GetAddressOf(), &stride, &offset);
-		//	m_d3dDeviceContext->IASetIndexBuffer(m_ModelIndexBuffer[vertexCount].Get(), DXGI_FORMAT_R32_UINT, 0);
-		//
-		//	D3D11_BUFFER_DESC indexBufferDesc;
-		//	m_ModelIndexBuffer[vertexCount]->GetDesc(&indexBufferDesc);
-		//	UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
-		//	m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
-		//}
-
-
-		//// 테스트용 스피어 드로우
-		//// Obj 상수 버퍼 설정
-		//{
-		//	ObjConstantBuffer ocb;
-		//	XMMATRIX world = m_World * XMMatrixScaling(0.15f,0.15f,0.15f);
-		//	//world *= XMMatrixTranslation(0.0f, -2.5f, 0.0f);
-		//	world *= XMMatrixTranslation(m_PointLight.Position.x,m_PointLight.Position.y,m_PointLight.Position.z);
-		//	ocb.World = XMMatrixTranspose(world);
-		//	// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
-		//	ocb.InvTransposeMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, world));
-		//	ocb.ObjectMaterial = m_ModelMaterial;
-		//	m_d3dDeviceContext->UpdateSubresource(m_ObjConstantBuffer.Get(), 0, nullptr, &ocb, 0, 0);	
-		//}
-
-		//{
-		//	m_d3dDeviceContext->PSSetShaderResources(0,1,m_ModelShaderResourceView[0].GetAddressOf());
-		//	UINT stride = sizeof(MyVertexData);
-		//	UINT offset = 0;
-		//	m_d3dDeviceContext->IASetVertexBuffers(0, 1, m_SphereVertexBuffer[0].GetAddressOf(), &stride, &offset);
-		//	m_d3dDeviceContext->IASetIndexBuffer(m_SphereIndexBuffer[0].Get(), DXGI_FORMAT_R32_UINT, 0);
-		//
-		//	D3D11_BUFFER_DESC indexBufferDesc;
-		//	m_SphereIndexBuffer[0]->GetDesc(&indexBufferDesc);
-		//	UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
-		//	m_d3dDeviceContext->DrawIndexed(indexSize, 0, 0);
-		//}
-		//DrawCube();
-		//DrawSkeletalMesh();
-
+		
 //#if defined(DEBUG) || defined(_DEBUG)
 //		DebuggingSRV::DrawDebuggingTexture(
 //				m_d3dDeviceContext,
@@ -977,7 +703,6 @@ void AnimationApp::DrawScene()
 //				);
 //#endif
 
-		//DrawImGui();
 	}
 
 	HR(m_SwapChain->Present(0, 0));
