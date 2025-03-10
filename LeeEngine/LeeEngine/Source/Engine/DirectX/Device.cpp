@@ -13,6 +13,7 @@
 #include "DirectX/d3dUtil.h"
 #include "Engine/MyEngineUtils.h"
 #include "Engine/UEngine.h"
+#include "Engine/RenderCore/RenderingThread.h"
 
 std::unique_ptr<FDirectXDevice> GDirectXDevice = nullptr;
 
@@ -188,6 +189,22 @@ void FDirectXDevice::BuildAllShaders()
 
 void FDirectXDevice::OnWindowResize()
 {
+	if(RenderingThreadFrameCount > 0)
+	{
+		ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& Dummy)
+		{
+			GDirectXDevice->ResizeWindow();
+		})
+	}
+	else
+	{
+		ResizeWindow();
+	}
+}
+
+void FDirectXDevice::ResizeWindow()
+{
+
 	assert(m_d3dDeviceContext);
 	assert(m_d3dDevice);
 	assert(m_SwapChain);

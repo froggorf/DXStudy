@@ -377,7 +377,7 @@ static void ImGui_ImplWin32_UpdateGamepads()
 
     // Calling XInputGetState() every frame on disconnected gamepads is unfortunately too slow.
     // Instead we refresh gamepad availability by calling XInputGetCapabilities() _only_ after receiving WM_DEVICECHANGE.
-    if (bd->WantUpdateHasGamepad)
+    if (bd && bd->WantUpdateHasGamepad)
     {
         XINPUT_CAPABILITIES caps = {};
         bd->HasGamepad = bd->XInputGetCapabilities ? (bd->XInputGetCapabilities(0, XINPUT_FLAG_GAMEPAD, &caps) == ERROR_SUCCESS) : false;
@@ -387,7 +387,7 @@ static void ImGui_ImplWin32_UpdateGamepads()
     io.BackendFlags &= ~ImGuiBackendFlags_HasGamepad;
     XINPUT_STATE xinput_state;
     XINPUT_GAMEPAD& gamepad = xinput_state.Gamepad;
-    if (!bd->HasGamepad || bd->XInputGetState == nullptr || bd->XInputGetState(0, &xinput_state) != ERROR_SUCCESS)
+    if (!bd && !bd->HasGamepad || bd->XInputGetState == nullptr || bd->XInputGetState(0, &xinput_state) != ERROR_SUCCESS)
         return;
     io.BackendFlags |= ImGuiBackendFlags_HasGamepad;
 

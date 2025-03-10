@@ -38,7 +38,9 @@ extern std::unique_ptr<class FDirectXDevice> GDirectXDevice;
 // ================================ 디버깅 로그 ================================
 #define MY_LOG(Category, DebugLogLevel, DebugText) \
 	{\
-		if(GEditorEngine)\
+		FScene::AddConsoleText_GameThread(Category, DebugLogLevel,DebugText);\
+	}
+		//if(GEditorEngine)\
 		{\
 			GEditorEngine->AddConsoleText(Category, DebugLogLevel, DebugText);\
 		}\

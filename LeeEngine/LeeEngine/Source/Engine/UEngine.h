@@ -40,6 +40,8 @@ public:
 	XMMATRIX Test_DeleteLater_GetViewMatrix() const {return Application->Test_DeleteLater_GetViewMatrix();}
 	XMMATRIX Test_DeleteLater_GetProjectionMatrix() const {return Application->Test_DeleteLater_GetProjectionMatrix();}
 	XMFLOAT3 Test_DeleteLater_GetCameraPosition() const {return Application->Test_DELETELATER_GetCameraPosition();}
+
+	void JoinThreadsAtDestroy();
 protected:
 private:
 	// ============= ImGui =============
@@ -63,8 +65,6 @@ private:
 	// =======================================
 
 
-	std::vector<std::function<void()>> ImGuiRenderFunctions;
-	std::vector<std::function<void()>> ImGuizmoRenderFunctions;
 
 	std::string CurrentDirectory;
 };

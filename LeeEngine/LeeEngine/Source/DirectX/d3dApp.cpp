@@ -143,6 +143,11 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 
 LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+	if(msg == WM_CLOSE)
+	{
+		FScene::KillRenderingThread();
+		GEngine->JoinThreadsAtDestroy();
+	}
 	if(msg==WM_QUIT)
 	{
 		return 0;

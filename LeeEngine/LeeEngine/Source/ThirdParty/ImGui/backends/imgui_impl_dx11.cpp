@@ -606,6 +606,7 @@ void ImGui_ImplDX11_Shutdown()
 void ImGui_ImplDX11_NewFrame()
 {
     ImGui_ImplDX11_Data* bd = ImGui_ImplDX11_GetBackendData();
+    if(!bd) return;
     IM_ASSERT(bd != nullptr && "Context or backend not initialized! Did you call ImGui_ImplDX11_Init()?");
 
     if (!bd->pFontSampler)

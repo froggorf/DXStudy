@@ -8,4 +8,13 @@
 std::shared_ptr<FScene> FRenderCommandExecutor::CurrentSceneData = nullptr;
 
 
-Concurrency::concurrent_queue<std::shared_ptr<FRenderTask>> FRenderCommandPipe::RenderCommandPipe;
+
+std::unordered_map<std::string,std::function<void()>> FScene::ImGuiRenderFunctions;
+std::unordered_map<std::string,std::function<void()>> FScene::ImGuizmoRenderFunctions;
+
+
+// 디버깅 콘솔
+std::vector<DebugText> FScene::DebugConsoleText;
+std::vector<DebugText> FScene::PendingAddDebugConsoleText;
+std::vector<DebugText> FScene::SearchingDebugConsoleText;
+std::string FScene::DebugConsoleSearchText;

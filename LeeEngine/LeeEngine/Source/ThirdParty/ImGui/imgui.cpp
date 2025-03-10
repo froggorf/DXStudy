@@ -5442,8 +5442,13 @@ void ImGui::EndFrame()
     g.Windows.swap(g.WindowsTempSortBuffer);
     g.IO.MetricsActiveWindows = g.WindowsActiveCount;
 
+
     // Unlock font atlas
-    g.IO.Fonts->Locked = false;
+    if(g.IO.Fonts)
+    {
+        g.IO.Fonts->Locked = false;    
+    }
+    
 
     // Clear Input data for next frame
     g.IO.MousePosPrev = g.IO.MousePos;
@@ -7525,7 +7530,11 @@ bool ImGui::Begin(const char* name, bool* p_open, ImGuiWindowFlags flags)
 
         // Setup draw list and outer clipping rectangle
         IM_ASSERT(window->DrawList->CmdBuffer.Size == 1 && window->DrawList->CmdBuffer[0].ElemCount == 0);
-        window->DrawList->PushTextureID(g.Font->ContainerAtlas->TexID);
+        if(g.Font->ContainerAtlas)
+        {
+            window->DrawList->PushTextureID(g.Font->ContainerAtlas->TexID);    
+        }
+        
         PushClipRect(host_rect.Min, host_rect.Max, false);
 
         // Child windows can render their decoration (bg color, border, scrollbars, etc.) within their parent to save a draw call (since 1.71)

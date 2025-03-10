@@ -19,11 +19,6 @@ std::shared_ptr<UEngine> GEngine = nullptr;
 
 UEngine::~UEngine()
 {
-	FScene::KillRenderingThread();
-	if(RenderThread.joinable())
-	{
-		RenderThread.join();	
-	}
 	
 }
 
@@ -105,7 +100,7 @@ const std::string& UEngine::GetDefaultMapName()
 
 void UEngine::Tick(float DeltaSeconds)
 {
-	std::cout <<  ++GameThreadFrameCount << std::endl;
+	++GameThreadFrameCount;
 	FScene::BeginRenderFrame_GameThread();
 	if(CurrentWorld)
 	{
@@ -118,6 +113,7 @@ void UEngine::Tick(float DeltaSeconds)
 	//Draw();
 
 	
+	//
 	//DrawImGui();
 
 	
@@ -211,14 +207,22 @@ void UEngine::Draw()
 void UEngine::AddImGuiRenderFunction(const std::function<void()>& NewRenderFunction)
 {
 	// TODO: 중복 체크에 대한 부분이 필요
-	ImGuiRenderFunctions.push_back(NewRenderFunction);
+	//ImGuiRenderFunctions.push_back(NewRenderFunction);
 }
 
 void UEngine::AddImGuizmoRenderFunction(const std::function<void()>& NewRenderFunction)
 {
-	ImGuizmoRenderFunctions.push_back(NewRenderFunction);
+	//ImGuizmoRenderFunctions.push_back(NewRenderFunction);
 }
 
+
+void UEngine::JoinThreadsAtDestroy()
+{
+	if(RenderThread.joinable())
+	{
+		RenderThread.join();
+	}
+}
 
 void UEngine::InitImGui()
 {
@@ -243,34 +247,34 @@ void UEngine::InitImGui()
 
 void UEngine::DrawImGui()
 {
-	if(ImGuiRenderFunctions.size() == 0)
-	{
-		return;
-	}
+	//if(ImGuiRenderFunctions.size() == 0)
+	//{
+	//	return;
+	//}
 
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
+	//ImGui_ImplDX11_NewFrame();
+	//ImGui_ImplWin32_NewFrame();
 
-	ImGui::NewFrame();
+	//ImGui::NewFrame();
 
-	// ImGui
-	for(const auto& Func : ImGuiRenderFunctions)
-	{
-		Func();
-	}
+	//// ImGui
+	//for(const auto& Func : ImGuiRenderFunctions)
+	//{
+	//	Func();
+	//}
 
 
-	// ImGuizmo
-	ImGuizmo::BeginFrame();
-	ImGuiIO& io = ImGui::GetIO();
-	ImGuizmo::SetRect(0,0,io.DisplaySize.x,io.DisplaySize.y);
-	for(const auto& Func : ImGuizmoRenderFunctions)
-	{
-		Func();
-	}
+	//// ImGuizmo
+	//ImGuizmo::BeginFrame();
+	//ImGuiIO& io = ImGui::GetIO();
+	//ImGuizmo::SetRect(0,0,io.DisplaySize.x,io.DisplaySize.y);
+	//for(const auto& Func : ImGuizmoRenderFunctions)
+	//{
+	//	Func();
+	//}
 
-	ImGui::Render();
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+	//ImGui::Render();
+	//ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
 
 void UEngine::LoadAllObjectsFromFile()

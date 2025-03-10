@@ -12,6 +12,7 @@
 #include "Engine/UEditorEngine.h"
 #include "Engine/DirectX/Device.h"
 #include "ThirdParty/ImGui/backends/imgui_impl_dx11.h"
+#include "ThirdParty/ImGui/backends/imgui_impl_win32.h"
 
 // 다수의 게임 쓰레드에서 단일의 렌더쓰레드가 수행할 명령을 관리하는 파이프라인
 // Multi-Producer(GameThread) Single-Consumer(RenderThread) Queue
@@ -30,7 +31,12 @@ struct FRenderTask
 class FRenderCommandPipe
 {
 private:
-	static Concurrency::concurrent_queue<std::shared_ptr<FRenderTask>> RenderCommandPipe;
+	static Concurrency::concurrent_queue<std::shared_ptr<FRenderTask>>& GetRenderCommandPipe()
+	{
+		static Concurrency::concurrent_queue<std::shared_ptr<FRenderTask>> RenderCommandPipe;
+		return RenderCommandPipe;
+	}
+	
 	//static std::unique_ptr<FRenderCommandPipe> RenderCommandPipe;
 	//std::atomic<Node*> Head;
 	//std::atomic<Node*> Tail;
@@ -43,13 +49,13 @@ public:
 		//Node* NewNode = new Node();
 		NewNode->CommandLambda = CommandLambda;
 
-		RenderCommandPipe.push(NewNode);
+		GetRenderCommandPipe().push(NewNode);
 		//Node* PrevHead = RenderCommandPipe->Head.exchange(NewNode);
 		//PrevHead->Next= NewNode;
 	}
 	static bool Dequeue(std::shared_ptr<FRenderTask>& Result)
 	{
-		if(RenderCommandPipe.try_pop(Result))
+		if(GetRenderCommandPipe().try_pop(Result))
 		{
 			return true;
 		}
@@ -87,15 +93,45 @@ private:
 inline bool bIsGameKill = false;
 inline UINT RenderingThreadFrameCount = 0;
 
+enum class EDebugLogLevel
+{
+	DLL_Fatal, DLL_Error, DLL_Warning, DLL_Display, 
+};
+struct DebugText
+{
+	DebugText(const std::string& Text, EDebugLogLevel Level)
+	{
+		this->Text = Text;
+		this->Level = Level;
+	}
+	std::string Text;
+	EDebugLogLevel Level;
+	static std::map<EDebugLogLevel, ImVec4> Color;
+};
+
 // 렌더링에 대한 정보를 가지고 있는 클래스 (씬 단위)
 // 03.10 렌더링 쓰레드의 경우 단일 소비로 진행할 예정이므로
 // 멀티쓰레드 동기화에 대한 처리 x
 class FScene
 {
 public:
+	// ==================== FPrimitiveSceneProxy ====================
 	std::map<UINT, std::shared_ptr<FPrimitiveSceneProxy>> PrimitiveSceneProxies;
 	std::map<UINT, std::shared_ptr<FPrimitiveSceneProxy>> PendingAddSceneProxies;
 	std::map<UINT, std::shared_ptr<FPrimitiveSceneProxy>> PendingDeleteSceneProxies;
+	// ==================== FPrimitiveSceneProxy ====================
+
+	// ==================== ImGui ====================
+	static std::unordered_map<std::string,std::function<void()>> ImGuiRenderFunctions;
+	static std::unordered_map<std::string,std::function<void()>> ImGuizmoRenderFunctions;
+
+
+	// 디버깅 콘솔
+	static std::vector<DebugText> DebugConsoleText;
+	static std::vector<DebugText> PendingAddDebugConsoleText;
+	static std::vector<DebugText> SearchingDebugConsoleText;
+	static std::string DebugConsoleSearchText;
+	// ==================== ImGui ====================
 
 	bool bIsFrameStart;
 protected:
@@ -104,6 +140,12 @@ public:
 	static void KillRenderingThread()
 	{
 		bIsGameKill = true;
+	}
+	static void ShutdownImgui()
+	{
+		ImGui_ImplDX11_Shutdown();
+		ImGui_ImplWin32_Shutdown();
+		ImGui::DestroyContext();
 	}
 
 	static void InitSceneData_GameThread()
@@ -142,9 +184,19 @@ public:
 
 		++RenderingThreadFrameCount;
 		SceneData->bIsFrameStart = true;
+
+#ifdef MYENGINE_BUILD_DEBUG || MYENGINE_BUILD_DEVELOPMENT
+		for(const auto& Text : PendingAddDebugConsoleText)
+		{
+			DebugConsoleText.push_back(Text);
+		}
+		PendingAddDebugConsoleText.clear();
+#endif
+
 		for(const auto& NewPrimitiveProxy : SceneData->PendingAddSceneProxies)
 		{
 			SceneData->PrimitiveSceneProxies[NewPrimitiveProxy.first] = NewPrimitiveProxy.second;
+			
 			MY_LOG("SceneProxy Add New Proxy - PrimitiveID = " + std::to_string(NewPrimitiveProxy.first), EDebugLogLevel::DLL_Display, "");
 		}
 		SceneData->PendingAddSceneProxies.clear();
@@ -199,15 +251,51 @@ public:
 		ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData)
 		{
 			FScene::DrawScene_RenderThread(SceneData);
+			
 		})
 		
 	}
+
+	static void DrawIMGUI_RenderThread(std::shared_ptr<FScene> SceneData)
+	{
+		/*if(ImGuiRenderFunctions.size() == 0)
+		{
+			return;
+		}*/
+		if(bIsGameKill)
+		{
+			return;
+		}
+		
+		ImGui_ImplDX11_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+
+		ImGui::NewFrame();
+
+		// ImGui
+		for(const auto& Func : ImGuiRenderFunctions)
+		{
+			Func.second();
+		}
+
+
+		//// ImGuizmo
+		//ImGuizmo::BeginFrame();
+		//ImGuiIO& io = ImGui::GetIO();
+		//ImGuizmo::SetRect(0,0,io.DisplaySize.x,io.DisplaySize.y);
+		//for(const auto& Func : ImGuizmoRenderFunctions)
+		//{
+		//	Func();
+		//}
+
+		ImGui::Render();
+		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+	}
+
 	static void DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 	{
 		// 프레임 단위 세팅
 		{
-			std::cout<<"FrameRenderCount" << RenderingThreadFrameCount << std::endl;
-
 			GDirectXDevice->GetDeviceContext()->OMSetRenderTargets(1, GDirectXDevice->GetRenderTargetView().GetAddressOf(),  GDirectXDevice->GetDepthStencilView().Get());
 			GDirectXDevice->GetDeviceContext()->RSSetViewports(1, GDirectXDevice->GetScreenViewport());
 
@@ -290,14 +378,109 @@ public:
 				//DrawImGui();
 
 			}
-		
 		}
+
+
+		DrawIMGUI_RenderThread(SceneData);
 		
 		HR(GDirectXDevice->GetSwapChain()->Present(0, 0));
 
 		// SceneProxy Render
 		EndRenderFrame_RenderThread(SceneData);
 	}
+
+
+	// ==================== IMGUI / IMGUIZMO (하드코딩) ===================
+	static void AddImGuiRenderFunction(const std::string& Name, const std::function<void()>& NewRenderFunction)
+	{
+		ImGuiRenderFunctions[Name] = NewRenderFunction;
+	}
+	static void AddConsoleText_GameThread(const std::string& Category, EDebugLogLevel DebugLevel, const std::string& InDebugText)
+	{
+#ifdef MYENGINE_BUILD_DEBUG || MYENGINE_BUILD_DEVELOPMENT
+
+		std::string NewText = Category + " : " + InDebugText;
+		DebugText NewDebugText{NewText, DebugLevel};
+		ENQUEUE_RENDER_COMMAND([NewDebugText](std::shared_ptr<FScene>& SceneData)
+			{
+				FScene::PendingAddDebugConsoleText.push_back(NewDebugText);
+			}
+		)
+#endif
+	}
+	static void SearchDebugConsole_RenderThread()
+	{
+		SearchingDebugConsoleText.clear();
+
+		if(DebugConsoleSearchText.size() == 0)
+		{
+			return;
+		}
+
+		for(const auto& Text : DebugConsoleText)
+		{
+			const std::string& LogText = Text.Text;
+			if(LogText.contains(DebugConsoleSearchText))
+			{
+				SearchingDebugConsoleText.push_back(Text);
+			}
+		}
+	}
+
+	static void DrawDebugConsole_RenderThread()
+	{
+		ImGui::Begin("Debug Console");
+
+		// EditBox
+		char* CurrentText = DebugConsoleSearchText.data();
+		ImGui::Text("Search: ");
+		ImGui::SameLine();
+		if(ImGui::InputText(" ",CurrentText,100))
+		{
+			DebugConsoleSearchText = CurrentText;
+			//SearchDebugConsole();
+		}
+
+		if(ImGui::BeginListBox(" ", ImVec2(-FLT_MIN, -FLT_MIN)))
+		{
+			// 디버그 리스트 박스의 맨 아래를 볼 시 맨 아래로 고정
+			bool bIsFixListBox = ImGui::GetScrollMaxY() == ImGui::GetScrollY();
+
+
+			// 검색 중 체크
+			bool bWhileSearching = DebugConsoleSearchText.size() != 0;
+			if(bWhileSearching)
+			{
+				for(const DebugText& Text : SearchingDebugConsoleText)
+				{
+					ImGui::TextColored(DebugText::Color[Text.Level], Text.Text.data());
+				}	
+			}
+			// 검색 아닐 시
+			else
+			{
+				for(const DebugText& Text : DebugConsoleText)
+				{
+					ImGui::TextColored(DebugText::Color[Text.Level], Text.Text.data());
+
+				}	
+			}
+
+			// 리스트 맨 아래였을 시 고정
+			if(bIsFixListBox)
+			{
+				ImGui::SetScrollHereY(1.0f);
+			}
+
+			ImGui::EndListBox();
+
+		}
+
+
+		ImGui::End();
+	}
+
+	// ===================================================================
 public:
 protected:
 private:
