@@ -4,3 +4,8 @@
 // 이윤석
 
 #include "renderingthread.h"
+
+std::shared_ptr<FScene> FRenderCommandExecutor::CurrentSceneData = nullptr;
+
+
+Concurrency::concurrent_queue<std::shared_ptr<FRenderTask>> FRenderCommandPipe::RenderCommandPipe;

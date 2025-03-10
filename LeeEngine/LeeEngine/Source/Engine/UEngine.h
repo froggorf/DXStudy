@@ -57,6 +57,7 @@ private:
 
 	std::vector<std::thread>		GameThreads;
 	std::thread						RenderThread;
+	
 
 
 	std::vector<std::function<void()>> ImGuiRenderFunctions;

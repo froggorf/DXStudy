@@ -544,7 +544,7 @@ void AnimationApp::DrawScene()
 	//GDirectXDevice->GetDeviceContext()->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), m_DepthStencilView.Get());
 	
 
-		GEngine->Draw();
+		//GEngine->Draw();
 		
 //#if defined(DEBUG) || defined(_DEBUG)
 //		DebuggingSRV::DrawDebuggingTexture(
