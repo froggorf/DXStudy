@@ -438,7 +438,7 @@ public:
 		if(ImGui::InputText(" ",CurrentText,100))
 		{
 			DebugConsoleSearchText = CurrentText;
-			//SearchDebugConsole();
+			SearchDebugConsole_RenderThread();
 		}
 
 		if(ImGui::BeginListBox(" ", ImVec2(-FLT_MIN, -FLT_MIN)))
