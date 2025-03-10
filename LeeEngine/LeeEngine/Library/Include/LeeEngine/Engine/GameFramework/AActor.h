@@ -20,7 +20,7 @@ public:
 	
 
 	virtual void Init() override;
-
+	virtual void Register() override;
 	const std::shared_ptr<USceneComponent>& GetRootComponent() const { return RootComponent; }
 
 	XMFLOAT3 GetActorLocation() const;

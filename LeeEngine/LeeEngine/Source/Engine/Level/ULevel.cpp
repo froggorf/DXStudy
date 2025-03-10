@@ -34,6 +34,7 @@ ULevel::ULevel(const ULevel* LevelInstance)
 		NewActor->SetActorRotation(Actor->GetActorRotation());
 		NewActor->SetActorScale3D(Actor->GetActorScale3D());
 		Actors.push_back(NewActor);
+		
 	}
 }
 
@@ -53,6 +54,16 @@ ULevel::~ULevel()
 void ULevel::PostLoad()
 {
 	UObject::PostLoad();
+}
+
+void ULevel::Register()
+{
+	UObject::Register();
+
+	for(const auto& Actor : Actors)
+	{
+		Actor->Register();
+	}
 }
 
 void ULevel::TickLevel(float DeltaSeconds)

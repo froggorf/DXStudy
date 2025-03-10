@@ -55,9 +55,12 @@ private:
 	D3DApp* Application;
 	std::shared_ptr<UWorld> CurrentWorld;
 
+	// =============== 쓰레드 =================
 	std::vector<std::thread>		GameThreads;
+	UINT							GameThreadFrameCount = 0;
 	std::thread						RenderThread;
-	
+	UINT							RenderThreadFrameCount = 0;
+	// =======================================
 
 
 	std::vector<std::function<void()>> ImGuiRenderFunctions;

@@ -5,6 +5,7 @@
 #include "Engine/UObject/UObject.h"
 #include "AActor.h"
 
+#include "Engine/UEditorEngine.h"
 #include "Engine/Components/USceneComponent.h"
 
 unsigned int ActorIDCount = 0;
@@ -24,6 +25,13 @@ void AActor::Init()
 
 	ActorID = ActorIDCount++;
 	Rename("Actor_" + std::to_string(ActorID));
+}
+
+void AActor::Register()
+{
+	UObject::Register();
+
+	RootComponent->Register();
 }
 
 XMFLOAT3 AActor::GetActorLocation() const

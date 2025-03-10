@@ -5,6 +5,8 @@
 
 #include "UPrimitiveComponent.h"
 
+#include "Engine/RenderCore/RenderingThread.h"
+
 UINT PrimitiveIDCount = 0;
 
 UPrimitiveComponent::UPrimitiveComponent()
@@ -17,4 +19,12 @@ UPrimitiveComponent::UPrimitiveComponent()
 UPrimitiveComponent::~UPrimitiveComponent()
 {
 
+}
+
+void UPrimitiveComponent::Register()
+{
+	USceneComponent::Register();
+
+	std::shared_ptr<FPrimitiveSceneProxy> PrimitiveSceneProxy = CreateSceneProxy();
+	FScene::AddPrimitive_GameThread(PrimitiveID, PrimitiveSceneProxy);
 }

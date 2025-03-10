@@ -5,6 +5,8 @@
 
 #include "USceneComponent.h"
 
+class FPrimitiveSceneProxy;
+
 class UPrimitiveComponent : public USceneComponent
 {
 	MY_GENERATED_BODY(UPrimitiveComponent)
@@ -13,10 +15,12 @@ public:
 	UPrimitiveComponent();
 	~UPrimitiveComponent() override;
 
-	/*virtual FPrimitiveSceneProxy* CreateSceneProxy() const
+	virtual void Register() override;
+
+	virtual std::shared_ptr<FPrimitiveSceneProxy> CreateSceneProxy() const
 	{
 		return nullptr;
-	}*/
+	}
 
 protected:
 	
@@ -24,8 +28,8 @@ private:
 
 public:
 protected:
-private:
 	UINT PrimitiveID = -1;
+private:
 
 
 };

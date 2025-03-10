@@ -162,6 +162,9 @@
     <ClCompile Include="Source\Engine\DirectX\Device.cpp">
       <Filter>Source\Engine\DirectX</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\SceneProxy\FStaticMeshSceneProxy.cpp">
+      <Filter>Source\Engine\SceneProxy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Animation\Bone.h">
@@ -289,6 +292,9 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\DirectX\Device.h">
       <Filter>Source\Engine\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\SceneProxy\FStaticMeshSceneProxy.h">
+      <Filter>Source\Engine\SceneProxy</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -45,6 +45,10 @@ public:
 	// 디스크에서 로드될 때 실행될 함수
 	virtual void PostLoad();
 
+	// 게임 시작 전 / Spawn 후 게임에 넣기 이전에 호출
+	// 렌더쓰레드에 씬프록시를 추가하는 등의 작업 진행
+	virtual void Register(){}
+
 	std::string GetName() const
 	{
 		return NamePrivate;

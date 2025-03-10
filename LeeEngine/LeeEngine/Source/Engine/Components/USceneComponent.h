@@ -17,6 +17,8 @@ class USceneComponent : public UActorComponent, public std::enable_shared_from_t
 public:
 	USceneComponent();
 
+	virtual void Register() override;
+
 	const std::shared_ptr<USceneComponent>& GetAttachParent() const { return AttachParent; }
 	std::string GetAttachSocketName() const { return AttachSocketName; }
 

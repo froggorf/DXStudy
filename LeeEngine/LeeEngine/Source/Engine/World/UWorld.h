@@ -29,7 +29,7 @@ public:
 
 
 	std::shared_ptr<ULevel> GetPersistentLevel() const { return PersistentLevel; }
-	void SetPersistentLevel(const std::shared_ptr<ULevel>& NewLevel) { PersistentLevel = NewLevel; }
+	void SetPersistentLevel(const std::shared_ptr<ULevel>& NewLevel);
 
 	void LoadLevelInstanceByName(const std::string& NewLevelName);
 

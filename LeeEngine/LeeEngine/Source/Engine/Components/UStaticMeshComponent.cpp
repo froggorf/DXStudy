@@ -6,11 +6,26 @@
 #include "UStaticMeshComponent.h"
 
 #include "Engine/Mesh/UStaticMesh.h"
+#include "Engine/SceneProxy/FStaticMeshSceneProxy.h"
 
 
 UStaticMeshComponent::UStaticMeshComponent()
 {
 	Rename("StaticMeshComponent_" + std::to_string(ComponentID));
+
+}
+
+void UStaticMeshComponent::Register()
+{
+	UMeshComponent::Register();
+
+
+}
+
+std::shared_ptr<FPrimitiveSceneProxy> UStaticMeshComponent::CreateSceneProxy() const
+{
+	std::shared_ptr<FStaticMeshSceneProxy> SceneProxy = std::make_shared<FStaticMeshSceneProxy>(PrimitiveID,StaticMesh);
+	return SceneProxy;
 
 }
 

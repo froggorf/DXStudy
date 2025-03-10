@@ -13,6 +13,7 @@
 #include "Engine/Components/USceneComponent.h"
 #include "Engine/DirectX/Device.h"
 #include "Engine/GameFramework/AActor.h"
+#include "Engine/RenderCore/RenderingThread.h"
 
 UWorld::UWorld()
 {
@@ -48,7 +49,9 @@ void UWorld::TickWorld(float DeltaSeconds)
 {
 	if(PersistentLevel)
 	{
+
 		PersistentLevel->TickLevel(DeltaSeconds);
+
 	}
 }
 
@@ -56,6 +59,13 @@ void UWorld::Tick()
 {
 }
 
+
+void UWorld::SetPersistentLevel(const std::shared_ptr<ULevel>& NewLevel)
+{
+	FScene::InitSceneData_GameThread();
+	PersistentLevel= NewLevel;
+	PersistentLevel->Register();
+}
 
 void UWorld::LoadLevelInstanceByName(const std::string& NewLevelName)
 {

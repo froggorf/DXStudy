@@ -13,6 +13,15 @@ USceneComponent::USceneComponent()
 	UpdateComponentToWorld();
 }
 
+void USceneComponent::Register()
+{
+	UActorComponent::Register();
+
+	for(const auto& Child : AttachChildren)
+	{
+		Child->Register();
+	}
+}
 
 
 void USceneComponent::SetupAttachment(const std::shared_ptr<USceneComponent>& InParent, std::string_view InSocketName)

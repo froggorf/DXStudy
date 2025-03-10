@@ -218,7 +218,6 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const Microsof
         vertexBufferDesc.CPUAccessFlags = 0;
         vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
         vertexBufferDesc.ByteWidth = sizeof(MySkeletalMeshVertexData) * allSkeletalVertices[i].size();
-        std::cout << "sizeof: " << sizeof(MySkeletalMeshVertexData)<<std::endl;
         D3D11_SUBRESOURCE_DATA initVertexData = {};
         initVertexData.pSysMem = allSkeletalVertices[i].data();
         HR(pDevice->CreateBuffer(&vertexBufferDesc,&initVertexData, vertexBuffer.GetAddressOf()));
