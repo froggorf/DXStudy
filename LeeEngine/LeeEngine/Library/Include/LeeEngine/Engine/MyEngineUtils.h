@@ -54,6 +54,13 @@ extern std::unique_ptr<class FDirectXDevice> GDirectXDevice;
 
 // typeid와 __func__ 를 쓰기위해 매크로로 설정
 #define GetFunctionName std::format("{}::{}", typeid(*this).name(), __func__)
+
+#define Make_Transform_Dirty()\
+	if(GEngine&& IsRegister())\
+	{\
+		std::shared_ptr<USceneComponent> Temp =shared_from_this(); \
+		GEngine->MakeComponentTransformDirty(Temp);\
+	}
 // ============================================================================
 
 

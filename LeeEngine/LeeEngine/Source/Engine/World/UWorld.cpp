@@ -35,6 +35,10 @@ void UWorld::Init()
 		FScene::DrawWorldOutliner_RenderThread();
 		FScene::DrawSelectActorDetail_RenderThread();
 	});
+	FScene::AddImGuizmoRenderFunction("Guizmo", []()
+	{
+		FScene::DrawImguizmoSelectedActor_RenderThread();
+	});
 	//GEngine->AddImGuiRenderFunction(std::bind(&UWorld::ImGuiRender_ActorDetail, this));
 
 	//GEngine->AddImGuizmoRenderFunction(std::bind(&UWorld::ImGuizmoRender_SelectComponentGizmo, this));

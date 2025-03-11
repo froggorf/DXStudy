@@ -8,7 +8,7 @@
 #include "Engine/MyEngineUtils.h"
 
 #include "UActorComponent.h"
-
+#include "Engine/UEngine.h"
 
 
 class USceneComponent : public UActorComponent, public std::enable_shared_from_this<USceneComponent>
@@ -18,7 +18,6 @@ public:
 	USceneComponent();
 
 	virtual void Register() override;
-
 	const std::shared_ptr<USceneComponent>& GetAttachParent() const { return AttachParent; }
 	std::string GetAttachSocketName() const { return AttachSocketName; }
 
@@ -29,6 +28,8 @@ public:
 	virtual void UpdateComponentToWorld() override final
 	{
 		UpdateComponentToWorldWithParent(GetAttachParent(), GetAttachSocketName());
+		
+		Make_Transform_Dirty()
 	}
 
 	XMFLOAT3 GetRelativeLocation() const {return RelativeLocation;}
@@ -54,6 +55,10 @@ public:
 
 	const std::vector<std::shared_ptr<USceneComponent>>& GetAttachChildren() const {return AttachChildren;}
 
+	// Primitive Component 전용
+	virtual UINT GetPrimitiveID() const {return PrimitiveID;}
+	virtual bool IsPrimitive() const {return bIsPrimitive;}
+
 	virtual void TestDraw();
 	virtual void TestDrawComponent();
 
@@ -69,6 +74,8 @@ private:
 	XMVECTOR GetRelativeRotationFromWorld(const XMVECTOR& NewWorldRotation);
 public:
 protected:
+	bool bIsPrimitive = false;
+	UINT PrimitiveID = -1;
 private:
 	// Relative Transform
 	DirectX::XMFLOAT3 RelativeLocation = DirectX::XMFLOAT3(0.0f,0.0f,0.0f);

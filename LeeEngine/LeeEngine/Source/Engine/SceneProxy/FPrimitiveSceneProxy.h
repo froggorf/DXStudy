@@ -3,6 +3,7 @@
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
 
+#pragma once
 #include "Engine/MyEngineUtils.h"
 
 
@@ -14,19 +15,24 @@
 // 렌더 쓰레드에서는 ID를 받아 SceneProxy를 직접적으로 조정하여
 // 상호배제를 진행
 
+
 class FPrimitiveSceneProxy
 {
 public:
 	FPrimitiveSceneProxy(UINT InPrimitiveID) : PrimitiveID(InPrimitiveID) {}
-	virtual ~FPrimitiveSceneProxy() {}
-	virtual void Draw() = 0;
+	virtual ~FPrimitiveSceneProxy() = default;
+	virtual void Draw();
 	UINT GetPrimitiveID() const { return PrimitiveID; }
 
+	// 복사되도록 설정
+	void SetSceneProxyWorldTransform(FTransform NewComponentToWorld){ComponentToWorld = NewComponentToWorld;}
 protected:
 private:
 public:
 protected:
 private:
 	UINT PrimitiveID;
+
+	FTransform ComponentToWorld;
 
 };

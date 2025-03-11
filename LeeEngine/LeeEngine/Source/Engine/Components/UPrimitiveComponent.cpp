@@ -12,6 +12,7 @@ UINT PrimitiveIDCount = 0;
 UPrimitiveComponent::UPrimitiveComponent()
 {
 	PrimitiveID = PrimitiveIDCount++;
+	bIsPrimitive=true;
 
 
 }

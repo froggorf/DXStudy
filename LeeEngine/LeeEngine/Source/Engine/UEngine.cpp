@@ -101,14 +101,41 @@ const std::string& UEngine::GetDefaultMapName()
 void UEngine::Tick(float DeltaSeconds)
 {
 	++GameThreadFrameCount;
-	FScene::BeginRenderFrame_GameThread();
+
+	// 컴퍼넌트 변경사항에 대한 변수 초기화
+	//ComponentsTransformDirty.clear();
+
+	std::shared_ptr<FImGUITask> Task;
+	while(FImGuizmoCommandPipe::Dequeue(Task))
+	{
+		Task->CommandLambda();
+	}
+
+
+	FScene::BeginRenderFrame_GameThread(GameThreadFrameCount);
 	if(CurrentWorld)
 	{
 		CurrentWorld->TickWorld(DeltaSeconds);
 	}
 
+	for(const auto& IDAndComponent : ComponentsTransformDirty)
+	{
+		UINT PrimitiveID = IDAndComponent.first;
+		if(IDAndComponent.second->IsPrimitive())
+		{
+			FScene::NewTransformToPrimitive_GameThread(PrimitiveID, IDAndComponent.second->GetComponentTransform());	
+		}
+	}
+	ComponentsTransformDirty.clear();
 
-	FScene::DrawScene_GameThread();
+	if(GameThreadFrameCount > RenderingThreadFrameCount + 3)
+	{
+		FScene::EndRenderFrame_GameThread();
+	}else
+	{
+		FScene::DrawScene_GameThread();	
+	}
+	
 
 	//Draw();
 
@@ -202,6 +229,19 @@ void UEngine::Draw()
 		//HR(GDirectXDevice->GetSwapChain()->Present(0, 0));
 	
 	
+}
+
+void UEngine::MakeComponentTransformDirty(std::shared_ptr<USceneComponent>& SceneComponent)
+{
+	if(!SceneComponent->IsPrimitive())
+	{
+		return;
+	}
+	UINT PrimitiveID = SceneComponent->GetPrimitiveID() ;
+	if(SceneComponent && PrimitiveID> 0)
+	{
+		ComponentsTransformDirty[PrimitiveID] = SceneComponent;
+	}
 }
 
 void UEngine::JoinThreadsAtDestroy()

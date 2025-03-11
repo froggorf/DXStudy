@@ -21,6 +21,8 @@ void USceneComponent::Register()
 	{
 		Child->Register();
 	}
+
+	Make_Transform_Dirty()
 }
 
 
@@ -75,6 +77,7 @@ void USceneComponent::SetRelativeRotation(const DirectX::XMFLOAT3& NewRelRotatio
 		XMConvertToRadians(NewRelRotationPitchYawRoll.z)
 	);
 	SetRelativeRotation(NewQuat);
+
 }
 
 void USceneComponent::SetRelativeRotation(const DirectX::XMFLOAT4& NewRotation)

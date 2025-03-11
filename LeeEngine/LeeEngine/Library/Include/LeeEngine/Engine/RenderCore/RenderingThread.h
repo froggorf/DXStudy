@@ -8,11 +8,13 @@
 #include <ppltasks.h>
 #include <thread>
 
+#include "ImGUIActionTask.h"
 #include "Engine/MyEngineUtils.h"
 #include "Engine/UEditorEngine.h"
 #include "Engine/Components/USceneComponent.h"
 #include "Engine/DirectX/Device.h"
 #include "Engine/GameFramework/AActor.h"
+#include "Engine/SceneProxy/FPrimitiveSceneProxy.h"
 #include "ThirdParty/ImGui/backends/imgui_impl_dx11.h"
 #include "ThirdParty/ImGui/backends/imgui_impl_win32.h"
 
@@ -21,7 +23,6 @@
 
 class USceneComponent;
 class AActor;
-class FPrimitiveSceneProxy;
 
 struct FRenderTask
 {
@@ -95,7 +96,7 @@ private:
 		FRenderCommandPipe::Enqueue(temp);
 
 inline bool bIsGameKill = false;
-inline UINT RenderingThreadFrameCount = 0;
+inline std::atomic<UINT> RenderingThreadFrameCount = 0;
 
 enum class EDebugLogLevel
 {
@@ -181,15 +182,15 @@ public:
 
 	// 렌더쓰레드 프레임 시작 알림 함수
 	// 게임쓰레드 시작 시 호출
-	static void BeginRenderFrame_GameThread()
+	static void BeginRenderFrame_GameThread(UINT GameThreadFrameCount)
 	{
-		ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData)
+		ENQUEUE_RENDER_COMMAND([GameThreadFrameCount](std::shared_ptr<FScene>& SceneData)
 			{
-				BeginRenderFrame_RenderThread(SceneData);	
+				BeginRenderFrame_RenderThread(SceneData, GameThreadFrameCount);	
 			}
 		)
 	}
-	static void BeginRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData)
+	static void BeginRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData, UINT GameThreadFrameCount)
 	{
 		if(SceneData->bIsFrameStart)
 		{
@@ -197,7 +198,7 @@ public:
 			return;
 		}
 
-		++RenderingThreadFrameCount;
+		RenderingThreadFrameCount = GameThreadFrameCount;
 		SceneData->bIsFrameStart = true;
 
 #ifdef MYENGINE_BUILD_DEBUG || MYENGINE_BUILD_DEVELOPMENT
@@ -224,6 +225,16 @@ public:
 		
 	}
 
+	// 렌더 쓰레드 프레임 종료 함수 (Draw에서 호출)
+	static void EndRenderFrame_GameThread()
+	{
+		ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData)
+			{
+				EndRenderFrame_RenderThread(SceneData);	
+			}
+		)
+	}
+
 	// 새로운 UPrimitiveComponent 생성 후 register 시 렌더링 쓰레드에게 알리는 함수
 	static void AddPrimitive_GameThread(UINT PrimitiveID, std::shared_ptr<FPrimitiveSceneProxy>& SceneProxy)
 	{
@@ -246,6 +257,23 @@ public:
 			return;
 		}
 		SceneData->PendingAddSceneProxies[PrimitiveID] = NewProxy;
+	}
+
+	static void NewTransformToPrimitive_GameThread(UINT PrimitiveID, const FTransform& NewTransform)
+	{
+		if(PrimitiveID > 0 )
+		{
+			auto Lambda = [PrimitiveID, NewTransform](std::shared_ptr<FScene>& SceneData)
+				{
+					const auto& SceneProxy = SceneData->PrimitiveSceneProxies.find(PrimitiveID);
+					if(SceneProxy != SceneData->PrimitiveSceneProxies.end())
+					{
+						SceneProxy->second->SetSceneProxyWorldTransform(NewTransform);
+					}
+				};
+			ENQUEUE_RENDER_COMMAND(Lambda)	
+		}
+		
 	}
 
 	// 게임쓰레드 호출_ 씬 렌더링 요청 함수
@@ -282,13 +310,13 @@ public:
 
 
 		//// ImGuizmo
-		//ImGuizmo::BeginFrame();
-		//ImGuiIO& io = ImGui::GetIO();
-		//ImGuizmo::SetRect(0,0,io.DisplaySize.x,io.DisplaySize.y);
-		//for(const auto& Func : ImGuizmoRenderFunctions)
-		//{
-		//	Func();
-		//}
+		ImGuizmo::BeginFrame();
+		ImGuiIO& io = ImGui::GetIO();
+		ImGuizmo::SetRect(0,0,io.DisplaySize.x,io.DisplaySize.y);
+		for(const auto& Func : ImGuizmoRenderFunctions)
+		{
+			Func.second();
+		}
 
 		ImGui::Render();
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -372,6 +400,10 @@ public:
 				// Sampler State 설정
 				GDirectXDevice->GetDeviceContext()->PSSetSamplers(0, 1, GDirectXDevice->GetSamplerState().GetAddressOf());
 
+				for(const auto& SceneProxy : SceneData->PrimitiveSceneProxies)
+				{
+					SceneProxy.second->Draw();
+				}
 				//if(CurrentWorld)
 				//{
 				//	CurrentWorld->TestDrawWorld();
@@ -396,6 +428,10 @@ public:
 	static void AddImGuiRenderFunction(const std::string& Name, const std::function<void()>& NewRenderFunction)
 	{
 		ImGuiRenderFunctions[Name] = NewRenderFunction;
+	}
+	static void AddImGuizmoRenderFunction(const std::string& Name, const std::function<void()>& NewRenderFunction)
+	{
+		ImGuizmoRenderFunctions[Name] = NewRenderFunction;
 	}
 	// 디버깅 콘솔 텍스트 추가 함수
 	static void AddConsoleText_GameThread(const std::string& Category, EDebugLogLevel DebugLevel, const std::string& InDebugText)
@@ -609,19 +645,86 @@ public:
 		}
 	}
 
+	static void DrawImguizmoSelectedActor_RenderThread()
+	{
+		if(!CurrentSelectedActor)
+		{
+			return;
+		}
+
+		static ImGuizmo::OPERATION CurrentGizmoOperation(ImGuizmo::TRANSLATE);
+		static ImGuizmo::MODE CurrentGizmoMode(ImGuizmo::WORLD);
+		if(ImGui::IsKeyPressed(ImGuiKey_Q))
+		{
+			CurrentGizmoOperation = ImGuizmo::TRANSLATE;
+		}
+		if(ImGui::IsKeyPressed(ImGuiKey_W))
+		{
+			CurrentGizmoOperation = ImGuizmo::ROTATE;
+		}
+		if(ImGui::IsKeyPressed(ImGuiKey_E))
+		{
+			CurrentGizmoOperation = ImGuizmo::SCALE;
+		}
+
+		if(ImGui::IsKeyPressed(ImGuiKey_1))
+		{
+			CurrentGizmoMode = ImGuizmo::WORLD;
+		}
+		if(ImGui::IsKeyPressed(ImGuiKey_2))
+		{
+			CurrentGizmoMode = ImGuizmo::LOCAL;
+		}
+
+		const std::shared_ptr<USceneComponent>& CurrentSelectedComponent = SelectActorComponents[CurrentSelectedComponentIndex];
+		FTransform ComponentTransform = CurrentSelectedComponent->GetComponentTransform();
+
+		XMMATRIX ComponentMatrix;
+		ComponentMatrix = ComponentTransform.ToMatrixWithScale();
+
+		XMMATRIX DeltaMatrixTemp = XMMatrixIdentity();
+		float* DeltaMatrix = reinterpret_cast<float*>(&DeltaMatrixTemp);
+
+		XMMATRIX ViewMat = GEngine->Test_DeleteLater_GetViewMatrix();
+		XMMATRIX ProjMat = GEngine->Test_DeleteLater_GetProjectionMatrix();
+
+		//ProjMat = XMMatrixPerspectiveFovRH(0.5*XM_PI, 1600.0f/1200.0f, 1.0f, 1000.0f);;
+		//ImGuizmo::AllowAxisFlip(true);
+		ImGuizmo::Manipulate(reinterpret_cast<float*>(&ViewMat), reinterpret_cast<float*>(&ProjMat),CurrentGizmoOperation,CurrentGizmoMode,reinterpret_cast<float*>(&ComponentMatrix),DeltaMatrix);
+
+		XMFLOAT3 DeltaTranslation;
+		XMFLOAT3 DeltaRot;
+		XMFLOAT3 DeltaScale;
+		ImGuizmo::DecomposeMatrixToComponents(DeltaMatrix, reinterpret_cast<float*>(&DeltaTranslation),reinterpret_cast<float*>(&DeltaRot),reinterpret_cast<float*>(&DeltaScale) );
+		if(CurrentGizmoOperation == ImGuizmo::TRANSLATE)
+		{
+			const auto Lambda = [CurrentSelectedComponent, DeltaTranslation]()
+				{
+					CurrentSelectedComponent->AddWorldOffset(DeltaTranslation);		
+				};
+			ENQUEUE_IMGUIZMO_COMMAND(Lambda)
+			
+		}
+
+		if ((CurrentGizmoOperation == ImGuizmo::ROTATE))
+		{
+			if(XMVectorGetX(XMVector3Length(XMLoadFloat3(&DeltaRot))) > FLT_EPSILON)
+			{
+				//CurrentSelectedComponent->AddWorldRotation(DeltaRot);
+				const auto Lambda = [CurrentSelectedComponent, DeltaRot]()
+					{
+						CurrentSelectedComponent->AddWorldRotation(DeltaRot);		
+					};
+				ENQUEUE_IMGUIZMO_COMMAND(Lambda)
+			}
+
+		}
+	}
+
 	// ===================================================================
 public:
 protected:
 private:
-	//// 렌더 쓰레드 프레임 종료 함수 (Draw에서 호출)
-	//static void EndRenderFrame_GameThread()
-	//{
-	//	ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData)
-	//		{
-	//			EndRenderFrame_RenderThread(SceneData);	
-	//		}
-	//	)
-	//}
 	static void EndRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData)
 	{
 		for(const auto& NewPrimitiveProxy : SceneData->PendingAddSceneProxies)
@@ -660,18 +763,6 @@ public:
 			}
 		}
 	}
-
-	//// 반드시 RenderCommandPipe를 통해 호출해야함
-	//// ENQUE_RENDER_COMMAND(...
-	//static void InitNewSceneData()
-	//{
-	//	if(CurrentSceneData)
-	//	{
-	//		CurrentSceneData.release();
-	//	}
-
-	//	CurrentSceneData = std::make_unique<FScene>();
-	//}
 protected:
 private:
 public:

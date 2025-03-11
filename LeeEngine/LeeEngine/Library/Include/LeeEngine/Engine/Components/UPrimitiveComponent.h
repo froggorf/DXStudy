@@ -22,13 +22,13 @@ public:
 		return nullptr;
 	}
 
+
 protected:
 	
 private:
 
 public:
 protected:
-	UINT PrimitiveID = -1;
 private:
 
 

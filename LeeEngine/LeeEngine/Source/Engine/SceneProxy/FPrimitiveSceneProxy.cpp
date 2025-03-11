@@ -4,3 +4,22 @@
 // 이윤석
 
 #include "FPrimitiveSceneProxy.h"
+
+#include "Engine/DirectX/Device.h"
+
+void FPrimitiveSceneProxy::Draw()
+{
+	{
+		ObjConstantBuffer ocb;
+		XMMATRIX world = ComponentToWorld.ToMatrixWithScale();
+		// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
+		ocb.InvTransposeMatrix = (XMMatrixInverse(nullptr, world));
+		ocb.World = XMMatrixTranspose(world);
+
+		ocb.ObjectMaterial.Ambient  = XMFLOAT4(1.0f,1.0f,1.0f, 1.0f);
+		ocb.ObjectMaterial.Diffuse  = XMFLOAT4(1.0f,1.0f,1.0f, 1.0f);
+		ocb.ObjectMaterial.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 32.0f);
+		
+		GDirectXDevice->GetDeviceContext()->UpdateSubresource(GDirectXDevice->GetObjConstantBuffer().Get(), 0, nullptr, &ocb, 0, 0);
+	}
+}

@@ -3,7 +3,7 @@
 #include "Engine/Components/UStaticMeshComponent.h"
 #include "Engine/Mesh/UStaticMesh.h"
 
-ATestActor2::ATestActor2()
+ATestActor2::ATestActor2() 
 {
 	TestSMComp = std::make_shared<UStaticMeshComponent>();
 	TestSMComp->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Cube"));

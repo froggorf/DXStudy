@@ -47,8 +47,9 @@ public:
 
 	// 게임 시작 전 / Spawn 후 게임에 넣기 이전에 호출
 	// 렌더쓰레드에 씬프록시를 추가하는 등의 작업 진행
-	virtual void Register(){}
-
+	virtual void Register(){bIsRegister = true;}
+	bool IsRegister() const {return bIsRegister;}
+	
 	std::string GetName() const
 	{
 		return NamePrivate;
@@ -68,7 +69,7 @@ private:
 	std::string NamePrivate;
 
 private:
-
+	bool bIsRegister = false;
 private:
 	//MY_GENERATED_BODY(UObject)
 	// Class Default Object 보관
@@ -76,6 +77,7 @@ private:
 		static std::unordered_map<std::string, std::unique_ptr<UObject>> ClassDefaultObjectMap;
 		return ClassDefaultObjectMap;
 	}
+
 public:
 	static void AddClassDefaultObject(const std::string& ClassName, std::unique_ptr<UObject>&& DefaultObject)
 	{

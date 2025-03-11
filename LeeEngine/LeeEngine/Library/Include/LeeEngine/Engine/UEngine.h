@@ -7,11 +7,14 @@
 
 #include <functional>
 #include <thread>
+#include <unordered_set>
 
 #include "DirectX/d3dApp.h"
 #include "Engine/MyEngineUtils.h"
 #include "Engine/UObject/UObject.h"
 
+
+class USceneComponent;
 
 class UEngine : public UObject
 {
@@ -34,12 +37,14 @@ public:
 
 	const std::string& GetDirectoryPath() const { return CurrentDirectory; }
 
+	void MakeComponentTransformDirty(std::shared_ptr<USceneComponent>& SceneComponent);
 
 	XMMATRIX Test_DeleteLater_GetViewMatrix() const {return Application->Test_DeleteLater_GetViewMatrix();}
 	XMMATRIX Test_DeleteLater_GetProjectionMatrix() const {return Application->Test_DeleteLater_GetProjectionMatrix();}
 	XMFLOAT3 Test_DeleteLater_GetCameraPosition() const {return Application->Test_DELETELATER_GetCameraPosition();}
 
 	void JoinThreadsAtDestroy();
+	bool IsStartGameThread() { return GameThreadFrameCount > 0; }
 protected:
 private:
 	// ============= ImGui =============
@@ -62,7 +67,8 @@ private:
 	UINT							RenderThreadFrameCount = 0;
 	// =======================================
 
-
-
+	// =============== 컴퍼넌트 변경사항 ================
+	// 중복 원소만 들어가지 않으면되며, 순서가 중요하지 않음
+	std::unordered_map<UINT, std::shared_ptr<USceneComponent>> ComponentsTransformDirty;
 	std::string CurrentDirectory;
 };
