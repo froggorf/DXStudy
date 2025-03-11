@@ -18,3 +18,12 @@ std::vector<DebugText> FScene::DebugConsoleText;
 std::vector<DebugText> FScene::PendingAddDebugConsoleText;
 std::vector<DebugText> FScene::SearchingDebugConsoleText;
 std::string FScene::DebugConsoleSearchText;
+
+// 월드 아웃라이너
+std::vector<std::shared_ptr<AActor>> FScene::WorldOutlinerActors;
+std::vector<std::shared_ptr<AActor>> FScene::PendingAddWorldOutlinerActors;
+std::shared_ptr<AActor> FScene::CurrentSelectedActor = nullptr;
+std::vector<std::shared_ptr<USceneComponent>> FScene::SelectActorComponents;
+std::vector<std::string> FScene:: SelectActorComponentNames;
+
+int FScene::CurrentSelectedComponentIndex = -1;

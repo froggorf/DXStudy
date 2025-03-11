@@ -32,6 +32,8 @@ void AActor::Register()
 	UObject::Register();
 
 	RootComponent->Register();
+
+	FScene::AddWorldOutlinerActor_GameThread(shared_from_this());
 }
 
 XMFLOAT3 AActor::GetActorLocation() const

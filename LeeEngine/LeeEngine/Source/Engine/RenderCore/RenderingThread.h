@@ -10,13 +10,17 @@
 
 #include "Engine/MyEngineUtils.h"
 #include "Engine/UEditorEngine.h"
+#include "Engine/Components/USceneComponent.h"
 #include "Engine/DirectX/Device.h"
+#include "Engine/GameFramework/AActor.h"
 #include "ThirdParty/ImGui/backends/imgui_impl_dx11.h"
 #include "ThirdParty/ImGui/backends/imgui_impl_win32.h"
 
 // 다수의 게임 쓰레드에서 단일의 렌더쓰레드가 수행할 명령을 관리하는 파이프라인
 // Multi-Producer(GameThread) Single-Consumer(RenderThread) Queue
 
+class USceneComponent;
+class AActor;
 class FPrimitiveSceneProxy;
 
 struct FRenderTask
@@ -131,6 +135,14 @@ public:
 	static std::vector<DebugText> PendingAddDebugConsoleText;
 	static std::vector<DebugText> SearchingDebugConsoleText;
 	static std::string DebugConsoleSearchText;
+
+	// 월드 아웃라이너
+	static std::vector<std::shared_ptr<AActor>> WorldOutlinerActors;
+	static std::vector<std::shared_ptr<AActor>> PendingAddWorldOutlinerActors;
+	static std::shared_ptr<AActor> CurrentSelectedActor;
+	static std::vector<std::shared_ptr<USceneComponent>> SelectActorComponents;
+	static std::vector<std::string> SelectActorComponentNames;
+	static int CurrentSelectedComponentIndex;
 	// ==================== ImGui ====================
 
 	bool bIsFrameStart;
@@ -191,6 +203,11 @@ public:
 			DebugConsoleText.push_back(Text);
 		}
 		PendingAddDebugConsoleText.clear();
+		for(const auto& NewOutlinerActor : PendingAddWorldOutlinerActors)
+		{
+			WorldOutlinerActors.push_back(NewOutlinerActor);
+		}
+		PendingAddWorldOutlinerActors.clear();
 #endif
 
 		for(const auto& NewPrimitiveProxy : SceneData->PendingAddSceneProxies)
@@ -390,7 +407,7 @@ public:
 	}
 
 
-	// ==================== IMGUI / IMGUIZMO (하드코딩) ===================
+	// ==================== IMGUI / IMGUIZMO ===================
 	static void AddImGuiRenderFunction(const std::string& Name, const std::function<void()>& NewRenderFunction)
 	{
 		ImGuiRenderFunctions[Name] = NewRenderFunction;
@@ -408,6 +425,7 @@ public:
 		)
 #endif
 	}
+	
 	static void SearchDebugConsole_RenderThread()
 	{
 		SearchingDebugConsoleText.clear();
@@ -478,6 +496,129 @@ public:
 
 
 		ImGui::End();
+	}
+
+	static void DrawWorldOutliner_RenderThread()
+	{
+		static int CurrentItem = -1;
+		ImGui::Begin("World Outliner", nullptr);
+
+		if (ImGui::BeginListBox(" ", ImVec2(-FLT_MIN,-FLT_MIN))) {
+			int ActorCount = WorldOutlinerActors.size();
+			for (int i = 0; i < ActorCount; i++) {
+				const bool is_selected = (CurrentItem== i);
+				if (ImGui::Selectable(WorldOutlinerActors[i]->GetName().c_str(), is_selected)) {
+					CurrentItem = i;
+					SelectActorFromWorldOutliner_RenderThread(WorldOutlinerActors[i]);
+				}
+
+				// 선택된 항목에 대한 포커스 처리
+				if (is_selected) {
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndListBox();
+		}
+		
+		ImGui::End();
+
+	}
+
+	static void DrawSelectActorDetail_RenderThread()
+	{
+		ImGui::Begin("Detail");
+		if(CurrentSelectedActor)
+		{
+			// 컴퍼넌트들 렌더링
+			{
+				if(ImGui::BeginListBox(" ", ImVec2(-FLT_MIN,200.0f)))
+				{
+					int ComponentCount = SelectActorComponentNames.size();
+					for (int i = 0; i < ComponentCount; i++) {
+						const bool is_selected = (CurrentSelectedComponentIndex == i);
+						if (ImGui::Selectable(SelectActorComponentNames[i].data(), is_selected)) {
+							CurrentSelectedComponentIndex = i;
+							// TODO : Select Component Action
+						}
+
+						if (is_selected) {
+							ImGui::SetItemDefaultFocus();
+						}
+					}
+					ImGui::EndListBox();
+				}
+			}
+
+		}
+		else
+		{
+			ImGui::Text("No Select");
+		}
+		ImGui::End();
+	}
+
+	static void AddWorldOutlinerActor_GameThread(std::shared_ptr<AActor> NewActor)
+	{
+		ENQUEUE_RENDER_COMMAND([NewActor](std::shared_ptr<FScene>& Dummy)
+		{
+			FScene::AddWorldOutlinerActor_RenderThread(NewActor);
+		})
+	}
+	//static void AddWorldOutlinerActor_GameThread(std::vector<std::shared_ptr<AActor>>& NewActors)
+	//{
+	//	ENQUEUE_RENDER_COMMAND([NewActors](std::shared_ptr<FScene>& Dummy)
+	//		{
+	//			
+	//			FScene::AddWorldOutlinerActor_RenderThread(NewActors);
+	//		})
+	//}
+	static void AddWorldOutlinerActor_RenderThread(std::shared_ptr<AActor> NewActor)
+	{
+		PendingAddWorldOutlinerActors.push_back(NewActor);
+	}
+	//static void AddWorldOutlinerActor_RenderThread(std::vector<std::shared_ptr<AActor>> NewActors)
+	//{
+	//	PendingAddWorldOutlinerActors.reserve(PendingAddWorldOutlinerActors.capacity() + NewActors.size());
+	//	for(const auto& NewActor : NewActors)
+	//	{
+	//		PendingAddWorldOutlinerActors.push_back(NewActor);
+	//	}
+	//	
+	//}
+
+	static void SelectActorFromWorldOutliner_RenderThread(const std::shared_ptr<AActor>& NewSelectedActor)
+	{
+		SelectActorComponents.clear();
+		SelectActorComponentNames.clear();
+		CurrentSelectedComponentIndex = 0;
+		CurrentSelectedActor = NewSelectedActor;
+		FindComponentsAndNamesFromActor_RenderThread(CurrentSelectedActor->GetRootComponent(), 0);
+	}
+
+	static void FindComponentsAndNamesFromActor_RenderThread(const std::shared_ptr<USceneComponent>& TargetComponent, int CurrentHierarchyDepth)
+	{
+		if(!CurrentSelectedActor)
+		{
+			return;
+		}
+
+		std::string HierarchyTabString;
+		HierarchyTabString.reserve(2*CurrentHierarchyDepth);
+		for(int i = 0; i < CurrentHierarchyDepth; ++i)
+		{
+			HierarchyTabString += "  ";
+		}
+		
+		std::string TargetComponentName = HierarchyTabString + TargetComponent->GetName();
+
+		SelectActorComponents.push_back(TargetComponent);
+		SelectActorComponentNames.push_back(TargetComponentName);
+
+		const std::vector<std::shared_ptr<USceneComponent>>& TargetComponentChildren = TargetComponent->GetAttachChildren();
+		for(const auto& ChildComponent : TargetComponentChildren)
+		{
+			FindComponentsAndNamesFromActor_RenderThread(ChildComponent, CurrentHierarchyDepth+1);
+		}
 	}
 
 	// ===================================================================

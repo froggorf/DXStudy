@@ -204,18 +204,6 @@ void UEngine::Draw()
 	
 }
 
-void UEngine::AddImGuiRenderFunction(const std::function<void()>& NewRenderFunction)
-{
-	// TODO: 중복 체크에 대한 부분이 필요
-	//ImGuiRenderFunctions.push_back(NewRenderFunction);
-}
-
-void UEngine::AddImGuizmoRenderFunction(const std::function<void()>& NewRenderFunction)
-{
-	//ImGuizmoRenderFunctions.push_back(NewRenderFunction);
-}
-
-
 void UEngine::JoinThreadsAtDestroy()
 {
 	if(RenderThread.joinable())

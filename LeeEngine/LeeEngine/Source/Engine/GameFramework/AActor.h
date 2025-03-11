@@ -10,7 +10,7 @@
 
 class USceneComponent;
 
-class AActor : public UObject
+class AActor : public UObject, public std::enable_shared_from_this<AActor>
 {
 	MY_GENERATED_BODY(AActor)
 

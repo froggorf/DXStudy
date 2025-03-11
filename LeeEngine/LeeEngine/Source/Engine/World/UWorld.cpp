@@ -29,10 +29,15 @@ void UWorld::Init()
 {
 	UObject::Init();
 
-	GEngine->AddImGuiRenderFunction(std::bind(&UWorld::ImguiRender_WorldOutliner, this));
-	GEngine->AddImGuiRenderFunction(std::bind(&UWorld::ImGuiRender_ActorDetail, this));
+	//GEngine->AddImGuiRenderFunction(std::bind(&UWorld::ImguiRender_WorldOutliner, this));
+	FScene::AddImGuiRenderFunction("World Outliner", []()
+	{
+		FScene::DrawWorldOutliner_RenderThread();
+		FScene::DrawSelectActorDetail_RenderThread();
+	});
+	//GEngine->AddImGuiRenderFunction(std::bind(&UWorld::ImGuiRender_ActorDetail, this));
 
-	GEngine->AddImGuizmoRenderFunction(std::bind(&UWorld::ImGuizmoRender_SelectComponentGizmo, this));
+	//GEngine->AddImGuizmoRenderFunction(std::bind(&UWorld::ImGuizmoRender_SelectComponentGizmo, this));
 }
 
 void UWorld::PostLoad()

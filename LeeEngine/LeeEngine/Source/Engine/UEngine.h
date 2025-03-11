@@ -34,8 +34,6 @@ public:
 
 	const std::string& GetDirectoryPath() const { return CurrentDirectory; }
 
-	void AddImGuiRenderFunction(const std::function<void()>& NewRenderFunction);
-	void AddImGuizmoRenderFunction(const std::function<void()>& NewRenderFunction);
 
 	XMMATRIX Test_DeleteLater_GetViewMatrix() const {return Application->Test_DeleteLater_GetViewMatrix();}
 	XMMATRIX Test_DeleteLater_GetProjectionMatrix() const {return Application->Test_DeleteLater_GetProjectionMatrix();}
