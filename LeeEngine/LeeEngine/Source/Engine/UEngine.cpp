@@ -311,11 +311,9 @@ void UEngine::LoadAllObjectsFromFile()
 	// TODO: 추후 디스크 읽는 라이브러리를 사용하기
 
 	/*
-	 *디스크를 읽는것 자체는 문제가 없으나,
-	 *지금 그 게 Level인지, StaticMesh인지 그걸 모르잖아.
-	 *그러니까 ...
-	 *파일들 첫글자에
 	 */
+	
+
 
 	// Mesh
 	AssetManager::ReadMyAsset(CurrentDirectory + "/Content/StaticMesh/SM_Racco.myasset");

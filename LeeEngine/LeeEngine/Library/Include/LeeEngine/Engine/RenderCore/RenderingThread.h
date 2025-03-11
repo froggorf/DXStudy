@@ -696,7 +696,7 @@ public:
 		XMFLOAT3 DeltaRot;
 		XMFLOAT3 DeltaScale;
 		ImGuizmo::DecomposeMatrixToComponents(DeltaMatrix, reinterpret_cast<float*>(&DeltaTranslation),reinterpret_cast<float*>(&DeltaRot),reinterpret_cast<float*>(&DeltaScale) );
-		if(CurrentGizmoOperation == ImGuizmo::TRANSLATE)
+		if(CurrentGizmoOperation == ImGuizmo::TRANSLATE && XMVectorGetX(XMVector3LengthEst(XMLoadFloat3(&DeltaTranslation))) > FLT_EPSILON)
 		{
 			const auto Lambda = [CurrentSelectedComponent, DeltaTranslation]()
 				{
@@ -706,7 +706,7 @@ public:
 			
 		}
 
-		if ((CurrentGizmoOperation == ImGuizmo::ROTATE))
+		if ((CurrentGizmoOperation == ImGuizmo::ROTATE) && XMVectorGetX(XMVector3LengthEst(XMLoadFloat3(&DeltaRot))) > FLT_EPSILON)
 		{
 			if(XMVectorGetX(XMVector3Length(XMLoadFloat3(&DeltaRot))) > FLT_EPSILON)
 			{
