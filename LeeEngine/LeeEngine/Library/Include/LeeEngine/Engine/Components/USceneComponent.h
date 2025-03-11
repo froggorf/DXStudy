@@ -59,8 +59,6 @@ public:
 	virtual UINT GetPrimitiveID() const {return PrimitiveID;}
 	virtual bool IsPrimitive() const {return bIsPrimitive;}
 
-	virtual void TestDraw();
-	virtual void TestDrawComponent();
 
 	
 protected:

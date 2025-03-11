@@ -31,7 +31,6 @@ public:
 	void SetActorScale3D(const XMFLOAT3& NewScale3D) const;
 
 	virtual void Tick(float DeltaSeconds);
-	virtual void TestDraw();
 protected:
 
 private:

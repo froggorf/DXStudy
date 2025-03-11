@@ -19,8 +19,6 @@ public:
 	const std::shared_ptr<UStaticMesh>& GetStaticMesh() const { return StaticMesh; }
 
 
-	virtual void TestDraw() override;
-	virtual void TestDrawComponent() override;
 protected:
 private:
 public:

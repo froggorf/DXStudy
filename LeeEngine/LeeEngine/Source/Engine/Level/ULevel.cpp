@@ -75,13 +75,6 @@ void ULevel::TickLevel(float DeltaSeconds)
 	}
 }
 
-void ULevel::TestDrawLevel()
-{
-	for(const auto& Actor : Actors)
-	{
-		Actor->TestDraw();
-	}
-}
 
 void ULevel::LoadDataFromFileData(const nlohmann::json& AssetData)
 {

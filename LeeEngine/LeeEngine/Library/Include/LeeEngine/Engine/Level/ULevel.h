@@ -28,7 +28,6 @@ public:
 
 	const std::vector<std::shared_ptr<AActor>>& GetLevelActors() const {return Actors;};
 
-	void TestDrawLevel();
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 

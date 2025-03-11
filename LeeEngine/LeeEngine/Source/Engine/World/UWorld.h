@@ -35,11 +35,7 @@ public:
 
 	void AddLevel(const std::shared_ptr<ULevel>& NewLevel);
 	void RemoveLevel(const std::shared_ptr<ULevel>& Level);
-	void TestDrawWorld();
 
-	// ========================== ImGui && ImGuizmo ==========================
-	void ImGuizmoRender_SelectComponentGizmo();
-	// =======================================================================
 	
 protected:
 private:

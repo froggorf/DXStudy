@@ -32,7 +32,6 @@ public:
 	virtual void LoadDefaultMap();
 	virtual const std::string& GetDefaultMapName();
 	void Tick(float DeltaSeconds);
-	void Draw();
 	const std::shared_ptr<UWorld>& GetWorld() const {return CurrentWorld;}
 
 	const std::string& GetDirectoryPath() const { return CurrentDirectory; }
@@ -49,7 +48,6 @@ protected:
 private:
 	// ============= ImGui =============
 	void InitImGui();
-	void DrawImGui();
 	// =================================
 	void LoadAllObjectsFromFile();
 public:

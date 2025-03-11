@@ -162,24 +162,6 @@ FTransform& USceneComponent::GetSocketTransform(const std::string& InSocketName)
 	return ComponentToWorld;
 }
 
-void USceneComponent::TestDraw()
-{
-	TestDrawComponent();
-
-	//int ComponentCount = AttachChildren.size();
-	//for(int index = 0; index < ComponentCount; ++index)
-	//{
-	//	AttachChildren[index]->TestDraw();
-	//}
-	for(const auto& ChildComponent : AttachChildren)
-	{
-		ChildComponent->TestDraw();
-	}
-}
-
-void USceneComponent::TestDrawComponent()
-{
-}
 
 void USceneComponent::SetAttachParent(const std::shared_ptr<USceneComponent>& NewAttachParent)
 {
