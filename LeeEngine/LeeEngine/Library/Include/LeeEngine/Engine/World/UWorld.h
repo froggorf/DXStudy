@@ -38,11 +38,6 @@ public:
 	void TestDrawWorld();
 
 	// ========================== ImGui && ImGuizmo ==========================
-	void ImguiRender_WorldOutliner();
-	void ImGuiAction_SelectActor(const std::shared_ptr<AActor>& NewSelectActor);
-	// 타겟 컴퍼넌트의 정보와 해당 타겟 컴퍼넌트의 자식들의 정보를 저장
-	void ImGuiAction_FindActorComponentsAndNames(const std::shared_ptr<USceneComponent>& TargetComponent, int CurrentHierarchyDepth);
-	void ImGuiRender_ActorDetail();
 	void ImGuizmoRender_SelectComponentGizmo();
 	// =======================================================================
 	

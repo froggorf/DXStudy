@@ -148,18 +148,19 @@ public:
 	bool bIsFrameStart;
 protected:
 public:
-
+	// 엔진 종료 시 렌더링 쓰레드를 죽이는 함수
 	static void KillRenderingThread()
 	{
 		bIsGameKill = true;
 	}
+	// ImGUI 종료 함수
 	static void ShutdownImgui()
 	{
 		ImGui_ImplDX11_Shutdown();
 		ImGui_ImplWin32_Shutdown();
 		ImGui::DestroyContext();
 	}
-
+	// 게임쓰레드 _ 레벨마다 가진 씬 데이터를 Init하는 함수 
 	static void InitSceneData_GameThread()
 	{ 
 		ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData)
@@ -168,7 +169,7 @@ public:
 			}
 		)
 	}
-
+	// InitSceneData_GameThread()
 	static void InitSceneData_RenderThread(std::shared_ptr<FScene>& SceneData)
 	{
 		if(SceneData)
@@ -178,6 +179,8 @@ public:
 		SceneData = std::make_shared<FScene>();
 	}
 
+	// 렌더쓰레드 프레임 시작 알림 함수
+	// 게임쓰레드 시작 시 호출
 	static void BeginRenderFrame_GameThread()
 	{
 		ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData)
@@ -221,25 +224,7 @@ public:
 		
 	}
 
-	static void EndRenderFrame_GameThread()
-	{
-		ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData)
-			{
-				EndRenderFrame_RenderThread(SceneData);	
-			}
-		)
-	}
-	static void EndRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData)
-	{
-		for(const auto& NewPrimitiveProxy : SceneData->PendingAddSceneProxies)
-		{
-			SceneData->PrimitiveSceneProxies[NewPrimitiveProxy.first] = NewPrimitiveProxy.second;
-
-		}
-		SceneData->PendingAddSceneProxies.clear();
-		SceneData->bIsFrameStart = false;
-	}
-
+	// 새로운 UPrimitiveComponent 생성 후 register 시 렌더링 쓰레드에게 알리는 함수
 	static void AddPrimitive_GameThread(UINT PrimitiveID, std::shared_ptr<FPrimitiveSceneProxy>& SceneProxy)
 	{
 		if(nullptr == SceneProxy)
@@ -263,6 +248,7 @@ public:
 		SceneData->PendingAddSceneProxies[PrimitiveID] = NewProxy;
 	}
 
+	// 게임쓰레드 호출_ 씬 렌더링 요청 함수
 	static void DrawScene_GameThread()
 	{
 		ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData)
@@ -272,7 +258,6 @@ public:
 		})
 		
 	}
-
 	static void DrawIMGUI_RenderThread(std::shared_ptr<FScene> SceneData)
 	{
 		/*if(ImGuiRenderFunctions.size() == 0)
@@ -308,7 +293,6 @@ public:
 		ImGui::Render();
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 	}
-
 	static void DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 	{
 		// 프레임 단위 세팅
@@ -408,10 +392,12 @@ public:
 
 
 	// ==================== IMGUI / IMGUIZMO ===================
+	// ImGUI렌더링 함수(람다) 추가 함수
 	static void AddImGuiRenderFunction(const std::string& Name, const std::function<void()>& NewRenderFunction)
 	{
 		ImGuiRenderFunctions[Name] = NewRenderFunction;
 	}
+	// 디버깅 콘솔 텍스트 추가 함수
 	static void AddConsoleText_GameThread(const std::string& Category, EDebugLogLevel DebugLevel, const std::string& InDebugText)
 	{
 #ifdef MYENGINE_BUILD_DEBUG || MYENGINE_BUILD_DEVELOPMENT
@@ -425,7 +411,7 @@ public:
 		)
 #endif
 	}
-	
+	// Search Debug Console
 	static void SearchDebugConsole_RenderThread()
 	{
 		SearchingDebugConsoleText.clear();
@@ -444,7 +430,7 @@ public:
 			}
 		}
 	}
-
+	// 렌더링 Debug Console
 	static void DrawDebugConsole_RenderThread()
 	{
 		ImGui::Begin("Debug Console");
@@ -498,6 +484,7 @@ public:
 		ImGui::End();
 	}
 
+	// 월드 아웃라이너 렌더링 함수
 	static void DrawWorldOutliner_RenderThread()
 	{
 		static int CurrentItem = -1;
@@ -523,7 +510,7 @@ public:
 		ImGui::End();
 
 	}
-
+	// 월드 아웃라이너_액터 선택시 디테일 패널 출력
 	static void DrawSelectActorDetail_RenderThread()
 	{
 		ImGui::Begin("Detail");
@@ -556,7 +543,7 @@ public:
 		}
 		ImGui::End();
 	}
-
+	// 게임쓰레드 호출_월드 아웃라이너 내 액터 추가 함수 (register 시 호출)
 	static void AddWorldOutlinerActor_GameThread(std::shared_ptr<AActor> NewActor)
 	{
 		ENQUEUE_RENDER_COMMAND([NewActor](std::shared_ptr<FScene>& Dummy)
@@ -572,6 +559,7 @@ public:
 	//			FScene::AddWorldOutlinerActor_RenderThread(NewActors);
 	//		})
 	//}
+	
 	static void AddWorldOutlinerActor_RenderThread(std::shared_ptr<AActor> NewActor)
 	{
 		PendingAddWorldOutlinerActors.push_back(NewActor);
@@ -585,7 +573,7 @@ public:
 	//	}
 	//	
 	//}
-
+	// 월드 아웃라이너의 액터를 선택 시 호출되는 함수
 	static void SelectActorFromWorldOutliner_RenderThread(const std::shared_ptr<AActor>& NewSelectedActor)
 	{
 		SelectActorComponents.clear();
@@ -594,7 +582,7 @@ public:
 		CurrentSelectedActor = NewSelectedActor;
 		FindComponentsAndNamesFromActor_RenderThread(CurrentSelectedActor->GetRootComponent(), 0);
 	}
-
+	// 선택된 월드아웃라이너 액터의 컴퍼넌트 계층구조를 찾는 함수
 	static void FindComponentsAndNamesFromActor_RenderThread(const std::shared_ptr<USceneComponent>& TargetComponent, int CurrentHierarchyDepth)
 	{
 		if(!CurrentSelectedActor)
@@ -625,6 +613,25 @@ public:
 public:
 protected:
 private:
+	//// 렌더 쓰레드 프레임 종료 함수 (Draw에서 호출)
+	//static void EndRenderFrame_GameThread()
+	//{
+	//	ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData)
+	//		{
+	//			EndRenderFrame_RenderThread(SceneData);	
+	//		}
+	//	)
+	//}
+	static void EndRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData)
+	{
+		for(const auto& NewPrimitiveProxy : SceneData->PendingAddSceneProxies)
+		{
+			SceneData->PrimitiveSceneProxies[NewPrimitiveProxy.first] = NewPrimitiveProxy.second;
+
+		}
+		SceneData->PendingAddSceneProxies.clear();
+		SceneData->bIsFrameStart = false;
+	}
 };
 
 
