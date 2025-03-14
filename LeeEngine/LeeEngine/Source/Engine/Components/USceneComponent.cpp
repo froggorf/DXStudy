@@ -195,9 +195,6 @@ void USceneComponent::UpdateComponentToWorldWithParent(const std::shared_ptr<USc
 		ComponentToWorld = Parent->ComponentToWorld * RelTransform;	
 	}
 
-	
-	
-
 	for(const auto& Child : AttachChildren)
 	{
 		Child->UpdateComponentToWorld();

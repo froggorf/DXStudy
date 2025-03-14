@@ -111,7 +111,6 @@ void UEngine::Tick(float DeltaSeconds)
 		Task->CommandLambda();
 	}
 
-
 	FScene::BeginRenderFrame_GameThread(GameThreadFrameCount);
 	if(CurrentWorld)
 	{
@@ -192,8 +191,6 @@ void UEngine::InitImGui()
 void UEngine::LoadAllObjectsFromFile()
 {
 	// 디스크에 내에 있는 모든 myasset 파일을 로드하는 함수
-	// TODO: 추후 디스크 읽는 라이브러리를 사용하기
-
 	std::vector<std::filesystem::path> MyAssetFiles;
 	MyAssetFiles.reserve(100);
 	std::string ContentDirectory = CurrentDirectory + "/Content";
@@ -220,15 +217,6 @@ void UEngine::LoadAllObjectsFromFile()
 		
 		AssetManager::ReadMyAsset(FilePath);
 	}
-
-	// Mesh
-	//AssetManager::ReadMyAsset(CurrentDirectory + "/Content/StaticMesh/SM_Racco.myasset");
-	//AssetManager::ReadMyAsset(CurrentDirectory+"/Content/StaticMesh/SM_Cube.myasset");
-	//AssetManager::ReadMyAsset(CurrentDirectory+"/Content/StaticMesh/SM_Sphere.myasset");
-	//
-	//// Level
-	//AssetManager::ReadMyAsset(CurrentDirectory+"/Content/Level/TestLevel.myasset");
-
 
 	MY_LOG("Load",EDebugLogLevel::DLL_Warning, "Load All Objects From File Success");
 }

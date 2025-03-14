@@ -201,9 +201,6 @@ public:
 		RenderingThreadFrameCount = GameThreadFrameCount;
 		SceneData->bIsFrameStart = true;
 
-	
-
-
 #ifdef MYENGINE_BUILD_DEBUG || MYENGINE_BUILD_DEVELOPMENT
 		for(const auto& Text : PendingAddDebugConsoleText)
 		{

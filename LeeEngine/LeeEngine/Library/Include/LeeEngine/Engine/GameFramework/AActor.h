@@ -16,8 +16,6 @@ class AActor : public UObject, public std::enable_shared_from_this<AActor>
 
 public:
 	AActor();
-	
-	
 
 	virtual void Init() override;
 	virtual void Register() override;

@@ -60,6 +60,8 @@ void ULevel::Register()
 {
 	UObject::Register();
 
+	FScene::InitSceneData_GameThread();
+
 	for(const auto& Actor : Actors)
 	{
 		Actor->Register();

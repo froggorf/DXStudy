@@ -29,7 +29,6 @@ void UWorld::Init()
 {
 	UObject::Init();
 
-	//GEngine->AddImGuiRenderFunction(std::bind(&UWorld::ImguiRender_WorldOutliner, this));
 	FScene::AddImGuiRenderFunction("World Outliner", []()
 	{
 		FScene::DrawWorldOutliner_RenderThread();
@@ -39,9 +38,6 @@ void UWorld::Init()
 	{
 		FScene::DrawImguizmoSelectedActor_RenderThread();
 	});
-	//GEngine->AddImGuiRenderFunction(std::bind(&UWorld::ImGuiRender_ActorDetail, this));
-
-	//GEngine->AddImGuizmoRenderFunction(std::bind(&UWorld::ImGuizmoRender_SelectComponentGizmo, this));
 }
 
 void UWorld::PostLoad()
@@ -71,7 +67,6 @@ void UWorld::Tick()
 
 void UWorld::SetPersistentLevel(const std::shared_ptr<ULevel>& NewLevel)
 {
-	FScene::InitSceneData_GameThread();
 	PersistentLevel= NewLevel;
 	PersistentLevel->Register();
 }
