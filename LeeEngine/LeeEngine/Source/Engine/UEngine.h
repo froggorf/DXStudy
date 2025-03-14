@@ -44,6 +44,8 @@ public:
 
 	void JoinThreadsAtDestroy();
 	bool IsStartGameThread() { return GameThreadFrameCount > 0; }
+
+	const D3DApp* GetApplication() const {return Application;}
 protected:
 private:
 	// ============= ImGui =============

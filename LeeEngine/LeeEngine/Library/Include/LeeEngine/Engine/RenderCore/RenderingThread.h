@@ -201,6 +201,9 @@ public:
 		RenderingThreadFrameCount = GameThreadFrameCount;
 		SceneData->bIsFrameStart = true;
 
+	
+
+
 #ifdef MYENGINE_BUILD_DEBUG || MYENGINE_BUILD_DEVELOPMENT
 		for(const auto& Text : PendingAddDebugConsoleText)
 		{
@@ -323,6 +326,43 @@ public:
 	}
 	static void DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 	{
+		// 임시 렌더링 쓰레드 FPS 측정
+		{
+			static GameTimer test;
+			static bool startbool = false;
+			if(!startbool)
+			{
+				test.Reset();
+				startbool = true;
+			}
+			test.Tick();
+			static int frameCnt = 0;
+			static float timeElapsed = 0.0f;
+
+			frameCnt++;
+
+			// Compute averages over one second period.
+			if( (test.TotalTime() - timeElapsed) >= 1.0f )
+			{
+				float fps = (float)frameCnt; // fps = frameCnt / 1
+				float mspf = 1000.0f / fps;
+
+				std::wostringstream outs;
+				outs.precision(6);
+				outs  << L"    "
+					<< L"FPS: " << fps << L"    " 
+					<< L"Frame Time: " << mspf << L" (ms)";
+				//SetWindowText(m_hMainWnd, outs.str().c_str());
+				if(GEngine)
+				{
+					GEngine->GetApplication()->TestSetWindowBarName(outs);
+				}
+
+				// Reset for next average.
+				frameCnt = 0;
+				timeElapsed += 1.0f;
+			}
+		}
 		// 프레임 단위 세팅
 		{
 			GDirectXDevice->GetDeviceContext()->OMSetRenderTargets(1, GDirectXDevice->GetRenderTargetView().GetAddressOf(),  GDirectXDevice->GetDepthStencilView().Get());

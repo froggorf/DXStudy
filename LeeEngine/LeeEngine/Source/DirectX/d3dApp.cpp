@@ -73,7 +73,8 @@ int D3DApp::Run()
 
 
 	m_Timer.Reset();
-
+	const int targetFPS = 5000;  // 목표 FPS
+	const double TargetFrameTime = 1'000'000.0f / targetFPS; // 마이크로 초
 	while(msg.message != WM_QUIT)
 	{
 		// 윈도우 메시지
@@ -85,13 +86,27 @@ int D3DApp::Run()
 		// 애니메이션, 게임 업데이트
 		else
 		{
+			auto FrameStartTime = std::chrono::high_resolution_clock::now();
+
+			while(true)
+			{
+				auto CurrentTime = std::chrono::high_resolution_clock::now();
+				auto ElapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(CurrentTime - FrameStartTime);
+				
+				if(ElapsedTime.count() > TargetFrameTime) break;
+
+				std::this_thread::yield();
+				
+			}
 			m_Timer.Tick();
 
 			if(!m_AppPaused)
 			{
+				
 				CalculateFrameStats();
 				UpdateScene(m_Timer.DeltaTime());		
-				DrawScene();
+				DrawScene();	
+				
 			}else
 			{
 				Sleep(100);
@@ -358,7 +373,7 @@ void D3DApp::CalculateFrameStats()
 		outs << m_MainWndTitle << L"    "
 			 << L"FPS: " << fps << L"    " 
 			 << L"Frame Time: " << mspf << L" (ms)";
-		SetWindowText(m_hMainWnd, outs.str().c_str());
+		//SetWindowText(m_hMainWnd, outs.str().c_str());
 		
 		// Reset for next average.
 		frameCnt = 0;

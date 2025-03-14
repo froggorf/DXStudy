@@ -12,6 +12,7 @@ public:
 
 	float TotalTime()const;  // in seconds
 	float DeltaTime()const; // in seconds
+	void SetDeltaTimeForFixedFPS(float NewDeltaTime) { mDeltaTime = NewDeltaTime;}
 
 	void Reset(); // Call before message loop.
 	void Start(); // Call when unpaused.
