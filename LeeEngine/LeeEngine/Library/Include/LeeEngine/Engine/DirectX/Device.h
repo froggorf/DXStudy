@@ -24,6 +24,9 @@ public:
 	void OnWindowResize();
 	void ResizeWindow();
 
+	void SetViewPortSize(float x, float y);
+	void SetDefaultViewPort();
+
 	const Microsoft::WRL::ComPtr<ID3D11Device>& GetDevice() const { return m_d3dDevice; }
 	const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& GetDeviceContext() const { return m_d3dDeviceContext; }
 	const Microsoft::WRL::ComPtr<IDXGISwapChain>& GetSwapChain() const { return m_SwapChain; }
@@ -58,6 +61,7 @@ private:
 
 	void BuildStaticMeshShader();
 	void CreateBuffers();
+	
 public:
 protected:
 private:

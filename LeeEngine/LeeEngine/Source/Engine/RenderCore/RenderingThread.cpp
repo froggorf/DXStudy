@@ -79,6 +79,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 #ifdef WITH_EDITOR
 		GDirectXDevice->GetDeviceContext()->OMSetRenderTargets(1, GDirectXDevice->GetEditorRenderTargetView().GetAddressOf(), GDirectXDevice->GetDepthStencilView().Get());
 		GDirectXDevice->GetDeviceContext()->ClearRenderTargetView(GDirectXDevice->GetEditorRenderTargetView().Get(),clearColor);
+		GDirectXDevice->SetViewPortSize(ResizeEditorRenderTargetSize.x,ResizeEditorRenderTargetSize.y);
 #else
 		GDirectXDevice->GetDeviceContext()->OMSetRenderTargets(1, GDirectXDevice->GetRenderTargetView().GetAddressOf(),  GDirectXDevice->GetDepthStencilView().Get());
 		GDirectXDevice->GetDeviceContext()->RSSetViewports(1, GDirectXDevice->GetScreenViewport());
@@ -176,6 +177,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 #ifdef WITH_EDITOR
 	GDirectXDevice->GetDeviceContext()->OMSetRenderTargets(1, GDirectXDevice->GetRenderTargetView().GetAddressOf(),  GDirectXDevice->GetDepthStencilView().Get());
 	GDirectXDevice->GetDeviceContext()->RSSetViewports(1, GDirectXDevice->GetScreenViewport());
+	GDirectXDevice->SetDefaultViewPort();
 
 	DrawIMGUI_RenderThread(SceneData);
 

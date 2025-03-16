@@ -307,3 +307,23 @@ void FDirectXDevice::ResizeWindow()
 
 	m_d3dDeviceContext->RSSetViewports(1, &m_ScreenViewport);
 }
+
+void FDirectXDevice::SetViewPortSize(float x, float y)
+{
+	m_ScreenViewport.TopLeftX	= 0;
+	m_ScreenViewport.TopLeftY	= 0;
+	m_ScreenViewport.Width		= static_cast<float>( x);
+	m_ScreenViewport.Height		=  static_cast<float>( y);
+	m_ScreenViewport.MinDepth	= 0.0f;
+	m_ScreenViewport.MaxDepth	= 1.0f;
+}
+
+void FDirectXDevice::SetDefaultViewPort()
+{
+	m_ScreenViewport.TopLeftX	= 0;
+	m_ScreenViewport.TopLeftY	= 0;
+	m_ScreenViewport.Width		= static_cast<float>( *m_ClientWidth);
+	m_ScreenViewport.Height		=  static_cast<float>( *m_ClientHeight);
+	m_ScreenViewport.MinDepth	= 0.0f;
+	m_ScreenViewport.MaxDepth	= 1.0f;
+}
