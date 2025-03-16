@@ -33,6 +33,81 @@ ImVec2 FScene::ResizeEditorRenderTargetSize = {};
 
 int FScene::CurrentSelectedComponentIndex = -1;
 
+void FScene::BeginRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData, UINT GameThreadFrameCount)
+{
+
+	if(SceneData->bIsFrameStart)
+	{
+		//MY_LOG("RenderCommand", EDebugLogLevel::DLL_Error,"RenderThread is already start");
+		return;
+	}
+
+	RenderingThreadFrameCount = GameThreadFrameCount;
+	SceneData->bIsFrameStart = true;
+
+#ifdef MYENGINE_BUILD_DEBUG || MYENGINE_BUILD_DEVELOPMENT
+	for(const auto& Text : PendingAddDebugConsoleText)
+	{
+		DebugConsoleText.push_back(Text);
+	}
+	PendingAddDebugConsoleText.clear();
+	for(const auto& NewOutlinerActor : PendingAddWorldOutlinerActors)
+	{
+		WorldOutlinerActors.push_back(NewOutlinerActor);
+	}
+	PendingAddWorldOutlinerActors.clear();
+#endif
+
+	for(const auto& NewPrimitiveProxy : SceneData->PendingAddSceneProxies)
+	{
+		SceneData->PrimitiveSceneProxies[NewPrimitiveProxy.first] = NewPrimitiveProxy.second;
+
+		MY_LOG("SceneProxy Add New Proxy - PrimitiveID = " + std::to_string(NewPrimitiveProxy.first), EDebugLogLevel::DLL_Display, "");
+	}
+	SceneData->PendingAddSceneProxies.clear();
+
+
+	
+}
+
+
+void FScene::DrawIMGUI_RenderThread(std::shared_ptr<FScene> SceneData)
+{
+	if(bIsGameKill)
+	{
+		return;
+	}
+	//========== IMGUI ==========
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+
+	ImGui::NewFrame();
+
+
+	
+	// ImGui
+	for(const auto& Func : ImGuiRenderFunctions)
+	{
+		Func.second();
+	}
+
+	
+	
+	//// ImGuizmo
+	ImGuizmo::BeginFrame();
+	ImGuiIO& io = ImGui::GetIO();
+	ImGuizmo::SetRect(0,0,io.DisplaySize.x,io.DisplaySize.y);
+	for(const auto& Func : ImGuizmoRenderFunctions)
+	{
+		Func.second();
+	}
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+	ImGui::EndFrame();
+}
+
+
 void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 {
 
@@ -165,6 +240,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 			{
 				SceneProxy.second->Draw();
 			}
+			
 			//if(CurrentWorld)
 			//{
 			//	CurrentWorld->TestDrawWorld();
@@ -175,6 +251,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 	}
 
 #ifdef WITH_EDITOR
+
 	GDirectXDevice->GetDeviceContext()->OMSetRenderTargets(1, GDirectXDevice->GetRenderTargetView().GetAddressOf(),  GDirectXDevice->GetDepthStencilView().Get());
 	GDirectXDevice->GetDeviceContext()->RSSetViewports(1, GDirectXDevice->GetScreenViewport());
 	GDirectXDevice->SetDefaultViewPort();
@@ -195,43 +272,138 @@ void FScene::DrawImGuiScene_RenderThread()
 	static ImVec2 PreviousViewPortSize = ImVec2(0.0f,0.0f);
 	ImVec2 CurrentViewPortSize{};
 
-	ImGui::Begin(" ", nullptr,ImGuiWindowFlags_NoTitleBar);
-	if(ImGui::BeginTabBar(" "))
+	if(ImGui::Begin(" ", nullptr,ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoMove))
 	{
-		if(ImGui::BeginTabItem("ViewPort"))
+		ImVec2 test =  ImGui::GetWindowPos();
+
+		if(ImGui::BeginTabBar(" "))
 		{
-			CurrentViewPortSize = ImGui::GetContentRegionAvail();
-			if(GDirectXDevice->GetSRVEditorRenderTarget())
-			{
-				ImGui::Image((void*)GDirectXDevice->GetSRVEditorRenderTarget().Get(), PreviousViewPortSize);	
-			}
 			
-			ImGui::EndTabItem();
+
+			if(ImGui::BeginTabItem("ViewPort"))
+			{
+				CurrentViewPortSize = ImGui::GetContentRegionAvail();
+				if(GDirectXDevice->GetSRVEditorRenderTarget())
+				{
+					ImGui::Image((void*)GDirectXDevice->GetSRVEditorRenderTarget().Get(), PreviousViewPortSize);	
+				}
+
+				ImGui::EndTabItem();
+
+			}
+			ImGui::EndTabBar();
+		}
+		if(PreviousViewPortSize != CurrentViewPortSize)
+		{
+			PreviousViewPortSize = CurrentViewPortSize;
+			ResizeEditorRenderTargetSize = CurrentViewPortSize;
+			bResizeEditorRenderTargetAtEndFrame = true;
 
 		}
-		ImGui::EndTabBar();
-	}
-	if(PreviousViewPortSize != CurrentViewPortSize)
-	{
-		PreviousViewPortSize = CurrentViewPortSize;
-		ResizeEditorRenderTargetSize = CurrentViewPortSize;
-		bResizeEditorRenderTargetAtEndFrame = true;
 
-	}
-	
 
 #ifdef WITH_EDITOR
-	if(bResizeEditorRenderTargetAtEndFrame)
-	{
-		bResizeEditorRenderTargetAtEndFrame = false;
-		GDirectXDevice->ResizeEditorRenderTarget(ResizeEditorRenderTargetSize.x, ResizeEditorRenderTargetSize.y);
-	}
+		if(bResizeEditorRenderTargetAtEndFrame)
+		{
+			bResizeEditorRenderTargetAtEndFrame = false;
+			GDirectXDevice->ResizeEditorRenderTarget(ResizeEditorRenderTargetSize.x, ResizeEditorRenderTargetSize.y);
+		}
 #endif
 
 
-	ImGui::End();
+		ImGui::End();
+	}
+	
+	
+	
 	
 #endif
 
 }
 
+void FScene::DrawImguizmoSelectedActor_RenderThread()
+{
+	if(!CurrentSelectedActor)
+	{
+		return;
+	}
+
+	static ImGuizmo::OPERATION CurrentGizmoOperation(ImGuizmo::TRANSLATE);
+	static ImGuizmo::MODE CurrentGizmoMode(ImGuizmo::WORLD);
+	if(ImGui::IsKeyPressed(ImGuiKey_Q))
+	{
+		CurrentGizmoOperation = ImGuizmo::TRANSLATE;
+	}
+	if(ImGui::IsKeyPressed(ImGuiKey_W))
+	{
+		CurrentGizmoOperation = ImGuizmo::ROTATE;
+	}
+	if(ImGui::IsKeyPressed(ImGuiKey_E))
+	{
+		CurrentGizmoOperation = ImGuizmo::SCALE;
+	}
+
+	if(ImGui::IsKeyPressed(ImGuiKey_1))
+	{
+		CurrentGizmoMode = ImGuizmo::WORLD;
+	}
+	if(ImGui::IsKeyPressed(ImGuiKey_2))
+	{
+		CurrentGizmoMode = ImGuizmo::LOCAL;
+	}
+
+	const std::shared_ptr<USceneComponent>& CurrentSelectedComponent = SelectActorComponents[CurrentSelectedComponentIndex];
+	FTransform ComponentTransform = CurrentSelectedComponent->GetComponentTransform();
+
+	XMMATRIX ComponentMatrix;
+	ComponentMatrix = ComponentTransform.ToMatrixWithScale();
+
+	XMMATRIX DeltaMatrixTemp = XMMatrixIdentity();
+	float* DeltaMatrix = reinterpret_cast<float*>(&DeltaMatrixTemp);
+
+	XMMATRIX ViewMat = GEngine->Test_DeleteLater_GetViewMatrix();
+	XMMATRIX ProjMat = GEngine->Test_DeleteLater_GetProjectionMatrix();
+
+	//ProjMat = XMMatrixPerspectiveFovRH(0.5*XM_PI, 1600.0f/1200.0f, 1.0f, 1000.0f);;
+	//ImGuizmo::AllowAxisFlip(true);
+	ImGuizmo::Manipulate(reinterpret_cast<float*>(&ViewMat), reinterpret_cast<float*>(&ProjMat),CurrentGizmoOperation,CurrentGizmoMode,reinterpret_cast<float*>(&ComponentMatrix),DeltaMatrix);
+
+	XMFLOAT3 DeltaTranslation;
+	XMFLOAT3 DeltaRot;
+	XMFLOAT3 DeltaScale;
+	ImGuizmo::DecomposeMatrixToComponents(DeltaMatrix, reinterpret_cast<float*>(&DeltaTranslation),reinterpret_cast<float*>(&DeltaRot),reinterpret_cast<float*>(&DeltaScale) );
+	if(CurrentGizmoOperation == ImGuizmo::TRANSLATE && XMVectorGetX(XMVector3LengthEst(XMLoadFloat3(&DeltaTranslation))) > FLT_EPSILON)
+	{
+		const auto Lambda = [CurrentSelectedComponent, DeltaTranslation]()
+			{
+				CurrentSelectedComponent->AddWorldOffset(DeltaTranslation);		
+			};
+		ENQUEUE_IMGUI_COMMAND(Lambda)
+
+	}
+
+	if ((CurrentGizmoOperation == ImGuizmo::ROTATE) && XMVectorGetX(XMVector3LengthEst(XMLoadFloat3(&DeltaRot))) > FLT_EPSILON)
+	{
+		if(XMVectorGetX(XMVector3Length(XMLoadFloat3(&DeltaRot))) > FLT_EPSILON)
+		{
+			//CurrentSelectedComponent->AddWorldRotation(DeltaRot);
+			const auto Lambda = [CurrentSelectedComponent, DeltaRot]()
+				{
+					CurrentSelectedComponent->AddWorldRotation(DeltaRot);		
+				};
+			ENQUEUE_IMGUI_COMMAND(Lambda)
+		}
+
+	}
+}
+
+void FScene::EndRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData)
+{
+	for(const auto& NewPrimitiveProxy : SceneData->PendingAddSceneProxies)
+	{
+		SceneData->PrimitiveSceneProxies[NewPrimitiveProxy.first] = NewPrimitiveProxy.second;
+
+	}
+	SceneData->PendingAddSceneProxies.clear();
+	SceneData->bIsFrameStart = false;
+}

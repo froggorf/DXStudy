@@ -258,7 +258,11 @@ void FDirectXDevice::ResizeWindow()
 	m_d3dDevice->CreateRenderTargetView(backBuffer.Get(), 0, m_RenderTargetView.GetAddressOf());
 
 #ifdef WITH_EDITOR
-	ResizeEditorRenderTarget(400.0f,300.0f);
+	if(RenderingThreadFrameCount < 1)
+	{
+		ResizeEditorRenderTarget(400.0f,300.0f);	
+	}
+	
 #endif
 
 
