@@ -5,6 +5,7 @@
 
 #pragma once
 #include <d3d11.h>
+#include "Engine/MyEngineUtils.h"
 #include <wrl/client.h>
 
 // 언리얼엔진의 경우 RHI 를 통해 렌더링을 진행하지만 (// 언리얼엔진의 경우 GDynamicRHI 로 관리, GDynamicRHI->RHICreateBuffer(*this, BufferDesc, ResourceState, CreateInfo);)
@@ -37,6 +38,17 @@ public:
 	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetFrameConstantBuffer() const {return m_FrameConstantBuffer;}
 	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetObjConstantBuffer() const {return m_ObjConstantBuffer;}
 	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetLightConstantBuffer() const {return m_LightConstantBuffer;}
+#ifdef WITH_EDITOR
+public:
+	const Microsoft::WRL::ComPtr<ID3D11Texture2D>& GetEditorRenderTargetTexture() const {return m_EditorRenderTargetTexture;}
+	const Microsoft::WRL::ComPtr<ID3D11RenderTargetView>& GetEditorRenderTargetView() const {return m_EditorRenderTargetView;}
+	const Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>&  GetSRVEditorRenderTarget() const {return m_SRVEditorRenderTarget; }
+	void ResizeEditorRenderTarget(float NewX,float NewY);
+private:
+	Microsoft::WRL::ComPtr<ID3D11Texture2D>				m_EditorRenderTargetTexture;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>		m_EditorRenderTargetView;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>	m_SRVEditorRenderTarget;
+#endif	
 	
 
 protected:
@@ -53,8 +65,9 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>			m_d3dDeviceContext;
 	Microsoft::WRL::ComPtr<IDXGISwapChain>				m_SwapChain;
 	Microsoft::WRL::ComPtr<ID3D11Texture2D>				m_DepthStencilBuffer;
-
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>		m_RenderTargetView;
+
+	
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>		m_DepthStencilView;
 	D3D11_VIEWPORT										m_ScreenViewport;
 

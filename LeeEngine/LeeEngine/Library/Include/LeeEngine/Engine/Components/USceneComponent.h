@@ -78,7 +78,6 @@ private:
 	// Relative Transform
 	DirectX::XMFLOAT3 RelativeLocation = DirectX::XMFLOAT3(0.0f,0.0f,0.0f);
 	DirectX::XMFLOAT4 RelativeRotation = DirectX::XMFLOAT4(0.0f,0.0f,0.0f,1.0f);
-	//DirectX::XMFLOAT3 RelativeRotation = DirectX::XMFLOAT3(0.0f,0.0f,0.0f);
 	DirectX::XMFLOAT3 RelativeScale3D = DirectX::XMFLOAT3(1.0f,1.0f,1.0f);
 
 	// 컴퍼넌트 월드 좌표

@@ -30,6 +30,14 @@
 	#endif
 #endif
 
+#define IS_EDITOR TRUE
+#if (IS_EDITOR == TRUE)
+	#ifndef WITH_EDITOR
+		#define WITH_EDITOR
+	#endif
+#endif
+
+
 extern std::shared_ptr<class UEngine> GEngine;
 extern std::shared_ptr<class UEditorEngine> GEditorEngine;
 

@@ -36,6 +36,13 @@ FDirectXDevice::FDirectXDevice(HWND* hWnd, int* ClientWidth, int* ClientHeight)
 
 	ZeroMemory(&m_ScreenViewport, sizeof(D3D11_VIEWPORT));
 
+#ifdef WITH_EDITOR
+
+	m_EditorRenderTargetTexture = nullptr;
+	m_EditorRenderTargetView = nullptr;
+	m_SRVEditorRenderTarget = nullptr;
+#endif
+
 	m_hWnd = hWnd;
 
 }
@@ -49,7 +56,7 @@ bool FDirectXDevice::InitDirect3D()
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-	D3D_FEATURE_LEVEL featureLevel;
+	D3D_FEATURE_LEVEL featureLevel{};
 	HRESULT hr = D3D11CreateDevice(nullptr /*default*/, m_d3dDriverType, nullptr, createDeviceFlags, 0, 0, D3D11_SDK_VERSION, m_d3dDevice.GetAddressOf(), &featureLevel, m_d3dDeviceContext.GetAddressOf());
 	if( FAILED(hr) )
 	{
@@ -119,6 +126,33 @@ bool FDirectXDevice::InitDirect3D()
 	CreateBuffers();
 
 	return true;
+}
+
+void FDirectXDevice::ResizeEditorRenderTarget(float NewX, float NewY)
+{
+	NewX = max(2.0f,NewX);
+	NewY = max(2.0f,NewY);
+	HRESULT hr;
+	// 텍스처 설명
+	D3D11_TEXTURE2D_DESC textureDesc = {};
+	textureDesc.Width = static_cast<int>(NewX);
+	textureDesc.Height = static_cast<int>(NewY);
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+
+	// 텍스처 생성
+	hr = m_d3dDevice->CreateTexture2D(&textureDesc, nullptr, m_EditorRenderTargetTexture.GetAddressOf());
+
+	// 렌더 타겟 뷰 생성
+	hr = m_d3dDevice->CreateRenderTargetView(m_EditorRenderTargetTexture.Get(), nullptr, m_EditorRenderTargetView.GetAddressOf());
+
+	// 셰이더 리소스 뷰 생성
+	hr = m_d3dDevice->CreateShaderResourceView(m_EditorRenderTargetTexture.Get(), nullptr, m_SRVEditorRenderTarget.GetAddressOf());
+
 }
 
 void FDirectXDevice::InitSamplerState()
@@ -204,7 +238,7 @@ void FDirectXDevice::OnWindowResize()
 
 void FDirectXDevice::ResizeWindow()
 {
-
+	HRESULT hr{};
 	assert(m_d3dDeviceContext);
 	assert(m_d3dDevice);
 	assert(m_SwapChain);
@@ -222,6 +256,11 @@ void FDirectXDevice::ResizeWindow()
 	Microsoft::WRL::ComPtr<ID3D11Texture2D>			backBuffer;
 	m_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(backBuffer.GetAddressOf()));
 	m_d3dDevice->CreateRenderTargetView(backBuffer.Get(), 0, m_RenderTargetView.GetAddressOf());
+
+#ifdef WITH_EDITOR
+	ResizeEditorRenderTarget(400.0f,300.0f);
+#endif
+
 
 	// backBuffer 는 ComPtr로 관리되므로 제거 x
 
@@ -263,6 +302,8 @@ void FDirectXDevice::ResizeWindow()
 	m_ScreenViewport.Height		=  static_cast<float>( *m_ClientHeight);
 	m_ScreenViewport.MinDepth	= 0.0f;
 	m_ScreenViewport.MaxDepth	= 1.0f;
+
+	
 
 	m_d3dDeviceContext->RSSetViewports(1, &m_ScreenViewport);
 }

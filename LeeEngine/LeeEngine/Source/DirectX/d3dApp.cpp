@@ -86,9 +86,9 @@ int D3DApp::Run()
 		// 애니메이션, 게임 업데이트
 		else
 		{
-			auto FrameStartTime = std::chrono::high_resolution_clock::now();
+			//auto FrameStartTime = std::chrono::high_resolution_clock::now();
 
-			while(true)
+			/*while(true)
 			{
 				auto CurrentTime = std::chrono::high_resolution_clock::now();
 				auto ElapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(CurrentTime - FrameStartTime);
@@ -97,7 +97,7 @@ int D3DApp::Run()
 
 				std::this_thread::yield();
 				
-			}
+			}*/
 			m_Timer.Tick();
 
 			if(!m_AppPaused)
@@ -370,7 +370,7 @@ void D3DApp::CalculateFrameStats()
 
 		std::wostringstream outs;
 		outs.precision(6);
-		outs << m_MainWndTitle << L"    "
+		outs << L"GameThread: " << L"    "
 			 << L"FPS: " << fps << L"    " 
 			 << L"Frame Time: " << mspf << L" (ms)";
 		//SetWindowText(m_hMainWnd, outs.str().c_str());

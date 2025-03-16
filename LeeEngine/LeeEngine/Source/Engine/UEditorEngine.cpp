@@ -34,6 +34,13 @@ void UEditorEngine::InitEngine()
 			FScene::DrawDebugConsole_RenderThread();
 		}
 	);
+	FScene::AddImGuiRenderFunction(
+		"DrawScene",
+		[]()
+		{
+			FScene::DrawImGuiScene_RenderThread();
+		}
+	);
 	MY_LOG("Init", EDebugLogLevel::DLL_Display, "UEditorEngine init");
 	
 }

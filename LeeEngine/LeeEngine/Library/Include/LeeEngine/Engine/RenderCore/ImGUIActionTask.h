@@ -65,6 +65,6 @@ private:
 	~FImGuizmoCommandPipe() = default;
 };
 
-#define ENQUEUE_IMGUIZMO_COMMAND(Lambda) \
+#define ENQUEUE_IMGUI_COMMAND(Lambda) \
 	std::function<void()> temp = Lambda;\
 		FImGuizmoCommandPipe::Enqueue(temp);

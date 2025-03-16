@@ -69,7 +69,6 @@ private:
 };
 
 
-//template <DerivedFromUObject T = UObject>
 inline UObject* AssetManager::ReadMyAsset(const std::string& FilePath)
 {
 	if(AssetCache.find(FilePath.data())!= AssetCache.end())
@@ -77,15 +76,13 @@ inline UObject* AssetManager::ReadMyAsset(const std::string& FilePath)
 		return reinterpret_cast<UObject*>(AssetCache[FilePath.data()].get());
 	}
 
-	//std::string FinalFilePath = "../../" + FilePath;
 	std::ifstream AssetFile(FilePath.data());
 	if(!AssetFile.is_open())
 	{
-			throw std::runtime_error("(AssetManager::ReadMyAsset) Failed open file: " + std::string(FilePath.data()));
+		MY_LOG("(AssetManager::ReadMyAsset) Failed open file", EDebugLogLevel::DLL_Warning, std::string(FilePath.data()));
 	}
 	nlohmann::json AssetData = nlohmann::json::parse(AssetFile);
 
-	//std::shared_ptr<T> Object = std::make_shared<T>();
 	std::shared_ptr<UObject> Object = UObject::GetDefaultObject(AssetData["Class"])->CreateInstance();
 	Object->LoadDataFromFileData(AssetData);
 
@@ -93,6 +90,5 @@ inline UObject* AssetManager::ReadMyAsset(const std::string& FilePath)
 	MY_LOG("AssetLoad", EDebugLogLevel::DLL_Display, FilePath+" Load Success");
 	return Object.get();
 
-	
 }
 
