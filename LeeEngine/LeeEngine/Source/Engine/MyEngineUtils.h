@@ -49,6 +49,7 @@ extern std::unique_ptr<class FDirectXDevice> GDirectXDevice;
 		FScene::AddConsoleText_GameThread(Category, DebugLogLevel,DebugText);\
 	}
 
+#define XMFLOAT2_TO_TEXT(Data) std::format("x = {:.3f}, y = {:.3f}", Data.x,Data.y)
 
 #define XMFLOAT3_TO_TEXT(Data) std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}", Data.x,Data.y,Data.z)
 

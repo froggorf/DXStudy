@@ -83,6 +83,7 @@ void FScene::DrawIMGUI_RenderThread(std::shared_ptr<FScene> SceneData)
 
 	ImGui::NewFrame();
 
+	ImGuizmo::BeginFrame();
 
 	
 	// ImGui
@@ -91,20 +92,20 @@ void FScene::DrawIMGUI_RenderThread(std::shared_ptr<FScene> SceneData)
 		Func.second();
 	}
 
-	
-	
+
 	//// ImGuizmo
-	ImGuizmo::BeginFrame();
-	ImGuiIO& io = ImGui::GetIO();
+	/*ImGuiIO& io = ImGui::GetIO();
 	ImGuizmo::SetRect(0,0,io.DisplaySize.x,io.DisplaySize.y);
 	for(const auto& Func : ImGuizmoRenderFunctions)
 	{
 		Func.second();
-	}
+	}*/
+
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 	ImGui::EndFrame();
+
 }
 
 
@@ -271,28 +272,33 @@ void FScene::DrawImGuiScene_RenderThread()
 #ifdef WITH_EDITOR
 	static ImVec2 PreviousViewPortSize = ImVec2(0.0f,0.0f);
 	ImVec2 CurrentViewPortSize{};
-
-	if(ImGui::Begin(" ", nullptr,ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoMove))
+	static ImVec2 CurrentViewPortPos{};
+	if(ImGui::Begin(" ", nullptr,ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoBringToFrontOnFocus))
 	{
-		ImVec2 test =  ImGui::GetWindowPos();
-
-		if(ImGui::BeginTabBar(" "))
+		CurrentViewPortSize.x = ImGui::GetWindowWidth();
+		CurrentViewPortSize.y = ImGui::GetWindowHeight();
+		if(GDirectXDevice->GetSRVEditorRenderTarget())
 		{
-			
+			ImGuizmo::SetDrawlist();
+			ImGui::Image((void*)GDirectXDevice->GetSRVEditorRenderTarget().Get(), PreviousViewPortSize);
 
+		}
+		ImVec2 test =  ImGui::GetWindowPos();
+		CurrentViewPortPos = ImGui::GetWindowPos();
+		
+		/*if(ImGui::BeginTabBar(" "))
+		{
+
+			
 			if(ImGui::BeginTabItem("ViewPort"))
 			{
-				CurrentViewPortSize = ImGui::GetContentRegionAvail();
-				if(GDirectXDevice->GetSRVEditorRenderTarget())
-				{
-					ImGui::Image((void*)GDirectXDevice->GetSRVEditorRenderTarget().Get(), PreviousViewPortSize);	
-				}
+				
 
 				ImGui::EndTabItem();
 
 			}
 			ImGui::EndTabBar();
-		}
+		}*/
 		if(PreviousViewPortSize != CurrentViewPortSize)
 		{
 			PreviousViewPortSize = CurrentViewPortSize;
@@ -311,15 +317,79 @@ void FScene::DrawImGuiScene_RenderThread()
 #endif
 
 
+		ImGuiIO& io = ImGui::GetIO();
+		ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
 		ImGui::End();
 	}
 	
 	
 	
+	DrawImguizmoSelectedActor_RenderThread();
 	
 #endif
 
 }
+
+void FScene::DrawDebugConsole_RenderThread()
+{
+
+	{
+		ImGui::Begin("Debug Console");
+
+		// EditBox
+		char* CurrentText = DebugConsoleSearchText.data();
+		ImGui::Text("Search: ");
+		ImGui::SameLine();
+		if(ImGui::InputText(" ",CurrentText,100))
+		{
+			DebugConsoleSearchText = CurrentText;
+			SearchDebugConsole_RenderThread();
+		}
+
+		ImGui::SameLine();
+		ImVec2 MousePos = ImGui::GetMousePos();
+		ImGui::Text("x = %.2f , y = %.2f", MousePos.x,MousePos.y);
+
+		if(ImGui::BeginListBox(" ", ImVec2(-FLT_MIN, -FLT_MIN)))
+		{
+			// 디버그 리스트 박스의 맨 아래를 볼 시 맨 아래로 고정
+			bool bIsFixListBox = ImGui::GetScrollMaxY() == ImGui::GetScrollY();
+
+
+			// 검색 중 체크
+			bool bWhileSearching = DebugConsoleSearchText.size() != 0;
+			if(bWhileSearching)
+			{
+				for(const DebugText& Text : SearchingDebugConsoleText)
+				{
+					ImGui::TextColored(DebugText::Color[Text.Level], Text.Text.data());
+				}	
+			}
+			// 검색 아닐 시
+			else
+			{
+				for(const DebugText& Text : DebugConsoleText)
+				{
+					ImGui::TextColored(DebugText::Color[Text.Level], Text.Text.data());
+
+				}	
+			}
+
+			// 리스트 맨 아래였을 시 고정
+			if(bIsFixListBox)
+			{
+				ImGui::SetScrollHereY(1.0f);
+			}
+
+			ImGui::EndListBox();
+
+		}
+
+
+		ImGui::End();
+	}
+}
+
 
 void FScene::DrawImguizmoSelectedActor_RenderThread()
 {
