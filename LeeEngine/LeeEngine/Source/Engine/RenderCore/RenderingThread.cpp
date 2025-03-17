@@ -83,7 +83,7 @@ void FScene::DrawIMGUI_RenderThread(std::shared_ptr<FScene> SceneData)
 
 	ImGui::NewFrame();
 
-	ImGuizmo::BeginFrame();
+	//ImGuizmo::BeginFrame();
 
 	
 	// ImGui
@@ -189,14 +189,11 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				{
 					FrameConstantBuffer fcb;
 					// TODO: 카메라 구현 시 수정
-					XMFLOAT3 m_CameraPosition = XMFLOAT3(0.0f,5.0f,-5.0f);
-					XMFLOAT3 m_CameraViewVector = XMFLOAT3(0.0f,-1.0f,1.0f);
-					XMMATRIX ViewMat = XMMatrixLookToLH(XMLoadFloat3(&m_CameraPosition), XMLoadFloat3(&m_CameraViewVector), XMVectorSet(0.0f,1.0f,0.0f,0.0f));
 
-					fcb.View = XMMatrixTranspose(ViewMat);
+					fcb.View = XMMatrixTranspose(GEngine->Test_DeleteLater_GetViewMatrix());
 					// TODO: 카메라 구현 시 수정
-					XMMATRIX ProjMat = XMMatrixPerspectiveFovLH(0.5*XM_PI, 1600.0f/1200.0f, 1.0f, 1000.0f);
-					fcb.Projection = XMMatrixTranspose(ProjMat);
+					//XMMATRIX ProjMat = XMMatrixPerspectiveFovLH(0.5*XM_PI, 1600.0f/1200.0f, 1.0f, 1000.0f);
+					fcb.Projection = XMMatrixTranspose(GEngine->Test_DeleteLater_GetProjectionMatrix());
 					fcb.LightView = XMMatrixTranspose(XMMatrixIdentity());//m_LightView
 					fcb.LightProj = XMMatrixTranspose(XMMatrixIdentity()); //m_LightProj
 					GDirectXDevice->GetDeviceContext()->UpdateSubresource(GDirectXDevice->GetFrameConstantBuffer().Get(), 0, nullptr, &fcb, 0, 0);
@@ -272,19 +269,26 @@ void FScene::DrawImGuiScene_RenderThread()
 #ifdef WITH_EDITOR
 	static ImVec2 PreviousViewPortSize = ImVec2(0.0f,0.0f);
 	ImVec2 CurrentViewPortSize{};
-	static ImVec2 CurrentViewPortPos{};
-	if(ImGui::Begin(" ", nullptr,ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoBringToFrontOnFocus))
+	ImVec2 ScreenPos;
+
+	if(ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoMove|
+		ImGuiWindowFlags_NoScrollbar |
+		ImGuiWindowFlags_NoScrollWithMouse))
 	{
-		CurrentViewPortSize.x = ImGui::GetWindowWidth();
-		CurrentViewPortSize.y = ImGui::GetWindowHeight();
+
+		ScreenPos = ImGui::GetCursorScreenPos();
+		CurrentViewPortSize = ImGui::GetWindowSize();
+		
+		float YMargin = 21.0f;
+		ImGui::Dummy(ImVec2(CurrentViewPortSize.x,CurrentViewPortSize.y-YMargin));
+		ImGui::SetCursorPos(ImVec2(0,YMargin));
 		if(GDirectXDevice->GetSRVEditorRenderTarget())
 		{
-			ImGuizmo::SetDrawlist();
-			ImGui::Image((void*)GDirectXDevice->GetSRVEditorRenderTarget().Get(), PreviousViewPortSize);
+			ImGui::Image((void*)GDirectXDevice->GetSRVEditorRenderTarget().Get(), ImVec2(CurrentViewPortSize.x,CurrentViewPortSize.y-YMargin));
 
 		}
 		ImVec2 test =  ImGui::GetWindowPos();
-		CurrentViewPortPos = ImGui::GetWindowPos();
+		//CurrentViewPortPos = ImGui::GetWindowPos();
 		
 		/*if(ImGui::BeginTabBar(" "))
 		{
@@ -317,14 +321,21 @@ void FScene::DrawImGuiScene_RenderThread()
 #endif
 
 
-		ImGuiIO& io = ImGui::GetIO();
-		ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
+		ImGuizmo::Enable(true);
+		ImGuizmo::SetOrthographic(false);
+		ImGuizmo::SetDrawlist(ImGui::GetForegroundDrawList());
+		ImGuizmo::SetRect(ScreenPos.x, ScreenPos.y, CurrentViewPortSize.x,CurrentViewPortSize.y+YMargin);
+		XMFLOAT4 testtt = {ScreenPos.x, ScreenPos.y, CurrentViewPortSize.x,CurrentViewPortSize.y+YMargin};
+		MY_LOG("logtemp", EDebugLogLevel::DLL_Warning, XMFLOAT4_TO_TEXT(testtt));
+		//ImGui::PushClipRect(ImVec2(ScreenPos.x,ScreenPos.y),ImVec2(CurrentViewPortSize.x,CurrentViewPortSize.y+YMargin),false);
+		ImGuizmo::SetGizmoSizeClipSpace(0.1f);
+		DrawImguizmoSelectedActor_RenderThread();
+		//ImGui::PopClipRect();
 		ImGui::End();
 	}
 	
-	
-	
-	DrawImguizmoSelectedActor_RenderThread();
+
+
 	
 #endif
 
@@ -465,6 +476,8 @@ void FScene::DrawImguizmoSelectedActor_RenderThread()
 		}
 
 	}
+
+	
 }
 
 void FScene::EndRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData)

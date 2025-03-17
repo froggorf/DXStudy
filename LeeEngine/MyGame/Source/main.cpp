@@ -334,7 +334,8 @@ void AnimationApp::OnResize()
 void AnimationApp::UpdateScene(float dt)
 {
 	GEngine->Tick(dt);
-    m_View = XMMatrixLookToLH(XMLoadFloat3(&m_CameraPosition), XMLoadFloat3(&m_CameraViewVector), XMVectorSet(0.0f,1.0f,0.0f,0.0f));
+
+	
 
 	//m_PaladinAnimator->UpdateAnimation(m_Timer.DeltaTime());
 	

@@ -38,8 +38,17 @@ public:
 
 	void MakeComponentTransformDirty(std::shared_ptr<USceneComponent>& SceneComponent);
 
-	XMMATRIX Test_DeleteLater_GetViewMatrix() const {return Application->Test_DeleteLater_GetViewMatrix();}
-	XMMATRIX Test_DeleteLater_GetProjectionMatrix() const {return Application->Test_DeleteLater_GetProjectionMatrix();}
+	XMMATRIX Test_DeleteLater_GetViewMatrix() const
+	{
+		XMFLOAT3 Pos= XMFLOAT3(0.0f,5.0f,-5.0f);
+		XMFLOAT3 View = XMFLOAT3(0.0f,-1.0f,1.0f);
+		XMStoreFloat3(&View, XMVector3Normalize(XMLoadFloat3(&View)));
+		return XMMatrixLookToLH(XMLoadFloat3(&Pos), XMLoadFloat3(&View), XMVectorSet(0.0f,1.0f,0.0f,0.0f));
+	}
+	XMMATRIX Test_DeleteLater_GetProjectionMatrix() const
+	{
+		return XMMatrixPerspectiveFovLH(0.5*XM_PI, 2560.0f/1440.0f, 1.0f, 1000.0f);
+	}
 	XMFLOAT3 Test_DeleteLater_GetCameraPosition() const {return Application->Test_DELETELATER_GetCameraPosition();}
 
 	void JoinThreadsAtDestroy();
