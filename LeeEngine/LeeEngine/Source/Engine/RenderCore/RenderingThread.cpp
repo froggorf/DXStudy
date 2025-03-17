@@ -276,15 +276,17 @@ void FScene::DrawImGuiScene_RenderThread()
 		ImGuiWindowFlags_NoScrollWithMouse))
 	{
 
-		ScreenPos = ImGui::GetCursorScreenPos();
+
 		CurrentViewPortSize = ImGui::GetWindowSize();
 		
 		float YMargin = 21.0f;
 		ImGui::Dummy(ImVec2(CurrentViewPortSize.x,CurrentViewPortSize.y-YMargin));
+		CurrentViewPortSize.y -= YMargin;
 		ImGui::SetCursorPos(ImVec2(0,YMargin));
+		ScreenPos = ImGui::GetCursorScreenPos();
 		if(GDirectXDevice->GetSRVEditorRenderTarget())
 		{
-			ImGui::Image((void*)GDirectXDevice->GetSRVEditorRenderTarget().Get(), ImVec2(CurrentViewPortSize.x,CurrentViewPortSize.y-YMargin));
+			ImGui::Image((void*)GDirectXDevice->GetSRVEditorRenderTarget().Get(), ImVec2(CurrentViewPortSize.x,CurrentViewPortSize.y-YMargin),ImVec2(0.0f,0.0f),ImVec2(1.0f,1.0f));
 
 		}
 		ImVec2 test =  ImGui::GetWindowPos();
@@ -324,8 +326,11 @@ void FScene::DrawImGuiScene_RenderThread()
 		ImGuizmo::Enable(true);
 		ImGuizmo::SetOrthographic(false);
 		ImGuizmo::SetDrawlist(ImGui::GetForegroundDrawList());
-		ImGuizmo::SetRect(ScreenPos.x, ScreenPos.y, CurrentViewPortSize.x,CurrentViewPortSize.y+YMargin);
-		XMFLOAT4 testtt = {ScreenPos.x, ScreenPos.y, CurrentViewPortSize.x,CurrentViewPortSize.y+YMargin};
+		//ImGuizmo::SetRect(ScreenPos.x, ScreenPos.y, CurrentViewPortSize.x,CurrentViewPortSize.y+YMargin);
+		
+		ImGuizmo::SetRect(ScreenPos.x,ScreenPos.y,CurrentViewPortSize.x,CurrentViewPortSize.y);
+		XMFLOAT4 testtt = {ScreenPos.x,ScreenPos.y,CurrentViewPortSize.x,CurrentViewPortSize.y};
+
 		MY_LOG("logtemp", EDebugLogLevel::DLL_Warning, XMFLOAT4_TO_TEXT(testtt));
 		//ImGui::PushClipRect(ImVec2(ScreenPos.x,ScreenPos.y),ImVec2(CurrentViewPortSize.x,CurrentViewPortSize.y+YMargin),false);
 		ImGuizmo::SetGizmoSizeClipSpace(0.1f);
