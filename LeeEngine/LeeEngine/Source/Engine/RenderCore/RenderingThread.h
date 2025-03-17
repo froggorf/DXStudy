@@ -433,7 +433,7 @@ public:
 		}
 	}
 
-	static void DrawImguizmoSelectedActor_RenderThread();
+	static void DrawImguizmoSelectedActor_RenderThread(float AspectRatio);
 	static void DrawImGuiScene_RenderThread();
 
 	// ===================================================================

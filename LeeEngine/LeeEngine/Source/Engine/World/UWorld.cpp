@@ -34,10 +34,10 @@ void UWorld::Init()
 		FScene::DrawWorldOutliner_RenderThread();
 		FScene::DrawSelectActorDetail_RenderThread();
 	});
-	FScene::AddImGuizmoRenderFunction("Guizmo", []()
+	/*FScene::AddImGuizmoRenderFunction("Guizmo", []()
 	{
 		FScene::DrawImguizmoSelectedActor_RenderThread();
-	});
+	});*/
 }
 
 void UWorld::PostLoad()

@@ -276,17 +276,17 @@ void FScene::DrawImGuiScene_RenderThread()
 		ImGuiWindowFlags_NoScrollWithMouse))
 	{
 
-
 		CurrentViewPortSize = ImGui::GetWindowSize();
+
+
 		
-		float YMargin = 21.0f;
-		ImGui::Dummy(ImVec2(CurrentViewPortSize.x,CurrentViewPortSize.y-YMargin));
-		CurrentViewPortSize.y -= YMargin;
-		ImGui::SetCursorPos(ImVec2(0,YMargin));
+		ImGui::Dummy(ImVec2(CurrentViewPortSize.x,20.0f));
+		//CurrentViewPortSize.y -= YMargin;
+		ImGui::SetCursorPos(ImVec2(0,20.0f));
 		ScreenPos = ImGui::GetCursorScreenPos();
 		if(GDirectXDevice->GetSRVEditorRenderTarget())
 		{
-			ImGui::Image((void*)GDirectXDevice->GetSRVEditorRenderTarget().Get(), ImVec2(CurrentViewPortSize.x,CurrentViewPortSize.y-YMargin),ImVec2(0.0f,0.0f),ImVec2(1.0f,1.0f));
+			ImGui::Image((void*)GDirectXDevice->GetSRVEditorRenderTarget().Get(), ImVec2(CurrentViewPortSize.x,CurrentViewPortSize.y),ImVec2(0.0f,0.0f),ImVec2(1.0f,1.0f));
 
 		}
 		ImVec2 test =  ImGui::GetWindowPos();
@@ -329,12 +329,11 @@ void FScene::DrawImGuiScene_RenderThread()
 		//ImGuizmo::SetRect(ScreenPos.x, ScreenPos.y, CurrentViewPortSize.x,CurrentViewPortSize.y+YMargin);
 		
 		ImGuizmo::SetRect(ScreenPos.x,ScreenPos.y,CurrentViewPortSize.x,CurrentViewPortSize.y);
-		XMFLOAT4 testtt = {ScreenPos.x,ScreenPos.y,CurrentViewPortSize.x,CurrentViewPortSize.y};
+		
 
-		MY_LOG("logtemp", EDebugLogLevel::DLL_Warning, XMFLOAT4_TO_TEXT(testtt));
 		//ImGui::PushClipRect(ImVec2(ScreenPos.x,ScreenPos.y),ImVec2(CurrentViewPortSize.x,CurrentViewPortSize.y+YMargin),false);
-		ImGuizmo::SetGizmoSizeClipSpace(0.1f);
-		DrawImguizmoSelectedActor_RenderThread();
+		
+		DrawImguizmoSelectedActor_RenderThread(CurrentViewPortSize.x/(CurrentViewPortSize.y));
 		//ImGui::PopClipRect();
 		ImGui::End();
 	}
@@ -407,7 +406,7 @@ void FScene::DrawDebugConsole_RenderThread()
 }
 
 
-void FScene::DrawImguizmoSelectedActor_RenderThread()
+void FScene::DrawImguizmoSelectedActor_RenderThread(float AspectRatio)
 {
 	if(!CurrentSelectedActor)
 	{
@@ -448,7 +447,7 @@ void FScene::DrawImguizmoSelectedActor_RenderThread()
 	float* DeltaMatrix = reinterpret_cast<float*>(&DeltaMatrixTemp);
 
 	XMMATRIX ViewMat = GEngine->Test_DeleteLater_GetViewMatrix();
-	XMMATRIX ProjMat = GEngine->Test_DeleteLater_GetProjectionMatrix();
+	XMMATRIX ProjMat = XMMatrixPerspectiveFovLH(0.5*XM_PI, AspectRatio, 1.0f, 1000.0f);
 
 	//ProjMat = XMMatrixPerspectiveFovRH(0.5*XM_PI, 1600.0f/1200.0f, 1.0f, 1000.0f);;
 	//ImGuizmo::AllowAxisFlip(true);
