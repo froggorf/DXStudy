@@ -275,21 +275,25 @@ void FScene::DrawImGuiScene_RenderThread()
 		ImGuiWindowFlags_NoScrollbar |
 		ImGuiWindowFlags_NoScrollWithMouse))
 	{
-
-		CurrentViewPortSize = ImGui::GetWindowSize();
+		ImVec2 WindowSize = ImGui::GetWindowSize();;
+		float XMargin = 5.0f;
+		float YMargin = 5.0f;
+		float TopMargin = 15.0f;
+		
+		ImVec2 ViewPortSize = WindowSize;
+		ViewPortSize.x -= XMargin*2;
+		ViewPortSize.y = ViewPortSize.y  - YMargin*2;
+		CurrentViewPortSize = ViewPortSize;
 
 
 		
-		ImGui::Dummy(ImVec2(CurrentViewPortSize.x,20.0f));
-		//CurrentViewPortSize.y -= YMargin;
-		ImGui::SetCursorPos(ImVec2(0,20.0f));
+		ImGui::SetCursorPos(ImVec2(XMargin,YMargin+TopMargin));
 		ScreenPos = ImGui::GetCursorScreenPos();
 		if(GDirectXDevice->GetSRVEditorRenderTarget())
 		{
-			ImGui::Image((void*)GDirectXDevice->GetSRVEditorRenderTarget().Get(), ImVec2(CurrentViewPortSize.x,CurrentViewPortSize.y),ImVec2(0.0f,0.0f),ImVec2(1.0f,1.0f));
+			ImGui::Image((void*)GDirectXDevice->GetSRVEditorRenderTarget().Get(), ViewPortSize);
 
 		}
-		ImVec2 test =  ImGui::GetWindowPos();
 		//CurrentViewPortPos = ImGui::GetWindowPos();
 		
 		/*if(ImGui::BeginTabBar(" "))
@@ -313,6 +317,13 @@ void FScene::DrawImGuiScene_RenderThread()
 
 		}
 
+		// SelectActor ImGuizmo
+		ImGuizmo::Enable(true);
+		ImGuizmo::SetOrthographic(false);
+		ImGuizmo::SetDrawlist(ImGui::GetForegroundDrawList());
+
+		ImGuizmo::SetRect(ScreenPos.x, ScreenPos.y,ViewPortSize.x,ViewPortSize.y);
+		DrawImguizmoSelectedActor_RenderThread(GDirectXDevice->GetAspectRatio());
 
 #ifdef WITH_EDITOR
 		if(bResizeEditorRenderTargetAtEndFrame)
@@ -323,18 +334,6 @@ void FScene::DrawImGuiScene_RenderThread()
 #endif
 
 
-		ImGuizmo::Enable(true);
-		ImGuizmo::SetOrthographic(false);
-		ImGuizmo::SetDrawlist(ImGui::GetForegroundDrawList());
-		//ImGuizmo::SetRect(ScreenPos.x, ScreenPos.y, CurrentViewPortSize.x,CurrentViewPortSize.y+YMargin);
-		
-		ImGuizmo::SetRect(ScreenPos.x,ScreenPos.y,CurrentViewPortSize.x,CurrentViewPortSize.y);
-		
-
-		//ImGui::PushClipRect(ImVec2(ScreenPos.x,ScreenPos.y),ImVec2(CurrentViewPortSize.x,CurrentViewPortSize.y+YMargin),false);
-		
-		DrawImguizmoSelectedActor_RenderThread(CurrentViewPortSize.x/(CurrentViewPortSize.y));
-		//ImGui::PopClipRect();
 		ImGui::End();
 	}
 	

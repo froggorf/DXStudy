@@ -27,6 +27,8 @@ public:
 	void SetViewPortSize(float x, float y);
 	void SetDefaultViewPort();
 
+	float GetAspectRatio() const {return static_cast<float>(*m_ClientWidth) / *m_ClientHeight; }
+
 	const Microsoft::WRL::ComPtr<ID3D11Device>& GetDevice() const { return m_d3dDevice; }
 	const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& GetDeviceContext() const { return m_d3dDeviceContext; }
 	const Microsoft::WRL::ComPtr<IDXGISwapChain>& GetSwapChain() const { return m_SwapChain; }

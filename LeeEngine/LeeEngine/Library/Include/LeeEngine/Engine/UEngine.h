@@ -37,7 +37,7 @@ public:
 	const std::string& GetDirectoryPath() const { return CurrentDirectory; }
 
 	void MakeComponentTransformDirty(std::shared_ptr<USceneComponent>& SceneComponent);
-
+	
 	XMMATRIX Test_DeleteLater_GetViewMatrix() const
 	{
 		XMFLOAT3 Pos= XMFLOAT3(0.0f,5.0f,-5.0f);
