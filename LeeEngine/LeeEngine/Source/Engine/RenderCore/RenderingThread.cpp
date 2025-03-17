@@ -83,23 +83,21 @@ void FScene::DrawIMGUI_RenderThread(std::shared_ptr<FScene> SceneData)
 
 	ImGui::NewFrame();
 
-	//ImGuizmo::BeginFrame();
+	
+	
+	static ImFont* RobotoFont = ImGui::GetIO().Fonts->Fonts[0];
+	ImGui::PushFont(RobotoFont);
 
 	
+
+
 	// ImGui
 	for(const auto& Func : ImGuiRenderFunctions)
 	{
 		Func.second();
 	}
 
-
-	//// ImGuizmo
-	/*ImGuiIO& io = ImGui::GetIO();
-	ImGuizmo::SetRect(0,0,io.DisplaySize.x,io.DisplaySize.y);
-	for(const auto& Func : ImGuizmoRenderFunctions)
-	{
-		Func.second();
-	}*/
+	ImGui::PopFont();
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -271,14 +269,21 @@ void FScene::DrawImGuiScene_RenderThread()
 	ImVec2 CurrentViewPortSize{};
 	ImVec2 ScreenPos;
 
-	if(ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoMove|
+	// Actor
+	if(ImGui::Begin("Place Actors",nullptr) )
+	{
+		ImGui::End();
+	}
+
+
+	if(ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoTitleBar|
 		ImGuiWindowFlags_NoScrollbar |
 		ImGuiWindowFlags_NoScrollWithMouse))
 	{
 		ImVec2 WindowSize = ImGui::GetWindowSize();;
 		float XMargin = 5.0f;
 		float YMargin = 5.0f;
-		float TopMargin = 15.0f;
+		float TopMargin = 0.0f;
 		
 		ImVec2 ViewPortSize = WindowSize;
 		ViewPortSize.x -= XMargin*2;
@@ -323,7 +328,11 @@ void FScene::DrawImGuiScene_RenderThread()
 		ImGuizmo::SetDrawlist(ImGui::GetForegroundDrawList());
 
 		ImGuizmo::SetRect(ScreenPos.x, ScreenPos.y,ViewPortSize.x,ViewPortSize.y);
+		
+		ImGui::PushClipRect(ImVec2{0,0},ImVec2{ViewPortSize.x,ViewPortSize.y},true);
+		
 		DrawImguizmoSelectedActor_RenderThread(GDirectXDevice->GetAspectRatio());
+		ImGui::PopClipRect();
 
 #ifdef WITH_EDITOR
 		if(bResizeEditorRenderTargetAtEndFrame)

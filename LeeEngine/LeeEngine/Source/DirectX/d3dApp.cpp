@@ -347,6 +347,8 @@ bool D3DApp::InitMainWindow()
 	ShowWindow(m_hMainWnd, SW_SHOW);
 	UpdateWindow(m_hMainWnd);
 
+	
+
 	return true;
 }
 

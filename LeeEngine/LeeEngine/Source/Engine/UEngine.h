@@ -55,6 +55,8 @@ public:
 	bool IsStartGameThread() { return GameThreadFrameCount > 0; }
 
 	const D3DApp* GetApplication() const {return Application;}
+	HWND GetWindow() const {return Application->GetMainWnd();}
+
 protected:
 private:
 	// ============= ImGui =============
@@ -80,4 +82,5 @@ private:
 	// 중복 원소만 들어가지 않으면되며, 순서가 중요하지 않음
 	std::unordered_map<UINT, std::shared_ptr<USceneComponent>> ComponentsTransformDirty;
 	std::string CurrentDirectory;
+	std::string EngineDirectory;
 };

@@ -96,7 +96,7 @@ private:
 	std::function<void(std::shared_ptr<FScene>&)> temp = Lambda;\
 		FRenderCommandPipe::Enqueue(temp);
 
-inline bool bIsGameKill = false;
+inline std::atomic<bool> bIsGameKill = false;
 inline std::atomic<UINT> RenderingThreadFrameCount = 0;
 
 enum class EDebugLogLevel

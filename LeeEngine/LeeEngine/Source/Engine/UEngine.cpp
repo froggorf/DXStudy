@@ -37,6 +37,11 @@ void UEngine::InitEngine()
 		}
 		CurrentDirectory.replace(p,1, "/");
 	}
+	EngineDirectory = CurrentDirectory;
+	if(auto p = EngineDirectory.find("MyGame"))
+	{
+		EngineDirectory.replace(p, p+5, "LeeEngine");
+	}
 
 	PostLoad();
 
@@ -54,6 +59,8 @@ void UEngine::InitEngine()
 
 	//RenderThread = std::thread(&UEngine::Draw,this);
 	RenderThread = std::thread(&FRenderCommandExecutor::Execute);
+
+	
 }
 
 void UEngine::PostLoad()
@@ -161,10 +168,12 @@ void UEngine::MakeComponentTransformDirty(std::shared_ptr<USceneComponent>& Scen
 
 void UEngine::JoinThreadsAtDestroy()
 {
+	
 	if(RenderThread.joinable())
 	{
 		RenderThread.join();
 	}
+	return;
 }
 
 void UEngine::InitImGui()
@@ -179,13 +188,25 @@ void UEngine::InitImGui()
 
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
-
+	
 	// Setup Platform/Renderer backends
 	
 	ImGui_ImplWin32_Init(Application->GetMainWnd());
 	ImGui_ImplDX11_Init(GDirectXDevice->GetDevice().Get(), GDirectXDevice->GetDeviceContext().Get());
 
 	MY_LOG("Init",EDebugLogLevel::DLL_Display, "Imgui init success");
+
+	// 폰트 로드
+	std::string FontPath = EngineDirectory+"/Content/Font/Roboto.ttf";
+	float FontSize = 18.0f;
+	ImFontConfig FontConfig;
+	FontConfig.OversampleH= 3;
+	FontConfig.OversampleV= 3;
+	FontConfig.PixelSnapH = true;
+	io.Fonts->AddFontFromFileTTF(FontPath.c_str(),FontSize, &FontConfig, io.Fonts->GetGlyphRangesKorean());
+	ImGui_ImplDX11_InvalidateDeviceObjects();
+	ImGui_ImplDX11_CreateDeviceObjects();
+
 }
 
 void UEngine::LoadAllObjectsFromFile()
