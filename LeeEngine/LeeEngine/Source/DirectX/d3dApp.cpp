@@ -5,6 +5,7 @@
 
 #include <sstream>
 #include <Windows.h>
+#include <dwmapi.h>
 #include <backends/imgui_impl_dx11.h>
 #include <backends/imgui_impl_win32.h>
 
@@ -32,7 +33,7 @@ D3DApp::D3DApp(HINSTANCE hInstance)
 {
 	m_hAppInstance = hInstance;
 	m_MainWndTitle = L"2019180031 D3D11";
-	m_ClientWidth = 2560;
+	m_ClientWidth = 2540;
 	m_ClientHeight = 1440;
 	m_hMainWnd = nullptr;
 	m_AppPaused = m_Minimized = m_Maximized = m_Resizing = false;
@@ -182,13 +183,65 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	}
 	
 
-
+	static LONG TitleBarHeight = 56;
 	switch( msg )
 	{
+	case WM_NCPAINT:
+		{
+			HDC hdc;
+			hdc = GetWindowDC(m_hMainWnd);
+			RECT rect;
+			GetWindowRect(m_hMainWnd, &rect);
+
+			// 타이틀바 영역 계산
+			rect.right -= rect.left;
+			rect.bottom -= rect.top;
+			rect.left = 0;
+			rect.top = 0;
+			rect.bottom = TitleBarHeight; // 타이틀바 높이
+
+			// 원하는 색상으로 타이틀바 채우기
+			HBRUSH hBrush = CreateSolidBrush(RGB(21,21,21)); // 파란색 브러시
+			FillRect(hdc, &rect, hBrush);
+			DeleteObject(hBrush);
+
+			// 텍스트 그리기
+			SetBkMode(hdc, TRANSPARENT);
+			RECT CloseButtonRect = rect;
+			CloseButtonRect.right -=10;
+			CloseButtonRect .left = CloseButtonRect.right - 20;
+			CloseButtonRect.top +=10;
+			CloseButtonRect.bottom = CloseButtonRect.top+10;
+			SetTextColor(hdc, RGB(255,0,0));
+			DrawTextA(hdc, "X", -1, &CloseButtonRect, DT_CENTER|DT_VCENTER|DT_SINGLELINE);
+
+			ReleaseDC(m_hMainWnd, hdc); // DC 해제
+		}
+		return 0;
+	break;
+	case WM_NCCALCSIZE:
+		{
+			if(wParam==TRUE)
+			{
+				// NCCALCSIZE_PARAMS 구조체를 가져옴
+				NCCALCSIZE_PARAMS* pParams = reinterpret_cast<NCCALCSIZE_PARAMS*>(lParam);
+
+				// 클라이언트 영역의 크기를 계산 (프레임 두께를 줄이거나 늘림)
+				pParams->rgrc[0].left +=0;   // 왼쪽 프레임 두께
+				pParams->rgrc[0].right -=0;  // 오른쪽 프레임 두께
+				pParams->rgrc[0].top += TitleBarHeight;    // 상단 프레임 두께
+				pParams->rgrc[0].bottom -= 1; // 하단 프레임 두께
+
+				return 0; // 기본 동작 차단
+			}
+		}
+	break;
+
 	// WM_ACTIVATE is sent when the window is activated or deactivated.  
 	// We pause the game when the window is deactivated and unpause it 
-	// when it becomes active.  
+	// when it becomes active.
 	case WM_ACTIVATE:
+
 		if( LOWORD(wParam) == WA_INACTIVE )
 		{
 			m_AppPaused = true;
@@ -336,13 +389,16 @@ bool D3DApp::InitMainWindow()
 	int width  = R.right - R.left;
 	int height = R.bottom - R.top;
 
+	auto Style = WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+	//WS_OVERLAPPED | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX
 	m_hMainWnd = CreateWindow(L"D3DWndClassName", m_MainWndTitle.c_str(), 
-		WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, 0, 0, m_hAppInstance, 0); 
+		Style, CW_USEDEFAULT, CW_USEDEFAULT, width, height, 0, 0, m_hAppInstance, 0); 
 	if( !m_hMainWnd )
 	{
 		MessageBox(0, L"CreateWindow Failed.", 0, 0);
 		return false;
 	}
+
 
 	ShowWindow(m_hMainWnd, SW_SHOW);
 	UpdateWindow(m_hMainWnd);
