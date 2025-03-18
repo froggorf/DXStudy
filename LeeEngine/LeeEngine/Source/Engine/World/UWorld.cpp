@@ -69,6 +69,10 @@ void UWorld::SetPersistentLevel(const std::shared_ptr<ULevel>& NewLevel)
 {
 	PersistentLevel= NewLevel;
 	PersistentLevel->Register();
+#ifdef WITH_EDITOR
+	// 타이틀 바 내 현재 레벨 이름 변경
+	SendMessage(GEditorEngine->GetWindow(), WM_NCPAINT,true,0);
+#endif
 }
 
 void UWorld::LoadLevelInstanceByName(const std::string& NewLevelName)

@@ -95,9 +95,13 @@ void UEditorEngine::DrawEngineTitleBar()
 	rect.top = 0;
 	rect.bottom = WindowTitleBarHeight; // 타이틀바 높이
 
+	HDC memDC = CreateCompatibleDC(hdc);
+	static HBITMAP hMemBitmap = CreateCompatibleBitmap(hdc, rect.right-rect.left, rect.bottom-rect.top);
+	SelectObject(memDC,hMemBitmap);
+
 	// 원하는 색상으로 타이틀바 채우기
 	HBRUSH hBrush = CreateSolidBrush(RGB(21,21,21)); // 파란색 브러시
-	FillRect(hdc, &rect, hBrush);
+	FillRect(memDC, &rect, hBrush);
 	DeleteObject(hBrush);
 
 	int Gap = 3;
@@ -105,7 +109,7 @@ void UEditorEngine::DrawEngineTitleBar()
 	if(!LogoImage.IsNull())
 	{
 		//
-		LogoImage.StretchBlt(hdc, ImageRect.left,ImageRect.top,ImageRect.right-ImageRect.left,ImageRect.bottom-ImageRect.top);
+		LogoImage.StretchBlt(memDC, ImageRect.left,ImageRect.top,ImageRect.right-ImageRect.left,ImageRect.bottom-ImageRect.top);
 	}
 
 	RECT CurrentLevelRect = ImageRect;
@@ -113,19 +117,28 @@ void UEditorEngine::DrawEngineTitleBar()
 	CurrentLevelRect.right = CurrentLevelRect.left + 200;
 	CurrentLevelRect.top = CurrentLevelRect.bottom/2;
 	CurrentLevelRect.bottom = CurrentLevelRect.top+30;
-	RoundRect(hdc,CurrentLevelRect.left,CurrentLevelRect.top,CurrentLevelRect.right,CurrentLevelRect.bottom*2,15,15);
-	DrawTextA(hdc,"TestLevel",-1, &CurrentLevelRect,DT_CENTER|DT_VCENTER|DT_SINGLELINE);
+	RoundRect(memDC,CurrentLevelRect.left,CurrentLevelRect.top,CurrentLevelRect.right,CurrentLevelRect.bottom*2,15,15);
+	if(GetWorld() && GetWorld()->GetPersistentLevel())
+	{
+		const std::string& PersistentLevelName = GetWorld()->GetPersistentLevel()->GetName();
+		DrawTextA(memDC,PersistentLevelName.c_str(),-1, &CurrentLevelRect,DT_CENTER|DT_VCENTER|DT_SINGLELINE);
+
+	}
+	MY_LOG("LOG", EDebugLogLevel::DLL_Warning, "REDRAW");
 	
 	// 텍스트 그리기
-	SetBkMode(hdc, TRANSPARENT);
+	SetBkMode(memDC, TRANSPARENT);
 	RECT CloseButtonRect = rect;
 	CloseButtonRect.right -=10;
 	CloseButtonRect .left = CloseButtonRect.right - 20;
 	CloseButtonRect.top +=10;
 	CloseButtonRect.bottom = CloseButtonRect.top+10;
-	SetTextColor(hdc, RGB(255,0,0));
-	DrawTextA(hdc, "X", -1, &CloseButtonRect, DT_CENTER|DT_VCENTER|DT_SINGLELINE);
+	SetTextColor(memDC, RGB(255,0,0));
+	DrawTextA(memDC, "X", -1, &CloseButtonRect, DT_CENTER|DT_VCENTER|DT_SINGLELINE);
 
+	BitBlt(hdc,rect.left,rect.top,rect.right-rect.left,rect.bottom-rect.top, memDC,0,0, SRCCOPY);
+
+	DeleteObject(memDC);
 	ReleaseDC(GetWindow(), hdc); // DC 해제
 }
 
