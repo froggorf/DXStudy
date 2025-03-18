@@ -34,7 +34,8 @@ public:
 	virtual void UpdateScene(float dt) = 0;
 	//virtual void DrawImGui();
 	virtual void DrawScene() = 0;
-	
+
+	void DrawTitleBar();
 	virtual LRESULT MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 	// 인풋 관련 함수

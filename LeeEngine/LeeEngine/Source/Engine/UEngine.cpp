@@ -15,6 +15,7 @@
 
 #include <threads.h>
 
+
 std::shared_ptr<UEngine> GEngine = nullptr;
 
 UEngine::~UEngine()
@@ -176,6 +177,7 @@ void UEngine::JoinThreadsAtDestroy()
 	return;
 }
 
+
 void UEngine::InitImGui()
 {
 	// Setup Dear ImGui context
@@ -197,7 +199,7 @@ void UEngine::InitImGui()
 	MY_LOG("Init",EDebugLogLevel::DLL_Display, "Imgui init success");
 
 	// 폰트 로드
-	std::string FontPath = EngineDirectory+"/Content/Font/Roboto.ttf";
+	std::string FontPath = EngineDirectory+"/Content/Editor/Font/Roboto.ttf";
 	float FontSize = 18.0f;
 	ImFontConfig FontConfig;
 	FontConfig.OversampleH= 3;

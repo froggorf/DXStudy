@@ -42,11 +42,15 @@
 	}
 	#endif
 
+
+
 #else
 	#ifndef HR
 	#define HR(x) (x)
 	#endif
-#endif 
+#endif
+
+#define WindowTitleBarHeight 56
 
 
 #ifndef COMPILE_SHADER_FROM_FILE

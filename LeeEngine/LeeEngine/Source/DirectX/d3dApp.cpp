@@ -157,6 +157,18 @@ void D3DApp::OnResize()
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
+void D3DApp::DrawTitleBar()
+{
+	if(GEditorEngine)
+	{
+
+		GEditorEngine->DrawEngineTitleBar();
+	}
+	
+
+	
+}
+
 LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	if(msg == WM_CLOSE)
@@ -183,41 +195,15 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	}
 	
 
-	static LONG TitleBarHeight = 56;
+	
 	switch( msg )
 	{
 	case WM_NCPAINT:
-		{
-			HDC hdc;
-			hdc = GetWindowDC(m_hMainWnd);
-			RECT rect;
-			GetWindowRect(m_hMainWnd, &rect);
+#ifdef WITH_EDITOR
 
-			// 타이틀바 영역 계산
-			rect.right -= rect.left;
-			rect.bottom -= rect.top;
-			rect.left = 0;
-			rect.top = 0;
-			rect.bottom = TitleBarHeight; // 타이틀바 높이
-
-			// 원하는 색상으로 타이틀바 채우기
-			HBRUSH hBrush = CreateSolidBrush(RGB(21,21,21)); // 파란색 브러시
-			FillRect(hdc, &rect, hBrush);
-			DeleteObject(hBrush);
-
-			// 텍스트 그리기
-			SetBkMode(hdc, TRANSPARENT);
-			RECT CloseButtonRect = rect;
-			CloseButtonRect.right -=10;
-			CloseButtonRect .left = CloseButtonRect.right - 20;
-			CloseButtonRect.top +=10;
-			CloseButtonRect.bottom = CloseButtonRect.top+10;
-			SetTextColor(hdc, RGB(255,0,0));
-			DrawTextA(hdc, "X", -1, &CloseButtonRect, DT_CENTER|DT_VCENTER|DT_SINGLELINE);
-
-			ReleaseDC(m_hMainWnd, hdc); // DC 해제
-		}
+		DrawTitleBar();
 		return 0;
+#endif
 	break;
 	case WM_NCCALCSIZE:
 		{
@@ -229,7 +215,7 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				// 클라이언트 영역의 크기를 계산 (프레임 두께를 줄이거나 늘림)
 				pParams->rgrc[0].left +=0;   // 왼쪽 프레임 두께
 				pParams->rgrc[0].right -=0;  // 오른쪽 프레임 두께
-				pParams->rgrc[0].top += TitleBarHeight;    // 상단 프레임 두께
+				pParams->rgrc[0].top += WindowTitleBarHeight;    // 상단 프레임 두께
 				pParams->rgrc[0].bottom -= 1; // 하단 프레임 두께
 
 				return 0; // 기본 동작 차단
@@ -244,6 +230,8 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 		if( LOWORD(wParam) == WA_INACTIVE )
 		{
+			// 비클라이언트 영역을 강제로 다시 그리기
+			RedrawWindow(m_hMainWnd, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE);
 			m_AppPaused = true;
 			m_Timer.Stop();
 		}

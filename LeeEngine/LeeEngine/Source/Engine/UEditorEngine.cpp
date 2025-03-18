@@ -22,6 +22,14 @@ std::map<EDebugLogLevel, ImVec4> DebugText::Color = std::map<EDebugLogLevel, ImV
 	{EDebugLogLevel::DLL_Warning, ImVec4(0.95f,0.73f,0.125f,1.0f)},
 };
 
+UEditorEngine::~UEditorEngine()
+{
+	if(LogoImage)
+	{
+		DeleteObject(LogoImage);
+	}
+}
+
 void UEditorEngine::InitEngine()
 {
 	UEngine::InitEngine();
@@ -41,7 +49,16 @@ void UEditorEngine::InitEngine()
 			FScene::DrawImGuiScene_RenderThread();
 		}
 	);
+
+	const std::string& EngineDirectoryString = GetEngineDirectory();
+	std::wstring FilePath = std::wstring{EngineDirectoryString.begin(), EngineDirectoryString.end()} + L"/Content/Editor/Logo/LeeEngineLogo.bmp";
+	LogoImage.Load(FilePath.c_str());
+	if (!LogoImage.IsNull()) {
+		MY_LOG("Load -", EDebugLogLevel::DLL_Error, "Load Logo Error");
+	}
+
 	MY_LOG("Init", EDebugLogLevel::DLL_Display, "UEditorEngine init");
+
 	
 }
 
@@ -63,5 +80,52 @@ void UEditorEngine::PostLoad()
 const std::string& UEditorEngine::GetDefaultMapName()
 {
 	return EngineData["EditorStartupMap"];
+}
+
+void UEditorEngine::DrawEngineTitleBar()
+{
+	HDC hdc;
+	hdc = GetWindowDC(GetWindow());
+	RECT rect;
+	GetWindowRect(GetWindow(), &rect);
+	// 타이틀바 영역 계산
+	rect.right -= rect.left;
+	rect.bottom -= rect.top;
+	rect.left = 0;
+	rect.top = 0;
+	rect.bottom = WindowTitleBarHeight; // 타이틀바 높이
+
+	// 원하는 색상으로 타이틀바 채우기
+	HBRUSH hBrush = CreateSolidBrush(RGB(21,21,21)); // 파란색 브러시
+	FillRect(hdc, &rect, hBrush);
+	DeleteObject(hBrush);
+
+	int Gap = 3;
+	RECT ImageRect = {Gap,Gap,WindowTitleBarHeight-Gap,WindowTitleBarHeight-Gap};
+	if(!LogoImage.IsNull())
+	{
+		//
+		LogoImage.StretchBlt(hdc, ImageRect.left,ImageRect.top,ImageRect.right-ImageRect.left,ImageRect.bottom-ImageRect.top);
+	}
+
+	RECT CurrentLevelRect = ImageRect;
+	CurrentLevelRect.left = CurrentLevelRect.right+20;
+	CurrentLevelRect.right = CurrentLevelRect.left + 200;
+	CurrentLevelRect.top = CurrentLevelRect.bottom/2;
+	CurrentLevelRect.bottom = CurrentLevelRect.top+30;
+	RoundRect(hdc,CurrentLevelRect.left,CurrentLevelRect.top,CurrentLevelRect.right,CurrentLevelRect.bottom*2,15,15);
+	DrawTextA(hdc,"TestLevel",-1, &CurrentLevelRect,DT_CENTER|DT_VCENTER|DT_SINGLELINE);
+	
+	// 텍스트 그리기
+	SetBkMode(hdc, TRANSPARENT);
+	RECT CloseButtonRect = rect;
+	CloseButtonRect.right -=10;
+	CloseButtonRect .left = CloseButtonRect.right - 20;
+	CloseButtonRect.top +=10;
+	CloseButtonRect.bottom = CloseButtonRect.top+10;
+	SetTextColor(hdc, RGB(255,0,0));
+	DrawTextA(hdc, "X", -1, &CloseButtonRect, DT_CENTER|DT_VCENTER|DT_SINGLELINE);
+
+	ReleaseDC(GetWindow(), hdc); // DC 해제
 }
 

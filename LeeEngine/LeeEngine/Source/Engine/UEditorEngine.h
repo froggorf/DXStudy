@@ -7,15 +7,18 @@
 #include "UEngine.h"
 #include "RenderCore/RenderingThread.h"
 
+#include <atlImage.h>
+
 
 
 class UEditorEngine : public UEngine
 {
 	MY_GENERATED_BODY(UEditorEngine)
 public:
-	UEditorEngine() : UEngine(nullptr) {};
-	UEditorEngine(D3DApp* Application) : UEngine(Application){};
+	UEditorEngine() : UEngine(nullptr) {	}
 
+	UEditorEngine(D3DApp* Application) : UEngine(Application)	{	};
+	~UEditorEngine() override;
 	virtual void InitEngine() override;
 	virtual void PostLoad() override;
 	virtual const std::string& GetDefaultMapName() override;
@@ -28,10 +31,16 @@ public:
 	//	
 	//	FScene::AddConsoleText_GameThread(NewDebugText);
 	//}
+
+#ifdef WITH_EDITOR
+	void DrawEngineTitleBar();
+#endif
 protected:
 private:
 public:
 protected:
 private:
+	CImage LogoImage;
+	
 
 };

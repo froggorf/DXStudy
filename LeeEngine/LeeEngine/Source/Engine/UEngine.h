@@ -19,6 +19,7 @@ class USceneComponent;
 class UEngine : public UObject
 {
 	MY_GENERATED_BODY(UEngine)
+
 public:
 	UEngine() = default;
 	UEngine(D3DApp* CurrentApplication)
@@ -56,6 +57,8 @@ public:
 
 	const D3DApp* GetApplication() const {return Application;}
 	HWND GetWindow() const {return Application->GetMainWnd();}
+
+	const std::string& GetEngineDirectory()const {return EngineDirectory;}
 
 protected:
 private:
