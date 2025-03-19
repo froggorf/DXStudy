@@ -56,19 +56,24 @@ public:
 	static std::vector<std::string> SelectActorComponentNames;
 	static int CurrentSelectedComponentIndex;
 
+
 	// 에디터 ViewPort
 	static bool bResizeEditorRenderTargetAtEndFrame;
 	static ImVec2 ResizeEditorRenderTargetSize;
-	static FViewMatrices ViewMatrices;
+	static FViewMatrices EditorViewMatrices;
 	// ==================== ImGui ====================
 	void InitLevelData() override;
 	void BeginRenderFrame() override;
 	void SetDrawScenePipeline(const float* ClearColor) override;
 	void AfterDrawSceneAction(const std::shared_ptr<FScene> SceneData) override;
 
+	XMMATRIX GetViewMatrix() override;
+	XMMATRIX GetProjectionMatrix() override;
+
 	static void DrawIMGUI_RenderThread(std::shared_ptr<FScene> SceneData);
 	// ==================== IMGUI / IMGUIZMO ===================
 	// ImGUI렌더링 함수(람다) 추가 함수
+
 
 	static void AddImGuiRenderFunction(const std::string& Name, const std::function<void()>& NewRenderFunction)	{ ImGuiRenderFunctions[Name] = NewRenderFunction; }
 	static void AddImGuizmoRenderFunction(const std::string& Name, const std::function<void()>& NewRenderFunction) { ImGuizmoRenderFunctions[Name] = NewRenderFunction; }
@@ -233,6 +238,7 @@ public:
 
 	static void DrawImguizmoSelectedActor_RenderThread(float AspectRatio);
 	static void DrawImGuiScene_RenderThread();
+	static void EditorCameraMove(XMFLOAT3 Delta);
 
 	// ===================================================================
 };

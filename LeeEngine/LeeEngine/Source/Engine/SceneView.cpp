@@ -8,8 +8,11 @@
 void FViewMatrices::UpdateViewMatrix(const XMFLOAT3 ViewLocation, const XMVECTOR& ViewRotation)
 {
 	ViewOrigin = ViewLocation;
+	CameraRotQuat  = ViewRotation;
+	XMVECTOR DefaultLook = XMVectorSet(0.0f,0.0f,1.0f,0.0f);;
+	XMVECTOR LookDirection = XMVector3Rotate(DefaultLook,ViewRotation);
 
-	ViewMatrix = XMMatrixLookToLH(XMLoadFloat3(&ViewLocation), ViewRotation, XMVectorSet(0.0f,1.0f,0.0f,0.0f));
+	ViewMatrix = XMMatrixLookToLH(XMLoadFloat3(&ViewOrigin), LookDirection, XMVectorSet(0.0f,1.0f,0.0f,0.0f));
 }
 
 void FViewMatrices::UpdateProjectionMatrix(const XMMATRIX NewProjectionMatrix)

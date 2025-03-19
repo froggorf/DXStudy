@@ -10,6 +10,7 @@
 
 #include "ImGUIActionTask.h"
 #include "Engine/MyEngineUtils.h"
+#include "Engine/SceneView.h"
 #include "Engine/UEditorEngine.h"
 #include "Engine/Components/USceneComponent.h"
 #include "Engine/DirectX/Device.h"
@@ -225,7 +226,9 @@ public:
 	static void DrawScene_RenderThread(std::shared_ptr<FScene> SceneData);
 	virtual void SetDrawScenePipeline(const float* ClearColor);
 	virtual void AfterDrawSceneAction(const std::shared_ptr<FScene> SceneData){}
-	
+
+	virtual XMMATRIX GetViewMatrix();
+	virtual XMMATRIX GetProjectionMatrix();
 public:
 protected:
 private:
@@ -267,8 +270,8 @@ public:
 protected:
 private:
 public:
+	static std::shared_ptr<FScene> CurrentSceneData;
 protected:
 private:
-	static std::shared_ptr<FScene> CurrentSceneData;
 
 };

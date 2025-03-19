@@ -53,44 +53,45 @@ void FScene::BeginRenderFrame()
 void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 {
 
+{	// 임시 렌더링 쓰레드 FPS 측정
+	//{
+	//	static GameTimer test;
+	//	static bool startbool = false;
+	//	if(!startbool)
+	//	{
+	//		test.Reset();
+	//		startbool = true;
+	//	}
+	//	test.Tick();
+	//	static int frameCnt = 0;
+	//	static float timeElapsed = 0.0f;
 
-	// 임시 렌더링 쓰레드 FPS 측정
-	{
-		static GameTimer test;
-		static bool startbool = false;
-		if(!startbool)
-		{
-			test.Reset();
-			startbool = true;
-		}
-		test.Tick();
-		static int frameCnt = 0;
-		static float timeElapsed = 0.0f;
+	//	frameCnt++;
 
-		frameCnt++;
+	//	// Compute averages over one second period.
+	//	if( (test.TotalTime() - timeElapsed) >= 1.0f )
+	//	{
+	//		float fps = (float)frameCnt; // fps = frameCnt / 1
+	//		float mspf = 1000.0f / fps;
 
-		// Compute averages over one second period.
-		if( (test.TotalTime() - timeElapsed) >= 1.0f )
-		{
-			float fps = (float)frameCnt; // fps = frameCnt / 1
-			float mspf = 1000.0f / fps;
+	//		std::wostringstream outs;
+	//		outs.precision(6);
+	//		outs  << L"Rendering Thread  "
+	//			<< L"FPS: " << fps << L"    " 
+	//			<< L"Frame Time: " << mspf << L" (ms)";
+	//		//SetWindowText(m_hMainWnd, outs.str().c_str());
+	//		if(GEngine)
+	//		{
+	//			GEngine->GetApplication()->TestSetWindowBarName(outs);
+	//		}
 
-			std::wostringstream outs;
-			outs.precision(6);
-			outs  << L"Rendering Thread  "
-				<< L"FPS: " << fps << L"    " 
-				<< L"Frame Time: " << mspf << L" (ms)";
-			//SetWindowText(m_hMainWnd, outs.str().c_str());
-			if(GEngine)
-			{
-				GEngine->GetApplication()->TestSetWindowBarName(outs);
-			}
+	//		// Reset for next average.
+	//		frameCnt = 0;
+	//		timeElapsed += 1.0f;
+	//	}
+	//}
+}
 
-			// Reset for next average.
-			frameCnt = 0;
-			timeElapsed += 1.0f;
-		}
-	}
 	// 프레임 단위 세팅
 	{
 		const float ClearColor[] = {0.0f, 0.0f, 0.0f,1.0f};
@@ -124,10 +125,10 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 					FrameConstantBuffer fcb;
 					// TODO: 카메라 구현 시 수정
 
-					fcb.View = XMMatrixTranspose(GEngine->Test_DeleteLater_GetViewMatrix());
+					fcb.View = XMMatrixTranspose(SceneData->GetViewMatrix());
 					// TODO: 카메라 구현 시 수정
 					//XMMATRIX ProjMat = XMMatrixPerspectiveFovLH(0.5*XM_PI, 1600.0f/1200.0f, 1.0f, 1000.0f);
-					fcb.Projection = XMMatrixTranspose(GEngine->Test_DeleteLater_GetProjectionMatrix());
+					fcb.Projection = XMMatrixTranspose(SceneData->GetProjectionMatrix());
 					fcb.LightView = XMMatrixTranspose(XMMatrixIdentity());//m_LightView
 					fcb.LightProj = XMMatrixTranspose(XMMatrixIdentity()); //m_LightProj
 					GDirectXDevice->GetDeviceContext()->UpdateSubresource(GDirectXDevice->GetFrameConstantBuffer().Get(), 0, nullptr, &fcb, 0, 0);
@@ -194,6 +195,16 @@ void FScene::SetDrawScenePipeline(const float* ClearColor)
 {
 	GDirectXDevice->GetDeviceContext()->OMSetRenderTargets(1, GDirectXDevice->GetRenderTargetView().GetAddressOf(),  GDirectXDevice->GetDepthStencilView().Get());
 	GDirectXDevice->GetDeviceContext()->RSSetViewports(1, GDirectXDevice->GetScreenViewport());
+}
+
+XMMATRIX FScene::GetViewMatrix()
+{
+	return GEngine->Test_DeleteLater_GetViewMatrix();
+}
+
+XMMATRIX FScene::GetProjectionMatrix()
+{
+	return GEngine->Test_DeleteLater_GetProjectionMatrix();
 }
 
 

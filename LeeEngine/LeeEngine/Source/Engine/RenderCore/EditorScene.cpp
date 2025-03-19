@@ -30,6 +30,8 @@ ImVec2 FEditorScene::ResizeEditorRenderTargetSize = {};
 
 int FEditorScene::CurrentSelectedComponentIndex = -1;
 
+FViewMatrices FEditorScene::EditorViewMatrices;
+
 
 #endif
 void FEditorScene::InitLevelData()
@@ -42,6 +44,8 @@ void FEditorScene::InitLevelData()
 	SelectActorComponents.clear();
 	SelectActorComponentNames.clear();
 	CurrentSelectedComponentIndex=-1;
+
+	EditorViewMatrices.UpdateViewMatrix(XMFLOAT3(0.0f,0.0f,0.0f), XMQuaternionRotationRollPitchYaw(0.0f,0.0f,0.0f));
 }
 
 void FEditorScene::BeginRenderFrame()
@@ -77,6 +81,17 @@ void FEditorScene::AfterDrawSceneAction(const std::shared_ptr<FScene> SceneData)
 	GDirectXDevice->SetDefaultViewPort();
 
 	DrawIMGUI_RenderThread(SceneData);
+}
+
+XMMATRIX FEditorScene::GetViewMatrix()
+{
+	return EditorViewMatrices.GetViewMatrix();
+}
+
+XMMATRIX FEditorScene::GetProjectionMatrix()
+{
+	// TODO: 수정 예정 03/20
+	return FScene::GetProjectionMatrix();//ViewMatrices.GetProjectionMatrix();
 }
 
 void FEditorScene::DrawIMGUI_RenderThread(std::shared_ptr<FScene> SceneData)
@@ -214,8 +229,9 @@ void FEditorScene::DrawImguizmoSelectedActor_RenderThread(float AspectRatio)
 	XMMATRIX DeltaMatrixTemp = XMMatrixIdentity();
 	float* DeltaMatrix = reinterpret_cast<float*>(&DeltaMatrixTemp);
 
-	XMMATRIX ViewMat = GEngine->Test_DeleteLater_GetViewMatrix();
-	XMMATRIX ProjMat = XMMatrixPerspectiveFovLH(0.5*XM_PI, AspectRatio, 1.0f, 1000.0f);
+	// TODO: 03.20 Editor 를 static이 아닌 FEditorScene내에서 작동하도록 변경하기
+	XMMATRIX ViewMat = FRenderCommandExecutor::CurrentSceneData->GetViewMatrix();//GEngine->Test_DeleteLater_GetViewMatrix();
+	XMMATRIX ProjMat = FRenderCommandExecutor::CurrentSceneData->GetProjectionMatrix();//XMMatrixPerspectiveFovLH(0.5*XM_PI, AspectRatio, 1.0f, 1000.0f);
 
 	//ProjMat = XMMatrixPerspectiveFovRH(0.5*XM_PI, 1600.0f/1200.0f, 1.0f, 1000.0f);;
 	//ImGuizmo::AllowAxisFlip(true);
@@ -328,8 +344,62 @@ void FEditorScene::DrawImGuiScene_RenderThread()
 			bResizeEditorRenderTargetAtEndFrame = false;
 			GDirectXDevice->ResizeEditorRenderTarget(ResizeEditorRenderTargetSize.x, ResizeEditorRenderTargetSize.y);
 		}
-		
+
+		// 키 입력 처리
+		if(ImGui::IsWindowFocused())
+		{
+			if(ImGui::IsMouseDown(ImGuiMouseButton_Right))
+			{
+				static float MoveSpeed = 0.05f;
+				XMFLOAT3 MoveDelta = XMFLOAT3(0.0f,0.0f,0.0f);
+				if(ImGui::IsKeyDown(ImGuiKey::ImGuiKey_W))
+				{
+					MoveDelta.z += MoveSpeed;
+				}
+				if(ImGui::IsKeyDown(ImGuiKey::ImGuiKey_S))
+				{
+					MoveDelta.z -= MoveSpeed;
+				}
+				if(ImGui::IsKeyDown(ImGuiKey::ImGuiKey_A))
+				{
+					MoveDelta.x-=MoveSpeed;
+				}
+				if(ImGui::IsKeyDown(ImGuiKey::ImGuiKey_D))
+				{
+					MoveDelta.x +=MoveSpeed;
+				}
+				if(ImGui::IsKeyDown(ImGuiKey::ImGuiKey_E))
+				{
+					MoveDelta.y +=MoveSpeed;
+				}
+				if(ImGui::IsKeyDown(ImGuiKey::ImGuiKey_Q))
+				{
+					MoveDelta.y -=MoveSpeed;
+				}
+
+
+				if(XMVectorGetX(XMVector3LengthEst(XMLoadFloat3(&MoveDelta)))>FLT_EPSILON)
+				{
+					EditorCameraMove(MoveDelta);
+				}
+				
+			}
+		}
+
 
 		ImGui::End();
 	}
+}
+
+void FEditorScene::EditorCameraMove(XMFLOAT3 Delta)
+{
+	XMFLOAT3 CurrentLocation = EditorViewMatrices.GetViewOrigin();
+	XMVECTOR CurrentCameraRotQuat = EditorViewMatrices.GetCameraRotQuat();
+
+	XMFLOAT3 NewLocation;
+	XMStoreFloat3(&NewLocation, XMVectorAdd(XMLoadFloat3(&CurrentLocation), XMLoadFloat3(&Delta)));
+
+	MY_LOG("TEST",EDebugLogLevel::DLL_Warning, XMFLOAT3_TO_TEXT(NewLocation));
+
+	EditorViewMatrices.UpdateViewMatrix(NewLocation, CurrentCameraRotQuat);
 }
