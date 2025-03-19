@@ -449,8 +449,13 @@ private:
 class FRenderCommandExecutor
 {
 public:
-	static void Execute()
+	static void Execute(const std::shared_ptr<FScene>& InSceneData)
 	{
+		if(!CurrentSceneData)
+		{
+			CurrentSceneData = InSceneData;
+		}
+		
 		std::shared_ptr<FRenderTask> Task;
 		while(true)
 		{

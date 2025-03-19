@@ -168,6 +168,9 @@
     <ClCompile Include="Source\Engine\RenderCore\ImGUIActionTask.cpp">
       <Filter>Source\Engine\RenderCore</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\RenderCore\EditorScene.cpp">
+      <Filter>Source\Engine\RenderCore</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Animation\Bone.h">
@@ -300,6 +303,9 @@
       <Filter>Source\Engine\SceneProxy</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\RenderCore\ImGUIActionTask.h">
+      <Filter>Source\Engine\RenderCore</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\RenderCore\EditorScene.h">
       <Filter>Source\Engine\RenderCore</Filter>
     </ClInclude>
   </ItemGroup>

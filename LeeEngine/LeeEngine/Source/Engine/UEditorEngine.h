@@ -32,10 +32,11 @@ public:
 	//	FScene::AddConsoleText_GameThread(NewDebugText);
 	//}
 
-#ifdef WITH_EDITOR
+
 	void DrawEngineTitleBar();
-#endif
+
 protected:
+	void CreateRenderThread() override;
 private:
 public:
 protected:

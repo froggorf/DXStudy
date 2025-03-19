@@ -59,7 +59,7 @@ void UEngine::InitEngine()
 	CurrentWorld->Init();
 
 	//RenderThread = std::thread(&UEngine::Draw,this);
-	RenderThread = std::thread(&FRenderCommandExecutor::Execute);
+	CreateRenderThread();
 
 	
 }
@@ -177,6 +177,11 @@ void UEngine::JoinThreadsAtDestroy()
 	return;
 }
 
+
+void UEngine::CreateRenderThread()
+{
+	RenderThread = std::thread(&FRenderCommandExecutor::Execute, std::make_shared<FScene>());
+}
 
 void UEngine::InitImGui()
 {

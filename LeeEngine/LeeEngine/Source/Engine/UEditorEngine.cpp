@@ -9,6 +9,7 @@
 
 #include "Engine/AssetManager/AssetManager.h"
 #include "imgui_internal.h"
+#include "RenderCore/EditorScene.h"
 #include "World/UWorld.h"
 
 
@@ -140,5 +141,10 @@ void UEditorEngine::DrawEngineTitleBar()
 
 	DeleteObject(memDC);
 	ReleaseDC(GetWindow(), hdc); // DC 해제
+}
+
+void UEditorEngine::CreateRenderThread()
+{
+	RenderThread = std::thread(&FRenderCommandExecutor::Execute, std::make_shared<FEditorScene>());
 }
 

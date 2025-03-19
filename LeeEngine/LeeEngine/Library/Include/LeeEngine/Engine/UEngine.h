@@ -61,6 +61,7 @@ public:
 	const std::string& GetEngineDirectory()const {return EngineDirectory;}
 
 protected:
+	virtual void CreateRenderThread();
 private:
 	// ============= ImGui =============
 	void InitImGui();
@@ -70,9 +71,6 @@ public:
 protected:
 	// Default Engine ini Data
 	std::map<std::string, std::string> EngineData;
-private:
-	D3DApp* Application;
-	std::shared_ptr<UWorld> CurrentWorld;
 
 	// =============== 쓰레드 =================
 	std::vector<std::thread>		GameThreads;
@@ -80,6 +78,11 @@ private:
 	std::thread						RenderThread;
 	UINT							RenderThreadFrameCount = 0;
 	// =======================================
+
+private:
+	D3DApp* Application;
+	std::shared_ptr<UWorld> CurrentWorld;
+
 
 	// =============== 컴퍼넌트 변경사항 ================
 	// 중복 원소만 들어가지 않으면되며, 순서가 중요하지 않음
