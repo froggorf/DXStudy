@@ -171,6 +171,9 @@
     <ClCompile Include="Source\Engine\RenderCore\EditorScene.cpp">
       <Filter>Source\Engine\RenderCore</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\SceneView.cpp">
+      <Filter>Source\Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Animation\Bone.h">
@@ -307,6 +310,9 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\RenderCore\EditorScene.h">
       <Filter>Source\Engine\RenderCore</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\SceneView.h">
+      <Filter>Source\Engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

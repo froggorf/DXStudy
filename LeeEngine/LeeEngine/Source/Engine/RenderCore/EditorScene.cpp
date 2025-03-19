@@ -328,7 +328,7 @@ void FEditorScene::DrawImGuiScene_RenderThread()
 			bResizeEditorRenderTargetAtEndFrame = false;
 			GDirectXDevice->ResizeEditorRenderTarget(ResizeEditorRenderTargetSize.x, ResizeEditorRenderTargetSize.y);
 		}
-
+		
 
 		ImGui::End();
 	}

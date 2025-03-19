@@ -7,7 +7,7 @@
 
 #include "RenderingThread.h"
 #include "Engine/MyEngineUtils.h"
-
+#include "Engine/SceneView.h"
 
 
 // ================================ 디버깅 로그 ================================
@@ -59,6 +59,7 @@ public:
 	// 에디터 ViewPort
 	static bool bResizeEditorRenderTargetAtEndFrame;
 	static ImVec2 ResizeEditorRenderTargetSize;
+	static FViewMatrices ViewMatrices;
 	// ==================== ImGui ====================
 	void InitLevelData() override;
 	void BeginRenderFrame() override;
