@@ -36,18 +36,18 @@ void UEditorEngine::InitEngine()
 	UEngine::InitEngine();
 
 	//AddImGuiRenderFunction(std::bind(&UEditorEngine::DrawDebugConsole, this));
-	FScene::AddImGuiRenderFunction(
+	FEditorScene::AddImGuiRenderFunction(
 		"DebugConsole",
 		[]()
 		{
-			FScene::DrawDebugConsole_RenderThread();
+			FEditorScene::DrawDebugConsole_RenderThread();
 		}
 	);
-	FScene::AddImGuiRenderFunction(
+	FEditorScene::AddImGuiRenderFunction(
 		"DrawScene",
 		[]()
 		{
-			FScene::DrawImGuiScene_RenderThread();
+			FEditorScene::DrawImGuiScene_RenderThread();
 		}
 	);
 

@@ -14,7 +14,7 @@
 
 #include <map>
 
-#include "Engine/Mesh/UStaticMesh.h"
+
 
 using namespace Microsoft::WRL;
 

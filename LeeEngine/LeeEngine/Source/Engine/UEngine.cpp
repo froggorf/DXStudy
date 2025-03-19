@@ -15,6 +15,8 @@
 
 #include <threads.h>
 
+#include "RenderCore/EditorScene.h"
+
 
 std::shared_ptr<UEngine> GEngine = nullptr;
 

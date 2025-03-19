@@ -7,6 +7,7 @@
 
 #include "DirectX/d3dApp.h"
 #include "StaticMeshResources.h"
+#include "Engine/RenderCore/EditorScene.h"
 
 
 //std::map<std::string, std::shared_ptr<UStaticMesh>> UStaticMesh::StaticMeshCache;

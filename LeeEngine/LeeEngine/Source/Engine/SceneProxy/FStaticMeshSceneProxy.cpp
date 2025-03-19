@@ -8,6 +8,7 @@
 #include "Engine/UEditorEngine.h"
 #include "Engine/Mesh/StaticMeshResources.h"
 #include "Engine/Mesh/UStaticMesh.h"
+#include "Engine/RenderCore/EditorScene.h"
 
 FStaticMeshSceneProxy::FStaticMeshSceneProxy(UINT PrimitiveID, const std::shared_ptr<UStaticMesh>& StaticMesh)
 	: FPrimitiveSceneProxy(PrimitiveID)

@@ -43,23 +43,6 @@ extern std::shared_ptr<class UEditorEngine> GEditorEngine;
 
 extern std::unique_ptr<class FDirectXDevice> GDirectXDevice;
 
-// ================================ 디버깅 로그 ================================
-#define MY_LOG(Category, DebugLogLevel, DebugText) \
-	{\
-		FScene::AddConsoleText_GameThread(Category, DebugLogLevel,DebugText);\
-	}
-
-#define XMFLOAT2_TO_TEXT(Data) std::format("x = {:.3f}, y = {:.3f}", Data.x,Data.y)
-
-#define XMFLOAT3_TO_TEXT(Data) std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}", Data.x,Data.y,Data.z)
-
-#define XMFLOAT4_TO_TEXT(Data) std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}, w = {:.3f}", Data.x,Data.y,Data.z, Data.w)
-
-#define XMVECTOR_TO_TEXT(Data) std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}, w = {:.3f}", DirectX::XMVectorGetX(Data),DirectX::XMVectorGetY(Data),DirectX::XMVectorGetZ(Data),DirectX::XMVectorGetW(Data))
-
-// typeid와 __func__ 를 쓰기위해 매크로로 설정
-#define GetFunctionName std::format("{}::{}", typeid(*this).name(), __func__)
-
 #define Make_Transform_Dirty()\
 	if(GEngine&& IsRegister())\
 	{\

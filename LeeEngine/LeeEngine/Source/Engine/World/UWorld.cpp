@@ -13,6 +13,7 @@
 #include "Engine/Components/USceneComponent.h"
 #include "Engine/DirectX/Device.h"
 #include "Engine/GameFramework/AActor.h"
+#include "Engine/RenderCore/EditorScene.h"
 #include "Engine/RenderCore/RenderingThread.h"
 
 UWorld::UWorld()
@@ -28,16 +29,13 @@ UWorld::~UWorld()
 void UWorld::Init()
 {
 	UObject::Init();
-
-	FScene::AddImGuiRenderFunction("World Outliner", []()
+#ifdef WITH_EDITOR
+	FEditorScene::AddImGuiRenderFunction("World Outliner", []()
 	{
-		FScene::DrawWorldOutliner_RenderThread();
-		FScene::DrawSelectActorDetail_RenderThread();
+		FEditorScene::DrawWorldOutliner_RenderThread();
+		FEditorScene::DrawSelectActorDetail_RenderThread();
 	});
-	/*FScene::AddImGuizmoRenderFunction("Guizmo", []()
-	{
-		FScene::DrawImguizmoSelectedActor_RenderThread();
-	});*/
+#endif
 }
 
 void UWorld::PostLoad()

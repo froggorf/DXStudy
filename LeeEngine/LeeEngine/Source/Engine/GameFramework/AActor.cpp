@@ -7,6 +7,7 @@
 
 #include "Engine/UEditorEngine.h"
 #include "Engine/Components/USceneComponent.h"
+#include "Engine/RenderCore/EditorScene.h"
 
 unsigned int ActorIDCount = 0;
 
@@ -32,8 +33,9 @@ void AActor::Register()
 	UObject::Register();
 
 	RootComponent->Register();
-
-	FScene::AddWorldOutlinerActor_GameThread(shared_from_this());
+#ifdef WITH_EDITOR
+	FEditorScene::AddWorldOutlinerActor_GameThread(shared_from_this());
+#endif
 }
 
 XMFLOAT3 AActor::GetActorLocation() const

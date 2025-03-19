@@ -10,6 +10,7 @@
 #include <fstream>
 
 #include "Engine/UEditorEngine.h"
+#include "Engine/RenderCore/EditorScene.h"
 #include "nlohmann/json.hpp"
 
 static int LevelCount = 0;

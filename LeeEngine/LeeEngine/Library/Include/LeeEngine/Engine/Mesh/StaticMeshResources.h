@@ -35,7 +35,7 @@ public:
 		{
 			if(TextureArraySize < count)
 			{
-				MY_LOG(StaticMeshFilePathData["Name"], EDebugLogLevel::DLL_Warning, "Texture count not match with mesh count! ");
+				/*MY_LOG(StaticMeshFilePathData["Name"], EDebugLogLevel::DLL_Warning, "Texture count not match with mesh count! ");*/
 				break;
 			}
 
@@ -47,7 +47,7 @@ public:
 
 		if(TextureSRV.size() == 0)
 		{
-			MY_LOG(StaticMeshFilePathData["Name"], EDebugLogLevel::DLL_Error, "In static mesh .myasset file, texture data no valid");
+			/*MY_LOG(StaticMeshFilePathData["Name"], EDebugLogLevel::DLL_Error, "In static mesh .myasset file, texture data no valid");*/
 			return;
 		}
 

@@ -4,3 +4,320 @@
 // 이윤석
 
 #include "EditorScene.h"
+
+#ifdef WITH_EDITOR
+
+std::unordered_map<std::string,std::function<void()>> FEditorScene::ImGuiRenderFunctions;
+std::unordered_map<std::string,std::function<void()>> FEditorScene::ImGuizmoRenderFunctions;
+
+
+// 디버깅 콘솔
+std::vector<DebugText> FEditorScene::DebugConsoleText;
+std::vector<DebugText> FEditorScene::PendingAddDebugConsoleText;
+std::vector<DebugText> FEditorScene::SearchingDebugConsoleText;
+std::string FEditorScene::DebugConsoleSearchText;
+
+// 월드 아웃라이너
+std::vector<std::shared_ptr<AActor>> FEditorScene::WorldOutlinerActors;
+std::vector<std::shared_ptr<AActor>> FEditorScene::PendingAddWorldOutlinerActors;
+std::shared_ptr<AActor> FEditorScene::CurrentSelectedActor = nullptr;
+std::vector<std::shared_ptr<USceneComponent>> FEditorScene::SelectActorComponents;
+std::vector<std::string> FEditorScene:: SelectActorComponentNames;
+
+// 에디터 ViewPort
+bool FEditorScene::bResizeEditorRenderTargetAtEndFrame=false;
+ImVec2 FEditorScene::ResizeEditorRenderTargetSize = {};
+
+int FEditorScene::CurrentSelectedComponentIndex = -1;
+
+
+#endif
+void FEditorScene::BeginRenderFrame()
+{
+	FScene::BeginRenderFrame();
+
+	for(const auto& Text : PendingAddDebugConsoleText)
+	{
+		DebugConsoleText.push_back(Text);
+	}
+	PendingAddDebugConsoleText.clear();
+	for(const auto& NewOutlinerActor : PendingAddWorldOutlinerActors)
+	{
+		WorldOutlinerActors.push_back(NewOutlinerActor);
+	}
+	PendingAddWorldOutlinerActors.clear();
+
+}
+
+void FEditorScene::SetDrawScenePipeline(const float* ClearColor)
+{
+	GDirectXDevice->GetDeviceContext()->OMSetRenderTargets(1, GDirectXDevice->GetEditorRenderTargetView().GetAddressOf(), GDirectXDevice->GetDepthStencilView().Get());
+	GDirectXDevice->GetDeviceContext()->ClearRenderTargetView(GDirectXDevice->GetEditorRenderTargetView().Get(),ClearColor);
+	GDirectXDevice->SetViewPortSize(ResizeEditorRenderTargetSize.x,ResizeEditorRenderTargetSize.y);
+}
+
+void FEditorScene::AfterDrawSceneAction(const std::shared_ptr<FScene> SceneData)
+{
+	FScene::AfterDrawSceneAction(SceneData);
+
+	GDirectXDevice->GetDeviceContext()->OMSetRenderTargets(1, GDirectXDevice->GetRenderTargetView().GetAddressOf(),  GDirectXDevice->GetDepthStencilView().Get());
+	GDirectXDevice->GetDeviceContext()->RSSetViewports(1, GDirectXDevice->GetScreenViewport());
+	GDirectXDevice->SetDefaultViewPort();
+
+	DrawIMGUI_RenderThread(SceneData);
+}
+
+void FEditorScene::DrawIMGUI_RenderThread(std::shared_ptr<FScene> SceneData)
+{
+	if(bIsGameKill)
+	{
+		return;
+	}
+	//========== IMGUI ==========
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+
+	ImGui::NewFrame();
+
+
+
+	static ImFont* RobotoFont = ImGui::GetIO().Fonts->Fonts[0];
+	ImGui::PushFont(RobotoFont);
+
+
+
+
+	// ImGui
+	for(const auto& Func : ImGuiRenderFunctions)
+	{
+		Func.second();
+	}
+
+	ImGui::PopFont();
+
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+	ImGui::EndFrame();
+
+
+}
+
+void FEditorScene::DrawDebugConsole_RenderThread()
+{
+	{
+		ImGui::Begin("Debug Console");
+
+		// EditBox
+		char* CurrentText = DebugConsoleSearchText.data();
+		ImGui::Text("Search: ");
+		ImGui::SameLine();
+		if(ImGui::InputText(" ",CurrentText,100))
+		{
+			DebugConsoleSearchText = CurrentText;
+			SearchDebugConsole_RenderThread();
+		}
+
+		ImGui::SameLine();
+		ImVec2 MousePos = ImGui::GetMousePos();
+		ImGui::Text("x = %.2f , y = %.2f", MousePos.x,MousePos.y);
+
+		if(ImGui::BeginListBox(" ", ImVec2(-FLT_MIN, -FLT_MIN)))
+		{
+			// 디버그 리스트 박스의 맨 아래를 볼 시 맨 아래로 고정
+			bool bIsFixListBox = ImGui::GetScrollMaxY() == ImGui::GetScrollY();
+
+
+			// 검색 중 체크
+			bool bWhileSearching = DebugConsoleSearchText.size() != 0;
+			if(bWhileSearching)
+			{
+				for(const DebugText& Text : SearchingDebugConsoleText)
+				{
+					ImGui::TextColored(DebugText::Color[Text.Level], Text.Text.data());
+				}	
+			}
+			// 검색 아닐 시
+			else
+			{
+				for(const DebugText& Text : DebugConsoleText)
+				{
+					ImGui::TextColored(DebugText::Color[Text.Level], Text.Text.data());
+
+				}	
+			}
+
+			// 리스트 맨 아래였을 시 고정
+			if(bIsFixListBox)
+			{
+				ImGui::SetScrollHereY(1.0f);
+			}
+
+			ImGui::EndListBox();
+
+		}
+
+
+		ImGui::End();
+	}
+}
+
+void FEditorScene::DrawImguizmoSelectedActor_RenderThread(float AspectRatio)
+{
+	if(!CurrentSelectedActor)
+	{
+		return;
+	}
+
+	static ImGuizmo::OPERATION CurrentGizmoOperation(ImGuizmo::TRANSLATE);
+	static ImGuizmo::MODE CurrentGizmoMode(ImGuizmo::WORLD);
+	if(ImGui::IsKeyPressed(ImGuiKey_Q))
+	{
+		CurrentGizmoOperation = ImGuizmo::TRANSLATE;
+	}
+	if(ImGui::IsKeyPressed(ImGuiKey_W))
+	{
+		CurrentGizmoOperation = ImGuizmo::ROTATE;
+	}
+	if(ImGui::IsKeyPressed(ImGuiKey_E))
+	{
+		CurrentGizmoOperation = ImGuizmo::SCALE;
+	}
+
+	if(ImGui::IsKeyPressed(ImGuiKey_1))
+	{
+		CurrentGizmoMode = ImGuizmo::WORLD;
+	}
+	if(ImGui::IsKeyPressed(ImGuiKey_2))
+	{
+		CurrentGizmoMode = ImGuizmo::LOCAL;
+	}
+
+	const std::shared_ptr<USceneComponent>& CurrentSelectedComponent = SelectActorComponents[CurrentSelectedComponentIndex];
+	FTransform ComponentTransform = CurrentSelectedComponent->GetComponentTransform();
+
+	XMMATRIX ComponentMatrix;
+	ComponentMatrix = ComponentTransform.ToMatrixWithScale();
+
+	XMMATRIX DeltaMatrixTemp = XMMatrixIdentity();
+	float* DeltaMatrix = reinterpret_cast<float*>(&DeltaMatrixTemp);
+
+	XMMATRIX ViewMat = GEngine->Test_DeleteLater_GetViewMatrix();
+	XMMATRIX ProjMat = XMMatrixPerspectiveFovLH(0.5*XM_PI, AspectRatio, 1.0f, 1000.0f);
+
+	//ProjMat = XMMatrixPerspectiveFovRH(0.5*XM_PI, 1600.0f/1200.0f, 1.0f, 1000.0f);;
+	//ImGuizmo::AllowAxisFlip(true);
+	ImGuizmo::Manipulate(reinterpret_cast<float*>(&ViewMat), reinterpret_cast<float*>(&ProjMat),CurrentGizmoOperation,CurrentGizmoMode,reinterpret_cast<float*>(&ComponentMatrix),DeltaMatrix);
+
+	XMFLOAT3 DeltaTranslation;
+	XMFLOAT3 DeltaRot;
+	XMFLOAT3 DeltaScale;
+	ImGuizmo::DecomposeMatrixToComponents(DeltaMatrix, reinterpret_cast<float*>(&DeltaTranslation),reinterpret_cast<float*>(&DeltaRot),reinterpret_cast<float*>(&DeltaScale) );
+	if(CurrentGizmoOperation == ImGuizmo::TRANSLATE && XMVectorGetX(XMVector3LengthEst(XMLoadFloat3(&DeltaTranslation))) > FLT_EPSILON)
+	{
+		const auto Lambda = [CurrentSelectedComponent, DeltaTranslation]()
+			{
+				CurrentSelectedComponent->AddWorldOffset(DeltaTranslation);		
+			};
+		ENQUEUE_IMGUI_COMMAND(Lambda)
+
+	}
+
+	if ((CurrentGizmoOperation == ImGuizmo::ROTATE) && XMVectorGetX(XMVector3LengthEst(XMLoadFloat3(&DeltaRot))) > FLT_EPSILON)
+	{
+		if(XMVectorGetX(XMVector3Length(XMLoadFloat3(&DeltaRot))) > FLT_EPSILON)
+		{
+			//CurrentSelectedComponent->AddWorldRotation(DeltaRot);
+			const auto Lambda = [CurrentSelectedComponent, DeltaRot]()
+				{
+					CurrentSelectedComponent->AddWorldRotation(DeltaRot);		
+				};
+			ENQUEUE_IMGUI_COMMAND(Lambda)
+		}
+
+	}
+
+
+}
+
+void FEditorScene::DrawImGuiScene_RenderThread()
+{
+	static ImVec2 PreviousViewPortSize = ImVec2(0.0f,0.0f);
+	ImVec2 CurrentViewPortSize{};
+	ImVec2 ScreenPos;
+
+	// Actor
+	if(ImGui::Begin("Place Actors",nullptr) )
+	{
+		ImGui::End();
+	}
+
+
+	if(ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoTitleBar|
+		ImGuiWindowFlags_NoScrollbar |
+		ImGuiWindowFlags_NoScrollWithMouse))
+	{
+		ImVec2 WindowSize = ImGui::GetWindowSize();;
+		float XMargin = 5.0f;
+		float YMargin = 5.0f;
+		float TopMargin = 0.0f;
+
+		ImVec2 ViewPortSize = WindowSize;
+		ViewPortSize.x -= XMargin*2;
+		ViewPortSize.y = ViewPortSize.y  - YMargin*2;
+		CurrentViewPortSize = ViewPortSize;
+
+
+
+		ImGui::SetCursorPos(ImVec2(XMargin,YMargin+TopMargin));
+		ScreenPos = ImGui::GetCursorScreenPos();
+		if(GDirectXDevice->GetSRVEditorRenderTarget())
+		{
+			ImGui::Image((void*)GDirectXDevice->GetSRVEditorRenderTarget().Get(), ViewPortSize);
+
+		}
+		//CurrentViewPortPos = ImGui::GetWindowPos();
+
+		/*if(ImGui::BeginTabBar(" "))
+		{
+
+
+		if(ImGui::BeginTabItem("ViewPort"))
+		{
+
+
+		ImGui::EndTabItem();
+
+		}
+		ImGui::EndTabBar();
+		}*/
+		if(PreviousViewPortSize != CurrentViewPortSize)
+		{
+			PreviousViewPortSize = CurrentViewPortSize;
+			ResizeEditorRenderTargetSize = CurrentViewPortSize;
+			bResizeEditorRenderTargetAtEndFrame = true;
+
+		}
+
+		// SelectActor ImGuizmo
+		ImGuizmo::Enable(true);
+		ImGuizmo::SetOrthographic(false);
+		ImGuizmo::SetDrawlist(ImGui::GetForegroundDrawList());
+
+		ImGuizmo::SetRect(ScreenPos.x, ScreenPos.y,ViewPortSize.x,ViewPortSize.y);
+
+		ImGui::PushClipRect(ImVec2{0,0},ImVec2{ViewPortSize.x,ViewPortSize.y},true);
+
+		DrawImguizmoSelectedActor_RenderThread(GDirectXDevice->GetAspectRatio());
+		ImGui::PopClipRect();
+
+		if(bResizeEditorRenderTargetAtEndFrame)
+		{
+			bResizeEditorRenderTargetAtEndFrame = false;
+			GDirectXDevice->ResizeEditorRenderTarget(ResizeEditorRenderTargetSize.x, ResizeEditorRenderTargetSize.y);
+		}
+
+
+		ImGui::End();
+	}
+}

@@ -8,6 +8,7 @@
 
 #include "Engine/MyEngineUtils.h"
 #include "Engine/UEditorEngine.h"
+#include "Engine/RenderCore/EditorScene.h"
 #include "nlohmann/json.hpp"
 class UObject;
 struct aiScene;
@@ -78,8 +79,8 @@ inline UObject* AssetManager::ReadMyAsset(const std::string& FilePath)
 
 	std::ifstream AssetFile(FilePath.data());
 	if(!AssetFile.is_open())
-	{
-		MY_LOG("(AssetManager::ReadMyAsset) Failed open file", EDebugLogLevel::DLL_Warning, std::string(FilePath.data()));
+	{/*
+		MY_LOG("(AssetManager::ReadMyAsset) Failed open file", EDebugLogLevel::DLL_Warning, std::string(FilePath.data()));*/
 	}
 	nlohmann::json AssetData = nlohmann::json::parse(AssetFile);
 

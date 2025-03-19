@@ -6,6 +6,7 @@
 #include "UStaticMeshComponent.h"
 
 #include "Engine/Mesh/UStaticMesh.h"
+#include "Engine/RenderCore/EditorScene.h"
 #include "Engine/SceneProxy/FStaticMeshSceneProxy.h"
 
 
