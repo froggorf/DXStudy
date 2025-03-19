@@ -27,5 +27,5 @@ void UPrimitiveComponent::Register()
 	USceneComponent::Register();
 
 	std::shared_ptr<FPrimitiveSceneProxy> PrimitiveSceneProxy = CreateSceneProxy();
-	FScene::AddPrimitive_GameThread(PrimitiveID, PrimitiveSceneProxy);
+	FScene::AddPrimitive_GameThread(PrimitiveID, PrimitiveSceneProxy, GetComponentTransform());
 }

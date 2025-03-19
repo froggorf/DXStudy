@@ -127,6 +127,8 @@ public:
 	std::map<UINT, std::shared_ptr<FPrimitiveSceneProxy>> PrimitiveSceneProxies;
 	std::map<UINT, std::shared_ptr<FPrimitiveSceneProxy>> PendingAddSceneProxies;
 	std::map<UINT, std::shared_ptr<FPrimitiveSceneProxy>> PendingDeleteSceneProxies;
+
+	std::map<UINT, FTransform> PendingNewTransformProxies;
 	// ==================== FPrimitiveSceneProxy ====================
 
 	
@@ -187,14 +189,14 @@ public:
 	}
 
 	// 새로운 UPrimitiveComponent 생성 후 register 시 렌더링 쓰레드에게 알리는 함수
-	static void AddPrimitive_GameThread(UINT PrimitiveID, std::shared_ptr<FPrimitiveSceneProxy>& SceneProxy)
+	static void AddPrimitive_GameThread(UINT PrimitiveID, std::shared_ptr<FPrimitiveSceneProxy>& SceneProxy, FTransform InitTransform)
 	{
 		if(nullptr == SceneProxy)
 		{
 			return;
 		}
 		auto Lambda = 
-			[PrimitiveID, SceneProxy](std::shared_ptr<FScene>& SceneData)
+			[PrimitiveID, SceneProxy, InitTransform](std::shared_ptr<FScene>& SceneData)
 			{
 				FScene::AddPrimitive_RenderThread(SceneData, PrimitiveID, SceneProxy);
 			};
@@ -216,11 +218,7 @@ public:
 		{
 			auto Lambda = [PrimitiveID, NewTransform](std::shared_ptr<FScene>& SceneData)
 				{
-					const auto& SceneProxy = SceneData->PrimitiveSceneProxies.find(PrimitiveID);
-					if(SceneProxy != SceneData->PrimitiveSceneProxies.end())
-					{
-						SceneProxy->second->SetSceneProxyWorldTransform(NewTransform);
-					}
+					SceneData->PendingNewTransformProxies[PrimitiveID] = NewTransform;
 				};
 			ENQUEUE_RENDER_COMMAND(Lambda)	
 		}

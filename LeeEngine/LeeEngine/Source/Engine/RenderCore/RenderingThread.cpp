@@ -14,6 +14,8 @@ void FScene::InitLevelData()
 	PrimitiveSceneProxies.clear();
 	PendingAddSceneProxies.clear();
 	PendingDeleteSceneProxies.clear();
+
+	PendingNewTransformProxies.clear();
 	bMustResetLevelDataAtEndFrame = false;
 }
 
@@ -210,6 +212,18 @@ void FScene::EndRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData)
 
 	}
 	SceneData->PendingAddSceneProxies.clear();
+
+	for(const auto& NewTransform : SceneData->PendingNewTransformProxies)
+	{
+		const auto& SceneProxy = SceneData->PrimitiveSceneProxies.find(NewTransform.first);
+		if(SceneProxy != SceneData->PrimitiveSceneProxies.end())
+		{
+			SceneProxy->second->SetSceneProxyWorldTransform(NewTransform.second);
+		}	
+	}
+	SceneData->PendingNewTransformProxies.clear();
+	
+
 	SceneData->bIsFrameStart = false;
 }
 

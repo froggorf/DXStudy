@@ -33,6 +33,7 @@ void AActor::Register()
 	UObject::Register();
 
 	RootComponent->Register();
+	
 #ifdef WITH_EDITOR
 	FEditorScene::AddWorldOutlinerActor_GameThread(shared_from_this());
 #endif
