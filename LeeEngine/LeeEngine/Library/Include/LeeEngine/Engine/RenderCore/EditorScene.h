@@ -9,15 +9,15 @@
 #include "Engine/MyEngineUtils.h"
 
 
+
 // ================================ 디버깅 로그 ================================
-#define MY_LOG(Category, DebugLogLevel, DebugText) "" //\
-//{\
-//#ifdef WITH_EDITOR\
-//	{\
-//		FEditorScene::AddConsoleText_GameThread(Category, DebugLogLevel,DebugText);\
-//	}\
-//#endif\
-//}
+#define MY_LOG(Category, DebugLogLevel, DebugText) \
+{\
+	if(GEditorEngine)\
+	{\
+		GEditorEngine->AddDebugText(Category, DebugLogLevel, DebugText);\
+	}\
+}
 
 #define XMFLOAT2_TO_TEXT(Data) std::format("x = {:.3f}, y = {:.3f}", Data.x,Data.y)
 

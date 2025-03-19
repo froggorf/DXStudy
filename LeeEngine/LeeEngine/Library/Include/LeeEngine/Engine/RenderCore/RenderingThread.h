@@ -99,21 +99,6 @@ private:
 inline std::atomic<bool> bIsGameKill = false;
 inline std::atomic<UINT> RenderingThreadFrameCount = 0;
 
-enum class EDebugLogLevel
-{
-	DLL_Fatal, DLL_Error, DLL_Warning, DLL_Display, 
-};
-struct DebugText
-{
-	DebugText(const std::string& Text, EDebugLogLevel Level)
-	{
-		this->Text = Text;
-		this->Level = Level;
-	}
-	std::string Text;
-	EDebugLogLevel Level;
-	static std::map<EDebugLogLevel, ImVec4> Color;
-};
 
 // 렌더링에 대한 정보를 가지고 있는 클래스 (씬 단위)
 // 03.10 렌더링 쓰레드의 경우 단일 소비로 진행할 예정이므로

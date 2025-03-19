@@ -148,3 +148,8 @@ void UEditorEngine::CreateRenderThread()
 	RenderThread = std::thread(&FRenderCommandExecutor::Execute, std::make_shared<FEditorScene>());
 }
 
+void UEditorEngine::AddDebugText(const std::string& Category, EDebugLogLevel DebugLevel, const std::string& InDebugText)
+{
+	FEditorScene::AddConsoleText_GameThread(Category, DebugLevel ,InDebugText);
+}
+
