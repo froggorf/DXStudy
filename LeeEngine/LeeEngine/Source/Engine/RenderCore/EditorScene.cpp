@@ -32,6 +32,18 @@ int FEditorScene::CurrentSelectedComponentIndex = -1;
 
 
 #endif
+void FEditorScene::InitLevelData()
+{
+	FScene::InitLevelData();
+
+	WorldOutlinerActors.clear();
+	PendingAddWorldOutlinerActors.clear();
+	CurrentSelectedActor = nullptr;
+	SelectActorComponents.clear();
+	SelectActorComponentNames.clear();
+	CurrentSelectedComponentIndex=-1;
+}
+
 void FEditorScene::BeginRenderFrame()
 {
 	FScene::BeginRenderFrame();

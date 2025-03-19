@@ -10,7 +10,14 @@
 
 
 // ================================ 디버깅 로그 ================================
-#define MY_LOG(Category, DebugLogLevel, DebugText) ""
+#define MY_LOG(Category, DebugLogLevel, DebugText) "" //\
+//{\
+//#ifdef WITH_EDITOR\
+//	{\
+//		FEditorScene::AddConsoleText_GameThread(Category, DebugLogLevel,DebugText);\
+//	}\
+//#endif\
+//}
 
 #define XMFLOAT2_TO_TEXT(Data) std::format("x = {:.3f}, y = {:.3f}", Data.x,Data.y)
 
@@ -28,6 +35,8 @@
 class FEditorScene : public FScene
 {
 public:
+	FEditorScene(){}
+	~FEditorScene() override {}
 	// ==================== ImGui ====================
 	static std::unordered_map<std::string,std::function<void()>> ImGuiRenderFunctions;
 	static std::unordered_map<std::string,std::function<void()>> ImGuizmoRenderFunctions;
@@ -51,7 +60,7 @@ public:
 	static bool bResizeEditorRenderTargetAtEndFrame;
 	static ImVec2 ResizeEditorRenderTargetSize;
 	// ==================== ImGui ====================
-
+	void InitLevelData() override;
 	void BeginRenderFrame() override;
 	void SetDrawScenePipeline(const float* ClearColor) override;
 	void AfterDrawSceneAction(const std::shared_ptr<FScene> SceneData) override;

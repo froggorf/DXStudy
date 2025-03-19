@@ -121,6 +121,8 @@ struct DebugText
 class FScene
 {
 public:
+	FScene(){}
+	virtual ~FScene(){}
 	// ==================== FPrimitiveSceneProxy ====================
 	std::map<UINT, std::shared_ptr<FPrimitiveSceneProxy>> PrimitiveSceneProxies;
 	std::map<UINT, std::shared_ptr<FPrimitiveSceneProxy>> PendingAddSceneProxies;
@@ -128,7 +130,7 @@ public:
 	// ==================== FPrimitiveSceneProxy ====================
 
 	
-
+	bool bMustResetLevelDataAtEndFrame = false;
 	bool bIsFrameStart;
 protected:
 public:
@@ -149,19 +151,17 @@ public:
 	{ 
 		ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData)
 			{
-				FScene::InitSceneData_RenderThread(SceneData);
+				//Scene::InitSceneData_RenderThread(SceneData);
+				SceneData->bMustResetLevelDataAtEndFrame = true;
 			}
 		)
 	}
 	// InitSceneData_GameThread()
 	static void InitSceneData_RenderThread(std::shared_ptr<FScene>& SceneData)
 	{
-		if(SceneData)
-		{
-			SceneData.reset();
-		}
-		SceneData = std::make_shared<FScene>();
+		
 	}
+	virtual void InitLevelData();
 
 	// 렌더쓰레드 프레임 시작 알림 함수
 	// 게임쓰레드 시작 시 호출
@@ -259,7 +259,8 @@ public:
 	{
 		if(!CurrentSceneData)
 		{
-			CurrentSceneData = InSceneData;
+			CurrentSceneData = std::move(InSceneData);
+			
 		}
 		
 		std::shared_ptr<FRenderTask> Task;
@@ -286,4 +287,5 @@ public:
 protected:
 private:
 	static std::shared_ptr<FScene> CurrentSceneData;
+
 };

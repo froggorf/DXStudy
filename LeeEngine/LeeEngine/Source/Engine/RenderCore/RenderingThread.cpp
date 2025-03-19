@@ -9,7 +9,13 @@
 std::shared_ptr<FScene> FRenderCommandExecutor::CurrentSceneData = nullptr;
 
 
-
+void FScene::InitLevelData()
+{
+	PrimitiveSceneProxies.clear();
+	PendingAddSceneProxies.clear();
+	PendingDeleteSceneProxies.clear();
+	bMustResetLevelDataAtEndFrame = false;
+}
 
 void FScene::BeginRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData, UINT GameThreadFrameCount)
 {
@@ -19,6 +25,7 @@ void FScene::BeginRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData, U
 
 void FScene::BeginRenderFrame()
 {
+	if(bMustResetLevelDataAtEndFrame) bMustResetLevelDataAtEndFrame=false;
 
 	if(bIsFrameStart)
 	{
@@ -43,6 +50,7 @@ void FScene::BeginRenderFrame()
 
 void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 {
+
 
 	// 임시 렌더링 쓰레드 FPS 측정
 	{
@@ -173,11 +181,6 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 	}
 
 	SceneData->AfterDrawSceneAction(SceneData);
-#ifdef WITH_EDITOR
-
-
-
-#endif
 
 	HR(GDirectXDevice->GetSwapChain()->Present(0, 0));
 
@@ -194,6 +197,13 @@ void FScene::SetDrawScenePipeline(const float* ClearColor)
 
 void FScene::EndRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData)
 {
+	if(SceneData->bMustResetLevelDataAtEndFrame)
+	{
+		SceneData->InitLevelData();
+
+	}
+
+
 	for(const auto& NewPrimitiveProxy : SceneData->PendingAddSceneProxies)
 	{
 		SceneData->PrimitiveSceneProxies[NewPrimitiveProxy.first] = NewPrimitiveProxy.second;
@@ -202,3 +212,21 @@ void FScene::EndRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData)
 	SceneData->PendingAddSceneProxies.clear();
 	SceneData->bIsFrameStart = false;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

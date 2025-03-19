@@ -133,11 +133,13 @@ bool D3DApp::Init()
 	}
 	OnResize();
 
-
+#ifdef WITH_EDITOR
 	GEngine = std::make_shared<UEditorEngine>(this);//new UEngine(this);
-#ifdef MYENGINE_BUILD_DEBUG || MYENGINE_BUILD_DEVELOPMENT
-	GEditorEngine = std::dynamic_pointer_cast<UEditorEngine>(GEngine);
+#else
+	GEngine = std::make_shared<UEngine>(this);//new UEngine(this);
 #endif
+	GEditorEngine = std::dynamic_pointer_cast<UEditorEngine>(GEngine);
+
 
 	GEngine->InitEngine();
 

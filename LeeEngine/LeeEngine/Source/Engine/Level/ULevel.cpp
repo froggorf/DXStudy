@@ -62,7 +62,7 @@ void ULevel::Register()
 	UObject::Register();
 
 	FScene::InitSceneData_GameThread();
-
+	Sleep(1);
 	for(const auto& Actor : Actors)
 	{
 		Actor->Register();
