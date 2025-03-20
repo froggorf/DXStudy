@@ -348,8 +348,13 @@ void FEditorScene::DrawImGuiScene_RenderThread()
 		// 키 입력 처리
 		if(ImGui::IsWindowFocused())
 		{
+			if(ImGui::IsMouseReleased(ImGuiMouseButton_Right))
+			{
+				ShowCursor(TRUE);
+			}
 			if(ImGui::IsMouseDown(ImGuiMouseButton_Right))
 			{
+				ShowCursor(FALSE);
 				static float MoveSpeed = 0.05f;
 				XMFLOAT3 MoveDelta = XMFLOAT3(0.0f,0.0f,0.0f);
 				if(ImGui::IsKeyDown(ImGuiKey::ImGuiKey_W))
