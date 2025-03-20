@@ -363,10 +363,10 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # 라이브러리 제외
-!Luna/DX11/ThirdParty/Assimp/lib/Debug/
-!Luna/DX11/ThirdParty/Assimp/lib/Release/
-!Luna/DX11/ThirdParty/DirectXTex/lib/Debug/
-!Luna/DX11/ThirdParty/DirectXTex/lib/Release/
+!LeeEngine/LeeEngine/ThirdParty/Assimp/lib/Debug/
+!LeeEngine/LeeEngine/ThirdParty/Assimp/lib/Release/
+!LeeEngine/LeeEngine/ThirdParty/DirectXTex/lib/Debug/
+!LeeEngine/LeeEngine/ThirdParty/DirectXTex/lib/Release/
 
 #리소스 제외
-!Luna/DX11/Resource/Model/*.[Oo]bj
+!LeeEngine/MyGame/Content/Resource/Model/*.[Oo]bj
