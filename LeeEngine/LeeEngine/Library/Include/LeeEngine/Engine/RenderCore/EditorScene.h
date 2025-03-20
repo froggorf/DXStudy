@@ -238,7 +238,7 @@ public:
 
 	static void DrawImguizmoSelectedActor_RenderThread(float AspectRatio);
 	static void DrawImGuiScene_RenderThread();
-	static void EditorCameraMove(XMFLOAT3 Delta);
+	static void EditorCameraMove(XMFLOAT3 MoveDelta, XMFLOAT2 MouseDelta);
 
 	// ===================================================================
 };

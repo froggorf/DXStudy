@@ -348,13 +348,33 @@ void FEditorScene::DrawImGuiScene_RenderThread()
 		// 키 입력 처리
 		if(ImGui::IsWindowFocused())
 		{
+			static bool bShowCursor = true;
+			static ImVec2 LastMousePos = ImVec2{ -1.0f,-1.0f };
 			if(ImGui::IsMouseReleased(ImGuiMouseButton_Right))
 			{
-				ShowCursor(TRUE);
+				if(!bShowCursor)
+				{
+					bShowCursor = true;
+					MY_LOG("CURSOR", EDebugLogLevel::DLL_Error, "SHOW");
+				}
+				LastMousePos = ImVec2{ -1.0f,-1.0f };
 			}
 			if(ImGui::IsMouseDown(ImGuiMouseButton_Right))
 			{
-				ShowCursor(FALSE);
+				if (bShowCursor) 
+				{
+					bShowCursor = false;
+					MY_LOG("CURSOR", EDebugLogLevel::DLL_Error, "HIDDEN");
+				}
+				// 커서 델타 구하기
+				ImVec2 MouseDelta{ 0.0f,0.0f };
+				if (LastMousePos.x >= 0.0f) 
+				{
+					MouseDelta = ImGui::GetMousePos() - LastMousePos;
+				}
+				LastMousePos = ImGui::GetMousePos();
+
+
 				static float MoveSpeed = 0.05f;
 				XMFLOAT3 MoveDelta = XMFLOAT3(0.0f,0.0f,0.0f);
 				if(ImGui::IsKeyDown(ImGuiKey::ImGuiKey_W))
@@ -382,11 +402,13 @@ void FEditorScene::DrawImGuiScene_RenderThread()
 					MoveDelta.y -=MoveSpeed;
 				}
 
-
-				if(XMVectorGetX(XMVector3LengthEst(XMLoadFloat3(&MoveDelta)))>FLT_EPSILON)
+				XMFLOAT2 XMMouseDelta{ MouseDelta.x, MouseDelta.y };
+				if(XMVectorGetX(XMVector3LengthEst(XMLoadFloat3(&MoveDelta)))>FLT_EPSILON
+					|| XMVectorGetX(XMVector2LengthEst(XMLoadFloat2(&XMMouseDelta))) > FLT_EPSILON)
 				{
-					EditorCameraMove(MoveDelta);
+					EditorCameraMove(MoveDelta, XMMouseDelta);
 				}
+				
 				
 			}
 		}
@@ -396,15 +418,36 @@ void FEditorScene::DrawImGuiScene_RenderThread()
 	}
 }
 
-void FEditorScene::EditorCameraMove(XMFLOAT3 Delta)
+void FEditorScene::EditorCameraMove(XMFLOAT3 MoveDelta, XMFLOAT2 MouseDelta)
 {
 	XMFLOAT3 CurrentLocation = EditorViewMatrices.GetViewOrigin();
 	XMVECTOR CurrentCameraRotQuat = EditorViewMatrices.GetCameraRotQuat();
+	float DeltaSpeed = 90.0f / 50.0f; // 윈도우 좌표 50 이동 시 90도 회전하도록
+	// MouseDelta.x -> y축(yaw) 회전 // MouseDelta.y -> x축(pitch) 회전
+	XMVECTOR NewCameraRotQuat = XMQuaternionMultiply(CurrentCameraRotQuat, XMQuaternionRotationRollPitchYaw(
+		XMConvertToRadians(MouseDelta.y * DeltaSpeed),
+		XMConvertToRadians(MouseDelta.x * DeltaSpeed),
+		XMConvertToRadians(0.0f)));
 
-	XMFLOAT3 NewLocation;
-	XMStoreFloat3(&NewLocation, XMVectorAdd(XMLoadFloat3(&CurrentLocation), XMLoadFloat3(&Delta)));
 
-	MY_LOG("TEST",EDebugLogLevel::DLL_Warning, XMFLOAT3_TO_TEXT(NewLocation));
+	// MoveDelta.x -> 좌우 이동
+	// MoveDelta.y -> 위 아래 이동
+	// MoveDelta.z -> 앞뒤 이동
+	XMVECTOR ForwardVector = XMVector3Normalize(XMVector3Rotate(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), NewCameraRotQuat));
+	XMVECTOR UpVector = XMVector3Normalize(XMVector3Rotate(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), NewCameraRotQuat));
+	XMVECTOR RightVector = XMVector3Normalize(XMVector3Cross(UpVector, ForwardVector));
+	
+	XMVECTOR CurLocVec = XMLoadFloat3(&CurrentLocation);
+	XMVECTOR MoveDeltaVec = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	// 앞뒤
+	MoveDeltaVec = XMVectorAdd(MoveDeltaVec, XMVectorScale(ForwardVector, MoveDelta.z));
+	// 좌우
+	MoveDeltaVec = XMVectorAdd(MoveDeltaVec, XMVectorScale(RightVector, MoveDelta.x));
+	// 위아래
+	MoveDeltaVec = XMVectorAdd(MoveDeltaVec, XMVectorScale(UpVector, MoveDelta.y));
 
-	EditorViewMatrices.UpdateViewMatrix(NewLocation, CurrentCameraRotQuat);
+	XMFLOAT3 NewLocation{0.0f,0.0f,0.0f};
+	XMStoreFloat3(&NewLocation, XMVectorAdd(CurLocVec, MoveDeltaVec));
+
+	EditorViewMatrices.UpdateViewMatrix(NewLocation, NewCameraRotQuat);
 }
