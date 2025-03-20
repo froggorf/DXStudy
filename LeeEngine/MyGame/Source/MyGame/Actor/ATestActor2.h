@@ -8,7 +8,7 @@
 
 class UStaticMeshComponent;
 
-class ATestActor2 : public ATestCube
+class ATestActor2 : public AActor
 {
 	MY_GENERATED_BODY(ATestActor2)
 public:

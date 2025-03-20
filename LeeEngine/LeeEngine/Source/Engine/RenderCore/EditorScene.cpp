@@ -230,7 +230,7 @@ void FEditorScene::DrawImguizmoSelectedActor_RenderThread(float AspectRatio)
 	float* DeltaMatrix = reinterpret_cast<float*>(&DeltaMatrixTemp);
 
 	// TODO: 03.20 Editor 를 static이 아닌 FEditorScene내에서 작동하도록 변경하기
-	XMMATRIX ViewMat = FRenderCommandExecutor::CurrentSceneData->GetViewMatrix();//GEngine->Test_DeleteLater_GetViewMatrix();
+	XMMATRIX ViewMat = EditorViewMatrices.GetViewMatrix();//GEngine->Test_DeleteLater_GetViewMatrix();
 	XMMATRIX ProjMat = FRenderCommandExecutor::CurrentSceneData->GetProjectionMatrix();//XMMatrixPerspectiveFovLH(0.5*XM_PI, AspectRatio, 1.0f, 1000.0f);
 
 	//ProjMat = XMMatrixPerspectiveFovRH(0.5*XM_PI, 1600.0f/1200.0f, 1.0f, 1000.0f);;
@@ -422,7 +422,7 @@ void FEditorScene::EditorCameraMove(XMFLOAT3 MoveDelta, XMFLOAT2 MouseDelta)
 {
 	XMFLOAT3 CurrentLocation = EditorViewMatrices.GetViewOrigin();
 	XMVECTOR CurrentCameraRotQuat = EditorViewMatrices.GetCameraRotQuat();
-	float DeltaSpeed = 90.0f / 50.0f; // 윈도우 좌표 50 이동 시 90도 회전하도록
+	float DeltaSpeed = 60.0f / 50.0f; // 윈도우 좌표 50 이동 시 60도 회전하도록
 	// MouseDelta.x -> y축(yaw) 회전 // MouseDelta.y -> x축(pitch) 회전
 	XMVECTOR NewCameraRotQuat = XMQuaternionMultiply(CurrentCameraRotQuat, XMQuaternionRotationRollPitchYaw(
 		XMConvertToRadians(MouseDelta.y * DeltaSpeed),

@@ -7,7 +7,7 @@ ATestActor2::ATestActor2()
 {
 	TestSMComp = std::make_shared<UStaticMeshComponent>();
 	TestSMComp->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Cube"));
-	TestSMComp->SetupAttachment(TestCubeStaticMeshComp);
+	TestSMComp->SetupAttachment(GetRootComponent());
 	TestSMComp->SetRelativeLocation(XMFLOAT3(100.0f,10.0f,0.0f));
 	TestSMComp->SetRelativeScale3D(XMFLOAT3(10.0f,10.0f,10.0f));
 
@@ -20,7 +20,7 @@ ATestActor2::ATestActor2()
 
 void ATestActor2::Tick(float DeltaSeconds)
 {
-	ATestCube::Tick(DeltaSeconds);
+	AActor::Tick(DeltaSeconds);
 
 	float RotationSpeed = 100;
 	RootComponent->AddWorldRotation(XMFLOAT3(0.0f, DeltaSeconds*RotationSpeed, 0.0f));
