@@ -15,7 +15,8 @@ void FViewMatrices::UpdateViewMatrix(const XMFLOAT3 ViewLocation, const XMVECTOR
 	
 	ViewOrigin = ViewLocation;
 	CameraRotQuat  = ViewRotation;
-	XMVECTOR UpVector = XMVector3Rotate(XMVectorSet(0.0f,1.0f,0.0f,0.0f), ViewRotation);
+
+	XMVECTOR UpVector = XMVectorSet(0.0f,1.0f,0.0f,0.0f);
 
 	ViewMatrix = XMMatrixLookToLH(XMLoadFloat3(&ViewOrigin), LookDirection, UpVector);
 }

@@ -376,6 +376,16 @@ void FEditorScene::DrawImGuiScene_RenderThread()
 
 
 				static float MoveSpeed = 0.05f;
+				ImGuiIO& io = ImGui::GetIO();
+				if(io.MouseWheel > 0.0f)
+				{
+					MoveSpeed = min(MoveSpeed + 0.05f, 100.0f);
+				}
+				else if(io.MouseWheel < -0.0f)
+				{
+					MoveSpeed = max(MoveSpeed - 0.05f, 0.05f);
+				}
+
 				XMFLOAT3 MoveDelta = XMFLOAT3(0.0f,0.0f,0.0f);
 				if(ImGui::IsKeyDown(ImGuiKey::ImGuiKey_W))
 				{
@@ -422,21 +432,35 @@ void FEditorScene::EditorCameraMove(XMFLOAT3 MoveDelta, XMFLOAT2 MouseDelta)
 {
 	XMFLOAT3 CurrentLocation = EditorViewMatrices.GetViewOrigin();
 	XMVECTOR CurrentCameraRotQuat = EditorViewMatrices.GetCameraRotQuat();
-	float DeltaSpeed = 60.0f / 50.0f; // 윈도우 좌표 50 이동 시 60도 회전하도록
+	float DeltaSpeed = 30.0f / 50.0f; // 윈도우 좌표 50 이동 시 60도 회전하도록
 	// MouseDelta.x -> y축(yaw) 회전 // MouseDelta.y -> x축(pitch) 회전
-	XMVECTOR NewCameraRotQuat = XMQuaternionMultiply(CurrentCameraRotQuat, XMQuaternionRotationRollPitchYaw(
-		XMConvertToRadians(MouseDelta.y * DeltaSpeed),
-		XMConvertToRadians(MouseDelta.x * DeltaSpeed),
-		XMConvertToRadians(0.0f)));
+
+	MY_LOG("DELTA" , EDebugLogLevel::DLL_Warning, XMFLOAT2_TO_TEXT(MouseDelta));
+
+	XMVECTOR ForwardVector = XMVector3Normalize(XMVector3Rotate(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), CurrentCameraRotQuat));
+	//XMVECTOR UpVector = XMVector3Normalize(XMVector3Rotate(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), CurrentCameraRotQuat));
+	XMVECTOR UpVector = XMVectorSet(0.0f,1.0f,0.0f,0.0f);
+	XMVECTOR RightVector = XMVector3Normalize(XMVector3Cross(UpVector, ForwardVector));
+
+	XMVECTOR LocalPitchQuat = XMQuaternionRotationAxis(RightVector,
+	XMConvertToRadians(MouseDelta.y*DeltaSpeed));
+	XMVECTOR LocalYawQuat = XMQuaternionRotationAxis(UpVector,
+		XMConvertToRadians(MouseDelta.x*DeltaSpeed));
+
+	XMVECTOR NewCameraRotQuat = XMQuaternionMultiply(CurrentCameraRotQuat,LocalPitchQuat);
+	NewCameraRotQuat = XMQuaternionNormalize(XMQuaternionMultiply(NewCameraRotQuat,LocalYawQuat));
+	//XMVECTOR NewCameraRotQuat = XMQuaternionMultiply(CurrentCameraRotQuat, XMQuaternionRotationRollPitchYaw(
+		//XMConvertToRadians(MouseDelta.y * DeltaSpeed),
+		//XMConvertToRadians(MouseDelta.x * DeltaSpeed),
+		//XMConvertToRadians(0.0f)));
 
 
 	// MoveDelta.x -> 좌우 이동
 	// MoveDelta.y -> 위 아래 이동
 	// MoveDelta.z -> 앞뒤 이동
-	XMVECTOR ForwardVector = XMVector3Normalize(XMVector3Rotate(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), NewCameraRotQuat));
-	XMVECTOR UpVector = XMVector3Normalize(XMVector3Rotate(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), NewCameraRotQuat));
-	XMVECTOR RightVector = XMVector3Normalize(XMVector3Cross(UpVector, ForwardVector));
-	
+	ForwardVector = XMVector3Normalize(XMVector3Rotate(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), NewCameraRotQuat));
+	//UpVector = XMVector3Normalize(XMVector3Rotate(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), NewCameraRotQuat));
+	RightVector = XMVector3Normalize(XMVector3Cross(UpVector, ForwardVector));
 	XMVECTOR CurLocVec = XMLoadFloat3(&CurrentLocation);
 	XMVECTOR MoveDeltaVec = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	// 앞뒤
