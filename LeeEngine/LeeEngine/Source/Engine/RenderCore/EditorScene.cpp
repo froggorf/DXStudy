@@ -5,6 +5,8 @@
 
 #include "EditorScene.h"
 
+#include "Engine/EditorClient/Panel/ImguiDebugConsole.h"
+
 
 #ifdef WITH_EDITOR
 
@@ -104,38 +106,6 @@ XMMATRIX FEditorScene::GetProjectionMatrix()
 
 void FEditorScene::DrawIMGUI_RenderThread(std::shared_ptr<FScene> SceneData)
 {
-	if(bIsGameKill)
-	{
-		return;
-	}
-	//========== IMGUI ==========
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-
-	ImGui::NewFrame();
-
-
-
-	static ImFont* RobotoFont = ImGui::GetIO().Fonts->Fonts[0];
-	ImGui::PushFont(RobotoFont);
-
-
-
-
-	// ImGui
-	for(const auto& Func : ImGuiRenderFunctions)
-	{
-		Func.second();
-	}
-
-	ImGui::PopFont();
-
-	ImGui::Render();
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-
-	ImGui::EndFrame();
-
-
 }
 
 void FEditorScene::AddConsoleText_GameThread(const std::string& Category, EDebugLogLevel DebugLevel, const std::string& InDebugText)
@@ -147,11 +117,11 @@ void FEditorScene::AddConsoleText_GameThread(const std::string& Category, EDebug
 			//FEditorScene::PendingAddDebugConsoleText.push_back(NewDebugText);
 			if(std::shared_ptr<FEditorScene> EditorSceneData = std::dynamic_pointer_cast<FEditorScene>(SceneData))
 			{
-				//std::shared_ptr<FImguiDebugConsoleCommandData> CommandData = std::make_shared<FImguiDebugConsoleCommandData>();
-				//CommandData->PanelType = EImguiPanelType::IPT_DebugConsole;
-				//CommandData->CommandType = EDebugConsoleCommandType::DCCT_AddConsoleText;
-				//CommandData->DebugText = NewDebugText;
-				//EditorSceneData->EditorClient->AddPanelCommand(CommandData);
+				std::shared_ptr<FImguiDebugConsoleCommandData> CommandData = std::make_shared<FImguiDebugConsoleCommandData>();
+				CommandData->PanelType = EImguiPanelType::IPT_DebugConsole;
+				CommandData->CommandType = EDebugConsoleCommandType::DCCT_AddConsoleText;
+				CommandData->DebugText = NewDebugText;
+				EditorSceneData->EditorClient->AddPanelCommand(CommandData);
 			}
 		}
 	)

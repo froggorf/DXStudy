@@ -27,11 +27,11 @@ public:
 protected:
 private:
 public:
-	//void AddPanelCommand(const std::shared_ptr<FImguiPanelCommandData>& CommandData);
+	void AddPanelCommand(const std::shared_ptr<FImguiPanelCommandData>& CommandData);
 
 	void Draw();
 	
 protected:
-	//std::vector<std::unique_ptr<FImguiPanel>> ImguiPanels;
+	std::vector<std::unique_ptr<FImguiPanel>> ImguiPanels;
 private:
 };

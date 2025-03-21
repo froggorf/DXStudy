@@ -11,6 +11,16 @@
 
 class FScene;
 
+struct CommandIDGenerator
+{
+	CommandIDGenerator()
+	{
+		ID = IDCount++;
+	}
+	static UINT IDCount;
+	UINT ID;
+};
+
 struct FImguiPanelCommandData
 {
 	FImguiPanelCommandData() = default;
@@ -20,9 +30,13 @@ struct FImguiPanelCommandData
 
 	// 언리얼엔진의 Struct 비교 방식에서 차용
 	// 각 ImguiPanelCommandData 클래스의 ID (고유해야함)
-	//static const UINT ClassID = typeid(FImguiPanelCommandData).hash_code();;
-	//virtual UINT GetTypeID() const {return FImguiPanelCommandData::ClassID;}
-	//virtual bool IsOfType(UINT InTypeID) const {return FImguiPanelCommandData::ClassID == InTypeID; }
+	static UINT GetClassID()
+	{
+		static CommandIDGenerator Generator;
+		return Generator.ID;
+	}
+	virtual UINT GetTypeID() const {return FImguiPanelCommandData::GetClassID();}
+	virtual bool IsOfType(UINT InTypeID) const {return FImguiPanelCommandData::GetClassID() == InTypeID; }
 };
 
 class FImguiPanel

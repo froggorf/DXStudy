@@ -16,6 +16,7 @@ enum class EDebugLogLevel
 };
 struct DebugText
 {
+	DebugText(){};
 	DebugText(const std::string& Text, EDebugLogLevel Level)
 	{
 		this->Text = Text;
