@@ -9,21 +9,6 @@
 
 #include <atlImage.h>
 
-enum class EDebugLogLevel
-{
-	DLL_Fatal, DLL_Error, DLL_Warning, DLL_Display, 
-};
-struct DebugText
-{
-	DebugText(const std::string& Text, EDebugLogLevel Level)
-	{
-		this->Text = Text;
-		this->Level = Level;
-	}
-	std::string Text;
-	EDebugLogLevel Level;
-	static std::map<EDebugLogLevel, ImVec4> Color;
-};
 
 
 class UEditorEngine : public UEngine
@@ -38,16 +23,6 @@ public:
 	virtual void PostLoad() override;
 	virtual const std::string& GetDefaultMapName() override;
 
-	void AddDebugText(const std::string& Category, EDebugLogLevel DebugLevel, const std::string& InDebugText);
-
-	//void AddConsoleText()
-	//{
-	//	std::string NewText = Category + " : " + InDebugText;
-	//	DebugText NewDebugText{NewText, DebugLevel};
-	//	//DebugConsoleText.push_back(NewDebugText);
-	//	
-	//	FScene::AddConsoleText_GameThread(NewDebugText);
-	//}
 
 
 	void DrawEngineTitleBar();

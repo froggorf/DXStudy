@@ -8,35 +8,34 @@
 #include "RenderingThread.h"
 #include "Engine/MyEngineUtils.h"
 #include "Engine/SceneView.h"
+#include "Engine/EditorClient/Panel/EditorClient.h"
 
+enum class EDebugLogLevel
+{
+	DLL_Fatal, DLL_Error, DLL_Warning, DLL_Display, 
+};
+struct DebugText
+{
+	DebugText(const std::string& Text, EDebugLogLevel Level)
+	{
+		this->Text = Text;
+		this->Level = Level;
+	}
+	std::string Text;
+	EDebugLogLevel Level;
+	static std::map<EDebugLogLevel, ImVec4> Color;
+};
 
-// ================================ 디버깅 로그 ================================
-#define MY_LOG(Category, DebugLogLevel, DebugText) \
-{\
-	if(GEditorEngine)\
-	{\
-		GEditorEngine->AddDebugText(Category, DebugLogLevel, DebugText);\
-	}\
-}
-
-#define XMFLOAT2_TO_TEXT(Data) std::format("x = {:.3f}, y = {:.3f}", Data.x,Data.y)
-
-#define XMFLOAT3_TO_TEXT(Data) std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}", Data.x,Data.y,Data.z)
-
-#define XMFLOAT4_TO_TEXT(Data) std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}, w = {:.3f}", Data.x,Data.y,Data.z, Data.w)
-
-#define XMVECTOR_TO_TEXT(Data) std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}, w = {:.3f}", DirectX::XMVectorGetX(Data),DirectX::XMVectorGetY(Data),DirectX::XMVectorGetZ(Data),DirectX::XMVectorGetW(Data))
-
-// typeid와 __func__ 를 쓰기위해 매크로로 설정
-#define GetFunctionName std::format("{}::{}", typeid(*this).name(), __func__)
 
 
 #ifdef WITH_EDITOR
 class FEditorScene : public FScene
 {
 public:
-	FEditorScene(){}
+	FEditorScene();
 	~FEditorScene() override {}
+
+	std::unique_ptr<FEditorClient> EditorClient;
 	// ==================== ImGui ====================
 	static std::unordered_map<std::string,std::function<void()>> ImGuiRenderFunctions;
 	static std::unordered_map<std::string,std::function<void()>> ImGuizmoRenderFunctions;
@@ -78,16 +77,7 @@ public:
 	static void AddImGuiRenderFunction(const std::string& Name, const std::function<void()>& NewRenderFunction)	{ ImGuiRenderFunctions[Name] = NewRenderFunction; }
 	static void AddImGuizmoRenderFunction(const std::string& Name, const std::function<void()>& NewRenderFunction) { ImGuizmoRenderFunctions[Name] = NewRenderFunction; }
 	// 디버깅 콘솔 텍스트 추가 함수
-	static void AddConsoleText_GameThread(const std::string& Category, EDebugLogLevel DebugLevel, const std::string& InDebugText)
-	{
-		std::string NewText = Category + " : " + InDebugText;
-		DebugText NewDebugText{NewText, DebugLevel};
-		ENQUEUE_RENDER_COMMAND([NewDebugText](std::shared_ptr<FScene>& SceneData)
-			{
-				FEditorScene::PendingAddDebugConsoleText.push_back(NewDebugText);
-			}
-		)
-	}
+	static void AddConsoleText_GameThread(const std::string& Category, EDebugLogLevel DebugLevel, const std::string& InDebugText);
 	// Search Debug Console
 	static void SearchDebugConsole_RenderThread()
 	{
@@ -244,3 +234,28 @@ public:
 };
 
 #endif
+
+
+
+// ================================ 디버깅 로그 ================================
+#ifdef WITH_EDITOR
+
+
+#define MY_LOG(Category, DebugLogLevel, InDebugText) \
+{\
+	FEditorScene::AddConsoleText_GameThread(Category,DebugLogLevel,InDebugText);\
+}
+#else
+#define MY_LOG(Category, DebugLogLevel, DebugText) ""	
+#endif
+
+#define XMFLOAT2_TO_TEXT(Data) std::format("x = {:.3f}, y = {:.3f}", Data.x,Data.y)
+
+#define XMFLOAT3_TO_TEXT(Data) std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}", Data.x,Data.y,Data.z)
+
+#define XMFLOAT4_TO_TEXT(Data) std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}, w = {:.3f}", Data.x,Data.y,Data.z, Data.w)
+
+#define XMVECTOR_TO_TEXT(Data) std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}, w = {:.3f}", DirectX::XMVectorGetX(Data),DirectX::XMVectorGetY(Data),DirectX::XMVectorGetZ(Data),DirectX::XMVectorGetW(Data))
+
+// typeid와 __func__ 를 쓰기위해 매크로로 설정
+#define GetFunctionName std::format("{}::{}", typeid(*this).name(), __func__)

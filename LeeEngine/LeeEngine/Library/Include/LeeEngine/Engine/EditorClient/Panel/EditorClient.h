@@ -4,16 +4,21 @@
 // 이윤석
 
 #pragma once
+#include <any>
+#include <functional>
+
+#include "ImguiPanel.h"
 #include "Engine/MyEngineUtils.h"
+
+
 
 enum class EImguiPanelType
 {
+	IPT_NULL,
 	IPT_SceneViewport,			// FImguiViewport (+ FImguiWorldOutliner + FImguiActorDetail
 	IPT_DebugConsole,			// FImguiDebugConsole
 	IPT_Count,
 };
-
-class FImguiPanel;
 
 class FEditorClient
 {
@@ -22,8 +27,11 @@ public:
 protected:
 private:
 public:
+	//void AddPanelCommand(const std::shared_ptr<FImguiPanelCommandData>& CommandData);
+
 	void Draw();
+	
 protected:
-	std::vector<std::unique_ptr<FImguiPanel>> ImguiPanels;
+	//std::vector<std::unique_ptr<FImguiPanel>> ImguiPanels;
 private:
 };

@@ -8,6 +8,30 @@
 
 #include "ImguiPanel.h"
 #include "Engine/MyEngineUtils.h"
+//#include "Engine/RenderCore/EditorScene.h"
+
+//enum class EDebugConsoleCommandType
+//{
+//	DCCT_Null,
+//	DCCT_AddConsoleText,
+//	
+//};
+//
+//struct FImguiDebugConsoleCommandData : public FImguiPanelCommandData
+//{
+//	FImguiDebugConsoleCommandData() =default;
+//	~FImguiDebugConsoleCommandData() override;
+//
+//	//DebugText DebugText;
+//	EDebugConsoleCommandType CommandType;
+//
+//	// 언리얼엔진의 Struct 비교 방식에서 차용
+//	// 각 ImguiPanelCommandData 클래스의 ID (고유해야함)
+//	//static const UINT ClassID = typeid(FImguiPanelCommandData).hash_code();;
+//	//virtual UINT GetTypeID() const {return FImguiPanelCommandData::ClassID;}
+//	//virtual bool IsOfType(UINT InTypeID) const {return FImguiPanelCommandData::ClassID == InTypeID|| FImguiPanelCommandData::IsOfType(InTypeID); }
+//	
+//};
 
 
 class FImguiDebugConsole : public FImguiPanel
@@ -15,7 +39,9 @@ class FImguiDebugConsole : public FImguiPanel
 public:
 	FImguiDebugConsole(FScene* SceneData);
 
+
 	void Draw() override;
+	void ExecuteCommand(const std::shared_ptr<FImguiPanelCommandData>& CommandData) override;
 protected:
 private:
 public:

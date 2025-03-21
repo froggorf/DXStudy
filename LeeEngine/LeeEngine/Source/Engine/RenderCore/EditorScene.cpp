@@ -5,6 +5,7 @@
 
 #include "EditorScene.h"
 
+
 #ifdef WITH_EDITOR
 
 std::unordered_map<std::string,std::function<void()>> FEditorScene::ImGuiRenderFunctions;
@@ -33,7 +34,13 @@ int FEditorScene::CurrentSelectedComponentIndex = -1;
 FViewMatrices FEditorScene::EditorViewMatrices;
 
 
-#endif
+FEditorScene::FEditorScene()
+{
+	EditorClient = std::make_unique<FEditorClient>(this);
+}
+
+
+
 void FEditorScene::InitLevelData()
 {
 	FScene::InitLevelData();
@@ -80,7 +87,8 @@ void FEditorScene::AfterDrawSceneAction(const std::shared_ptr<FScene> SceneData)
 	GDirectXDevice->GetDeviceContext()->RSSetViewports(1, GDirectXDevice->GetScreenViewport());
 	GDirectXDevice->SetDefaultViewPort();
 
-	DrawIMGUI_RenderThread(SceneData);
+	//DrawIMGUI_RenderThread(SceneData);
+	EditorClient->Draw();
 }
 
 XMMATRIX FEditorScene::GetViewMatrix()
@@ -129,6 +137,26 @@ void FEditorScene::DrawIMGUI_RenderThread(std::shared_ptr<FScene> SceneData)
 
 
 }
+
+void FEditorScene::AddConsoleText_GameThread(const std::string& Category, EDebugLogLevel DebugLevel, const std::string& InDebugText)
+{
+	std::string NewText = Category + " : " + InDebugText;
+	DebugText NewDebugText{NewText, DebugLevel};
+	ENQUEUE_RENDER_COMMAND([NewDebugText](std::shared_ptr<FScene>& SceneData)
+		{
+			//FEditorScene::PendingAddDebugConsoleText.push_back(NewDebugText);
+			if(std::shared_ptr<FEditorScene> EditorSceneData = std::dynamic_pointer_cast<FEditorScene>(SceneData))
+			{
+				//std::shared_ptr<FImguiDebugConsoleCommandData> CommandData = std::make_shared<FImguiDebugConsoleCommandData>();
+				//CommandData->PanelType = EImguiPanelType::IPT_DebugConsole;
+				//CommandData->CommandType = EDebugConsoleCommandType::DCCT_AddConsoleText;
+				//CommandData->DebugText = NewDebugText;
+				//EditorSceneData->EditorClient->AddPanelCommand(CommandData);
+			}
+		}
+	)
+}
+
 
 void FEditorScene::DrawDebugConsole_RenderThread()
 {
@@ -473,3 +501,5 @@ void FEditorScene::EditorCameraMove(XMFLOAT3 MoveDelta, XMFLOAT2 MouseDelta)
 
 	EditorViewMatrices.UpdateViewMatrix(NewLocation, NewCameraRotQuat);
 }
+
+#endif

@@ -6,16 +6,33 @@
 
 #pragma once
 
+//#include "EditorClient.h"
 #include "Engine/MyEngineUtils.h"
 
 class FScene;
+
+struct FImguiPanelCommandData
+{
+	FImguiPanelCommandData() = default;
+	virtual ~FImguiPanelCommandData() = default;
+
+	enum class EImguiPanelType PanelType;
+
+	// 언리얼엔진의 Struct 비교 방식에서 차용
+	// 각 ImguiPanelCommandData 클래스의 ID (고유해야함)
+	//static const UINT ClassID = typeid(FImguiPanelCommandData).hash_code();;
+	//virtual UINT GetTypeID() const {return FImguiPanelCommandData::ClassID;}
+	//virtual bool IsOfType(UINT InTypeID) const {return FImguiPanelCommandData::ClassID == InTypeID; }
+};
 
 class FImguiPanel
 {
 public:
 	FImguiPanel(FScene* SceneData);
+	virtual ~FImguiPanel(){}
 
 	virtual void Draw() = 0;
+	virtual void ExecuteCommand(const std::shared_ptr<FImguiPanelCommandData>& CommandData) = 0;
 protected:
 private:
 public:
