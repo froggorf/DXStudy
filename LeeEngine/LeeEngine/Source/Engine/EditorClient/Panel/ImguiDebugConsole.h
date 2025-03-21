@@ -32,8 +32,8 @@ struct FImguiDebugConsoleCommandData : public FImguiPanelCommandData
 		static CommandIDGenerator Generator;
 		return Generator.ID;
 	}
-	virtual UINT GetTypeID() const {return FImguiPanelCommandData::GetClassID();}
-	virtual bool IsOfType(UINT InTypeID) const {return FImguiPanelCommandData::GetClassID() == InTypeID|| FImguiPanelCommandData::IsOfType(InTypeID); }
+	virtual UINT GetTypeID() const {return GetClassID();}
+	virtual bool IsOfType(UINT InTypeID) const {return GetClassID() == InTypeID|| FImguiPanelCommandData::IsOfType(InTypeID); }
 	
 };
 

@@ -24,7 +24,7 @@ struct CommandIDGenerator
 struct FImguiPanelCommandData
 {
 	FImguiPanelCommandData() = default;
-	virtual ~FImguiPanelCommandData() = default;
+	virtual ~FImguiPanelCommandData(){};
 
 	enum class EImguiPanelType PanelType;
 
