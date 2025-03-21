@@ -43,11 +43,7 @@ public:
 
 
 	// 디버깅 콘솔
-	static std::vector<DebugText> DebugConsoleText;
-	static std::vector<DebugText> PendingAddDebugConsoleText;
-	static std::vector<DebugText> SearchingDebugConsoleText;
-	static std::string DebugConsoleSearchText;
-
+	
 	// 월드 아웃라이너
 	static std::vector<std::shared_ptr<AActor>> WorldOutlinerActors;
 	static std::vector<std::shared_ptr<AActor>> PendingAddWorldOutlinerActors;
@@ -79,25 +75,7 @@ public:
 	static void AddImGuizmoRenderFunction(const std::string& Name, const std::function<void()>& NewRenderFunction) { ImGuizmoRenderFunctions[Name] = NewRenderFunction; }
 	// 디버깅 콘솔 텍스트 추가 함수
 	static void AddConsoleText_GameThread(const std::string& Category, EDebugLogLevel DebugLevel, const std::string& InDebugText);
-	// Search Debug Console
-	static void SearchDebugConsole_RenderThread()
-	{
-		SearchingDebugConsoleText.clear();
 
-		if(DebugConsoleSearchText.size() == 0)
-		{
-			return;
-		}
-
-		for(const auto& Text : DebugConsoleText)
-		{
-			const std::string& LogText = Text.Text;
-			if(LogText.contains(DebugConsoleSearchText))
-			{
-				SearchingDebugConsoleText.push_back(Text);
-			}
-		}
-	}
 	// 렌더링 Debug Console
 	static void DrawDebugConsole_RenderThread();
 

@@ -48,7 +48,17 @@ public:
 	void ExecuteCommand(const std::shared_ptr<FImguiPanelCommandData>& CommandData) override;
 protected:
 private:
+	void SearchDebugConsole();
 public:
 protected:
 private:
+	// 검색에 사용되는 string
+	std::string DebugConsoleSearchText;
+
+	// 디버그 텍스트 벡터
+	std::vector<DebugText> DebugConsoleText;
+	// Pending Add
+	std::vector<DebugText> PendingAddDebugConsoleText;
+	// 검색 시 string에 맞는 디버그 문구만 모은 벡터
+	std::vector<DebugText> SearchingDebugConsoleText;
 };
