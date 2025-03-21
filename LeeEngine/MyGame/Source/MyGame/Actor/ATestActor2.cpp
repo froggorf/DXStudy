@@ -5,12 +5,13 @@
 
 ATestActor2::ATestActor2() 
 {
-	GetRootComponent()->SetRelativeRotation(XMFLOAT3(90.0f,0.0f,0.0f));
+	GetRootComponent()->SetRelativeRotation(XMFLOAT3(0.0f,0.0f,0.0f));
+
 	TestSMComp = std::make_shared<UStaticMeshComponent>();
-	TestSMComp->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Cube"));
+	TestSMComp->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Racco"));
 	TestSMComp->SetupAttachment(GetRootComponent());
-	TestSMComp->SetRelativeLocation(XMFLOAT3(0.0f,0.0f,0.0f));
-	TestSMComp->SetRelativeScale3D(XMFLOAT3(10.0f,10.0f,10.0f));
+	TestSMComp->SetRelativeLocation(XMFLOAT3(0.0f,5.0f,0.0f));
+	TestSMComp->SetRelativeScale3D(XMFLOAT3(0.2f,0.2f,0.2f));
 
 	//TestSMComp2= std::make_shared<UStaticMeshComponent>();
 	//TestSMComp2->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Sphere"));
@@ -23,6 +24,6 @@ void ATestActor2::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
 
-	//float RotationSpeed = 100;
-	//RootComponent->AddWorldRotation(XMFLOAT3(0.0f, DeltaSeconds*RotationSpeed, 0.0f));
+	float RotationSpeed = 100;
+	RootComponent->AddWorldRotation(XMFLOAT3(0.0f, DeltaSeconds*RotationSpeed, 0.0f));
 }

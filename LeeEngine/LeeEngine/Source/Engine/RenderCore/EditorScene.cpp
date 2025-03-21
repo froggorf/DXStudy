@@ -435,8 +435,6 @@ void FEditorScene::EditorCameraMove(XMFLOAT3 MoveDelta, XMFLOAT2 MouseDelta)
 	float DeltaSpeed = 30.0f / 50.0f; // 윈도우 좌표 50 이동 시 60도 회전하도록
 	// MouseDelta.x -> y축(yaw) 회전 // MouseDelta.y -> x축(pitch) 회전
 
-	MY_LOG("DELTA" , EDebugLogLevel::DLL_Warning, XMFLOAT2_TO_TEXT(MouseDelta));
-
 	XMVECTOR ForwardVector = XMVector3Normalize(XMVector3Rotate(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), CurrentCameraRotQuat));
 	//XMVECTOR UpVector = XMVector3Normalize(XMVector3Rotate(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), CurrentCameraRotQuat));
 	XMVECTOR UpVector = XMVectorSet(0.0f,1.0f,0.0f,0.0f);

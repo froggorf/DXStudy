@@ -55,6 +55,12 @@
     <Filter Include="Source\Engine\DirectX">
       <UniqueIdentifier>{49f77e73-e848-46eb-beb8-96e8b375953f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Engine\EditorClient">
+      <UniqueIdentifier>{f6f44b7c-fd0f-4535-a5d0-cf312046df24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine\EditorClient\Panel">
+      <UniqueIdentifier>{a0328231-c86d-44e8-8469-437e5405aacc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Animation\Bone.cpp">
@@ -173,6 +179,18 @@
     </ClCompile>
     <ClCompile Include="Source\Engine\SceneView.cpp">
       <Filter>Source\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\EditorClient\Panel\ImguiPanel.cpp">
+      <Filter>Source\Engine\EditorClient\Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\EditorClient\Panel\ImguiViewport.cpp">
+      <Filter>Source\Engine\EditorClient\Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\EditorClient\Panel\EditorClient.cpp">
+      <Filter>Source\Engine\EditorClient\Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\EditorClient\Panel\ImguiDebugConsole.cpp">
+      <Filter>Source\Engine\EditorClient\Panel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -313,6 +331,18 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\SceneView.h">
       <Filter>Source\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\EditorClient\Panel\ImguiPanel.h">
+      <Filter>Source\Engine\EditorClient\Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\EditorClient\Panel\ImguiViewport.h">
+      <Filter>Source\Engine\EditorClient\Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\EditorClient\Panel\EditorClient.h">
+      <Filter>Source\Engine\EditorClient\Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\EditorClient\Panel\ImguiDebugConsole.h">
+      <Filter>Source\Engine\EditorClient\Panel</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

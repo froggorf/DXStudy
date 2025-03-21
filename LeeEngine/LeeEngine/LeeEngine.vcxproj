@@ -33,6 +33,10 @@
     <ClCompile Include="Source\Engine\Components\USceneComponent.cpp" />
     <ClCompile Include="Source\Engine\Components\UStaticMeshComponent.cpp" />
     <ClCompile Include="Source\Engine\DirectX\Device.cpp" />
+    <ClCompile Include="Source\Engine\EditorClient\Panel\EditorClient.cpp" />
+    <ClCompile Include="Source\Engine\EditorClient\Panel\ImguiDebugConsole.cpp" />
+    <ClCompile Include="Source\Engine\EditorClient\Panel\ImguiPanel.cpp" />
+    <ClCompile Include="Source\Engine\EditorClient\Panel\ImguiViewport.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\AActor.cpp" />
     <ClCompile Include="Source\Engine\Level\ULevel.cpp" />
     <ClCompile Include="Source\Engine\Mesh\UStaticMesh.cpp" />
@@ -76,6 +80,10 @@
     <ClInclude Include="Source\Engine\Components\USceneComponent.h" />
     <ClInclude Include="Source\Engine\Components\UStaticMeshComponent.h" />
     <ClInclude Include="Source\Engine\DirectX\Device.h" />
+    <ClInclude Include="Source\Engine\EditorClient\Panel\EditorClient.h" />
+    <ClInclude Include="Source\Engine\EditorClient\Panel\ImguiDebugConsole.h" />
+    <ClInclude Include="Source\Engine\EditorClient\Panel\ImguiPanel.h" />
+    <ClInclude Include="Source\Engine\EditorClient\Panel\ImguiViewport.h" />
     <ClInclude Include="Source\Engine\GameFramework\AActor.h" />
     <ClInclude Include="Source\Engine\Level\ULevel.h" />
     <ClInclude Include="Source\Engine\Mesh\StaticMeshResources.h" />

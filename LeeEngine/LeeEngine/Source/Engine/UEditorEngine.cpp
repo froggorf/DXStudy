@@ -36,7 +36,7 @@ void UEditorEngine::InitEngine()
 	UEngine::InitEngine();
 
 	//AddImGuiRenderFunction(std::bind(&UEditorEngine::DrawDebugConsole, this));
-	FEditorScene::AddImGuiRenderFunction(
+	/*FEditorScene::AddImGuiRenderFunction(
 		"DebugConsole",
 		[]()
 		{
@@ -49,7 +49,7 @@ void UEditorEngine::InitEngine()
 		{
 			FEditorScene::DrawImGuiScene_RenderThread();
 		}
-	);
+	);*/
 
 	const std::string& EngineDirectoryString = GetEngineDirectory();
 	std::wstring FilePath = std::wstring{EngineDirectoryString.begin(), EngineDirectoryString.end()} + L"/Content/Editor/Logo/LeeEngineLogo.bmp";

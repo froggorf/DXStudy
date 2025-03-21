@@ -30,11 +30,11 @@ void UWorld::Init()
 {
 	UObject::Init();
 #ifdef WITH_EDITOR
-	FEditorScene::AddImGuiRenderFunction("World Outliner", []()
+	/*FEditorScene::AddImGuiRenderFunction("World Outliner", []()
 	{
 		FEditorScene::DrawWorldOutliner_RenderThread();
 		FEditorScene::DrawSelectActorDetail_RenderThread();
-	});
+	});*/
 #endif
 }
 
