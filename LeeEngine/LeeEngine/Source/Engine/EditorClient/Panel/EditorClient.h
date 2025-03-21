@@ -15,7 +15,7 @@
 enum class EImguiPanelType
 {
 	IPT_NULL,
-	IPT_SceneViewport,			// FImguiViewport (+ FImguiWorldOutliner + FImguiActorDetail
+	IPT_LevelViewport,			// FImguiViewport (+ FImguiWorldOutliner + FImguiActorDetail
 	IPT_DebugConsole,			// FImguiDebugConsole
 	IPT_Count,
 };

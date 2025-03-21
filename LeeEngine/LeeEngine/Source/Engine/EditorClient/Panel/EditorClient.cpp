@@ -11,7 +11,7 @@ FEditorClient::FEditorClient(FScene* SceneData)
 {
 	ImguiPanels.resize(static_cast<UINT>(EImguiPanelType::IPT_Count));
 
-	//ImguiPanels[static_cast<UINT>(EImguiPanelType::IPT_SceneViewport)] = std::make_unique<FImguiViewport>(SceneData);
+	ImguiPanels[static_cast<UINT>(EImguiPanelType::IPT_LevelViewport)] = std::make_unique<FImguiLevelViewport>(SceneData);
 	ImguiPanels[static_cast<UINT>(EImguiPanelType::IPT_DebugConsole)] = std::make_unique<FImguiDebugConsole>(SceneData);
 }
 
