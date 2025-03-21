@@ -192,6 +192,12 @@
     <ClCompile Include="Source\Engine\EditorClient\Panel\ImguiDebugConsole.cpp">
       <Filter>Source\Engine\EditorClient\Panel</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\EditorClient\Panel\ImguiWorldOutliner.cpp">
+      <Filter>Source\Engine\EditorClient\Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\EditorClient\Panel\ImguiActorDetail.cpp">
+      <Filter>Source\Engine\EditorClient\Panel</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Animation\Bone.h">
@@ -342,6 +348,12 @@
       <Filter>Source\Engine\EditorClient\Panel</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\EditorClient\Panel\ImguiDebugConsole.h">
+      <Filter>Source\Engine\EditorClient\Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\EditorClient\Panel\ImguiWorldOutliner.h">
+      <Filter>Source\Engine\EditorClient\Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\EditorClient\Panel\ImguiActorDetail.h">
       <Filter>Source\Engine\EditorClient\Panel</Filter>
     </ClInclude>
   </ItemGroup>

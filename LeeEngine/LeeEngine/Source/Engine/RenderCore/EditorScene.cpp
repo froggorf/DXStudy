@@ -28,7 +28,7 @@ void FEditorScene::InitLevelData()
 	std::shared_ptr<FImguiLevelViewportCommandData> CommandData = std::make_shared<FImguiLevelViewportCommandData>();
 	CommandData->PanelType = EImguiPanelType::IPT_LevelViewport;
 	CommandData->CommandType = ELevelViewportCommandType::LVCT_ClearCurrentLevelData;
-
+	EditorClient->AddPanelCommand(CommandData);
 	
 	
 }
@@ -112,7 +112,7 @@ void FEditorScene::AddWorldOutlinerActor_GameThread(std::shared_ptr<AActor> NewA
 			if(std::shared_ptr<FEditorScene> EditorSceneData = std::dynamic_pointer_cast<FEditorScene>(SceneData))
 			{
 				std::shared_ptr<FImguiLevelViewportCommandData> CommandData = std::make_shared<FImguiLevelViewportCommandData>();
-				CommandData->PanelType = EImguiPanelType::IPT_DebugConsole;
+				CommandData->PanelType = EImguiPanelType::IPT_LevelViewport;
 				CommandData->CommandType = ELevelViewportCommandType::LVCT_AddActorToWorldOutliner;
 				CommandData->NewPendingAddActor = NewActor;
 				EditorSceneData->EditorClient->AddPanelCommand(CommandData);

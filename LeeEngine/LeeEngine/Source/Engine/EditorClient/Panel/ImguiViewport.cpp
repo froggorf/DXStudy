@@ -1,21 +1,18 @@
 #include "ImguiViewport.h"
 
+#include "ImguiActorDetail.h"
+#include "ImguiWorldOutliner.h"
 #include "Engine/DirectX/Device.h"
 
 FImguiLevelViewport::FImguiLevelViewport(FScene* SceneData)
 	:FImguiPanel(SceneData)
 {
-
+	ActorDetailPanel = std::make_unique<FImguiActorDetail>(SceneData, this);
+	WorldOutlinerPanel = std::make_unique<FImguiWorldOutliner>(SceneData, this);
 }
 
 void FImguiLevelViewport::Draw()
 {
-	// Pending Add
-	for(const auto& NewOutlinerActor : PendingAddWorldOutlinerActors)
-	{
-		WorldOutlinerActors.push_back(NewOutlinerActor);
-	}
-	PendingAddWorldOutlinerActors.clear();
 
 	// 렌더링 시작
 
@@ -29,60 +26,11 @@ void FImguiLevelViewport::Draw()
 		ImGui::End();
 	}
 
-	// WorldOutliner
-	static int CurrentItem = -1;
-	ImGui::Begin("World Outliner", nullptr);
+	// World Outliner
+	WorldOutlinerPanel->Draw();
+	// Actor Detail
+	ActorDetailPanel->Draw();
 
-	if (ImGui::BeginListBox(" ", ImVec2(-FLT_MIN,-FLT_MIN))) {
-		int ActorCount = WorldOutlinerActors.size();
-		for (int i = 0; i < ActorCount; i++) {
-			const bool is_selected = (CurrentItem== i);
-			if (ImGui::Selectable(WorldOutlinerActors[i]->GetName().c_str(), is_selected)) {
-				CurrentItem = i;
-				SelectActorFromWorldOutliner(WorldOutlinerActors[i]);
-			}
-
-			// 선택된 항목에 대한 포커스 처리
-			if (is_selected) {
-				ImGui::SetItemDefaultFocus();
-			}
-		}
-		ImGui::EndListBox();
-	}
-
-	ImGui::End();
-
-
-	// 액터 디테일
-	ImGui::Begin("Detail");
-	if(CurrentSelectedActor)
-	{
-		// 컴퍼넌트들 렌더링
-		{
-			if(ImGui::BeginListBox(" ", ImVec2(-FLT_MIN,200.0f)))
-			{
-				int ComponentCount = SelectActorComponentNames.size();
-				for (int i = 0; i < ComponentCount; i++) {
-					const bool is_selected = (CurrentSelectedComponentIndex == i);
-					if (ImGui::Selectable(SelectActorComponentNames[i].data(), is_selected)) {
-						CurrentSelectedComponentIndex = i;
-						// TODO : Select Component Action
-					}
-
-					if (is_selected) {
-						ImGui::SetItemDefaultFocus();
-					}
-				}
-				ImGui::EndListBox();
-			}
-		}
-
-	}
-	else
-	{
-		ImGui::Text("No Select");
-	}
-	ImGui::End();
 
 	if(ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoTitleBar|
 		ImGuiWindowFlags_NoScrollbar |
@@ -107,21 +55,6 @@ void FImguiLevelViewport::Draw()
 			ImGui::Image((void*)GDirectXDevice->GetSRVEditorRenderTarget().Get(), ViewPortSize);
 
 		}
-		//CurrentViewPortPos = ImGui::GetWindowPos();
-
-		/*if(ImGui::BeginTabBar(" "))
-		{
-
-
-		if(ImGui::BeginTabItem("ViewPort"))
-		{
-
-
-		ImGui::EndTabItem();
-
-		}
-		ImGui::EndTabBar();
-		}*/
 		if(PreviousViewPortSize != CurrentViewPortSize)
 		{
 			PreviousViewPortSize = CurrentViewPortSize;
@@ -239,7 +172,7 @@ void FImguiLevelViewport::ExecuteCommand(const std::shared_ptr<FImguiPanelComman
 		switch (Data->CommandType)
 		{
 		case ELevelViewportCommandType::LVCT_AddActorToWorldOutliner:
-			PendingAddWorldOutlinerActors.push_back(Data->NewPendingAddActor);
+			WorldOutlinerPanel->PendingAddWorldOutlinerActor(Data->NewPendingAddActor);
 			break;
 
 		case ELevelViewportCommandType::LVCT_SetViewportSizeToEditorViewportSize:
@@ -264,56 +197,26 @@ void FImguiLevelViewport::ExecuteCommand(const std::shared_ptr<FImguiPanelComman
 
 void FImguiLevelViewport::InitLevelData()
 {
-	WorldOutlinerActors.clear();
-	PendingAddWorldOutlinerActors.clear();
-	CurrentSelectedActor = nullptr;
-	SelectActorComponents.clear();
-	SelectActorComponentNames.clear();
-	CurrentSelectedComponentIndex=-1;
+	WorldOutlinerPanel->InitLevelData();
+	ActorDetailPanel->InitLevelData();
 
 	EditorViewMatrices.UpdateViewMatrix(XMFLOAT3(0.0f,0.0f,0.0f), XMQuaternionRotationRollPitchYaw(0.0f,0.0f,0.0f));
 }
 
 void FImguiLevelViewport::SelectActorFromWorldOutliner(const std::shared_ptr<AActor>& NewSelectedActor)
 {
-	SelectActorComponents.clear();
-	SelectActorComponentNames.clear();
-	CurrentSelectedComponentIndex = 0;
-	CurrentSelectedActor = NewSelectedActor;
-	FindComponentsAndNamesFromActor(CurrentSelectedActor->GetRootComponent(), 0);
-}
-
-void FImguiLevelViewport::FindComponentsAndNamesFromActor(const std::shared_ptr<USceneComponent>& TargetComponent,
-	int CurrentHierarchyDepth)
-{
-	if(!CurrentSelectedActor)
+	if(ActorDetailPanel)
 	{
-		return;
+		ActorDetailPanel->SelectActorFromWorldOutliner(NewSelectedActor);
 	}
-
-	std::string HierarchyTabString;
-	HierarchyTabString.reserve(2*CurrentHierarchyDepth);
-	for(int i = 0; i < CurrentHierarchyDepth; ++i)
-	{
-		HierarchyTabString += "  ";
-	}
-
-	std::string TargetComponentName = HierarchyTabString + TargetComponent->GetName();
-
-	SelectActorComponents.push_back(TargetComponent);
-	SelectActorComponentNames.push_back(TargetComponentName);
-
-	const std::vector<std::shared_ptr<USceneComponent>>& TargetComponentChildren = TargetComponent->GetAttachChildren();
-	for(const auto& ChildComponent : TargetComponentChildren)
-	{
-		FindComponentsAndNamesFromActor(ChildComponent, CurrentHierarchyDepth+1);
-	}
+	
 }
 
 
 void FImguiLevelViewport::DrawImguizmoSelectedActor(float AspectRatio)
 {
-	if(!CurrentSelectedActor)
+	const std::shared_ptr<USceneComponent>& CurrentSelectedComponent = ActorDetailPanel->GetCurrentSelectedComponent();
+	if(!ActorDetailPanel || !CurrentSelectedComponent)
 	{
 		return;
 	}
@@ -342,7 +245,6 @@ void FImguiLevelViewport::DrawImguizmoSelectedActor(float AspectRatio)
 		CurrentGizmoMode = ImGuizmo::LOCAL;
 	}
 
-	const std::shared_ptr<USceneComponent>& CurrentSelectedComponent = SelectActorComponents[CurrentSelectedComponentIndex];
 	FTransform ComponentTransform = CurrentSelectedComponent->GetComponentTransform();
 
 	XMMATRIX ComponentMatrix;

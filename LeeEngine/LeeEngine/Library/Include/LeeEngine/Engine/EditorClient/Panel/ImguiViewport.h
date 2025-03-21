@@ -18,6 +18,9 @@
  * 한번에 관리하고 렌더링 하는 클래스
  */
 
+class FImguiActorDetail;
+class FImguiWorldOutliner;
+
 enum class ELevelViewportCommandType
 {
 	LVCT_Null,
@@ -25,6 +28,7 @@ enum class ELevelViewportCommandType
 	LVCT_SetViewportSizeToEditorViewportSize,
 	LVCT_GetEditorViewMatrices,
 	LVCT_ClearCurrentLevelData,
+	LVCT_SelectActorFromWorldOutliner,
 };
 
 struct FImguiLevelViewportCommandData: public FImguiPanelCommandData
@@ -34,6 +38,7 @@ struct FImguiLevelViewportCommandData: public FImguiPanelCommandData
 
 	ELevelViewportCommandType CommandType;
 	std::shared_ptr<AActor> NewPendingAddActor;
+	std::shared_ptr<AActor> NewSelectedActorFromWorldOutliner;
 	FViewMatrices* ViewMatrices;
 
 	// 언리얼엔진의 Struct 비교 방식에서 차용
@@ -56,16 +61,16 @@ public:
 
 	void Draw() override;
 	void ExecuteCommand(const std::shared_ptr<FImguiPanelCommandData>& CommandData) override;
+
+	// 월드 아웃라이너 패널에서 액터를 선택했을 시 호출
+	void SelectActorFromWorldOutliner(const std::shared_ptr<AActor>& NewSelectedActor);
 protected:
 private:
 	// 레벨 변경 시 현재의 레벨 데이터를 초기화 하는 함수
 	void InitLevelData();
 
-	// 월드 아웃라이너 패널에서 액터를 선택했을 시 호출
-	void SelectActorFromWorldOutliner(const std::shared_ptr<AActor>& NewSelectedActor);
+	
 
-	// 선택된 월드 아웃라이너 액터의 컴퍼넌트 계층구조를 찾는 함수
-	void FindComponentsAndNamesFromActor(const std::shared_ptr<USceneComponent>& TargetComponent, int CurrentHierarchyDepth);
 
 	// CurrentSelectedActor의 Imguizmo 기즈모 렌더링 + 이동 조작 Imguizmo 커맨드 큐 추가
 	void DrawImguizmoSelectedActor(float AspectRatio);
@@ -73,22 +78,20 @@ private:
 	// Level Viewport 내에서 우클릭 + WASD 및 마우스 인풋 시
 	// 에디터 카메라 이동을 적용하는 함수
 	void EditorCameraMove(XMFLOAT3 MoveDelta, XMFLOAT2 MouseDelta);
+
+	FImguiWorldOutliner* GetWorldOutlinerPanel() const {return WorldOutlinerPanel.get(); }
+	FImguiActorDetail* GetActorDetailPanel() const {return ActorDetailPanel.get(); }
 public:
 protected:
 private:
-	// 월드 아웃라이너
-	std::vector<std::shared_ptr<AActor>> WorldOutlinerActors;
-	std::vector<std::shared_ptr<AActor>> PendingAddWorldOutlinerActors;
-	std::shared_ptr<AActor> CurrentSelectedActor;
-	std::vector<std::shared_ptr<USceneComponent>> SelectActorComponents;
-	std::vector<std::string> SelectActorComponentNames;
+	std::unique_ptr<FImguiWorldOutliner> WorldOutlinerPanel;
+	std::unique_ptr<FImguiActorDetail> ActorDetailPanel;
 
 
 	// Level Viewport 변수
 	bool bResizeEditorRenderTargetAtEndFrame=false;
 	ImVec2 ResizeEditorRenderTargetSize = {};
 
-	int CurrentSelectedComponentIndex = -1;
 
 	FViewMatrices EditorViewMatrices;
 

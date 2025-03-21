@@ -37,11 +37,6 @@ public:
 
 	std::unique_ptr<FEditorClient> EditorClient;
 
-
-	// 디버깅 콘솔
-	
-
-	
 	// ==================== ImGui ====================
 	void InitLevelData() override;
 	void BeginRenderFrame() override;
