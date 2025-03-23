@@ -23,7 +23,7 @@ ULevel::ULevel()
 ULevel::ULevel(const ULevel* LevelInstance)
 {
 	OwningWorld = GEngine->GetWorld();
-
+	Rename(LevelInstance->GetName());
 	int ActorCount = LevelInstance->GetLevelActors().size();
 	const auto& LevelActors = LevelInstance->GetLevelActors();
 	Actors.reserve(ActorCount);
@@ -112,5 +112,27 @@ void ULevel::LoadDataFromFileData(const nlohmann::json& AssetData)
 	}
 
 	GetLevelInstanceMap()[LevelName] = std::make_unique<ULevel>(*this);
+	GetLevelInstanceMap()[LevelName]->Rename(AssetData["Name"]);
+}
+
+void ULevel::SaveDataFromAssetToFile(nlohmann::json& Json)
+{
+	UObject::SaveDataFromAssetToFile(Json);
+
+	for(const auto& Actor : Actors)
+	{
+		nlohmann::json ActorJson;
+		ActorJson["Class"] = Actor->GetClass();
+		ActorJson["Name"] = Actor->GetName();
+		XMFLOAT3 ActorLocation = Actor->GetActorLocation();
+		ActorJson["Location"] = { ActorLocation.x,ActorLocation.y,ActorLocation.z};
+		XMFLOAT4 ActorRotation = Actor->GetActorRotation();
+		ActorJson["Rotation"] = { ActorRotation.x,ActorRotation.y,ActorRotation.z,ActorRotation.w};
+		XMFLOAT3 ActorScale3D = Actor->GetActorScale3D();
+		ActorJson["Scale"] = { ActorScale3D.x,ActorScale3D.y,ActorScale3D.z};
+
+		Json["Actor"].push_back(ActorJson);
+	}
+
 }
 

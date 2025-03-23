@@ -112,20 +112,21 @@ void UEngine::Tick(float DeltaSeconds)
 {
 	++GameThreadFrameCount;
 
-	// 컴퍼넌트 변경사항에 대한 변수 초기화
-	//ComponentsTransformDirty.clear();
-
+#ifdef WITH_EDITOR
 	std::shared_ptr<FImGUITask> Task;
 	while(FImGuizmoCommandPipe::Dequeue(Task))
 	{
 		Task->CommandLambda();
 	}
+#endif
 
 	FScene::BeginRenderFrame_GameThread(GameThreadFrameCount);
+#ifndef WITH_EDITOR
 	if(CurrentWorld)
 	{
 		CurrentWorld->TickWorld(DeltaSeconds);
 	}
+#endif
 
 	for(const auto& IDAndComponent : ComponentsTransformDirty)
 	{
@@ -179,6 +180,11 @@ void UEngine::JoinThreadsAtDestroy()
 	return;
 }
 
+
+void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	// 엔진에서의 인풋 관리
+}
 
 void UEngine::CreateRenderThread()
 {

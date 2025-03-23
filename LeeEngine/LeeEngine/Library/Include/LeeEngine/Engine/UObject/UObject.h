@@ -17,14 +17,14 @@ public:\
 		UObject::AddClassDefaultObject(#CLASS,std::make_unique<CLASS>());\
 	}\
 };\
-inline static MakeCDO _initializer;
+inline static MakeCDO _initializer;\
 
 
 #define MY_GENERATED_BODY(CLASS)\
 GENERATE_UOBJECT_DERIVED_CLASS(CLASS)\
 public:\
 	virtual std::shared_ptr<UObject> CreateInstance() const override { return std::make_shared<CLASS>();}\
-	std::string GetClass() const { return #CLASS; }\
+	std::string GetClass() const override { return #CLASS; } \
 
 
 class UWorld;
@@ -32,10 +32,12 @@ class UWorld;
 class UObject
 {
 	GENERATE_UOBJECT_DERIVED_CLASS(UObject)
+public:
+	virtual std::shared_ptr<UObject> CreateInstance() const { return std::make_shared<UObject>(); }
+	virtual std::string GetClass() const {return "UObject";}
 	
 	
 public:
-	virtual std::shared_ptr<UObject> CreateInstance() const { return std::make_shared<UObject>(); }
 	UObject();
 	UObject(const UObject& other) {};
 	virtual ~UObject();
@@ -59,7 +61,7 @@ public:
 
 	// .myasset으로 부터 읽은 데이터를 각 상속된 클래스에서 재해석하여 데이터 읽기
 	virtual void LoadDataFromFileData(const nlohmann::json& AssetData);
-
+	virtual void SaveDataFromAssetToFile(nlohmann::json& Json);
 
 protected:
 private:
@@ -67,6 +69,7 @@ public:
 protected:
 private:
 	std::string NamePrivate;
+
 
 private:
 	bool bIsRegister = false;

@@ -13,6 +13,7 @@ class UWorld;
 class ULevel : public UObject
 {
 	MY_GENERATED_BODY(ULevel)
+
 public:
 	ULevel();
 	//ULevel(const std::shared_ptr<UWorld>& World);
@@ -30,7 +31,7 @@ public:
 
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
-
+	void SaveDataFromAssetToFile(nlohmann::json& Json) override;
 	static const ULevel* GetLevelInstanceByName(const std::string& LevelName) {return GetLevelInstanceMap()[LevelName].get();}
 protected:
 private:

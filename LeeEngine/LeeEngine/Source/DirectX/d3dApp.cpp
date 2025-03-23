@@ -14,6 +14,7 @@
 #include "Engine/UEditorEngine.h"
 #include "Engine/UEngine.h"
 #include "Engine/DirectX/Device.h"
+#include "Engine/RenderCore/EditorScene.h"
 
 namespace
 {
@@ -182,21 +183,25 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		return 0;
 	}
-
-	// ImGui 이벤트 처리
-	if(ImGui::GetCurrentContext())
-	{
-		 ImGuiIO& io = ImGui::GetIO();
-		if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam)) {
-		   return TRUE;
-		}
-		if(io.WantCaptureMouse || io.WantCaptureKeyboard)
-		{
-			return TRUE;
-		}
-	}
 	
+	if(GEditorEngine)
+	{
+		// ImGui 이벤트 처리
+		if(ImGui::GetCurrentContext())
+		{
+			GEditorEngine->HandleInput(msg,wParam,lParam);
+			ImGuiIO& io = ImGui::GetIO();
+			if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam)) {
 
+				return TRUE;
+			}
+			if(io.WantCaptureMouse || io.WantCaptureKeyboard)
+			{
+				return TRUE;
+			}
+		}
+
+	}
 	
 	switch( msg )
 	{
@@ -337,15 +342,20 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_LBUTTONDOWN:
 	case WM_MBUTTONDOWN:
 	case WM_RBUTTONDOWN:
-		OnMouseDown(wParam, LOWORD(lParam), HIWORD(lParam));
-		return 0;
+		//OnMouseDown(wParam, LOWORD(lParam), HIWORD(lParam));
+		
 	case WM_LBUTTONUP:
 	case WM_MBUTTONUP:
 	case WM_RBUTTONUP:
-		OnMouseUp(wParam, LOWORD(lParam), HIWORD(lParam));
-		return 0;
-	case WM_MOUSEMOVE:
-		OnMouseMove(wParam, LOWORD(lParam), HIWORD(lParam));
+		//OnMouseUp(wParam, LOWORD(lParam), HIWORD(lParam));
+	//case WM_MOUSEMOVE:
+		//OnMouseMove(wParam, LOWORD(lParam), HIWORD(lParam));
+	case WM_KEYDOWN:
+
+		if(GEngine && !GEditorEngine)
+		{
+			GEngine->HandleInput(msg, wParam, lParam);
+		}
 		return 0;
 	}
 

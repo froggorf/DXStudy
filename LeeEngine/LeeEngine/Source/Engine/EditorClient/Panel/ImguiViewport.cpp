@@ -265,6 +265,8 @@ void FImguiLevelViewport::DrawImguizmoSelectedActor(float AspectRatio)
 	XMFLOAT3 DeltaRot;
 	XMFLOAT3 DeltaScale;
 	ImGuizmo::DecomposeMatrixToComponents(DeltaMatrix, reinterpret_cast<float*>(&DeltaTranslation),reinterpret_cast<float*>(&DeltaRot),reinterpret_cast<float*>(&DeltaScale) );
+
+	bool bHasChange = false;
 	if(CurrentGizmoOperation == ImGuizmo::TRANSLATE && XMVectorGetX(XMVector3LengthEst(XMLoadFloat3(&DeltaTranslation))) > FLT_EPSILON)
 	{
 		const auto Lambda = [CurrentSelectedComponent, DeltaTranslation]()
@@ -272,6 +274,7 @@ void FImguiLevelViewport::DrawImguizmoSelectedActor(float AspectRatio)
 				CurrentSelectedComponent->AddWorldOffset(DeltaTranslation);		
 			};
 		ENQUEUE_IMGUI_COMMAND(Lambda)
+		bHasChange = true;
 
 	}
 
@@ -286,7 +289,16 @@ void FImguiLevelViewport::DrawImguizmoSelectedActor(float AspectRatio)
 				};
 			ENQUEUE_IMGUI_COMMAND(Lambda)
 		}
+		bHasChange= true;
 
+	}
+
+	if(bHasChange)
+	{
+		GEditorEngine->EditorModify(EEditorModificationType::EMT_Level, [](bool bIsFirstChange)
+		{
+			GEditorEngine->DrawEngineTitleBar();
+		});
 	}
 
 

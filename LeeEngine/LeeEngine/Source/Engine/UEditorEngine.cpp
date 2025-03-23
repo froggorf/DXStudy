@@ -6,6 +6,7 @@
 #include "UEditorEngine.h"
 #include <fstream>
 #include <memory>
+#include <windowsx.h>
 
 #include "Engine/AssetManager/AssetManager.h"
 #include "imgui_internal.h"
@@ -121,12 +122,11 @@ void UEditorEngine::DrawEngineTitleBar()
 	RoundRect(memDC,CurrentLevelRect.left,CurrentLevelRect.top,CurrentLevelRect.right,CurrentLevelRect.bottom*2,15,15);
 	if(GetWorld() && GetWorld()->GetPersistentLevel())
 	{
-		const std::string& PersistentLevelName = GetWorld()->GetPersistentLevel()->GetName();
+		std::string PersistentLevelName = GetWorld()->GetPersistentLevel()->GetName();
+		PersistentLevelName = GEditorEngine->IsEditorModify(EEditorModificationType::EMT_Level)? "* " + PersistentLevelName : PersistentLevelName; 
 		DrawTextA(memDC,PersistentLevelName.c_str(),-1, &CurrentLevelRect,DT_CENTER|DT_VCENTER|DT_SINGLELINE);
 
 	}
-	MY_LOG("LOG", EDebugLogLevel::DLL_Warning, "REDRAW");
-	
 	// 텍스트 그리기
 	SetBkMode(memDC, TRANSPARENT);
 	RECT CloseButtonRect = rect;
@@ -141,6 +141,72 @@ void UEditorEngine::DrawEngineTitleBar()
 
 	DeleteObject(memDC);
 	ReleaseDC(GetWindow(), hdc); // DC 해제
+}
+
+void UEditorEngine::SaveModifiedLevel()
+{
+	EditorModificationTypes[static_cast<UINT>(EEditorModificationType::EMT_Level)] = false;
+
+
+	if(GetWorld())
+	{
+		if(std::shared_ptr<ULevel> PersistentLevel = GetWorld()->GetPersistentLevel())
+		{
+			std::string LevelPath = GetDirectoryPath() + "/Content/Test.myasset";
+			nlohmann::json LevelData;
+			PersistentLevel->SaveDataFromAssetToFile(LevelData);
+			auto& AssetNameAndPathMap = AssetManager::GetAssetNameAndAssetPathCacheMap();
+			const std::string AssetPath = AssetNameAndPathMap[LevelData["Name"]];
+
+			std::ofstream LevelMyAssetFile{AssetPath.c_str()};
+			if(LevelMyAssetFile.is_open())
+			{
+				LevelMyAssetFile << LevelData.dump(4);
+				LevelMyAssetFile.close();
+			}
+			
+			
+		}
+	}
+}
+
+void UEditorEngine::SaveModifiedData()
+{
+	if(EditorModificationTypes[static_cast<UINT>( EEditorModificationType::EMT_Level)])
+	{
+		SaveModifiedLevel();
+	}
+
+	DrawEngineTitleBar();
+}
+
+void UEditorEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	ImGuiIO& io = ImGui::GetIO();
+
+	if(msg == WM_KEYUP)
+	{
+		// 모두 저장
+		if(io.KeyCtrl && io.KeyShift && ImGui::IsKeyDown(ImGuiKey::ImGuiKey_S) )
+		{
+			SaveModifiedData();
+		}	
+	}
+	
+	
+	
+}
+
+void UEditorEngine::EditorModify(EEditorModificationType Type, std::function<void(bool)> Func)
+{
+	bool bIsFirstModify = EditorModificationTypes[static_cast<UINT>(Type)] == false;
+	EditorModificationTypes[static_cast<UINT>(Type)] = true;
+	bEditorModified = true;
+	if(Func)
+	{
+		Func(bIsFirstModify);
+	}
+
 }
 
 void UEditorEngine::CreateRenderThread()

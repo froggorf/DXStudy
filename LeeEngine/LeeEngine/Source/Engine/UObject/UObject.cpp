@@ -34,5 +34,10 @@ void UObject::Rename(const std::string& NewName)
 void UObject::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
 	Rename(AssetData["Name"]);
-	
+}
+
+void UObject::SaveDataFromAssetToFile(nlohmann::json& Json)
+{
+	Json["Name"] = GetName();
+	Json["Class"] = GetClass();
 }

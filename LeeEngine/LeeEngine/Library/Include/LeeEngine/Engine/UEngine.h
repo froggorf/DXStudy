@@ -60,6 +60,8 @@ public:
 
 	const std::string& GetEngineDirectory()const {return EngineDirectory;}
 
+	virtual void HandleInput( UINT msg, WPARAM wParam, LPARAM lParam);
+
 protected:
 	virtual void CreateRenderThread();
 private:

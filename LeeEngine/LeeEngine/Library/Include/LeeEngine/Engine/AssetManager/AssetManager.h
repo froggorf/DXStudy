@@ -63,10 +63,13 @@ private:
 	// 버텍스의 BoneWeight 정보를 추출하는 함수
 	static void ExtractBoneWeightForVertices(std::vector<MySkeletalMeshVertexData>& vVertexData, aiMesh* mesh, std::map<std::string, BoneInfo>& modelBoneInfoMap);
 
+
 public:
+	static std::unordered_map<std::string,std::string>& GetAssetNameAndAssetPathCacheMap() {return AssetNameAndAssetPathCacheMap;}
 protected:
 private:
 	static std::unordered_map<std::string, std::shared_ptr<UObject>> AssetCache;
+	static std::unordered_map<std::string, std::string> AssetNameAndAssetPathCacheMap;
 };
 
 
@@ -86,6 +89,7 @@ inline UObject* AssetManager::ReadMyAsset(const std::string& FilePath)
 
 	std::shared_ptr<UObject> Object = UObject::GetDefaultObject(AssetData["Class"])->CreateInstance();
 	Object->LoadDataFromFileData(AssetData);
+	AssetNameAndAssetPathCacheMap[Object->GetName()] = FilePath;
 
 	AssetCache[FilePath.data()] = Object;
 	MY_LOG("AssetLoad", EDebugLogLevel::DLL_Display, FilePath+" Load Success");

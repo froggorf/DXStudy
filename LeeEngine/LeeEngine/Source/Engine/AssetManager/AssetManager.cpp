@@ -20,6 +20,7 @@ using namespace Microsoft::WRL;
 
 
 std::unordered_map<std::string, std::shared_ptr<UObject>> AssetManager::AssetCache;
+std::unordered_map<std::string, std::string> AssetManager::AssetNameAndAssetPathCacheMap;
 
 void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Device> pDevice, std::vector<ComPtr<ID3D11Buffer>>& pVertexBuffer,
 	std::vector<ComPtr<ID3D11Buffer>>&pIndexBuffer)

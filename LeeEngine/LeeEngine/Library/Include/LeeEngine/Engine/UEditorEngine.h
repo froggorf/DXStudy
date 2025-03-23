@@ -9,7 +9,11 @@
 
 #include <atlImage.h>
 
-
+enum class EEditorModificationType
+{
+	EMT_Level,
+	EMT_Count
+};
 
 class UEditorEngine : public UEngine
 {
@@ -27,6 +31,13 @@ public:
 
 	void DrawEngineTitleBar();
 
+
+	void SaveModifiedLevel();
+	void SaveModifiedData();
+	virtual void HandleInput(UINT msg, WPARAM wParam, LPARAM lParam) override;
+
+	void EditorModify(EEditorModificationType Type, std::function<void(bool)> Func = nullptr);
+	bool IsEditorModify(EEditorModificationType Type) const {return EditorModificationTypes[static_cast<UINT>(Type)];}
 protected:
 	void CreateRenderThread() override;
 private:
@@ -34,6 +45,8 @@ public:
 protected:
 private:
 	CImage LogoImage;
-	
 
+	bool EditorModificationTypes[static_cast<UINT>( EEditorModificationType::EMT_Count)] = {false,};
+	bool bEditorModified = false;
+	
 };
