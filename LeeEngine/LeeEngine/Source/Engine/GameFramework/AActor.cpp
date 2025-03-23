@@ -100,3 +100,32 @@ void AActor::Tick(float DeltaSeconds)
 {
 }
 
+void AActor::SaveDataFromAssetToFile(nlohmann::json& Json)
+{
+	UObject::SaveDataFromAssetToFile(Json);
+
+	Json["Class"] = GetClass();
+	Json["Name"] = GetName();
+	XMFLOAT3 ActorLocation = GetActorLocation();
+	Json["Location"] = { ActorLocation.x,ActorLocation.y,ActorLocation.z};
+	XMFLOAT4 ActorRotation = GetActorRotation();
+	Json["Rotation"] = { ActorRotation.x,ActorRotation.y,ActorRotation.z,ActorRotation.w};
+	XMFLOAT3 ActorScale3D = GetActorScale3D();
+	Json["Scale"] = { ActorScale3D.x,ActorScale3D.y,ActorScale3D.z};
+}
+
+void AActor::LoadDataFromFileData(const nlohmann::json& AssetData)
+{
+	UObject::LoadDataFromFileData(AssetData);
+
+	
+	Rename(AssetData["Name"]);
+	int X = 0, Y = 1, Z = 2, W =3;
+	auto LocationData = AssetData["Location"];
+	SetActorLocation(XMFLOAT3(LocationData[X],LocationData[Y],LocationData[Z]));
+	auto RotationData = AssetData["Rotation"];
+	SetActorRotation(XMFLOAT4(RotationData[X],RotationData[Y],RotationData[Z],RotationData[W]));
+	auto ScaleData = AssetData["Scale"];
+	SetActorScale3D(XMFLOAT3(ScaleData[X],ScaleData[Y],ScaleData[Z]));
+}
+

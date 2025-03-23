@@ -99,14 +99,7 @@ void ULevel::LoadDataFromFileData(const nlohmann::json& AssetData)
 		std::shared_ptr<AActor> NewActor = std::dynamic_pointer_cast<AActor>(GetDefaultObject(ClassName)->CreateInstance());
 		if(NewActor)
 		{
-			NewActor->Rename(ActorData["Name"]);
-			int X = 0, Y = 1, Z = 2, W =3;
-			auto LocationData = ActorData["Location"];
-			NewActor->SetActorLocation(XMFLOAT3(LocationData[X],LocationData[Y],LocationData[Z]));
-			auto RotationData = ActorData["Rotation"];
-			NewActor->SetActorRotation(XMFLOAT4(RotationData[X],RotationData[Y],RotationData[Z],RotationData[W]));
-			auto ScaleData = ActorData["Scale"];
-			NewActor->SetActorScale3D(XMFLOAT3(ScaleData[X],ScaleData[Y],ScaleData[Z]));
+			NewActor->LoadDataFromFileData(ActorData);
 			Actors.push_back(NewActor);
 		}
 	}
@@ -122,14 +115,7 @@ void ULevel::SaveDataFromAssetToFile(nlohmann::json& Json)
 	for(const auto& Actor : Actors)
 	{
 		nlohmann::json ActorJson;
-		ActorJson["Class"] = Actor->GetClass();
-		ActorJson["Name"] = Actor->GetName();
-		XMFLOAT3 ActorLocation = Actor->GetActorLocation();
-		ActorJson["Location"] = { ActorLocation.x,ActorLocation.y,ActorLocation.z};
-		XMFLOAT4 ActorRotation = Actor->GetActorRotation();
-		ActorJson["Rotation"] = { ActorRotation.x,ActorRotation.y,ActorRotation.z,ActorRotation.w};
-		XMFLOAT3 ActorScale3D = Actor->GetActorScale3D();
-		ActorJson["Scale"] = { ActorScale3D.x,ActorScale3D.y,ActorScale3D.z};
+		Actor->SaveDataFromAssetToFile(ActorJson);
 
 		Json["Actor"].push_back(ActorJson);
 	}

@@ -35,6 +35,8 @@ class UObject
 public:
 	virtual std::shared_ptr<UObject> CreateInstance() const { return std::make_shared<UObject>(); }
 	virtual std::string GetClass() const {return "UObject";}
+
+
 	
 	
 public:

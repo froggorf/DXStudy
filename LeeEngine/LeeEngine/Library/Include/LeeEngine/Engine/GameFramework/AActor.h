@@ -29,6 +29,10 @@ public:
 	void SetActorScale3D(const XMFLOAT3& NewScale3D) const;
 
 	virtual void Tick(float DeltaSeconds);
+
+	void SaveDataFromAssetToFile(nlohmann::json& Json) override;
+	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
+
 protected:
 
 private:
