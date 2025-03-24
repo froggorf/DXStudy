@@ -8,7 +8,7 @@ ATestActor2::ATestActor2()
 	GetRootComponent()->SetRelativeRotation(XMFLOAT3(0.0f,0.0f,0.0f));
 
 	TestSMComp = std::make_shared<UStaticMeshComponent>();
-	TestSMComp->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Racco"));
+	TestSMComp->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_ChibiCat"));
 	TestSMComp->SetupAttachment(GetRootComponent());
 	TestSMComp->SetRelativeLocation(XMFLOAT3(0.0f,5.0f,0.0f));
 	TestSMComp->SetRelativeScale3D(XMFLOAT3(0.2f,0.2f,0.2f));

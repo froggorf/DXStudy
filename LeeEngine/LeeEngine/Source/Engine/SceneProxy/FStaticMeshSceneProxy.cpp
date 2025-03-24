@@ -38,7 +38,12 @@ void FStaticMeshSceneProxy::Draw()
 		ID3D11DeviceContext* DeviceContext = GDirectXDevice->GetDeviceContext().Get();
 		// SRV 설정(텍스쳐)
 		{
-			DeviceContext->PSSetShaderResources(0,1, RenderData->TextureSRV[0].GetAddressOf());	
+			int TextureIndex = 0;
+			if(RenderData->TextureSRV.size() > MeshIndex)
+			{
+				TextureIndex = MeshIndex;
+			}
+			DeviceContext->PSSetShaderResources(0,1, RenderData->TextureSRV[TextureIndex].GetAddressOf());	
 		}
 		UINT stride = sizeof(MyVertexData);
 		UINT offset = 0;
