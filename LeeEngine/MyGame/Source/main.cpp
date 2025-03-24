@@ -109,10 +109,9 @@ private:
 	std::unique_ptr<Animation>						m_Anim_Cat_Idle;
 	std::unique_ptr<Animation>						m_Anim_Cat_HI;
 	std::unique_ptr<Animation>						m_Anim_Cat_DIG;
-	std::unique_ptr<Animator>						m_PaladinAnimator;
+	//std::unique_ptr<Animator>						m_PaladinAnimator;
 	ComPtr<ID3D11VertexShader>						m_SkeletalMeshVertexShader;
 	ComPtr<ID3D11InputLayout>						m_SkeletalMeshInputLayout;
-	ComPtr<ID3D11Buffer>							m_SkeletalBoneMatrixConstantBuffer;
 
 	// 큐브 출력용
 	ComPtr<ID3D11Buffer>							m_CubeVertexBuffer;
@@ -594,31 +593,13 @@ void AnimationApp::BuildShader()
 		bufferDesc.ByteWidth = sizeof(ShadowObjConstantBuffer);
 	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_ShadowObjConstantBuffer.GetAddressOf()))
 
-
-		bufferDesc.ByteWidth = sizeof(SkeletalMeshBoneTransformConstantBuffer);
-	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_SkeletalBoneMatrixConstantBuffer.GetAddressOf()));
 	
 }
 
 
 void AnimationApp::BuildShaderForSkeletalMesh()
 {
-	ComPtr<ID3DBlob> pVSBlob = nullptr;
-	HR(CompileShaderFromFile(L"Shader/SkeletalMesh.hlsl", "VS", "vs_4_0", pVSBlob.GetAddressOf()));
-	HR(GDirectXDevice->GetDevice()->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, m_SkeletalMeshVertexShader.GetAddressOf()));
-
-	D3D11_INPUT_ELEMENT_DESC inputLayout[] =
-	{
-		{"BONEIDS", 0, DXGI_FORMAT_R32G32B32A32_SINT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"BONEWEIGHTS",0,DXGI_FORMAT_R32G32B32A32_FLOAT, 0,16, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 44, D3D11_INPUT_PER_VERTEX_DATA,0},
-		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,0,56,D3D11_INPUT_PER_VERTEX_DATA, 0},
-
-	};
-	UINT numElements = ARRAYSIZE(inputLayout);
-
-	HR(GDirectXDevice->GetDevice()->CreateInputLayout(inputLayout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), m_SkeletalMeshInputLayout.GetAddressOf()));
+	
 	//m_d3dDeviceContext->IASetInputLayout(m_InputLayout.Get());
 
 

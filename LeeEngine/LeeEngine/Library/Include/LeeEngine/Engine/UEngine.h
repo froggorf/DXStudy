@@ -9,6 +9,7 @@
 #include <thread>
 #include <unordered_set>
 
+#include "Animation/Animation.h"
 #include "DirectX/d3dApp.h"
 #include "Engine/MyEngineUtils.h"
 #include "Engine/UObject/UObject.h"
@@ -62,6 +63,9 @@ public:
 
 	virtual void HandleInput( UINT msg, WPARAM wParam, LPARAM lParam);
 
+
+	Animation* TestAnim1 = nullptr;
+	Animation* TestAnim2 = nullptr;
 protected:
 	virtual void CreateRenderThread();
 private:

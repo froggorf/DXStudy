@@ -30,6 +30,11 @@ void FStaticMeshSceneProxy::Draw()
 	}
 
 	FPrimitiveSceneProxy::Draw();
+
+	// 셰이더 설정
+	GDirectXDevice->GetDeviceContext()->IASetInputLayout(GDirectXDevice->GetStaticMeshInputLayout().Get());
+	GDirectXDevice->GetDeviceContext()->VSSetShader(GDirectXDevice->GetStaticMeshVertexShader().Get(), nullptr, 0);
+
 	
 	const FStaticMeshRenderData* RenderData = StaticMesh->GetStaticMeshRenderData();
 	unsigned int MeshCount = RenderData->MeshCount;

@@ -189,13 +189,35 @@ void FDirectXDevice::BuildStaticMeshShader()
 	};
 	UINT numElements = ARRAYSIZE(inputLayout);
 
-	HR(GDirectXDevice->GetDevice()->CreateInputLayout(inputLayout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), m_InputLayout.GetAddressOf()));
-	GDirectXDevice->GetDeviceContext()->IASetInputLayout(m_InputLayout.Get());
+	HR(GDirectXDevice->GetDevice()->CreateInputLayout(inputLayout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), m_StaticMeshInputLayout.GetAddressOf()));
+	GDirectXDevice->GetDeviceContext()->IASetInputLayout(m_StaticMeshInputLayout.Get());
 
 	ComPtr<ID3DBlob> pPSBlob = nullptr;
 	HR(CompileShaderFromFile((TempShaderPath + L"/Shader/LightColor.hlsl").c_str(), "PS", "ps_4_0", pPSBlob.GetAddressOf()));
 
 	HR(GDirectXDevice->GetDevice()->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, m_TexturePixelShader.GetAddressOf()));
+}
+
+void FDirectXDevice::BuildSkeletalMeshVertexShader()
+{
+	ComPtr<ID3DBlob> pVSBlob = nullptr;
+	std::string TempDirectoryPath =  GEngine->GetDirectoryPath();
+	std::wstring TempShaderPath = std::wstring(TempDirectoryPath.begin(), TempDirectoryPath.end());
+	HR(CompileShaderFromFile((TempShaderPath +  L"/Shader/SkeletalMesh.hlsl").c_str(), "VS", "vs_4_0", pVSBlob.GetAddressOf()));
+	HR(GDirectXDevice->GetDevice()->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, m_SkeletalMeshVertexShader.GetAddressOf()));
+
+	D3D11_INPUT_ELEMENT_DESC inputLayout[] =
+	{
+		{"BONEIDS", 0, DXGI_FORMAT_R32G32B32A32_SINT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"BONEWEIGHTS",0,DXGI_FORMAT_R32G32B32A32_FLOAT, 0,16, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 44, D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,0,56,D3D11_INPUT_PER_VERTEX_DATA, 0},
+
+	};
+	UINT numElements = ARRAYSIZE(inputLayout);
+
+	HR(GDirectXDevice->GetDevice()->CreateInputLayout(inputLayout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), m_SkeletalMeshInputLayout.GetAddressOf()));
 }
 
 void FDirectXDevice::CreateBuffers()
@@ -214,11 +236,15 @@ void FDirectXDevice::CreateBuffers()
 	bufferDesc.ByteWidth = sizeof(LightFrameConstantBuffer);
 	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_LightConstantBuffer.GetAddressOf()))
 
+		bufferDesc.ByteWidth = sizeof(SkeletalMeshBoneTransformConstantBuffer);
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_SkeletalMeshConstantBuffer.GetAddressOf()))
+
 }
 
 void FDirectXDevice::BuildAllShaders()
 {
 	BuildStaticMeshShader();
+	BuildSkeletalMeshVertexShader();
 }
 
 void FDirectXDevice::OnWindowResize()

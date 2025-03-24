@@ -211,6 +211,8 @@ public:
 		
 	}
 
+	static void UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std::vector<XMMATRIX>& FinalMatrices);
+
 	// 게임쓰레드 호출_ 씬 렌더링 요청 함수
 	static void DrawScene_GameThread()
 	{

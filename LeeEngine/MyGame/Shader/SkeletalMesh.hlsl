@@ -70,6 +70,7 @@ VS_OUTPUT VS( VS_INPUT input )
         float4 skinnedPosition;
         float3 skinnedNormal;
 
+        
         CalculateSkinnedPosition(
             input.Pos,
             input.Normal,
@@ -79,7 +80,7 @@ VS_OUTPUT VS( VS_INPUT input )
             skinnedPosition,
             skinnedNormal
         );
-
+        
         input.Pos = skinnedPosition;
         input.Normal = skinnedNormal;    
     }

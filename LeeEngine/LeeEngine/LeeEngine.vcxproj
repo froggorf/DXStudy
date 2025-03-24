@@ -31,6 +31,8 @@
     <ClCompile Include="Source\Engine\Components\UMeshComponent.cpp" />
     <ClCompile Include="Source\Engine\Components\UPrimitiveComponent.cpp" />
     <ClCompile Include="Source\Engine\Components\USceneComponent.cpp" />
+    <ClCompile Include="Source\Engine\Components\USkeletalMeshComponent.cpp" />
+    <ClCompile Include="Source\Engine\Components\USkinnedMeshComponent.cpp" />
     <ClCompile Include="Source\Engine\Components\UStaticMeshComponent.cpp" />
     <ClCompile Include="Source\Engine\DirectX\Device.cpp" />
     <ClCompile Include="Source\Engine\EditorClient\Panel\EditorClient.cpp" />
@@ -49,6 +51,7 @@
     <ClCompile Include="Source\Engine\RenderCore\ImGUIActionTask.cpp" />
     <ClCompile Include="Source\Engine\RenderCore\RenderingThread.cpp" />
     <ClCompile Include="Source\Engine\SceneProxy\FPrimitiveSceneProxy.cpp" />
+    <ClCompile Include="Source\Engine\SceneProxy\FSkeletalMeshSceneProxy.cpp" />
     <ClCompile Include="Source\Engine\SceneProxy\FStaticMeshSceneProxy.cpp" />
     <ClCompile Include="Source\Engine\SceneView.cpp" />
     <ClCompile Include="Source\Engine\UEditorEngine.cpp" />
@@ -82,6 +85,8 @@
     <ClInclude Include="Source\Engine\Components\UMeshComponent.h" />
     <ClInclude Include="Source\Engine\Components\UPrimitiveComponent.h" />
     <ClInclude Include="Source\Engine\Components\USceneComponent.h" />
+    <ClInclude Include="Source\Engine\Components\USkeletalMeshComponent.h" />
+    <ClInclude Include="Source\Engine\Components\USkinnedMeshComponent.h" />
     <ClInclude Include="Source\Engine\Components\UStaticMeshComponent.h" />
     <ClInclude Include="Source\Engine\DirectX\Device.h" />
     <ClInclude Include="Source\Engine\EditorClient\Panel\EditorClient.h" />
@@ -101,6 +106,7 @@
     <ClInclude Include="Source\Engine\RenderCore\ImGUIActionTask.h" />
     <ClInclude Include="Source\Engine\RenderCore\RenderingThread.h" />
     <ClInclude Include="Source\Engine\SceneProxy\FPrimitiveSceneProxy.h" />
+    <ClInclude Include="Source\Engine\SceneProxy\FSkeletalMeshSceneProxy.h" />
     <ClInclude Include="Source\Engine\SceneProxy\FStaticMeshSceneProxy.h" />
     <ClInclude Include="Source\Engine\SceneView.h" />
     <ClInclude Include="Source\Engine\UEditorEngine.h" />

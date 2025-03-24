@@ -10,11 +10,7 @@ void CalculateSkinnedPosition(const in float4 Pos, const in float3 Normal, const
 	{
 		for (int index = 0; index < MAX_BONE_INFLUENCE; ++index)
 		{
-			if(boneIDs[index] <0)
-			{
-				continue;
-			}
-			if(boneIDs[index] >= MAX_BONES)
+			if(boneIDs[index] <0 || boneIDs[index] >= MAX_BONES)
 			{
 				continue;
 			}

@@ -9,10 +9,9 @@
 #include "Bone.h"
 
 
-#define ResourceFolderDirectory "../../Resource/"
 Animation::Animation(const std::string& animationPath, std::map<std::string, BoneInfo>& modelBoneInfoMap)
 {
-	std::string path = ResourceFolderDirectory + animationPath;
+	std::string path = animationPath;
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path,
 		aiProcess_Triangulate |
@@ -20,6 +19,7 @@ Animation::Animation(const std::string& animationPath, std::map<std::string, Bon
 	if(!scene || !scene->mRootNode)
 	{
 		std::cerr << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
+		return;
 	}
 	aiAnimation* animation = scene->mAnimations[0];
 	m_Duration = animation->mDuration;

@@ -8,54 +8,11 @@
 #include "Engine/AssetManager/AssetManager.h"
 #include "Engine/UObject/UObject.h"
 
-
 class FTest
 {
 public:
-	FTest(const nlohmann::json& StaticMeshFilePathData)
-	{
-		for(auto& p : VertexBuffer)
-		{
-			p->Release();
-		}
-		for(auto& p : IndexBuffer)
-		{
-			p->Release();
-		}
-		for(auto& p : TextureSRV)
-		{
-			p->Release();
-		}
+	FTest(const nlohmann::json& SkeletalMeshFilePathData);
 
-		AssetManager::LoadModelData(StaticMeshFilePathData["ModelData"],GDirectXDevice->GetDevice(),VertexBuffer,IndexBuffer);
-		MeshCount = VertexBuffer.size();
-		int TextureArraySize = StaticMeshFilePathData["TextureData"].size();
-		for(int count = 0; count < MeshCount; ++count)
-		{
-			if(TextureArraySize < count)
-			{
-				/*MY_LOG(StaticMeshFilePathData["Name"], EDebugLogLevel::DLL_Warning, "Texture count not match with mesh count! ");*/
-				break;
-			}
-
-			Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> SRV;
-			const std::string TextureFilePath = StaticMeshFilePathData["TextureData"][count];
-			AssetManager::LoadTextureFromFile(std::wstring().assign(TextureFilePath.begin(),TextureFilePath.end()), GDirectXDevice->GetDevice(), SRV);
-			TextureSRV.push_back(SRV);
-		}
-
-		if(TextureSRV.size() == 0)
-		{
-			/*MY_LOG(StaticMeshFilePathData["Name"], EDebugLogLevel::DLL_Error, "In static mesh .myasset file, texture data no valid");*/
-			return;
-		}
-
-		int currentTextureCount = TextureSRV.size();
-		for(; currentTextureCount < MeshCount; ++currentTextureCount)
-		{
-			TextureSRV.push_back(TextureSRV[0]);
-		}
-	}
 
 
 protected:
@@ -70,6 +27,9 @@ public:
 	// TODO: 임시 텍스쳐 데이터,
 	// UMaterial 구현 이전으로 텍스쳐 SRV 데이터를 해당 클래스에서 관리
 	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> TextureSRV;
+
+	// 본이름 - BoneInfo 맵
+	std::map<std::string, BoneInfo> ModelBoneInfoMap;
 };
 
 
@@ -84,11 +44,11 @@ public:
 
 	// unique_ptr 로 관리되는 RenderData
 	// Render 시 잠깐 사용하므로 로우 포인터를 반환
-	const FTest* GetStaticMeshRenderData() const {return RenderData.get();}
+	FTest* GetSkeletalMeshRenderData() const {return RenderData.get();}
 
-	static const std::map<std::string, std::shared_ptr<USkeletalMesh>>& GetStaticMeshCache() {return GetStaticMeshCacheMap();}
-	static const std::shared_ptr<USkeletalMesh>& GetStaticMesh(const std::string& StaticMeshName) { return GetStaticMeshCacheMap()[StaticMeshName]; }
 
+	static const std::map<std::string, std::shared_ptr<USkeletalMesh>>& GetStaticMeshCache() {return GetSkeletalMeshCacheMap();}
+	static const std::shared_ptr<USkeletalMesh>& GetSkeletalMesh(const std::string& SkeletalMeshName) { return GetSkeletalMeshCacheMap()[SkeletalMeshName]; }
 
 	virtual void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 protected:
@@ -97,12 +57,11 @@ private:
 public:
 protected:
 private:
-	static std::map<std::string, std::shared_ptr<USkeletalMesh>>& GetStaticMeshCacheMap()
+	static std::map<std::string, std::shared_ptr<USkeletalMesh>>& GetSkeletalMeshCacheMap()
 	{
 		static std::map<std::string, std::shared_ptr<USkeletalMesh>> SkeletalMeshCache;
 		return SkeletalMeshCache;
 	}
-
 
 
 	// TODO: LOD 데이터가 필요한 경우 std::map<UINT, std::unique_ptr<FStaticMeshRenderData> LODRenderData; 로 변경 예정

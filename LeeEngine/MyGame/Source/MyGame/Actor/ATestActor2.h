@@ -6,6 +6,7 @@
 #include "ATestCube.h"
 #include "Engine/GameFramework/AActor.h"
 
+class USkeletalMeshComponent;
 class UStaticMeshComponent;
 
 class ATestActor2 : public AActor
@@ -20,6 +21,5 @@ private:
 public:
 protected:
 private:
-	std::shared_ptr<UStaticMeshComponent> TestSMComp;
-	std::shared_ptr<UStaticMeshComponent> TestSMComp2;
+	std::shared_ptr<USkeletalMeshComponent> TestSKComp;
 };

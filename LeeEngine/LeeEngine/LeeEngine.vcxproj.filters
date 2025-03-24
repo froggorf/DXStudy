@@ -204,6 +204,15 @@
     <ClCompile Include="Source\Engine\Mesh\USkinnedAsset.cpp">
       <Filter>Source\Engine\Mesh</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\SceneProxy\FSkeletalMeshSceneProxy.cpp">
+      <Filter>Source\Engine\SceneProxy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Components\USkeletalMeshComponent.cpp">
+      <Filter>Source\Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Components\USkinnedMeshComponent.cpp">
+      <Filter>Source\Engine\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Animation\Bone.h">
@@ -367,6 +376,15 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\Mesh\USkinnedAsset.h">
       <Filter>Source\Engine\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\SceneProxy\FSkeletalMeshSceneProxy.h">
+      <Filter>Source\Engine\SceneProxy</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Components\USkeletalMeshComponent.h">
+      <Filter>Source\Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Components\USkinnedMeshComponent.h">
+      <Filter>Source\Engine\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

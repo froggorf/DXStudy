@@ -15,6 +15,8 @@
 
 #include <threads.h>
 
+#include "Animation/Animation.h"
+#include "Mesh/USkeletalMesh.h"
 #include "RenderCore/EditorScene.h"
 
 
@@ -254,5 +256,9 @@ void UEngine::LoadAllObjectsFromFile()
 		AssetManager::ReadMyAsset(FilePath);
 	}
 
+	std::shared_ptr<USkeletalMesh> chibi = USkeletalMesh::GetSkeletalMesh("SK_ChibiCat");
+	TestAnim1 = new Animation(ContentDirectory + "/Resource/Animation/Anim_Chibi_DigA.FBX", chibi->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
+	TestAnim2 = new Animation(ContentDirectory + "/Resource/Animation/Anim_Chibi_Hi.FBX", chibi->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
+	
 	MY_LOG("Load",EDebugLogLevel::DLL_Warning, "Load All Objects From File Success");
 }

@@ -20,13 +20,6 @@ UStaticMesh::UStaticMesh()
 UStaticMesh::~UStaticMesh()
 {
 }
-
-
-enum class EStaticMeshAssetData
-{
-	ESMAD_Name = 0, ESMAD_ModelDataFilePath, ESMAD_TextureDataFilePath
-};
-
 void UStaticMesh::LoadDataFromFileData(const nlohmann::json& StaticMeshAssetData)
 {
 	if(GetStaticMeshCacheMap().contains(GetName()))

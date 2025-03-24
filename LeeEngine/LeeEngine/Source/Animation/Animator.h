@@ -11,10 +11,14 @@ class Animation;
 class Animator
 {
 public:
+	Animator();
 	Animator(Animation* animation);
+	~Animator();
 	void UpdateAnimation(float dt);
 	void PlayAnimation(Animation* pAnimation);
 	void CalculateBoneTransform(const AssimpNodeData* node, DirectX::XMMATRIX parentTransform);
+
+	void SetAnimation(Animation* InAnimation);
 
 	std::vector<DirectX::XMMATRIX>& GetFinalBoneMatrices() { return m_FinalBoneMatrices; }
 

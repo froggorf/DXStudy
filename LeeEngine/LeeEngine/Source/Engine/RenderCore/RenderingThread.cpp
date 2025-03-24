@@ -4,6 +4,7 @@
 // 이윤석
 
 #include "renderingthread.h"
+#include "Engine/SceneProxy/FSkeletalMeshSceneProxy.h"
 #include "ThirdParty/ImGui/imgui_internal.h"
 
 std::shared_ptr<FScene> FRenderCommandExecutor::CurrentSceneData = nullptr;
@@ -49,6 +50,41 @@ void FScene::BeginRenderFrame()
 }
 
 
+void FScene::UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std::vector<XMMATRIX>& FinalMatrices)
+{
+	if(PrimitiveID > 0)
+	{
+		auto Lambda = [PrimitiveID, FinalMatrices](std::shared_ptr<FScene>& SceneData)
+			{
+				auto p = SceneData->PrimitiveSceneProxies.find(PrimitiveID);\
+				FSkeletalMeshSceneProxy* SkeletalMeshSceneProxy = nullptr;
+				if(p != SceneData->PrimitiveSceneProxies.end())
+				{
+					SkeletalMeshSceneProxy = dynamic_cast<FSkeletalMeshSceneProxy*>(p->second.get());
+					
+				}
+				else
+				{
+					p = SceneData->PendingAddSceneProxies.find(PrimitiveID);
+					if(p != SceneData->PendingAddSceneProxies.end())
+					{
+						SkeletalMeshSceneProxy = dynamic_cast<FSkeletalMeshSceneProxy*>(p->second.get());	
+					}
+				}
+				
+				if(SkeletalMeshSceneProxy)
+				{
+					for(int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
+					{
+						SkeletalMeshSceneProxy->BoneFinalMatrices[BoneIndex] = FinalMatrices[BoneIndex];	
+					}
+
+				}	
+				
+			};
+		ENQUEUE_RENDER_COMMAND(Lambda);
+	}
+}
 
 void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 {
@@ -101,10 +137,8 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 		GDirectXDevice->GetDeviceContext()->ClearDepthStencilView( GDirectXDevice->GetDepthStencilView().Get(), D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 
-		GDirectXDevice->GetDeviceContext()->IASetInputLayout(GDirectXDevice->GetInputLayout().Get());
 		{
 			// 셰이더 설정
-			GDirectXDevice->GetDeviceContext()->VSSetShader(GDirectXDevice->GetStaticMeshVertexShader().Get(), nullptr, 0);
 			GDirectXDevice->GetDeviceContext()->PSSetShader(GDirectXDevice->GetTexturePixelShader().Get(), nullptr, 0);
 			// 상수버퍼 설정
 			GDirectXDevice->GetDeviceContext()->VSSetConstantBuffers(0, 1, GDirectXDevice->GetFrameConstantBuffer().GetAddressOf());
@@ -112,10 +146,10 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 			GDirectXDevice->GetDeviceContext()->VSSetConstantBuffers(1, 1, GDirectXDevice->GetObjConstantBuffer().GetAddressOf());
 			GDirectXDevice->GetDeviceContext()->PSSetConstantBuffers(1,1, GDirectXDevice->GetObjConstantBuffer().GetAddressOf());
 			GDirectXDevice->GetDeviceContext()->PSSetConstantBuffers(2,1, GDirectXDevice->GetLightConstantBuffer().GetAddressOf());
-
+			GDirectXDevice->GetDeviceContext()->VSSetConstantBuffers(3, 1, GDirectXDevice->GetSkeletalMeshConstantBuffer().GetAddressOf());
 
 			// 인풋 레이아웃
-			GDirectXDevice->GetDeviceContext()->IASetInputLayout(GDirectXDevice->GetInputLayout().Get());
+			GDirectXDevice->GetDeviceContext()->IASetInputLayout(GDirectXDevice->GetStaticMeshInputLayout().Get());
 			GDirectXDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 			// Frame 상수 버퍼 설정
