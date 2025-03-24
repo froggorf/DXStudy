@@ -41,6 +41,8 @@
     <ClCompile Include="Source\Engine\EditorClient\Panel\ImguiWorldOutliner.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\AActor.cpp" />
     <ClCompile Include="Source\Engine\Level\ULevel.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\USkeletalMesh.cpp" />
+    <ClCompile Include="Source\Engine\Mesh\USkinnedAsset.cpp" />
     <ClCompile Include="Source\Engine\Mesh\UStaticMesh.cpp" />
     <ClCompile Include="Source\Engine\MyEngineUtils.cpp" />
     <ClCompile Include="Source\Engine\RenderCore\EditorScene.cpp" />
@@ -91,6 +93,8 @@
     <ClInclude Include="Source\Engine\GameFramework\AActor.h" />
     <ClInclude Include="Source\Engine\Level\ULevel.h" />
     <ClInclude Include="Source\Engine\Mesh\StaticMeshResources.h" />
+    <ClInclude Include="Source\Engine\Mesh\USkeletalMesh.h" />
+    <ClInclude Include="Source\Engine\Mesh\USkinnedAsset.h" />
     <ClInclude Include="Source\Engine\Mesh\UStaticMesh.h" />
     <ClInclude Include="Source\Engine\MyEngineUtils.h" />
     <ClInclude Include="Source\Engine\RenderCore\EditorScene.h" />

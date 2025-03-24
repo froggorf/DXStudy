@@ -198,6 +198,12 @@
     <ClCompile Include="Source\Engine\EditorClient\Panel\ImguiActorDetail.cpp">
       <Filter>Source\Engine\EditorClient\Panel</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Mesh\USkeletalMesh.cpp">
+      <Filter>Source\Engine\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Mesh\USkinnedAsset.cpp">
+      <Filter>Source\Engine\Mesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Animation\Bone.h">
@@ -355,6 +361,12 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\EditorClient\Panel\ImguiActorDetail.h">
       <Filter>Source\Engine\EditorClient\Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Mesh\USkeletalMesh.h">
+      <Filter>Source\Engine\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Mesh\USkinnedAsset.h">
+      <Filter>Source\Engine\Mesh</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
