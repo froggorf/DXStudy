@@ -30,7 +30,8 @@ FTest::FTest(const nlohmann::json& SkeletalMeshFilePathData)
 		}
 
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> SRV;
-		const std::string TextureFilePath = SkeletalMeshFilePathData["TextureData"][count];
+		const std::string RelativePath = SkeletalMeshFilePathData["TextureData"][count];
+		const std::string TextureFilePath = GEngine->GetDirectoryPath() + RelativePath;
 		AssetManager::LoadTextureFromFile(std::wstring().assign(TextureFilePath.begin(),TextureFilePath.end()), GDirectXDevice->GetDevice(), SRV);
 		TextureSRV.push_back(SRV);
 	}

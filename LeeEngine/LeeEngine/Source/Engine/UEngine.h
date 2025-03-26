@@ -33,7 +33,9 @@ public:
 	virtual void LoadDataFromDefaultEngineIni();
 	virtual void LoadDefaultMap();
 	virtual const std::string& GetDefaultMapName();
+
 	void Tick(float DeltaSeconds);
+
 	const std::shared_ptr<UWorld>& GetWorld() const {return CurrentWorld;}
 
 	const std::string& GetDirectoryPath() const { return CurrentDirectory; }
@@ -88,6 +90,8 @@ protected:
 private:
 	D3DApp* Application;
 	std::shared_ptr<UWorld> CurrentWorld;
+
+	bool bGameStart = false;
 
 
 	// =============== 컴퍼넌트 변경사항 ================

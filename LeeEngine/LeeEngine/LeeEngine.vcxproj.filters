@@ -213,6 +213,9 @@
     <ClCompile Include="Source\Engine\Components\USkinnedMeshComponent.cpp">
       <Filter>Source\Engine\Components</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\EditorClient\Panel\ImguiEditorMainPanel.cpp">
+      <Filter>Source\Engine\EditorClient\Panel</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Animation\Bone.h">
@@ -385,6 +388,9 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\Components\USkinnedMeshComponent.h">
       <Filter>Source\Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\EditorClient\Panel\ImguiEditorMainPanel.h">
+      <Filter>Source\Engine\EditorClient\Panel</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

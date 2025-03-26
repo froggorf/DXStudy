@@ -40,7 +40,8 @@ public:
 			}
 
 			Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> SRV;
-			const std::string TextureFilePath = StaticMeshFilePathData["TextureData"][count];
+			const std::string RelativePath = StaticMeshFilePathData["TextureData"][count];
+			const std::string TextureFilePath = GEngine->GetDirectoryPath() + RelativePath;
 			AssetManager::LoadTextureFromFile(std::wstring().assign(TextureFilePath.begin(),TextureFilePath.end()), GDirectXDevice->GetDevice(), SRV);
 			TextureSRV.push_back(SRV);
 		}

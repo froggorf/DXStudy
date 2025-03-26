@@ -244,18 +244,16 @@ void AssetManager::LoadTextureFromFile(const std::wstring& szFile, const Microso
 	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>>& vTextureShaderResourceView)
 {
     DirectX::ScratchImage image;
-    std::string DirectoryPath = GEngine->GetDirectoryPath();
-    const std::wstring filePath = std::wstring(DirectoryPath.begin(),DirectoryPath.end())  + szFile;
 
-    std::filesystem::path p(filePath.c_str());
+    std::filesystem::path p(szFile.c_str());
     std::wstring ext = p.extension();
 
 	if (ext == L".dds" || ext == L".DDS")
-		DirectX::LoadFromDDSFile(filePath.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, image);
+		DirectX::LoadFromDDSFile(szFile.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, image);
 	else if (ext == L".tga" || ext == L".TGA")
-		DirectX::LoadFromTGAFile(filePath.c_str(), nullptr, image);
+		DirectX::LoadFromTGAFile(szFile.c_str(), nullptr, image);
 	else // png, jpg, jpeg, bmp
-		DirectX::LoadFromWICFile(filePath.c_str(), DirectX::WIC_FLAGS_NONE, nullptr, image);
+		DirectX::LoadFromWICFile(szFile.c_str(), DirectX::WIC_FLAGS_NONE, nullptr, image);
 
     
     ID3D11Texture2D* pTexture = nullptr;
@@ -284,18 +282,16 @@ void AssetManager::LoadTextureFromFile(const std::wstring& szFile, const Microso
 {
     
     DirectX::ScratchImage image;
-    std::string DirectoryPath = GEngine->GetDirectoryPath();
-    const std::wstring filePath = std::wstring(DirectoryPath.begin(),DirectoryPath.end())  + szFile;
 
-    std::filesystem::path p(filePath.c_str());
+    std::filesystem::path p(szFile.c_str());
     std::wstring ext = p.extension();
 
 	if (ext == L".dds" || ext == L".DDS")
-		DirectX::LoadFromDDSFile(filePath.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, image);
+		DirectX::LoadFromDDSFile(szFile.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, image);
 	else if (ext == L".tga" || ext == L".TGA")
-		DirectX::LoadFromTGAFile(filePath.c_str(), nullptr, image);
+		DirectX::LoadFromTGAFile(szFile.c_str(), nullptr, image);
 	else // png, jpg, jpeg, bmp
-		DirectX::LoadFromWICFile(filePath.c_str(), DirectX::WIC_FLAGS_NONE, nullptr, image);
+		DirectX::LoadFromWICFile(szFile.c_str(), DirectX::WIC_FLAGS_NONE, nullptr, image);
 
     
     ID3D11Texture2D* pTexture = nullptr;

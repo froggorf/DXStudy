@@ -112,8 +112,7 @@ const std::string& UEngine::GetDefaultMapName()
 
 void UEngine::Tick(float DeltaSeconds)
 {
-	++GameThreadFrameCount;
-
+	
 #ifdef WITH_EDITOR
 	std::shared_ptr<FImGUITask> Task;
 	while(FImGuizmoCommandPipe::Dequeue(Task))
@@ -122,13 +121,20 @@ void UEngine::Tick(float DeltaSeconds)
 	}
 #endif
 
+	++GameThreadFrameCount;
+
+
 	FScene::BeginRenderFrame_GameThread(GameThreadFrameCount);
-#ifndef WITH_EDITOR
-	if(CurrentWorld)
+
+	if(bGameStart)
 	{
-		CurrentWorld->TickWorld(DeltaSeconds);
+		if(CurrentWorld)
+		{
+			CurrentWorld->TickWorld(DeltaSeconds);
+		}	
 	}
-#endif
+	
+
 
 	for(const auto& IDAndComponent : ComponentsTransformDirty)
 	{
