@@ -34,6 +34,13 @@ public:
 	virtual void LoadDefaultMap();
 	virtual const std::string& GetDefaultMapName();
 
+
+	/*
+	 * 에디터의 경우에는 Play Button 을 통해 호출되며,
+	 * 런타임 게임의 경우 엔진의 Init 이후 바로 실행
+	 */
+	void GameStart();
+
 	void Tick(float DeltaSeconds);
 
 	const std::shared_ptr<UWorld>& GetWorld() const {return CurrentWorld;}

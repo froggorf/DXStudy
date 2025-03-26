@@ -24,6 +24,8 @@ public:
 	void Init() override;
 	void PostLoad() override;
 
+	void BeginPlay() override;
+
 	void TickWorld(float DeltaSeconds);
 	void Tick();
 

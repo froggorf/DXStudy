@@ -68,6 +68,16 @@ void ULevel::Register()
 	}
 }
 
+void ULevel::BeginPlay()
+{
+	UObject::BeginPlay();
+
+	for(const auto& Actor : Actors)
+	{
+		Actor->BeginPlay();
+	}
+}
+
 void ULevel::TickLevel(float DeltaSeconds)
 {
 

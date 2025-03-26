@@ -48,6 +48,18 @@ void UWorld::PostLoad()
 	}
 }
 
+void UWorld::BeginPlay()
+{
+	UObject::BeginPlay();
+
+	if(!PersistentLevel)
+	{
+		MY_LOG("Error call", EDebugLogLevel::DLL_Error, "Not valid PersistentLevel");
+		return;
+	}
+	PersistentLevel->BeginPlay();
+}
+
 void UWorld::TickWorld(float DeltaSeconds)
 {
 	if(PersistentLevel)

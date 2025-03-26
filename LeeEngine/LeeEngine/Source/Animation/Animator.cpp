@@ -4,6 +4,7 @@
 
 #include "Animation.h"
 #include "Bone.h"
+#include "Engine/RenderCore/renderingthread.h"
 
 Animator::Animator()
 {
@@ -36,7 +37,7 @@ Animator::~Animator()
 {
 }
 
-void Animator::UpdateAnimation(float dt)
+void Animator::UpdateAnimation(float dt, float OwnerPrimitiveID)
 {
 	m_DeltaTime = dt;
 	if(m_CurrentAnimation)
@@ -44,6 +45,8 @@ void Animator::UpdateAnimation(float dt)
 		m_CurrentTime = m_CurrentTime + m_CurrentAnimation->GetTicksPerSecond() * dt;
 		m_CurrentTime = fmod(m_CurrentTime, m_CurrentAnimation->GetDuration());
 		CalculateBoneTransform(&m_CurrentAnimation->GetRootNode(), DirectX::XMMatrixIdentity());
+
+		FScene::UpdateSkeletalMeshAnimation_GameThread(OwnerPrimitiveID, GetFinalBoneMatrices());
 	}
 
 }

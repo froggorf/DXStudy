@@ -110,6 +110,25 @@ const std::string& UEngine::GetDefaultMapName()
 	return EngineData["GameDefaultMap"];
 }
 
+void UEngine::GameStart()
+{
+	// 게임 시작
+	if(bGameStart)
+	{
+		MY_LOG("Error call", EDebugLogLevel::DLL_Error, "Already start game");
+		return;
+	}
+	if(!GetWorld() || !GetWorld()->GetPersistentLevel())
+	{
+		MY_LOG("Error call", EDebugLogLevel::DLL_Error, "No valid PersistentLevel");
+		return;
+	}
+
+	bGameStart= true;
+
+	GetWorld()->BeginPlay();
+}
+
 void UEngine::Tick(float DeltaSeconds)
 {
 	

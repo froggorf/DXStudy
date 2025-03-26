@@ -32,7 +32,7 @@ void FImguiLevelViewport::Draw()
 	ActorDetailPanel->Draw();
 
 
-	if(ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoTitleBar|
+	if(ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoTitleBar|
 		ImGuiWindowFlags_NoScrollbar |
 		ImGuiWindowFlags_NoScrollWithMouse))
 	{

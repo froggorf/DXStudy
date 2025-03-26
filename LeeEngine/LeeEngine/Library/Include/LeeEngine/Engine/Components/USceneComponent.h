@@ -18,6 +18,8 @@ public:
 	USceneComponent();
 
 	virtual void Register() override;
+	void BeginPlay() override;
+	void TickComponent(float DeltaSeconds) override;
 	const std::shared_ptr<USceneComponent>& GetAttachParent() const { return AttachParent; }
 	std::string GetAttachSocketName() const { return AttachSocketName; }
 

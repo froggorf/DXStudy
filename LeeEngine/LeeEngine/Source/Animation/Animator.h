@@ -14,7 +14,7 @@ public:
 	Animator();
 	Animator(Animation* animation);
 	~Animator();
-	void UpdateAnimation(float dt);
+	void UpdateAnimation(float dt, float OwnerPrimitiveID);
 	void PlayAnimation(Animation* pAnimation);
 	void CalculateBoneTransform(const AssimpNodeData* node, DirectX::XMMATRIX parentTransform);
 

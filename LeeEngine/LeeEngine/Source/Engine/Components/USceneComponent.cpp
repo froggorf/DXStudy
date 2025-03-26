@@ -25,6 +25,26 @@ void USceneComponent::Register()
 	Make_Transform_Dirty()
 }
 
+void USceneComponent::BeginPlay()
+{
+	UActorComponent::BeginPlay();
+
+	for(const auto& ChildComponent : AttachChildren)
+	{
+		ChildComponent->BeginPlay();
+	}
+}
+
+void USceneComponent::TickComponent(float DeltaSeconds)
+{
+	UActorComponent::TickComponent(DeltaSeconds);
+
+	for(const auto& ChildComponent : AttachChildren)
+	{
+		ChildComponent->TickComponent(DeltaSeconds);
+	}
+}
+
 
 void USceneComponent::SetupAttachment(const std::shared_ptr<USceneComponent>& InParent, std::string_view InSocketName)
 {

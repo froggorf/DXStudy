@@ -225,6 +225,8 @@ public:
 	}
 
 	
+
+	
 	static void DrawScene_RenderThread(std::shared_ptr<FScene> SceneData);
 	virtual void SetDrawScenePipeline(const float* ClearColor);
 	virtual void AfterDrawSceneAction(const std::shared_ptr<FScene> SceneData){}

@@ -39,6 +39,16 @@ void AActor::Register()
 #endif
 }
 
+void AActor::BeginPlay()
+{
+	UObject::BeginPlay();
+
+	if(GetRootComponent())
+	{
+		GetRootComponent()->BeginPlay();
+	}
+}
+
 XMFLOAT3 AActor::GetActorLocation() const
 {
 	XMFLOAT3 RetLoc = XMFLOAT3{0.0f,0.0f,0.0f};
@@ -98,6 +108,10 @@ void AActor::SetActorScale3D(const XMFLOAT3& NewScale3D) const
 
 void AActor::Tick(float DeltaSeconds)
 {
+	if(GetRootComponent())
+	{
+		GetRootComponent()->TickComponent(DeltaSeconds);
+	}
 }
 
 void AActor::SaveDataFromAssetToFile(nlohmann::json& Json)

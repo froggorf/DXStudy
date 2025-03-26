@@ -24,8 +24,7 @@ void USkeletalMeshComponent::Register()
 
 	if(SkinnedAnimator)
 	{
-		SkinnedAnimator->UpdateAnimation(0.0f);
-		FScene::UpdateSkeletalMeshAnimation_GameThread(GetPrimitiveID(), SkinnedAnimator->GetFinalBoneMatrices());
+		SkinnedAnimator->UpdateAnimation(0.0f, GetPrimitiveID());
 	}
 }
 
@@ -59,7 +58,7 @@ void USkeletalMeshComponent::SetAnimation(Animation* InAnim)
 	if(SkinnedAnimator)
 	{
 		SkinnedAnimator->SetAnimation(InAnim);
-		SkinnedAnimator->UpdateAnimation(0.0f);
+		SkinnedAnimator->UpdateAnimation(0.0f, GetPrimitiveID());
 	}
 }
 
@@ -69,6 +68,6 @@ void USkeletalMeshComponent::TickComponent(float DeltaSeconds)
 
 	if(SkinnedAnimator)
 	{
-		SkinnedAnimator->UpdateAnimation(DeltaSeconds);
+		SkinnedAnimator->UpdateAnimation(DeltaSeconds, GetPrimitiveID());
 	}
 }

@@ -20,12 +20,19 @@ void FImguiEditorMainPanel::Draw()
 	if(ImGui::Begin("  ", nullptr, ImGuiWindowFlags_NoTitleBar))
 	{
 		ImVec2 WindowSize = ImGui::GetWindowSize();
-		MY_LOG("Test", EDebugLogLevel::DLL_Warning, XMFLOAT2_TO_TEXT(WindowSize));
+		float TitleBarHeight = 30.0f;
 		if(PlayIcon)
 		{
-			float PlayButtonSize=  WindowSize.y - 20 - 20 - 10;
+
+			ImGui::SetCursorPos(ImVec2{500.0f, TitleBarHeight+5.0f});
+			float PlayButtonSize=  WindowSize.y - TitleBarHeight - 20 - 5;
 			if(ImGui::ImageButton(" ", (void*)PlayIcon.Get(), ImVec2{PlayButtonSize,PlayButtonSize}))
 			{
+				ENQUEUE_IMGUI_COMMAND([]()
+				{
+					//MY_LOG("TEST", EDebugLogLevel::DLL_Warning, "Start Game");
+					GEngine->GameStart();
+				})
 			}
 		}
 		

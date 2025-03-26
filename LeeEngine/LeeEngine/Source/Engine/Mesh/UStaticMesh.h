@@ -17,7 +17,7 @@ class UStaticMesh : public UObject, public std::enable_shared_from_this<UStaticM
 	MY_GENERATED_BODY(UStaticMesh)
 public:
 	UStaticMesh();
-	~UStaticMesh();
+	~UStaticMesh() override;
 
 	unsigned int GetStaticMeshMeshCount() const {return RenderData.get()->MeshCount; }
 

@@ -22,6 +22,7 @@ public:
 
 	virtual void PostLoad() override;
 	virtual void Register() override;
+	void BeginPlay() override;
 	void TickLevel(float DeltaSeconds);
 
 	void SetOwningWorld(const std::shared_ptr<UWorld>& NewOwningWorld){ OwningWorld = NewOwningWorld; }

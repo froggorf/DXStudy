@@ -39,6 +39,6 @@ void ATestActor2::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
 
-	float RotationSpeed = 100;
-	RootComponent->AddWorldRotation(XMFLOAT3(0.0f, DeltaSeconds*RotationSpeed, 0.0f));
+	//float RotationSpeed = 100;
+	//RootComponent->AddWorldRotation(XMFLOAT3(0.0f, DeltaSeconds*RotationSpeed, 0.0f));
 }
