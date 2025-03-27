@@ -3,9 +3,9 @@
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
 #pragma once
-#include "USkinnedMeshComponent.h"
-#include "Animation/Animator.h"
 #include "Engine/MyEngineUtils.h"
+#include "USkinnedMeshComponent.h"
+#include "Engine/Animation/UAnimInstance.h"
 #include "Engine/Mesh/USkeletalMesh.h"
 
 
@@ -21,7 +21,11 @@ public:
 	virtual bool SetSkeletalMesh(const std::shared_ptr<USkeletalMesh>& NewMesh);
 	const std::shared_ptr<USkeletalMesh>& GetSkeletalMesh() const { return SkeletalMesh; }
 
-	void SetAnimation(class Animation* InAnim);
+#ifdef WITH_EDITOR
+	void DrawDetailPanel(UINT ComponentDepth) override;
+#endif
+
+	void SetAnimation(const std::shared_ptr<UAnimSequence>& InAnim);
 
 	void TickComponent(float DeltaSeconds) override;
 protected:
@@ -30,5 +34,5 @@ public:
 protected:
 private:
 	std::shared_ptr<USkeletalMesh> SkeletalMesh;
-	std::unique_ptr<Animator> SkinnedAnimator;
+	std::unique_ptr<UAnimInstance> SkinnedAnimator;
 };

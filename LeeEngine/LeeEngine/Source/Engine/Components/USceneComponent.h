@@ -62,7 +62,9 @@ public:
 	virtual bool IsPrimitive() const {return bIsPrimitive;}
 
 
-	
+#ifdef WITH_EDITOR
+	virtual void DrawDetailPanel(UINT ComponentDepth);
+#endif
 protected:
 private:
 	void SetAttachParent(const std::shared_ptr<USceneComponent>& NewAttachParent);

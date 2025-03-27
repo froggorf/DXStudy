@@ -5,7 +5,6 @@
 
 #include "FSkeletalMeshSceneProxy.h"
 
-#include "Animation/Animator.h"
 #include "Engine/UEditorEngine.h"
 #include "Engine/Mesh/USkeletalMesh.h"
 #include "Engine/RenderCore/EditorScene.h"

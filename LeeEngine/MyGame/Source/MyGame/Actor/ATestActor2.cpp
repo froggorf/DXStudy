@@ -1,7 +1,5 @@
 #include "ATestActor2.h"
 
-#include <Animation/Animation.h>
-
 #include "Engine/Mesh/USkeletalMesh.h"
 #include "Engine/Components/USkeletalMeshComponent.h"
 #include "Engine/Mesh/UStaticMesh.h"

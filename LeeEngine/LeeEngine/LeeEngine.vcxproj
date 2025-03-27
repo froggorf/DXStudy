@@ -19,13 +19,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Animation\Animation.cpp" />
-    <ClCompile Include="Source\Animation\Animator.cpp" />
-    <ClCompile Include="Source\Animation\Bone.cpp" />
     <ClCompile Include="Source\DirectX\d3dApp.cpp" />
     <ClCompile Include="Source\DirectX\DebuggingSRV.cpp" />
     <ClCompile Include="Source\DirectX\GameTimer.cpp" />
     <ClCompile Include="Source\DirectX\ShadowMap.cpp" />
+    <ClCompile Include="Source\Engine\Animation\Bone.cpp" />
+    <ClCompile Include="Source\Engine\Animation\UAnimationAsset.cpp" />
+    <ClCompile Include="Source\Engine\Animation\UAnimCompositeBase.cpp" />
+    <ClCompile Include="Source\Engine\Animation\UAnimInstance.cpp" />
+    <ClCompile Include="Source\Engine\Animation\UAnimSequence.cpp" />
+    <ClCompile Include="Source\Engine\Animation\UAnimSequenceBase.cpp" />
+    <ClCompile Include="Source\Engine\Animation\UBlendSpace.cpp" />
     <ClCompile Include="Source\Engine\AssetManager\AssetManager.cpp" />
     <ClCompile Include="Source\Engine\Components\UActorComponent.cpp" />
     <ClCompile Include="Source\Engine\Components\UMeshComponent.cpp" />
@@ -72,15 +76,19 @@
     <ClCompile Include="Source\ThirdParty\ImGui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Animation\Animation.h" />
-    <ClInclude Include="Source\Animation\Animator.h" />
-    <ClInclude Include="Source\Animation\Bone.h" />
     <ClInclude Include="Source\DirectX\d3dApp.h" />
     <ClInclude Include="Source\DirectX\d3dUtil.h" />
     <ClInclude Include="Source\DirectX\DebuggingSRV.h" />
     <ClInclude Include="Source\DirectX\GameTimer.h" />
     <ClInclude Include="Source\DirectX\LightHelper.h" />
     <ClInclude Include="Source\DirectX\ShadowMap.h" />
+    <ClInclude Include="Source\Engine\Animation\Bone.h" />
+    <ClInclude Include="Source\Engine\Animation\UAnimationAsset.h" />
+    <ClInclude Include="Source\Engine\Animation\UAnimCompositeBase.h" />
+    <ClInclude Include="Source\Engine\Animation\UAnimInstance.h" />
+    <ClInclude Include="Source\Engine\Animation\UAnimSequence.h" />
+    <ClInclude Include="Source\Engine\Animation\UAnimSequenceBase.h" />
+    <ClInclude Include="Source\Engine\Animation\UBlendSpace.h" />
     <ClInclude Include="Source\Engine\AssetManager\AssetManager.h" />
     <ClInclude Include="Source\Engine\Components\UActorComponent.h" />
     <ClInclude Include="Source\Engine\Components\UMeshComponent.h" />
@@ -237,6 +245,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <DisableSpecificWarnings>4819;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>

@@ -5,7 +5,6 @@
 
 #include "USkeletalMeshComponent.h"
 
-#include "Animation/Animator.h"
 #include "Engine/Mesh/USkeletalMesh.h"
 #include "Engine/SceneProxy/FSkeletalMeshSceneProxy.h"
 
@@ -13,7 +12,7 @@
 USkeletalMeshComponent::USkeletalMeshComponent()
 {
 	Rename("SkeletalMeshComponent_" + std::to_string(ComponentID));
-	SkinnedAnimator = std::make_unique<Animator>();
+	SkinnedAnimator = std::make_unique<UAnimInstance>();
 	
 
 }
@@ -53,7 +52,27 @@ bool USkeletalMeshComponent::SetSkeletalMesh(const std::shared_ptr<USkeletalMesh
 	return true;
 }
 
-void USkeletalMeshComponent::SetAnimation(Animation* InAnim)
+void USkeletalMeshComponent::DrawDetailPanel(UINT ComponentDepth)
+{
+	USkinnedMeshComponent::DrawDetailPanel(ComponentDepth);
+
+	if(ImGui::Button("Anim1"))
+	{
+		if(SkinnedAnimator)
+		{
+			SkinnedAnimator->SetAnimation(GEngine->TestAnim1);
+		}
+	}
+	if(ImGui::Button("Anim2"))
+	{
+		if(SkinnedAnimator)
+		{
+			SkinnedAnimator->SetAnimation(GEngine->TestAnim2);
+		}
+	}
+}
+
+void USkeletalMeshComponent::SetAnimation(const std::shared_ptr<UAnimSequence>& InAnim)
 {
 	if(SkinnedAnimator)
 	{

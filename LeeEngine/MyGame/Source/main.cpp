@@ -28,8 +28,6 @@
 
 #include "ThirdParty/ImGui/imgui_internal.h"
 #include "DirectX/ShadowMap.h"
-#include "Animation/Animation.h"
-#include "Animation/Animator.h"
 #include "Engine/UEngine.h"
 #include "Engine/Mesh/UStaticMesh.h"
 
@@ -106,9 +104,6 @@ private:
 	std::vector<ComPtr<ID3D11Buffer>> 				m_PaladinIndexBuffer;
 	std::map<std::string, BoneInfo>					m_BoneInfoMap;
 	int 											m_BoneCounter = 0;
-	std::unique_ptr<Animation>						m_Anim_Cat_Idle;
-	std::unique_ptr<Animation>						m_Anim_Cat_HI;
-	std::unique_ptr<Animation>						m_Anim_Cat_DIG;
 	//std::unique_ptr<Animator>						m_PaladinAnimator;
 	ComPtr<ID3D11VertexShader>						m_SkeletalMeshVertexShader;
 	ComPtr<ID3D11InputLayout>						m_SkeletalMeshInputLayout;

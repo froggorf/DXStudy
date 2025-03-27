@@ -4,9 +4,6 @@
     <Filter Include="Source">
       <UniqueIdentifier>{1e07cf89-0139-4de9-931a-c58357fead5e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Animation">
-      <UniqueIdentifier>{f58a78a5-a6f2-4766-9e32-d9bdc8811513}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\DirectX">
       <UniqueIdentifier>{fb0ee873-fad1-4776-89a9-cff9b63ab717}</UniqueIdentifier>
     </Filter>
@@ -61,17 +58,11 @@
     <Filter Include="Source\Engine\EditorClient\Panel">
       <UniqueIdentifier>{a0328231-c86d-44e8-8469-437e5405aacc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Engine\Animation">
+      <UniqueIdentifier>{7d32f728-d22b-4929-85e5-dc16706e85aa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Animation\Bone.cpp">
-      <Filter>Source\Animation</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Animation\Animation.cpp">
-      <Filter>Source\Animation</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Animation\Animator.cpp">
-      <Filter>Source\Animation</Filter>
-    </ClCompile>
     <ClCompile Include="Source\DirectX\ShadowMap.cpp">
       <Filter>Source\DirectX</Filter>
     </ClCompile>
@@ -216,17 +207,29 @@
     <ClCompile Include="Source\Engine\EditorClient\Panel\ImguiEditorMainPanel.cpp">
       <Filter>Source\Engine\EditorClient\Panel</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Animation\UAnimationAsset.cpp">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Animation\UBlendSpace.cpp">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Animation\UAnimSequenceBase.cpp">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Animation\UAnimCompositeBase.cpp">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Animation\UAnimSequence.cpp">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Animation\UAnimInstance.cpp">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Animation\Bone.cpp">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Animation\Bone.h">
-      <Filter>Source\Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Animation\Animation.h">
-      <Filter>Source\Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Animation\Animator.h">
-      <Filter>Source\Animation</Filter>
-    </ClInclude>
     <ClInclude Include="Source\DirectX\ShadowMap.h">
       <Filter>Source\DirectX</Filter>
     </ClInclude>
@@ -391,6 +394,27 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\EditorClient\Panel\ImguiEditorMainPanel.h">
       <Filter>Source\Engine\EditorClient\Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\UAnimationAsset.h">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\UBlendSpace.h">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\UAnimSequenceBase.h">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\UAnimCompositeBase.h">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\UAnimSequence.h">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\UAnimInstance.h">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Animation\Bone.h">
+      <Filter>Source\Engine\Animation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

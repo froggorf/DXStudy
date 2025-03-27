@@ -33,8 +33,15 @@ void FImguiActorDetail::Draw()
 						if (is_selected) {
 							ImGui::SetItemDefaultFocus();
 						}
+
+						
 					}
 					ImGui::EndListBox();
+
+					if(const auto& CurrentSelectedComponent = GetCurrentSelectedComponent())
+					{
+						CurrentSelectedComponent->DrawDetailPanel(0);
+					}
 				}
 			}
 

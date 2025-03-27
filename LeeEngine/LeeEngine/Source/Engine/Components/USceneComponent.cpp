@@ -183,6 +183,42 @@ FTransform& USceneComponent::GetSocketTransform(const std::string& InSocketName)
 }
 
 
+#ifdef WITH_EDITOR
+void USceneComponent::DrawDetailPanel(UINT ComponentDepth)
+{
+	if(ComponentDepth == 0)
+	{
+		// Imgui의 윈도우가 시작되었다고 가정하에 진행
+		if(ImGui::CollapsingHeader("Transform"))
+		{
+			// Location
+			ImGui::Text("Location");
+			ImGui::SameLine(100);
+			float Location[3] = {RelativeLocation.x,RelativeLocation.y,RelativeLocation.z};
+			if(ImGui::InputFloat3("##Location", Location))
+			{
+				SetRelativeLocation(XMFLOAT3{Location[0],Location[1],Location[2]});
+			}
+
+			// Scale
+			ImGui::Text("Scale");
+			ImGui::SameLine(100);
+			float Scale[3] = {RelativeScale3D.x,RelativeScale3D.y,RelativeScale3D.z};
+			if(ImGui::InputFloat3("##Scale", Scale))
+			{
+				SetRelativeScale3D(XMFLOAT3{Scale[0],Scale[1],Scale[2]});
+			}
+		}	
+	}
+
+	for(const auto& ChildComponent : GetAttachChildren())
+	{
+		ChildComponent->DrawDetailPanel(ComponentDepth+1);
+	}
+}
+#endif
+
+
 void USceneComponent::SetAttachParent(const std::shared_ptr<USceneComponent>& NewAttachParent)
 {
 	AttachParent = NewAttachParent;

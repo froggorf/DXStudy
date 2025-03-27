@@ -9,7 +9,7 @@
 #include <thread>
 #include <unordered_set>
 
-#include "Animation/Animation.h"
+#include "Animation/UAnimSequence.h"
 #include "DirectX/d3dApp.h"
 #include "Engine/MyEngineUtils.h"
 #include "Engine/UObject/UObject.h"
@@ -73,8 +73,8 @@ public:
 	virtual void HandleInput( UINT msg, WPARAM wParam, LPARAM lParam);
 
 
-	Animation* TestAnim1 = nullptr;
-	Animation* TestAnim2 = nullptr;
+	std::shared_ptr<UAnimSequence> TestAnim1 = nullptr;
+	std::shared_ptr<UAnimSequence> TestAnim2 = nullptr;
 protected:
 	virtual void CreateRenderThread();
 private:
