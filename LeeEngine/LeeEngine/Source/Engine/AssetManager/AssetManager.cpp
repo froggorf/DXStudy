@@ -47,6 +47,7 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
 	ProcessScene(scene, allVertices, allIndices);
 	
 	// 결과 출력
+    std::cout << "Path : " << path<< std::endl;
     for (size_t i = 0; i < allVertices.size(); i++) {
         std::cout << "Mesh " << i << ":\n";
         std::cout << "  Vertices: " << allVertices[i].size() << "\n";
@@ -109,6 +110,7 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
 	ProcessScene(scene, allVertices, allIndices);
 	
 	// 결과 출력
+    std::cout << "Path : " << path<< std::endl;
     for (size_t i = 0; i < allVertices.size(); i++) {
         std::cout << "Mesh " << i << ":\n";
         std::cout << "  Vertices: " << allVertices[i].size() << "\n";
@@ -175,6 +177,7 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const Microsof
     ProcessScene(scene, allVertices, allIndices);
 
     // 결과 출력
+    std::cout << "Path : " << path<< std::endl;
     for (size_t i = 0; i < allVertices.size(); i++) {
         std::cout << "Mesh " << i << ":\n";
         std::cout << "  Vertices: " << allVertices[i].size() << "\n";
@@ -405,6 +408,10 @@ void AssetManager::ExtractBoneWeightForVertices(std::vector<MySkeletalMeshVertex
                 aiMat.a4, aiMat.b4, aiMat.c4, aiMat.d4   // 4열
             );
             //ConvertAiMatrixToXMMATRIX(mesh->mBones[boneIndex]->mOffsetMatrix);
+            if(boneName.contains("mixamorig:"))
+            {
+                boneName.replace(boneName.begin(),boneName.begin()+10, "");
+            }
             modelBoneInfoMap[boneName] = newBoneInfo;
             boneID = boneIndex;
         }
@@ -413,7 +420,7 @@ void AssetManager::ExtractBoneWeightForVertices(std::vector<MySkeletalMeshVertex
             boneID = modelBoneInfoMap[boneName].id;
         }
         assert(boneID != -1);
-
+        
 
         auto weights = mesh->mBones[boneIndex]->mWeights;
         int numWeights = mesh->mBones[boneIndex]->mNumWeights;

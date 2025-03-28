@@ -1,0 +1,7 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_ChibiCat",
+    "ModelData": "/Content/Resource/Model/Chibi_Cat.FBX",
+    "TextureData": [ "/Content/Resource/Texture/T_Chibi_Cat_06.png",
+                          "/Content/Resource/Texture/T_Chibi_Emo_25.png" ]
+}

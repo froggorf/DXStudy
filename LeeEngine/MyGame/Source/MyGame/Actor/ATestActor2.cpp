@@ -15,7 +15,7 @@ ATestActor2::ATestActor2()
 	//TestSMComp->SetRelativeScale3D(XMFLOAT3(0.2f,0.2f,0.2f));
 	
 	TestSKComp = std::make_shared<USkeletalMeshComponent>();
-	TestSKComp->SetSkeletalMesh(USkeletalMesh::GetSkeletalMesh("SK_ChibiCat"));
+	TestSKComp->SetSkeletalMesh(USkeletalMesh::GetSkeletalMesh("SK_Paladin"));
 	TestSKComp->SetupAttachment(GetRootComponent());
 	TestSKComp->SetRelativeLocation(XMFLOAT3(0.0f,5.0f,0.0f));
 	TestSKComp->SetRelativeScale3D(XMFLOAT3(0.2f,0.2f,0.2f));

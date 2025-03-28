@@ -276,14 +276,18 @@ void UEngine::LoadAllObjectsFromFile()
 			}
 			FilePath.replace(p,1, "/");	
 		}
+
 		
 		AssetManager::ReadMyAsset(FilePath);
 	}
 
-	std::shared_ptr<USkeletalMesh> chibi = USkeletalMesh::GetSkeletalMesh("SK_ChibiCat");
-	UAnimSequence* Anim1= new UAnimSequence(ContentDirectory + "/Resource/Animation/Anim_Chibi_DigA.FBX", chibi->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
+	std::shared_ptr<USkeletalMesh> chibi = USkeletalMesh::GetSkeletalMesh("SK_Paladin");
+	//std::shared_ptr<USkeletalMesh> chibi = USkeletalMesh::GetSkeletalMesh("SK_ChibiCat");
+	//UAnimSequence* Anim1= new UAnimSequence(ContentDirectory + "/Resource/Animation/Anim_Chibi_DigA.FBX", chibi->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
+	UAnimSequence* Anim1= new UAnimSequence(ContentDirectory + "/Resource/Animation/Paladin_Running_WithSkin.fbx", chibi->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
 	TestAnim1 = std::make_shared<UAnimSequence>(*Anim1);
-	UAnimSequence* Anim2= new UAnimSequence(ContentDirectory + "/Resource/Animation/Anim_Chibi_Hi.FBX", chibi->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
+	UAnimSequence* Anim2= new UAnimSequence(ContentDirectory + "/Resource/Animation/Paladin_Running_WithSkin.fbx", chibi->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
+	//UAnimSequence* Anim2= new UAnimSequence(ContentDirectory + "/Resource/Animation/Anim_Chibi_Alert.FBX", chibi->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
 	TestAnim2 = std::make_shared<UAnimSequence>(*Anim2);
 
 	MY_LOG("Load",EDebugLogLevel::DLL_Warning, "Load All Objects From File Success");

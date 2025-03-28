@@ -1,6 +1,0 @@
-{
-    "Class": "UStaticMesh",
-    "Name": "SM_Racco",
-    "ModelData": "/Content/Resource/Model/Racco.fbx",
-    "TextureData": [ "/Content/Resource/Texture/T_Racco_B.png" ]
-}

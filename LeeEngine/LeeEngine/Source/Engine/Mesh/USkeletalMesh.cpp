@@ -21,7 +21,7 @@ FTest::FTest(const nlohmann::json& SkeletalMeshFilePathData)
 	int TextureArraySize = SkeletalMeshFilePathData["TextureData"].size();
 	for(int count = 0; count < MeshCount; ++count)
 	{
-		if(TextureArraySize < count)
+		if(TextureArraySize <= count)
 		{
 			/*MY_LOG(StaticMeshFilePathData["Name"], EDebugLogLevel::DLL_Warning, "Texture count not match with mesh count! ");*/
 			break;

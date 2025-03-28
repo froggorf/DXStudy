@@ -23,6 +23,7 @@ UAnimSequence::UAnimSequence(const std::string& animationPath, std::map<std::str
 		return;
 	}
 	aiAnimation* animation = scene->mAnimations[0];
+	
 	Duration = animation->mDuration;
 	TicksPerSecond = animation->mTicksPerSecond;
 	ReadHierarchyData(RootNode, scene->mRootNode);
@@ -67,15 +68,21 @@ void UAnimSequence::ReadMissingBones(const aiAnimation* animation, std::map<std:
 		auto channel = animation->mChannels[index];
 		std::string boneName = channel->mNodeName.C_Str();
 
+		if(boneName.contains("mixamorig:"))
+		{
+			boneName.replace(boneName.begin(),boneName.begin()+10, "");
+		}
+
 		// Missing Bone 추가
 		if (modelBoneInfoMap.find(boneName) == modelBoneInfoMap.end())
 		{
 			modelBoneInfoMap[boneName] = { boneCount, DirectX::XMMatrixIdentity() };
 			modelBoneInfoMap[boneName].id = boneCount;
 			++boneCount;
-			std::cout << "Missing Bone Added: " << boneName << std::endl;
+			std::cout << "Missing Bone Added:" << boneName << std::endl;
 		}
-		Bones.push_back(Bone(boneName, modelBoneInfoMap[boneName].id, channel));
+		Bones.push_back(Bone(boneName, modelBoneInfoMap[boneName].id, channel));	
+		
 	}
 	BoneInfoMap = modelBoneInfoMap;
 }
@@ -85,6 +92,10 @@ void UAnimSequence::ReadHierarchyData(AssimpNodeData& dest, const aiNode* src)
 	assert(src);
 
 	dest.name = src->mName.C_Str();
+	if(dest.name.contains("mixamorig:"))
+	{
+		dest.name.replace(dest.name.begin(),dest.name.begin()+10, "");
+	}
 	aiMatrix4x4 aiMat = src->mTransformation;
 	dest.transformation = 	DirectX::XMMATRIX(
 		aiMat.a1, aiMat.b1, aiMat.c1, aiMat.d1,  // 1열

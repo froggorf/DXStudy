@@ -1,0 +1,6 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_Sphere",
+    "ModelData": "/Content/Resource/Model/Sphere.obj",
+    "TextureData": [ "/Content/Resource/Texture/cardboard.png" ]
+}

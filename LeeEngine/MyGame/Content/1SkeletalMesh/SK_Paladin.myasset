@@ -1,0 +1,6 @@
+{
+    "Class": "USkeletalMesh",
+    "Name": "SK_Paladin",
+    "ModelData": "/Content/Resource/Model/Paladin.fbx",
+    "TextureData": [ "/Content/Resource/Texture/Paladin_diffuse.png" ]
+}

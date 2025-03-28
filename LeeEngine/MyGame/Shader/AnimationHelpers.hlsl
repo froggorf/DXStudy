@@ -1,4 +1,4 @@
-#define MAX_BONES 100
+#define MAX_BONES 256
 #define MAX_BONE_INFLUENCE 4
 
 void CalculateSkinnedPosition(const in float4 Pos, const in float3 Normal, const in int4 boneIDs, const in float4 boneWeights, const in float4x4 BoneFinalTransforms[MAX_BONES], out float4 skinnedPosition, out float3 skinnedNormal)
