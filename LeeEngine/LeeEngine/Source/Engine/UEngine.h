@@ -73,9 +73,6 @@ public:
 
 	virtual void HandleInput( UINT msg, WPARAM wParam, LPARAM lParam);
 
-
-	std::shared_ptr<UAnimSequence> TestAnim1 = nullptr;
-	std::shared_ptr<UAnimSequence> TestAnim2 = nullptr;
 protected:
 	virtual void CreateRenderThread();
 private:

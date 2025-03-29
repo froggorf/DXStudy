@@ -9,15 +9,7 @@
 
 UAnimInstance::UAnimInstance()
 {
-	CurrentAnimation=nullptr;
-	CurrentTime = 0.0f;
 	DeltaTime = 0.0f;
-	FinalBoneMatrices.reserve(MAX_BONES);
-
-	for(int i = 0; i < MAX_BONES; ++i)
-	{
-		FinalBoneMatrices.push_back(DirectX::XMMatrixIdentity());
-	}
 }
 
 
@@ -38,18 +30,6 @@ void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UAnimInstance::UpdateAnimation(float dt)
 {
-	//DeltaTime = dt;
-	//if(CurrentAnimation && CurrentSkeletalMeshComponent)
-	//{
-	//	CurrentTime = CurrentTime + CurrentAnimation->GetTicksPerSecond() * dt;
-	//	CurrentTime = fmod(CurrentTime, CurrentAnimation->GetDuration());
-	//	CalculateBoneTransform(&CurrentAnimation->GetRootNode(), DirectX::XMMatrixIdentity());
-	//
-	//	FScene::UpdateSkeletalMeshAnimation_GameThread(CurrentSkeletalMeshComponent->GetPrimitiveID() , GetFinalBoneMatrices());
-	//}	
-	
-	
-
 }
 
 void UAnimInstance::Tick(float DeltaSeconds)
@@ -58,19 +38,13 @@ void UAnimInstance::Tick(float DeltaSeconds)
 	UpdateAnimation(DeltaSeconds);
 }
 
-void UAnimInstance::PlayAnimation(const std::shared_ptr<UAnimSequence>& InAnimation)
-{
-	CurrentAnimation = InAnimation;
-	CurrentTime = 0.0f;
-}
 
-
-void UAnimInstance::CalculateBoneTransform(const AssimpNodeData* node, DirectX::XMMATRIX parentTransform)
+void UAnimInstance::CalculateBoneTransform(const std::shared_ptr<UAnimSequence>& Animation, const AssimpNodeData* node, DirectX::XMMATRIX parentTransform, float CurrentTime, std::vector<XMMATRIX>& FinalBoneMatrices)
 {
 	std::string nodeName = node->name;
 	DirectX::XMMATRIX nodeTransform = node->transformation;
 
-	Bone* bone = CurrentAnimation->FindBone(nodeName);
+	Bone* bone = Animation->FindBone(nodeName);
 	if (bone)
 	{
 		bone->Update(CurrentTime);
@@ -80,7 +54,7 @@ void UAnimInstance::CalculateBoneTransform(const AssimpNodeData* node, DirectX::
 	DirectX::XMMATRIX globalTransform = parentTransform;
 	//DirectX::XMMATRIX globalTransform = DirectX::XMMatrixMultiply(nodeTransform,parentTransform);
 
-	auto boneInfoMap = CurrentAnimation->GetBoneIDMap();
+	auto boneInfoMap = Animation->GetBoneIDMap();
 	if (boneInfoMap.find(nodeName) != boneInfoMap.end())
 	{
 		globalTransform  = DirectX::XMMatrixMultiply(nodeTransform,parentTransform);
@@ -88,31 +62,14 @@ void UAnimInstance::CalculateBoneTransform(const AssimpNodeData* node, DirectX::
 		DirectX::XMMATRIX offset = boneInfoMap[nodeName].offset;
 		if(index < MAX_BONES)
 		{
-			FinalBoneMatrices[index] =  DirectX::XMMatrixMultiply(offset,globalTransform);	
+			FinalBoneMatrices[index] = DirectX::XMMatrixMultiply(offset,globalTransform);	
 		}
 		
 	}
 
 	for (int i = 0; i < node->childrenCount; ++i)
 	{
-		CalculateBoneTransform(&node->children[i], globalTransform);
-	}
-}
-
-void UAnimInstance::SetAnimation(const std::shared_ptr<UAnimSequence>& InAnimation, float InBlendTime)
-{
-	if (InBlendTime > FLT_EPSILON)
-	{
-		// 블렌딩에 대한 변수들 조정
-
-	}
-	CurrentAnimation = InAnimation;	
-	CurrentTime = 0.0f;
-
-
-	for(int i = 0; i < MAX_BONES; ++i)
-	{
-		FinalBoneMatrices[i] = XMMatrixIdentity();
+		CalculateBoneTransform(Animation, &node->children[i], globalTransform,CurrentTime, FinalBoneMatrices);
 	}
 }
 

@@ -27,7 +27,6 @@ public:
 #endif
 
 	void SetAnimInstanceClass(const std::string& InAnimInstanceClass);
-	void SetAnimation(const std::shared_ptr<UAnimSequence>& InAnim);
 
 	void TickComponent(float DeltaSeconds) override;
 protected:
@@ -36,5 +35,5 @@ public:
 protected:
 private:
 	std::shared_ptr<USkeletalMesh> SkeletalMesh;
-	std::unique_ptr<UAnimInstance> AnimInstance;
+	std::shared_ptr<UAnimInstance> AnimInstance;
 };

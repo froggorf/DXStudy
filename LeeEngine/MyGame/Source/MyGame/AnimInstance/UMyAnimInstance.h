@@ -25,4 +25,7 @@ private:
 
 	std::shared_ptr<UTestComponent> TestComp;
 
+	float CurrentTime = 0.0f;
+	float CurrentSpeed = 0.0f;
+
 };

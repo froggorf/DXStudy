@@ -27,7 +27,7 @@ struct FViewMatrices
 
 public:
 	void UpdateViewMatrix(const XMFLOAT3 ViewLocation, const XMVECTOR& ViewRotation);
-	void UpdateProjectionMatrix(const XMMATRIX NewProjectionMatrix);
+	void UpdateProjectionMatrix(const XMMATRIX& NewProjectionMatrix);
 	inline const XMMATRIX GetProjectionMatrix() const
 	{
 		return ProjectionMatrix;

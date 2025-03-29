@@ -82,8 +82,7 @@ const std::string& UEditorEngine::GetDefaultMapName()
 
 void UEditorEngine::DrawEngineTitleBar()
 {
-	HDC hdc;
-	hdc = GetWindowDC(GetWindow());
+	HDC hdc = GetWindowDC(GetWindow());
 	RECT rect;
 	GetWindowRect(GetWindow(), &rect);
 	// 타이틀바 영역 계산
@@ -152,7 +151,7 @@ void UEditorEngine::SaveModifiedLevel()
 			nlohmann::json LevelData;
 			PersistentLevel->SaveDataFromAssetToFile(LevelData);
 			auto& AssetNameAndPathMap = AssetManager::GetAssetNameAndAssetPathCacheMap();
-			const std::string AssetPath = AssetNameAndPathMap[LevelData["Name"]];
+			const std::string& AssetPath = AssetNameAndPathMap[LevelData["Name"]];
 
 			std::ofstream LevelMyAssetFile{AssetPath.c_str()};
 			if(LevelMyAssetFile.is_open())

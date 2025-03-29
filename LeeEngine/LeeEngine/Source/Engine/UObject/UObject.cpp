@@ -33,6 +33,7 @@ void UObject::Rename(const std::string& NewName)
 
 void UObject::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
+	assert(AssetData.contains("Name"));
 	Rename(AssetData["Name"]);
 }
 

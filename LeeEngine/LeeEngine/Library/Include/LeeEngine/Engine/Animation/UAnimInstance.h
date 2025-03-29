@@ -26,12 +26,8 @@ public:
 	virtual void UpdateAnimation(float dt);
 	void Tick(float DeltaSeconds);
 
-	void PlayAnimation(const std::shared_ptr<UAnimSequence>& InAnimation);
-	void CalculateBoneTransform(const AssimpNodeData* node, DirectX::XMMATRIX parentTransform);
+	void CalculateBoneTransform(const std::shared_ptr<UAnimSequence>& Animation,const AssimpNodeData* node, DirectX::XMMATRIX parentTransform, float CurrentTime,std::vector<XMMATRIX>& FinalBoneMatrices);
 
-	void SetAnimation(const std::shared_ptr<UAnimSequence>& InAnimation, float InBlendTime = 0.0f);
-
-	std::vector<DirectX::XMMATRIX>& GetFinalBoneMatrices() { return FinalBoneMatrices; }
 
 	void SetSkeletalMeshComponent(USkeletalMeshComponent* InOwner) { CurrentSkeletalMeshComponent = InOwner; }
 	USkeletalMeshComponent* GetSkeletalMeshComponent() const { return CurrentSkeletalMeshComponent; }
@@ -41,11 +37,8 @@ protected:
 private:
 public:
 protected:
-private:
-	std::vector<DirectX::XMMATRIX> FinalBoneMatrices;
-	std::shared_ptr<UAnimSequence> CurrentAnimation;
-	float CurrentTime;
 	float DeltaTime;
+private:
 
 	USkeletalMeshComponent* CurrentSkeletalMeshComponent;
 };

@@ -22,7 +22,7 @@ void FViewMatrices::UpdateViewMatrix(const XMFLOAT3 ViewLocation, const XMVECTOR
 	ViewMatrix = XMMatrixLookToLH(XMLoadFloat3(&ViewOrigin), LookDirection, UpVector);
 }
 
-void FViewMatrices::UpdateProjectionMatrix(const XMMATRIX NewProjectionMatrix)
+void FViewMatrices::UpdateProjectionMatrix(const XMMATRIX& NewProjectionMatrix)
 {
 	ProjectionMatrix = NewProjectionMatrix;
 

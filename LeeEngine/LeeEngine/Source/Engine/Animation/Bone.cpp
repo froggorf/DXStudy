@@ -56,7 +56,7 @@ int Bone::GetPositionIndex(float animationTime) const
 		if (animationTime < m_KeyPositions[index + 1].timeStamp)
 			return index;
 	}
-	
+	// 일부 애니메이션의 경우 타임스탬프의 시간을 넘는 경우가 있음, 해당 경우에는 마지막 인덱스를 반환
 	assert(0);
 	return -1;
 }
