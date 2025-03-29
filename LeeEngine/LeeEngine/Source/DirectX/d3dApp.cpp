@@ -3,16 +3,10 @@
 
 #include "d3dApp.h"
 
-#include <sstream>
-#include <Windows.h>
-#include <dwmapi.h>
-#include <backends/imgui_impl_dx11.h>
-#include <backends/imgui_impl_win32.h>
+#include "CoreMinimal.h"
 
-#include "imgui_internal.h"
-#include "Engine/MyEngineUtils.h"
-#include "Engine/UEditorEngine.h"
 #include "Engine/UEngine.h"
+#include "Engine/UEditorEngine.h"
 #include "Engine/DirectX/Device.h"
 #include "Engine/RenderCore/EditorScene.h"
 

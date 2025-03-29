@@ -2,19 +2,11 @@
 // 언리얼 엔진 5 코드를 분석하며 자체엔진으로 작성중인 코드입니다.
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
-
+#include "CoreMinimal.h"
 #include "UEngine.h"
-
-#include <ImGuizmo.h>
-
-#include "backends/imgui_impl_dx11.h"
-#include "backends/imgui_impl_win32.h"
 #include "Mesh/UStaticMesh.h"
 #include "RenderCore/RenderingThread.h"
 #include "World/UWorld.h"
-
-#include <threads.h>
-
 #include "Mesh/USkeletalMesh.h"
 #include "RenderCore/EditorScene.h"
 

@@ -34,5 +34,5 @@ public:
 protected:
 private:
 	std::shared_ptr<USkeletalMesh> SkeletalMesh;
-	std::unique_ptr<UAnimInstance> SkinnedAnimator;
+	std::unique_ptr<UAnimInstance> AnimInstance;
 };

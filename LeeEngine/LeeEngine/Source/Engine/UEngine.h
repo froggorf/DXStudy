@@ -22,6 +22,7 @@ class UEngine : public UObject
 	MY_GENERATED_BODY(UEngine)
 
 public:
+
 	UEngine() = default;
 	UEngine(D3DApp* CurrentApplication)
 	{

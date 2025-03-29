@@ -12,7 +12,7 @@
 USkeletalMeshComponent::USkeletalMeshComponent()
 {
 	Rename("SkeletalMeshComponent_" + std::to_string(ComponentID));
-	SkinnedAnimator = std::make_unique<UAnimInstance>();
+	AnimInstance = std::make_unique<UAnimInstance>();
 	
 
 }
@@ -21,9 +21,9 @@ void USkeletalMeshComponent::Register()
 {
 	USkinnedMeshComponent::Register();
 
-	if(SkinnedAnimator)
+	if(AnimInstance)
 	{
-		SkinnedAnimator->UpdateAnimation(0.0f, GetPrimitiveID());
+		AnimInstance->UpdateAnimation(0.0f, GetPrimitiveID());
 	}
 }
 
@@ -58,26 +58,26 @@ void USkeletalMeshComponent::DrawDetailPanel(UINT ComponentDepth)
 
 	if(ImGui::Button("Anim1"))
 	{
-		if(SkinnedAnimator)
+		if(AnimInstance)
 		{
-			SkinnedAnimator->SetAnimation(GEngine->TestAnim1);
+			AnimInstance->SetAnimation(GEngine->TestAnim1);
 		}
 	}
 	if(ImGui::Button("Anim2"))
 	{
-		if(SkinnedAnimator)
+		if(AnimInstance)
 		{
-			SkinnedAnimator->SetAnimation(GEngine->TestAnim2);
+			AnimInstance->SetAnimation(GEngine->TestAnim2);
 		}
 	}
 }
 
 void USkeletalMeshComponent::SetAnimation(const std::shared_ptr<UAnimSequence>& InAnim)
 {
-	if(SkinnedAnimator)
+	if(AnimInstance)
 	{
-		SkinnedAnimator->SetAnimation(InAnim);
-		SkinnedAnimator->UpdateAnimation(0.0f, GetPrimitiveID());
+		AnimInstance->SetAnimation(InAnim);
+		AnimInstance->UpdateAnimation(0.0f, GetPrimitiveID());
 	}
 }
 
@@ -85,8 +85,8 @@ void USkeletalMeshComponent::TickComponent(float DeltaSeconds)
 {
 	USkinnedMeshComponent::TickComponent(DeltaSeconds);
 
-	if(SkinnedAnimator)
+	if(AnimInstance)
 	{
-		SkinnedAnimator->UpdateAnimation(DeltaSeconds, GetPrimitiveID());
+		AnimInstance->UpdateAnimation(DeltaSeconds, GetPrimitiveID());
 	}
 }

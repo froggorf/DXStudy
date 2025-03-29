@@ -1,11 +1,7 @@
 // https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
-
+#include "CoreMinimal.h"
 #include "UAnimSequence.h"
 
-
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
 
 #include "Bone.h"
 

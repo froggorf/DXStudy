@@ -1,9 +1,7 @@
 // https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
 
+#include "CoreMinimal.h"
 #include "Bone.h"
-
-#include <assimp/anim.h>
-#include <Windows.h>
 
 Bone::Bone(const std::string& name, int ID, const aiNodeAnim* channel)
 	: m_LocalTransform(DirectX::XMMatrixIdentity()), m_Name(name), m_ID(ID)

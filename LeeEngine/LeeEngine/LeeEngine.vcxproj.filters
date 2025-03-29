@@ -228,6 +228,9 @@
     <ClCompile Include="Source\Engine\Animation\Bone.cpp">
       <Filter>Source\Engine\Animation</Filter>
     </ClCompile>
+    <ClCompile Include="Source\CoreMinimal.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DirectX\ShadowMap.h">
@@ -415,6 +418,9 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\Animation\Bone.h">
       <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CoreMinimal.h">
+      <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

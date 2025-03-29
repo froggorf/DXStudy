@@ -1,6 +1,6 @@
-#include "ShadowMap.h"
 
-#include "d3dUtil.h"
+#include "CoreMinimal.h"
+#include "ShadowMap.h"
 
 ShadowMap::ShadowMap(Microsoft::WRL::ComPtr<ID3D11Device> device, UINT width, UINT height)
 	: m_Width{width}, m_Height{height}, m_DepthMapDSV{nullptr}, m_DepthMapSRV{nullptr}

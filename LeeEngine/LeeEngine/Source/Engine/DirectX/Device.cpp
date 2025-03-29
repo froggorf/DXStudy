@@ -3,15 +3,9 @@
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
 
+#include "CoreMinimal.h"
 #include "Device.h"
 
-#include <cassert>
-#include <iostream>
-#include <windows.h>
-#include <memory>
-
-#include "DirectX/d3dUtil.h"
-#include "Engine/MyEngineUtils.h"
 #include "Engine/UEngine.h"
 #include "Engine/RenderCore/RenderingThread.h"
 

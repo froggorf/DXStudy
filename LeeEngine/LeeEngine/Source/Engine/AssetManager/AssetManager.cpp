@@ -1,20 +1,5 @@
+#include "CoreMinimal.h"
 #include "AssetManager.h"
-#include <fstream>
-// Assimp
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
-
-// DirectXTex
-#include <DirectXTex/DirectXTex.h>
-#include <DirectXTex/DirectXTex.inl>
-
-// std::filesystem path
-#include <filesystem>
-
-#include <map>
-
-
 
 using namespace Microsoft::WRL;
 
