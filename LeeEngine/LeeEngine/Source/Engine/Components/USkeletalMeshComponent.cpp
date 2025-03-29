@@ -13,7 +13,7 @@ USkeletalMeshComponent::USkeletalMeshComponent()
 {
 	Rename("SkeletalMeshComponent_" + std::to_string(ComponentID));
 	AnimInstance = std::make_unique<UAnimInstance>();
-	
+	AnimInstance->SetSkeletalMeshComponent(this);
 
 }
 
@@ -23,7 +23,7 @@ void USkeletalMeshComponent::Register()
 
 	if(AnimInstance)
 	{
-		AnimInstance->UpdateAnimation(0.0f, GetPrimitiveID());
+		AnimInstance->UpdateAnimation(0.0f);
 	}
 }
 
@@ -77,7 +77,7 @@ void USkeletalMeshComponent::SetAnimation(const std::shared_ptr<UAnimSequence>& 
 	if(AnimInstance)
 	{
 		AnimInstance->SetAnimation(InAnim);
-		AnimInstance->UpdateAnimation(0.0f, GetPrimitiveID());
+		AnimInstance->UpdateAnimation(0.0f);
 	}
 }
 
@@ -87,6 +87,6 @@ void USkeletalMeshComponent::TickComponent(float DeltaSeconds)
 
 	if(AnimInstance)
 	{
-		AnimInstance->UpdateAnimation(DeltaSeconds, GetPrimitiveID());
+		AnimInstance->UpdateAnimation(DeltaSeconds);
 	}
 }
