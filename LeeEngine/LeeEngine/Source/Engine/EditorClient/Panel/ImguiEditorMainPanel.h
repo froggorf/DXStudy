@@ -24,5 +24,6 @@ private:
 public:
 protected:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> PlayIcon;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> StopIcon;
 private:
 };

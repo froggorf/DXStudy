@@ -81,6 +81,7 @@ private:
 	// =================================
 	void LoadAllObjectsFromFile();
 public:
+	std::atomic<bool> bGameStart = false;
 protected:
 	// Default Engine ini Data
 	std::map<std::string, std::string> EngineData;
@@ -96,7 +97,6 @@ private:
 	D3DApp* Application;
 	std::shared_ptr<UWorld> CurrentWorld;
 
-	bool bGameStart = false;
 
 
 	// =============== 컴퍼넌트 변경사항 ================
