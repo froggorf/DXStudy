@@ -72,6 +72,30 @@ void USkeletalMeshComponent::DrawDetailPanel(UINT ComponentDepth)
 	}
 }
 
+void USkeletalMeshComponent::SetAnimInstanceClass(const std::string& InAnimInstanceClass)
+{
+	if(AnimInstance)
+	{
+		AnimInstance.release();
+	}
+
+	if(const UObject* AnimDefaultObject = GetDefaultObject(InAnimInstanceClass))
+	{
+		UAnimInstance* NewAnimInstance = dynamic_cast<UAnimInstance*>(AnimDefaultObject->CreateInstanceRawPointer());
+		if(NewAnimInstance)
+		{
+			AnimInstance = std::make_unique<UAnimInstance>(*NewAnimInstance);
+			AnimInstance->SetSkeletalMeshComponent(this);
+			return;
+		}
+		// GetDefaultObject(...)->CreateInstanceRawPointer는 Class* 으로 반환되므로,
+		// 해당 함수 종료 시, 정상적이지 않았다면 delete 해줘야함
+		MY_LOG("SetAnimInstanceClass", EDebugLogLevel::DLL_Warning, "Invalid AnimInstanceClass");
+		delete NewAnimInstance;
+	}
+	
+}
+
 void USkeletalMeshComponent::SetAnimation(const std::shared_ptr<UAnimSequence>& InAnim)
 {
 	if(AnimInstance)

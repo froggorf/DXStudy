@@ -24,17 +24,15 @@ UAnimInstance::UAnimInstance()
 void UAnimInstance::UpdateAnimation(float dt)
 {
 	DeltaTime = dt;
-	if(TryGetPawnOwner())
+	if(CurrentAnimation && CurrentSkeletalMeshComponent)
 	{
-		if(CurrentAnimation && CurrentSkeletalMeshComponent)
-		{
-			CurrentTime = CurrentTime + CurrentAnimation->GetTicksPerSecond() * dt;
-			CurrentTime = fmod(CurrentTime, CurrentAnimation->GetDuration());
-			CalculateBoneTransform(&CurrentAnimation->GetRootNode(), DirectX::XMMatrixIdentity());
+		CurrentTime = CurrentTime + CurrentAnimation->GetTicksPerSecond() * dt;
+		CurrentTime = fmod(CurrentTime, CurrentAnimation->GetDuration());
+		CalculateBoneTransform(&CurrentAnimation->GetRootNode(), DirectX::XMMatrixIdentity());
 
-			FScene::UpdateSkeletalMeshAnimation_GameThread(CurrentSkeletalMeshComponent->GetPrimitiveID() , GetFinalBoneMatrices());
-		}	
-	}
+		FScene::UpdateSkeletalMeshAnimation_GameThread(CurrentSkeletalMeshComponent->GetPrimitiveID() , GetFinalBoneMatrices());
+	}	
+	
 	
 
 }

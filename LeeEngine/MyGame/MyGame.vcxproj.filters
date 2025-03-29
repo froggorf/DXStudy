@@ -11,6 +11,9 @@
     <Filter Include="Source\MyGame\Actor">
       <UniqueIdentifier>{4970eb9a-d277-45d7-a220-380f42267a2d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\AnimInstance">
+      <UniqueIdentifier>{af8862c9-b46f-448e-9e8d-4bec809f8046}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -22,6 +25,9 @@
     <ClCompile Include="Source\MyGame\Actor\ATestCube.cpp">
       <Filter>Source\MyGame\Actor</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\AnimInstance\UMyAnimInstance.cpp">
+      <Filter>Source\MyGame\AnimInstance</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -29,6 +35,9 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Actor\ATestCube.h">
       <Filter>Source\MyGame\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\AnimInstance\UMyAnimInstance.h">
+      <Filter>Source\MyGame\AnimInstance</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -25,6 +25,7 @@ public:
 	void DrawDetailPanel(UINT ComponentDepth) override;
 #endif
 
+	void SetAnimInstanceClass(const std::string& InAnimInstanceClass);
 	void SetAnimation(const std::shared_ptr<UAnimSequence>& InAnim);
 
 	void TickComponent(float DeltaSeconds) override;
