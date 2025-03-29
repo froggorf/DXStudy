@@ -15,3 +15,8 @@ UActorComponent::UActorComponent()
 void UActorComponent::TickComponent(float DeltaSeconds)
 {
 }
+
+void UActorComponent::DrawDetailPanel(UINT ComponentDepth)
+{
+	
+}

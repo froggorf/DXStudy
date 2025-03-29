@@ -20,6 +20,10 @@ public:
 
 	AActor* GetOwner() const { return OwnerPrivate; }
 	void SetOwner(AActor* InOwner) { OwnerPrivate = InOwner; }
+
+#ifdef WITH_EDITOR
+	virtual void DrawDetailPanel(UINT ComponentDepth);
+#endif
 protected:
 private:
 public:

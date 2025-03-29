@@ -39,7 +39,8 @@ void UMyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	if(TestComp)
 	{
-		MY_LOG("TestValue", EDebugLogLevel::DLL_Display, std::to_string(TestComp->TestValue1));
+		
+		
 	}
 }
 

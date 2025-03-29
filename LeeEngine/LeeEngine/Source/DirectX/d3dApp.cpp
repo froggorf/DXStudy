@@ -69,7 +69,7 @@ int D3DApp::Run()
 
 
 	m_Timer.Reset();
-	const int targetFPS = 5000;  // 목표 FPS
+	const int targetFPS = 200;  // 목표 FPS
 	const double TargetFrameTime = 1'000'000.0f / targetFPS; // 마이크로 초
 	while(msg.message != WM_QUIT)
 	{

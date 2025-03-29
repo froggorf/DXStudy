@@ -10,6 +10,7 @@
 class UAnimationAsset : public UObject
 {
 	MY_GENERATED_BODY(UAnimationAsset)
+
 public:
 protected:
 private:

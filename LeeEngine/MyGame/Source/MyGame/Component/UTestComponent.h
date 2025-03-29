@@ -10,6 +10,11 @@ class UTestComponent : public UActorComponent
 public:
 	UTestComponent();
 
+
+
+#ifdef WITH_EDITOR
+	void DrawDetailPanel(UINT ComponentDepth) override;
+#endif
 protected:
 private:
 public:

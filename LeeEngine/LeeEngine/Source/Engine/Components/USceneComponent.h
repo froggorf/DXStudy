@@ -63,7 +63,7 @@ public:
 
 
 #ifdef WITH_EDITOR
-	virtual void DrawDetailPanel(UINT ComponentDepth);
+	void DrawDetailPanel(UINT ComponentDepth) override;
 #endif
 protected:
 private:

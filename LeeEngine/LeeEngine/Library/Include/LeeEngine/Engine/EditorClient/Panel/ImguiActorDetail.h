@@ -26,12 +26,22 @@ public:
 	// Imguizmo 렌더링에 사용
 	const std::shared_ptr<USceneComponent>& GetCurrentSelectedComponent() const
 	{
-		if(CurrentSelectedComponentIndex < 0 || CurrentSelectedComponentIndex >= SelectActorComponents.size())
+		if(CurrentSelectedComponentIndex < 0 || CurrentSelectedComponentIndex >= SelectActorSceneComponents.size())
 		{
 			return nullptr;
 		}
 
-		return SelectActorComponents[CurrentSelectedComponentIndex];
+		return SelectActorSceneComponents[CurrentSelectedComponentIndex];
+	}
+
+	const std::shared_ptr<UActorComponent>& GetCurrentSelectedActorComponent() const
+	{
+		if(CurrentSelectedComponentIndex < SelectActorSceneComponents.size() || CurrentSelectedComponentIndex >= SelectActorSceneComponents.size() + SelectActorActorComponents.size())
+		{
+			return nullptr;
+		}
+
+		return SelectActorActorComponents[CurrentSelectedComponentIndex-SelectActorSceneComponents.size()];
 	}
 protected:
 private:
@@ -46,7 +56,9 @@ private:
 
 	// Detail Panel 변수
 	std::shared_ptr<AActor> CurrentSelectedActor;
-	std::vector<std::shared_ptr<USceneComponent>> SelectActorComponents;
-	std::vector<std::string> SelectActorComponentNames;
+	std::vector<std::shared_ptr<USceneComponent>> SelectActorSceneComponents;
+	std::vector<std::string> SelectActorSceneComponentNames;
+	std::vector<std::shared_ptr<UActorComponent>> SelectActorActorComponents;
+	std::vector<std::string> SelectActorActorComponentNames;
 	int CurrentSelectedComponentIndex = -1;
 };

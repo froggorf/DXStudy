@@ -22,12 +22,11 @@ void FImguiActorDetail::Draw()
 			{
 				if(ImGui::BeginListBox(" ", ImVec2(-FLT_MIN,200.0f)))
 				{
-					int ComponentCount = SelectActorComponentNames.size();
-					for (int i = 0; i < ComponentCount; i++) {
+					int ComponentCount = SelectActorSceneComponentNames.size();
+					for (int i = 0; i < ComponentCount; ++i) {
 						const bool is_selected = (CurrentSelectedComponentIndex == i);
-						if (ImGui::Selectable(SelectActorComponentNames[i].data(), is_selected)) {
+						if (ImGui::Selectable(SelectActorSceneComponentNames[i].data(), is_selected)) {
 							CurrentSelectedComponentIndex = i;
-							// TODO : Select Component Action
 						}
 
 						if (is_selected) {
@@ -36,11 +35,27 @@ void FImguiActorDetail::Draw()
 
 						
 					}
+
+					int ActorComponentCount = SelectActorActorComponentNames.size();
+					for(int index = 0; index < ActorComponentCount; ++index)
+					{
+						const bool is_selected = (CurrentSelectedComponentIndex == index + ComponentCount);
+						if (ImGui::Selectable(SelectActorActorComponentNames[index].data(), is_selected)) {
+							CurrentSelectedComponentIndex = index + ComponentCount;
+						}
+						if (is_selected) {
+							ImGui::SetItemDefaultFocus();
+						}
+					}
 					ImGui::EndListBox();
 
 					if(const auto& CurrentSelectedComponent = GetCurrentSelectedComponent())
 					{
 						CurrentSelectedComponent->DrawDetailPanel(0);
+					}
+					else if(const auto& CurrentSelectedActorComponent = GetCurrentSelectedActorComponent())
+					{
+						CurrentSelectedActorComponent->DrawDetailPanel(0);
 					}
 				}
 			}
@@ -58,15 +73,20 @@ void FImguiActorDetail::Draw()
 void FImguiActorDetail::InitLevelData()
 {
 	CurrentSelectedActor = nullptr;
-	SelectActorComponents.clear();
-	SelectActorComponentNames.clear();
+	SelectActorSceneComponents.clear();
+	SelectActorSceneComponentNames.clear();
+	SelectActorActorComponents.clear();
+	SelectActorActorComponentNames.clear();
 	CurrentSelectedComponentIndex=-1;
 }
 
 void FImguiActorDetail::SelectActorFromWorldOutliner(const std::shared_ptr<AActor>& NewSelectedActor)
 {
-	SelectActorComponents.clear();
-	SelectActorComponentNames.clear();
+	SelectActorSceneComponents.clear();
+	SelectActorSceneComponentNames.clear();
+	SelectActorActorComponents.clear();
+	SelectActorActorComponentNames.clear();
+
 	CurrentSelectedComponentIndex = 0;
 	CurrentSelectedActor = NewSelectedActor;
 	FindComponentsAndNamesFromActor(CurrentSelectedActor->GetRootComponent(), 0);
@@ -80,6 +100,7 @@ void FImguiActorDetail::FindComponentsAndNamesFromActor(const std::shared_ptr<US
 		return;
 	}
 
+	// 계층에 따른 SceneComponent 찾기
 	std::string HierarchyTabString;
 	HierarchyTabString.reserve(2*CurrentHierarchyDepth);
 	for(int i = 0; i < CurrentHierarchyDepth; ++i)
@@ -89,12 +110,22 @@ void FImguiActorDetail::FindComponentsAndNamesFromActor(const std::shared_ptr<US
 
 	std::string TargetComponentName = HierarchyTabString + TargetComponent->GetName();
 
-	SelectActorComponents.push_back(TargetComponent);
-	SelectActorComponentNames.push_back(TargetComponentName);
+	SelectActorSceneComponents.push_back(TargetComponent);
+	SelectActorSceneComponentNames.push_back(TargetComponentName);
 
 	const std::vector<std::shared_ptr<USceneComponent>>& TargetComponentChildren = TargetComponent->GetAttachChildren();
 	for(const auto& ChildComponent : TargetComponentChildren)
 	{
 		FindComponentsAndNamesFromActor(ChildComponent, CurrentHierarchyDepth+1);
+	}
+
+	// UActorComponent에 대해서 조사
+	if(CurrentHierarchyDepth == 0)
+	{
+		for (const auto& Component : CurrentSelectedActor->GetComponents())
+		{
+			SelectActorActorComponents.push_back(Component);
+			SelectActorActorComponentNames.push_back(Component->GetName());
+		}
 	}
 }
