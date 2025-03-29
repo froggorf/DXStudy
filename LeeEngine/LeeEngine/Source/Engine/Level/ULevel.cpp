@@ -23,7 +23,7 @@ ULevel::ULevel(const ULevel* LevelInstance)
 {
 	OwningWorld = GEngine->GetWorld();
 	Rename(LevelInstance->GetName());
-	int ActorCount = LevelInstance->GetLevelActors().size();
+	int ActorCount = static_cast<int>(LevelInstance->GetLevelActors().size());
 	const auto& LevelActors = LevelInstance->GetLevelActors();
 	Actors.reserve(ActorCount);
 	for(const auto& Actor : LevelActors)
@@ -99,7 +99,7 @@ void ULevel::LoadDataFromFileData(const nlohmann::json& AssetData)
 	UObject::LoadDataFromFileData(AssetData);
 
 	auto ActorsData = AssetData["Actor"];
-	int ActorCount = ActorsData.size();
+	int ActorCount = static_cast<int>(ActorsData.size());
 	Actors.reserve(ActorCount);
 	for(int i = 0; i < ActorCount; ++i)
 	{

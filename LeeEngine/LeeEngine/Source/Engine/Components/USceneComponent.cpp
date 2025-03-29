@@ -75,7 +75,8 @@ void USceneComponent::SetupAttachment(const std::shared_ptr<USceneComponent>& In
 	std::shared_ptr<USceneComponent> thisPtr = shared_from_this(); // std::enable_shared_from_this<USceneComponent>
 	if(std::find(AttachChildren.begin(),AttachChildren.end(), thisPtr) == AttachChildren.end())
 	{
-		InParent->AttachChildren.push_back(thisPtr);	
+		InParent->AttachChildren.push_back(thisPtr);
+		thisPtr->SetOwner(InParent->GetOwner());
 	}
 
 	UpdateComponentToWorld();

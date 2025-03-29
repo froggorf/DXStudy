@@ -23,6 +23,7 @@ void AActor::Init()
 	UObject::Init();
 	RootComponent = std::make_shared<USceneComponent>();
 	RootComponent->Rename("RootComponent");
+	//RootComponent->SetOwner(this);
 
 	ActorID = ActorIDCount++;
 	Rename("Actor_" + std::to_string(ActorID));

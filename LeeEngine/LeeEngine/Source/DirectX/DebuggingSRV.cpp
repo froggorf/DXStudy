@@ -1,7 +1,6 @@
-
+#include "CoreMinimal.h"
 #if defined(DEBUG) || defined(_DEBUG)
 #include "DebuggingSRV.h"
-#include "d3dUtil.h"
 
 bool DebuggingSRV::bIsInitialized = false;
 Microsoft::WRL::ComPtr<ID3D11SamplerState> DebuggingSRV::m_SamplerState;

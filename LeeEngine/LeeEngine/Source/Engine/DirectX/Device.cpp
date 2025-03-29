@@ -119,6 +119,12 @@ bool FDirectXDevice::InitDirect3D()
 	InitSamplerState();
 	CreateBuffers();
 
+	
+
+
+
+
+
 	return true;
 }
 

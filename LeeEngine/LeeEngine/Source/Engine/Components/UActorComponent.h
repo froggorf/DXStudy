@@ -6,6 +6,8 @@
 #pragma once
 #include "Engine/UObject/UObject.h"
 
+class AActor;
+
 class UActorComponent : public UObject
 {
 	MY_GENERATED_BODY(UActorComponent)
@@ -14,11 +16,15 @@ public:
 	virtual void UpdateComponentToWorld() {}
 
 	virtual void TickComponent(float DeltaSeconds);
+
+	AActor* GetOwner() const { return OwnerPrivate; }
+	void SetOwner(AActor* InOwner) { OwnerPrivate = InOwner; }
 protected:
 private:
 public:
 	UINT ComponentID;
 protected:
 private:
+	AActor* OwnerPrivate = nullptr;
 	
 };

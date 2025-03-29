@@ -7,28 +7,33 @@
 #include "UAnimSequence.h"
 #include "Engine/UObject/UObject.h"
 
+class USkeletalMeshComponent;
+
 class UAnimInstance : public UObject
 {
 	MY_GENERATED_BODY(UAnimInstance)
 public:
 	UAnimInstance();
-	UAnimInstance(const std::shared_ptr<UAnimSequence>& InAnimation);
 	~UAnimInstance() override {};
-	void UpdateAnimation(float dt, float OwnerPrimitiveID);
+	void UpdateAnimation(float dt);
 	void PlayAnimation(const std::shared_ptr<UAnimSequence>& InAnimation);
 	void CalculateBoneTransform(const AssimpNodeData* node, DirectX::XMMATRIX parentTransform);
 
 	void SetAnimation(const std::shared_ptr<UAnimSequence>& InAnimation, float InBlendTime = 0.0f);
 
-	std::vector<DirectX::XMMATRIX>& GetFinalBoneMatrices() { return m_FinalBoneMatrices; }
+	std::vector<DirectX::XMMATRIX>& GetFinalBoneMatrices() { return FinalBoneMatrices; }
 
+	void SetSkeletalMeshComponent(USkeletalMeshComponent* InOwner) { CurrentSkeletalMeshComponent = InOwner; }
+	class AActor* TryGetPawnOwner() const;
 protected:
 private:
 public:
 protected:
 private:
-	std::vector<DirectX::XMMATRIX> m_FinalBoneMatrices;
-	std::shared_ptr<UAnimSequence> m_CurrentAnimation;
-	float m_CurrentTime;
-	float m_DeltaTime;
+	std::vector<DirectX::XMMATRIX> FinalBoneMatrices;
+	std::shared_ptr<UAnimSequence> CurrentAnimation;
+	float CurrentTime;
+	float DeltaTime;
+
+	USkeletalMeshComponent* CurrentSkeletalMeshComponent;
 };

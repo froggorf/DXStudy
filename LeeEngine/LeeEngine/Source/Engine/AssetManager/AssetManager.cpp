@@ -41,7 +41,7 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
 
     // 모델 로드 성공
     MY_LOG("AssetLoad", EDebugLogLevel::DLL_Display, "Model - " + filePath+" Load Success");
-	for(int i = 0; i < scene->mNumMeshes; ++i)
+	for(unsigned int i = 0; i < scene->mNumMeshes; ++i)
 	{
 		// 버텍스 버퍼
         ComPtr<ID3D11Buffer> vertexBuffer;
@@ -49,7 +49,7 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
 		vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		vertexBufferDesc.CPUAccessFlags = 0;
 		vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-		vertexBufferDesc.ByteWidth = sizeof(MyVertexData) * allVertices[i].size();
+		vertexBufferDesc.ByteWidth = static_cast<UINT>( sizeof(MyVertexData) * allVertices[i].size());
 		D3D11_SUBRESOURCE_DATA initVertexData = {};
 		initVertexData.pSysMem = allVertices[i].data();
 		HR(pDevice->CreateBuffer(&vertexBufferDesc,&initVertexData, vertexBuffer.GetAddressOf()));
@@ -59,7 +59,7 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
         ComPtr<ID3D11Buffer> indexBuffer;
 		D3D11_BUFFER_DESC indexBufferDesc = {};
 		indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-		indexBufferDesc.ByteWidth = sizeof(UINT) * allIndices[i].size();
+		indexBufferDesc.ByteWidth = static_cast<UINT>( sizeof(UINT) * allIndices[i].size());
 		indexBufferDesc.CPUAccessFlags = 0;
 		indexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 		D3D11_SUBRESOURCE_DATA initIndexData = {};
@@ -111,7 +111,7 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vertexBufferDesc.CPUAccessFlags = 0;
 	vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-	vertexBufferDesc.ByteWidth = sizeof(MyVertexData) * allVertices[0].size();
+	vertexBufferDesc.ByteWidth = static_cast<UINT>(sizeof(MyVertexData) * allVertices[0].size());
 	D3D11_SUBRESOURCE_DATA initVertexData = {};
 	initVertexData.pSysMem = allVertices[0].data();
 	HR(pDevice->CreateBuffer(&vertexBufferDesc,&initVertexData, vertexBuffer.GetAddressOf()));
@@ -122,7 +122,7 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
        ComPtr<ID3D11Buffer> indexBuffer;
 	D3D11_BUFFER_DESC indexBufferDesc = {};
 	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	indexBufferDesc.ByteWidth = sizeof(UINT) * allIndices[0].size();
+	indexBufferDesc.ByteWidth = static_cast<UINT>( sizeof(UINT) * allIndices[0].size());
 	indexBufferDesc.CPUAccessFlags = 0;
 	indexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 	D3D11_SUBRESOURCE_DATA initIndexData = {};
@@ -190,7 +190,7 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const Microsof
     }
     
 
-    for(int meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex)
+    for(unsigned int meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex)
     {
         ExtractBoneWeightForVertices(allSkeletalVertices[meshIndex], scene->mMeshes[meshIndex], modelBoneInfoMap);
     }
@@ -198,7 +198,7 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const Microsof
     // 모델 로드 성공
     MY_LOG("AssetLoad", EDebugLogLevel::DLL_Display, "SkeletalModel - " + filePath+" Load Success");
 
-    for(int i = 0; i < scene->mNumMeshes; ++i)
+    for(unsigned int i = 0; i < scene->mNumMeshes; ++i)
     {
         // 버텍스 버퍼
         ComPtr<ID3D11Buffer> vertexBuffer;
@@ -206,7 +206,7 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const Microsof
         vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
         vertexBufferDesc.CPUAccessFlags = 0;
         vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-        vertexBufferDesc.ByteWidth = sizeof(MySkeletalMeshVertexData) * allSkeletalVertices[i].size();
+        vertexBufferDesc.ByteWidth = static_cast<UINT>(sizeof(MySkeletalMeshVertexData) * allSkeletalVertices[i].size());
         D3D11_SUBRESOURCE_DATA initVertexData = {};
         initVertexData.pSysMem = allSkeletalVertices[i].data();
         HR(pDevice->CreateBuffer(&vertexBufferDesc,&initVertexData, vertexBuffer.GetAddressOf()));
@@ -216,7 +216,7 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const Microsof
         ComPtr<ID3D11Buffer> indexBuffer;
         D3D11_BUFFER_DESC indexBufferDesc = {};
         indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-        indexBufferDesc.ByteWidth = sizeof(UINT) * allIndices[i].size();
+        indexBufferDesc.ByteWidth = static_cast<UINT>(sizeof(UINT) * allIndices[i].size());
         indexBufferDesc.CPUAccessFlags = 0;
         indexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
         D3D11_SUBRESOURCE_DATA initIndexData = {};
@@ -377,7 +377,7 @@ void AssetManager::SetVertexBoneData(MySkeletalMeshVertexData& vertexData, int b
 void AssetManager::ExtractBoneWeightForVertices(std::vector<MySkeletalMeshVertexData>& vVertexData, aiMesh* mesh,
 	std::map<std::string, BoneInfo>& modelBoneInfoMap)
 {
-    for (int boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex)
+    for (unsigned int boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex)
     {
         std::string boneName = mesh->mBones[boneIndex]->mName.C_Str();
         int boneID = -1;
