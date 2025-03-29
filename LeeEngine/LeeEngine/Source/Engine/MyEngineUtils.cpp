@@ -1,3 +1,4 @@
+#include "CoreMinimal.h"
 #include "MyEngineUtils.h"
 
 FTransform FTransform::operator*(const FTransform& OtherTransform)

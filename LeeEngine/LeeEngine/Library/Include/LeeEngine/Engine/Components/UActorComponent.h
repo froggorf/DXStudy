@@ -4,7 +4,10 @@
 // 이윤석
 
 #pragma once
+#include "Engine/GameFramework/AActor.h"
 #include "Engine/UObject/UObject.h"
+
+
 
 class UActorComponent : public UObject
 {
@@ -14,11 +17,14 @@ public:
 	virtual void UpdateComponentToWorld() {}
 
 	virtual void TickComponent(float DeltaSeconds);
+
+	AActor* GetOwner() const { return OwnerPrivate; }
+	void SetOwner(AActor* InOwner) { OwnerPrivate = InOwner; }
 protected:
 private:
 public:
 	UINT ComponentID;
 protected:
 private:
-	
+	AActor* OwnerPrivate;
 };

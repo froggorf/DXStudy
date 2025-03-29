@@ -66,17 +66,39 @@
     <ClCompile Include="Source\Engine\UEngine.cpp" />
     <ClCompile Include="Source\Engine\UObject\UObject.cpp" />
     <ClCompile Include="Source\Engine\World\UWorld.cpp" />
-    <ClCompile Include="Source\ThirdParty\ImGuizmo\GraphEditor.cpp" />
-    <ClCompile Include="Source\ThirdParty\ImGuizmo\ImCurveEdit.cpp" />
-    <ClCompile Include="Source\ThirdParty\ImGuizmo\ImGradient.cpp" />
-    <ClCompile Include="Source\ThirdParty\ImGuizmo\ImGuizmo.cpp" />
-    <ClCompile Include="Source\ThirdParty\ImGuizmo\ImSequencer.cpp" />
-    <ClCompile Include="Source\ThirdParty\ImGui\backends\imgui_impl_dx11.cpp" />
-    <ClCompile Include="Source\ThirdParty\ImGui\backends\imgui_impl_win32.cpp" />
-    <ClCompile Include="Source\ThirdParty\ImGui\imgui.cpp" />
-    <ClCompile Include="Source\ThirdParty\ImGui\imgui_draw.cpp" />
-    <ClCompile Include="Source\ThirdParty\ImGui\imgui_tables.cpp" />
-    <ClCompile Include="Source\ThirdParty\ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="Source\ThirdParty\ImGuizmo\GraphEditor.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\ImGuizmo\ImCurveEdit.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\ImGuizmo\ImGradient.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\ImGuizmo\ImGuizmo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\ImGuizmo\ImSequencer.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\ImGui\backends\imgui_impl_dx11.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\ImGui\backends\imgui_impl_win32.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\ImGui\imgui.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\ImGui\imgui_draw.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\ImGui\imgui_tables.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\ImGui\imgui_widgets.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\CoreMinimal.h" />

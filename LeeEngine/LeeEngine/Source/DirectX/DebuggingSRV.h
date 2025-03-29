@@ -11,7 +11,7 @@
 #include <wrl/client.h>
 #include <d3d11_1.h>
 
-class ID3D11SamplerState;
+struct ID3D11SamplerState;
 class DebuggingSRV
 {
 public:

@@ -1,4 +1,4 @@
-
+#include "CoreMinimal.h"
 #if defined(DEBUG) || defined(_DEBUG)
 #include "DebuggingSRV.h"
 #include "d3dUtil.h"

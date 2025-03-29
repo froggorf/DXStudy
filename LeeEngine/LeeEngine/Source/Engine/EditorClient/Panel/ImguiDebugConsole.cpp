@@ -1,3 +1,4 @@
+#include "CoreMinimal.h"
 #include "ImguiDebugConsole.h"
 
 #include "Engine/RenderCore/EditorScene.h"

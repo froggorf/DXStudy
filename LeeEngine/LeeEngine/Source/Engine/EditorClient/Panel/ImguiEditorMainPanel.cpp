@@ -1,3 +1,4 @@
+#include "CoreMinimal.h"
 #include "ImguiEditorMainPanel.h"
 
 #include "Engine/AssetManager/AssetManager.h"

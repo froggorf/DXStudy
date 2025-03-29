@@ -1,3 +1,4 @@
+#include "CoreMinimal.h"
 #include "ImguiPanel.h"
 
 UINT CommandIDGenerator::IDCount = 0;
