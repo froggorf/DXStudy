@@ -19,8 +19,9 @@ ATestActor2::ATestActor2()
 	{
 		TestSKComp->SetAnimation(GEngine->TestAnim1);	
 	}
-	
-	
+
+	UTestComponent* NewTestComp = dynamic_cast<UTestComponent*>( CreateDefaultSubobject("TestActorComp", "UTestComponent"));
+	TestComponent = std::make_shared<UTestComponent>(*NewTestComp);
 
 }
 

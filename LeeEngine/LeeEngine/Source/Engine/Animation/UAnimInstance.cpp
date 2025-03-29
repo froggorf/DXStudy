@@ -21,20 +21,41 @@ UAnimInstance::UAnimInstance()
 }
 
 
+void UAnimInstance::BeginPlay()
+{
+	UObject::BeginPlay();
+
+	NativeInitializeAnimation();
+}
+
+void UAnimInstance::NativeInitializeAnimation()
+{
+}
+
+void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
+{
+}
+
 void UAnimInstance::UpdateAnimation(float dt)
 {
-	DeltaTime = dt;
-	if(CurrentAnimation && CurrentSkeletalMeshComponent)
-	{
-		CurrentTime = CurrentTime + CurrentAnimation->GetTicksPerSecond() * dt;
-		CurrentTime = fmod(CurrentTime, CurrentAnimation->GetDuration());
-		CalculateBoneTransform(&CurrentAnimation->GetRootNode(), DirectX::XMMatrixIdentity());
-
-		FScene::UpdateSkeletalMeshAnimation_GameThread(CurrentSkeletalMeshComponent->GetPrimitiveID() , GetFinalBoneMatrices());
-	}	
+	//DeltaTime = dt;
+	//if(CurrentAnimation && CurrentSkeletalMeshComponent)
+	//{
+	//	CurrentTime = CurrentTime + CurrentAnimation->GetTicksPerSecond() * dt;
+	//	CurrentTime = fmod(CurrentTime, CurrentAnimation->GetDuration());
+	//	CalculateBoneTransform(&CurrentAnimation->GetRootNode(), DirectX::XMMatrixIdentity());
+	//
+	//	FScene::UpdateSkeletalMeshAnimation_GameThread(CurrentSkeletalMeshComponent->GetPrimitiveID() , GetFinalBoneMatrices());
+	//}	
 	
 	
 
+}
+
+void UAnimInstance::Tick(float DeltaSeconds)
+{
+	NativeUpdateAnimation(DeltaSeconds);
+	UpdateAnimation(DeltaSeconds);
 }
 
 void UAnimInstance::PlayAnimation(const std::shared_ptr<UAnimSequence>& InAnimation)

@@ -16,6 +16,7 @@ class USkeletalMeshComponent : public USkinnedMeshComponent
 	MY_GENERATED_BODY(USkeletalMeshComponent)
 public:
 	USkeletalMeshComponent();
+	void BeginPlay() override;
 	virtual void Register() override;
 	virtual std::shared_ptr<FPrimitiveSceneProxy> CreateSceneProxy() const override;
 	virtual bool SetSkeletalMesh(const std::shared_ptr<USkeletalMesh>& NewMesh);

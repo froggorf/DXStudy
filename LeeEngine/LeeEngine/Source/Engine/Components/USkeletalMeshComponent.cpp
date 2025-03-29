@@ -17,6 +17,16 @@ USkeletalMeshComponent::USkeletalMeshComponent()
 
 }
 
+void USkeletalMeshComponent::BeginPlay()
+{
+	USkinnedMeshComponent::BeginPlay();
+
+	if (AnimInstance)
+	{
+		AnimInstance->BeginPlay();
+	}
+}
+
 void USkeletalMeshComponent::Register()
 {
 	USkinnedMeshComponent::Register();
@@ -84,7 +94,7 @@ void USkeletalMeshComponent::SetAnimInstanceClass(const std::string& InAnimInsta
 		UAnimInstance* NewAnimInstance = dynamic_cast<UAnimInstance*>(AnimDefaultObject->CreateInstanceRawPointer());
 		if(NewAnimInstance)
 		{
-			AnimInstance = std::make_unique<UAnimInstance>(*NewAnimInstance);
+			AnimInstance = std::unique_ptr<UAnimInstance>(NewAnimInstance);
 			AnimInstance->SetSkeletalMeshComponent(this);
 			return;
 		}
@@ -111,6 +121,6 @@ void USkeletalMeshComponent::TickComponent(float DeltaSeconds)
 
 	if(AnimInstance)
 	{
-		AnimInstance->UpdateAnimation(DeltaSeconds);
+		AnimInstance->Tick(DeltaSeconds);
 	}
 }

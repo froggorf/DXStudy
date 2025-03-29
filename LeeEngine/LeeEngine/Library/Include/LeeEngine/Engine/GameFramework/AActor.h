@@ -5,8 +5,9 @@
 
 #pragma once
 #include <memory>
-
+#include <unordered_set>
 #include "Engine/UObject/UObject.h"
+#include "Engine/Components/UActorComponent.h"
 
 class USceneComponent;
 
@@ -35,6 +36,10 @@ public:
 	void SaveDataFromAssetToFile(nlohmann::json& Json) override;
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
+	UActorComponent* CreateDefaultSubobject(const std::string& SubobjectName, const std::string& ClassToCreateByDefault);
+
+	const std::shared_ptr<UActorComponent>& FindComponentByClass(const std::string& Class) const;
+	const std::unordered_set<std::shared_ptr<UActorComponent>>& GetComponents() const { return OwnedComponents; }
 protected:
 
 private:
@@ -48,6 +53,10 @@ protected:
 
 protected:
 	unsigned int ActorID = 0;
-	
+
+private:
+	// 액터가 소유중인 모든 액터 컴퍼넌트를 관리하는 컨테이너
+	// 언리얼엔진의 경우 많은 수의 컴퍼넌트를 가질 수 있으므로 TSet을 사용
+	std::unordered_set<std::shared_ptr<UActorComponent>> OwnedComponents;
 	
 };

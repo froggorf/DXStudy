@@ -14,6 +14,9 @@
     <Filter Include="Source\MyGame\AnimInstance">
       <UniqueIdentifier>{af8862c9-b46f-448e-9e8d-4bec809f8046}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\Component">
+      <UniqueIdentifier>{3e8daa15-35b2-46a9-9f85-96ae9e4a110c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -28,6 +31,9 @@
     <ClCompile Include="Source\MyGame\AnimInstance\UMyAnimInstance.cpp">
       <Filter>Source\MyGame\AnimInstance</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Component\UTestComponent.cpp">
+      <Filter>Source\MyGame\Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -38,6 +44,9 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\AnimInstance\UMyAnimInstance.h">
       <Filter>Source\MyGame\AnimInstance</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Component\UTestComponent.h">
+      <Filter>Source\MyGame\Component</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

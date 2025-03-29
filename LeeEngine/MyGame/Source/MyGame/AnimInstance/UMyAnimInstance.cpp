@@ -2,7 +2,48 @@
 
 #include <Engine/RenderCore/EditorScene.h>
 
+#include "../Actor/ATestActor2.h"
+#include "Engine/Components/USkeletalMeshComponent.h"
+
+
+
 UMyAnimInstance::UMyAnimInstance()
 {
-	MY_LOG("UMyAnimInstance", EDebugLogLevel::DLL_Warning, "Success");
+	
+}
+
+void UMyAnimInstance::BeginPlay()
+{
+	UAnimInstance::BeginPlay();
+}
+
+void UMyAnimInstance::NativeInitializeAnimation()
+{
+	UAnimInstance::NativeInitializeAnimation();
+	
+	if(AActor* OwnerActor = GetSkeletalMeshComponent()->GetOwner())
+	{
+		if(ATestActor2* TestActor = dynamic_cast<ATestActor2*>(OwnerActor))
+		{
+			if(const std::shared_ptr<UTestComponent>& OwnerTestComp = std::dynamic_pointer_cast<UTestComponent>(TestActor->FindComponentByClass("UTestComponent")))
+			{
+				TestComp = OwnerTestComp;
+			}
+		}
+	}
+}
+
+void UMyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
+{
+	UAnimInstance::NativeUpdateAnimation(DeltaSeconds);
+
+	if(TestComp)
+	{
+		MY_LOG("TestValue", EDebugLogLevel::DLL_Display, std::to_string(TestComp->TestValue1));
+	}
+}
+
+void UMyAnimInstance::UpdateAnimation(float dt)
+{
+	UAnimInstance::UpdateAnimation(dt);
 }

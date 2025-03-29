@@ -22,7 +22,7 @@ class UAnimSequence : public UAnimCompositeBase
 {
 	MY_GENERATED_BODY(UAnimSequence)
 public:
-	UAnimSequence() = default;
+	UAnimSequence( ) = default;
 	UAnimSequence(const std::string& animationPath, std::map<std::string, BoneInfo>& modelBoneInfoMap );
 	UAnimSequence(const UAnimSequence& Other);
 	~UAnimSequence() override {};

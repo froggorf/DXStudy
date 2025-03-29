@@ -34,7 +34,11 @@ void AActor::Register()
 	UObject::Register();
 
 	RootComponent->Register();
-	
+
+	for (const auto& Component : OwnedComponents)
+	{
+		Component->Register();
+	}
 #ifdef WITH_EDITOR
 	FEditorScene::AddWorldOutlinerActor_GameThread(shared_from_this());
 #endif
@@ -142,5 +146,37 @@ void AActor::LoadDataFromFileData(const nlohmann::json& AssetData)
 	SetActorRotation(XMFLOAT4(RotationData[X],RotationData[Y],RotationData[Z],RotationData[W]));
 	auto ScaleData = AssetData["Scale"];
 	SetActorScale3D(XMFLOAT3(ScaleData[X],ScaleData[Y],ScaleData[Z]));
+}
+
+UActorComponent* AActor::CreateDefaultSubobject(const std::string& SubobjectName, const std::string& ClassToCreateByDefault)
+{
+	// nullptr를 반환하기 위하여 Raw Pointer 전달
+	const UObject* DefaultObject = UObject::GetDefaultObject(ClassToCreateByDefault);
+	if(DefaultObject)
+	{
+		std::shared_ptr<UActorComponent> NewComponent = std::dynamic_pointer_cast<UActorComponent>(DefaultObject->CreateInstance());
+		if(NewComponent)
+		{
+			NewComponent->Rename(SubobjectName);
+			NewComponent->SetOwner(this);
+			OwnedComponents.insert(NewComponent);
+			return NewComponent.get();
+		}
+	}
+
+	return nullptr;
+}
+
+const std::shared_ptr<UActorComponent>& AActor::FindComponentByClass(const std::string& Class) const
+{
+	for (const auto& Component : OwnedComponents)
+	{
+		if (Component->GetClass() == Class)
+		{
+			return Component;
+		}
+	}
+
+	return nullptr;
 }
 

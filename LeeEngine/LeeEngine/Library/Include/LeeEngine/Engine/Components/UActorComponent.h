@@ -4,10 +4,10 @@
 // 이윤석
 
 #pragma once
-#include "Engine/GameFramework/AActor.h"
 #include "Engine/UObject/UObject.h"
 
 
+class AActor;
 
 class UActorComponent : public UObject
 {

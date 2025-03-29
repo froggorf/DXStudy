@@ -4,6 +4,7 @@
 #pragma once
 
 #include "ATestCube.h"
+#include "../Component/UTestComponent.h"
 #include "Engine/GameFramework/AActor.h"
 
 class USkeletalMeshComponent;
@@ -22,4 +23,6 @@ public:
 protected:
 private:
 	std::shared_ptr<USkeletalMeshComponent> TestSKComp;
+
+	std::shared_ptr<UTestComponent> TestComponent;
 };
