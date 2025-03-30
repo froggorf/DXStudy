@@ -67,7 +67,6 @@ void FImguiActorDetail::Draw()
 		}
 		ImGui::End();	
 	}
-	
 }
 
 void FImguiActorDetail::InitLevelData()

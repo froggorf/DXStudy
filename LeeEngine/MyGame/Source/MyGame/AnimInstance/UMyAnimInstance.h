@@ -20,8 +20,7 @@ private:
 public:
 protected:
 private:
-	std::shared_ptr<UAnimSequence> TestAnim1;
-	std::shared_ptr<UAnimSequence> TestAnim2;
+	std::vector<std::shared_ptr<UAnimSequence>> AnimSequences;
 
 	std::shared_ptr<UTestComponent> TestComp;
 

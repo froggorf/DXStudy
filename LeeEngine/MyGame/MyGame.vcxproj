@@ -84,7 +84,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)LeeEngine\Library\Include\LeeEngine\ThirdParty\nlohmannJson\;$(SolutionDir)LeeEngine\Library\Include\LeeEngine\ThirdParty\Imguizmo\;$(SolutionDir)LeeEngine\Library\Include\LeeEngine\ThirdParty\Imgui\;$(SolutionDir)LeeEngine\Library\Include\LeeEngine\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)LeeEngine\Library\Include\LeeEngine\ThirdParty\DirectXTex\;$(SolutionDir)LeeEngine\Library\Include\LeeEngine\ThirdParty\Assimp\;$(SolutionDir)LeeEngine\Library\Include\LeeEngine\ThirdParty\nlohmannJson\;$(SolutionDir)LeeEngine\Library\Include\LeeEngine\ThirdParty\Imguizmo\;$(SolutionDir)LeeEngine\Library\Include\LeeEngine\ThirdParty\Imgui\;$(SolutionDir)LeeEngine\Library\Include\LeeEngine\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)LeeEngine\ThirdParty\DirectXTex\lib\$(Configuration)\;$(SolutionDir)LeeEngine\ThirdParty\Assimp\lib\$(Configuration)\;$(SolutionDir)LeeEngine\Library\Lib\LeeEngine\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)MyGame</OutDir>
     <TargetName>$(ProjectName)_D</TargetName>
