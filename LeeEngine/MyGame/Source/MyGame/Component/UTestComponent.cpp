@@ -8,6 +8,24 @@ bool operator==(const XMFLOAT2& A, const XMFLOAT2& B)
 {
 	return A.x == B.x&& A.y == B.y;
 }
+bool IsPointOnSegment(const XMFLOAT2& A, const XMFLOAT2& P1, const XMFLOAT2& P2)
+{
+	XMVECTOR P = XMVectorSubtract(XMVectorSet(P1.x,P1.y,0.0f,0.0f), XMVectorSet(P2.x,P2.y,0.0f,0.0f));
+	XMVECTOR AP1 = XMVectorSubtract(XMVectorSet(A.x,A.y,0.0f,0.0f),XMVectorSet(P1.x,P1.y,0.0f,0.0f));
+
+	// 선위에 없음
+	if(std::abs(XMVectorGetZ(XMVector3Cross(P,AP1))) > FLT_EPSILON)
+	{
+		return false;
+	}
+
+	// 2. 점 A가 선분 BC의 범위 내에 있는지 확인
+	if ((A.x <= min(P1.x, P2.x) || A.x >= max(P1.x, P2.x)) && (A.y <= min(P1.y, P2.y) || A.y >= max(P1.y, P2.y))) return false;
+
+
+	return true;
+}
+
 
 UTestComponent::UTestComponent()
 {
@@ -29,30 +47,37 @@ UTestComponent::UTestComponent()
 	std::shared_ptr<UAnimSequence> RunBack = std::make_shared<UAnimSequence>(GEngine->GetDirectoryPath() + "/Content/Resource/Animation/Paladin/Paladin_RunBack.fbx", PaladinSkeleton->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
 	std::shared_ptr<UAnimSequence> RunLeft = std::make_shared<UAnimSequence>(GEngine->GetDirectoryPath() + "/Content/Resource/Animation/Paladin/Paladin_RunLeft.fbx", PaladinSkeleton->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
 
-	HorizontalValue = {-180.0f - Gap.x,180.0f + Gap.x};
-	VerticalValue = {0.0f-Gap.y, 600.0f+Gap.y};
+	//HorizontalValue = {-180.0f - Gap.x,180.0f + Gap.x};
+	//VerticalValue = {0.0f-Gap.y, 600.0f+Gap.y};
 
-	// IDLE
-	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{0.0f,0.0f}, IdleAnim));
-	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-90.0f,0.0f}, IdleAnim));
-	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-180.0f,0.0f}, IdleAnim));
-	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{90.0f,0.0f}, IdleAnim));
-	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{180.0f,0.0f}, IdleAnim));
+	//// IDLE
+	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{0.0f,0.0f}, IdleAnim));
+	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-90.0f,0.0f}, IdleAnim));
+	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-180.0f,0.0f}, IdleAnim));
+	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{90.0f,0.0f}, IdleAnim));
+	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{180.0f,0.0f}, IdleAnim));
 
-	// WALK
-	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{0.0f,150.0f}, WalkForward));
-	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-90.0f,150.0f}, WalkLeft));
-	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{90.0f,150.0f}, WalkRight));
-	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-180.0f,150.0f}, WalkBack));
-	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{180.0f,150.0f}, WalkBack));
+	//// WALK
+	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{0.0f,150.0f}, WalkForward));
+	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-90.0f,150.0f}, WalkLeft));
+	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{90.0f,150.0f}, WalkRight));
+	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-180.0f,150.0f}, WalkBack));
+	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{180.0f,150.0f}, WalkBack));
 
-	// Run
-	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{0.0f,600.0f}, RunForward));
-	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-90.0f,600.0f}, RunLeft));
-	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{90.0f,600.0f}, RunRight));
-	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-180.0f,600.0f}, RunBack));
-	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{180.0f,600.0f}, RunBack));
+	//// Run
+	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{0.0f,600.0f}, RunForward));
+	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-90.0f,600.0f}, RunLeft));
+	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{90.0f,600.0f}, RunRight));
+	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-180.0f,600.0f}, RunBack));
+	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{180.0f,600.0f}, RunBack));
 
+	{
+		HorizontalValue = {0.0f - Gap.x, 600.0f + Gap.x};
+		VerticalValue = {0.0f-Gap.y, 0.0f+Gap.y};
+		TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{0.0f,0.0f}, IdleAnim));
+		TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{150.0f,0.0f}, WalkForward));
+		TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{600.0f,0.0f}, RunForward));
+	}
 	for(int i =0; i < TestValue.size()-1; ++i)
 	{
 		for(int j = i+1; j < TestValue.size(); ++j)
@@ -61,19 +86,7 @@ UTestComponent::UTestComponent()
 			std::shared_ptr<FAnimClipEdge> NewEdge = std::make_shared<FAnimClipEdge>(TestValue[i],TestValue[j]);
 
 
-			std::function<bool(const XMFLOAT2& CheckPoint, const XMFLOAT2& FirstPoint, const XMFLOAT2& SecondPoint)> IsPointOnSegment = [](const XMFLOAT2& A, const XMFLOAT2& B, const XMFLOAT2& C)->bool
-				{
-					float crossProduct = (C.x - B.x) * (A.y - B.y) - (C.y - B.y) * (A.x - B.x);
-					if (std::abs(crossProduct) > FLT_EPSILON) { // 0이 아닌 경우 (부동소수점 비교)
-						return false;
-					}
-
-					// 2. 점 A가 선분 BC의 범위 내에 있는지 확인
-					if ((A.x <= min(B.x, C.x) || A.x >= max(B.x, C.x)) && (A.y <= min(B.y, C.y) || A.y >= max(B.y, C.y))) return false;
-
-
-					return true;
-				};
+		
 
 			// 2. 만약 그 간선 사이에 점이 있다면 그 간선은 못만든다(n)
 			bool bIsOnLine = false;
@@ -426,20 +439,6 @@ void UTestComponent::DrawDetailPanel(UINT ComponentDepth)
 	
 }
 
-bool IsPointOnLine(const XMFLOAT2& A, const XMFLOAT2& P1, const XMFLOAT2& P2)
-{
-	XMVECTOR P = XMVectorSubtract(XMVectorSet(P1.x,P1.y,0.0f,0.0f), XMVectorSet(P2.x,P2.y,0.0f,0.0f));
-	XMVECTOR AP1 = XMVectorSubtract(XMVectorSet(A.x,A.y,0.0f,0.0f),XMVectorSet(P1.x,P1.y,0.0f,0.0f));
-
-	// 선위에 없음
-	if(std::abs(XMVectorGetZ(XMVector3Cross(P,AP1))) > FLT_EPSILON)
-	{
-		return false;
-	}
-
-	return true;
-}
-
 void UTestComponent::GetAnimsForBlend(XMFLOAT2& OutCurrentValue, std::vector<std::shared_ptr<FAnimClipPoint>>& OutPoints)
 {
 	OutCurrentValue = CurrentValue;
@@ -470,19 +469,51 @@ void UTestComponent::GetAnimsForBlend(XMFLOAT2& OutCurrentValue, std::vector<std
 				for(int EdgeIndex = 0; EdgeIndex < Edges.size(); ++EdgeIndex)
 				{
 					const std::shared_ptr<FAnimClipEdge>& Edge = Edges[EdgeIndex];
-					if(IsPointOnLine(CurrentValue, Edge->StartPoint->Position, Edge->EndPoint->Position))
+					if(IsPointOnSegment(CurrentValue, Edge->StartPoint->Position, Edge->EndPoint->Position))
 					{
 						OutPoints.emplace_back(Edge->StartPoint);
 						OutPoints.emplace_back(Edge->EndPoint);
+						return;
 					}
 
 				}
-				return;
 			}	
 		}
-
-		
-		
-
+	}
+	if(CurrentTriangles.size() == 0)
+	{
+		const auto& Edges = CurrentEdge;
+		for(int EdgeIndex = 0; EdgeIndex < Edges.size(); ++EdgeIndex)
+		{
+			const std::shared_ptr<FAnimClipEdge>& Edge = Edges[EdgeIndex];
+			if(IsPointOnSegment(CurrentValue, Edge->StartPoint->Position, Edge->EndPoint->Position))
+			{
+				OutPoints.emplace_back(Edge->StartPoint);
+				OutPoints.emplace_back(Edge->EndPoint);
+				return;
+			}
+		}
+	}
+	// 아무것도 없다면 가장 가까운 점을 그리기
+	if(OutPoints.size()==0)
+	{
+		std::shared_ptr<FAnimClipPoint> NearestPoint;
+		float DistanceSq = 10000;
+		XMVECTOR CurrentValueVec = XMVectorSet(CurrentValue.x,CurrentValue.y,0.0f,0.0f);
+		for(int PointIndex= 0; PointIndex < TestValue.size();++PointIndex)
+		{
+			const std::shared_ptr<FAnimClipPoint>& TargetPoint = TestValue[PointIndex];
+			float DistanceToPoint =XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(CurrentValueVec, XMVectorSet(TargetPoint->Position.x,TargetPoint->Position.y,0.0f,0.0f))));
+			if(DistanceToPoint < DistanceSq)
+			{
+				DistanceSq = DistanceToPoint;
+				NearestPoint = TargetPoint;
+			}
+		}
+		if(NearestPoint)
+		{
+			OutPoints.emplace_back(NearestPoint);
+			return;
+		}
 	}
 }

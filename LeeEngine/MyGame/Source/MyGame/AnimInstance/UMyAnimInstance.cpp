@@ -83,6 +83,10 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 		{
 			LinearInterpolation(CurrentValue,Points[0],Points[1], FinalBoneMatrices);
 		}
+		else if(Points.size()==1)
+		{
+			CalculateOneAnimation(Points[0], FinalBoneMatrices);
+		}
 
 		FScene::UpdateSkeletalMeshAnimation_GameThread(GetSkeletalMeshComponent()->GetPrimitiveID() , FinalBoneMatrices);
 	}	
@@ -101,7 +105,8 @@ void UMyAnimInstance::TriangleInterpolation(const XMFLOAT2& CurrentValue, const 
 	float P2AnimDuration = P2->AnimSequence->GetDuration();
 	float P3AnimDuration = P3->AnimSequence->GetDuration();
 
-	float WantedAnimDuration = (P1AnimDuration+P2AnimDuration+P3AnimDuration)/3;
+	//float WantedAnimDuration = (P1AnimDuration+P2AnimDuration+P3AnimDuration)/3;
+	float WantedAnimDuration = 30.0f;
 	float AnimTime = fmod(CurrentTime, WantedAnimDuration);
 	float WantedTimeRate = AnimTime / WantedAnimDuration;
 
@@ -134,9 +139,9 @@ void UMyAnimInstance::TriangleInterpolation(const XMFLOAT2& CurrentValue, const 
 	{
 		T3.join();
 	}
-	float P1LengthEst = XMVectorGetX(XMVector2LengthEst(XMVectorSubtract(P1Vector, CurrentValueVector)));
-	float P2LengthEst = XMVectorGetX(XMVector2LengthEst(XMVectorSubtract(P2Vector, CurrentValueVector)));
-	float P3LengthEst = XMVectorGetX(XMVector2LengthEst(XMVectorSubtract(P3Vector, CurrentValueVector)));
+	float P1LengthEst = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P1Vector, CurrentValueVector)));
+	float P2LengthEst = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P2Vector, CurrentValueVector)));
+	float P3LengthEst = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P3Vector, CurrentValueVector)));
 	float P1Weight = 1 - P1LengthEst/(P1LengthEst+P2LengthEst+P3LengthEst);
 	float P2Weight = 1 - P2LengthEst/(P1LengthEst+P2LengthEst+P3LengthEst);
 	float P3Weight = 1 - P1Weight-P2Weight;
@@ -162,7 +167,8 @@ void UMyAnimInstance::LinearInterpolation(const XMFLOAT2& CurrentValue, const st
 	float P1AnimDuration = P1->AnimSequence->GetDuration();
 	float P2AnimDuration = P2->AnimSequence->GetDuration();
 
-	float WantedAnimDuration = (P1AnimDuration+P2AnimDuration)/2;
+	//float WantedAnimDuration = (P1AnimDuration+P2AnimDuration)/2;
+	float WantedAnimDuration = 30.0f;
 	float AnimTime = fmod(CurrentTime, WantedAnimDuration);
 	float WantedTimeRate = AnimTime / WantedAnimDuration;
 
@@ -187,8 +193,8 @@ void UMyAnimInstance::LinearInterpolation(const XMFLOAT2& CurrentValue, const st
 		T2.join();
 	}
 
-	float P1LengthEst = XMVectorGetX(XMVector2LengthEst(XMVectorSubtract(P1Vector, CurrentValueVector)));
-	float P2LengthEst = XMVectorGetX(XMVector2LengthEst(XMVectorSubtract(P2Vector, CurrentValueVector)));
+	float P1LengthEst = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P1Vector, CurrentValueVector)));
+	float P2LengthEst = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P2Vector, CurrentValueVector)));
 	float P1Weight = P1LengthEst/(P1LengthEst+P2LengthEst);
 	for(int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
 	{
@@ -199,4 +205,15 @@ void UMyAnimInstance::LinearInterpolation(const XMFLOAT2& CurrentValue, const st
 		
 		AnimMatrices[BoneIndex] = XMMATRIX{V1,V2,V3,V4};
 	}
+}
+
+void UMyAnimInstance::CalculateOneAnimation(const std::shared_ptr<FAnimClipPoint>& Point,
+	std::vector<DirectX::XMMATRIX>& AnimMatrices)
+{
+	float P1AnimDuration = Point->AnimSequence->GetDuration();
+
+	
+	CalculateBoneTransform(Point->AnimSequence, &Point->AnimSequence->GetRootNode(), XMMatrixIdentity(), fmod(CurrentTime, Point->AnimSequence->GetDuration()), AnimMatrices);
+
+	
 }
