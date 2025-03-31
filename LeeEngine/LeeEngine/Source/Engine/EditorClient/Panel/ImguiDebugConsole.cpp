@@ -33,7 +33,8 @@ void FImguiDebugConsole::Draw()
 		ImGui::SameLine();
 		ImVec2 MousePos = ImGui::GetMousePos();
 		ImGui::Text("x = %.2f , y = %.2f", MousePos.x,MousePos.y);
-
+		ImGui::SameLine();
+		ImGui::Text("FPS = %.2f", GEngine->GetApplication()->CurrentFrame);
 		if(ImGui::BeginListBox(" ", ImVec2(-FLT_MIN, -FLT_MIN)))
 		{
 			// 디버그 리스트 박스의 맨 아래를 볼 시 맨 아래로 고정

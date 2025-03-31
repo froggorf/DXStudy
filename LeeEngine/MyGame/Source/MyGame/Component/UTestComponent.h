@@ -50,12 +50,11 @@ public:
 	void DrawDetailPanel(UINT ComponentDepth) override;
 #endif
 
-	void UpdateAnimation(float CurrentAnimTime);
+	void GetAnimsForBlend(XMFLOAT2& OutCurrentValue, std::vector<std::shared_ptr<FAnimClipPoint>>& OutPoints);
 
 	const std::vector<std::shared_ptr<FAnimClipEdge>>& GetCurrentEdge() const {return CurrentEdge;}
 	const std::vector<std::shared_ptr<FAnimClipTriangle>>& GetCurrentTriangles() const {return CurrentTriangles;}
 	const std::vector<std::shared_ptr<FAnimClipPoint>>& GetTestValue() const {return TestValue;}
-	const std::vector<XMMATRIX>& GetAnimMatrices() const {return AnimMatrices;}
 protected:
 private:
 public:
@@ -68,7 +67,6 @@ public:
 	std::vector<std::shared_ptr<FAnimClipEdge>> CurrentEdge;
 	std::vector <std::shared_ptr<FAnimClipTriangle>> CurrentTriangles;
 
-	std::vector<XMMATRIX> AnimMatrices;
 	XMFLOAT2 CurrentValue = XMFLOAT2{0.0f,0.0f};
 
 	std::vector< std::shared_ptr<FAnimClipPoint>> TestValue;

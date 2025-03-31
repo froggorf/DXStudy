@@ -106,7 +106,7 @@ struct MyVertexData
 };
 
 #define MAX_BONE_INFLUENCE 4
-#define MAX_BONES 256
+#define MAX_BONES 100
 __declspec(align(16)) struct MySkeletalMeshVertexData
 {
     int m_BoneIDs[MAX_BONE_INFLUENCE];

@@ -16,6 +16,7 @@ UTestComponent::UTestComponent()
 	{
 		return;
 	}
+
 	std::shared_ptr<UAnimSequence> IdleAnim = std::make_shared<UAnimSequence>(GEngine->GetDirectoryPath() + "/Content/Resource/Animation/Paladin/Paladin_Idle.fbx", PaladinSkeleton->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
 
 	std::shared_ptr<UAnimSequence> WalkForward= std::make_shared<UAnimSequence>(GEngine->GetDirectoryPath() + "/Content/Resource/Animation/Paladin/Paladin_WalkForward.fbx", PaladinSkeleton->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
@@ -326,6 +327,7 @@ XMFLOAT2 GetLocalPosFromDrawPanel(const XMFLOAT2& DrawPanelPos, const XMFLOAT2& 
 
 
 
+
 void UTestComponent::DrawDetailPanel(UINT ComponentDepth)
 {
 	UActorComponent::DrawDetailPanel(ComponentDepth);
@@ -423,6 +425,26 @@ void UTestComponent::DrawDetailPanel(UINT ComponentDepth)
 	
 }
 
-void UTestComponent::UpdateAnimation(float CurrentAnimTime)
+void UTestComponent::GetAnimsForBlend(XMFLOAT2& OutCurrentValue, std::vector<std::shared_ptr<FAnimClipPoint>>& OutPoints)
 {
+	OutCurrentValue = CurrentValue;
+	for(int TriangleIndex = 0; TriangleIndex < CurrentTriangles.size(); ++TriangleIndex)
+	{
+		std::shared_ptr<FAnimClipPoint> P1 = CurrentTriangles[TriangleIndex]->Points[0];
+		std::shared_ptr<FAnimClipPoint> P2 = CurrentTriangles[TriangleIndex]->Points[1];
+		std::shared_ptr<FAnimClipPoint> P3 = CurrentTriangles[TriangleIndex]->Points[2];
+		EPointAndTriangleState State = FindPointAndTriangleState(
+			CurrentValue,
+			P1->Position,
+			P2->Position,
+			P3->Position
+		);
+
+		if(State == EPointAndTriangleState::PATS_Inside)
+		{
+			OutPoints.emplace_back(P1);
+			OutPoints.emplace_back(P2);
+			OutPoints.emplace_back(P3);
+		}
+	}
 }

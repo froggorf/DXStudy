@@ -48,7 +48,9 @@ public:
 	virtual XMFLOAT3 Test_DELETELATER_GetCameraPosition() const {return XMFLOAT3{};	}
 
 	void TestSetWindowBarName(std::wostringstream& Test) const { SetWindowText(m_hMainWnd, Test.str().c_str());}
-	
+public:
+
+	float CurrentFrame;
 protected:
 	bool InitMainWindow();
 
@@ -64,7 +66,6 @@ protected:
 	bool		m_Resizing;
 
 	GameTimer	m_Timer;
-
 
 	// 시작 값을 위해 상속받은 클래스 시작 시 값 설정 필요
 	std::wstring m_MainWndTitle;
