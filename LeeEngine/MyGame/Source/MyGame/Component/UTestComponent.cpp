@@ -8,22 +8,7 @@ bool operator==(const XMFLOAT2& A, const XMFLOAT2& B)
 
 UTestComponent::UTestComponent()
 {
-	struct Edge
-	{
-		XMFLOAT2 StartPos;
-		XMFLOAT2 EndPos;
-		float LengthSq;
-	};
-
-	struct Triangle
-	{
-		std::vector<XMFLOAT2> Points;
-		std::vector<Edge> Edges;
-
-
-	};
-	std::vector< XMFLOAT2> TestValue = {{0.0f,0.0f}, {100.0f,0.0f}, {50.0f,-50.0f}, {0.0f,-100.0f}, {0.0f,100.0f}, {-100.0f,0.0f}};
-	std::vector<Edge> CurrentEdge;
+	TestValue = {{0.0f,0.0f}, {100.0f,0.0f}, {50.0f,-50.0f}, {0.0f,-100.0f}, {0.0f,100.0f}, {-100.0f,0.0f}};
 	for(int i =0; i < TestValue.size()-1; ++i)
 	{
 		for(int j = i+1; j < TestValue.size(); ++j)
@@ -34,7 +19,7 @@ UTestComponent::UTestComponent()
 			NewEdge.EndPos = TestValue[j];
 
 			std::function<bool(const XMFLOAT2& CheckPoint, const XMFLOAT2& FirstPoint, const XMFLOAT2& SecondPoint)> IsPointOnSegment = [](const XMFLOAT2& A, const XMFLOAT2& B, const XMFLOAT2& C)->bool
-			{
+				{
 					float crossProduct = (C.x - B.x) * (A.y - B.y) - (C.y - B.y) * (A.x - B.x);
 					if (std::abs(crossProduct) > FLT_EPSILON) { // 0이 아닌 경우 (부동소수점 비교)
 						return false;
@@ -42,10 +27,10 @@ UTestComponent::UTestComponent()
 
 					// 2. 점 A가 선분 BC의 범위 내에 있는지 확인
 					if ((A.x <= min(B.x, C.x) || A.x >= max(B.x, C.x)) && (A.y <= min(B.y, C.y) || A.y >= max(B.y, C.y))) return false;
-					
+
 
 					return true;
-			};
+				};
 
 			// 2. 만약 그 간선 사이에 점이 있다면 그 간선은 못만든다(n)
 			bool bIsOnLine = false;
@@ -66,30 +51,30 @@ UTestComponent::UTestComponent()
 
 			// 3. 만약 그 간선이 다른 간선들과 교차할 경우, 길이가 긴 간선이 이긴다 (nlogn)
 			std::function<float(const XMFLOAT2& P, const XMFLOAT2& Q, const XMFLOAT2& R)> CrossProduct = [](const XMFLOAT2& P, const XMFLOAT2& Q, const XMFLOAT2& R)->float
-			{
-				return (Q.x - P.x) * (R.y - P.y) - (Q.y - P.y) * (R.x - P.x);
-			};
-			std::function<bool(const XMFLOAT2& AStart, const XMFLOAT2& AEnd, const XMFLOAT2& BStart, const XMFLOAT2& BEnd)> IsSegmentsIntersect = [CrossProduct](const XMFLOAT2& AStart, const XMFLOAT2& AEnd, const XMFLOAT2& BStart, const XMFLOAT2& BEnd)->bool
-			{
-				float cross1 = CrossProduct(BStart,BEnd,AStart);
-				float cross2 = CrossProduct(BStart,BEnd,AEnd);
-				float cross3 = CrossProduct(AStart,AEnd,BStart);
-				float cross4 = CrossProduct(AStart,AEnd,BEnd);
-
-				bool bIsIntersecting = (cross1*cross2 <= 0) && (cross3*cross4 <= 0);
-				if(bIsIntersecting)
 				{
-					// 직선이 겹칠 경우 선분도 겹치는지 확인
-					bool bIsXNotInterSect = (max(AStart.x, AEnd.x) <= min(BStart.x, BEnd.x) || max(BStart.x, BEnd.x) <= min(AStart.x, AEnd.x));
-					bool bIsYNotInterSect = (max(AStart.y, AEnd.y) <= min(BStart.y, BEnd.y) || max(BStart.y, BEnd.y) <= min(AStart.y, AEnd.y));
-					if ( bIsXNotInterSect || bIsYNotInterSect) 
+					return (Q.x - P.x) * (R.y - P.y) - (Q.y - P.y) * (R.x - P.x);
+				};
+			std::function<bool(const XMFLOAT2& AStart, const XMFLOAT2& AEnd, const XMFLOAT2& BStart, const XMFLOAT2& BEnd)> IsSegmentsIntersect = [CrossProduct](const XMFLOAT2& AStart, const XMFLOAT2& AEnd, const XMFLOAT2& BStart, const XMFLOAT2& BEnd)->bool
+				{
+					float cross1 = CrossProduct(BStart,BEnd,AStart);
+					float cross2 = CrossProduct(BStart,BEnd,AEnd);
+					float cross3 = CrossProduct(AStart,AEnd,BStart);
+					float cross4 = CrossProduct(AStart,AEnd,BEnd);
+
+					bool bIsIntersecting = (cross1*cross2 <= 0) && (cross3*cross4 <= 0);
+					if(bIsIntersecting)
 					{
-						return false;
+						// 직선이 겹칠 경우 선분도 겹치는지 확인
+						bool bIsXNotInterSect = (max(AStart.x, AEnd.x) <= min(BStart.x, BEnd.x) || max(BStart.x, BEnd.x) <= min(AStart.x, AEnd.x));
+						bool bIsYNotInterSect = (max(AStart.y, AEnd.y) <= min(BStart.y, BEnd.y) || max(BStart.y, BEnd.y) <= min(AStart.y, AEnd.y));
+						if ( bIsXNotInterSect || bIsYNotInterSect) 
+						{
+							return false;
+						}
+
 					}
-					
-				}
-				return bIsIntersecting;
-			};
+					return bIsIntersecting;
+				};
 
 			// 선분이 겹칠 경우, 길이가 짧은 것을 넣어주므로
 			// 새로 넣는 간선이 길이가 짧을 경우 추가를 위해 index가 -1이 아니지만
@@ -120,18 +105,17 @@ UTestComponent::UTestComponent()
 					CurrentEdge.push_back(NewEdge);
 				}	
 			}
-			
 
-			
+
+
 		}
 	}
 
-	
+
 	std::vector<Edge> ToBeTriangleEdge{CurrentEdge.begin(),CurrentEdge.end()};
-	std::vector<Triangle> CurrentTriangles;
 	for(int TargetEdgeIndex = 0; TargetEdgeIndex < ToBeTriangleEdge.size(); ++TargetEdgeIndex)
 	{
-		
+
 		for(int NextEdgeIndex = TargetEdgeIndex +1; NextEdgeIndex < ToBeTriangleEdge.size(); ++NextEdgeIndex)
 		{
 			// 시작점 or 끝점이 같은 것이 있는지 확인
@@ -179,7 +163,7 @@ UTestComponent::UTestComponent()
 
 						NewTriangle.Points.push_back(ToBeTriangleEdge[FoundEdgeIndex].StartPos);
 						NewTriangle.Points.push_back(ToBeTriangleEdge[FoundEdgeIndex].EndPos);
-						
+
 						XMFLOAT2 OtherPoint;
 						if(ToBeTriangleEdge[TargetEdgeIndex].StartPos == ToBeTriangleEdge[FoundEdgeIndex].StartPos
 							|| ToBeTriangleEdge[TargetEdgeIndex].StartPos == ToBeTriangleEdge[FoundEdgeIndex].EndPos)
@@ -195,36 +179,16 @@ UTestComponent::UTestComponent()
 
 						CurrentTriangles.push_back(NewTriangle);
 					}
-					
-					
+
+
 				}
-				
+
 			}
 		}
 		// 현재의 탐색하는 간선에 대해서 탐색이 끝나면 해당 간선은 삭제해준다.
 		ToBeTriangleEdge.erase(ToBeTriangleEdge.begin());
 		--TargetEdgeIndex;
 	}
-	static bool a = true;
-	if(a)
-	{
-		a=false;
-		std::cout<< "\n\nStart\n";
-		for(int i = 0; i < CurrentTriangles.size(); ++i)
-		{
-			std::cout << "triangle " + i << std::endl;
-			for(int j = 0; j < 3; ++j)
-			{
-				std::cout<<"    " << XMFLOAT2_TO_TEXT(CurrentTriangles[i].Points[j])<<std::endl;
-				
-			}
-			
-		}
-	}
-	
-
-
-
 }
 
 void UTestComponent::DrawDetailPanel(UINT ComponentDepth)
@@ -236,24 +200,36 @@ void UTestComponent::DrawDetailPanel(UINT ComponentDepth)
 		
 	}
 
-	/*
+
+	
 	auto d2 = ImGui::GetWindowDrawList();
 
 	ImVec2 CurPos = ImGui::GetCursorScreenPos();
 	ImVec2 DrawRectPos = CurPos + ImVec2{10.0f,10.0f};
-	ImVec2 DrawSize = ImVec2{200.0f,150.0f};
+	ImVec2 DrawSize = ImVec2{400.0f,300.0f};
 	d2->AddRectFilled(DrawRectPos, DrawRectPos+ DrawSize, IM_COL32(50,50,50,255));
 
 
-	std::vector< XMFLOAT2> TestValue = {{0.0f, 0.0f}, {150.0f, 0.0f}, {600.0f, 0.0f}};
-	XMFLOAT2 HorizontalValue = {-180.0f, 180.0f};
-	XMFLOAT2 VerticalValue = {0.0f, 600.0f};
+	XMFLOAT2 HorizontalValue = {-100.0f,100.0f};
+	XMFLOAT2 VerticalValue = {-100.0f, 100.0f};
+	XMFLOAT2 Gap = {10.0f,10.0f};
 
+	ImVec2 RectLeftBottom = DrawRectPos; RectLeftBottom.y += DrawSize.y;
+
+	std::function<XMFLOAT2(const XMFLOAT2& WantPos, const XMFLOAT2& CurrentSize, const XMFLOAT2& WantSize)> AdjustSize = [](const XMFLOAT2& WantPos, const XMFLOAT2& CurrentSize, const XMFLOAT2& WantSize)->XMFLOAT2
+	{
+		XMFLOAT2 AdjustSize;
+		AdjustSize.x = WantSize.x/CurrentSize.x;
+		AdjustSize.y = WantSize.y/CurrentSize.y;
+		return XMFLOAT2{WantPos.x*AdjustSize.x, WantPos.y*AdjustSize.y};
+	};
+
+	XMFLOAT2 CurrentTestValueSize = {HorizontalValue.y - HorizontalValue.x ,VerticalValue.y - VerticalValue.x};
 	for(int i = 0 ; i < TestValue.size(); ++i)
 	{
-		d2->AddCircleFilled()
-		 TestValue[i].x
-	}*/
+		XMFLOAT2 AdjustedTestValue = AdjustSize(XMFLOAT2{TestValue[i].x - HorizontalValue.x, TestValue[i].y - HorizontalValue.x}, CurrentTestValueSize, {DrawSize.x,DrawSize.y});
+		d2->AddCircleFilled(ImVec2{RectLeftBottom.x + AdjustedTestValue.x, RectLeftBottom.y-AdjustedTestValue.y}, 5, IM_COL32(255,255,255,255));
+	}
 
 	
 }
