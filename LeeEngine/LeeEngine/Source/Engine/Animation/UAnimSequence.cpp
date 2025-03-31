@@ -105,6 +105,7 @@ void UAnimSequence::ReadHierarchyData(AssimpNodeData& dest, const aiNode* src)
 	{
 		AssimpNodeData newData;
 		ReadHierarchyData(newData, src->mChildren[i]);
-		dest.children.push_back(newData);
+		dest.children.push_back(newData);	
+		
 	}
 }

@@ -322,6 +322,8 @@ XMFLOAT2 GetLocalPosFromDrawPanel(const XMFLOAT2& DrawPanelPos, const XMFLOAT2& 
 
 	ReturnValue.y = LocalVerticalSize.y - ReturnValue.y -5.0f; // Gap;
 
+	ReturnValue.x = static_cast<int>(ReturnValue.x * 100)/100;
+	ReturnValue.y = static_cast<int>(ReturnValue.y * 100)/100;
 	return ReturnValue;
 }
 
@@ -381,7 +383,6 @@ void UTestComponent::DrawDetailPanel(UINT ComponentDepth)
 	// y축의 height에서 해당 값을 빼주어야 해당 렉트의 위치로 적용된다.
 	XMFLOAT2 CurTestPosToRectSize {CurTestPos.x - DrawRectPos.x,(CurTestPos.y - DrawRectPos.y)};
 	CurrentValue = GetLocalPosFromDrawPanel(CurTestPosToRectSize, HorizontalValue,VerticalValue,{DrawSize.x,DrawSize.y});
-	
 	for(int i = 0; i < CurrentTriangles.size(); ++i)
 	{
 		XMFLOAT2 AdjustedT1 = GetDrawPanelPosFromLocal(CurrentTriangles[i]->Points[0]->Position,HorizontalValue,VerticalValue,{DrawSize.x,DrawSize.y});
@@ -425,6 +426,20 @@ void UTestComponent::DrawDetailPanel(UINT ComponentDepth)
 	
 }
 
+bool IsPointOnLine(const XMFLOAT2& A, const XMFLOAT2& P1, const XMFLOAT2& P2)
+{
+	XMVECTOR P = XMVectorSubtract(XMVectorSet(P1.x,P1.y,0.0f,0.0f), XMVectorSet(P2.x,P2.y,0.0f,0.0f));
+	XMVECTOR AP1 = XMVectorSubtract(XMVectorSet(A.x,A.y,0.0f,0.0f),XMVectorSet(P1.x,P1.y,0.0f,0.0f));
+
+	// 선위에 없음
+	if(std::abs(XMVectorGetZ(XMVector3Cross(P,AP1))) > FLT_EPSILON)
+	{
+		return false;
+	}
+
+	return true;
+}
+
 void UTestComponent::GetAnimsForBlend(XMFLOAT2& OutCurrentValue, std::vector<std::shared_ptr<FAnimClipPoint>>& OutPoints)
 {
 	OutCurrentValue = CurrentValue;
@@ -445,6 +460,29 @@ void UTestComponent::GetAnimsForBlend(XMFLOAT2& OutCurrentValue, std::vector<std
 			OutPoints.emplace_back(P1);
 			OutPoints.emplace_back(P2);
 			OutPoints.emplace_back(P3);
+			return;
 		}
+		else
+		{
+			if(State == EPointAndTriangleState::PATS_InEdge)
+			{
+				const auto& Edges = CurrentTriangles[TriangleIndex]->Edges;
+				for(int EdgeIndex = 0; EdgeIndex < Edges.size(); ++EdgeIndex)
+				{
+					const std::shared_ptr<FAnimClipEdge>& Edge = Edges[EdgeIndex];
+					if(IsPointOnLine(CurrentValue, Edge->StartPoint->Position, Edge->EndPoint->Position))
+					{
+						OutPoints.emplace_back(Edge->StartPoint);
+						OutPoints.emplace_back(Edge->EndPoint);
+					}
+
+				}
+				return;
+			}	
+		}
+
+		
+		
+
 	}
 }
