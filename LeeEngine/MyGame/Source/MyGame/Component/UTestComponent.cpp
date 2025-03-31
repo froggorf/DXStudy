@@ -1,6 +1,10 @@
 #include "UTestComponent.h"
 
 #include <Engine/RenderCore/EditorScene.h>
+bool operator==(const XMFLOAT2& A, const XMFLOAT2& B)
+{
+	return A.x == B.x&& A.y == B.y;
+}
 
 UTestComponent::UTestComponent()
 {
@@ -9,6 +13,14 @@ UTestComponent::UTestComponent()
 		XMFLOAT2 StartPos;
 		XMFLOAT2 EndPos;
 		float LengthSq;
+	};
+
+	struct Triangle
+	{
+		std::vector<XMFLOAT2> Points;
+		std::vector<Edge> Edges;
+
+
 	};
 	std::vector< XMFLOAT2> TestValue = {{0.0f,0.0f}, {100.0f,0.0f}, {50.0f,-50.0f}, {0.0f,-100.0f}, {0.0f,100.0f}, {-100.0f,0.0f}};
 	std::vector<Edge> CurrentEdge;
@@ -114,11 +126,104 @@ UTestComponent::UTestComponent()
 		}
 	}
 
-	std::cout<< "\n\nStart\n";
-	for(int i =0; i<CurrentEdge.size();++i)
+	
+	std::vector<Edge> ToBeTriangleEdge{CurrentEdge.begin(),CurrentEdge.end()};
+	std::vector<Triangle> CurrentTriangles;
+	for(int TargetEdgeIndex = 0; TargetEdgeIndex < ToBeTriangleEdge.size(); ++TargetEdgeIndex)
 	{
-		std::cout<<XMFLOAT2_TO_TEXT(CurrentEdge[i].StartPos) << " - " <<XMFLOAT2_TO_TEXT(CurrentEdge[i].EndPos) <<std::endl;
+		
+		for(int NextEdgeIndex = TargetEdgeIndex +1; NextEdgeIndex < ToBeTriangleEdge.size(); ++NextEdgeIndex)
+		{
+			// 시작점 or 끝점이 같은 것이 있는지 확인
+			bool bIsSameStart = ToBeTriangleEdge[TargetEdgeIndex].StartPos == ToBeTriangleEdge[NextEdgeIndex].StartPos;
+			bool bIsSameEnd = ToBeTriangleEdge[TargetEdgeIndex].EndPos == ToBeTriangleEdge[NextEdgeIndex].EndPos;
+			bool bIsSameAStartAndBEnd = (ToBeTriangleEdge[TargetEdgeIndex].StartPos == ToBeTriangleEdge[NextEdgeIndex].EndPos);
+			bool bIsSameAEndAndBStart = (ToBeTriangleEdge[TargetEdgeIndex].EndPos== ToBeTriangleEdge[NextEdgeIndex].StartPos);
+
+			// 같은 것이 있다면 (이어지는 엣지가 있다면)
+			if(bIsSameStart || bIsSameEnd || bIsSameAStartAndBEnd || bIsSameAEndAndBStart)
+			{
+				// 찾으려는 간선의 위치
+				XMFLOAT2 FindEdgeFirstPos, FindEdgeSecondPos;
+				if(bIsSameStart)
+				{
+					FindEdgeFirstPos = ToBeTriangleEdge[TargetEdgeIndex].EndPos;
+					FindEdgeSecondPos = ToBeTriangleEdge[NextEdgeIndex].EndPos;
+				}
+				if(bIsSameEnd)
+				{
+					FindEdgeFirstPos = ToBeTriangleEdge[TargetEdgeIndex].StartPos;
+					FindEdgeSecondPos = ToBeTriangleEdge[NextEdgeIndex].StartPos;
+				}
+				if(bIsSameAStartAndBEnd)
+				{
+					FindEdgeFirstPos = ToBeTriangleEdge[TargetEdgeIndex].EndPos;
+					FindEdgeSecondPos = ToBeTriangleEdge[NextEdgeIndex].StartPos;	
+				}
+				if(bIsSameAEndAndBStart)
+				{
+					FindEdgeFirstPos = ToBeTriangleEdge[TargetEdgeIndex].StartPos;
+					FindEdgeSecondPos = ToBeTriangleEdge[NextEdgeIndex].EndPos;	
+				}
+
+				for(int FoundEdgeIndex = NextEdgeIndex + 1 ; FoundEdgeIndex < ToBeTriangleEdge.size(); ++FoundEdgeIndex)
+				{
+					// 해당하는 간선을 찾음
+					if(ToBeTriangleEdge[FoundEdgeIndex].StartPos == FindEdgeFirstPos && ToBeTriangleEdge[FoundEdgeIndex].EndPos == FindEdgeSecondPos
+						|| ToBeTriangleEdge[FoundEdgeIndex].EndPos == FindEdgeFirstPos && ToBeTriangleEdge[FoundEdgeIndex].StartPos == FindEdgeSecondPos)
+					{
+						Triangle NewTriangle;
+						NewTriangle.Edges.push_back(ToBeTriangleEdge[TargetEdgeIndex]);
+						NewTriangle.Edges.push_back(ToBeTriangleEdge[NextEdgeIndex]);
+						NewTriangle.Edges.push_back(ToBeTriangleEdge[FoundEdgeIndex]);
+
+						NewTriangle.Points.push_back(ToBeTriangleEdge[FoundEdgeIndex].StartPos);
+						NewTriangle.Points.push_back(ToBeTriangleEdge[FoundEdgeIndex].EndPos);
+						
+						XMFLOAT2 OtherPoint;
+						if(ToBeTriangleEdge[TargetEdgeIndex].StartPos == ToBeTriangleEdge[FoundEdgeIndex].StartPos
+							|| ToBeTriangleEdge[TargetEdgeIndex].StartPos == ToBeTriangleEdge[FoundEdgeIndex].EndPos)
+						{
+							OtherPoint = ToBeTriangleEdge[TargetEdgeIndex].EndPos;
+						}
+						else if(ToBeTriangleEdge[TargetEdgeIndex].EndPos == ToBeTriangleEdge[FoundEdgeIndex].StartPos
+							|| ToBeTriangleEdge[TargetEdgeIndex].EndPos == ToBeTriangleEdge[FoundEdgeIndex].EndPos)
+						{
+							OtherPoint = ToBeTriangleEdge[TargetEdgeIndex].StartPos;
+						}
+						NewTriangle.Points.push_back(OtherPoint);
+
+						CurrentTriangles.push_back(NewTriangle);
+					}
+					
+					
+				}
+				
+			}
+		}
+		// 현재의 탐색하는 간선에 대해서 탐색이 끝나면 해당 간선은 삭제해준다.
+		ToBeTriangleEdge.erase(ToBeTriangleEdge.begin());
+		--TargetEdgeIndex;
 	}
+	static bool a = true;
+	if(a)
+	{
+		a=false;
+		std::cout<< "\n\nStart\n";
+		for(int i = 0; i < CurrentTriangles.size(); ++i)
+		{
+			std::cout << "triangle " + i << std::endl;
+			for(int j = 0; j < 3; ++j)
+			{
+				std::cout<<"    " << XMFLOAT2_TO_TEXT(CurrentTriangles[i].Points[j])<<std::endl;
+				
+			}
+			
+		}
+	}
+	
+
+
 
 }
 
