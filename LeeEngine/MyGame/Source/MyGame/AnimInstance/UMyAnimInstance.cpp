@@ -92,6 +92,27 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 	}	
 }
 
+float DistanceSqToSegment(const XMFLOAT2& P, const XMFLOAT2& A, const XMFLOAT2& B)
+{
+	XMVECTOR AP = XMVectorSubtract(XMVectorSet(A.x,A.y,0.0f,0.0f), XMVectorSet(P.x,P.y,0.0f,0.0f));
+	XMVECTOR AB = XMVectorSubtract(XMVectorSet(A.x,A.y,0.0f,0.0f), XMVectorSet(B.x,B.y,0.0f,0.0f));
+	float LengthSq = XMVectorGetX(XMVector2LengthSq(AB));
+
+	// 만약 선분 AB의 길이가 0이라면, 그냥 한 점에 대해서 반환
+	if(LengthSq < FLT_EPSILON)
+	{
+		return XMVectorGetX(XMVector2LengthEst(AP));
+	}
+
+	// P 에서 AB로의 투영 위치
+	float t = XMVectorGetX(XMVector2Dot(AP,AB));
+	t = std::clamp(t, 0.0f,1.0f);
+
+	XMVECTOR ClosestPoint = XMVectorAdd(XMVectorSet(A.x,A.y,0.0f,0.0f), XMVectorScale(AB, t));
+	XMVECTOR ClosestVector = XMVectorSubtract(XMVectorSet(P.x,P.y,0.0f,0.0f), ClosestPoint);
+	return XMVectorGetX(XMVector2LengthSq(ClosestVector));
+}
+
 void UMyAnimInstance::TriangleInterpolation(const XMFLOAT2& CurrentValue, const std::shared_ptr<FAnimClipPoint>& P1,
 	const std::shared_ptr<FAnimClipPoint>& P2, const std::shared_ptr<FAnimClipPoint>& P3,
 	std::vector<XMMATRIX>& AnimMatrices)
@@ -139,12 +160,33 @@ void UMyAnimInstance::TriangleInterpolation(const XMFLOAT2& CurrentValue, const 
 	{
 		T3.join();
 	}
-	float P1LengthEst = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P1Vector, CurrentValueVector)));
-	float P2LengthEst = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P2Vector, CurrentValueVector)));
-	float P3LengthEst = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P3Vector, CurrentValueVector)));
-	float P1Weight = 1 - P1LengthEst/(P1LengthEst+P2LengthEst+P3LengthEst);
-	float P2Weight = 1 - P2LengthEst/(P1LengthEst+P2LengthEst+P3LengthEst);
-	float P3Weight = 1 - P1Weight-P2Weight;
+
+	// 아래는 점을 기반으로 weight를 계산했던것
+	// 다만 이렇게 할 경우 선분 사이에서 왔다갔다 할 경우 애니메이션이 튀는 현상이 보이기에
+	// 선분에 가까울수록 선분의 비중을 더 크게 주는 방향으로 변경해야할 것으로 생각
+	float P1LengthSq = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P1Vector, CurrentValueVector)));
+	float P2LengthSq = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P2Vector, CurrentValueVector)));
+	float P3LengthSq = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P3Vector, CurrentValueVector)));
+	float P1Weight = 1.0f / std::powf((P1LengthSq),4.0f);
+	float P2Weight = 1.0f / std::powf((P2LengthSq),4.0f); // P2LengthEst/(P1LengthEst+P2LengthEst+P3LengthEst);
+	float P3Weight = 1.0f / std::powf((P3LengthSq),4.0f); //P1Weight-P2Weight;
+	float WeightSumBeforeNormalize = P1Weight+P2Weight+P3Weight;
+	P1Weight = P1Weight/WeightSumBeforeNormalize;
+	P2Weight = P2Weight/WeightSumBeforeNormalize;
+	P3Weight = 1- P1Weight - P2Weight;
+
+	/*float ToP1P2 = std::powf(DistanceSqToSegment(CurrentValue, P1->Position,P2->Position),2.0f);
+	float ToP2P3 = std::powf(DistanceSqToSegment(CurrentValue, P2->Position,P3->Position),2.0f);
+	float ToP3P1 = std::powf(DistanceSqToSegment(CurrentValue, P3->Position,P1->Position),2.0f);
+
+	float P1Weight = 1 / (ToP1P2 + ToP3P1);
+	float P2Weight = 1 / (ToP2P3 + ToP1P2);
+	float P3Weight = 1 / (ToP3P1 + ToP2P3);
+	float WeightSumBeforeNormalize = P1Weight+P2Weight+P3Weight;
+	P1Weight = P1Weight/WeightSumBeforeNormalize;
+	P2Weight = P2Weight/WeightSumBeforeNormalize;
+	P3Weight = 1- P1Weight - P2Weight;*/
+
 	for(int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
 	{
 		for(int VectorIndex = 0; VectorIndex < 4; ++VectorIndex)

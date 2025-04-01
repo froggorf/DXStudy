@@ -2096,8 +2096,19 @@ struct ImVector
     inline int          size_in_bytes() const               { return Size * (int)sizeof(T); }
     inline int          max_size() const                    { return 0x7FFFFFFF / (int)sizeof(T); }
     inline int          capacity() const                    { return Capacity; }
-    inline T&           operator[](int i)                   { IM_ASSERT(i >= 0 && i < Size); return Data[i]; }
-    inline const T&     operator[](int i) const             { IM_ASSERT(i >= 0 && i < Size); return Data[i]; }
+    inline T&           operator[](int i)
+    {
+        // 04.01 2019180031 Imgui 내 이상한 데이터로 인해 계속 중단되므로 nullptr를 반환하도록 변경
+
+    	IM_ASSERT(i >= 0 && i < Size);
+    	return Data[i];
+    }
+    inline const T&     operator[](int i) const
+    {
+        // 04.01 2019180031 Imgui 내 이상한 데이터로 인해 계속 중단되므로 nullptr를 반환하도록 변경
+	    IM_ASSERT(i >= 0 && i < Size);
+    	return Data[i];
+    }
 
     inline T*           begin()                             { return Data; }
     inline const T*     begin() const                       { return Data; }

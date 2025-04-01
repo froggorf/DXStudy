@@ -47,37 +47,38 @@ UTestComponent::UTestComponent()
 	std::shared_ptr<UAnimSequence> RunBack = std::make_shared<UAnimSequence>(GEngine->GetDirectoryPath() + "/Content/Resource/Animation/Paladin/Paladin_RunBack.fbx", PaladinSkeleton->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
 	std::shared_ptr<UAnimSequence> RunLeft = std::make_shared<UAnimSequence>(GEngine->GetDirectoryPath() + "/Content/Resource/Animation/Paladin/Paladin_RunLeft.fbx", PaladinSkeleton->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
 
-	//HorizontalValue = {-180.0f - Gap.x,180.0f + Gap.x};
-	//VerticalValue = {0.0f-Gap.y, 600.0f+Gap.y};
+	HorizontalValue = {-180.0f - Gap.x,180.0f + Gap.x};
+	VerticalValue = {0.0f-Gap.y, 600.0f+Gap.y};
 
-	//// IDLE
-	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{0.0f,0.0f}, IdleAnim));
-	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-90.0f,0.0f}, IdleAnim));
-	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-180.0f,0.0f}, IdleAnim));
-	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{90.0f,0.0f}, IdleAnim));
-	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{180.0f,0.0f}, IdleAnim));
+	// IDLE
+	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{0.0f,0.0f}, IdleAnim));
+	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-90.0f,0.0f}, IdleAnim));
+	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-180.0f,0.0f}, IdleAnim));
+	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{90.0f,0.0f}, IdleAnim));
+	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{180.0f,0.0f}, IdleAnim));
 
-	//// WALK
-	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{0.0f,150.0f}, WalkForward));
-	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-90.0f,150.0f}, WalkLeft));
-	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{90.0f,150.0f}, WalkRight));
-	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-180.0f,150.0f}, WalkBack));
-	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{180.0f,150.0f}, WalkBack));
+	// WALK
+	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{0.0f,150.0f}, WalkForward));
+	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-90.0f,150.0f}, WalkLeft));
+	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{90.0f,150.0f}, WalkRight));
+	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-180.0f,150.0f}, WalkBack));
+	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{180.0f,150.0f}, WalkBack));
 
-	//// Run
-	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{0.0f,600.0f}, RunForward));
-	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-90.0f,600.0f}, RunLeft));
-	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{90.0f,600.0f}, RunRight));
-	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-180.0f,600.0f}, RunBack));
-	//TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{180.0f,600.0f}, RunBack));
+	// Run
+	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{0.0f,600.0f}, RunForward));
+	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-90.0f,600.0f}, RunLeft));
+	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{90.0f,600.0f}, RunRight));
+	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-180.0f,600.0f}, RunBack));
+	TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{180.0f,600.0f}, RunBack));
 
-	{
+	/*{
 		HorizontalValue = {0.0f - Gap.x, 600.0f + Gap.x};
 		VerticalValue = {0.0f-Gap.y, 0.0f+Gap.y};
 		TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{0.0f,0.0f}, IdleAnim));
 		TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{150.0f,0.0f}, WalkForward));
 		TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{600.0f,0.0f}, RunForward));
-	}
+	}*/
+
 	for(int i =0; i < TestValue.size()-1; ++i)
 	{
 		for(int j = i+1; j < TestValue.size(); ++j)
