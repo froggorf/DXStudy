@@ -35,17 +35,21 @@ UTestComponent::UTestComponent()
 		return;
 	}
 
-	std::shared_ptr<UAnimSequence> IdleAnim = std::make_shared<UAnimSequence>(GEngine->GetDirectoryPath() + "/Content/Resource/Animation/Paladin/Paladin_Idle.fbx", PaladinSkeleton->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
+	if(!UAnimationAsset::GetAnimationAsset("AS_Paladin_Idle"))
+	{
+		return;
+	}
+	std::shared_ptr<UAnimSequence> IdleAnim = UAnimSequence::GetAnimationAsset("AS_Paladin_Idle");
 
-	std::shared_ptr<UAnimSequence> WalkForward= std::make_shared<UAnimSequence>(GEngine->GetDirectoryPath() + "/Content/Resource/Animation/Paladin/Paladin_WalkForward.fbx", PaladinSkeleton->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
-	std::shared_ptr<UAnimSequence> WalkRight = std::make_shared<UAnimSequence>(GEngine->GetDirectoryPath() + "/Content/Resource/Animation/Paladin/Paladin_WalkRight.fbx", PaladinSkeleton->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
-	std::shared_ptr<UAnimSequence> WalkBack = std::make_shared<UAnimSequence>(GEngine->GetDirectoryPath() + "/Content/Resource/Animation/Paladin/Paladin_WalkBack.fbx", PaladinSkeleton->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
-	std::shared_ptr<UAnimSequence> WalkLeft = std::make_shared<UAnimSequence>(GEngine->GetDirectoryPath() + "/Content/Resource/Animation/Paladin/Paladin_WalkLeft.fbx", PaladinSkeleton->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
+	std::shared_ptr<UAnimSequence> WalkForward= UAnimSequence::GetAnimationAsset("AS_Paladin_WalkForward");
+	std::shared_ptr<UAnimSequence> WalkRight= UAnimSequence::GetAnimationAsset("AS_Paladin_WalkRight");
+	std::shared_ptr<UAnimSequence> WalkLeft= UAnimSequence::GetAnimationAsset("AS_Paladin_WalkLeft");
+	std::shared_ptr<UAnimSequence> WalkBack= UAnimSequence::GetAnimationAsset("AS_Paladin_WalkBack");
 
-	std::shared_ptr<UAnimSequence> RunForward= std::make_shared<UAnimSequence>(GEngine->GetDirectoryPath() + "/Content/Resource/Animation/Paladin/Paladin_RunForward.fbx", PaladinSkeleton->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
-	std::shared_ptr<UAnimSequence> RunRight = std::make_shared<UAnimSequence>(GEngine->GetDirectoryPath() + "/Content/Resource/Animation/Paladin/Paladin_RunRight.fbx", PaladinSkeleton->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
-	std::shared_ptr<UAnimSequence> RunBack = std::make_shared<UAnimSequence>(GEngine->GetDirectoryPath() + "/Content/Resource/Animation/Paladin/Paladin_RunBack.fbx", PaladinSkeleton->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
-	std::shared_ptr<UAnimSequence> RunLeft = std::make_shared<UAnimSequence>(GEngine->GetDirectoryPath() + "/Content/Resource/Animation/Paladin/Paladin_RunLeft.fbx", PaladinSkeleton->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
+	std::shared_ptr<UAnimSequence> RunForward= UAnimSequence::GetAnimationAsset("AS_Paladin_RunForward");
+	std::shared_ptr<UAnimSequence> RunRight= UAnimSequence::GetAnimationAsset("AS_Paladin_RunRight");
+	std::shared_ptr<UAnimSequence> RunLeft= UAnimSequence::GetAnimationAsset("AS_Paladin_RunLeft");
+	std::shared_ptr<UAnimSequence> RunBack= UAnimSequence::GetAnimationAsset("AS_Paladin_RunBack");
 
 	HorizontalValue = {-180.0f - Gap.x,180.0f + Gap.x};
 	VerticalValue = {0.0f-Gap.y, 600.0f+Gap.y};

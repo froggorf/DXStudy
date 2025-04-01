@@ -4,28 +4,7 @@
 
 
 #include "Bone.h"
-
-
-UAnimSequence::UAnimSequence(const std::string& animationPath, std::map<std::string, BoneInfo>& modelBoneInfoMap)
-{
-	std::string path = animationPath;
-	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(path,
-		aiProcess_Triangulate |
-		aiProcess_ConvertToLeftHanded );
-	if(!scene || !scene->mRootNode)
-	{
-		std::cerr << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
-		return;
-	}
-	aiAnimation* animation = scene->mAnimations[0];
-	
-	Duration = animation->mDuration;
-	TicksPerSecond = animation->mTicksPerSecond;
-	ReadHierarchyData(RootNode, scene->mRootNode);
-	ReadMissingBones(animation, modelBoneInfoMap);
-
-}
+#include "Engine/UEngine.h"
 
 UAnimSequence::UAnimSequence(const UAnimSequence& Other)
 {
@@ -53,6 +32,34 @@ Bone* UAnimSequence::FindBone(const std::string& name)
 
 	return &(*iter);
 }
+
+void UAnimSequence::LoadDataFromFileData(const nlohmann::json& AssetData)
+{
+	UAnimCompositeBase::LoadDataFromFileData(AssetData);
+
+	if(!GetAnimationSkeleton())
+	{
+		return;
+	}
+
+	std::string path = GEngine->GetDirectoryPath() + std::string(AssetData["AnimationDataPath"]);
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile(path,
+		aiProcess_Triangulate |
+		aiProcess_ConvertToLeftHanded );
+	if(!scene || !scene->mRootNode)
+	{
+		std::cerr << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
+		return;
+	}
+	aiAnimation* animation = scene->mAnimations[0];
+
+	Duration = animation->mDuration;
+	TicksPerSecond = animation->mTicksPerSecond;
+	ReadHierarchyData(RootNode, scene->mRootNode);
+	ReadMissingBones(animation, GetAnimationSkeleton()->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
+}
+
 
 void UAnimSequence::ReadMissingBones(const aiAnimation* animation, std::map<std::string, BoneInfo>& modelBoneInfoMap)
 {

@@ -26,7 +26,7 @@
 #pragma comment(lib, "comctl32.lib")
 
 #if defined(DEBUG) | defined(_DEBUG)
-	#pragma comment(lib, "assimp-zvc143-mtd.lib")
+	#pragma comment(lib, "assimp-vc143-mtd.lib")
 #else
 	#pragma comment(lib, "assimp-vc143-mt.lib")
 #endif

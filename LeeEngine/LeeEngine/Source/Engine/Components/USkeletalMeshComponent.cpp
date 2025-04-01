@@ -7,7 +7,7 @@
 
 #include "Engine/Mesh/USkeletalMesh.h"
 #include "Engine/SceneProxy/FSkeletalMeshSceneProxy.h"
-
+#include "Engine/RenderCore/EditorScene.h"
 
 USkeletalMeshComponent::USkeletalMeshComponent()
 {

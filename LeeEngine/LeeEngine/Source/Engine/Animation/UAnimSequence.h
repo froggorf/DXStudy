@@ -23,7 +23,6 @@ class UAnimSequence : public UAnimCompositeBase
 	MY_GENERATED_BODY(UAnimSequence)
 public:
 	UAnimSequence( ) = default;
-	UAnimSequence(const std::string& animationPath, std::map<std::string, BoneInfo>& modelBoneInfoMap );
 	UAnimSequence(const UAnimSequence& Other);
 	~UAnimSequence() override {};
 	Bone* FindBone(const std::string& name);
@@ -32,8 +31,9 @@ public:
 	inline float GetDuration() const { return Duration; }
 	inline const AssimpNodeData& GetRootNode() const { return RootNode; }
 	inline const std::map<std::string, BoneInfo>& GetBoneIDMap() const { return BoneInfoMap; }
+	inline static const std::shared_ptr<UAnimSequence>& GetAnimationAsset(const std::string& AnimationName){return std::dynamic_pointer_cast<UAnimSequence>(GetAnimationAsset(AnimationName));}
 
-
+	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 protected:
 private:
 	// 누락된 본 데이터 추가 및 모델의 boneInfoMap 업데이트

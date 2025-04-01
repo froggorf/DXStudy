@@ -26,7 +26,6 @@ private:
 public:
 protected:
 private:
-	std::vector<std::shared_ptr<UAnimSequence>> AnimSequences;
 
 	std::shared_ptr<UTestComponent> TestComp;
 

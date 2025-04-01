@@ -1,4 +1,5 @@
 #include "CoreMinimal.h"
+#include "Engine/AssetManager/AssetManager.h"
 #include "USkeletalMesh.h"
 
 

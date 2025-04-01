@@ -5,7 +5,6 @@
 
 #pragma once
 #include "Engine/MyEngineUtils.h"
-#include "Engine/AssetManager/AssetManager.h"
 #include "Engine/UObject/UObject.h"
 
 class FTest
