@@ -1,0 +1,6 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_PaladinIdle",
+    "Skeleton": "SK_Paladin",
+    "AnimationDataPath": "/Content/Resource/Animation/Paladin/Paladin_Idle.fbx"
+}
