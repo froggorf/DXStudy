@@ -3,6 +3,7 @@
 #include "UAnimSequence.h"
 
 
+
 #include "Bone.h"
 #include "Engine/UEngine.h"
 
@@ -31,6 +32,88 @@ Bone* UAnimSequence::FindBone(const std::string& name)
 	}
 
 	return &(*iter);
+}
+
+void UAnimSequence::CalculateBoneTransform(float CurrentAnimTime, std::vector<XMMATRIX>& FinalBoneMatrices) 
+{
+	const AssimpNodeData* Node = &GetRootNode();
+	//std::string nodeName = node->name;
+	//DirectX::XMMATRIX nodeTransform = node->transformation;
+	//
+	//Bone* bone = Animation->FindBone(nodeName);
+	//if (bone)
+	//{
+	//	bone->Update(CurrentTime);
+	//	nodeTransform = bone->GetLocalTransform();
+	//}
+
+	//DirectX::XMMATRIX globalTransform = DirectX::XMMatrixMultiply(nodeTransform,parentTransform);
+
+	//auto boneInfoMap = Animation->GetBoneIDMap();
+	//if (boneInfoMap.contains(nodeName))
+	//{
+	//	//globalTransform  = DirectX::XMMatrixMultiply(nodeTransform,parentTransform);
+	//	int index = boneInfoMap[nodeName].id;
+	//	DirectX::XMMATRIX offset = boneInfoMap[nodeName].offset;
+	//	if(index < MAX_BONES)
+	//	{
+	//		FinalBoneMatrices[index] = DirectX::XMMatrixMultiply(offset,globalTransform);	
+	//	}
+	//	
+	//}
+	//else
+	//{
+	//	for (int i = 0; i < node->childrenCount; ++i)
+	//	{
+	//		CalculateBoneTransform(Animation, &node->children[i], parentTransform,CurrentTime, FinalBoneMatrices);
+	//	}
+	//	return;
+	//}
+
+	//for (int i = 0; i < node->children.size(); ++i)
+	//{
+	//	CalculateBoneTransform(Animation, &node->children[i], globalTransform,CurrentTime, FinalBoneMatrices);
+	//}
+
+	std::stack<std::pair<const AssimpNodeData*, XMMATRIX>> nodeStack;
+	nodeStack.push({Node, XMMatrixIdentity()});
+
+	auto boneInfoMap = GetBoneIDMap();
+
+	while (!nodeStack.empty()) {
+		auto [node, parentTransform] = nodeStack.top();
+		nodeStack.pop();
+
+		std::string nodeName = node->name;
+		XMMATRIX nodeTransform = node->transformation;
+
+		Bone* bone = FindBone(nodeName);
+		if (bone) {
+			bone->Update(CurrentAnimTime);
+			nodeTransform = bone->GetLocalTransform();
+		}
+
+		XMMATRIX globalTransform = XMMatrixMultiply(nodeTransform, parentTransform);
+
+		if (boneInfoMap.contains(nodeName)) {
+			int index = boneInfoMap[nodeName].id;
+			XMMATRIX offset = boneInfoMap[nodeName].offset;
+			if (index < MAX_BONES) {
+				FinalBoneMatrices[index] = XMMatrixMultiply(offset, globalTransform);
+			}
+		}
+		else
+		{
+			for (int i = 0; i < node->children.size(); ++i) {
+				nodeStack.push({&node->children[i], parentTransform});
+			}
+			continue;
+		}
+
+		for (int i = 0; i < node->children.size(); ++i) {
+			nodeStack.push({&node->children[i], globalTransform});
+		}
+	}
 }
 
 void UAnimSequence::LoadDataFromFileData(const nlohmann::json& AssetData)

@@ -16,13 +16,23 @@ public:
     const std::shared_ptr<USkeletalMesh>& GetAnimationSkeleton() const {return AnimationSkeleton;}
 
 
-    static const std::shared_ptr<UAnimationAsset>& GetAnimationAsset(const std::string& AnimationAssetName) { return GetAnimationAssetCacheMap()[AnimationAssetName]; }
+    static const std::shared_ptr<UAnimationAsset>& GetAnimationAsset(const std::string& AnimationAssetName)
+    {
+		const auto& Map = GetAnimationAssetCacheMap();
+        if(Map.contains(AnimationAssetName))
+        {
+            return GetAnimationAssetCacheMap()[AnimationAssetName];    
+        }
+	    return nullptr;
+    }
     virtual void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
 protected:
 private:
 public:
 protected:
+	
+
 private:
     std::shared_ptr<USkeletalMesh> AnimationSkeleton;
 

@@ -15,10 +15,12 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <stack>
 #include <map>
 #include <memory>
 
 // 기타 유틸리티 헤더
+#include <thread>
 #include <sstream>
 #include <fstream>
 #include <filesystem>

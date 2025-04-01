@@ -1,6 +1,7 @@
 #pragma once
 // 테스트용 AnimInstance
 
+#include "Engine/Animation/UBlendSpace.h"
 #include "../Component/UTestComponent.h"
 #include "Engine/Animation/UAnimInstance.h"
 
@@ -19,14 +20,10 @@ public:
 protected:
 private:
 
-	void TriangleInterpolation(const XMFLOAT2& CurrentValue, const std::shared_ptr<FAnimClipPoint>& P1, const std::shared_ptr<FAnimClipPoint>& P2,const std::shared_ptr<FAnimClipPoint>& P3, std::vector<XMMATRIX>& AnimMatrices);
-	void LinearInterpolation(const XMFLOAT2& CurrentValue,const std::shared_ptr<FAnimClipPoint>& P1, const std::shared_ptr<FAnimClipPoint>& P2,std::vector<XMMATRIX>& AnimMatrices);
-	void CalculateOneAnimation(const std::shared_ptr<FAnimClipPoint>& Point,
-		std::vector<DirectX::XMMATRIX>& AnimMatrices);
 public:
 protected:
 private:
-
+	std::shared_ptr<UBlendSpace> BS_Paladin_IdleWalkRun;
 	std::shared_ptr<UTestComponent> TestComp;
 
 	float CurrentTime = 0.0f;

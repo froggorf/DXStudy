@@ -10,7 +10,11 @@
 
 UMyAnimInstance::UMyAnimInstance()
 {
-	
+	//BS_Paladin_IdleWalkRun = std::make_shared<UBlendSpace>();
+	if(const std::shared_ptr<UBlendSpace> BlendSpace = UBlendSpace::GetAnimationAsset("BS_Paladin_Locomotion"))
+	{
+		BS_Paladin_IdleWalkRun = BlendSpace;
+	}
 
 }
 
@@ -52,201 +56,34 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 	
 
 	DeltaTime = dt;
-	if(GetSkeletalMeshComponent()&&TestComp)
+	if(GetSkeletalMeshComponent()&&BS_Paladin_IdleWalkRun)
 	{
-		const auto& Edges = TestComp->GetCurrentEdge();
-		const auto& Triangles = TestComp->GetCurrentTriangles();
-		
-		std::vector<DirectX::XMMATRIX> FinalBoneMatrices(MAX_BONES, DirectX::XMMatrixIdentity());
+		std::vector<XMMATRIX> FinalBoneMatrices(MAX_BONES);	
 		
 		CurrentTime = CurrentTime + dt * 15;
-
-		XMFLOAT2 CurrentValue;
-
-		std::vector<std::shared_ptr<FAnimClipPoint>> Points;
-		TestComp->GetAnimsForBlend(CurrentValue,Points);
-
-		if(Points.size() == 3)
+		static float x = 0.0f;
+		static bool b = false;
 		{
-			TriangleInterpolation(CurrentValue, Points[0],Points[1],Points[2],FinalBoneMatrices);
+			x = b? x+0.5f : x-0.5f;
+			if(x < -180.0f)
+			{
+				x = -180.0f;
+				b = 1-b;
+			}
+			if(x>180.0f)
+			{
+				x = 180.0f;
+				b=1-b;
+			}
 		}
-		else if(Points.size()==2)
+		static float y = 600.0f;
+		BS_Paladin_IdleWalkRun->GetAnimationBoneMatrices(XMFLOAT2{x,y}, CurrentTime,FinalBoneMatrices);
+		if(XMMatrixIsIdentity(FinalBoneMatrices[0]) )
 		{
-			LinearInterpolation(CurrentValue,Points[0],Points[1], FinalBoneMatrices);
+			int a = 0;
+			a += 5;
+			std::cout<<a<<std::endl;
 		}
-		else if(Points.size()==1)
-		{
-			CalculateOneAnimation(Points[0], FinalBoneMatrices);
-		}
-
 		FScene::UpdateSkeletalMeshAnimation_GameThread(GetSkeletalMeshComponent()->GetPrimitiveID() , FinalBoneMatrices);
 	}	
-}
-
-float DistanceSqToSegment(const XMFLOAT2& P, const XMFLOAT2& A, const XMFLOAT2& B)
-{
-	XMVECTOR AP = XMVectorSubtract(XMVectorSet(A.x,A.y,0.0f,0.0f), XMVectorSet(P.x,P.y,0.0f,0.0f));
-	XMVECTOR AB = XMVectorSubtract(XMVectorSet(A.x,A.y,0.0f,0.0f), XMVectorSet(B.x,B.y,0.0f,0.0f));
-	float LengthSq = XMVectorGetX(XMVector2LengthSq(AB));
-
-	// 만약 선분 AB의 길이가 0이라면, 그냥 한 점에 대해서 반환
-	if(LengthSq < FLT_EPSILON)
-	{
-		return XMVectorGetX(XMVector2LengthEst(AP));
-	}
-
-	// P 에서 AB로의 투영 위치
-	float t = XMVectorGetX(XMVector2Dot(AP,AB));
-	t = std::clamp(t, 0.0f,1.0f);
-
-	XMVECTOR ClosestPoint = XMVectorAdd(XMVectorSet(A.x,A.y,0.0f,0.0f), XMVectorScale(AB, t));
-	XMVECTOR ClosestVector = XMVectorSubtract(XMVectorSet(P.x,P.y,0.0f,0.0f), ClosestPoint);
-	return XMVectorGetX(XMVector2LengthSq(ClosestVector));
-}
-
-void UMyAnimInstance::TriangleInterpolation(const XMFLOAT2& CurrentValue, const std::shared_ptr<FAnimClipPoint>& P1,
-	const std::shared_ptr<FAnimClipPoint>& P2, const std::shared_ptr<FAnimClipPoint>& P3,
-	std::vector<XMMATRIX>& AnimMatrices)
-{
-	XMVECTOR CurrentValueVector = XMVectorSet(CurrentValue.x,CurrentValue.y,0.0f,0.0f);
-	XMVECTOR P1Vector = XMVectorSet(P1->Position.x,P1->Position.y,0.0f,0.0f);
-	XMVECTOR P2Vector = XMVectorSet(P2->Position.x,P2->Position.y,0.0f,0.0f);
-	XMVECTOR P3Vector = XMVectorSet(P3->Position.x,P3->Position.y,0.0f,0.0f);
-
-	float P1AnimDuration = P1->AnimSequence->GetDuration();
-	float P2AnimDuration = P2->AnimSequence->GetDuration();
-	float P3AnimDuration = P3->AnimSequence->GetDuration();
-
-	//float WantedAnimDuration = (P1AnimDuration+P2AnimDuration+P3AnimDuration)/3;
-	float WantedAnimDuration = 30.0f;
-	float AnimTime = fmod(CurrentTime, WantedAnimDuration);
-	float WantedTimeRate = AnimTime / WantedAnimDuration;
-
-	std::vector<XMMATRIX> P1AnimMatrices(MAX_BONES,XMMatrixIdentity());
-	std::thread T1 (&UAnimInstance::CalculateBoneTransform, this, 
-		P1->AnimSequence, &P1->AnimSequence->GetRootNode(), XMMatrixIdentity(), P1AnimDuration*WantedTimeRate, std::ref(P1AnimMatrices));
-	//CalculateBoneTransform(P1->AnimSequence, &P1->AnimSequence->GetRootNode(), XMMatrixIdentity(), fmod(CurrentTime, P1->AnimSequence->GetDuration()), P1AnimMatrices);
-
-	std::vector<XMMATRIX> P2AnimMatrices(MAX_BONES,XMMatrixIdentity());
-	std::thread T2(&UAnimInstance::CalculateBoneTransform, this,
-		P2->AnimSequence, &P2->AnimSequence->GetRootNode(), XMMatrixIdentity(), P2AnimDuration*WantedTimeRate, std::ref(P2AnimMatrices)
-	);
-	//CalculateBoneTransform(P2->AnimSequence, &P2->AnimSequence->GetRootNode(), XMMatrixIdentity(), fmod(CurrentTime, P2->AnimSequence->GetDuration()), P2AnimMatrices);
-
-	std::vector<XMMATRIX> P3AnimMatrices(MAX_BONES,XMMatrixIdentity());
-	std::thread T3(&UAnimInstance::CalculateBoneTransform, this,
-		P3->AnimSequence, &P3->AnimSequence->GetRootNode(), XMMatrixIdentity(), P3AnimDuration*WantedTimeRate, std::ref(P3AnimMatrices)
-	);
-	//CalculateBoneTransform(P3->AnimSequence, &P3->AnimSequence->GetRootNode(), XMMatrixIdentity(), fmod(CurrentTime, P3->AnimSequence->GetDuration()), P3AnimMatrices);
-
-	if(T1.joinable())
-	{
-		T1.join();
-	}
-	if(T2.joinable())
-	{
-		T2.join();
-	}
-	if(T3.joinable())
-	{
-		T3.join();
-	}
-
-	// 아래는 점을 기반으로 weight를 계산했던것
-	// 다만 이렇게 할 경우 선분 사이에서 왔다갔다 할 경우 애니메이션이 튀는 현상이 보이기에
-	// 선분에 가까울수록 선분의 비중을 더 크게 주는 방향으로 변경해야할 것으로 생각
-	float P1LengthSq = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P1Vector, CurrentValueVector)));
-	float P2LengthSq = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P2Vector, CurrentValueVector)));
-	float P3LengthSq = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P3Vector, CurrentValueVector)));
-	float P1Weight = 1.0f / std::powf((P1LengthSq),4.0f);
-	float P2Weight = 1.0f / std::powf((P2LengthSq),4.0f); // P2LengthEst/(P1LengthEst+P2LengthEst+P3LengthEst);
-	float P3Weight = 1.0f / std::powf((P3LengthSq),4.0f); //P1Weight-P2Weight;
-	float WeightSumBeforeNormalize = P1Weight+P2Weight+P3Weight;
-	P1Weight = P1Weight/WeightSumBeforeNormalize;
-	P2Weight = P2Weight/WeightSumBeforeNormalize;
-	P3Weight = 1- P1Weight - P2Weight;
-
-	/*float ToP1P2 = std::powf(DistanceSqToSegment(CurrentValue, P1->Position,P2->Position),2.0f);
-	float ToP2P3 = std::powf(DistanceSqToSegment(CurrentValue, P2->Position,P3->Position),2.0f);
-	float ToP3P1 = std::powf(DistanceSqToSegment(CurrentValue, P3->Position,P1->Position),2.0f);
-
-	float P1Weight = 1 / (ToP1P2 + ToP3P1);
-	float P2Weight = 1 / (ToP2P3 + ToP1P2);
-	float P3Weight = 1 / (ToP3P1 + ToP2P3);
-	float WeightSumBeforeNormalize = P1Weight+P2Weight+P3Weight;
-	P1Weight = P1Weight/WeightSumBeforeNormalize;
-	P2Weight = P2Weight/WeightSumBeforeNormalize;
-	P3Weight = 1- P1Weight - P2Weight;*/
-
-	for(int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
-	{
-		for(int VectorIndex = 0; VectorIndex < 4; ++VectorIndex)
-		{
-			XMVECTOR WeightedP1 = XMVectorScale(P1AnimMatrices[BoneIndex].r[VectorIndex], P1Weight);
-			XMVECTOR WeightedP2 = XMVectorScale(P2AnimMatrices[BoneIndex].r[VectorIndex], P2Weight);
-			XMVECTOR WeightedP3 = XMVectorScale(P3AnimMatrices[BoneIndex].r[VectorIndex], P3Weight);
-			AnimMatrices[BoneIndex].r[VectorIndex]= XMVectorAdd(XMVectorAdd(WeightedP1,WeightedP2),WeightedP3);
-		}
-	}
-}
-
-void UMyAnimInstance::LinearInterpolation(const XMFLOAT2& CurrentValue, const std::shared_ptr<FAnimClipPoint>& P1,
-	const std::shared_ptr<FAnimClipPoint>& P2,std::vector<XMMATRIX>& AnimMatrices)
-{
-	XMVECTOR CurrentValueVector = XMVectorSet(CurrentValue.x,CurrentValue.y,0.0f,0.0f);
-	XMVECTOR P1Vector = XMVectorSet(P1->Position.x,P1->Position.y,0.0f,0.0f);
-	XMVECTOR P2Vector = XMVectorSet(P2->Position.x,P2->Position.y,0.0f,0.0f);
-
-	float P1AnimDuration = P1->AnimSequence->GetDuration();
-	float P2AnimDuration = P2->AnimSequence->GetDuration();
-
-	//float WantedAnimDuration = (P1AnimDuration+P2AnimDuration)/2;
-	float WantedAnimDuration = 30.0f;
-	float AnimTime = fmod(CurrentTime, WantedAnimDuration);
-	float WantedTimeRate = AnimTime / WantedAnimDuration;
-
-	std::vector<XMMATRIX> P1AnimMatrices(MAX_BONES,XMMatrixIdentity());
-	std::thread T1 (&UAnimInstance::CalculateBoneTransform, this, 
-		P1->AnimSequence, &P1->AnimSequence->GetRootNode(), XMMatrixIdentity(), P1AnimDuration*WantedTimeRate, std::ref(P1AnimMatrices));
-	//CalculateBoneTransform(P1->AnimSequence, &P1->AnimSequence->GetRootNode(), XMMatrixIdentity(), fmod(CurrentTime, P1->AnimSequence->GetDuration()), P1AnimMatrices);
-
-	std::vector<XMMATRIX> P2AnimMatrices(MAX_BONES,XMMatrixIdentity());
-	std::thread T2(&UAnimInstance::CalculateBoneTransform, this,
-		P2->AnimSequence, &P2->AnimSequence->GetRootNode(), XMMatrixIdentity(), P2AnimDuration*WantedTimeRate, std::ref(P2AnimMatrices)
-	);
-	//CalculateBoneTransform(P2->AnimSequence, &P2->AnimSequence->GetRootNode(), XMMatrixIdentity(), fmod(CurrentTime, P2->AnimSequence->GetDuration()), P2AnimMatrices);
-
-
-	if(T1.joinable())
-	{
-		T1.join();
-	}
-	if(T2.joinable())
-	{
-		T2.join();
-	}
-
-	float P1LengthEst = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P1Vector, CurrentValueVector)));
-	float P2LengthEst = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P2Vector, CurrentValueVector)));
-	float P1Weight = P1LengthEst/(P1LengthEst+P2LengthEst);
-	for(int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
-	{
-		XMVECTOR V1 = XMVectorLerp(P1AnimMatrices[BoneIndex].r[0], P2AnimMatrices[BoneIndex].r[0], P1Weight);
-		XMVECTOR V2 = XMVectorLerp(P1AnimMatrices[BoneIndex].r[1], P2AnimMatrices[BoneIndex].r[1], P1Weight);
-		XMVECTOR V3 = XMVectorLerp(P1AnimMatrices[BoneIndex].r[2], P2AnimMatrices[BoneIndex].r[2], P1Weight);
-		XMVECTOR V4 = XMVectorLerp(P1AnimMatrices[BoneIndex].r[3], P2AnimMatrices[BoneIndex].r[3], P1Weight);
-		
-		AnimMatrices[BoneIndex] = XMMATRIX{V1,V2,V3,V4};
-	}
-}
-
-void UMyAnimInstance::CalculateOneAnimation(const std::shared_ptr<FAnimClipPoint>& Point,
-	std::vector<DirectX::XMMATRIX>& AnimMatrices)
-{
-	float P1AnimDuration = Point->AnimSequence->GetDuration();
-
-	
-	CalculateBoneTransform(Point->AnimSequence, &Point->AnimSequence->GetRootNode(), XMMatrixIdentity(), fmod(CurrentTime, Point->AnimSequence->GetDuration()), AnimMatrices);
-
-	
 }

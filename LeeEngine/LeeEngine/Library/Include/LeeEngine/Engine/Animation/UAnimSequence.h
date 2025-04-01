@@ -33,6 +33,9 @@ public:
 	inline const std::map<std::string, BoneInfo>& GetBoneIDMap() const { return BoneInfoMap; }
 	inline static const std::shared_ptr<UAnimSequence>& GetAnimationAsset(const std::string& AnimationName){return std::dynamic_pointer_cast<UAnimSequence>(UAnimationAsset::GetAnimationAsset(AnimationName));}
 
+	void CalculateBoneTransform(float CurrentAnimTime, std::vector<XMMATRIX>& FinalBoneMatrices);
+
+
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 protected:
 private:
