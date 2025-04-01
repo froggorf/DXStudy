@@ -248,7 +248,7 @@ void AnimationApp::InitSamplerState()
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	samplerDesc.MinLOD = 0;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	HR(GDirectXDevice->GetDevice()->CreateSamplerState(&samplerDesc, m_ShadowSamplerState.GetAddressOf()))
+	HR(GDirectXDevice->GetDevice()->CreateSamplerState(&samplerDesc, m_ShadowSamplerState.GetAddressOf()));
 
 
 	D3D11_BLEND_DESC blendDesc = {};
@@ -583,10 +583,10 @@ void AnimationApp::BuildShader()
 	bufferDesc.CPUAccessFlags = 0;
 
 	bufferDesc.ByteWidth = sizeof(ShadowLightMatrixConstantBuffer);
-	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_ShadowLightMatrixConstantBuffer.GetAddressOf()))
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_ShadowLightMatrixConstantBuffer.GetAddressOf()));
 
 		bufferDesc.ByteWidth = sizeof(ShadowObjConstantBuffer);
-	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_ShadowObjConstantBuffer.GetAddressOf()))
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_ShadowObjConstantBuffer.GetAddressOf()));
 
 	
 }

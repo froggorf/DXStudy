@@ -25,7 +25,12 @@
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "comctl32.lib")
 
-#pragma comment(lib, "assimp-vc143-mtd.lib")
+#if defined(DEBUG) | defined(_DEBUG)
+	#pragma comment(lib, "assimp-zvc143-mtd.lib")
+#else
+	#pragma comment(lib, "assimp-vc143-mt.lib")
+#endif
+
 #pragma comment(lib, "DirectXTex.lib")
 
 

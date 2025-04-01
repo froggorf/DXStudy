@@ -91,8 +91,11 @@
     <IntDir>$(SolutionDir)Executable\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LibraryPath>$(SolutionDir)\LeeEngine\Library\Lib\LeeEngine\$(Configuration)\;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)LeeEngine\Library\Include\LeeEngine\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)LeeEngine\ThirdParty\Assimp\lib\$(Configuration)\;$(SolutionDir)LeeEngine\ThirdParty\DirectXTex\lib\$(Configuration)\;$(SolutionDir)LeeEngine\Library\Lib\LeeEngine\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)LeeEngine\Library\Include\LeeEngine\ThirdParty\ImGuizmo;$(SolutionDir)LeeEngine\Library\Include\LeeEngine\ThirdParty\ImGui;$(SolutionDir)LeeEngine\Library\Include\LeeEngine\ThirdParty\nlohmannJson\;$(SolutionDir)LeeEngine\Library\Include\LeeEngine\;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)MyGame</OutDir>
+    <IntDir>$(SolutionDir)Executable\</IntDir>
+    <TargetName>$(ProjectName)_D</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -144,12 +147,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>LeeEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

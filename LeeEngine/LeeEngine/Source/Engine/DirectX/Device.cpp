@@ -228,10 +228,10 @@ void FDirectXDevice::CreateBuffers()
 	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_ObjConstantBuffer.GetAddressOf()));
 
 	bufferDesc.ByteWidth = sizeof(LightFrameConstantBuffer);
-	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_LightConstantBuffer.GetAddressOf()))
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_LightConstantBuffer.GetAddressOf()));
 
-		bufferDesc.ByteWidth = sizeof(SkeletalMeshBoneTransformConstantBuffer);
-	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_SkeletalMeshConstantBuffer.GetAddressOf()))
+	bufferDesc.ByteWidth = sizeof(SkeletalMeshBoneTransformConstantBuffer);
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_SkeletalMeshConstantBuffer.GetAddressOf()));
 
 }
 
