@@ -10,8 +10,7 @@
 
 UMyAnimInstance::UMyAnimInstance()
 {
-	//BS_Paladin_IdleWalkRun = std::make_shared<UBlendSpace>();
-	if(const std::shared_ptr<UBlendSpace> BlendSpace = UBlendSpace::GetAnimationAsset("BS_Paladin_Locomotion"))
+	if(const std::shared_ptr<UBlendSpace> BlendSpace = UBlendSpace::GetAnimationAsset("BS_Paladin_IdleWalkRun"))
 	{
 		BS_Paladin_IdleWalkRun = BlendSpace;
 	}
@@ -77,13 +76,9 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 			}
 		}
 		static float y = 600.0f;
+
 		BS_Paladin_IdleWalkRun->GetAnimationBoneMatrices(XMFLOAT2{x,y}, CurrentTime,FinalBoneMatrices);
-		if(XMMatrixIsIdentity(FinalBoneMatrices[0]) )
-		{
-			int a = 0;
-			a += 5;
-			std::cout<<a<<std::endl;
-		}
+		
 		FScene::UpdateSkeletalMeshAnimation_GameThread(GetSkeletalMeshComponent()->GetPrimitiveID() , FinalBoneMatrices);
 	}	
 }

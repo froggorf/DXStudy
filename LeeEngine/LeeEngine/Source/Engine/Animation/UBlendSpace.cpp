@@ -154,41 +154,33 @@ void UBlendSpace::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
 	UAnimationAsset::LoadDataFromFileData(AssetData);
 
-	std::shared_ptr<UAnimSequence> IdleAnim = UAnimSequence::GetAnimationAsset("AS_Paladin_Idle");
 
-	std::shared_ptr<UAnimSequence> WalkForward= UAnimSequence::GetAnimationAsset("AS_Paladin_WalkForward");
-	std::shared_ptr<UAnimSequence> WalkRight= UAnimSequence::GetAnimationAsset("AS_Paladin_WalkRight");
-	std::shared_ptr<UAnimSequence> WalkLeft= UAnimSequence::GetAnimationAsset("AS_Paladin_WalkLeft");
-	std::shared_ptr<UAnimSequence> WalkBack= UAnimSequence::GetAnimationAsset("AS_Paladin_WalkBack");
+	std::vector<float> Horizontal = AssetData["HorizontalValue"];
+	HorizontalValue = {Horizontal[0] - Gap.x,Horizontal[1] +Gap.x};
+	std::vector<float> Vertical = AssetData["VerticalValue"];
+	VerticalValue = {Vertical[0] - Gap.y,Vertical[1] +Gap.y};
 
-	std::shared_ptr<UAnimSequence> RunForward= UAnimSequence::GetAnimationAsset("AS_Paladin_RunForward");
-	std::shared_ptr<UAnimSequence> RunRight= UAnimSequence::GetAnimationAsset("AS_Paladin_RunRight");
-	std::shared_ptr<UAnimSequence> RunLeft= UAnimSequence::GetAnimationAsset("AS_Paladin_RunLeft");
-	std::shared_ptr<UAnimSequence> RunBack= UAnimSequence::GetAnimationAsset("AS_Paladin_RunBack");
-
-	HorizontalValue = {-180.0f - Gap.x,180.0f + Gap.x};
-	VerticalValue = {0.0f-Gap.y, 600.0f+Gap.y};
-
-	// IDLE
-	CurrentPoints.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{0.0f,0.0f}, IdleAnim));
-	CurrentPoints.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-90.0f,0.0f}, IdleAnim));
-	CurrentPoints.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-180.0f,0.0f}, IdleAnim));
-	CurrentPoints.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{90.0f,0.0f}, IdleAnim));
-	CurrentPoints.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{180.0f,0.0f}, IdleAnim));
-
-	// WALK
-	CurrentPoints.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{0.0f,150.0f}, WalkForward));
-	CurrentPoints.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-90.0f,150.0f}, WalkLeft));
-	CurrentPoints.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{90.0f,150.0f}, WalkRight));
-	CurrentPoints.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-180.0f,150.0f}, WalkBack));
-	CurrentPoints.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{180.0f,150.0f}, WalkBack));
-
-	// Run
-	CurrentPoints.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{0.0f,600.0f}, RunForward));
-	CurrentPoints.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-90.0f,600.0f}, RunLeft));
-	CurrentPoints.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{90.0f,600.0f}, RunRight));
-	CurrentPoints.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{-180.0f,600.0f}, RunBack));
-	CurrentPoints.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{180.0f,600.0f}, RunBack));
+	std::vector<nlohmann::json> Points = AssetData["Points"];
+	for(const auto& Point : Points)
+	{
+		std::vector<float> Position = Point["Position"];
+		std::string AnimClipName = Point["AnimClipName"];
+		if(std::shared_ptr<UAnimSequence> AnimSequence = UAnimSequence::GetAnimationAsset(AnimClipName))
+		{
+			CurrentPoints.emplace_back(std::make_shared<FAnimClipPoint>(
+				XMFLOAT2{Position[0], Position[1]},
+				AnimSequence
+				));	
+		}
+		else
+		{
+			// Non valid AnimClipName
+			assert(1);
+		}
+		
+	}
+	
+	
 
 	CreateEdgeAndTriangle();
 }
