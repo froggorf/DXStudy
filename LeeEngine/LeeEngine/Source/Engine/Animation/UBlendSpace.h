@@ -10,6 +10,7 @@ class UBlendSpace : public UAnimationAsset
 {
 	MY_GENERATED_BODY(UBlendSpace)
 public:
+	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 protected:
 private:
 public:

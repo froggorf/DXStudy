@@ -1,6 +1,7 @@
 #pragma once
 // 테스트용 AnimInstance
 
+#include "Engine/Animation/UBlendSpace.h"
 #include "../Component/UTestComponent.h"
 #include "Engine/Animation/UAnimInstance.h"
 
@@ -29,6 +30,8 @@ private:
 	std::vector<std::shared_ptr<UAnimSequence>> AnimSequences;
 
 	std::shared_ptr<UTestComponent> TestComp;
+
+	std::shared_ptr<UBlendSpace> BS_PaladinIdleWalkRun;
 
 	float CurrentTime = 0.0f;
 	float CurrentSpeed = 0.0f;

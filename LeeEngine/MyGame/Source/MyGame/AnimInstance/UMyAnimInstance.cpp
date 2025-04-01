@@ -19,6 +19,9 @@ UMyAnimInstance::UMyAnimInstance()
 		AnimSequences.push_back(std::make_shared<UAnimSequence>(GEngine->GetDirectoryPath() + "/Content/Resource/Animation/Paladin_Idle.fbx", PaladinSkeleton->GetSkeletalMeshRenderData()->ModelBoneInfoMap));
 		AnimSequences.push_back(std::make_shared<UAnimSequence>(GEngine->GetDirectoryPath() + "/Content/Resource/Animation/Paladin_Running.fbx", PaladinSkeleton->GetSkeletalMeshRenderData()->ModelBoneInfoMap));
 	}
+
+	// 추후에는 데이터에서 갖고올 수 있도록
+	BS_PaladinIdleWalkRun = std::make_shared<UBlendSpace>();
 	
 
 }
@@ -63,9 +66,6 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 	DeltaTime = dt;
 	if(GetSkeletalMeshComponent()&&TestComp)
 	{
-		const auto& Edges = TestComp->GetCurrentEdge();
-		const auto& Triangles = TestComp->GetCurrentTriangles();
-		
 		std::vector<DirectX::XMMATRIX> FinalBoneMatrices(MAX_BONES, DirectX::XMMatrixIdentity());
 		
 		CurrentTime = CurrentTime + dt * 15;

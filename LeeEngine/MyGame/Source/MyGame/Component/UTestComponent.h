@@ -52,9 +52,6 @@ public:
 
 	void GetAnimsForBlend(XMFLOAT2& OutCurrentValue, std::vector<std::shared_ptr<FAnimClipPoint>>& OutPoints);
 
-	const std::vector<std::shared_ptr<FAnimClipEdge>>& GetCurrentEdge() const {return CurrentEdge;}
-	const std::vector<std::shared_ptr<FAnimClipTriangle>>& GetCurrentTriangles() const {return CurrentTriangles;}
-	const std::vector<std::shared_ptr<FAnimClipPoint>>& GetTestValue() const {return TestValue;}
 protected:
 private:
 public:

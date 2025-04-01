@@ -35,6 +35,7 @@ UTestComponent::UTestComponent()
 		return;
 	}
 
+	
 	std::shared_ptr<UAnimSequence> IdleAnim = std::make_shared<UAnimSequence>(GEngine->GetDirectoryPath() + "/Content/Resource/Animation/Paladin/Paladin_Idle.fbx", PaladinSkeleton->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
 
 	std::shared_ptr<UAnimSequence> WalkForward= std::make_shared<UAnimSequence>(GEngine->GetDirectoryPath() + "/Content/Resource/Animation/Paladin/Paladin_WalkForward.fbx", PaladinSkeleton->GetSkeletalMeshRenderData()->ModelBoneInfoMap);

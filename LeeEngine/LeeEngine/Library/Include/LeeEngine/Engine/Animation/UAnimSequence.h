@@ -33,7 +33,7 @@ public:
 	inline const AssimpNodeData& GetRootNode() const { return RootNode; }
 	inline const std::map<std::string, BoneInfo>& GetBoneIDMap() const { return BoneInfoMap; }
 
-
+	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 protected:
 private:
 	// 누락된 본 데이터 추가 및 모델의 boneInfoMap 업데이트
