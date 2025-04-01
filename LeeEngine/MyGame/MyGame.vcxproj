@@ -95,7 +95,7 @@
     <IncludePath>$(SolutionDir)LeeEngine\Library\Include\LeeEngine\ThirdParty\ImGuizmo;$(SolutionDir)LeeEngine\Library\Include\LeeEngine\ThirdParty\ImGui;$(SolutionDir)LeeEngine\Library\Include\LeeEngine\ThirdParty\nlohmannJson\;$(SolutionDir)LeeEngine\Library\Include\LeeEngine\;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)MyGame</OutDir>
     <IntDir>$(SolutionDir)Executable\</IntDir>
-    <TargetName>$(ProjectName)_D</TargetName>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
