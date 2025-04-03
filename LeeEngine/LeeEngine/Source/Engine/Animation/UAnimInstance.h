@@ -37,6 +37,9 @@ private:
 public:
 protected:
 	float DeltaTime;
+
+	float CurrentTime = 0.0f;
+	float LatestUpdateTime = -100.0f;
 private:
 
 	USkeletalMeshComponent* CurrentSkeletalMeshComponent;

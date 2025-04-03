@@ -54,12 +54,10 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 	UAnimInstance::UpdateAnimation(dt);
 	
 
-	DeltaTime = dt;
 	if(GetSkeletalMeshComponent()&&BS_Paladin_IdleWalkRun)
 	{
 		std::vector<XMMATRIX> FinalBoneMatrices(MAX_BONES);	
 		
-		CurrentTime = CurrentTime + dt * 15;
 		static float x = 0.0f;
 		static int a = 0;
 		static bool b = false;

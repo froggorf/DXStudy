@@ -34,47 +34,40 @@ Bone* UAnimSequence::FindBone(const std::string& name)
 	return &(*iter);
 }
 
+
 void UAnimSequence::CalculateBoneTransform(float CurrentAnimTime, std::vector<XMMATRIX>& FinalBoneMatrices) 
 {
-	const AssimpNodeData* Node = &GetRootNode();
-	//std::string nodeName = node->name;
-	//DirectX::XMMATRIX nodeTransform = node->transformation;
-	//
-	//Bone* bone = Animation->FindBone(nodeName);
-	//if (bone)
-	//{
-	//	bone->Update(CurrentTime);
-	//	nodeTransform = bone->GetLocalTransform();
-	//}
+	std::vector<XMMATRIX> GlobalTransform(BoneHierarchy.size(), XMMatrixIdentity());
+	for(int HierarchyIndex = 0; HierarchyIndex < BoneHierarchy.size();++HierarchyIndex)
+	{
+		const FPrecomputedBoneData& BoneData = BoneHierarchy[HierarchyIndex];
+		XMMATRIX LocalTransform = XMMatrixIdentity();
+		if(BoneData.Bone)
+		{
+			BoneData.Bone->Update(CurrentAnimTime);
+			LocalTransform = BoneData.Bone->GetLocalTransform();
+		}
 
-	//DirectX::XMMATRIX globalTransform = DirectX::XMMatrixMultiply(nodeTransform,parentTransform);
+		
+		if(BoneData.ParentIndex >= 0)
+		{
+			GlobalTransform[HierarchyIndex] = XMMatrixMultiply(LocalTransform, GlobalTransform[BoneData.ParentIndex]);
+		}
+		else
+		{
+			GlobalTransform[HierarchyIndex] = LocalTransform;
+		}
 
-	//auto boneInfoMap = Animation->GetBoneIDMap();
-	//if (boneInfoMap.contains(nodeName))
-	//{
-	//	//globalTransform  = DirectX::XMMatrixMultiply(nodeTransform,parentTransform);
-	//	int index = boneInfoMap[nodeName].id;
-	//	DirectX::XMMATRIX offset = boneInfoMap[nodeName].offset;
-	//	if(index < MAX_BONES)
-	//	{
-	//		FinalBoneMatrices[index] = DirectX::XMMatrixMultiply(offset,globalTransform);	
-	//	}
-	//	
-	//}
-	//else
-	//{
-	//	for (int i = 0; i < node->childrenCount; ++i)
-	//	{
-	//		CalculateBoneTransform(Animation, &node->children[i], parentTransform,CurrentTime, FinalBoneMatrices);
-	//	}
-	//	return;
-	//}
+		if(BoneData.BoneInfo.id >= 0 && BoneData.BoneInfo.id < MAX_BONES)
+		{
+			FinalBoneMatrices[BoneData.BoneInfo.id] = XMMatrixMultiply(BoneData.BoneInfo.offset,GlobalTransform[HierarchyIndex]);
+		}
 
-	//for (int i = 0; i < node->children.size(); ++i)
-	//{
-	//	CalculateBoneTransform(Animation, &node->children[i], globalTransform,CurrentTime, FinalBoneMatrices);
-	//}
 
+
+	}
+
+	/*const AssimpNodeData* Node = &GetRootNode();
 	std::stack<std::pair<const AssimpNodeData*, XMMATRIX>> nodeStack;
 	nodeStack.push({Node, XMMatrixIdentity()});
 
@@ -113,7 +106,9 @@ void UAnimSequence::CalculateBoneTransform(float CurrentAnimTime, std::vector<XM
 		for (int i = 0; i < node->children.size(); ++i) {
 			nodeStack.push({&node->children[i], globalTransform});
 		}
-	}
+	}*/
+
+
 }
 
 void UAnimSequence::LoadDataFromFileData(const nlohmann::json& AssetData)
@@ -141,6 +136,8 @@ void UAnimSequence::LoadDataFromFileData(const nlohmann::json& AssetData)
 	TicksPerSecond = animation->mTicksPerSecond;
 	ReadHierarchyData(RootNode, scene->mRootNode);
 	ReadMissingBones(animation, GetAnimationSkeleton()->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
+
+	PrecomputeAnimationData();
 }
 
 
@@ -199,3 +196,44 @@ void UAnimSequence::ReadHierarchyData(AssimpNodeData& dest, const aiNode* src)
 		
 	}
 }
+
+void UAnimSequence::TraverseTreeHierarchy(const AssimpNodeData* NodeData, int ParentIndex)
+{
+	if(!NodeData)
+	{
+		return;
+	}
+
+	FPrecomputedBoneData BoneData;
+	BoneData.BoneName = NodeData->name;
+	BoneData.ParentIndex = ParentIndex;
+	BoneData.Bone = FindBone(BoneData.BoneName);
+
+	
+	if(BoneInfoMap.contains(BoneData.BoneName))
+	{
+		BoneData.BoneInfo = BoneInfoMap[BoneData.BoneName];
+	}
+	else
+	{
+		BoneData.BoneInfo.id = -1;
+		BoneData.BoneInfo.offset = XMMatrixIdentity();
+	}
+
+	int CurrentIndex = BoneHierarchy.size();
+	BoneHierarchy.emplace_back(BoneData);
+
+	int ChildCount = NodeData->children.size();
+	for(int ChildIndex = 0; ChildIndex < ChildCount; ++ChildIndex)
+	{
+		TraverseTreeHierarchy(&NodeData->children[ChildIndex], CurrentIndex); 
+	}
+}
+
+void UAnimSequence::PrecomputeAnimationData()
+{
+	BoneHierarchy.clear();
+	TraverseTreeHierarchy(&RootNode, -1);
+
+}
+

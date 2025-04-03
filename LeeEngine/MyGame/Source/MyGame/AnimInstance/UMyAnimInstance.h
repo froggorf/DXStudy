@@ -26,7 +26,6 @@ private:
 	std::shared_ptr<UBlendSpace> BS_Paladin_IdleWalkRun;
 	std::shared_ptr<UTestComponent> TestComp;
 
-	float CurrentTime = 0.0f;
 	float CurrentSpeed = 0.0f;
 
 };

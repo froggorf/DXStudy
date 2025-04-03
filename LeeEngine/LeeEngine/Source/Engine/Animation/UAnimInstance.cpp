@@ -37,8 +37,18 @@ void UAnimInstance::UpdateAnimation(float dt)
 
 void UAnimInstance::Tick(float DeltaSeconds)
 {
-	NativeUpdateAnimation(DeltaSeconds);
-	UpdateAnimation(DeltaSeconds);
+	DeltaTime = DeltaSeconds;
+	CurrentTime = CurrentTime + DeltaSeconds * 15;
+
+	static float TicksPerSecondTime = 1.0f/30*15;
+	if(LatestUpdateTime + TicksPerSecondTime < CurrentTime)
+	{
+		LatestUpdateTime = CurrentTime;
+
+		NativeUpdateAnimation(DeltaSeconds);
+		UpdateAnimation(DeltaSeconds);
+	}
+
 }
 
 
