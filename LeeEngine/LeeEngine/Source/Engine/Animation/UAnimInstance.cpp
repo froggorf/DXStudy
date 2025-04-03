@@ -7,6 +7,7 @@
 #include "UAnimSequence.h"
 #include "Bone.h"
 #include "Engine/Components/USkeletalMeshComponent.h"
+#include "Engine/RenderCore/EditorScene.h"
 #include "Engine/RenderCore/renderingthread.h"
 
 UAnimInstance::UAnimInstance()
@@ -38,11 +39,12 @@ void UAnimInstance::UpdateAnimation(float dt)
 void UAnimInstance::Tick(float DeltaSeconds)
 {
 	DeltaTime = DeltaSeconds;
-	CurrentTime = CurrentTime + DeltaSeconds * 15;
+	static float DefaultSpeed = 30;
+	CurrentTime = CurrentTime + DeltaSeconds * DefaultSpeed;
 
-	static float TicksPerSecondTime = 1.0f/30*15;
+	static float TicksPerSecondTime = 1.0f/30* DefaultSpeed;
 	if(LatestUpdateTime + TicksPerSecondTime < CurrentTime)
-	{
+	{		
 		LatestUpdateTime = CurrentTime;
 
 		NativeUpdateAnimation(DeltaSeconds);

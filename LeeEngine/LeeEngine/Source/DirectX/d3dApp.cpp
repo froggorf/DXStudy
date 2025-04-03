@@ -9,6 +9,8 @@
 #include "Engine/DirectX/Device.h"
 #include "Engine/RenderCore/EditorScene.h"
 
+
+
 namespace
 {
 	// 특정 메시지를 클래스의 멤버함수로 전달하기 위해
@@ -68,7 +70,7 @@ int D3DApp::Run()
 
 
 	m_Timer.Reset();
-	const int targetFPS = 200;  // 목표 FPS
+	const int targetFPS = 10000;  // 목표 FPS
 	const double TargetFrameTime = 1'000'000.0f / targetFPS; // 마이크로 초
 	while(msg.message != WM_QUIT)
 	{

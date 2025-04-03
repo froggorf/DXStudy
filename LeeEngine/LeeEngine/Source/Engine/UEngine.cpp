@@ -8,6 +8,7 @@
 #include "RenderCore/RenderingThread.h"
 #include "World/UWorld.h"
 #include "Mesh/USkeletalMesh.h"
+#include "Misc/QueuedThreadPool.h"
 #include "RenderCore/EditorScene.h"
 
 
@@ -39,6 +40,8 @@ void UEngine::InitEngine()
 		EngineDirectory.replace(p, p+5, "LeeEngine");
 	}
 
+	GThreadPool = std::make_unique<FQueuedThreadPool>(std::thread::hardware_concurrency()-2); // GameThread, RenderThread
+	
 	PostLoad();
 
 

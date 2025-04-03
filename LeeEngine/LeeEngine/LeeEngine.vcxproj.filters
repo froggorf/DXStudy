@@ -61,6 +61,15 @@
     <Filter Include="Source\Engine\Animation">
       <UniqueIdentifier>{7d32f728-d22b-4929-85e5-dc16706e85aa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Engine\Core">
+      <UniqueIdentifier>{819757b0-56dd-46f0-a0f3-a962a3f44c6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine\Core\Async">
+      <UniqueIdentifier>{2e1cd4f3-29c6-46db-a699-72b8b98a0ee7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine\Misc">
+      <UniqueIdentifier>{d892d5f0-652a-4c98-954e-493c0468baa3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\DirectX\ShadowMap.cpp">
@@ -230,6 +239,12 @@
     </ClCompile>
     <ClCompile Include="Source\CoreMinimal.cpp">
       <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\Async\ThreadPool.cpp">
+      <Filter>Source\Engine\Core\Async</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Misc\QueuedThreadPool.cpp">
+      <Filter>Source\Engine\Misc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -421,6 +436,12 @@
     </ClInclude>
     <ClInclude Include="Source\CoreMinimal.h">
       <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Core\Async\ThreadPool.h">
+      <Filter>Source\Engine\Core\Async</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Misc\QueuedThreadPool.h">
+      <Filter>Source\Engine\Misc</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

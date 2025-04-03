@@ -79,8 +79,8 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 			}	
 		}
 		
-		static float y = 600.0f;
-
+		static float y = 500.0f;
+		
 		BS_Paladin_IdleWalkRun->GetAnimationBoneMatrices(XMFLOAT2{x,y}, CurrentTime,FinalBoneMatrices);
 		
 		FScene::UpdateSkeletalMeshAnimation_GameThread(GetSkeletalMeshComponent()->GetPrimitiveID() , FinalBoneMatrices);

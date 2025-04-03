@@ -1,5 +1,8 @@
 #include "CoreMinimal.h"
 #include "UBlendSpace.h"
+
+#include "Engine/Misc/QueuedThreadPool.h"
+#include "Engine/RenderCore/EditorScene.h"
 XMFLOAT2 UBlendSpace::Gap = {5.0f,5.0f};
 // ========================================================================
 bool operator==(const XMFLOAT2& A, const XMFLOAT2& B)
@@ -371,67 +374,95 @@ void UBlendSpace::CreateTriangle()
 void UBlendSpace::TriangleInterpolation(const XMFLOAT2& AnimValue,
 	const std::shared_ptr<FAnimClipTriangle>& Triangle, float AnimTime, std::vector<XMMATRIX>& OutMatrices)
 {
-	const std::shared_ptr<FAnimClipPoint>& P1 = Triangle->Points[0];
-	const std::shared_ptr<FAnimClipPoint>& P2 = Triangle->Points[1];
-	const std::shared_ptr<FAnimClipPoint>& P3 = Triangle->Points[2];
 
-	XMVECTOR CurrentValueVector = XMVectorSet(AnimValue.x,AnimValue.y,0.0f,0.0f);
-	XMVECTOR P1Vector = XMVectorSet(P1->Position.x,P1->Position.y,0.0f,0.0f);
-	XMVECTOR P2Vector = XMVectorSet(P2->Position.x,P2->Position.y,0.0f,0.0f);
-	XMVECTOR P3Vector = XMVectorSet(P3->Position.x,P3->Position.y,0.0f,0.0f);
-
-	float P1AnimDuration = P1->AnimSequence->GetDuration();
-	float P2AnimDuration = P2->AnimSequence->GetDuration();
-	float P3AnimDuration = P3->AnimSequence->GetDuration();
-
-	float WantedAnimDuration = 30.0f;
-	float AnimTimeNormalized = fmod(AnimTime, WantedAnimDuration);
-	float WantedTimeRate = AnimTimeNormalized / WantedAnimDuration;
-
-	std::vector<XMMATRIX> P1AnimMatrices(MAX_BONES,XMMatrixIdentity());
-	std::thread T1 (&UAnimSequence::CalculateBoneTransform, P1->AnimSequence, P1AnimDuration*WantedTimeRate, std::ref(P1AnimMatrices));
-	std::vector<XMMATRIX> P2AnimMatrices(MAX_BONES,XMMatrixIdentity());
-	std::thread T2 (&UAnimSequence::CalculateBoneTransform, P2->AnimSequence, P2AnimDuration*WantedTimeRate, std::ref(P2AnimMatrices));
-
-	std::vector<XMMATRIX> P3AnimMatrices(MAX_BONES,XMMatrixIdentity());
-	std::thread T3 (&UAnimSequence::CalculateBoneTransform, P3->AnimSequence, P3AnimDuration*WantedTimeRate, std::ref(P3AnimMatrices));
-
-	if(T1.joinable())
 	{
-		T1.join();
-	}
-	if(T2.joinable())
-	{
-		T2.join();
-	}
-	if(T3.joinable())
-	{
-		T3.join();
-	}
+		const std::shared_ptr<FAnimClipPoint>& P1 = Triangle->Points[0];
+		const std::shared_ptr<FAnimClipPoint>& P2 = Triangle->Points[1];
+		const std::shared_ptr<FAnimClipPoint>& P3 = Triangle->Points[2];
 
-	// 점의 거리를 기반으로 가중치 계산
-	float P1LengthSq = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P1Vector, CurrentValueVector)));
-	float P2LengthSq = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P2Vector, CurrentValueVector)));
-	float P3LengthSq = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P3Vector, CurrentValueVector)));
-	float P1Weight = 1.0f / std::powf((P1LengthSq),4.0f);
-	float P2Weight = 1.0f / std::powf((P2LengthSq),4.0f); // P2LengthEst/(P1LengthEst+P2LengthEst+P3LengthEst);
-	float P3Weight = 1.0f / std::powf((P3LengthSq),4.0f); //P1Weight-P2Weight;
-	float WeightSumBeforeNormalize = P1Weight+P2Weight+P3Weight;
-	P1Weight = P1Weight/WeightSumBeforeNormalize;
-	P2Weight = P2Weight/WeightSumBeforeNormalize;
-	P3Weight = 1- P1Weight - P2Weight;
+		XMVECTOR CurrentValueVector = XMVectorSet(AnimValue.x,AnimValue.y,0.0f,0.0f);
+		XMVECTOR P1Vector = XMVectorSet(P1->Position.x,P1->Position.y,0.0f,0.0f);
+		XMVECTOR P2Vector = XMVectorSet(P2->Position.x,P2->Position.y,0.0f,0.0f);
+		XMVECTOR P3Vector = XMVectorSet(P3->Position.x,P3->Position.y,0.0f,0.0f);
 
+		float P1AnimDuration = P1->AnimSequence->GetDuration();
+		float P2AnimDuration = P2->AnimSequence->GetDuration();
+		float P3AnimDuration = P3->AnimSequence->GetDuration();
 
-	for(int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
-	{
-		for(int VectorIndex = 0; VectorIndex < 4; ++VectorIndex)
+		float WantedAnimDuration = 30.0f;
+		float AnimTimeNormalized = fmod(AnimTime, WantedAnimDuration);
+		float WantedTimeRate = AnimTimeNormalized / WantedAnimDuration;
+
+		std::vector<XMMATRIX> P1AnimMatrices(MAX_BONES,XMMatrixIdentity());
+
+		std::atomic<bool> bAnim1Updated = false;
+		auto Anim1Work = [P1, P1AnimDuration, WantedTimeRate, &P1AnimMatrices]()
 		{
-			XMVECTOR WeightedP1 = XMVectorScale(P1AnimMatrices[BoneIndex].r[VectorIndex], P1Weight);
-			XMVECTOR WeightedP2 = XMVectorScale(P2AnimMatrices[BoneIndex].r[VectorIndex], P2Weight);
-			XMVECTOR WeightedP3 = XMVectorScale(P3AnimMatrices[BoneIndex].r[VectorIndex], P3Weight);
-			OutMatrices[BoneIndex].r[VectorIndex]= XMVectorAdd(XMVectorAdd(WeightedP1,WeightedP2),WeightedP3);
+			P1->AnimSequence->CalculateBoneTransform(P1AnimDuration*WantedTimeRate, (P1AnimMatrices));
+		};
+		GThreadPool->AddTask(
+			FTask{
+				2,
+				Anim1Work,
+				&bAnim1Updated}
+				);
+
+
+		std::atomic<bool> bAnim2Updated = false;
+	
+		std::vector<XMMATRIX> P2AnimMatrices(MAX_BONES,XMMatrixIdentity());
+		auto Anim2Work = [P2, P2AnimDuration, WantedTimeRate, &P2AnimMatrices]()
+		{
+			P2->AnimSequence->CalculateBoneTransform(P2AnimDuration*WantedTimeRate, (P2AnimMatrices));
+		};
+		GThreadPool->AddTask(
+			FTask{
+				2,
+				Anim2Work,
+			&bAnim2Updated}
+		);
+
+		std::atomic<bool> bAnim3Updated = false;
+		std::vector<XMMATRIX> P3AnimMatrices(MAX_BONES,XMMatrixIdentity());
+		auto Anim3Work = 		[P3, P3AnimDuration, WantedTimeRate, &P3AnimMatrices]()
+		{ P3->AnimSequence->CalculateBoneTransform(P3AnimDuration*WantedTimeRate, (P3AnimMatrices)); };
+		GThreadPool->AddTask(
+			FTask{
+				2,
+			Anim3Work,
+			&bAnim3Updated}
+		);
+
+		// 점의 거리를 기반으로 가중치 계산
+		float P1LengthSq = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P1Vector, CurrentValueVector)));
+		float P2LengthSq = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P2Vector, CurrentValueVector)));
+		float P3LengthSq = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P3Vector, CurrentValueVector)));
+		float P1Weight = 1.0f / std::powf((P1LengthSq),4.0f);
+		float P2Weight = 1.0f / std::powf((P2LengthSq),4.0f); // P2LengthEst/(P1LengthEst+P2LengthEst+P3LengthEst);
+		float P3Weight = 1.0f / std::powf((P3LengthSq),4.0f); //P1Weight-P2Weight;
+		float WeightSumBeforeNormalize = P1Weight+P2Weight+P3Weight;
+		P1Weight = P1Weight/WeightSumBeforeNormalize;
+		P2Weight = P2Weight/WeightSumBeforeNormalize;
+		P3Weight = 1- P1Weight - P2Weight;
+
+		while (!bAnim1Updated || !bAnim2Updated || !bAnim3Updated)
+		{
+			std::this_thread::yield();
+		}
+
+		for(int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
+		{
+			for(int VectorIndex = 0; VectorIndex < 4; ++VectorIndex)
+			{
+				XMVECTOR WeightedP1 = XMVectorScale(P1AnimMatrices[BoneIndex].r[VectorIndex], P1Weight);
+				XMVECTOR WeightedP2 = XMVectorScale(P2AnimMatrices[BoneIndex].r[VectorIndex], P2Weight);
+				XMVECTOR WeightedP3 = XMVectorScale(P3AnimMatrices[BoneIndex].r[VectorIndex], P3Weight);
+				OutMatrices[BoneIndex].r[VectorIndex]= XMVectorAdd(XMVectorAdd(WeightedP1,WeightedP2),WeightedP3);
+			}
 		}
 	}
+
+	
 }
 
 void UBlendSpace::LinearInterpolation(const XMFLOAT2& CurrentValue,
@@ -452,23 +483,44 @@ void UBlendSpace::LinearInterpolation(const XMFLOAT2& CurrentValue,
 	float WantedTimeRate = AnimTimeNormalized / WantedAnimDuration;
 
 	std::vector<XMMATRIX> P1AnimMatrices(MAX_BONES,XMMatrixIdentity());
-	std::thread T1 (&UAnimSequence::CalculateBoneTransform, P1->AnimSequence, P1AnimDuration*WantedTimeRate, std::ref(P1AnimMatrices));
+
+	std::atomic<bool> bAnim1Updated = false;
+	auto Anim1Work = [P1, P1AnimDuration, WantedTimeRate, &P1AnimMatrices]()
+		{
+			P1->AnimSequence->CalculateBoneTransform(P1AnimDuration*WantedTimeRate, (P1AnimMatrices));
+		};
+	GThreadPool->AddTask(
+		FTask{
+			2,
+			Anim1Work,
+			&bAnim1Updated}
+			);
+
+
+	std::atomic<bool> bAnim2Updated = false;
+
 	std::vector<XMMATRIX> P2AnimMatrices(MAX_BONES,XMMatrixIdentity());
-	std::thread T2 (&UAnimSequence::CalculateBoneTransform, P2->AnimSequence, P2AnimDuration*WantedTimeRate, std::ref(P2AnimMatrices));
-
-
-	if(T1.joinable())
-	{
-		T1.join();
-	}
-	if(T2.joinable())
-	{
-		T2.join();
-	}
+	auto Anim2Work = [P2, P2AnimDuration, WantedTimeRate, &P2AnimMatrices]()
+		{
+			P2->AnimSequence->CalculateBoneTransform(P2AnimDuration*WantedTimeRate, (P2AnimMatrices));
+		};
+	GThreadPool->AddTask(
+		FTask{
+			2,
+			Anim2Work,
+			&bAnim2Updated}
+			);
 
 	float P1LengthEst = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P1Vector, CurrentValueVector)));
 	float P2LengthEst = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P2Vector, CurrentValueVector)));
 	float P1Weight = P1LengthEst/(P1LengthEst+P2LengthEst);
+
+	while (!bAnim1Updated || !bAnim2Updated )
+	{
+		std::this_thread::yield();
+	}
+
+
 	for(int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
 	{
 		XMVECTOR V1 = XMVectorLerp(P1AnimMatrices[BoneIndex].r[0], P2AnimMatrices[BoneIndex].r[0], P1Weight);
@@ -478,6 +530,8 @@ void UBlendSpace::LinearInterpolation(const XMFLOAT2& CurrentValue,
 
 		OutMatrices[BoneIndex] = XMMATRIX{V1,V2,V3,V4};
 	}
+
+	
 }
 
 void UBlendSpace::CalculateOneAnimation(const std::shared_ptr<FAnimClipPoint>& Point,

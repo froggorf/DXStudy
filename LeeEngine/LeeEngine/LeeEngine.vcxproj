@@ -43,6 +43,7 @@
     <ClCompile Include="Source\Engine\Components\USkeletalMeshComponent.cpp" />
     <ClCompile Include="Source\Engine\Components\USkinnedMeshComponent.cpp" />
     <ClCompile Include="Source\Engine\Components\UStaticMeshComponent.cpp" />
+    <ClCompile Include="Source\Engine\Core\Async\ThreadPool.cpp" />
     <ClCompile Include="Source\Engine\DirectX\Device.cpp" />
     <ClCompile Include="Source\Engine\EditorClient\Panel\EditorClient.cpp" />
     <ClCompile Include="Source\Engine\EditorClient\Panel\ImguiActorDetail.cpp" />
@@ -56,6 +57,7 @@
     <ClCompile Include="Source\Engine\Mesh\USkeletalMesh.cpp" />
     <ClCompile Include="Source\Engine\Mesh\USkinnedAsset.cpp" />
     <ClCompile Include="Source\Engine\Mesh\UStaticMesh.cpp" />
+    <ClCompile Include="Source\Engine\Misc\QueuedThreadPool.cpp" />
     <ClCompile Include="Source\Engine\MyEngineUtils.cpp" />
     <ClCompile Include="Source\Engine\RenderCore\EditorScene.cpp" />
     <ClCompile Include="Source\Engine\RenderCore\ImGUIActionTask.cpp" />
@@ -136,6 +138,7 @@
     <ClInclude Include="Source\Engine\Components\USkeletalMeshComponent.h" />
     <ClInclude Include="Source\Engine\Components\USkinnedMeshComponent.h" />
     <ClInclude Include="Source\Engine\Components\UStaticMeshComponent.h" />
+    <ClInclude Include="Source\Engine\Core\Async\ThreadPool.h" />
     <ClInclude Include="Source\Engine\DirectX\Device.h" />
     <ClInclude Include="Source\Engine\EditorClient\Panel\EditorClient.h" />
     <ClInclude Include="Source\Engine\EditorClient\Panel\ImguiActorDetail.h" />
@@ -150,6 +153,7 @@
     <ClInclude Include="Source\Engine\Mesh\USkeletalMesh.h" />
     <ClInclude Include="Source\Engine\Mesh\USkinnedAsset.h" />
     <ClInclude Include="Source\Engine\Mesh\UStaticMesh.h" />
+    <ClInclude Include="Source\Engine\Misc\QueuedThreadPool.h" />
     <ClInclude Include="Source\Engine\MyEngineUtils.h" />
     <ClInclude Include="Source\Engine\RenderCore\EditorScene.h" />
     <ClInclude Include="Source\Engine\RenderCore\ImGUIActionTask.h" />
