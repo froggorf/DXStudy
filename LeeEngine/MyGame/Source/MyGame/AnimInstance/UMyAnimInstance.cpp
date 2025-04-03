@@ -61,20 +61,26 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 		
 		CurrentTime = CurrentTime + dt * 15;
 		static float x = 0.0f;
+		static int a = 0;
 		static bool b = false;
+		++a;
+		if(a % 10 == 0)
 		{
-			x = b? x+0.5f : x-0.5f;
-			if(x < -180.0f)
 			{
-				x = -180.0f;
-				b = 1-b;
-			}
-			if(x>180.0f)
-			{
-				x = 180.0f;
-				b=1-b;
-			}
+				x = b? x+0.5f : x-0.5f;
+				if(x < -180.0f)
+				{
+					x = -180.0f;
+					b = 1-b;
+				}
+				if(x>180.0f)
+				{
+					x = 180.0f;
+					b=1-b;
+				}
+			}	
 		}
+		
 		static float y = 600.0f;
 
 		BS_Paladin_IdleWalkRun->GetAnimationBoneMatrices(XMFLOAT2{x,y}, CurrentTime,FinalBoneMatrices);
