@@ -58,7 +58,14 @@ class UBlendSpace : public UAnimationAsset
 	MY_GENERATED_BODY(UBlendSpace)
 public:
 
-	inline static const std::shared_ptr<UBlendSpace>& GetAnimationAsset(const std::string& AnimationName){return std::dynamic_pointer_cast<UBlendSpace>(UAnimationAsset::GetAnimationAsset(AnimationName));}
+	inline static const std::shared_ptr<UBlendSpace>& GetAnimationAsset(const std::string& AnimationName)
+	{
+		if(std::shared_ptr<UAnimationAsset> FindAsset = UAnimationAsset::GetAnimationAsset(AnimationName))
+		{
+			return std::dynamic_pointer_cast<UBlendSpace>(FindAsset);	
+		}
+		return nullptr;
+	}
 
 	void GetAnimationBoneMatrices(const XMFLOAT2& AnimValue, float CurrentAnimTime, std::vector<XMMATRIX>& OutMatrices);
 
