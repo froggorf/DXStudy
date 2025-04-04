@@ -6,19 +6,19 @@
 		"VerticalValue" : [ -90.0, 90.0 ],
 		"Points" : [ 
 	{ "Position": [ 45.0, 90.0], "AnimClipName": "M_Neutral_AO_Stand_X+45_Y+90" },
-	{ "Position": [ 45.0, 0.0 ], "AnimClipName": "AS_M_Neutral_AO_Stand_X+45_Y0" },
-	{ "Position": [ 45.0,-90.0 ], "AnimClipName": "AS_M_Neutral_AO_Stand_X+45_Y-90" },
-	{ "Position": [ 90.0,90.0 ], "AnimClipName": "AS_M_Neutral_AO_Stand_X+90_Y+90" },
-	{ "Position": [ 90.0,0.0 ], "AnimClipName": "AS_M_Neutral_AO_Stand_X+90_Y0" },
-	{ "Position": [ 90.0,-90.0 ], "AnimClipName": "AS_M_Neutral_AO_Stand_X+90_Y-90" },
-	{ "Position": [ 0.0,90.0 ], "AnimClipName": "AS_M_Neutral_AO_Stand_X0_Y+90" },
-	{ "Position": [ 0.0,0.0 ], "AnimClipName": "AS_M_Neutral_AO_Stand_X0_Y0" },
-	{ "Position": [ 0.0,-90.0 ], "AnimClipName": "AS_M_Neutral_AO_Stand_X0_Y-90" },
-	{ "Position": [ -45.0,90.0 ], "AnimClipName": "AS_M_Neutral_AO_Stand_X-45_Y+90" },
-	{ "Position": [ -45.0,0.0 ], "AnimClipName": "AS_M_Neutral_AO_Stand_X-45_Y0" },
-	{ "Position": [ -45.0,-90.0 ], "AnimClipName": "AS_M_Neutral_AO_Stand_X-45_Y-90" },
-	{ "Position": [ -90.0,90.0 ], "AnimClipName": "AS_M_Neutral_AO_Stand_X-90_Y+90" },
-	{ "Position": [ -90.0,0.0 ], "AnimClipName": "AS_M_Neutral_AO_Stand_X-90_Y0" },
-	{ "Position": [ -90.0,-90.0 ], "AnimClipName": "AS_M_Neutral_AO_Stand_X-90_Y-90" }
+	{ "Position": [ 45.0, 0.0 ], "AnimClipName": "M_Neutral_AO_Stand_X+45_Y0" },
+	{ "Position": [ 45.0,-90.0 ], "AnimClipName": "M_Neutral_AO_Stand_X+45_Y-90" },
+	{ "Position": [ 90.0,90.0 ], "AnimClipName": "M_Neutral_AO_Stand_X+90_Y+90" },
+	{ "Position": [ 90.0,0.0 ], "AnimClipName": "M_Neutral_AO_Stand_X+90_Y0" },
+	{ "Position": [ 90.0,-90.0 ], "AnimClipName": "M_Neutral_AO_Stand_X+90_Y-90" },
+	{ "Position": [ 0.0,90.0 ], "AnimClipName": "M_Neutral_AO_Stand_X0_Y+90" },
+	{ "Position": [ 0.0,0.0 ], "AnimClipName": "M_Neutral_AO_Stand_X0_Y0" },
+	{ "Position": [ 0.0,-90.0 ], "AnimClipName": "M_Neutral_AO_Stand_X0_Y-90" },
+	{ "Position": [ -45.0,90.0 ], "AnimClipName": "M_Neutral_AO_Stand_X-45_Y+90" },
+	{ "Position": [ -45.0,0.0 ], "AnimClipName": "M_Neutral_AO_Stand_X-45_Y0" },
+	{ "Position": [ -45.0,-90.0 ], "AnimClipName": "M_Neutral_AO_Stand_X-45_Y-90" },
+	{ "Position": [ -90.0,90.0 ], "AnimClipName": "M_Neutral_AO_Stand_X-90_Y+90" },
+	{ "Position": [ -90.0,0.0 ], "AnimClipName": "M_Neutral_AO_Stand_X-90_Y0" },
+	{ "Position": [ -90.0,-90.0 ], "AnimClipName": "M_Neutral_AO_Stand_X-90_Y-90" }
 		]
 }

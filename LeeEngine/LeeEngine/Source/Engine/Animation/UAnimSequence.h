@@ -43,7 +43,8 @@ public:
 	inline const std::map<std::string, BoneInfo>& GetBoneIDMap() const { return BoneInfoMap; }
 	inline static const std::shared_ptr<UAnimSequence>& GetAnimationAsset(const std::string& AnimationName){return std::dynamic_pointer_cast<UAnimSequence>(UAnimationAsset::GetAnimationAsset(AnimationName));}
 
-	void CalculateBoneTransform(float CurrentAnimTime, std::vector<XMMATRIX>& FinalBoneMatrices);
+	// 특정 애니메이션 시간의 본 Matrices를 반환받는 함수
+	void GetBoneTransform(float CurrentAnimTime, std::vector<XMMATRIX>& FinalBoneMatrices);
 
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
@@ -57,6 +58,8 @@ private:
 	void TraverseTreeHierarchy(const AssimpNodeData* NodeData, int ParentIndex);
 	void PrecomputeAnimationData();
 
+	
+
 public:
 protected:
 private:
@@ -67,4 +70,7 @@ private:
 	std::map<std::string, BoneInfo> BoneInfoMap;
 
 	std::vector<FPrecomputedBoneData> BoneHierarchy;
+
+	std::vector<XMMATRIX> CachedFirstFrameBoneMatrices;
+	bool bIsCachedFirstFrameBoneMatrices;
 };

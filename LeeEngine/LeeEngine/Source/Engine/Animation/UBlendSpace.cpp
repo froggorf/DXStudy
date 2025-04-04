@@ -115,7 +115,7 @@ void UBlendSpace::GetAnimationBoneMatrices(const XMFLOAT2& AnimValue, float Curr
 			}
 		}	
 	}
-	//// 아무것도 없었을 경우 
+	//// 아무것도 없었을 경우 간선 바로 위에 있었는지 확인,
 	//if(CurrentTriangles.size() == 0)
 	//{
 	//	const auto& Edges = CurrentEdge;
@@ -124,8 +124,7 @@ void UBlendSpace::GetAnimationBoneMatrices(const XMFLOAT2& AnimValue, float Curr
 	//		const std::shared_ptr<FAnimClipEdge>& Edge = Edges[EdgeIndex];
 	//		if(Edge->IsPointOnSegment(AnimValue) )
 	//		{
-	//			OutPoints.emplace_back(Edge->StartPoint);
-	//			OutPoints.emplace_back(Edge->EndPoint);
+	//			LinearInterpolation(AnimValue, Edge,CurrentAnimTime, OutMatrices);
 	//			return;
 	//		}
 	//	}
@@ -178,7 +177,7 @@ void UBlendSpace::LoadDataFromFileData(const nlohmann::json& AssetData)
 		else
 		{
 			// Non valid AnimClipName
-			assert(1);
+			assert(nullptr, "NULL AnimClip's name");
 		}
 		
 	}
@@ -398,7 +397,7 @@ void UBlendSpace::TriangleInterpolation(const XMFLOAT2& AnimValue,
 		std::atomic<bool> bAnim1Updated = false;
 		auto Anim1Work = [P1, P1AnimDuration, WantedTimeRate, &P1AnimMatrices]()
 		{
-			P1->AnimSequence->CalculateBoneTransform(P1AnimDuration*WantedTimeRate, (P1AnimMatrices));
+			P1->AnimSequence->GetBoneTransform(P1AnimDuration*WantedTimeRate, (P1AnimMatrices));
 		};
 		GThreadPool->AddTask(
 			FTask{
@@ -413,7 +412,7 @@ void UBlendSpace::TriangleInterpolation(const XMFLOAT2& AnimValue,
 		std::vector<XMMATRIX> P2AnimMatrices(MAX_BONES,XMMatrixIdentity());
 		auto Anim2Work = [P2, P2AnimDuration, WantedTimeRate, &P2AnimMatrices]()
 		{
-			P2->AnimSequence->CalculateBoneTransform(P2AnimDuration*WantedTimeRate, (P2AnimMatrices));
+			P2->AnimSequence->GetBoneTransform(P2AnimDuration*WantedTimeRate, (P2AnimMatrices));
 		};
 		GThreadPool->AddTask(
 			FTask{
@@ -425,7 +424,7 @@ void UBlendSpace::TriangleInterpolation(const XMFLOAT2& AnimValue,
 		std::atomic<bool> bAnim3Updated = false;
 		std::vector<XMMATRIX> P3AnimMatrices(MAX_BONES,XMMatrixIdentity());
 		auto Anim3Work = 		[P3, P3AnimDuration, WantedTimeRate, &P3AnimMatrices]()
-		{ P3->AnimSequence->CalculateBoneTransform(P3AnimDuration*WantedTimeRate, (P3AnimMatrices)); };
+		{ P3->AnimSequence->GetBoneTransform(P3AnimDuration*WantedTimeRate, (P3AnimMatrices)); };
 		GThreadPool->AddTask(
 			FTask{
 				2,
@@ -487,7 +486,7 @@ void UBlendSpace::LinearInterpolation(const XMFLOAT2& CurrentValue,
 	std::atomic<bool> bAnim1Updated = false;
 	auto Anim1Work = [P1, P1AnimDuration, WantedTimeRate, &P1AnimMatrices]()
 		{
-			P1->AnimSequence->CalculateBoneTransform(P1AnimDuration*WantedTimeRate, (P1AnimMatrices));
+			P1->AnimSequence->GetBoneTransform(P1AnimDuration*WantedTimeRate, (P1AnimMatrices));
 		};
 	GThreadPool->AddTask(
 		FTask{
@@ -502,7 +501,7 @@ void UBlendSpace::LinearInterpolation(const XMFLOAT2& CurrentValue,
 	std::vector<XMMATRIX> P2AnimMatrices(MAX_BONES,XMMatrixIdentity());
 	auto Anim2Work = [P2, P2AnimDuration, WantedTimeRate, &P2AnimMatrices]()
 		{
-			P2->AnimSequence->CalculateBoneTransform(P2AnimDuration*WantedTimeRate, (P2AnimMatrices));
+			P2->AnimSequence->GetBoneTransform(P2AnimDuration*WantedTimeRate, (P2AnimMatrices));
 		};
 	GThreadPool->AddTask(
 		FTask{
@@ -537,5 +536,5 @@ void UBlendSpace::LinearInterpolation(const XMFLOAT2& CurrentValue,
 void UBlendSpace::CalculateOneAnimation(const std::shared_ptr<FAnimClipPoint>& Point,
 	float AnimTime, std::vector<XMMATRIX>& OutMatrices)
 {
-	Point->AnimSequence->CalculateBoneTransform(fmod(AnimTime,Point->AnimSequence->GetDuration()), OutMatrices);
+	Point->AnimSequence->GetBoneTransform(fmod(AnimTime,Point->AnimSequence->GetDuration()), OutMatrices);
 }

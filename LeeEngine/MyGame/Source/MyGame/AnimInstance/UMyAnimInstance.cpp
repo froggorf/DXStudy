@@ -58,11 +58,12 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 	UAnimInstance::UpdateAnimation(dt);
 	
 
-	if(GetSkeletalMeshComponent()&&BS_Paladin_IdleWalkRun && TestComp)
+	if(GetSkeletalMeshComponent()&&BS_Paladin_IdleWalkRun && TestComp && AO_Paladin_Stand)
 	{
 		std::vector<XMMATRIX> FinalBoneMatrices(MAX_BONES);	
 		
-		BS_Paladin_IdleWalkRun->GetAnimationBoneMatrices(XMFLOAT2{TestComp->TestAngle,TestComp->TestSpeed}, CurrentTime,FinalBoneMatrices);
+		//BS_Paladin_IdleWalkRun->GetAnimationBoneMatrices(XMFLOAT2{TestComp->TestAngle,TestComp->TestSpeed}, CurrentTime,FinalBoneMatrices);
+		AO_Paladin_Stand->GetAnimationBoneMatrices(XMFLOAT2{TestComp->TestAimOffsetAngleX,TestComp->TestAimOffsetAngleY}, CurrentTime,FinalBoneMatrices);
 		
 		FScene::UpdateSkeletalMeshAnimation_GameThread(GetSkeletalMeshComponent()->GetPrimitiveID() , FinalBoneMatrices);
 	}	

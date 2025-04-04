@@ -35,8 +35,16 @@ Bone* UAnimSequence::FindBone(const std::string& name)
 }
 
 
-void UAnimSequence::CalculateBoneTransform(float CurrentAnimTime, std::vector<XMMATRIX>& FinalBoneMatrices) 
+void UAnimSequence::GetBoneTransform(float CurrentAnimTime, std::vector<XMMATRIX>& FinalBoneMatrices) 
 {
+	if(CurrentAnimTime == 0.0f && bIsCachedFirstFrameBoneMatrices)
+	{
+		for (int i = 0; i < MAX_BONES; ++i)
+		{
+			FinalBoneMatrices[i] = CachedFirstFrameBoneMatrices[i];
+		}
+		return;
+	}
 	std::vector<XMMATRIX> GlobalTransform(BoneHierarchy.size(), XMMatrixIdentity());
 	for(int HierarchyIndex = 0; HierarchyIndex < BoneHierarchy.size();++HierarchyIndex)
 	{
@@ -66,49 +74,6 @@ void UAnimSequence::CalculateBoneTransform(float CurrentAnimTime, std::vector<XM
 
 
 	}
-
-	/*const AssimpNodeData* Node = &GetRootNode();
-	std::stack<std::pair<const AssimpNodeData*, XMMATRIX>> nodeStack;
-	nodeStack.push({Node, XMMatrixIdentity()});
-
-	auto boneInfoMap = GetBoneIDMap();
-
-	while (!nodeStack.empty()) {
-		auto [node, parentTransform] = nodeStack.top();
-		nodeStack.pop();
-
-		std::string nodeName = node->name;
-		XMMATRIX nodeTransform = node->transformation;
-
-		Bone* bone = FindBone(nodeName);
-		if (bone) {
-			bone->Update(CurrentAnimTime);
-			nodeTransform = bone->GetLocalTransform();
-		}
-
-		XMMATRIX globalTransform = XMMatrixMultiply(nodeTransform, parentTransform);
-
-		if (boneInfoMap.contains(nodeName)) {
-			int index = boneInfoMap[nodeName].id;
-			XMMATRIX offset = boneInfoMap[nodeName].offset;
-			if (index < MAX_BONES) {
-				FinalBoneMatrices[index] = XMMatrixMultiply(offset, globalTransform);
-			}
-		}
-		else
-		{
-			for (int i = 0; i < node->children.size(); ++i) {
-				nodeStack.push({&node->children[i], parentTransform});
-			}
-			continue;
-		}
-
-		for (int i = 0; i < node->children.size(); ++i) {
-			nodeStack.push({&node->children[i], globalTransform});
-		}
-	}*/
-
-
 }
 
 void UAnimSequence::LoadDataFromFileData(const nlohmann::json& AssetData)
@@ -232,8 +197,13 @@ void UAnimSequence::TraverseTreeHierarchy(const AssimpNodeData* NodeData, int Pa
 
 void UAnimSequence::PrecomputeAnimationData()
 {
+	// 트리 구조의 계층을 벡터 구조로 변환
 	BoneHierarchy.clear();
 	TraverseTreeHierarchy(&RootNode, -1);
 
+	// 첫 프레임의 본 변환 행렬을 캐시
+	CachedFirstFrameBoneMatrices = std::vector<XMMATRIX>(MAX_BONES, XMMatrixIdentity());
+	GetBoneTransform(0.0f,CachedFirstFrameBoneMatrices);
+	bIsCachedFirstFrameBoneMatrices = true;
 }
 

@@ -26,6 +26,7 @@ struct FAnimClipPoint
 	}
 
 	bool IsPointOnSegment(const XMFLOAT2& P1, const XMFLOAT2& P2) const;
+
 };
 struct FAnimClipEdge
 {
