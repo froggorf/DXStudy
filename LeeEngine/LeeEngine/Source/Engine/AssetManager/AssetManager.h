@@ -73,28 +73,4 @@ private:
 };
 
 
-inline UObject* AssetManager::ReadMyAsset(const std::string& FilePath)
-{
-	if(AssetCache.find(FilePath.data())!= AssetCache.end())
-	{
-		return reinterpret_cast<UObject*>(AssetCache[FilePath.data()].get());
-	}
-
-	std::ifstream AssetFile(FilePath.data());
-	if(!AssetFile.is_open())
-	{/*
-		MY_LOG("(AssetManager::ReadMyAsset) Failed open file", EDebugLogLevel::DLL_Warning, std::string(FilePath.data()));*/
-		assert(1);
-	}
-	nlohmann::json AssetData = nlohmann::json::parse(AssetFile);
-
-	std::shared_ptr<UObject> Object = UObject::GetDefaultObject(AssetData["Class"])->CreateInstance();
-	Object->LoadDataFromFileData(AssetData);
-	AssetNameAndAssetPathCacheMap[Object->GetName()] = FilePath;
-
-	AssetCache[FilePath.data()] = Object;
-	MY_LOG("AssetLoad", EDebugLogLevel::DLL_Display, FilePath+" Load Success");
-	return Object.get();
-
-}
 

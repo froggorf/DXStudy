@@ -14,6 +14,10 @@ UMyAnimInstance::UMyAnimInstance()
 	{
 		BS_Paladin_IdleWalkRun = BlendSpace;
 	}
+	if (const std::shared_ptr<UAimOffsetBlendSpace> AimOffset = UAimOffsetBlendSpace::GetAnimationAsset("AO_Paladin_Stand"))
+	{
+		AO_Paladin_Stand = AimOffset;
+	}
 
 }
 

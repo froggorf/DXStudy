@@ -3,6 +3,7 @@
 
 #include "Engine/Animation/UBlendSpace.h"
 #include "../Component/UTestComponent.h"
+#include "Engine/Animation/UAimOffsetBlendSpace.h"
 #include "Engine/Animation/UAnimInstance.h"
 
 class UMyAnimInstance : public UAnimInstance
@@ -25,6 +26,9 @@ protected:
 private:
 	std::shared_ptr<UBlendSpace> BS_Paladin_IdleWalkRun;
 	std::shared_ptr<UTestComponent> TestComp;
+
+	std::shared_ptr<UAimOffsetBlendSpace> AO_Paladin_Stand;
+
 
 	float CurrentSpeed = 0.0f;
 
