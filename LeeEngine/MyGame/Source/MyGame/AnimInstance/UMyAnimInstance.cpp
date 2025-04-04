@@ -44,7 +44,7 @@ void UMyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	if(TestComp)
 	{
-		UpdateAnimation(DeltaSeconds);
+		
 		
 	}
 }
@@ -54,34 +54,11 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 	UAnimInstance::UpdateAnimation(dt);
 	
 
-	if(GetSkeletalMeshComponent()&&BS_Paladin_IdleWalkRun)
+	if(GetSkeletalMeshComponent()&&BS_Paladin_IdleWalkRun && TestComp)
 	{
 		std::vector<XMMATRIX> FinalBoneMatrices(MAX_BONES);	
 		
-		static float x = 0.0f;
-		static int a = 0;
-		static bool b = false;
-		++a;
-		if(a % 10 == 0)
-		{
-			{
-				x = b? x+0.5f : x-0.5f;
-				if(x < -180.0f)
-				{
-					x = -180.0f;
-					b = 1-b;
-				}
-				if(x>180.0f)
-				{
-					x = 180.0f;
-					b=1-b;
-				}
-			}	
-		}
-		
-		static float y = 500.0f;
-		
-		BS_Paladin_IdleWalkRun->GetAnimationBoneMatrices(XMFLOAT2{x,y}, CurrentTime,FinalBoneMatrices);
+		BS_Paladin_IdleWalkRun->GetAnimationBoneMatrices(XMFLOAT2{TestComp->TestAngle,TestComp->TestSpeed}, CurrentTime,FinalBoneMatrices);
 		
 		FScene::UpdateSkeletalMeshAnimation_GameThread(GetSkeletalMeshComponent()->GetPrimitiveID() , FinalBoneMatrices);
 	}	

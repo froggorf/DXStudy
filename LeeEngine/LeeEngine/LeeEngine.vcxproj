@@ -29,6 +29,7 @@
     <ClCompile Include="Source\DirectX\GameTimer.cpp" />
     <ClCompile Include="Source\DirectX\ShadowMap.cpp" />
     <ClCompile Include="Source\Engine\Animation\Bone.cpp" />
+    <ClCompile Include="Source\Engine\Animation\UAimOffsetBlendSpace.cpp" />
     <ClCompile Include="Source\Engine\Animation\UAnimationAsset.cpp" />
     <ClCompile Include="Source\Engine\Animation\UAnimCompositeBase.cpp" />
     <ClCompile Include="Source\Engine\Animation\UAnimInstance.cpp" />
@@ -124,6 +125,7 @@
     <ClInclude Include="Source\DirectX\LightHelper.h" />
     <ClInclude Include="Source\DirectX\ShadowMap.h" />
     <ClInclude Include="Source\Engine\Animation\Bone.h" />
+    <ClInclude Include="Source\Engine\Animation\UAimOffsetBlendSpace.h" />
     <ClInclude Include="Source\Engine\Animation\UAnimationAsset.h" />
     <ClInclude Include="Source\Engine\Animation\UAnimCompositeBase.h" />
     <ClInclude Include="Source\Engine\Animation\UAnimInstance.h" />
