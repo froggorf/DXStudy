@@ -31,10 +31,10 @@ protected:
 private:
 public:
 protected:
-	
+
+    std::shared_ptr<USkeletalMesh> AnimationSkeleton;
 
 private:
-    std::shared_ptr<USkeletalMesh> AnimationSkeleton;
 
     static std::map<std::string, std::shared_ptr<UAnimationAsset>>& GetAnimationAssetCacheMap()
     {

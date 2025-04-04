@@ -60,11 +60,66 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 
 	if(GetSkeletalMeshComponent()&&BS_Paladin_IdleWalkRun && TestComp && AO_Paladin_Stand)
 	{
-		std::vector<XMMATRIX> FinalBoneMatrices(MAX_BONES);	
+		std::vector<XMMATRIX> FinalBoneMatrices(MAX_BONES, XMMatrixIdentity());	
+
+		std::vector<XMMATRIX> BS_IdleWalkRunMatrices(MAX_BONES);
+		BS_Paladin_IdleWalkRun->GetAnimationBoneMatrices(XMFLOAT2{TestComp->TestAngle,TestComp->TestSpeed}, CurrentTime,BS_IdleWalkRunMatrices);
+
+		std::vector<XMMATRIX> AO_StandMatrices(MAX_BONES);
+		AO_Paladin_Stand->GetAnimationBoneMatrices(XMFLOAT2{TestComp->TestAimOffsetAngleX,TestComp->TestAimOffsetAngleY}, CurrentTime,AO_StandMatrices);
+
 		
-		//BS_Paladin_IdleWalkRun->GetAnimationBoneMatrices(XMFLOAT2{TestComp->TestAngle,TestComp->TestSpeed}, CurrentTime,FinalBoneMatrices);
-		AO_Paladin_Stand->GetAnimationBoneMatrices(XMFLOAT2{TestComp->TestAimOffsetAngleX,TestComp->TestAimOffsetAngleY}, CurrentTime,FinalBoneMatrices);
+
+		std::vector<XMMATRIX> ResultMatrices(MAX_BONES);
+		std::string TargetBoneName = "Spine";
+		auto BoneHierarchyMap = UAnimSequence::GetSkeletonBoneHierarchyMap();
+		if(BoneHierarchyMap.contains(GetSkeletalMeshComponent()->GetSkeletalMesh()->GetName()))
+		{
+			std::vector<FPrecomputedBoneData> BoneHierarchy = BoneHierarchyMap[GetSkeletalMeshComponent()->GetSkeletalMesh()->GetName()];
+			// 본의 계층을 돌면서 해당 본의 부모 중 TargetBoneName의 본이 있을 경우 블렌딩
+			for(int i = 0; i < BoneHierarchy.size(); ++i)
+			{
+				bool bHasTargetParentBone = false;
+				int CurrentCheckParentIndex = BoneHierarchy[i].ParentIndex;
+				while(true)
+				{
+					if(CurrentCheckParentIndex >= 0)
+					{
+						// 부모 중 타겟 본이 존재
+						if(BoneHierarchy[CurrentCheckParentIndex].BoneName == TargetBoneName)
+						{
+							bHasTargetParentBone = true;
+							break;
+						}
+						else
+						{
+							CurrentCheckParentIndex = BoneHierarchy[CurrentCheckParentIndex].ParentIndex;
+							continue;
+						}
+					}
+					break;
+				}
+				int CurrentBoneIndex = BoneHierarchy[i].BoneInfo.id;
+				if(0<= CurrentBoneIndex && CurrentBoneIndex < MAX_BONES)
+				{
+					if(bHasTargetParentBone)
+					{
+
+
+						ResultMatrices[CurrentBoneIndex] = AO_StandMatrices[CurrentBoneIndex];
+					}
+					else
+					{
+						ResultMatrices[CurrentBoneIndex] = BS_IdleWalkRunMatrices[CurrentBoneIndex];
+					}	
+				}
+				
+			}
+			
+		}
 		
-		FScene::UpdateSkeletalMeshAnimation_GameThread(GetSkeletalMeshComponent()->GetPrimitiveID() , FinalBoneMatrices);
+		
+
+		FScene::UpdateSkeletalMeshAnimation_GameThread(GetSkeletalMeshComponent()->GetPrimitiveID() , ResultMatrices);
 	}	
 }

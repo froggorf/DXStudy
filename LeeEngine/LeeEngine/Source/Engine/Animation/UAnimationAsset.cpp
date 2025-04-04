@@ -19,6 +19,7 @@ void UAnimationAsset::LoadDataFromFileData(const nlohmann::json& AssetData)
     std::shared_ptr<USkeletalMesh> Skeleton = USkeletalMesh::GetSkeletalMesh(AssetData["Skeleton"]);
     if(!Skeleton)
     {
+        assert(nullptr);
         return;
     }
     AnimationSkeleton = Skeleton;

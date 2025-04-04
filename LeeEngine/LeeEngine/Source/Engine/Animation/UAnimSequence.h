@@ -61,6 +61,12 @@ private:
 	
 
 public:
+	static std::map<std::string, std::vector<FPrecomputedBoneData>>& GetSkeletonBoneHierarchyMap()
+	{
+		static std::map<std::string, std::vector<FPrecomputedBoneData>> SkeletonBoneHierarchyMap;
+		return SkeletonBoneHierarchyMap;
+	}
+
 protected:
 private:
 	float Duration;
@@ -73,4 +79,6 @@ private:
 
 	std::vector<XMMATRIX> CachedFirstFrameBoneMatrices;
 	bool bIsCachedFirstFrameBoneMatrices;
+
+	
 };

@@ -200,6 +200,10 @@ void UAnimSequence::PrecomputeAnimationData()
 	// 트리 구조의 계층을 벡터 구조로 변환
 	BoneHierarchy.clear();
 	TraverseTreeHierarchy(&RootNode, -1);
+	if(!GetSkeletonBoneHierarchyMap().contains(GetAnimationSkeleton()->GetName()))
+	{
+		GetSkeletonBoneHierarchyMap()[GetAnimationSkeleton()->GetName()] = BoneHierarchy;
+	}
 
 	// 첫 프레임의 본 변환 행렬을 캐시
 	CachedFirstFrameBoneMatrices = std::vector<XMMATRIX>(MAX_BONES, XMMatrixIdentity());
