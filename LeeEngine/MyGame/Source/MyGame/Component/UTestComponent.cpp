@@ -91,7 +91,7 @@ void UTestComponent::DrawDetailPanel(UINT ComponentDepth)
 	ImGui::SliderFloat("Speed", &TestSpeed, 0.0f,600.0f);
 	ImGui::SliderFloat("Direction", &TestAngle, -180.0f,180.0f);
 	ImGui::Dummy(ImVec2{1.0f,50.0f});
-	ImGui::SliderFloat("AimOffset X", &TestAimOffsetAngleX, -135.0f,135);
+	ImGui::SliderFloat("AimOffset X", &TestAimOffsetAngleX, -90.0f,90);
 	ImGui::SliderFloat("AimOffset Y", &TestAimOffsetAngleY, -90.0f,90.0f);
 	
 
