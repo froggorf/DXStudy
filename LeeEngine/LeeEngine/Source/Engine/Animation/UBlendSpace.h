@@ -68,7 +68,7 @@ public:
 		return nullptr;
 	}
 
-	void GetAnimationBoneMatrices(const XMFLOAT2& AnimValue, float CurrentAnimTime, std::vector<XMMATRIX>& OutMatrices);
+	virtual void GetAnimationBoneMatrices(const XMFLOAT2& AnimValue, float CurrentAnimTime, std::vector<XMMATRIX>& OutMatrices);
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 protected:

@@ -10,7 +10,7 @@ ATestActor2::ATestActor2()
 
 	TestSKComp = std::make_shared<USkeletalMeshComponent>();
 	TestSKComp->SetupAttachment(GetRootComponent());
-	TestSKComp->SetSkeletalMesh(USkeletalMesh::GetSkeletalMesh("SK_Paladin"));
+	TestSKComp->SetSkeletalMesh(USkeletalMesh::GetSkeletalMesh("SK_MyUEFN"));
 	TestSKComp->SetAnimInstanceClass("UMyAnimInstance");
 	
 	TestSKComp->SetRelativeLocation(XMFLOAT3(0.0f,5.0f,0.0f));

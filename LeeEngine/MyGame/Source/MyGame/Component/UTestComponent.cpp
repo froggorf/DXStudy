@@ -10,24 +10,11 @@
 
 UTestComponent::UTestComponent()
 {
-	std::shared_ptr<USkeletalMesh> PaladinSkeleton = USkeletalMesh::GetSkeletalMesh("SK_Paladin");
+	std::shared_ptr<USkeletalMesh> PaladinSkeleton = USkeletalMesh::GetSkeletalMesh("SK_MyUEFN");
 	if(!PaladinSkeleton)
 	{
 		return;
 	}
-
-	if(!UAnimationAsset::GetAnimationAsset("AS_Paladin_Idle"))
-	{
-		return;
-	}
-	
-	/*{
-		HorizontalValue = {0.0f - Gap.x, 600.0f + Gap.x};
-		VerticalValue = {0.0f-Gap.y, 0.0f+Gap.y};
-		TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{0.0f,0.0f}, IdleAnim));
-		TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{150.0f,0.0f}, WalkForward));
-		TestValue.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{600.0f,0.0f}, RunForward));
-	}*/
 
 
 

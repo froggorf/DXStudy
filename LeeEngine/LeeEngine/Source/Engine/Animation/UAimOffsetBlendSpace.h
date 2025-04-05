@@ -25,5 +25,18 @@ public:
 		}
 		return nullptr;
 	}
+
+	// UBlendSpace와 다르게 AimOffset의 정중앙의 애니메이션과의 "Offset" 에 대한 본 매트릭스만 반환
+	void GetAnimationBoneMatrices(const XMFLOAT2& AnimValue, float CurrentAnimTime, std::vector<XMMATRIX>& OutMatrices) override;
+
+
+
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
+
+protected:
+private:
+public:
+protected:
+private:
+	std::vector<XMMATRIX> DefaultAnimMatrices;
 };

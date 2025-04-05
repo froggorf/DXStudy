@@ -1,6 +1,0 @@
-{
-    "Class": "UAnimSequence",
-    "Name": "AS_Paladin_RunBack",
-    "Skeleton": "SK_Paladin",
-    "AnimationDataPath": "/Content/Resource/Animation/Paladin/Paladin_RunBack.fbx"
-}
