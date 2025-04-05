@@ -29,9 +29,7 @@ public:
 	float TestSpeed = 0.0f;
 	float TestAngle = 0.0f;
 
-	float TestAimOffsetAngleX = 0.0f;
-	float TestAimOffsetAngleY = 0.0f;
-
+	int TargetAnim = 0;
 	/*ImVec2 DrawSize = ImVec2{400.0f,300.0f};
 
 	XMFLOAT2 CurrentValue = XMFLOAT2{0.0f,0.0f};*/

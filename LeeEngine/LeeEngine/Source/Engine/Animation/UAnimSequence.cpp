@@ -45,6 +45,7 @@ void UAnimSequence::GetBoneTransform(float CurrentAnimTime, std::vector<XMMATRIX
 		}
 		return;
 	}
+	CurrentAnimTime = fmod(CurrentAnimTime, Duration);
 	std::vector<XMMATRIX> GlobalTransform(BoneHierarchy.size(), XMMatrixIdentity());
 	for(int HierarchyIndex = 0; HierarchyIndex < BoneHierarchy.size();++HierarchyIndex)
 	{

@@ -29,6 +29,10 @@ private:
 
 	std::shared_ptr<UAimOffsetBlendSpace> AO_MyUEFN_Stand;
 
+	std::shared_ptr<UAnimSequence> AS_Test0;
+	std::shared_ptr<UAnimSequence> AS_Test1;
+	std::shared_ptr<UAnimSequence> AS_Test2;
+
 
 	float CurrentSpeed = 0.0f;
 
