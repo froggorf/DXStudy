@@ -1,0 +1,7 @@
+
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_MyUEFN_WalkRight",
+    "Skeleton": "SK_MyUEFN",
+    "AnimationDataPath": "/Content/Resource/Animation/MyUEFN/Locomotion/MyUEFN_WalkRight.fbx"
+}

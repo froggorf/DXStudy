@@ -10,13 +10,13 @@
 
 UMyAnimInstance::UMyAnimInstance()
 {
-	/*if(const std::shared_ptr<UBlendSpace> BlendSpace = UBlendSpace::GetAnimationAsset("BS_Paladin_IdleWalkRun"))
+	if(const std::shared_ptr<UBlendSpace> BlendSpace = UBlendSpace::GetAnimationAsset("BS_MyUEFN_Locomotion"))
 	{
-		BS_Paladin_IdleWalkRun = BlendSpace;
-	}*/
+		BS_MyUEFN_Locomotion = BlendSpace;
+	}
 	if (const std::shared_ptr<UAimOffsetBlendSpace> AimOffset = UAimOffsetBlendSpace::GetAnimationAsset("AO_MyUEFN_Stand"))
 	{
-		AO_Paladin_Stand = AimOffset;
+		AO_MyUEFN_Stand = AimOffset;
 	}
 
 }
@@ -58,15 +58,15 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 	UAnimInstance::UpdateAnimation(dt);
 	
 
-	if(GetSkeletalMeshComponent() && TestComp && AO_Paladin_Stand)
+	if(GetSkeletalMeshComponent() && BS_MyUEFN_Locomotion && TestComp && AO_MyUEFN_Stand)
 	{
 		std::vector<XMMATRIX> FinalBoneMatrices(MAX_BONES, XMMatrixIdentity());	
 
 		std::vector<XMMATRIX> BS_IdleWalkRunMatrices(MAX_BONES,XMMatrixIdentity());
-		//BS_Paladin_IdleWalkRun->GetAnimationBoneMatrices(XMFLOAT2{TestComp->TestAngle,TestComp->TestSpeed}, CurrentTime,BS_IdleWalkRunMatrices);
+		BS_MyUEFN_Locomotion->GetAnimationBoneMatrices(XMFLOAT2{TestComp->TestAngle,TestComp->TestSpeed}, CurrentTime,BS_IdleWalkRunMatrices);
 
 		std::vector<XMMATRIX> AO_StandOffsetMatrices(MAX_BONES, XMMatrixIdentity());
-		AO_Paladin_Stand->GetAnimationBoneMatrices(XMFLOAT2{TestComp->TestAimOffsetAngleX,TestComp->TestAimOffsetAngleY}, CurrentTime,AO_StandOffsetMatrices);
+		AO_MyUEFN_Stand->GetAnimationBoneMatrices(XMFLOAT2{TestComp->TestAimOffsetAngleX,TestComp->TestAimOffsetAngleY}, CurrentTime,AO_StandOffsetMatrices);
 
 		
 		//auto BoneHierarchyMap = UAnimSequence::GetSkeletonBoneHierarchyMap();
@@ -148,6 +148,6 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 		
 		
 
-		FScene::UpdateSkeletalMeshAnimation_GameThread(GetSkeletalMeshComponent()->GetPrimitiveID() , AO_StandOffsetMatrices);
+		FScene::UpdateSkeletalMeshAnimation_GameThread(GetSkeletalMeshComponent()->GetPrimitiveID() , BS_IdleWalkRunMatrices);
 	}	
 }
