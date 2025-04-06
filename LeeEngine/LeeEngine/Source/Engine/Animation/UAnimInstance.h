@@ -33,7 +33,10 @@ public:
 	class AActor* TryGetPawnOwner() const;
 
 protected:
+	// 애니메이션 레이어 블렌딩
+	void LayeredBlendPerBone(const std::vector<XMMATRIX>& BasePose, const std::vector<XMMATRIX>& BlendPose, const std::string& TargetBoneName, float BlendWeights, std::vector<XMMATRIX>& OutMatrices);
 private:
+	
 public:
 protected:
 	float DeltaTime;

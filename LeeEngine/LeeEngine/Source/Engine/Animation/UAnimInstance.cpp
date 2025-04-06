@@ -63,3 +63,52 @@ AActor* UAnimInstance::TryGetPawnOwner() const
 	}
 	return nullptr;
 }
+
+void UAnimInstance::LayeredBlendPerBone(const std::vector<XMMATRIX>& BasePose, const std::vector<XMMATRIX>& BlendPose,
+	const std::string& TargetBoneName, float BlendWeights, std::vector<XMMATRIX>& OutMatrices)
+{
+	auto BoneHierarchyMap = UAnimSequence::GetSkeletonBoneHierarchyMap();
+	if(BoneHierarchyMap.contains(GetSkeletalMeshComponent()->GetSkeletalMesh()->GetName()))
+	{
+		std::vector<FPrecomputedBoneData> BoneHierarchy = BoneHierarchyMap[GetSkeletalMeshComponent()->GetSkeletalMesh()->GetName()];
+		// 본의 계층을 돌면서 해당 본의 부모 중 TargetBoneName의 본이 있을 경우 블렌딩
+		for(int i = 0; i < BoneHierarchy.size(); ++i)
+		{
+			bool bHasTargetParentBone = false;
+			int CurrentCheckParentIndex = BoneHierarchy[i].ParentIndex;
+			while(true)
+			{
+				if(CurrentCheckParentIndex >= 0)
+				{
+					// 부모 중 타겟 본이 존재
+					if(BoneHierarchy[CurrentCheckParentIndex].BoneName == TargetBoneName)
+					{
+						bHasTargetParentBone = true;
+						break;
+					}
+					else
+					{
+						CurrentCheckParentIndex = BoneHierarchy[CurrentCheckParentIndex].ParentIndex;
+						continue;
+					}
+				}
+				break;
+			}
+			int CurrentBoneIndex = BoneHierarchy[i].BoneInfo.id;
+			// 본의 계층을 돌면서 해당 본의 부모 중 TargetBoneName의 본이 있을 경우 블렌딩
+			if(0<= CurrentBoneIndex && CurrentBoneIndex < MAX_BONES)
+			{
+				if(bHasTargetParentBone)
+				{
+					XMMatrixLerp( BasePose[CurrentBoneIndex], BlendPose[CurrentBoneIndex], BlendWeights, OutMatrices[CurrentBoneIndex]);
+				}
+				else
+				{
+					OutMatrices[CurrentBoneIndex] = BasePose[CurrentBoneIndex];
+				}	
+			}
+
+		}
+
+	}
+}
