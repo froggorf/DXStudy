@@ -522,12 +522,7 @@ void UBlendSpace::LinearInterpolation(const XMFLOAT2& CurrentValue,
 
 	for(int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
 	{
-		XMVECTOR V1 = XMVectorLerp(P1AnimMatrices[BoneIndex].r[0], P2AnimMatrices[BoneIndex].r[0], P1Weight);
-		XMVECTOR V2 = XMVectorLerp(P1AnimMatrices[BoneIndex].r[1], P2AnimMatrices[BoneIndex].r[1], P1Weight);
-		XMVECTOR V3 = XMVectorLerp(P1AnimMatrices[BoneIndex].r[2], P2AnimMatrices[BoneIndex].r[2], P1Weight);
-		XMVECTOR V4 = XMVectorLerp(P1AnimMatrices[BoneIndex].r[3], P2AnimMatrices[BoneIndex].r[3], P1Weight);
-
-		OutMatrices[BoneIndex] = XMMATRIX{V1,V2,V3,V4};
+		XMMatrixLerp(P1AnimMatrices[BoneIndex], P2AnimMatrices[BoneIndex], P1Weight, OutMatrices[BoneIndex]);
 	}
 
 	

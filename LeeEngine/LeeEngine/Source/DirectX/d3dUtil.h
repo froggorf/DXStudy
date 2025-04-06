@@ -194,3 +194,14 @@ inline DirectX::XMVECTOR ComputeUpVector(const DirectX::XMVECTOR& cameraPos, con
     return up;
 }
 
+inline void XMMatrixLerp(const XMMATRIX& A, const XMMATRIX& B, float t, XMMATRIX& Out)
+{
+    
+    XMVECTOR V1 = XMVectorLerp(A.r[0], B.r[0], t);
+    XMVECTOR V2 = XMVectorLerp(A.r[1], B.r[1], t);
+    XMVECTOR V3 = XMVectorLerp(A.r[2], B.r[2], t);
+    XMVECTOR V4 = XMVectorLerp(A.r[3], B.r[3], t);
+
+
+    Out = XMMATRIX{V1,V2,V3,V4};
+}

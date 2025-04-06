@@ -129,6 +129,7 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 					break;
 				}
 				int CurrentBoneIndex = BoneHierarchy[i].BoneInfo.id;
+				// 본의 계층을 돌면서 해당 본의 부모 중 TargetBoneName의 본이 있을 경우 블렌딩
 				if(0<= CurrentBoneIndex && CurrentBoneIndex < MAX_BONES)
 				{
 					if(bHasTargetParentBone)
