@@ -36,6 +36,9 @@ public:
 	~FQueuedThreadPool();
 
 	void AddTask(const FTask& NewTask);
+
+	UINT GetThreadCount() const {return Threads.size();}
+
 private:
 	concurrency::concurrent_priority_queue<FTask> TaskQueue;
 	std::vector<std::thread> Threads;
@@ -47,3 +50,5 @@ private:
 };
 
 extern std::unique_ptr<FQueuedThreadPool> GThreadPool;
+
+void ParallelFor(UINT TaskCount, UINT Priority, const std::function<void(int)>& Body);

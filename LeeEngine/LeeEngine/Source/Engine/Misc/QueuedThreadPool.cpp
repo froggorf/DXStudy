@@ -24,7 +24,7 @@ FQueuedThreadPool::FQueuedThreadPool(UINT InNumQueuedThreads)
 						if(!TaskQueue.try_pop(CurrentTask)) continue;
 					}
 					CurrentTask.Work();
-					*(CurrentTask.IsWorkComplete) = true;
+					CurrentTask.IsWorkComplete->store(true);
 				}
 			});
 	}
@@ -48,4 +48,61 @@ void FQueuedThreadPool::AddTask(const FTask& NewTask)
 	TaskQueue.push(NewTask);
 
 	Condition.notify_one();
+}
+
+// =================================================
+
+
+void ParallelFor(UINT TaskCount, UINT Priority, const std::function<void(int)>& Body)
+{
+	const UINT ThreadCount = GThreadPool->GetThreadCount();
+	// 싱글쓰레드 가동
+	if (ThreadCount == 0)
+	{
+		for (UINT i = 0; i < TaskCount; ++i)
+		{
+			Body(i);
+		}
+		return;
+	}
+	
+	const UINT TasksPerThread = (TaskCount + ThreadCount -1) / ThreadCount;
+	
+
+	std::vector<std::shared_ptr<std::atomic<bool>>> IsWorkComplete(ThreadCount);
+	for(int i = 0; i < ThreadCount; ++i)
+	{
+		IsWorkComplete[i] = std::make_shared<std::atomic<bool>>(false);
+	}
+
+	
+	for (UINT i = 0; i < ThreadCount; ++i)
+	{
+		UINT StartIndex = i * TasksPerThread;
+		UINT EndIndex = std::min(StartIndex + TasksPerThread, TaskCount);
+		
+		std::atomic<bool>& WorkCompleteFlag = *IsWorkComplete[i];
+		GThreadPool->AddTask(FTask{ static_cast<int>(Priority), [StartIndex, EndIndex, &Body]()
+		{
+			for(UINT i = StartIndex; i < EndIndex; ++i)
+			{
+				Body(i);
+			}
+		}, &WorkCompleteFlag });
+		
+	}
+	while (true)
+	{
+		bool bAllTasksComplete = true;
+		for (UINT i = 0; i < ThreadCount; ++i)
+		{
+			if (!IsWorkComplete[i]->load())
+			{
+				bAllTasksComplete = false;
+				break;
+			}
+		}
+		if (bAllTasksComplete) break;
+		std::this_thread::yield();
+	}
 }

@@ -449,6 +449,7 @@ void UBlendSpace::TriangleInterpolation(const XMFLOAT2& AnimValue,
 			std::this_thread::yield();
 		}
 
+		
 		for(int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
 		{
 			for(int VectorIndex = 0; VectorIndex < 4; ++VectorIndex)

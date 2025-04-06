@@ -73,13 +73,17 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 
 	if(GetSkeletalMeshComponent() && BS_MyUEFN_Locomotion && TestComp && AS_Test1 && AS_Test2)
 	{
+		/*static long long AddedTime = 0;
+		static int ExecuteTime = 0;
+		ExecuteTime++;
+		auto StartTime = std::chrono::high_resolution_clock::now();*/
+
 		std::vector<XMMATRIX> FinalBoneMatrices(MAX_BONES, XMMatrixIdentity());	
 
 		std::vector<XMMATRIX> BS_IdleWalkRunMatrices(MAX_BONES,XMMatrixIdentity());
 		BS_MyUEFN_Locomotion->GetAnimationBoneMatrices(XMFLOAT2{TestComp->TestAngle,TestComp->TestSpeed}, CurrentTime,BS_IdleWalkRunMatrices);
 
 		std::vector<XMMATRIX> AS_Matrices(MAX_BONES, XMMatrixIdentity());
-	
 		switch(TestComp->TargetAnim)
 		{
 		case 0:
@@ -94,10 +98,7 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 		default:
 		break;
 		}
-		
-		
-		
-		
+
 		// 레이어 블렌딩
 		std::vector<XMMATRIX> ResultMatrices(MAX_BONES);
 		LayeredBlendPerBone(BS_IdleWalkRunMatrices, AS_Matrices, "spine_01", 1.0f, ResultMatrices);
@@ -105,5 +106,15 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 		
 
 		FScene::UpdateSkeletalMeshAnimation_GameThread(GetSkeletalMeshComponent()->GetPrimitiveID() , ResultMatrices);
+
+		/*auto CurrentTime = std::chrono::high_resolution_clock::now();
+		auto ElapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(CurrentTime - StartTime).count();
+		AddedTime += ElapsedTime;
+		if(ExecuteTime == 1000)
+		{
+			ExecuteTime = 0;
+			MY_LOG("Execute 10000 times ", EDebugLogLevel::DLL_Warning, std::to_string(AddedTime) + " microseconds");
+			AddedTime = 0;
+		}*/
 	}	
 }

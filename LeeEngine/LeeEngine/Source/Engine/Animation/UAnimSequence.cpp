@@ -47,6 +47,8 @@ void UAnimSequence::GetBoneTransform(float CurrentAnimTime, std::vector<XMMATRIX
 	}
 	CurrentAnimTime = fmod(CurrentAnimTime, Duration);
 	std::vector<XMMATRIX> GlobalTransform(BoneHierarchy.size(), XMMatrixIdentity());
+
+	// 계층별로 작업이 일어나야하므로 싱글쓰레드에서 진행
 	for(int HierarchyIndex = 0; HierarchyIndex < BoneHierarchy.size();++HierarchyIndex)
 	{
 		const FPrecomputedBoneData& BoneData = BoneHierarchy[HierarchyIndex];

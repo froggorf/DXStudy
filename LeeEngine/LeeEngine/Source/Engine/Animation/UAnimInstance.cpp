@@ -7,6 +7,7 @@
 #include "UAnimSequence.h"
 #include "Bone.h"
 #include "Engine/Components/USkeletalMeshComponent.h"
+#include "Engine/Misc/QueuedThreadPool.h"
 #include "Engine/RenderCore/EditorScene.h"
 #include "Engine/RenderCore/renderingthread.h"
 
@@ -67,10 +68,28 @@ AActor* UAnimInstance::TryGetPawnOwner() const
 void UAnimInstance::LayeredBlendPerBone(const std::vector<XMMATRIX>& BasePose, const std::vector<XMMATRIX>& BlendPose,
 	const std::string& TargetBoneName, float BlendWeights, std::vector<XMMATRIX>& OutMatrices)
 {
+	static long long AddedTime = 0;
+	static int ExecuteTime = 0;
+	ExecuteTime++;
+	auto StartTime = std::chrono::high_resolution_clock::now();
+
+
 	auto BoneHierarchyMap = UAnimSequence::GetSkeletonBoneHierarchyMap();
 	if(BoneHierarchyMap.contains(GetSkeletalMeshComponent()->GetSkeletalMesh()->GetName()))
 	{
 		std::vector<FPrecomputedBoneData> BoneHierarchy = BoneHierarchyMap[GetSkeletalMeshComponent()->GetSkeletalMesh()->GetName()];
+
+		// BlendPose의 TargetBone을 BasePose의 TargetBone 좌표계로 바꾸기 위한 행렬 계산
+		XMMATRIX ToBaseAnimTargetBoneMatrix = XMMatrixIdentity();
+		for (int i = 0; i < BoneHierarchy.size(); ++i)
+		{
+			if (BoneHierarchy[i].BoneName == TargetBoneName)
+			{
+				ToBaseAnimTargetBoneMatrix = XMMatrixInverse(nullptr, BlendPose[BoneHierarchy[i].BoneInfo.id]) * BasePose[BoneHierarchy[i].BoneInfo.id];
+				break;
+			}
+		}
+
 		// 본의 계층을 돌면서 해당 본의 부모 중 TargetBoneName의 본이 있을 경우 블렌딩
 		for(int i = 0; i < BoneHierarchy.size(); ++i)
 		{
@@ -100,7 +119,7 @@ void UAnimInstance::LayeredBlendPerBone(const std::vector<XMMATRIX>& BasePose, c
 			{
 				if(bHasTargetParentBone)
 				{
-					XMMatrixLerp( BasePose[CurrentBoneIndex], BlendPose[CurrentBoneIndex], BlendWeights, OutMatrices[CurrentBoneIndex]);
+					XMMatrixLerp( BasePose[CurrentBoneIndex], BlendPose[CurrentBoneIndex] *  ToBaseAnimTargetBoneMatrix, BlendWeights, OutMatrices[CurrentBoneIndex]);
 				}
 				else
 				{
@@ -111,4 +130,19 @@ void UAnimInstance::LayeredBlendPerBone(const std::vector<XMMATRIX>& BasePose, c
 		}
 
 	}
+
+	auto CurrentTime = std::chrono::high_resolution_clock::now();
+	auto ElapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(CurrentTime - StartTime).count();
+	AddedTime += ElapsedTime;
+	if(ExecuteTime == 1000)
+	{
+		ExecuteTime = 0;
+		MY_LOG("LayeredBlendPerBone Execute 1000 times ", EDebugLogLevel::DLL_Warning, std::to_string(AddedTime) + " microseconds");
+		AddedTime = 0;
+	}
 }
+
+/*
+
+
+ */
