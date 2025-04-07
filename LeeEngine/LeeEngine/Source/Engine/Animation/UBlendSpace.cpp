@@ -115,20 +115,21 @@ void UBlendSpace::GetAnimationBoneMatrices(const XMFLOAT2& AnimValue, float Curr
 			}
 		}	
 	}
-	//// 아무것도 없었을 경우 간선 바로 위에 있었는지 확인,
-	//if(CurrentTriangles.size() == 0)
-	//{
-	//	const auto& Edges = CurrentEdge;
-	//	for(int EdgeIndex = 0; EdgeIndex < Edges.size(); ++EdgeIndex)
-	//	{
-	//		const std::shared_ptr<FAnimClipEdge>& Edge = Edges[EdgeIndex];
-	//		if(Edge->IsPointOnSegment(AnimValue) )
-	//		{
-	//			LinearInterpolation(AnimValue, Edge,CurrentAnimTime, OutMatrices);
-	//			return;
-	//		}
-	//	}
-	//}
+	// 삼각형이 없고 직선으로만 이루어져 있을 경우
+	// 아무것도 없었을 경우 간선 바로 위에 있었는지 확인,
+	if(CurrentTriangles.size() == 0)
+	{
+		const auto& Edges = CurrentEdge;
+		for(int EdgeIndex = 0; EdgeIndex < Edges.size(); ++EdgeIndex)
+		{
+			const std::shared_ptr<FAnimClipEdge>& Edge = Edges[EdgeIndex];
+			if(Edge->IsPointOnSegment(AnimValue) )
+			{
+				LinearInterpolation(AnimValue, Edge,CurrentAnimTime, OutMatrices);
+				return;
+			}
+		}
+	}
 
 	// 전부다 삼각형 / 엣지의 밖에 있었다면
 	// 아무것도 없다면 가장 가까운 점을 그리기
@@ -449,7 +450,6 @@ void UBlendSpace::TriangleInterpolation(const XMFLOAT2& AnimValue,
 			std::this_thread::yield();
 		}
 
-		
 		for(int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
 		{
 			for(int VectorIndex = 0; VectorIndex < 4; ++VectorIndex)

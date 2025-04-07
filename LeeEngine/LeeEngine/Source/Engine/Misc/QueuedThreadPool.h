@@ -36,6 +36,7 @@ public:
 	~FQueuedThreadPool();
 
 	void AddTask(const FTask& NewTask);
+	
 
 	UINT GetThreadCount() const {return Threads.size();}
 

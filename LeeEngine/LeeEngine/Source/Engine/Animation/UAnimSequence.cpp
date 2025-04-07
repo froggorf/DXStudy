@@ -106,6 +106,20 @@ void UAnimSequence::LoadDataFromFileData(const nlohmann::json& AssetData)
 	ReadMissingBones(animation, GetAnimationSkeleton()->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
 
 	PrecomputeAnimationData();
+
+	if(AssetData.contains("Notifies"))
+	{
+		const auto& NotifiesData = AssetData["Notifies"];
+		for(const auto& NotifyData : NotifiesData)
+		{
+			FAnimNotifyEvent NotifyEvent;
+
+			Notifies.emplace_back(NotifyEvent);	
+		}
+		
+	}
+
+
 }
 
 

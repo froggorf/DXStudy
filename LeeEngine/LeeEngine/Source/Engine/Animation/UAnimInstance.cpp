@@ -68,12 +68,6 @@ AActor* UAnimInstance::TryGetPawnOwner() const
 void UAnimInstance::LayeredBlendPerBone(const std::vector<XMMATRIX>& BasePose, const std::vector<XMMATRIX>& BlendPose,
 	const std::string& TargetBoneName, float BlendWeights, std::vector<XMMATRIX>& OutMatrices)
 {
-	static long long AddedTime = 0;
-	static int ExecuteTime = 0;
-	ExecuteTime++;
-	auto StartTime = std::chrono::high_resolution_clock::now();
-
-
 	auto BoneHierarchyMap = UAnimSequence::GetSkeletonBoneHierarchyMap();
 	if(BoneHierarchyMap.contains(GetSkeletalMeshComponent()->GetSkeletalMesh()->GetName()))
 	{
@@ -131,15 +125,6 @@ void UAnimInstance::LayeredBlendPerBone(const std::vector<XMMATRIX>& BasePose, c
 
 	}
 
-	auto CurrentTime = std::chrono::high_resolution_clock::now();
-	auto ElapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(CurrentTime - StartTime).count();
-	AddedTime += ElapsedTime;
-	if(ExecuteTime == 1000)
-	{
-		ExecuteTime = 0;
-		MY_LOG("LayeredBlendPerBone Execute 1000 times ", EDebugLogLevel::DLL_Warning, std::to_string(AddedTime) + " microseconds");
-		AddedTime = 0;
-	}
 }
 
 /*

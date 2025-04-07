@@ -76,7 +76,11 @@ void UTestComponent::DrawDetailPanel(UINT ComponentDepth)
 	UActorComponent::DrawDetailPanel(ComponentDepth);
 
 	ImGui::SliderFloat("Speed", &TestSpeed, 0.0f,600.0f);
-	ImGui::SliderFloat("Direction", &TestAngle, -180.0f,180.0f);
+	//ImGui::SliderFloat("Direction", &TestAngle, -180.0f,180.0f);
+
+	/*ImGui::SliderFloat("AimOffset_X", &AimOffsetX, -90.0f,90.0f);
+	ImGui::SliderFloat("AimOffset_Y", &AimOffsetY, -90.0f,90.0f);*/
+
 	ImGui::Dummy(ImVec2{1.0f,50.0f});
 	if(ImGui::Button("Idle", ImVec2{100.0f,30.0f}))
 	{

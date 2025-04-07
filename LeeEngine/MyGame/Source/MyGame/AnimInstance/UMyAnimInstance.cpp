@@ -10,7 +10,7 @@
 
 UMyAnimInstance::UMyAnimInstance()
 {
-	if(const std::shared_ptr<UBlendSpace> BlendSpace = UBlendSpace::GetAnimationAsset("BS_MyUEFN_Locomotion"))
+	if(const std::shared_ptr<UBlendSpace> BlendSpace = UBlendSpace::GetAnimationAsset("BS_MyUEFN_LocomotionRPG"))
 	{
 		BS_MyUEFN_Locomotion = BlendSpace;
 	}
@@ -73,16 +73,13 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 
 	if(GetSkeletalMeshComponent() && BS_MyUEFN_Locomotion && TestComp && AS_Test1 && AS_Test2)
 	{
-		/*static long long AddedTime = 0;
-		static int ExecuteTime = 0;
-		ExecuteTime++;
-		auto StartTime = std::chrono::high_resolution_clock::now();*/
-
 		std::vector<XMMATRIX> FinalBoneMatrices(MAX_BONES, XMMatrixIdentity());	
 
+		// BlendSpace_Locomotion
 		std::vector<XMMATRIX> BS_IdleWalkRunMatrices(MAX_BONES,XMMatrixIdentity());
-		BS_MyUEFN_Locomotion->GetAnimationBoneMatrices(XMFLOAT2{TestComp->TestAngle,TestComp->TestSpeed}, CurrentTime,BS_IdleWalkRunMatrices);
+		BS_MyUEFN_Locomotion->GetAnimationBoneMatrices(XMFLOAT2{0.0f,TestComp->TestSpeed}, CurrentTime,BS_IdleWalkRunMatrices);
 
+		// 애니메이션 시퀀스 계산
 		std::vector<XMMATRIX> AS_Matrices(MAX_BONES, XMMatrixIdentity());
 		switch(TestComp->TargetAnim)
 		{
@@ -100,21 +97,9 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 		}
 
 		// 레이어 블렌딩
-		std::vector<XMMATRIX> ResultMatrices(MAX_BONES);
+		std::vector<XMMATRIX> ResultMatrices(MAX_BONES, XMMatrixIdentity());
 		LayeredBlendPerBone(BS_IdleWalkRunMatrices, AS_Matrices, "spine_01", 1.0f, ResultMatrices);
-		
-		
 
 		FScene::UpdateSkeletalMeshAnimation_GameThread(GetSkeletalMeshComponent()->GetPrimitiveID() , ResultMatrices);
-
-		/*auto CurrentTime = std::chrono::high_resolution_clock::now();
-		auto ElapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(CurrentTime - StartTime).count();
-		AddedTime += ElapsedTime;
-		if(ExecuteTime == 1000)
-		{
-			ExecuteTime = 0;
-			MY_LOG("Execute 10000 times ", EDebugLogLevel::DLL_Warning, std::to_string(AddedTime) + " microseconds");
-			AddedTime = 0;
-		}*/
 	}	
 }

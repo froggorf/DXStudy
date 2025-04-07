@@ -16,15 +16,20 @@ FQueuedThreadPool::FQueuedThreadPool(UINT InNumQueuedThreads)
 					// try_pop
 					{
 						std::unique_lock<std::mutex> Lock(QueueMutex);
+						if(TaskQueue.try_pop(CurrentTask))
+						{
+							CurrentTask.Work();
+							CurrentTask.IsWorkComplete->store(true);
+							continue;
+						}
 						// 종료되거나 작업이 생기는 시점까지 대기
 						Condition.wait(Lock, [this](){return bStop || !TaskQueue.empty();});
 
 						if(bStop && TaskQueue.empty()) return;
 
-						if(!TaskQueue.try_pop(CurrentTask)) continue;
+						//if(!TaskQueue.try_pop(CurrentTask)) continue;
 					}
-					CurrentTask.Work();
-					CurrentTask.IsWorkComplete->store(true);
+					
 				}
 			});
 	}
@@ -49,6 +54,7 @@ void FQueuedThreadPool::AddTask(const FTask& NewTask)
 
 	Condition.notify_one();
 }
+
 
 // =================================================
 

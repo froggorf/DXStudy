@@ -12,7 +12,7 @@ void UAimOffsetBlendSpace::GetAnimationBoneMatrices(const XMFLOAT2& AnimValue, f
 	std::vector<XMMATRIX>& OutMatrices)
 {
 	std::vector<XMMATRIX> AO_Matrices(MAX_BONES, XMMatrixIdentity());
-	UBlendSpace::GetAnimationBoneMatrices(AnimValue, CurrentAnimTime, AO_Matrices);
+	UBlendSpace::GetAnimationBoneMatrices(AnimValue, CurrentAnimTime, OutMatrices);
 
 	for (int i = 0; i < MAX_BONES; ++i)
 	{
