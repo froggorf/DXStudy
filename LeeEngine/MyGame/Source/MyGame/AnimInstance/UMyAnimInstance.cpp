@@ -77,7 +77,12 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 
 		// BlendSpace_Locomotion
 		std::vector<XMMATRIX> BS_IdleWalkRunMatrices(MAX_BONES,XMMatrixIdentity());
-		BS_MyUEFN_Locomotion->GetAnimationBoneMatrices(XMFLOAT2{0.0f,TestComp->TestSpeed}, CurrentTime,BS_IdleWalkRunMatrices);
+		std::vector<FAnimNotifyEvent> BS_Notifies;
+		BS_MyUEFN_Locomotion->GetAnimationBoneMatrices(XMFLOAT2{0.0f,TestComp->TestSpeed}, CurrentTime,BS_IdleWalkRunMatrices,BS_Notifies);
+		for(int i = 0; i < BS_Notifies.size(); ++i)
+		{
+			BS_Notifies[i].Notify->Notify();
+		}
 
 		// 애니메이션 시퀀스 계산
 		std::vector<XMMATRIX> AS_Matrices(MAX_BONES, XMMatrixIdentity());

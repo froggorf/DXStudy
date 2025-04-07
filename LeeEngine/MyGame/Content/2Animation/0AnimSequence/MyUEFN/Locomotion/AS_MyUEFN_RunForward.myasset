@@ -2,5 +2,10 @@
     "Class": "UAnimSequence",
     "Name": "AS_MyUEFN_RunForward",
     "Skeleton": "SK_MyUEFN",
-    "AnimationDataPath": "/Content/Resource/Animation/MyUEFN/Locomotion/MyUEFN_RunForward.fbx"
+    "AnimationDataPath": "/Content/Resource/Animation/MyUEFN/Locomotion/MyUEFN_RunForward.fbx",
+    "Notifies" : [
+        { "NotifyClass" : "UAnimNotify_PlaySound_RunLeft", "TriggerTime" : 6.2 },
+        { "NotifyClass" : "UAnimNotify_PlaySound_RunRight", "TriggerTime" : 17.5 }
+
+    ]
 }

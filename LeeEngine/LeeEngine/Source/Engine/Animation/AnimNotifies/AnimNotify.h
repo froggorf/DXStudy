@@ -32,3 +32,45 @@ public:
 
 	void Notify() override;
 };
+
+class UAnimNotify_PlaySound_WalkLeft : public UAnimNotify_PlaySound
+{
+	MY_GENERATED_BODY(UAnimNotify_PlaySound_WalkLeft)
+public:
+	UAnimNotify_PlaySound_WalkLeft() = default;
+	~UAnimNotify_PlaySound_WalkLeft() override = default;
+
+	void Notify() override;
+};
+
+class UAnimNotify_PlaySound_WalkRight : public UAnimNotify_PlaySound
+{
+	MY_GENERATED_BODY(UAnimNotify_PlaySound_WalkRight)
+public:
+	UAnimNotify_PlaySound_WalkRight() = default;
+	~UAnimNotify_PlaySound_WalkRight() override = default;
+
+	void Notify() override;
+};
+
+
+class UAnimNotify_PlaySound_RunLeft : public UAnimNotify_PlaySound
+{
+	MY_GENERATED_BODY(UAnimNotify_PlaySound_RunLeft)
+public:
+	UAnimNotify_PlaySound_RunLeft() = default;
+	~UAnimNotify_PlaySound_RunLeft() override = default;
+
+	void Notify() override;
+};
+
+
+class UAnimNotify_PlaySound_RunRight : public UAnimNotify_PlaySound
+{
+	MY_GENERATED_BODY(UAnimNotify_PlaySound_RunRight)
+public:
+	UAnimNotify_PlaySound_RunRight() = default;
+	~UAnimNotify_PlaySound_RunRight() override = default;
+
+	void Notify() override;
+};

@@ -1,12 +1,14 @@
 #include "CoreMinimal.h"
 #include "UAnimSequenceBase.h"
 
+#include "Engine/RenderCore/EditorScene.h"
+
 void UAnimSequenceBase::SortNotifies()
 {
 	std::sort(Notifies.begin(),Notifies.end());
 }
 
-void UAnimSequenceBase::GetAnimNotifies(const float& StartTime, const float& DeltaTime,
+void UAnimSequenceBase::GetAnimNotifies(const float& CurrentTime,
 	std::vector<FAnimNotifyEvent>& OutActiveNotifies)
 {
 	// early out
@@ -15,8 +17,11 @@ void UAnimSequenceBase::GetAnimNotifies(const float& StartTime, const float& Del
 		return;
 	}
 
-	float PreviousPosition = StartTime;
-	float CurrentPosition = StartTime + DeltaTime;
+	
+
+	
+	float PreviousPosition = LastUpdateTime;
+	float CurrentPosition = CurrentTime;
 	for(const auto& NotifyEvent : Notifies)
 	{
 		const float NotifyStartTime = NotifyEvent.GetTriggerTime();
@@ -26,4 +31,5 @@ void UAnimSequenceBase::GetAnimNotifies(const float& StartTime, const float& Del
 			OutActiveNotifies.emplace_back(NotifyEvent);
 		}
 	}
+	LastUpdateTime = CurrentPosition;
 }

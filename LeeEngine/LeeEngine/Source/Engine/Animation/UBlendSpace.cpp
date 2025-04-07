@@ -86,7 +86,8 @@ EPointAndTriangleState FAnimClipTriangle::FindPointAndTriangleState(const XMFLOA
 
 // ========================================================================
 
-void UBlendSpace::GetAnimationBoneMatrices(const XMFLOAT2& AnimValue, float CurrentAnimTime, std::vector<XMMATRIX>& OutMatrices)
+void UBlendSpace::GetAnimationBoneMatrices(const XMFLOAT2& AnimValue, float CurrentAnimTime, std::vector<XMMATRIX>& OutMatrices,
+	std::vector<FAnimNotifyEvent>& OutActiveNotifies)
 {
 
 	for(int TriangleIndex = 0; TriangleIndex < CurrentTriangles.size(); ++TriangleIndex)
@@ -96,7 +97,7 @@ void UBlendSpace::GetAnimationBoneMatrices(const XMFLOAT2& AnimValue, float Curr
 
 		if(State == EPointAndTriangleState::PATS_Inside)
 		{
-			TriangleInterpolation(AnimValue,CurrentTriangles[TriangleIndex], CurrentAnimTime,OutMatrices);
+			TriangleInterpolation(AnimValue,CurrentTriangles[TriangleIndex], CurrentAnimTime,OutMatrices, OutActiveNotifies);
 			return ;
 		}
 		if(State == EPointAndTriangleState::PATS_InEdge)
@@ -108,7 +109,7 @@ void UBlendSpace::GetAnimationBoneMatrices(const XMFLOAT2& AnimValue, float Curr
 
 				if(Edge->IsPointOnSegment(AnimValue))
 				{
-					LinearInterpolation(AnimValue, Edge, CurrentAnimTime,OutMatrices);
+					LinearInterpolation(AnimValue, Edge, CurrentAnimTime,OutMatrices, OutActiveNotifies);
 					return ;
 				}
 
@@ -125,7 +126,7 @@ void UBlendSpace::GetAnimationBoneMatrices(const XMFLOAT2& AnimValue, float Curr
 			const std::shared_ptr<FAnimClipEdge>& Edge = Edges[EdgeIndex];
 			if(Edge->IsPointOnSegment(AnimValue) )
 			{
-				LinearInterpolation(AnimValue, Edge,CurrentAnimTime, OutMatrices);
+				LinearInterpolation(AnimValue, Edge,CurrentAnimTime, OutMatrices, OutActiveNotifies);
 				return;
 			}
 		}
@@ -148,7 +149,7 @@ void UBlendSpace::GetAnimationBoneMatrices(const XMFLOAT2& AnimValue, float Curr
 	}
 	if(NearestPoint)
 	{
-		CalculateOneAnimation(NearestPoint, CurrentAnimTime,OutMatrices);
+		CalculateOneAnimation(NearestPoint, CurrentAnimTime,OutMatrices, OutActiveNotifies);
 		return;
 	}
 }
@@ -372,7 +373,8 @@ void UBlendSpace::CreateTriangle()
 }
 
 void UBlendSpace::TriangleInterpolation(const XMFLOAT2& AnimValue,
-	const std::shared_ptr<FAnimClipTriangle>& Triangle, float AnimTime, std::vector<XMMATRIX>& OutMatrices)
+	const std::shared_ptr<FAnimClipTriangle>& Triangle, float AnimTime, std::vector<XMMATRIX>& OutMatrices,
+	std::vector<FAnimNotifyEvent>& OutActiveNotifies)
 {
 
 	{
@@ -437,6 +439,24 @@ void UBlendSpace::TriangleInterpolation(const XMFLOAT2& AnimValue,
 		float P1LengthSq = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P1Vector, CurrentValueVector)));
 		float P2LengthSq = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P2Vector, CurrentValueVector)));
 		float P3LengthSq = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P3Vector, CurrentValueVector)));
+
+		// 거리가 가장 가까운 애니메이션의 노티파이 정보를 획득
+		float MinDistance = P1LengthSq;
+		int ClosestPointIndex = 0;
+		float AnimNotifyTime = P1AnimDuration*WantedTimeRate;
+		if(P2LengthSq < MinDistance)
+		{
+			MinDistance = P2LengthSq;
+			ClosestPointIndex = 1;
+			AnimNotifyTime = P2AnimDuration*WantedTimeRate;
+		}
+		if(P3LengthSq < MinDistance)
+		{
+			ClosestPointIndex = 2;
+			AnimNotifyTime = P3AnimDuration*WantedTimeRate;
+		}
+		Triangle->Points[ClosestPointIndex]->AnimSequence->GetAnimNotifies(AnimNotifyTime, OutActiveNotifies);
+
 		float P1Weight = 1.0f / std::powf((P1LengthSq),4.0f);
 		float P2Weight = 1.0f / std::powf((P2LengthSq),4.0f); // P2LengthEst/(P1LengthEst+P2LengthEst+P3LengthEst);
 		float P3Weight = 1.0f / std::powf((P3LengthSq),4.0f); //P1Weight-P2Weight;
@@ -466,7 +486,8 @@ void UBlendSpace::TriangleInterpolation(const XMFLOAT2& AnimValue,
 }
 
 void UBlendSpace::LinearInterpolation(const XMFLOAT2& CurrentValue,
-	const std::shared_ptr<FAnimClipEdge>& Edge, float AnimTime, std::vector<XMMATRIX>& OutMatrices)
+	const std::shared_ptr<FAnimClipEdge>& Edge, float AnimTime, std::vector<XMMATRIX>& OutMatrices,
+	std::vector<FAnimNotifyEvent>& OutActiveNotifies)
 {
 	const std::shared_ptr<FAnimClipPoint>& P1 = Edge->StartPoint;
 	const std::shared_ptr<FAnimClipPoint>& P2 = Edge->EndPoint;
@@ -513,6 +534,17 @@ void UBlendSpace::LinearInterpolation(const XMFLOAT2& CurrentValue,
 
 	float P1LengthEst = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P1Vector, CurrentValueVector)));
 	float P2LengthEst = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(P2Vector, CurrentValueVector)));
+
+	// 거리가 가장 가까운 애니메이션의 노티파이 정보를 획득
+	if(P1LengthEst < P2LengthEst)
+	{
+		Edge->StartPoint->AnimSequence->GetAnimNotifies(P1AnimDuration*WantedTimeRate,OutActiveNotifies);
+	}
+	else
+	{
+		Edge->EndPoint->AnimSequence->GetAnimNotifies(P2AnimDuration*WantedTimeRate,OutActiveNotifies);	
+	}
+
 	float P1Weight = P1LengthEst/(P1LengthEst+P2LengthEst);
 
 	while (!bAnim1Updated || !bAnim2Updated )
@@ -530,7 +562,10 @@ void UBlendSpace::LinearInterpolation(const XMFLOAT2& CurrentValue,
 }
 
 void UBlendSpace::CalculateOneAnimation(const std::shared_ptr<FAnimClipPoint>& Point,
-	float AnimTime, std::vector<XMMATRIX>& OutMatrices)
+	float AnimTime, std::vector<XMMATRIX>& OutMatrices,
+	std::vector<FAnimNotifyEvent>& OutActiveNotifies)
 {
 	Point->AnimSequence->GetBoneTransform(fmod(AnimTime,Point->AnimSequence->GetDuration()), OutMatrices);
+	float DeltaSeconds = GEngine->GetDeltaSeconds();
+	Point->AnimSequence->GetAnimNotifies( fmod(AnimTime,Point->AnimSequence->GetDuration()), OutActiveNotifies);
 }

@@ -125,7 +125,7 @@ void UEngine::GameStart()
 
 void UEngine::Tick(float DeltaSeconds)
 {
-	
+	this->DeltaSeconds = DeltaSeconds;
 #ifdef WITH_EDITOR
 	std::shared_ptr<FImGUITask> Task;
 	while(FImGuizmoCommandPipe::Dequeue(Task))

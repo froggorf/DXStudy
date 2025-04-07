@@ -14,13 +14,17 @@ public:
 	// 더 이른 시간을 기준으로 notify 정렬
 	void SortNotifies();
 
-	// StartTime(exclusive) 와 StartTime+DeltaTime(inclusive) 사이의 Notify를 반환
-	void GetAnimNotifies(const float& StartTime, const float& DeltaTime, std::vector<FAnimNotifyEvent>& OutActiveNotifies);
+	// LastUpdateTime 과 CurrentTime 사이의 Notify를 반환
+	void GetAnimNotifies(const float& CurrentTime, std::vector<FAnimNotifyEvent>& OutActiveNotifies);
 
 protected:
 private:
 public:
 	std::vector<FAnimNotifyEvent> Notifies;
+
+	float LastUpdateTime = 1000.0f;
+
+	
 protected:
 private:
 };
