@@ -40,7 +40,6 @@
 
 extern std::shared_ptr<class UEngine> GEngine;
 extern std::shared_ptr<class UEditorEngine> GEditorEngine;
-
 extern std::unique_ptr<class FDirectXDevice> GDirectXDevice;
 
 #define Make_Transform_Dirty()\

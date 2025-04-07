@@ -17,7 +17,7 @@ class UAimOffsetBlendSpace : public UBlendSpace
 public:
 	UAimOffsetBlendSpace();
 
-	inline static const std::shared_ptr<UAimOffsetBlendSpace>& GetAnimationAsset(const std::string& AnimationName)
+	static const std::shared_ptr<UAimOffsetBlendSpace>& GetAnimationAsset(const std::string& AnimationName)
 	{
 		if(std::shared_ptr<UAnimationAsset> FindAsset = UAnimationAsset::GetAnimationAsset(AnimationName))
 		{

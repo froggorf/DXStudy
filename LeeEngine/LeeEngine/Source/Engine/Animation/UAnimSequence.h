@@ -41,7 +41,14 @@ public:
 	inline float GetDuration() const { return Duration; }
 	inline const AssimpNodeData& GetRootNode() const { return RootNode; }
 	inline const std::map<std::string, BoneInfo>& GetBoneIDMap() const { return BoneInfoMap; }
-	inline static const std::shared_ptr<UAnimSequence>& GetAnimationAsset(const std::string& AnimationName){return std::dynamic_pointer_cast<UAnimSequence>(UAnimationAsset::GetAnimationAsset(AnimationName));}
+	inline static std::shared_ptr<UAnimSequence> GetAnimationAsset(const std::string& AnimationName)
+	{
+		if(std::shared_ptr<UAnimationAsset> Asset = UAnimationAsset::GetAnimationAsset(AnimationName))
+		{
+			return std::dynamic_pointer_cast<UAnimSequence>(Asset);	
+		}
+		return nullptr;
+	}
 
 	// 특정 애니메이션 시간의 본 Matrices를 반환받는 함수
 	void GetBoneTransform(float CurrentAnimTime, std::vector<XMMATRIX>& FinalBoneMatrices);

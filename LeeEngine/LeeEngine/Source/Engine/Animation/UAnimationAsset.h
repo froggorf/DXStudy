@@ -16,9 +16,10 @@ public:
     const std::shared_ptr<USkeletalMesh>& GetAnimationSkeleton() const {return AnimationSkeleton;}
 
 
-    static const std::shared_ptr<UAnimationAsset>& GetAnimationAsset(const std::string& AnimationAssetName)
+    static std::shared_ptr<UAnimationAsset> GetAnimationAsset(const std::string& AnimationAssetName)
     {
 		const auto& Map = GetAnimationAssetCacheMap();
+        if(Map.size()==0) return nullptr;
         if(Map.contains(AnimationAssetName))
         {
             return GetAnimationAssetCacheMap()[AnimationAssetName];    
@@ -38,7 +39,7 @@ private:
 
     static std::map<std::string, std::shared_ptr<UAnimationAsset>>& GetAnimationAssetCacheMap()
     {
-        static std::map<std::string, std::shared_ptr<UAnimationAsset>> AnimationAssetCache;
+        static std::map<std::string, std::shared_ptr<UAnimationAsset>> AnimationAssetCache{};
         return AnimationAssetCache;
     }
 };

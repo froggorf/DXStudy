@@ -1,4 +1,4 @@
-
+#include "CoreMinimal.h"
 #include "UMyAnimInstance.h"
 
 #include <Engine/RenderCore/EditorScene.h>
