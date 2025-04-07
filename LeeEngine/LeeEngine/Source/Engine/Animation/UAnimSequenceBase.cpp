@@ -17,19 +17,22 @@ void UAnimSequenceBase::GetAnimNotifies(const float& CurrentTime,
 		return;
 	}
 
-	
-
-	
-	float PreviousPosition = LastUpdateTime;
-	float CurrentPosition = CurrentTime;
-	for(const auto& NotifyEvent : Notifies)
+	// 급격한 애니메이션 변화로 인한 AnimNotify 중복 호출 방어
+	if(LastUpdateTimeSeconds + 0.1f > GEngine->GetTimeSeconds())
 	{
-		const float NotifyStartTime = NotifyEvent.GetTriggerTime();
-		const float NotifyEndTime = NotifyEvent.GetEndTriggerTime();
-		if(NotifyStartTime <= CurrentPosition && NotifyEndTime>PreviousPosition)
+		float PreviousPosition = LastUpdateTime;
+		float CurrentPosition = CurrentTime;
+		for(const auto& NotifyEvent : Notifies)
 		{
-			OutActiveNotifies.emplace_back(NotifyEvent);
+			const float NotifyStartTime = NotifyEvent.GetTriggerTime();
+			const float NotifyEndTime = NotifyEvent.GetEndTriggerTime();
+			if(NotifyStartTime <= CurrentPosition && NotifyEndTime>PreviousPosition)
+			{
+				OutActiveNotifies.emplace_back(NotifyEvent);
+			}
 		}
+		LastUpdateTime = CurrentPosition;
 	}
-	LastUpdateTime = CurrentPosition;
+	LastUpdateTimeSeconds = GEngine->GetTimeSeconds();
+	
 }

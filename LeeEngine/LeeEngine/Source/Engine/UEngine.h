@@ -35,6 +35,7 @@ public:
 	virtual void LoadDefaultMap();
 	virtual const std::string& GetDefaultMapName();
 	float GetDeltaSeconds() const {return DeltaSeconds;}
+	float GetTimeSeconds() const {return TimeSeconds;}
 
 	/*
 	 * 에디터의 경우에는 Play Button 을 통해 호출되며,
@@ -97,6 +98,7 @@ private:
 	D3DApp* Application;
 	std::shared_ptr<UWorld> CurrentWorld;
 	float DeltaSeconds;
+	float TimeSeconds;
 
 
 

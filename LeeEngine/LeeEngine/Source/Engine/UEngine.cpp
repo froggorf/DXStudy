@@ -119,6 +119,7 @@ void UEngine::GameStart()
 	}
 
 	bGameStart= true;
+	TimeSeconds = 0;
 
 	GetWorld()->BeginPlay();
 }
@@ -141,6 +142,7 @@ void UEngine::Tick(float DeltaSeconds)
 
 	if(bGameStart)
 	{
+		TimeSeconds += DeltaSeconds;
 		if(CurrentWorld)
 		{
 			CurrentWorld->TickWorld(DeltaSeconds);

@@ -23,6 +23,7 @@ public:
 	std::vector<FAnimNotifyEvent> Notifies;
 
 	float LastUpdateTime = 1000.0f;
+	float LastUpdateTimeSeconds = 0.0f;
 
 	
 protected:
