@@ -250,7 +250,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(ProjectDir)Library\Lib\LeeEngine\$(Configuration)\</OutDir>
-    <IncludePath>$(ProjectDir)Source\;$(ProjectDir)ThirdParty\nlohmannJson\;$(ProjectDir)ThirdParty\nlohmannJson\nlohmann;$(ProjectDir)ThirdParty\ImGuizmo;$(ProjectDir)ThirdParty\DirectXTex;$(ProjectDir)ThirdParty\ImGui;$(ProjectDir)ThirdParty\Assimp;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)Source\;$(ProjectDir)Source\ThirdParty\nlohmannJson\;$(ProjectDir)Source\ThirdParty\nlohmannJson\nlohmann;$(ProjectDir)Source\ThirdParty\ImGuizmo;$(ProjectDir)Source\ThirdParty\DirectXTex;$(ProjectDir)Source\ThirdParty\ImGui;$(ProjectDir)Source\ThirdParty\Assimp;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)ThirdParty\DirectXTex\lib\Release;$(ProjectDir)ThirdParty\Assimp\lib\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
