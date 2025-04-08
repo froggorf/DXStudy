@@ -17,6 +17,7 @@
 #include <string>
 #include <stack>
 #include <map>
+#include <queue>
 #include <memory>
 
 // 기타 유틸리티 헤더

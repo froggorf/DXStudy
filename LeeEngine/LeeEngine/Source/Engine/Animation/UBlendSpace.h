@@ -61,7 +61,6 @@ public:
 
 	static std::shared_ptr<UBlendSpace> GetAnimationAsset(const std::string& AnimationName)
 	{
-		
 		if(std::shared_ptr<UAnimationAsset> FindAsset = UAnimationAsset::GetAnimationAsset(AnimationName))
 		{
 			return std::dynamic_pointer_cast<UBlendSpace>(FindAsset);	
