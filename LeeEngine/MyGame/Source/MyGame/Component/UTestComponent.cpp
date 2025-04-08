@@ -31,11 +31,11 @@ XMFLOAT2 GetDrawPanelPosFromLocal(const XMFLOAT2& LocalPos, const XMFLOAT2& Loca
 	// DrawPanel은 좌 하단이므로, 해당 값에 맞게 반환하기 위해 bFlipY 값을 통해 반영
 	XMFLOAT2 ReturnValue{LocalPos};
 
-	ReturnValue.x = ReturnValue.x - min(LocalHorizontalSize.x,LocalHorizontalSize.y);
-	ReturnValue.y = ReturnValue.y - min(LocalVerticalSize.x,LocalVerticalSize.y);
+	ReturnValue.x = ReturnValue.x - std::min(LocalHorizontalSize.x,LocalHorizontalSize.y);
+	ReturnValue.y = ReturnValue.y - std::min(LocalVerticalSize.x,LocalVerticalSize.y);
 
-	float Width = max(LocalHorizontalSize.x,LocalHorizontalSize.y) - min(LocalHorizontalSize.x,LocalHorizontalSize.y);
-	float Height = max(LocalVerticalSize.x,LocalVerticalSize.y) - min(LocalVerticalSize.x,LocalVerticalSize.y);
+	float Width = max(LocalHorizontalSize.x,LocalHorizontalSize.y) - std::min(LocalHorizontalSize.x,LocalHorizontalSize.y);
+	float Height = max(LocalVerticalSize.x,LocalVerticalSize.y) - std::min(LocalVerticalSize.x,LocalVerticalSize.y);
 
 	ReturnValue.x = ReturnValue.x * (DrawPanelSize.x / Width);
 	ReturnValue.y = ReturnValue.y * (DrawPanelSize.y / Height);
@@ -52,14 +52,14 @@ XMFLOAT2 GetLocalPosFromDrawPanel(const XMFLOAT2& DrawPanelPos, const XMFLOAT2& 
 	XMFLOAT2 ReturnValue{DrawPanelPos};
 
 
-	float Width = max(LocalHorizontalSize.x,LocalHorizontalSize.y) - min(LocalHorizontalSize.x,LocalHorizontalSize.y);
-	float Height = max(LocalVerticalSize.x,LocalVerticalSize.y) - min(LocalVerticalSize.x,LocalVerticalSize.y);
+	float Width = max(LocalHorizontalSize.x,LocalHorizontalSize.y) - std::min(LocalHorizontalSize.x,LocalHorizontalSize.y);
+	float Height = max(LocalVerticalSize.x,LocalVerticalSize.y) - std::min(LocalVerticalSize.x,LocalVerticalSize.y);
 
 	ReturnValue.x = ReturnValue.x * (Width / DrawPanelSize.x);
 	ReturnValue.y = ReturnValue.y * (Height / DrawPanelSize.y);
 
-	ReturnValue.x = ReturnValue.x + min(LocalHorizontalSize.x,LocalHorizontalSize.y);
-	ReturnValue.y = ReturnValue.y + min(LocalVerticalSize.x,LocalVerticalSize.y);
+	ReturnValue.x = ReturnValue.x + std::min(LocalHorizontalSize.x,LocalHorizontalSize.y);
+	ReturnValue.y = ReturnValue.y + std::min(LocalVerticalSize.x,LocalVerticalSize.y);
 
 	ReturnValue.y = LocalVerticalSize.y - ReturnValue.y -5.0f; // Gap;
 

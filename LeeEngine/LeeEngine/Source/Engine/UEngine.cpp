@@ -43,13 +43,16 @@ void UEngine::InitEngine()
 	}
 
 	GThreadPool = std::make_unique<FQueuedThreadPool>(std::thread::hardware_concurrency()-2); // GameThread, RenderThread
-	
+
+	CreateAudioThread();
+
 	PostLoad();
 
 
 	CurrentWorld = std::make_shared<UWorld>();
 
 	InitImGui();
+
 
 	LoadDataFromDefaultEngineIni();
 
@@ -61,7 +64,6 @@ void UEngine::InitEngine()
 	//RenderThread = std::thread(&UEngine::Draw,this);
 	CreateRenderThread();
 
-	CreateAudioThread();
 
 	
 	
@@ -139,6 +141,10 @@ void UEngine::Tick(float DeltaSeconds)
 		Task->CommandLambda();
 	}
 #endif
+	if(GAudioDevice)
+	{
+		GAudioDevice->GameThread_AudioUpdate();
+	}
 
 	++GameThreadFrameCount;
 
@@ -218,7 +224,7 @@ void UEngine::CreateRenderThread()
 void UEngine::CreateAudioThread()
 {
 	GAudioDevice = std::make_shared<FAudioDevice>();
-	AudioThread = std::thread(&FAudioDevice::AudioThread_Update, GAudioDevice);
+	AudioThread = std::thread(&FAudioThread::Execute);
 }
 
 void UEngine::InitImGui()

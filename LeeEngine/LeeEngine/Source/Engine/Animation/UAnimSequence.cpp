@@ -115,7 +115,9 @@ void UAnimSequence::LoadDataFromFileData(const nlohmann::json& AssetData)
 			FAnimNotifyEvent NotifyEvent;
 			if(NotifyData.contains("NotifyClass"))
 			{
-				NotifyEvent.Notify = std::dynamic_pointer_cast<UAnimNotify>(GetDefaultObject(NotifyData["NotifyClass"])->CreateInstance());
+				std::string NotifyClassName = NotifyData["NotifyClass"];
+				NotifyEvent.Notify = std::dynamic_pointer_cast<UAnimNotify>(GetDefaultObject(NotifyClassName)->CreateInstance());
+				NotifyEvent.Notify->LoadDataFromFileData(NotifyData);
 			}
 			NotifyEvent.TriggerTimeOffset = NotifyData["TriggerTime"];
 			// Json 에러로 인하여 분리

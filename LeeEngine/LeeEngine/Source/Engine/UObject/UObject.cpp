@@ -33,8 +33,13 @@ void UObject::Rename(const std::string& NewName)
 
 void UObject::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
-	assert(AssetData.contains("Name"));
-	Rename(AssetData["Name"]);
+	// 이름이 없는 에셋의 경우도 존재 (ex)UAnimNotify)
+	//assert(AssetData.contains("Name"));
+	if(AssetData.contains("Name"))
+	{
+		Rename(AssetData["Name"]);	
+	}
+	
 }
 
 void UObject::SaveDataFromAssetToFile(nlohmann::json& Json)

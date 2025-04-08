@@ -4,8 +4,8 @@
     "Skeleton": "SK_MyUEFN",
     "AnimationDataPath": "/Content/Resource/Animation/MyUEFN/Locomotion/MyUEFN_RunForward.fbx",
     "Notifies" : [
-        { "NotifyClass" : "UAnimNotify_PlaySound_RunLeft", "TriggerTime" : 6.2 },
-        { "NotifyClass" : "UAnimNotify_PlaySound_RunRight", "TriggerTime" : 17.5 }
+        { "NotifyClass" : "UAnimNotify_PlaySound", "TriggerTime" : 6.2 , "SoundName": "Run_Left"},
+        { "NotifyClass" : "UAnimNotify_PlaySound", "TriggerTime" : 17.5, "SoundName" : "Run_Right" }
 
     ]
 }
