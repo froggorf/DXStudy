@@ -56,3 +56,14 @@
 
 // nlohmann/json
 #include "nlohmann/json.hpp"
+
+// FMOD
+#include <FMOD/fmod.h>
+#include <FMOD/fmod.hpp>
+#include <FMOD/fmod_codec.h>
+#include <FMOD/fmod_common.h>
+#include <FMOD/fmod_dsp.h>
+#include <FMOD/fmod_dsp_effects.h>
+#include <FMOD/fmod_errors.h>
+#include <FMOD/fmod_output.h>
+

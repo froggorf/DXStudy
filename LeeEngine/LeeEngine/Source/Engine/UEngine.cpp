@@ -4,6 +4,8 @@
 // 이윤석
 #include "CoreMinimal.h"
 #include "UEngine.h"
+
+#include "FAudioDevice.h"
 #include "Mesh/UStaticMesh.h"
 #include "RenderCore/RenderingThread.h"
 #include "World/UWorld.h"
@@ -59,6 +61,9 @@ void UEngine::InitEngine()
 	//RenderThread = std::thread(&UEngine::Draw,this);
 	CreateRenderThread();
 
+	CreateAudioThread();
+
+	
 	
 }
 
@@ -169,15 +174,6 @@ void UEngine::Tick(float DeltaSeconds)
 		FScene::DrawScene_GameThread();	
 	}
 	
-
-	//Draw();
-
-	
-	//
-	//DrawImGui();
-
-	
-
 }
 
 void UEngine::MakeComponentTransformDirty(std::shared_ptr<USceneComponent>& SceneComponent)
@@ -195,12 +191,17 @@ void UEngine::MakeComponentTransformDirty(std::shared_ptr<USceneComponent>& Scen
 
 void UEngine::JoinThreadsAtDestroy()
 {
-	
 	if(RenderThread.joinable())
 	{
 		RenderThread.join();
 	}
-	return;
+
+	GAudioDevice->GameKill();
+	if(AudioThread.joinable())
+	{
+		AudioThread.join();
+	}
+	
 }
 
 
@@ -212,6 +213,12 @@ void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 void UEngine::CreateRenderThread()
 {
 	RenderThread = std::thread(&FRenderCommandExecutor::Execute, std::make_shared<FScene>());
+}
+
+void UEngine::CreateAudioThread()
+{
+	GAudioDevice = std::make_shared<FAudioDevice>();
+	AudioThread = std::thread(&FAudioDevice::AudioThread_Update, GAudioDevice);
 }
 
 void UEngine::InitImGui()

@@ -30,6 +30,20 @@ private:
 
 class FAudioDevice 
 {
+public:
+	void AudioThread_Update();
+	void GameKill();
+protected:
 	std::vector<FActiveSound> ActiveSounds;
 	std::queue<std::shared_ptr<FActiveSound>> PendingAddedActiveSounds;
+
+private:
+	FMOD::System* FMODSystem = nullptr;
+	FMOD::Sound* Sound = nullptr;
+	FMOD::Channel* FMODChannel = nullptr;
+
+	bool bIsGameRunning = true;;
+
 };
+
+extern std::shared_ptr<FAudioDevice> GAudioDevice;

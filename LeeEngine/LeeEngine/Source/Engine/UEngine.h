@@ -29,6 +29,7 @@ public:
 		Application = CurrentApplication;
 	}
 	~UEngine() override;
+	
 	virtual void InitEngine();
 	void PostLoad() override;
 	virtual void LoadDataFromDefaultEngineIni();
@@ -76,6 +77,7 @@ public:
 
 protected:
 	virtual void CreateRenderThread();
+	void CreateAudioThread();
 private:
 	// ============= ImGui =============
 	void InitImGui();
@@ -92,6 +94,7 @@ protected:
 	UINT							GameThreadFrameCount = 0;
 	std::thread						RenderThread;
 	UINT							RenderThreadFrameCount = 0;
+	std::thread						AudioThread;
 	// =======================================
 
 private:
