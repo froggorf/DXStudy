@@ -31,6 +31,9 @@ private:
 class FAudioDevice 
 {
 public:
+	FAudioDevice();
+	~FAudioDevice();
+
 	void AudioThread_Update();
 	void GameKill();
 protected:
