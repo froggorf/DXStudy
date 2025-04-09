@@ -5,6 +5,7 @@
 #include "../Component/UTestComponent.h"
 #include "Engine/Animation/UAimOffsetBlendSpace.h"
 #include "Engine/Animation/UAnimInstance.h"
+#include "Engine/Components/UAnimMontage.h"
 
 class UMyAnimInstance : public UAnimInstance
 {
@@ -33,6 +34,7 @@ private:
 	std::shared_ptr<UAnimSequence> AS_Test1;
 	std::shared_ptr<UAnimSequence> AS_Test2;
 
+	std::shared_ptr<UAnimMontage> AM_Test;
 
 	float CurrentSpeed = 0.0f;
 

@@ -261,6 +261,9 @@
     <ClCompile Include="Source\Engine\FAudioDevice.cpp">
       <Filter>Source\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Components\UAnimMontage.cpp">
+      <Filter>Source\Engine\Animation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DirectX\ShadowMap.h">
@@ -469,6 +472,9 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\FAudioDevice.h">
       <Filter>Source\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Components\UAnimMontage.h">
+      <Filter>Source\Engine\Animation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

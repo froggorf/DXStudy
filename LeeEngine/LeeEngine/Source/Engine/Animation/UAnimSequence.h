@@ -35,7 +35,7 @@ public:
 	~UAnimSequence() override {};
 
 	Bone* FindBone(const std::string& name);
-
+	float GetLength() const {return Duration;}
 
 	inline float GetTicksPerSecond() const { return TicksPerSecond; }
 	inline float GetDuration() const { return Duration; }

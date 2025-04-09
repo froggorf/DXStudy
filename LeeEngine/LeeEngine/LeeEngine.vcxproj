@@ -40,6 +40,7 @@
     <ClCompile Include="Source\Engine\Animation\UBlendSpace.cpp" />
     <ClCompile Include="Source\Engine\AssetManager\AssetManager.cpp" />
     <ClCompile Include="Source\Engine\Components\UActorComponent.cpp" />
+    <ClCompile Include="Source\Engine\Components\UAnimMontage.cpp" />
     <ClCompile Include="Source\Engine\Components\UMeshComponent.cpp" />
     <ClCompile Include="Source\Engine\Components\UPrimitiveComponent.cpp" />
     <ClCompile Include="Source\Engine\Components\USceneComponent.cpp" />
@@ -139,6 +140,7 @@
     <ClInclude Include="Source\Engine\Animation\UBlendSpace.h" />
     <ClInclude Include="Source\Engine\AssetManager\AssetManager.h" />
     <ClInclude Include="Source\Engine\Components\UActorComponent.h" />
+    <ClInclude Include="Source\Engine\Components\UAnimMontage.h" />
     <ClInclude Include="Source\Engine\Components\UMeshComponent.h" />
     <ClInclude Include="Source\Engine\Components\UPrimitiveComponent.h" />
     <ClInclude Include="Source\Engine\Components\USceneComponent.h" />
