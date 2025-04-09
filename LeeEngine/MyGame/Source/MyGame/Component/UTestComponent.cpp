@@ -3,10 +3,8 @@
 #include <Engine/RenderCore/EditorScene.h>
 
 #include "Engine/Mesh/USkeletalMesh.h"
-
-
-
-
+#include "../Actor/ATestActor2.h"
+#include "../AnimInstance/UMyAnimInstance.h"
 
 UTestComponent::UTestComponent()
 {
@@ -97,7 +95,30 @@ void UTestComponent::DrawDetailPanel(UINT ComponentDepth)
 		TargetAnim = 2;
 	}
 
+	if(ImGui::Button("PlayAnimMontage - Reload1"))
+	{
+		if(AM_Test)
+		{
+			UMyAnimInstance::MyAnimInstance->Montage_Play(AM_Test, 0.0f);	
+		}
+		
+	}
+	if(ImGui::Button("PlayAnimMontage - Reload2"))
+	{
+		if(AM_Test)
+		{
+			UMyAnimInstance::MyAnimInstance->Montage_Play(AM_Test, AM_Test->GetStartTimeFromSectionName("Reload2"));	
+		}
 
+	}
+	if(ImGui::Button("PlayAnimMontage - Fire"))
+	{
+		if(AM_Test)
+		{
+			UMyAnimInstance::MyAnimInstance->Montage_Play(AM_Test, AM_Test->GetStartTimeFromSectionName("Fire"));	
+		}
+
+	}
 	
 	//auto d2 = ImGui::GetWindowDrawList();
 
@@ -183,5 +204,13 @@ void UTestComponent::DrawDetailPanel(UINT ComponentDepth)
 //	d2->PopClipRect();
 //	
 }
+
+void UTestComponent::BeginPlay()
+{
+	UActorComponent::BeginPlay();
+
+	AM_Test = UAnimMontage::GetAnimationAsset("AM_Test");
+}
+
 
 

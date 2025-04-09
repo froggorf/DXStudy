@@ -11,6 +11,9 @@ class UMyAnimInstance : public UAnimInstance
 {
 	MY_GENERATED_BODY(UMyAnimInstance)
 public:
+	static UMyAnimInstance* MyAnimInstance;
+
+
 	UMyAnimInstance();
 	~UMyAnimInstance() override {};
 

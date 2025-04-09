@@ -2,6 +2,8 @@
 	"Class": "UAnimMontage",
 	"Name": "AM_Test",
 	"Skeleton": "SK_MyUEFN",
+
+	"SlotName": "DefaultSlot",
 	"AnimTrack" : [
 		{"AnimName" : "AS_RifleReload"},
 		{"AnimName" : "AS_RifleFire"}

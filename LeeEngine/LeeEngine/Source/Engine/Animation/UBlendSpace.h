@@ -66,7 +66,6 @@ public:
 			return std::dynamic_pointer_cast<UBlendSpace>(FindAsset);	
 		}
 		return nullptr;	
-		
 	}
 
 	virtual void GetAnimationBoneMatrices(const XMFLOAT2& AnimValue, float CurrentAnimTime, std::vector<XMMATRIX>& OutMatrices,

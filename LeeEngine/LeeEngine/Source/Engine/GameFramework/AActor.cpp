@@ -52,6 +52,11 @@ void AActor::BeginPlay()
 	{
 		GetRootComponent()->BeginPlay();
 	}
+
+	for (const auto& Component : OwnedComponents)
+	{
+		Component->BeginPlay();
+	}
 }
 
 XMFLOAT3 AActor::GetActorLocation() const

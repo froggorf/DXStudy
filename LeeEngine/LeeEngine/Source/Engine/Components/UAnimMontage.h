@@ -8,6 +8,8 @@
 #include "Engine/Animation/UAnimCompositeBase.h"
 #include "Engine/Animation/UAnimSequence.h"
 
+class UAnimInstance;
+
 struct FCompositeSection
 {
 	std::string SectionName;
@@ -27,6 +29,15 @@ class UAnimMontage : public UAnimCompositeBase
 	MY_GENERATED_BODY(UAnimMontage)
 
 public:
+	static std::shared_ptr<UAnimMontage> GetAnimationAsset(const std::string& AnimationName)
+	{
+		if(std::shared_ptr<UAnimationAsset> FindAsset = UAnimationAsset::GetAnimationAsset(AnimationName))
+		{
+			return std::dynamic_pointer_cast<UAnimMontage>(FindAsset);	
+		}
+		return nullptr;	
+	}
+
 	// 언리얼엔진은 FSlotAnimationTrack으로 여러 슬롯으로 관리할 수 있도록 하지만,
 	// LeeEngine에서는 하나의 몽타쥬당 하나의 섹션만 관리하도록 진행할 예정
 	std::string SlotName;
@@ -37,9 +48,48 @@ public:
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
+	// 애니메이션 몽타쥬의 전체 길이를 반환
+	float GetPlayLength() const {return AnimTrack.GetLength();}
+
+	// 특정 섹션의 시작과 종료 시간을 반환
+	float GetStartTimeFromSectionName(const std::string& SectionName);
+	void GetSectionStartAndEndTime(UINT SectionIndex, float& OutStartTime, float& OutEndTime);
+
+	bool IsWithinPos(UINT SectionIndex1, UINT SectionIndex2, float InPosition);
+	int GetSectionIndexFromPosition(float InPosition);
+	int GetSectionIndex(const std::string& InSectionName) const;
+
+
 protected:
 private:
 public:
 protected:
 private:
+};
+
+struct FAnimMontageInstance
+{
+public:
+	FAnimMontageInstance(UAnimInstance* InAnimInstance) : AnimInstance(InAnimInstance), Position(0.0f) {MontageBones = std::vector<XMMATRIX>(MAX_BONES,XMMatrixIdentity());}
+	void Play();
+
+	void SetPosition(float InPosition);
+	void JumpToSectionName(const std::string& SectionName);
+
+public:
+	std::vector<XMMATRIX> MontageBones;
+
+	std::shared_ptr<UAnimMontage> Montage;
+
+	std::function<void()> OnMontageEnded;
+	std::function<void()> OnMontageBlendingOutStarted;
+	std::function<void()> OnMontageBlendedInEnded;
+
+	bool bIsPlaying;
+private:
+	UAnimInstance* AnimInstance;
+	float Position;
+	float CurPlayingStartPosition = 0.0f;
+	float CurPlayingEndPosition = 0.0f;
+	std::string NextSectionName;
 };

@@ -6,7 +6,7 @@
 #include "../Actor/ATestActor2.h"
 #include "Engine/Components/USkeletalMeshComponent.h"
 
-
+UMyAnimInstance* UMyAnimInstance::MyAnimInstance;
 
 UMyAnimInstance::UMyAnimInstance()
 {
@@ -53,6 +53,7 @@ void UMyAnimInstance::NativeInitializeAnimation()
 			}
 		}
 	}
+	MyAnimInstance = this;
 }
 
 void UMyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -69,7 +70,6 @@ void UMyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 void UMyAnimInstance::UpdateAnimation(float dt)
 {
 	UAnimInstance::UpdateAnimation(dt);
-	
 
 	if(GetSkeletalMeshComponent() && BS_MyUEFN_Locomotion && TestComp && AS_Test1 && AS_Test2)
 	{
@@ -104,6 +104,22 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 		// 레이어 블렌딩
 		std::vector<XMMATRIX> ResultMatrices(MAX_BONES, XMMatrixIdentity());
 		LayeredBlendPerBone(BS_IdleWalkRunMatrices, AS_Matrices, "spine_01", 1.0f, ResultMatrices);
+
+
+		// 몽타쥬 연결
+		{
+			std::string SlotName = "DefaultSlot";
+			for(const auto& MontageInstance : MontageInstances)
+			{
+				if(MontageInstance->Montage->SlotName == SlotName)
+				{
+					ResultMatrices = MontageInstance->MontageBones;
+				}
+			}
+		}
+
+
+
 
 		FScene::UpdateSkeletalMeshAnimation_GameThread(GetSkeletalMeshComponent()->GetPrimitiveID() , ResultMatrices);
 	}	

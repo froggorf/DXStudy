@@ -6,6 +6,7 @@
 
 #include "ThirdParty/ImGui/imgui.h"
 #include "Engine/Components/UActorComponent.h"
+#include "Engine/Components/UAnimMontage.h"
 
 
 class UTestComponent : public UActorComponent
@@ -18,11 +19,7 @@ public:
 	void DrawDetailPanel(UINT ComponentDepth) override;
 #endif
 
-	//void GetAnimsForBlend(XMFLOAT2& OutCurrentValue, std::vector<std::shared_ptr<FAnimClipPoint>>& OutPoints);
-
-	//const std::vector<std::shared_ptr<FAnimClipEdge>>& GetCurrentEdge() const {return CurrentEdge;}
-	//const std::vector<std::shared_ptr<FAnimClipTriangle>>& GetCurrentTriangles() const {return CurrentTriangles;}
-	//const std::vector<std::shared_ptr<FAnimClipPoint>>& GetTestValue() const {return CurrentPoints;}
+	void BeginPlay() override;
 protected:
 private:
 public:
@@ -37,7 +34,7 @@ public:
 
 	XMFLOAT2 CurrentValue = XMFLOAT2{0.0f,0.0f};*/
 
-
+	std::shared_ptr<UAnimMontage> AM_Test;
 protected:
 private:
 };

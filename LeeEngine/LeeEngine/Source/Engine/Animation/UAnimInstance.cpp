@@ -34,7 +34,18 @@ void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UAnimInstance::UpdateAnimation(float dt)
 {
+	for(int i = 0; i < MontageInstances.size(); ++i)
+	{
+		MontageInstances[i]->Play();
 
+		// 몽타쥬 재생 종료됨
+		if(!MontageInstances[i]->bIsPlaying)
+		{
+			MontageInstances.erase(MontageInstances.begin() + i);
+			--i;
+		}
+	}
+	
 }
 
 void UAnimInstance::Tick(float DeltaSeconds)
@@ -65,8 +76,31 @@ AActor* UAnimInstance::TryGetPawnOwner() const
 	return nullptr;
 }
 
+void UAnimInstance::Montage_Play(std::shared_ptr<UAnimMontage> MontageToPlay, float InTimeToStartMontageAt)
+{
+	if(!MontageToPlay || MontageToPlay->GetPlayLength() <= 0.0f)
+	{
+		return;
+	}
+
+	// 이미 해당 몽타쥬가 재생중인지 확인
+	for(const auto& MontageInstance : MontageInstances)
+	{
+		if(MontageInstance->Montage == MontageToPlay)
+		{
+			MontageInstance->SetPosition(std::clamp(InTimeToStartMontageAt, 0.0f, MontageToPlay->GetPlayLength()));
+			return;
+		}
+	}
+
+	std::shared_ptr<FAnimMontageInstance> NewInstance = std::make_shared<FAnimMontageInstance>(this);
+	NewInstance->Montage = MontageToPlay;
+	NewInstance->SetPosition(std::clamp(InTimeToStartMontageAt, 0.0f, MontageToPlay->GetPlayLength()));
+	MontageInstances.emplace_back(NewInstance);
+}
+
 void UAnimInstance::LayeredBlendPerBone(const std::vector<XMMATRIX>& BasePose, const std::vector<XMMATRIX>& BlendPose,
-	const std::string& TargetBoneName, float BlendWeights, std::vector<XMMATRIX>& OutMatrices)
+                                        const std::string& TargetBoneName, float BlendWeights, std::vector<XMMATRIX>& OutMatrices)
 {
 	auto BoneHierarchyMap = UAnimSequence::GetSkeletonBoneHierarchyMap();
 	if(BoneHierarchyMap.contains(GetSkeletalMeshComponent()->GetSkeletalMesh()->GetName()))
