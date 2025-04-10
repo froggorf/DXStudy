@@ -14,13 +14,13 @@ FImguiActorDetail::FImguiActorDetail(FScene* Scene, class FImguiLevelViewport* O
 
 void FImguiActorDetail::Draw()
 {
-	if(ImGui::Begin("Detail"))
+	if(ImGui::Begin("Detail", nullptr, ImGuiWindowFlags_NoMove))
 	{
 		if(CurrentSelectedActor)
 		{
 			// 컴퍼넌트들 렌더링
 			{
-				if(ImGui::BeginListBox(" ", ImVec2(-FLT_MIN,200.0f)))
+				if(ImGui::BeginListBox(" ", ImVec2(-FLT_MIN,100.0f)))
 				{
 					int ComponentCount = SelectActorSceneComponentNames.size();
 					for (int i = 0; i < ComponentCount; ++i) {
@@ -48,7 +48,7 @@ void FImguiActorDetail::Draw()
 						}
 					}
 					ImGui::EndListBox();
-
+					ImGui::BeginChild("Detail");
 					if(const auto& CurrentSelectedComponent = GetCurrentSelectedComponent())
 					{
 						CurrentSelectedComponent->DrawDetailPanel(0);
@@ -57,6 +57,7 @@ void FImguiActorDetail::Draw()
 					{
 						CurrentSelectedActorComponent->DrawDetailPanel(0);
 					}
+					ImGui::EndChild();
 				}
 			}
 

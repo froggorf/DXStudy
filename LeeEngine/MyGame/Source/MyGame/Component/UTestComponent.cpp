@@ -66,7 +66,38 @@ XMFLOAT2 GetLocalPosFromDrawPanel(const XMFLOAT2& DrawPanelPos, const XMFLOAT2& 
 	return ReturnValue;
 }
 
+ImVec2 operator*(float Value, ImVec2 Point)
+{
+	return ImVec2{Point.x*Value, Point.y*Value};
+}
 
+ImVec2 BezierPoint(const ImVec2& P0, const ImVec2& P1, const ImVec2& P0LeaveTangent, const ImVec2& P1ArriveTangent, float t)
+{
+	float u = 1.0f - t;
+	float tt = t * t;
+	float uu = u * u;
+	float uuu = uu * u;
+	float ttt = tt * t;
+
+	ImVec2 Point = uuu * P0; // (1-t)^3 * P0
+	Point += 3 * uu * t * P1; // 3(1-t)^2 * t * P1
+	Point += 3 * u * tt * P0LeaveTangent; // 3(1-t) * t^2 * P2
+	Point += ttt * P1ArriveTangent; // t^3 * P3
+	return Point;
+}
+
+// 베지어 커브 그리기 함수
+void DrawBezierCurve(ImDrawList* DrawList, const ImVec2& P0, const ImVec2& P1, const ImVec2& P2, const ImVec2& P3, ImU32 Color, int Segments = 100)
+{
+	ImVec2 PreviousPoint = P0;
+	for (int i = 1; i <= Segments; ++i)
+	{
+		float t = i / (float)Segments;
+		ImVec2 CurrentPoint = BezierPoint(P0, P1, P2, P3, t);
+		DrawList->AddLine(PreviousPoint, CurrentPoint, Color, 2.0f);
+		PreviousPoint = CurrentPoint;
+	}
+}
 
 
 void UTestComponent::DrawDetailPanel(UINT ComponentDepth)
@@ -119,6 +150,71 @@ void UTestComponent::DrawDetailPanel(UINT ComponentDepth)
 		}
 
 	}
+
+	{
+		enum class ECurveMode
+		{
+			ECM_Linear, ECM_Bezier
+		};
+		struct FRichCurveKey
+		{
+			float Time;
+			float Value;
+			float ArriveTangent;
+			float LeaveTangent;
+		};
+		struct FRichCurve
+		{
+			ECurveMode CurveMode;
+			std::vector<FRichCurveKey> Keys;
+		};
+		static ImVec2 P0 = ImVec2(100, 300);
+		static ImVec2 P1 = ImVec2(200, 100);
+		static ImVec2 P2 = ImVec2(300, 500);
+		static ImVec2 P3 = ImVec2(400, 300);
+
+		ImDrawList* DrawList = ImGui::GetWindowDrawList();
+		ImVec2 CanvasPos = ImGui::GetCursorScreenPos();
+		ImVec2 CanvasSize = ImVec2(500, 500);
+
+		// 캔버스 영역 그리기
+		DrawList->AddRectFilled(CanvasPos, CanvasPos + CanvasSize, IM_COL32(50, 50, 50, 255));
+		DrawList->AddRect(CanvasPos, CanvasPos + CanvasSize, IM_COL32(255, 255, 255, 255));
+
+		// 베지어 곡선 그리기
+		DrawBezierCurve(DrawList, CanvasPos + P0, CanvasPos + P1, CanvasPos + P2, CanvasPos + P3, IM_COL32(0, 255, 0, 255));
+
+		// 제어점 그리기 및 드래그 처리
+		ImVec2* Points[] = { &P0, &P1, &P2, &P3 };
+		for (int i = 0; i < 4; ++i)
+		{
+			ImVec2 Point = CanvasPos + *Points[i];
+			if(ImGui::IsMouseHoveringRect(Point - ImVec2(10.0f,10.0f), Point+ImVec2(10.0f,10.0f)))
+			{
+				DrawList->AddCircleFilled(Point, 10.0f, IM_COL32(255,0,0, 255));
+			}
+			else
+			{
+				DrawList->AddCircleFilled(Point, 10.0f, IM_COL32(50,50,0, 255));
+			}
+
+			// 마우스 입력 처리
+			if (ImGui::IsMouseDown(0) && ImGui::IsMouseHoveringRect(Point - ImVec2(10,10), Point + ImVec2(10,10)))
+			{
+				*Points[i] = ImGui::GetMousePos() - CanvasPos;
+			}
+		}
+
+		ImGui::Dummy(CanvasSize); // 캔버스 공간 확보
+		for(int i = 0; i < 10; ++i)
+		{
+
+			ImGui::Text("asd")	;
+		}
+	}
+
+	
+
 	
 	//auto d2 = ImGui::GetWindowDrawList();
 
