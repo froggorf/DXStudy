@@ -66,6 +66,24 @@ XMFLOAT2 GetLocalPosFromDrawPanel(const XMFLOAT2& DrawPanelPos, const XMFLOAT2& 
 	return ReturnValue;
 }
 
+
+enum class ECurveMode
+{
+	ECM_Linear, ECM_Bezier
+};
+struct FRichCurveKey
+{
+	float Time;
+	float Value;
+	float ArriveTangent;
+	float LeaveTangent;
+};
+struct FRichCurve
+{
+	ECurveMode CurveMode;
+	std::vector<FRichCurveKey> Keys;
+};
+
 ImVec2 operator*(float Value, ImVec2 Point)
 {
 	return ImVec2{Point.x*Value, Point.y*Value};
@@ -99,6 +117,53 @@ void DrawBezierCurve(ImDrawList* DrawList, const ImVec2& P0, const ImVec2& P1, c
 	}
 }
 
+float HermiteCurve(float t, float P0, float P1, float T0, float T1) {
+	float b1 = 2 * t * t * t - 3 * t * t + 1;;
+	float b2 = t * t * t - 2 * t * t + t;;
+	float b3 = -2 * t * t * t + 3 * t * t;;
+	float b4 = t * t * t - t * t;;
+
+	// Hermite curve value
+	return b1 * P0 + b2 * T0 + b3 * P1 + b4 * T1;
+}
+
+void DrawHermiteCurve(ImDrawList* DrawList, ImVec2 CanvasPos, ImVec2 CanvasSize, const FRichCurve& Curve)
+{
+	UINT KeySize = Curve.Keys.size();
+	const auto& Keys = Curve.Keys;
+	if(Keys.size() == 0 )
+	{
+		//early return
+		return;
+	}
+
+	ImVec2 PreviousPoint = { Keys[0].Time,Keys[0].Value};
+	PreviousPoint.y = CanvasPos.y +  (1-PreviousPoint.y) * CanvasSize.y;
+	PreviousPoint.x = CanvasPos.x + PreviousPoint.x * CanvasSize.x;
+	for(UINT KeyIndex = 0; KeyIndex < KeySize-1; ++KeyIndex)
+	{
+		if(KeyIndex+1 >= KeySize)
+		{
+			break;
+		}
+		
+		int SegmentCount = 100;
+		for(int SegmentIndex = 0; SegmentIndex < SegmentCount; ++SegmentIndex)
+		{
+			float NewTimeNormalized = static_cast<float>(SegmentIndex) / (Keys[KeyIndex+1].Time - Keys[KeyIndex].Time) / SegmentCount;
+			
+			float NewValue =  HermiteCurve(NewTimeNormalized, Keys[KeyIndex].Value, Keys[KeyIndex+1].Value, Keys[KeyIndex].LeaveTangent, Keys[KeyIndex].ArriveTangent);
+			ImVec2 CurrentKey = {NewTimeNormalized*(Keys[KeyIndex+1].Time - Keys[KeyIndex].Time) + Keys[KeyIndex].Time ,NewValue};
+			// 윈도우 좌표계는 좌상단이 기준점이므로 1 - 
+			CurrentKey.y = 1- CurrentKey.y;
+
+			ImVec2 CanvasKeyPos = { CanvasPos.x + CurrentKey.x*CanvasSize.x, CanvasPos.y+ CurrentKey.y*CanvasSize.y};
+			DrawList->AddLine(PreviousPoint, ImVec2{CanvasKeyPos.x,CanvasKeyPos.y}, IM_COL32(250,250,0,255), 2.0f);
+			PreviousPoint = CanvasKeyPos;
+
+		}
+	}
+}
 
 void UTestComponent::DrawDetailPanel(UINT ComponentDepth)
 {
@@ -152,26 +217,16 @@ void UTestComponent::DrawDetailPanel(UINT ComponentDepth)
 	}
 
 	{
-		enum class ECurveMode
+
+		static FRichCurve Curve;
+		static bool bIsInitialize = false;
+		if(!bIsInitialize)
 		{
-			ECM_Linear, ECM_Bezier
-		};
-		struct FRichCurveKey
-		{
-			float Time;
-			float Value;
-			float ArriveTangent;
-			float LeaveTangent;
-		};
-		struct FRichCurve
-		{
-			ECurveMode CurveMode;
-			std::vector<FRichCurveKey> Keys;
-		};
-		static ImVec2 P0 = ImVec2(100, 300);
-		static ImVec2 P1 = ImVec2(200, 100);
-		static ImVec2 P2 = ImVec2(300, 500);
-		static ImVec2 P3 = ImVec2(400, 300);
+			bIsInitialize = true;
+			Curve.CurveMode = ECurveMode::ECM_Bezier;
+			Curve.Keys.push_back(FRichCurveKey{0.0f, 0.0f, 0.0f,0.0f});
+			Curve.Keys.push_back(FRichCurveKey{1.0f, 1.0f, 0.0f,0.0f});
+		}
 
 		ImDrawList* DrawList = ImGui::GetWindowDrawList();
 		ImVec2 CanvasPos = ImGui::GetCursorScreenPos();
@@ -182,28 +237,29 @@ void UTestComponent::DrawDetailPanel(UINT ComponentDepth)
 		DrawList->AddRect(CanvasPos, CanvasPos + CanvasSize, IM_COL32(255, 255, 255, 255));
 
 		// 베지어 곡선 그리기
-		DrawBezierCurve(DrawList, CanvasPos + P0, CanvasPos + P1, CanvasPos + P2, CanvasPos + P3, IM_COL32(0, 255, 0, 255));
+		//DrawBezierCurve(DrawList, CanvasPos + P0, CanvasPos + P1, CanvasPos + P2, CanvasPos + P3, IM_COL32(0, 255, 0, 255));
+		DrawHermiteCurve(DrawList, CanvasPos, CanvasSize, Curve);
 
 		// 제어점 그리기 및 드래그 처리
-		ImVec2* Points[] = { &P0, &P1, &P2, &P3 };
-		for (int i = 0; i < 4; ++i)
-		{
-			ImVec2 Point = CanvasPos + *Points[i];
-			if(ImGui::IsMouseHoveringRect(Point - ImVec2(10.0f,10.0f), Point+ImVec2(10.0f,10.0f)))
-			{
-				DrawList->AddCircleFilled(Point, 10.0f, IM_COL32(255,0,0, 255));
-			}
-			else
-			{
-				DrawList->AddCircleFilled(Point, 10.0f, IM_COL32(50,50,0, 255));
-			}
+		//ImVec2* Points[] = { &P0, &P1, &P2, &P3 };
+		//for (int i = 0; i < 4; ++i)
+		//{
+		//	ImVec2 Point = CanvasPos + *Points[i];
+		//	if(ImGui::IsMouseHoveringRect(Point - ImVec2(10.0f,10.0f), Point+ImVec2(10.0f,10.0f)))
+		//	{
+		//		DrawList->AddCircleFilled(Point, 10.0f, IM_COL32(255,0,0, 255));
+		//	}
+		//	else
+		//	{
+		//		DrawList->AddCircleFilled(Point, 10.0f, IM_COL32(100,100,100, 255));
+		//	}
 
-			// 마우스 입력 처리
-			if (ImGui::IsMouseDown(0) && ImGui::IsMouseHoveringRect(Point - ImVec2(10,10), Point + ImVec2(10,10)))
-			{
-				*Points[i] = ImGui::GetMousePos() - CanvasPos;
-			}
-		}
+		//	// 마우스 입력 처리
+		//	if (ImGui::IsMouseDown(0) && ImGui::IsMouseHoveringRect(Point - ImVec2(10,10), Point + ImVec2(10,10)))
+		//	{
+		//		*Points[i] = ImGui::GetMousePos() - CanvasPos;
+		//	}
+		//}
 
 		ImGui::Dummy(CanvasSize); // 캔버스 공간 확보
 		for(int i = 0; i < 10; ++i)
