@@ -7,6 +7,7 @@
 #include "Engine/MyEngineUtils.h"
 #include "Engine/Animation/UAnimCompositeBase.h"
 #include "Engine/Animation/UAnimSequence.h"
+#include "Engine/Class/Curve/UCurveBase.h"
 
 class UAnimInstance;
 
@@ -15,7 +16,6 @@ struct FCompositeSection
 	std::string SectionName;
 	std::string NextSectionName;
 	float StartTime;
-
 };
 struct FAnimTrack
 {
@@ -38,13 +38,8 @@ public:
 		return nullptr;	
 	}
 
-	// 언리얼엔진은 FSlotAnimationTrack으로 여러 슬롯으로 관리할 수 있도록 하지만,
-	// LeeEngine에서는 하나의 몽타쥬당 하나의 섹션만 관리하도록 진행할 예정
-	std::string SlotName;
-	FAnimTrack AnimTrack;
-
-
-	std::vector<FCompositeSection> CompositeSections;
+	FAlphaBlend BlendIn;
+	FAlphaBlend BlendOut;
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
@@ -63,6 +58,14 @@ public:
 protected:
 private:
 public:
+	// 언리얼엔진은 FSlotAnimationTrack으로 여러 슬롯으로 관리할 수 있도록 하지만,
+	// LeeEngine에서는 하나의 몽타쥬당 하나의 섹션만 관리하도록 진행할 예정
+	std::string SlotName;
+	FAnimTrack AnimTrack;
+
+	// 섹션 데이터(Composite Section)
+	std::vector<FCompositeSection> CompositeSections;
+
 protected:
 private:
 };

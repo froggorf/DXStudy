@@ -73,6 +73,12 @@
     <Filter Include="Source\Engine\Animation\AnimNotifies">
       <UniqueIdentifier>{ff8b2077-8b22-4121-9496-c1c920279b2e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Engine\Class">
+      <UniqueIdentifier>{0c4e9448-15c7-4e26-900d-6be8002edb9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine\Class\Curve">
+      <UniqueIdentifier>{077c6515-f26a-497c-8c2c-016c0156beb7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\DirectX\ShadowMap.cpp">
@@ -263,6 +269,9 @@
     </ClCompile>
     <ClCompile Include="Source\Engine\Components\UAnimMontage.cpp">
       <Filter>Source\Engine\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Class\Curve\UCurveBase.cpp">
+      <Filter>Source\Engine\Class\Curve</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -475,6 +484,9 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\Components\UAnimMontage.h">
       <Filter>Source\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Class\Curve\UCurveBase.h">
+      <Filter>Source\Engine\Class\Curve</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

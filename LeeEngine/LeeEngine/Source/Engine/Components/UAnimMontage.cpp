@@ -44,6 +44,31 @@ void UAnimMontage::LoadDataFromFileData(const nlohmann::json& AssetData)
 		
 	}
 
+	// 반드시 있어야 하는 데이터
+	{
+		// BlendIn
+		auto BlendInData =  AssetData["BlendIn"];
+		std::string BlendInCurveName =  BlendInData["CurveName"];
+		std::shared_ptr<UCurveFloat> CustomCurveFloat = std::dynamic_pointer_cast<UCurveFloat>(UCurveBase::GetCurveAssetCache(BlendInCurveName));
+		assert(CustomCurveFloat);
+		BlendIn.SetCurveFloat(CustomCurveFloat);
+		float BlendInBlendTime = BlendInData["BlendTime"];
+		BlendIn.SetBlendTime(BlendInBlendTime);
+
+		// BlendOut
+		auto BlendOutData =  AssetData["BlendOut"];
+		std::string BlendOutCurveName =  BlendOutData["CurveName"];
+		std::shared_ptr<UCurveFloat> BlendOutCustomCurveFloat = std::dynamic_pointer_cast<UCurveFloat>(UCurveBase::GetCurveAssetCache(BlendOutCurveName));
+		assert(BlendOutCustomCurveFloat);
+		BlendOut.SetCurveFloat(BlendOutCustomCurveFloat);
+		float BlendOutBlendTime = BlendOutData["BlendTime"];
+		BlendOut.SetBlendTime(BlendOutBlendTime);	
+	}
+	
+
+
+
+
 
 }
 

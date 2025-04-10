@@ -39,6 +39,7 @@
     <ClCompile Include="Source\Engine\Animation\UAnimSequenceBase.cpp" />
     <ClCompile Include="Source\Engine\Animation\UBlendSpace.cpp" />
     <ClCompile Include="Source\Engine\AssetManager\AssetManager.cpp" />
+    <ClCompile Include="Source\Engine\Class\Curve\UCurveBase.cpp" />
     <ClCompile Include="Source\Engine\Components\UActorComponent.cpp" />
     <ClCompile Include="Source\Engine\Components\UAnimMontage.cpp" />
     <ClCompile Include="Source\Engine\Components\UMeshComponent.cpp" />
@@ -139,6 +140,7 @@
     <ClInclude Include="Source\Engine\Animation\UAnimSequenceBase.h" />
     <ClInclude Include="Source\Engine\Animation\UBlendSpace.h" />
     <ClInclude Include="Source\Engine\AssetManager\AssetManager.h" />
+    <ClInclude Include="Source\Engine\Class\Curve\UCurveBase.h" />
     <ClInclude Include="Source\Engine\Components\UActorComponent.h" />
     <ClInclude Include="Source\Engine\Components\UAnimMontage.h" />
     <ClInclude Include="Source\Engine\Components\UMeshComponent.h" />
