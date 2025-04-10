@@ -66,10 +66,20 @@ XMFLOAT2 GetLocalPosFromDrawPanel(const XMFLOAT2& DrawPanelPos, const XMFLOAT2& 
 	return ReturnValue;
 }
 
+float HermiteCurve(float t, float P0, float P1, float T0, float T1) {
+	float b1 = 2 * t * t * t - 3 * t * t + 1;;
+	float b2 = t * t * t - 2 * t * t + t;;
+	float b3 = -2 * t * t * t + 3 * t * t;;
+	float b4 = t * t * t - t * t;;
+
+	// Hermite curve value
+	return b1 * P0 + b2 * T0 + b3 * P1 + b4 * T1;
+}
+
 
 enum class ECurveMode
 {
-	ECM_Linear, ECM_Bezier
+	ECM_Linear, ECM_Hermite
 };
 struct FRichCurveKey
 {
@@ -82,6 +92,54 @@ struct FRichCurve
 {
 	ECurveMode CurveMode;
 	std::vector<FRichCurveKey> Keys;
+
+	float Eval(float InTime)
+	{
+		size_t KeySize = Keys.size(); 
+		if(KeySize == 0)
+		{
+			return 0.0f;
+		}
+		if(InTime >= Keys[KeySize-1].Time)
+		{
+			return Keys[KeySize-1].Value;
+		}
+		if(InTime <= Keys[0].Time)
+		{
+			return Keys[0].Value;
+		}
+
+
+		for(int i = 0; i < KeySize; ++i)
+		{
+			// i ~ i+1 사이에 있다면 해당 값 반환
+			if(Keys[i].Time <= InTime)
+			{
+				// 해당 Time 마지막 Time 이상인지는 앞에서 체크함 (InTime >= Keys[KeySize-1].Time)
+				if(InTime < Keys[i+1].Time )
+				{
+					// i 와 i + 1 을 보간
+					float t = InTime / (Keys[i].Time + Keys[i+1].Time);
+					switch(CurveMode)
+					{
+					case ECurveMode::ECM_Linear:
+						
+						return std::lerp(Keys[i].Value,Keys[i+1].Value,t);
+					break;
+					case ECurveMode::ECM_Hermite:
+						return HermiteCurve(t, Keys[i].Value, Keys[i+1].Value, Keys[i].LeaveTangent, Keys[i].ArriveTangent);
+					break;
+					default:
+						assert(0);
+					break;
+					}
+				}
+			}
+		}
+		MY_LOG("Eval", EDebugLogLevel::DLL_Error, "Error");
+		assert(0);
+		
+	}
 };
 
 ImVec2 operator*(float Value, ImVec2 Point)
@@ -117,16 +175,6 @@ void DrawBezierCurve(ImDrawList* DrawList, const ImVec2& P0, const ImVec2& P1, c
 	}
 }
 
-float HermiteCurve(float t, float P0, float P1, float T0, float T1) {
-	float b1 = 2 * t * t * t - 3 * t * t + 1;;
-	float b2 = t * t * t - 2 * t * t + t;;
-	float b3 = -2 * t * t * t + 3 * t * t;;
-	float b4 = t * t * t - t * t;;
-
-	// Hermite curve value
-	return b1 * P0 + b2 * T0 + b3 * P1 + b4 * T1;
-}
-
 void DrawHermiteCurve(ImDrawList* DrawList, ImVec2 CanvasPos, ImVec2 CanvasSize, const FRichCurve& Curve)
 {
 	UINT KeySize = Curve.Keys.size();
@@ -137,28 +185,28 @@ void DrawHermiteCurve(ImDrawList* DrawList, ImVec2 CanvasPos, ImVec2 CanvasSize,
 		return;
 	}
 
-	ImVec2 PreviousPoint = { Keys[0].Time,Keys[0].Value};
-	PreviousPoint.y = CanvasPos.y +  (1-PreviousPoint.y) * CanvasSize.y;
-	PreviousPoint.x = CanvasPos.x + PreviousPoint.x * CanvasSize.x;
 	for(UINT KeyIndex = 0; KeyIndex < KeySize-1; ++KeyIndex)
 	{
 		if(KeyIndex+1 >= KeySize)
 		{
 			break;
 		}
-		
+
+		ImVec2 PreviousPoint = { Keys[KeyIndex].Time,Keys[KeyIndex].Value};
+		PreviousPoint.y = CanvasPos.y +  (1-PreviousPoint.y) * CanvasSize.y;
+		PreviousPoint.x = CanvasPos.x + PreviousPoint.x * CanvasSize.x;		
 		int SegmentCount = 100;
 		for(int SegmentIndex = 0; SegmentIndex < SegmentCount; ++SegmentIndex)
 		{
-			float NewTimeNormalized = static_cast<float>(SegmentIndex) / (Keys[KeyIndex+1].Time - Keys[KeyIndex].Time) / SegmentCount;
+			float NewTimeNormalized = static_cast<float>(SegmentIndex) / SegmentCount;
 			
-			float NewValue =  HermiteCurve(NewTimeNormalized, Keys[KeyIndex].Value, Keys[KeyIndex+1].Value, Keys[KeyIndex].LeaveTangent, Keys[KeyIndex].ArriveTangent);
+			float NewValue =  HermiteCurve(NewTimeNormalized, Keys[KeyIndex].Value, Keys[KeyIndex+1].Value, Keys[KeyIndex].LeaveTangent, Keys[KeyIndex+1].ArriveTangent);
 			ImVec2 CurrentKey = {NewTimeNormalized*(Keys[KeyIndex+1].Time - Keys[KeyIndex].Time) + Keys[KeyIndex].Time ,NewValue};
 			// 윈도우 좌표계는 좌상단이 기준점이므로 1 - 
 			CurrentKey.y = 1- CurrentKey.y;
 
 			ImVec2 CanvasKeyPos = { CanvasPos.x + CurrentKey.x*CanvasSize.x, CanvasPos.y+ CurrentKey.y*CanvasSize.y};
-			DrawList->AddLine(PreviousPoint, ImVec2{CanvasKeyPos.x,CanvasKeyPos.y}, IM_COL32(250,250,0,255), 2.0f);
+			DrawList->AddLine(PreviousPoint, ImVec2{CanvasKeyPos.x,CanvasKeyPos.y}, IM_COL32(100*KeyIndex,250,0,255), 2.0f);
 			PreviousPoint = CanvasKeyPos;
 
 		}
@@ -223,14 +271,15 @@ void UTestComponent::DrawDetailPanel(UINT ComponentDepth)
 		if(!bIsInitialize)
 		{
 			bIsInitialize = true;
-			Curve.CurveMode = ECurveMode::ECM_Bezier;
+			Curve.CurveMode = ECurveMode::ECM_Hermite;
 			Curve.Keys.push_back(FRichCurveKey{0.0f, 0.0f, 0.0f,0.0f});
+
 			Curve.Keys.push_back(FRichCurveKey{1.0f, 1.0f, 0.0f,0.0f});
 		}
 
 		ImDrawList* DrawList = ImGui::GetWindowDrawList();
 		ImVec2 CanvasPos = ImGui::GetCursorScreenPos();
-		ImVec2 CanvasSize = ImVec2(500, 500);
+		ImVec2 CanvasSize = ImVec2(300, 200);
 
 		// 캔버스 영역 그리기
 		DrawList->AddRectFilled(CanvasPos, CanvasPos + CanvasSize, IM_COL32(50, 50, 50, 255));
@@ -262,11 +311,13 @@ void UTestComponent::DrawDetailPanel(UINT ComponentDepth)
 		//}
 
 		ImGui::Dummy(CanvasSize); // 캔버스 공간 확보
-		for(int i = 0; i < 10; ++i)
+		static float X;
+		static float Y;
+		if(ImGui::SliderFloat("X",&X, -1.0f,2.0f))
 		{
-
-			ImGui::Text("asd")	;
+			Y = Curve.Eval(X);
 		}
+		ImGui::Text("Y : %f", Y);
 	}
 
 	
