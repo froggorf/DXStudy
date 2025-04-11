@@ -174,7 +174,10 @@ void FAnimMontageInstance::Play()
 		}
 		
 		Anim->GetBoneTransform(AnimSegmentPosition, MontageBones);
+		
 	}
+	Notifies.clear();
+	Montage->GetAnimNotifies(Position, Notifies);
 }
 
 void FAnimMontageInstance::SetPosition(float InPosition)

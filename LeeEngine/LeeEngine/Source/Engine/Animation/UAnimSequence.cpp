@@ -107,35 +107,7 @@ void UAnimSequence::LoadDataFromFileData(const nlohmann::json& AssetData)
 
 	PrecomputeAnimationData();
 
-	if(AssetData.contains("Notifies"))
-	{
-		const auto& NotifiesData = AssetData["Notifies"];
-		for(const auto& NotifyData : NotifiesData)
-		{
-			FAnimNotifyEvent NotifyEvent;
-			if(NotifyData.contains("NotifyClass"))
-			{
-				std::string NotifyClassName = NotifyData["NotifyClass"];
-				NotifyEvent.Notify = std::dynamic_pointer_cast<UAnimNotify>(GetDefaultObject(NotifyClassName)->CreateInstance());
-				NotifyEvent.Notify->LoadDataFromFileData(NotifyData);
-			}
-			NotifyEvent.TriggerTimeOffset = NotifyData["TriggerTime"];
-			// Json 에러로 인하여 분리
-			//NotifyEvent.EndTriggerTimeOffset = NotifyData.contains("EndTriggerTime") ? NotifyData["EndTriggerTime"] : NotifyEvent.TriggerTimeOffset;
-			if(NotifyData.contains("EndTriggerTime") )
-			{
-				NotifyEvent.EndTriggerTimeOffset = NotifyData["EndTriggerTime"];
-			}
-			else
-			{
-				NotifyEvent.EndTriggerTimeOffset  = NotifyEvent.TriggerTimeOffset;
-			}
-
-
-			Notifies.emplace_back(NotifyEvent);	
-		}
-		
-	}
+	
 
 
 }

@@ -17,6 +17,7 @@ public:
 	// LastUpdateTime 과 CurrentTime 사이의 Notify를 반환
 	void GetAnimNotifies(const float& CurrentTime, std::vector<FAnimNotifyEvent>& OutActiveNotifies);
 
+	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 protected:
 private:
 public:

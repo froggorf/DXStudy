@@ -162,7 +162,7 @@ void UAnimInstance::LayeredBlendPerBone(const std::vector<XMMATRIX>& BasePose, c
 
 }
 
-void UAnimInstance::PlayMontage(const std::string& SlotName, std::vector<XMMATRIX>& OriginMatrices)
+void UAnimInstance::PlayMontage(const std::string& SlotName, std::vector<XMMATRIX>& OriginMatrices, std::vector<FAnimNotifyEvent>& OriginNotifies)
 {
 	std::vector<XMMATRIX> MontageMatrices(MAX_BONES,XMMatrixIdentity());
 	for(const auto& MontageInstance : MontageInstances)
@@ -170,7 +170,8 @@ void UAnimInstance::PlayMontage(const std::string& SlotName, std::vector<XMMATRI
 		if(MontageInstance->Montage->SlotName == SlotName)
 		{
 			MontageMatrices = MontageInstance->MontageBones;
-
+			// 해당 섹션의 애니메이션을 재생중일 경우 기존의 노티파이는 모두 제거하고 해당 몽타쥬의 노티파이만 진행
+			OriginNotifies = MontageInstance->Notifies;
 			float BlendInBlendTime = MontageInstance->Montage->BlendIn.GetBlendTime();
 			float BlendOutBlendTime = MontageInstance->Montage->BlendOut.GetBlendTime();
 

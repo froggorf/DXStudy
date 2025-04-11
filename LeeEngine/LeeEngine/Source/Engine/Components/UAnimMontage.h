@@ -81,6 +81,7 @@ public:
 	void JumpToSectionName(const std::string& SectionName);
 public:
 	std::vector<XMMATRIX> MontageBones;
+	std::vector<FAnimNotifyEvent> Notifies;
 
 	std::shared_ptr<UAnimMontage> Montage;
 
