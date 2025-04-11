@@ -110,6 +110,7 @@ void FRichCurve::DrawCurve(ImDrawList* DrawList, ImVec2 CanvasPos, ImVec2 Canvas
 	default:
 		break;
 	}
+	ImGui::Dummy(CanvasSize);
 }
 
 void FRichCurve::DrawHermiteCurve(ImDrawList* DrawList, ImVec2 CanvasPos, ImVec2 CanvasSize) const

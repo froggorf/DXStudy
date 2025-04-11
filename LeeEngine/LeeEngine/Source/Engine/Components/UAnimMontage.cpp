@@ -142,6 +142,9 @@ void FAnimMontageInstance::Play()
 {
 	bIsPlaying = true;
 
+	// 30프레임에 한번 업데이트
+	CurrentPlayTime += static_cast<float>(1)/30;
+
 	Position += 1;
 	// 현재 섹션 끝났을 때
 	if(Position >= CurPlayingEndPosition)

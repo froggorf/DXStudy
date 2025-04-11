@@ -96,6 +96,7 @@ void UAnimInstance::Montage_Play(std::shared_ptr<UAnimMontage> MontageToPlay, fl
 	std::shared_ptr<FAnimMontageInstance> NewInstance = std::make_shared<FAnimMontageInstance>(this);
 	NewInstance->Montage = MontageToPlay;
 	NewInstance->SetPosition(std::clamp(InTimeToStartMontageAt, 0.0f, MontageToPlay->GetPlayLength()));
+	NewInstance->CurrentPlayTime = 0.0f;
 	MontageInstances.emplace_back(NewInstance);
 }
 

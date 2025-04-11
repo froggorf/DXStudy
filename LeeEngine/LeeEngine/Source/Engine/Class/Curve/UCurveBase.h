@@ -53,6 +53,8 @@ public:
 		}
 		return nullptr;
 	}
+
+
 protected:
 private:
 public:
@@ -73,6 +75,8 @@ public:
 	float GetFloatValue(float InTime) const;
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
+
+	const FRichCurve& GetRichCurve() const {return FloatCurve;}
 protected:
 private:
 public:
@@ -87,8 +91,13 @@ struct FAlphaBlend
 public:
 	FAlphaBlend() : CustomCurve(nullptr), BlendTime(0.0f) {};
 	void SetCurveFloat(const std::shared_ptr<UCurveFloat>& InCustomCurve){CustomCurve = InCustomCurve;}
+
 	void SetBlendTime(float InBlendTime){BlendTime=  InBlendTime;}
+	float GetBlendTime() const {return BlendTime;}
+
 	void Update(float DeltaSeconds);
+
+	const std::shared_ptr<UCurveFloat>& GetCurve() const {return CustomCurve;}
 private:
 	std::shared_ptr<UCurveFloat> CustomCurve;
 	// Blend Time

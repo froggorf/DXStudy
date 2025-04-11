@@ -20,7 +20,7 @@
 	"Sections" : [
 		{ "SectionName" : "Reload1", "StartTime" : 0.0, "NextSectionName" : "Reload2" },
 		{ "SectionName" : "Reload2", "StartTime" : 30.0, "NextSectionName" : "Fire" },
-		{ "SectionName" : "Fire", "StartTime" : 65.0, "NextSectionName" : "Fire" }
+		{ "SectionName" : "Fire", "StartTime" : 65.0 }
 	]
 
 }

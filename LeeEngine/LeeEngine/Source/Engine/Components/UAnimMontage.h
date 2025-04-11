@@ -76,9 +76,9 @@ public:
 	FAnimMontageInstance(UAnimInstance* InAnimInstance) : AnimInstance(InAnimInstance), Position(0.0f) {MontageBones = std::vector<XMMATRIX>(MAX_BONES,XMMatrixIdentity());}
 	void Play();
 
+	float GetPosition() const {return Position;}
 	void SetPosition(float InPosition);
 	void JumpToSectionName(const std::string& SectionName);
-
 public:
 	std::vector<XMMATRIX> MontageBones;
 
@@ -89,10 +89,12 @@ public:
 	std::function<void()> OnMontageBlendedInEnded;
 
 	bool bIsPlaying;
+	float CurrentPlayTime = 0.0f;
 private:
 	UAnimInstance* AnimInstance;
 	float Position;
 	float CurPlayingStartPosition = 0.0f;
 	float CurPlayingEndPosition = 0.0f;
 	std::string NextSectionName;
+
 };

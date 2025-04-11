@@ -35,6 +35,9 @@ public:
 	XMFLOAT2 CurrentValue = XMFLOAT2{0.0f,0.0f};*/
 
 	std::shared_ptr<UAnimMontage> AM_Test;
+	std::shared_ptr<UAnimMontage> AM_NoBlend;
+	std::shared_ptr<UAnimMontage> AM_Blend1s_Linear;
+	std::shared_ptr<UAnimMontage> AM_CustomCurve;
 protected:
 private:
 };

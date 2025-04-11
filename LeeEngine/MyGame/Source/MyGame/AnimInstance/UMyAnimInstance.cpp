@@ -109,11 +109,47 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 		// 몽타쥬 연결
 		{
 			std::string SlotName = "DefaultSlot";
+			std::vector<XMMATRIX> MontageMatrices(MAX_BONES,XMMatrixIdentity());
 			for(const auto& MontageInstance : MontageInstances)
 			{
 				if(MontageInstance->Montage->SlotName == SlotName)
 				{
-					ResultMatrices = MontageInstance->MontageBones;
+					MontageMatrices = MontageInstance->MontageBones;
+
+					float BlendInBlendTime = MontageInstance->Montage->BlendIn.GetBlendTime();
+					float BlendOutBlendTime = MontageInstance->Montage->BlendOut.GetBlendTime();
+
+					float StartTimeFrame, EndTimeFrame;
+					MontageInstance->Montage->GetSectionStartAndEndTime(MontageInstance->GetPosition(), StartTimeFrame,EndTimeFrame);
+					float StartTime = StartTimeFrame / 30; // 30FPS
+					float EndTime = EndTimeFrame/30;
+
+
+					if(MontageInstance->CurrentPlayTime < BlendInBlendTime)
+					{
+						const FRichCurve& BlendInCurve = MontageInstance->Montage->BlendIn.GetCurve()->GetRichCurve();
+						float NormalizedTime = MontageInstance->CurrentPlayTime / BlendInBlendTime; // 0 ~ 1 의 값
+						float CurveValue = BlendInCurve.Eval(NormalizedTime);
+						for(int i = 0; i < MAX_BONES; ++i)
+						{
+							XMMatrixLerp(ResultMatrices[i], MontageMatrices[i], CurveValue, ResultMatrices[i]);	
+						}
+					}
+					else if(EndTime - BlendOutBlendTime<= MontageInstance->CurrentPlayTime && MontageInstance->CurrentPlayTime < EndTime)
+					{
+						const FRichCurve& BlendOutCurve = MontageInstance->Montage->BlendOut.GetCurve()->GetRichCurve();
+						float NormalizedTime = (EndTime - MontageInstance->CurrentPlayTime) / BlendOutBlendTime; // 1~0의 값
+						float CurveValue = BlendOutCurve.Eval(NormalizedTime);
+						for(int i = 0; i < MAX_BONES; ++i)
+						{
+							XMMatrixLerp(ResultMatrices[i],MontageMatrices[i], CurveValue, ResultMatrices[i]);	
+						}
+					}
+					else
+					{
+						ResultMatrices = MontageMatrices;
+					}
+
 				}
 			}
 		}

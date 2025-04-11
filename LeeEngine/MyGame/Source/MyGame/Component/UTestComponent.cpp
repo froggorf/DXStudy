@@ -94,30 +94,52 @@ void UTestComponent::DrawDetailPanel(UINT ComponentDepth)
 		TargetAnim = 2;
 	}
 
-	if(ImGui::Button("PlayAnimMontage - Reload1"))
+	if(ImGui::Button("BlendIn NoBlend"))
 	{
-		if(AM_Test)
+		if(AM_NoBlend)
 		{
-			UMyAnimInstance::MyAnimInstance->Montage_Play(AM_Test, 0.0f);	
+			UMyAnimInstance::MyAnimInstance->Montage_Play(AM_NoBlend, 0.0f);	
 		}
 		
 	}
-	if(ImGui::Button("PlayAnimMontage - Reload2"))
+
+	ImDrawList* DrawList = ImGui::GetWindowDrawList();
+	ImVec2 CanvasPos = ImGui::GetCursorScreenPos();
+	ImVec2 CanvasSize = ImVec2{200.0f,150.0f};
+	AM_Blend1s_Linear->BlendIn.GetCurve()->FloatCurve.DrawCurve(DrawList,CanvasPos,CanvasSize);
+
+	if(ImGui::Button("BlendIn 0.25s - Linear"))
 	{
-		if(AM_Test)
+		if(AM_Blend1s_Linear)
 		{
-			UMyAnimInstance::MyAnimInstance->Montage_Play(AM_Test, AM_Test->GetStartTimeFromSectionName("Reload2"));	
+			UMyAnimInstance::MyAnimInstance->Montage_Play(AM_Blend1s_Linear);	
 		}
 
 	}
-	if(ImGui::Button("PlayAnimMontage - Fire"))
+
+	
+	CanvasPos = ImGui::GetCursorScreenPos();
+	AM_Test->BlendIn.GetCurve()->FloatCurve.DrawCurve(DrawList,CanvasPos,CanvasSize);
+	if(ImGui::Button("BlendIn 0.25s - Hermite"))
 	{
 		if(AM_Test)
 		{
-			UMyAnimInstance::MyAnimInstance->Montage_Play(AM_Test, AM_Test->GetStartTimeFromSectionName("Fire"));	
+			UMyAnimInstance::MyAnimInstance->Montage_Play(AM_Test);	
 		}
 
 	}
+
+	CanvasPos = ImGui::GetCursorScreenPos();
+	AM_CustomCurve->BlendIn.GetCurve()->FloatCurve.DrawCurve(DrawList,CanvasPos,CanvasSize);
+	if(ImGui::Button("BlendIn 0.25s - CustomCurve"))
+	{
+		if(AM_CustomCurve)
+		{
+			UMyAnimInstance::MyAnimInstance->Montage_Play(AM_CustomCurve);	
+		}
+
+	}
+	
 
 	
 		
@@ -215,7 +237,10 @@ void UTestComponent::BeginPlay()
 {
 	UActorComponent::BeginPlay();
 
-	AM_Test = UAnimMontage::GetAnimationAsset("AM_Test");
+	AM_Test = UAnimMontage::GetAnimationAsset("AM_Blend1s");
+	AM_NoBlend =UAnimMontage::GetAnimationAsset("AM_NoBlend");
+	AM_Blend1s_Linear = UAnimMontage::GetAnimationAsset("AM_Blend1s_Linear");
+	AM_CustomCurve = UAnimMontage::GetAnimationAsset("AM_Blend1s_CustomCurve");
 }
 
 

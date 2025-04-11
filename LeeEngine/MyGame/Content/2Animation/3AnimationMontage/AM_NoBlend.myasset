@@ -1,0 +1,26 @@
+{
+	"Class": "UAnimMontage",
+	"Name": "AM_NoBlend",
+	"Skeleton": "SK_MyUEFN",
+	
+	"BlendIn" : {
+		"CurveName" : "TestCurve",
+		"BlendTime" : 0.0
+	},
+	"BlendOut" : {
+		"CurveName" : "TestCurve",
+		"BlendTime" : 0.0
+	},
+
+	"SlotName": "DefaultSlot",
+	"AnimTrack" : [
+		{"AnimName" : "AS_RifleReload"},
+		{"AnimName" : "AS_RifleFire"}
+	],
+	"Sections" : [
+		{ "SectionName" : "Reload1", "StartTime" : 0.0, "NextSectionName" : "Reload2" },
+		{ "SectionName" : "Reload2", "StartTime" : 30.0, "NextSectionName" : "Fire" },
+		{ "SectionName" : "Fire", "StartTime" : 65.0 }
+	]
+
+}
