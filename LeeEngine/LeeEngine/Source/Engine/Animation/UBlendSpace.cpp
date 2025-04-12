@@ -18,6 +18,33 @@ float CrossProduct2D(const XMVECTOR& P, const XMVECTOR& Q, const XMVECTOR& R) {
 	// z 좌표 반환 (2D 외적의 크기)
 	return XMVectorGetZ(cross);
 }
+bool IsSegmentsIntersect(const XMFLOAT2& AStart, const XMFLOAT2& AEnd, const XMFLOAT2& BStart, const XMFLOAT2& BEnd)
+{
+	XMVECTOR AStartVec = XMLoadFloat2(&AStart);
+	XMVECTOR AEndVec = XMLoadFloat2(&AEnd);
+	XMVECTOR BStartVec = XMLoadFloat2(&BStart);
+	XMVECTOR BEndVec = XMLoadFloat2(&BEnd);
+	float cross1 = CrossProduct2D(BStartVec, BEndVec, AStartVec);
+	float cross2 = CrossProduct2D(BStartVec, BEndVec, AEndVec);
+	float cross3 = CrossProduct2D(AStartVec, AEndVec, BStartVec);
+	float cross4 = CrossProduct2D(AStartVec, AEndVec, BEndVec);
+
+	bool bIsIntersecting = (cross1 * cross2 <= 0) && (cross3 * cross4 <= 0);
+	if (bIsIntersecting)
+	{
+		// 직선이 겹칠 경우 선분도 겹치는지 확인
+		bool bIsXNotInterSect = (max(AStart.x, AEnd.x) <= std::min(BStart.x, BEnd.x) || max(BStart.x, BEnd.x) <= std::min(AStart.x, AEnd.x));
+		bool bIsYNotInterSect = (max(AStart.y, AEnd.y) <= std::min(BStart.y, BEnd.y) || max(BStart.y, BEnd.y) <= std::min(AStart.y, AEnd.y));
+		if (bIsXNotInterSect || bIsYNotInterSect)
+		{
+			return false;
+		}
+
+	}
+	return bIsIntersecting;
+};
+
+
 
 bool FAnimClipPoint::IsPointOnSegment( const XMFLOAT2& P1, const XMFLOAT2& P2) const
 {
@@ -86,7 +113,9 @@ EPointAndTriangleState FAnimClipTriangle::FindPointAndTriangleState(const XMFLOA
 
 // ========================================================================
 
-void UBlendSpace::GetAnimationBoneMatrices(const XMFLOAT2& AnimValue, float CurrentAnimTime, std::vector<XMMATRIX>& OutMatrices,
+void UBlendSpace::GetAnimationBoneMatrices(
+	const XMFLOAT2& AnimValue, float CurrentAnimTime, 
+	std::vector<XMMATRIX>& OutMatrices,
 	std::vector<FAnimNotifyEvent>& OutActiveNotifies)
 {
 
@@ -183,9 +212,6 @@ void UBlendSpace::LoadDataFromFileData(const nlohmann::json& AssetData)
 		}
 		
 	}
-	
-	
-
 	CreateEdgeAndTriangle();
 }
 
@@ -207,9 +233,6 @@ void UBlendSpace::CreateEdge()
 			// 1. n(n-1) 돌면서 간선을 만든다.
 			std::shared_ptr<FAnimClipEdge> NewEdge = std::make_shared<FAnimClipEdge>(CurrentPoints[i],CurrentPoints[j]);
 
-
-
-
 			// 2. 만약 그 간선 사이에 점이 있다면 그 간선은 못만든다(n)
 			bool bIsOnLine = false;
 			for(int k =0; k < CurrentPoints.size(); ++k)
@@ -228,31 +251,6 @@ void UBlendSpace::CreateEdge()
 			NewEdge->LengthSq = XMVectorGetX( XMVector2LengthSq(XMVectorSubtract(XMLoadFloat2(&NewEdge->StartPoint->Position), XMLoadFloat2(&NewEdge->EndPoint->Position))));
 
 			// 3. 만약 그 간선이 다른 간선들과 교차할 경우, 길이가 긴 간선이 이긴다 (nlogn)
-			std::function<float(const XMFLOAT2& P, const XMFLOAT2& Q, const XMFLOAT2& R)> CrossProduct = [](const XMFLOAT2& P, const XMFLOAT2& Q, const XMFLOAT2& R)->float
-				{
-					return (Q.x - P.x) * (R.y - P.y) - (Q.y - P.y) * (R.x - P.x);
-				};
-			std::function<bool(const XMFLOAT2& AStart, const XMFLOAT2& AEnd, const XMFLOAT2& BStart, const XMFLOAT2& BEnd)> IsSegmentsIntersect = [CrossProduct](const XMFLOAT2& AStart, const XMFLOAT2& AEnd, const XMFLOAT2& BStart, const XMFLOAT2& BEnd)->bool
-				{
-					float cross1 = CrossProduct(BStart,BEnd,AStart);
-					float cross2 = CrossProduct(BStart,BEnd,AEnd);
-					float cross3 = CrossProduct(AStart,AEnd,BStart);
-					float cross4 = CrossProduct(AStart,AEnd,BEnd);
-
-					bool bIsIntersecting = (cross1*cross2 <= 0) && (cross3*cross4 <= 0);
-					if(bIsIntersecting)
-					{
-						// 직선이 겹칠 경우 선분도 겹치는지 확인
-						bool bIsXNotInterSect = (max(AStart.x, AEnd.x) <= std::min(BStart.x, BEnd.x) || max(BStart.x, BEnd.x) <= std::min(AStart.x, AEnd.x));
-						bool bIsYNotInterSect = (max(AStart.y, AEnd.y) <= std::min(BStart.y, BEnd.y) || max(BStart.y, BEnd.y) <= std::min(AStart.y, AEnd.y));
-						if ( bIsXNotInterSect || bIsYNotInterSect) 
-						{
-							return false;
-						}
-
-					}
-					return bIsIntersecting;
-				};
 
 			// 선분이 겹칠 경우, 길이가 짧은 것을 넣어주므로
 			// 새로 넣는 간선이 길이가 짧을 경우 추가를 위해 index가 -1이 아니지만
