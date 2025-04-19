@@ -1,0 +1,6 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_MyUEFN_WalkBack",
+    "Skeleton": "SK_MyUEFN",
+    "AnimationDataPath": "/Content/Resource/Animation/MyUEFN/Locomotion/MyUEFN_WalkBack.fbx"
+}

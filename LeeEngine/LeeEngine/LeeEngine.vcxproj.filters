@@ -79,6 +79,9 @@
     <Filter Include="Source\Engine\Class\Curve">
       <UniqueIdentifier>{077c6515-f26a-497c-8c2c-016c0156beb7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Engine\Material">
+      <UniqueIdentifier>{3415f7d7-eaa3-400b-8619-a5dcea17efa9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\DirectX\ShadowMap.cpp">
@@ -272,6 +275,9 @@
     </ClCompile>
     <ClCompile Include="Source\Engine\Class\Curve\UCurveBase.cpp">
       <Filter>Source\Engine\Class\Curve</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Material\UMaterial.cpp">
+      <Filter>Source\Engine\Material</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -487,6 +493,9 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\Class\Curve\UCurveBase.h">
       <Filter>Source\Engine\Class\Curve</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Material\UMaterial.h">
+      <Filter>Source\Engine\Material</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

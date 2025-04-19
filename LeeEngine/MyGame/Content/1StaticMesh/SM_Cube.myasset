@@ -1,0 +1,6 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_Cube",
+    "ModelData": "/Content/Resource/Model/cube.obj",
+    "TextureData": [ "/Content/Resource/Texture/cardboard.png" ]
+}

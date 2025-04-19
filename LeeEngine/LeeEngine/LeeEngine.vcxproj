@@ -60,6 +60,7 @@
     <ClCompile Include="Source\Engine\FAudioDevice.cpp" />
     <ClCompile Include="Source\Engine\GameFramework\AActor.cpp" />
     <ClCompile Include="Source\Engine\Level\ULevel.cpp" />
+    <ClCompile Include="Source\Engine\Material\UMaterial.cpp" />
     <ClCompile Include="Source\Engine\Mesh\USkeletalMesh.cpp" />
     <ClCompile Include="Source\Engine\Mesh\USkinnedAsset.cpp" />
     <ClCompile Include="Source\Engine\Mesh\UStaticMesh.cpp" />
@@ -161,6 +162,7 @@
     <ClInclude Include="Source\Engine\FAudioDevice.h" />
     <ClInclude Include="Source\Engine\GameFramework\AActor.h" />
     <ClInclude Include="Source\Engine\Level\ULevel.h" />
+    <ClInclude Include="Source\Engine\Material\UMaterial.h" />
     <ClInclude Include="Source\Engine\Mesh\StaticMeshResources.h" />
     <ClInclude Include="Source\Engine\Mesh\USkeletalMesh.h" />
     <ClInclude Include="Source\Engine\Mesh\USkinnedAsset.h" />

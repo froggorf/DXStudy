@@ -1,0 +1,11 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_MyUEFN_WalkForward",
+    "Skeleton": "SK_MyUEFN",
+    "AnimationDataPath": "/Content/Resource/Animation/MyUEFN/Locomotion/MyUEFN_WalkForward.fbx",
+    "Notifies" : [
+        { "NotifyClass" : "UAnimNotify_PlaySound", "TriggerTime" : 10.45, "SoundName" : "Walk_Left" },
+        { "NotifyClass" : "UAnimNotify_PlaySound", "TriggerTime" : 31.8, "SoundName": "Walk_Right"}
+
+    ]
+}
