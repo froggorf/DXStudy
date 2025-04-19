@@ -5,6 +5,7 @@
 
 #pragma once
 #include "Engine/MyEngineUtils.h"
+#include "Engine/Class/UTexture.h"
 #include "Engine/UObject/UObject.h"
 
 class FSkeletalMeshRenderData
@@ -25,7 +26,8 @@ public:
 
 	// TODO: 임시 텍스쳐 데이터,
 	// UMaterial 구현 이전으로 텍스쳐 SRV 데이터를 해당 클래스에서 관리
-	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> TextureSRV;
+	//std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> TextureSRV;
+	std::vector<std::shared_ptr<UTexture>> Textures;
 
 	// 본이름 - BoneInfo 맵
 	std::map<std::string, BoneInfo> ModelBoneInfoMap;

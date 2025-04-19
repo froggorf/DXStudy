@@ -3,6 +3,21 @@
 
 #include "Engine/AssetManager/AssetManager.h"
 
+std::unordered_map<std::string, std::shared_ptr<UTexture>> UTexture::TextureCacheMap;
+
+void UTexture::Release()
+{
+	if(Texture2D)
+	{
+		Texture2D->Release();	
+	}
+	if(SRView)
+	{
+		SRView->Release();	
+	}
+	
+}
+
 void UTexture::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
 	UObject::LoadDataFromFileData(AssetData);

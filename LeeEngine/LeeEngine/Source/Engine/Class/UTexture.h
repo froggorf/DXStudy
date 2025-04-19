@@ -14,9 +14,20 @@ class UTexture : public UObject, public std::enable_shared_from_this<UTexture>
 	friend class AssetManager;
 public:
 	UTexture() = default;
-
+	void Release();
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetSRV() const {return SRView;}
+
+	static std::shared_ptr<UTexture> GetTextureCache(const std::string& TextureName)
+	{
+		auto Target = TextureCacheMap.find(TextureName);
+		if(Target != TextureCacheMap.end())
+		{
+			return Target->second;
+		}
+		return nullptr;
+	}
 protected:
 private:
 public:
@@ -28,5 +39,5 @@ private:
 	//...
 	D3D11_TEXTURE2D_DESC Desc{};
 
-	std::unordered_map<std::string, std::shared_ptr<UTexture>> TextureCacheMap;
+	static std::unordered_map<std::string, std::shared_ptr<UTexture>> TextureCacheMap;
 };

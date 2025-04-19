@@ -1,7 +1,7 @@
 {
     "Class": "UBlendSpace",
     "Name": "BS_MyUEFN_Locomotion",
-    "Skeleton": "SK_Paladin",
+    "Skeleton": "SK_MyUEFN",
     "HorizontalValue" : [ -180.0, 180.0 ],
     "VerticalValue" : [ 0.0, 600.0 ],
     "Points" : [ 

@@ -2,6 +2,8 @@
 #include "Engine/AssetManager/AssetManager.h"
 #include "USkeletalMesh.h"
 
+#include "Engine/Class/UTexture.h"
+
 
 FSkeletalMeshRenderData::FSkeletalMeshRenderData(const nlohmann::json& SkeletalMeshFilePathData)
 {
@@ -13,14 +15,15 @@ FSkeletalMeshRenderData::FSkeletalMeshRenderData(const nlohmann::json& SkeletalM
 	{
 		p->Release();
 	}
-	for(auto& p : TextureSRV)
+	for(auto& p : Textures)
 	{
 		p->Release();
 	}
+	Textures.clear();
 
 	AssetManager::LoadSkeletalModelData(SkeletalMeshFilePathData["ModelData"], GDirectXDevice->GetDevice(), VertexBuffer,IndexBuffer, ModelBoneInfoMap);
 	MeshCount = VertexBuffer.size();
-	int TextureArraySize = SkeletalMeshFilePathData["TextureData"].size();
+	int TextureArraySize = SkeletalMeshFilePathData["Texture"].size();
 	for(int count = 0; count < MeshCount; ++count)
 	{
 		if(TextureArraySize <= count)
@@ -29,23 +32,23 @@ FSkeletalMeshRenderData::FSkeletalMeshRenderData(const nlohmann::json& SkeletalM
 			break;
 		}
 
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> SRV;
-		const std::string RelativePath = SkeletalMeshFilePathData["TextureData"][count];
-		const std::string TextureFilePath = GEngine->GetDirectoryPath() + RelativePath;
-		AssetManager::LoadTextureFromFile(std::wstring().assign(TextureFilePath.begin(),TextureFilePath.end()), GDirectXDevice->GetDevice(), SRV);
-		TextureSRV.push_back(SRV);
+		std::string TextureName = SkeletalMeshFilePathData["Texture"][count];
+		std::shared_ptr<UTexture> MeshTexture = UTexture::GetTextureCache(TextureName);
+
+		Textures.push_back(MeshTexture);
 	}
 
-	if(TextureSRV.size() == 0)
+	if(Textures.size() == 0)
 	{
-		/*MY_LOG(StaticMeshFilePathData["Name"], EDebugLogLevel::DLL_Error, "In static mesh .myasset file, texture data no valid");*/
+		std::string Name = SkeletalMeshFilePathData["Name"];
+		MY_LOG(Name, EDebugLogLevel::DLL_Error, "In static mesh .myasset file, texture data no valid");
 		return;
 	}
 
-	int currentTextureCount = TextureSRV.size();
+	int currentTextureCount = Textures.size();
 	for(; currentTextureCount < MeshCount; ++currentTextureCount)
 	{
-		TextureSRV.push_back(TextureSRV[0]);
+		Textures.push_back(Textures[0]);
 	}
 }
 

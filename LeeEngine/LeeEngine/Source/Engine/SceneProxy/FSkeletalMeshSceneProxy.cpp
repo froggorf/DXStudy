@@ -61,11 +61,11 @@ void FSkeletalMeshSceneProxy::Draw()
 		// SRV 설정(텍스쳐)
 		{
 			int TextureIndex = 0;
-			if(RenderData->TextureSRV.size() > MeshIndex)
+			if(RenderData->Textures.size() > MeshIndex)
 			{
 				TextureIndex = MeshIndex;
 			}
-			DeviceContext->PSSetShaderResources(0,1, RenderData->TextureSRV[TextureIndex].GetAddressOf());	
+			DeviceContext->PSSetShaderResources(0,1, RenderData->Textures[TextureIndex]->GetSRV().GetAddressOf());	
 		}
 		UINT stride = sizeof(MySkeletalMeshVertexData);
 		UINT offset = 0;
