@@ -12,14 +12,17 @@
 FSkeletalMeshSceneProxy::FSkeletalMeshSceneProxy(UINT PrimitiveID, const std::shared_ptr<USkeletalMesh>& InSkeletalMesh)
 	: FPrimitiveSceneProxy(PrimitiveID)
 {
-	this->SkeletalMesh = InSkeletalMesh;
-	std::string Text = "FSkeletalMeshSceneProxy Create StaticMeshSceneProxy - " + std::to_string(PrimitiveID);
+	RenderData = InSkeletalMesh->GetSkeletalMeshRenderData();
+	//for(int i = 0 ; i < )
+
+
 	BoneFinalMatrices.resize(MAX_BONES);
 	for(int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
 	{
 		BoneFinalMatrices[BoneIndex] = XMMatrixIdentity(); 
 	}
-	
+
+	std::string Text = "FSkeletalMeshSceneProxy Create SkeletalMeshSceneProxy - " + std::to_string(PrimitiveID);
 	MY_LOG(Text, EDebugLogLevel::DLL_Display, "");
 }
 
@@ -29,7 +32,7 @@ FSkeletalMeshSceneProxy::~FSkeletalMeshSceneProxy()
 
 void FSkeletalMeshSceneProxy::Draw()
 {
-	if(!SkeletalMesh || !SkeletalMesh->GetSkeletalMeshRenderData())
+	if(!RenderData)
 	{
 		return;
 	}
@@ -53,19 +56,19 @@ void FSkeletalMeshSceneProxy::Draw()
 		
 	}
 
-	const FSkeletalMeshRenderData* RenderData = SkeletalMesh->GetSkeletalMeshRenderData();
 	unsigned int MeshCount = RenderData->MeshCount;
 	for(int MeshIndex= 0; MeshIndex < MeshCount; ++MeshIndex)
 	{
 		ID3D11DeviceContext* DeviceContext = GDirectXDevice->GetDeviceContext().Get();
 		// SRV 설정(텍스쳐)
 		{
-			int TextureIndex = 0;
-			if(RenderData->Textures.size() > MeshIndex)
+			int MaterialIndex = 0;
+			if(RenderData->MaterialInterfaces.size() > MeshIndex)
 			{
-				TextureIndex = MeshIndex;
+				MaterialIndex = MeshIndex;
 			}
-			DeviceContext->PSSetShaderResources(0,1, RenderData->Textures[TextureIndex]->GetSRV().GetAddressOf());	
+			RenderData->MaterialInterfaces[MaterialIndex]->Binding();
+			
 		}
 		UINT stride = sizeof(MySkeletalMeshVertexData);
 		UINT offset = 0;

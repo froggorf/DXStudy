@@ -15,41 +15,42 @@ FSkeletalMeshRenderData::FSkeletalMeshRenderData(const nlohmann::json& SkeletalM
 	{
 		p->Release();
 	}
-	for(auto& p : Textures)
-	{
-		p->Release();
-	}
-	Textures.clear();
+	MaterialInterfaces.clear();
 
 	AssetManager::LoadSkeletalModelData(SkeletalMeshFilePathData["ModelData"], GDirectXDevice->GetDevice(), VertexBuffer,IndexBuffer, ModelBoneInfoMap);
 	MeshCount = VertexBuffer.size();
-	int TextureArraySize = SkeletalMeshFilePathData["Texture"].size();
-	for(int count = 0; count < MeshCount; ++count)
+
+	// 머테리얼
 	{
-		if(TextureArraySize <= count)
+		auto MaterialData = SkeletalMeshFilePathData["Material"];
+		int MaterialArraySize = MaterialData.size();
+		for(int count = 0; count < MeshCount; ++count)
 		{
-			/*MY_LOG(StaticMeshFilePathData["Name"], EDebugLogLevel::DLL_Warning, "Texture count not match with mesh count! ");*/
-			break;
+			if(MaterialArraySize <= count)
+			{
+				break;
+			}
+
+			std::string MaterialName = MaterialData[count];
+			std::shared_ptr<UMaterialInterface> MeshMaterial = UMaterialInterface::GetMaterialCache(MaterialName);
+
+			MaterialInterfaces.emplace_back(MeshMaterial);
 		}
 
-		std::string TextureName = SkeletalMeshFilePathData["Texture"][count];
-		std::shared_ptr<UTexture> MeshTexture = UTexture::GetTextureCache(TextureName);
+		if(MaterialInterfaces.size() == 0)
+		{
+			std::string Name = SkeletalMeshFilePathData["Name"];
+			MY_LOG(Name, EDebugLogLevel::DLL_Error, "In static mesh .myasset file, Material data no valid");
+			return;
+		}
 
-		Textures.push_back(MeshTexture);
+		int currentTextureCount = MaterialInterfaces.size();
+		for(; currentTextureCount < MeshCount; ++currentTextureCount)
+		{
+			MaterialInterfaces.push_back(MaterialInterfaces[0]);
+		}	
 	}
-
-	if(Textures.size() == 0)
-	{
-		std::string Name = SkeletalMeshFilePathData["Name"];
-		MY_LOG(Name, EDebugLogLevel::DLL_Error, "In static mesh .myasset file, texture data no valid");
-		return;
-	}
-
-	int currentTextureCount = Textures.size();
-	for(; currentTextureCount < MeshCount; ++currentTextureCount)
-	{
-		Textures.push_back(Textures[0]);
-	}
+	
 }
 
 USkeletalMesh::USkeletalMesh()
@@ -77,7 +78,7 @@ void USkeletalMesh::LoadDataFromFileData(const nlohmann::json& SkeletalMeshAsset
 
 	UObject::LoadDataFromFileData(SkeletalMeshAssetData);
 
-	RenderData = std::make_unique<FSkeletalMeshRenderData>(SkeletalMeshAssetData);
+	RenderData = std::make_shared<FSkeletalMeshRenderData>(SkeletalMeshAssetData);
 
 	GetSkeletalMeshCacheMap()[GetName()] = shared_from_this();
 

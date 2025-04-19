@@ -2,5 +2,5 @@
     "Class": "USkeletalMesh",
     "Name": "SK_MyUEFN",
     "ModelData": "/Content/Resource/Model/SKM_MyUEFN.FBX",
-    "Texture" : [ "T_MyUEFN" ]
+    "Material" : [ "M_MyUEFN" ]
 }

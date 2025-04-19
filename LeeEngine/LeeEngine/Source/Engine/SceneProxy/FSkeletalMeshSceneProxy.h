@@ -5,6 +5,8 @@
 
 #pragma once
 #include "FPrimitiveSceneProxy.h"
+#include "Engine/Material/UMaterial.h"
+#include "Engine/Mesh/USkeletalMesh.h"
 
 class USkeletalMesh;
 
@@ -14,9 +16,15 @@ public:
 	FSkeletalMeshSceneProxy(UINT PrimitiveID, const std::shared_ptr<USkeletalMesh>& SkeletalMesh);
 	virtual ~FSkeletalMeshSceneProxy() override;
 
-	std::shared_ptr<USkeletalMesh> SkeletalMesh;
+	// 메쉬 정보
+	FSkeletalMeshRenderData* RenderData;
 
+	// 애니메이션 정보
 	std::vector<DirectX::XMMATRIX> BoneFinalMatrices;
+
+	// 머테리얼 정보
+	std::vector<UMaterialInterface> Materials;
+	
 
 	virtual void Draw() override;
 };
