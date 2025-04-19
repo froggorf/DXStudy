@@ -1,6 +1,0 @@
-{
-    "Class": "UStaticMesh",
-    "Name": "SM_SkySphere",
-    "ModelData": "/Content/Resource/Model/SM_SkySphere.FBX",
-    "TextureData": [ "/Content/Resource/Texture/T_Sky_Blue.PNG" ]
-}

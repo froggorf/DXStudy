@@ -23,39 +23,40 @@ public:
 		{
 			p->Release();
 		}
-		for(auto& p : TextureSRV)
+		for(auto& p : Textures)
 		{
 			p->Release();
 		}
+		Textures.clear();
 
 		AssetManager::LoadModelData(StaticMeshFilePathData["ModelData"],GDirectXDevice->GetDevice(),VertexBuffer,IndexBuffer);
 		MeshCount = VertexBuffer.size();
-		int TextureArraySize = StaticMeshFilePathData["TextureData"].size();
+		int TextureArraySize = StaticMeshFilePathData["Texture"].size();
 		for(int count = 0; count < MeshCount; ++count)
 		{
-			if(TextureArraySize < count)
+			if(TextureArraySize <= count)
 			{
 				/*MY_LOG(StaticMeshFilePathData["Name"], EDebugLogLevel::DLL_Warning, "Texture count not match with mesh count! ");*/
 				break;
 			}
 
-			Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> SRV;
-			const std::string RelativePath = StaticMeshFilePathData["TextureData"][count];
-			const std::string TextureFilePath = GEngine->GetDirectoryPath() + RelativePath;
-			AssetManager::LoadTextureFromFile(std::wstring().assign(TextureFilePath.begin(),TextureFilePath.end()), GDirectXDevice->GetDevice(), SRV);
-			TextureSRV.push_back(SRV);
+			std::string TextureName = StaticMeshFilePathData["Texture"][count];
+			std::shared_ptr<UTexture> MeshTexture = UTexture::GetTextureCache(TextureName);
+
+			Textures.push_back(MeshTexture);
 		}
 
-		if(TextureSRV.size() == 0)
+		if(Textures.size() == 0)
 		{
-			/*MY_LOG(StaticMeshFilePathData["Name"], EDebugLogLevel::DLL_Error, "In static mesh .myasset file, texture data no valid");*/
+			std::string Name = StaticMeshFilePathData["Name"];
+			MY_LOG(Name, EDebugLogLevel::DLL_Error, "In static mesh .myasset file, texture data no valid");
 			return;
 		}
 
-		int currentTextureCount = TextureSRV.size();
+		int currentTextureCount = Textures.size();
 		for(; currentTextureCount < MeshCount; ++currentTextureCount)
 		{
-			TextureSRV.push_back(TextureSRV[0]);
+			Textures.push_back(Textures[0]);
 		}
 	}
 
@@ -71,5 +72,6 @@ public:
 
 	// TODO: 임시 텍스쳐 데이터,
 	// UMaterial 구현 이전으로 텍스쳐 SRV 데이터를 해당 클래스에서 관리
-	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> TextureSRV;
+	std::vector<std::shared_ptr<UTexture>> Textures;
+	
 };
