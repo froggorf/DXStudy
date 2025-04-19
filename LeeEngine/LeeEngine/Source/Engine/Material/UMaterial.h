@@ -72,6 +72,9 @@ public:
 		return nullptr;
 	}
 
+	virtual Microsoft::WRL::ComPtr<ID3D11VertexShader> GetVertexShader() const {return nullptr;}
+	virtual Microsoft::WRL::ComPtr<ID3D11PixelShader> GetPixelShader() const {return nullptr;}
+
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
 	virtual void Binding() {};
@@ -86,6 +89,9 @@ class UMaterial : public UMaterialInterface, public std::enable_shared_from_this
 public:
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 	void Binding() override;
+
+	Microsoft::WRL::ComPtr<ID3D11VertexShader> GetVertexShader() const override{return VertexShader->VertexShader;}
+	Microsoft::WRL::ComPtr<ID3D11PixelShader> GetPixelShader() const override {return PixelShader->PixelShader;} 
 protected:
 	std::shared_ptr<FVertexShader> VertexShader;
 	std::shared_ptr<FPixelShader> PixelShader;

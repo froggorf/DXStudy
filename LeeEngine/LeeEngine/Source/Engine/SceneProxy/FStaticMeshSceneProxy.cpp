@@ -40,7 +40,19 @@ void FStaticMeshSceneProxy::Draw()
 
 	// 셰이더 설정
 	GDirectXDevice->GetDeviceContext()->IASetInputLayout(GDirectXDevice->GetStaticMeshInputLayout().Get());
-	GDirectXDevice->GetDeviceContext()->VSSetShader(GDirectXDevice->GetStaticMeshVertexShader().Get(), nullptr, 0);
+	ComPtr<ID3D11VertexShader> VS = MaterialInterfaces[0]->GetVertexShader();
+	if(VS)
+	{
+		GDirectXDevice->GetDeviceContext()->VSSetShader(VS.Get(), nullptr, 0);	
+	}
+	ComPtr<ID3D11PixelShader> PS = MaterialInterfaces[0]->GetPixelShader();
+	if(PS)
+	{
+		GDirectXDevice->GetDeviceContext()->PSSetShader(PS.Get(), nullptr, 0);
+	}
+
+
+	// 셰이더 설정
 
 	unsigned int MeshCount = RenderData->MeshCount;
 	for(int MeshIndex= 0; MeshIndex < MeshCount; ++MeshIndex)

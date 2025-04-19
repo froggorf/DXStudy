@@ -35,9 +35,6 @@ public:
 	const Microsoft::WRL::ComPtr<ID3D11RenderTargetView>& GetRenderTargetView() const { return m_RenderTargetView; }
 	const Microsoft::WRL::ComPtr<ID3D11DepthStencilView>& GetDepthStencilView() const { return m_DepthStencilView; }
 	const D3D11_VIEWPORT* GetScreenViewport() const { return &m_ScreenViewport; }
-	const Microsoft::WRL::ComPtr<ID3D11VertexShader>& GetStaticMeshVertexShader() const {return m_StaticMeshVertexShader;}
-	const Microsoft::WRL::ComPtr<ID3D11VertexShader>& GetSkeletalMeshVertexShader() const {return m_SkeletalMeshVertexShader;}
-	const Microsoft::WRL::ComPtr<ID3D11PixelShader>& GetTexturePixelShader() const {return m_TexturePixelShader;}
 	const Microsoft::WRL::ComPtr<ID3D11InputLayout>& GetStaticMeshInputLayout() const {return m_StaticMeshInputLayout;}
 	const Microsoft::WRL::ComPtr<ID3D11InputLayout>& GetSkeletalMeshInputLayout() const {return m_SkeletalMeshInputLayout;}
 	const Microsoft::WRL::ComPtr<ID3D11SamplerState>& GetSamplerState() const {return m_SamplerState;}
@@ -82,12 +79,9 @@ private:
 	D3D11_VIEWPORT										m_ScreenViewport;
 
 	// 파이프라인
-	Microsoft::WRL::ComPtr<ID3D11VertexShader>	m_StaticMeshVertexShader;
-	Microsoft::WRL::ComPtr<ID3D11PixelShader>	m_TexturePixelShader;
 	Microsoft::WRL::ComPtr<ID3D11InputLayout>	m_StaticMeshInputLayout;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState>	m_SamplerState;
 
-	Microsoft::WRL::ComPtr<ID3D11VertexShader>	m_SkeletalMeshVertexShader;
 	Microsoft::WRL::ComPtr<ID3D11InputLayout>	m_SkeletalMeshInputLayout;
 	// 상수버퍼
 	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_FrameConstantBuffer;

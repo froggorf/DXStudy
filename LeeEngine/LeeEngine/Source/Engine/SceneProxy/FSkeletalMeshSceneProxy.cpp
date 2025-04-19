@@ -15,7 +15,7 @@ FSkeletalMeshSceneProxy::FSkeletalMeshSceneProxy(UINT PrimitiveID, const std::sh
 	RenderData = InSkeletalMesh->GetSkeletalMeshRenderData();
 	for(int i = 0 ; i < RenderData->MaterialInterfaces.size(); ++i)
 	{
-		Materials.emplace_back(RenderData->MaterialInterfaces[i]);
+		MaterialInterfaces.emplace_back(RenderData->MaterialInterfaces[i]);
 	}
 
 
@@ -44,7 +44,19 @@ void FSkeletalMeshSceneProxy::Draw()
 
 	// 셰이더 설정
 	GDirectXDevice->GetDeviceContext()->IASetInputLayout(GDirectXDevice->GetSkeletalMeshInputLayout().Get());
-	GDirectXDevice->GetDeviceContext()->VSSetShader(GDirectXDevice->GetSkeletalMeshVertexShader().Get(), nullptr, 0);
+
+
+	ComPtr<ID3D11VertexShader> VS = MaterialInterfaces[0]->GetVertexShader();
+	if(VS)
+	{
+	GDirectXDevice->GetDeviceContext()->VSSetShader(VS.Get(), nullptr, 0);	
+	}
+	ComPtr<ID3D11PixelShader> PS = MaterialInterfaces[0]->GetPixelShader();
+	if(PS)
+	{
+		GDirectXDevice->GetDeviceContext()->PSSetShader(PS.Get(), nullptr, 0);
+	}
+	
 
 
 	{
@@ -66,11 +78,11 @@ void FSkeletalMeshSceneProxy::Draw()
 		// SRV 설정(텍스쳐)
 		{
 			int MaterialIndex = 0;
-			if(Materials.size() > MeshIndex)
+			if(MaterialInterfaces.size() > MeshIndex)
 			{
 				MaterialIndex = MeshIndex;
 			}
-			Materials[MaterialIndex]->Binding();
+			MaterialInterfaces[MaterialIndex]->Binding();
 			//RenderData->MaterialInterfaces[MaterialIndex]->Binding();
 			
 		}

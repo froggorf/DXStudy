@@ -171,6 +171,7 @@ void FDirectXDevice::BuildStaticMeshShader()
 
 	std::string TempDirectoryPath =  GEngine->GetDirectoryPath();
 	std::wstring TempShaderPath = std::wstring(TempDirectoryPath.begin(), TempDirectoryPath.end());
+	ComPtr<ID3D11VertexShader> m_StaticMeshVertexShader;
 	HR(CompileShaderFromFile((TempShaderPath +  L"/Shader/LightColor.hlsl").c_str(), "VS", "vs_4_0", pVSBlob.GetAddressOf()));
 	HR(GDirectXDevice->GetDevice()->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, m_StaticMeshVertexShader.GetAddressOf()));
 
@@ -186,10 +187,6 @@ void FDirectXDevice::BuildStaticMeshShader()
 	HR(GDirectXDevice->GetDevice()->CreateInputLayout(inputLayout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), m_StaticMeshInputLayout.GetAddressOf()));
 	GDirectXDevice->GetDeviceContext()->IASetInputLayout(m_StaticMeshInputLayout.Get());
 
-	ComPtr<ID3DBlob> pPSBlob = nullptr;
-	HR(CompileShaderFromFile((TempShaderPath + L"/Shader/LightColor.hlsl").c_str(), "PS", "ps_4_0", pPSBlob.GetAddressOf()));
-
-	HR(GDirectXDevice->GetDevice()->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, m_TexturePixelShader.GetAddressOf()));
 }
 
 void FDirectXDevice::BuildSkeletalMeshVertexShader()
@@ -198,6 +195,7 @@ void FDirectXDevice::BuildSkeletalMeshVertexShader()
 	std::string TempDirectoryPath =  GEngine->GetDirectoryPath();
 	std::wstring TempShaderPath = std::wstring(TempDirectoryPath.begin(), TempDirectoryPath.end());
 	HR(CompileShaderFromFile((TempShaderPath +  L"/Shader/SkeletalMesh.hlsl").c_str(), "VS", "vs_4_0", pVSBlob.GetAddressOf()));
+	ComPtr<ID3D11VertexShader> m_SkeletalMeshVertexShader;
 	HR(GDirectXDevice->GetDevice()->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, m_SkeletalMeshVertexShader.GetAddressOf()));
 
 	D3D11_INPUT_ELEMENT_DESC inputLayout[] =
