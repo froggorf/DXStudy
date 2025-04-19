@@ -7,10 +7,10 @@
 std::shared_ptr<FAudioDevice> GAudioDevice = nullptr;
 USoundBase::~USoundBase()
 {
-	if(Sound)
-	{
-		Sound->release();
-	}
+	//if(Sound)
+	//{
+	//	Sound->release();
+	//}
 }
 
 void USoundBase::LoadDataFromFileData(const nlohmann::json& AssetData)

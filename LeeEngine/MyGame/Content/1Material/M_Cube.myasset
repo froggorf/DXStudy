@@ -1,0 +1,14 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_Cube",
+    "VertexShader" : {
+	"FilePath" : "/Shader/LightColor.hlsl",
+	"Func" : "VS"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/LightColor.hlsl",
+	"Func": "PS"
+    },
+    "Textures" : [ "T_Cube" ]
+	
+}

@@ -23,7 +23,7 @@ public:
 
 	// unique_ptr 로 관리되는 RenderData
 	// Render 시 잠깐 사용하므로 로우 포인터를 반환
-	const FStaticMeshRenderData* GetStaticMeshRenderData() const {return RenderData.get();}
+	FStaticMeshRenderData* GetStaticMeshRenderData() const {return RenderData.get();}
 
 	static const std::map<std::string, std::shared_ptr<UStaticMesh>>& GetStaticMeshCache() {return GetStaticMeshCacheMap();}
 	static const std::shared_ptr<UStaticMesh>& GetStaticMesh(const std::string& StaticMeshName) { return GetStaticMeshCacheMap()[StaticMeshName]; }

@@ -5,6 +5,8 @@
 
 #pragma once
 #include "FPrimitiveSceneProxy.h"
+#include "Engine/Material/UMaterial.h"
+#include "Engine/Mesh/StaticMeshResources.h"
 
 class UStaticMesh;
 
@@ -14,7 +16,9 @@ public:
 	FStaticMeshSceneProxy(UINT PrimitiveID, const std::shared_ptr<UStaticMesh>& StaticMesh);
 	virtual ~FStaticMeshSceneProxy() override;
 
-	std::shared_ptr<UStaticMesh> StaticMesh;
+	
+	FStaticMeshRenderData* RenderData;
+	std::vector<std::shared_ptr<UMaterialInterface>> MaterialInterfaces;
 
 	virtual void Draw() override;
 };

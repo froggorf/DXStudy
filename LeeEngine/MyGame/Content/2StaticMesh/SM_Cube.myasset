@@ -2,5 +2,5 @@
     "Class": "UStaticMesh",
     "Name": "SM_Cube",
     "ModelData": "/Content/Resource/Model/cube.obj",
-    "Texture": [ "T_Cube" ]
+    "Material" : [ "M_Cube" ]
 }

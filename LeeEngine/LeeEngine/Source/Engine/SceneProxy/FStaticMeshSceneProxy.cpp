@@ -13,7 +13,14 @@
 FStaticMeshSceneProxy::FStaticMeshSceneProxy(UINT PrimitiveID, const std::shared_ptr<UStaticMesh>& StaticMesh)
 	: FPrimitiveSceneProxy(PrimitiveID)
 {
-	this->StaticMesh = StaticMesh;
+	RenderData = StaticMesh->GetStaticMeshRenderData();
+	for(int i = 0; i < RenderData->Materials.size(); ++i)
+	{
+		MaterialInterfaces.emplace_back(RenderData->Materials[i]);
+	}
+
+
+	
 	std::string Text = "FStaticMeshSceneProxy Create StaticMeshSceneProxy - " + std::to_string(PrimitiveID);
 	MY_LOG(Text, EDebugLogLevel::DLL_Display, "");
 }
@@ -24,7 +31,7 @@ FStaticMeshSceneProxy::~FStaticMeshSceneProxy()
 
 void FStaticMeshSceneProxy::Draw()
 {
-	if(!StaticMesh || !StaticMesh->GetStaticMeshRenderData())
+	if(!RenderData)
 	{
 		return;
 	}
@@ -35,8 +42,6 @@ void FStaticMeshSceneProxy::Draw()
 	GDirectXDevice->GetDeviceContext()->IASetInputLayout(GDirectXDevice->GetStaticMeshInputLayout().Get());
 	GDirectXDevice->GetDeviceContext()->VSSetShader(GDirectXDevice->GetStaticMeshVertexShader().Get(), nullptr, 0);
 
-	
-	const FStaticMeshRenderData* RenderData = StaticMesh->GetStaticMeshRenderData();
 	unsigned int MeshCount = RenderData->MeshCount;
 	for(int MeshIndex= 0; MeshIndex < MeshCount; ++MeshIndex)
 	{
@@ -44,11 +49,12 @@ void FStaticMeshSceneProxy::Draw()
 		// SRV 설정(텍스쳐)
 		{
 			int TextureIndex = 0;
-			if(RenderData->Textures.size() > MeshIndex)
+			if(MaterialInterfaces.size() > MeshIndex)
 			{
 				TextureIndex = MeshIndex;
 			}
-			DeviceContext->PSSetShaderResources(0,1, RenderData->Textures[TextureIndex]->GetSRV().GetAddressOf());	
+			MaterialInterfaces[TextureIndex]->Binding();
+			
 		}
 		UINT stride = sizeof(MyVertexData);
 		UINT offset = 0;

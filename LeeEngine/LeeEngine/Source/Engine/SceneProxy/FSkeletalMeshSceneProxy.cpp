@@ -13,7 +13,10 @@ FSkeletalMeshSceneProxy::FSkeletalMeshSceneProxy(UINT PrimitiveID, const std::sh
 	: FPrimitiveSceneProxy(PrimitiveID)
 {
 	RenderData = InSkeletalMesh->GetSkeletalMeshRenderData();
-	//for(int i = 0 ; i < )
+	for(int i = 0 ; i < RenderData->MaterialInterfaces.size(); ++i)
+	{
+		Materials.emplace_back(RenderData->MaterialInterfaces[i]);
+	}
 
 
 	BoneFinalMatrices.resize(MAX_BONES);
@@ -63,11 +66,12 @@ void FSkeletalMeshSceneProxy::Draw()
 		// SRV 설정(텍스쳐)
 		{
 			int MaterialIndex = 0;
-			if(RenderData->MaterialInterfaces.size() > MeshIndex)
+			if(Materials.size() > MeshIndex)
 			{
 				MaterialIndex = MeshIndex;
 			}
-			RenderData->MaterialInterfaces[MaterialIndex]->Binding();
+			Materials[MaterialIndex]->Binding();
+			//RenderData->MaterialInterfaces[MaterialIndex]->Binding();
 			
 		}
 		UINT stride = sizeof(MySkeletalMeshVertexData);

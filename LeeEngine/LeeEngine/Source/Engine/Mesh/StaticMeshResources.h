@@ -23,40 +23,41 @@ public:
 		{
 			p->Release();
 		}
-		for(auto& p : Textures)
-		{
-			p->Release();
-		}
-		Textures.clear();
+		Materials.clear();
 
 		AssetManager::LoadModelData(StaticMeshFilePathData["ModelData"],GDirectXDevice->GetDevice(),VertexBuffer,IndexBuffer);
 		MeshCount = VertexBuffer.size();
-		int TextureArraySize = StaticMeshFilePathData["Texture"].size();
-		for(int count = 0; count < MeshCount; ++count)
+		
+
+		// 머테리얼
 		{
-			if(TextureArraySize <= count)
+			auto MaterialData = StaticMeshFilePathData["Material"];
+			int MaterialArraySize = MaterialData.size();
+			for(int count = 0; count < MeshCount; ++count)
 			{
-				/*MY_LOG(StaticMeshFilePathData["Name"], EDebugLogLevel::DLL_Warning, "Texture count not match with mesh count! ");*/
-				break;
+				if(MaterialArraySize <= count)
+				{
+					break;
+				}
+
+				std::string MaterialName = MaterialData[count];
+				std::shared_ptr<UMaterialInterface> MeshMaterial = UMaterialInterface::GetMaterialCache(MaterialName);
+
+				Materials.emplace_back(MeshMaterial);
 			}
 
-			std::string TextureName = StaticMeshFilePathData["Texture"][count];
-			std::shared_ptr<UTexture> MeshTexture = UTexture::GetTextureCache(TextureName);
+			if(Materials.size() == 0)
+			{
+				std::string Name = StaticMeshFilePathData["Name"];
+				MY_LOG(Name, EDebugLogLevel::DLL_Error, "In static mesh .myasset file, Material data no valid");
+				return;
+			}
 
-			Textures.push_back(MeshTexture);
-		}
-
-		if(Textures.size() == 0)
-		{
-			std::string Name = StaticMeshFilePathData["Name"];
-			MY_LOG(Name, EDebugLogLevel::DLL_Error, "In static mesh .myasset file, texture data no valid");
-			return;
-		}
-
-		int currentTextureCount = Textures.size();
-		for(; currentTextureCount < MeshCount; ++currentTextureCount)
-		{
-			Textures.push_back(Textures[0]);
+			int currentTextureCount = Materials.size();
+			for(; currentTextureCount < MeshCount; ++currentTextureCount)
+			{
+				Materials.push_back(Materials[0]);
+			}	
 		}
 	}
 
@@ -70,8 +71,7 @@ public:
 	std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>> VertexBuffer;
 	std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>> IndexBuffer;
 
-	// TODO: 임시 텍스쳐 데이터,
-	// UMaterial 구현 이전으로 텍스쳐 SRV 데이터를 해당 클래스에서 관리
-	std::vector<std::shared_ptr<UTexture>> Textures;
+	// 머테리얼 정보
+	std::vector<std::shared_ptr<UMaterialInterface>> Materials;
 	
 };

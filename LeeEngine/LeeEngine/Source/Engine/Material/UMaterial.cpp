@@ -39,8 +39,7 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 
 	if(UMaterialInterface::MaterialCache.contains(GetName()))
 	{
-		// 이미 존재하는 이름의 머테리얼
-		assert(0);
+		// 이미 캐시를 진행한 머테리얼
 		return;
 	}
 

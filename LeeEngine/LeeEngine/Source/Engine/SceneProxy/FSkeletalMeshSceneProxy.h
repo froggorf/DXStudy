@@ -23,7 +23,7 @@ public:
 	std::vector<DirectX::XMMATRIX> BoneFinalMatrices;
 
 	// 머테리얼 정보
-	std::vector<UMaterialInterface> Materials;
+	std::vector<std::shared_ptr<UMaterialInterface>> Materials;
 	
 
 	virtual void Draw() override;
