@@ -53,7 +53,7 @@ void FSkeletalMeshSceneProxy::Draw()
 		
 	}
 
-	const FTest* RenderData = SkeletalMesh->GetSkeletalMeshRenderData();
+	const FSkeletalMeshRenderData* RenderData = SkeletalMesh->GetSkeletalMeshRenderData();
 	unsigned int MeshCount = RenderData->MeshCount;
 	for(int MeshIndex= 0; MeshIndex < MeshCount; ++MeshIndex)
 	{

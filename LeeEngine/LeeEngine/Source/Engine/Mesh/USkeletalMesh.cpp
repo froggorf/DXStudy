@@ -3,7 +3,7 @@
 #include "USkeletalMesh.h"
 
 
-FTest::FTest(const nlohmann::json& SkeletalMeshFilePathData)
+FSkeletalMeshRenderData::FSkeletalMeshRenderData(const nlohmann::json& SkeletalMeshFilePathData)
 {
 	for(auto& p : VertexBuffer)
 	{
@@ -74,7 +74,7 @@ void USkeletalMesh::LoadDataFromFileData(const nlohmann::json& SkeletalMeshAsset
 
 	UObject::LoadDataFromFileData(SkeletalMeshAssetData);
 
-	RenderData = std::make_unique<FTest>(SkeletalMeshAssetData);
+	RenderData = std::make_unique<FSkeletalMeshRenderData>(SkeletalMeshAssetData);
 
 	GetSkeletalMeshCacheMap()[GetName()] = shared_from_this();
 

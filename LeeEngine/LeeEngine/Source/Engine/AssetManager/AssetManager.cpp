@@ -1,6 +1,8 @@
 #include "CoreMinimal.h"
 #include "AssetManager.h"
 
+#include "Engine/Class/UTexture.h"
+
 using namespace Microsoft::WRL;
 
 
@@ -300,6 +302,34 @@ void AssetManager::LoadTextureFromFile(const std::wstring& szFile, const Microso
     HR(pDevice->CreateShaderResourceView(pTexture, &srvDesc, srv.ReleaseAndGetAddressOf()));
     
     pTextureShaderResourceView = (srv.Get());
+    MY_LOG("TextureLoad", EDebugLogLevel::DLL_Display, "Texture Load Success");
+}
+
+void AssetManager::LoadTexture(class UTexture* Texture, const nlohmann::json& AssetData)
+{
+    std::string FilePath = GEngine->GetDirectoryPath() + std::string{AssetData["FilePath"]};
+	std::wstring WFilePath = std::wstring{FilePath.begin(), FilePath.end()};
+
+    DirectX::ScratchImage image;
+
+    std::filesystem::path p(WFilePath.c_str());
+    std::wstring ext = p.extension();
+
+    if (ext == L".dds" || ext == L".DDS")
+        DirectX::LoadFromDDSFile(WFilePath.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, image);
+    else if (ext == L".tga" || ext == L".TGA")
+        DirectX::LoadFromTGAFile(WFilePath.c_str(), nullptr, image);
+    else // png, jpg, jpeg, bmp
+        DirectX::LoadFromWICFile(WFilePath.c_str(), DirectX::WIC_FLAGS_NONE, nullptr, image);
+
+    DirectX::CreateShaderResourceView(GDirectXDevice->GetDevice().Get(),
+									  image.GetImages(),
+									  image.GetImageCount(),
+                                      image.GetMetadata(),
+                                      Texture->SRView.GetAddressOf());
+    Texture->SRView->GetResource((ID3D11Resource**)Texture->Texture2D.GetAddressOf());
+    Texture->Texture2D->GetDesc(&Texture->Desc);
+
     MY_LOG("TextureLoad", EDebugLogLevel::DLL_Display, "Texture Load Success");
 }
 

@@ -279,6 +279,9 @@
     <ClCompile Include="Source\Engine\Material\UMaterial.cpp">
       <Filter>Source\Engine\Material</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Class\UTexture.cpp">
+      <Filter>Source\Engine\Class</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DirectX\ShadowMap.h">
@@ -496,6 +499,9 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\Material\UMaterial.h">
       <Filter>Source\Engine\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Class\UTexture.h">
+      <Filter>Source\Engine\Class</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

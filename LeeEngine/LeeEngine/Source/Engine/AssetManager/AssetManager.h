@@ -42,6 +42,7 @@ public:
 	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>>& vTextureShaderResourceView);
 	static void LoadTextureFromFile(const std::wstring& szFile, const Microsoft::WRL::ComPtr<ID3D11Device> pDevice,
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& vTextureShaderResourceView);
+	static void LoadTexture(class UTexture* Texture, const nlohmann::json& AssetData);
 
 
 	// myasset 파일 읽기
