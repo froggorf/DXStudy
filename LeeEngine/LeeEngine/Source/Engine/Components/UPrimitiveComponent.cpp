@@ -26,6 +26,10 @@ void UPrimitiveComponent::Register()
 {
 	USceneComponent::Register();
 
-	std::shared_ptr<FPrimitiveSceneProxy> PrimitiveSceneProxy = CreateSceneProxy();
-	FScene::AddPrimitive_GameThread(PrimitiveID, PrimitiveSceneProxy, GetComponentTransform());
+	std::vector<std::shared_ptr<FPrimitiveSceneProxy>> PrimitiveSceneProxies = CreateSceneProxy();
+	for(int i = 0; i < PrimitiveSceneProxies.size(); ++i)
+	{
+		FScene::AddPrimitive_GameThread(PrimitiveID, PrimitiveSceneProxies[i], GetComponentTransform());	
+	}
+	
 }

@@ -90,6 +90,26 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 		}
 	}
 
+	// 블렌드 모드
+	{
+		std::string BlendModeStr = AssetData["BlendMode"];
+		if(BlendModeStr == "Opaque")
+		{
+			BlendMode = EBlendMode::BM_Opaque;
+		}
+		else if(BlendModeStr == "Masked")
+		{
+			BlendMode = EBlendMode::BM_Masked;
+		}else if(BlendModeStr == "Translucent")
+		{
+			BlendMode = EBlendMode::BM_Translucent;
+		}else
+		{
+			// 잘못된 BlendMode
+			assert(0);
+		}
+	}
+
 	UMaterialInterface::MaterialCache[GetName()] = shared_from_this();
 
 

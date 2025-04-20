@@ -23,10 +23,19 @@ void UStaticMeshComponent::Register()
 
 }
 
-std::shared_ptr<FPrimitiveSceneProxy> UStaticMeshComponent::CreateSceneProxy() const
+std::vector<std::shared_ptr<FPrimitiveSceneProxy>> UStaticMeshComponent::CreateSceneProxy() const
 {
-	std::shared_ptr<FStaticMeshSceneProxy> SceneProxy = std::make_shared<FStaticMeshSceneProxy>(PrimitiveID,StaticMesh);
-	return SceneProxy;
+	std::vector<
+	std::shared_ptr<FPrimitiveSceneProxy>> SceneProxies;
+
+	UINT MeshCount =  StaticMesh->GetStaticMeshRenderData()->MeshCount;
+	for(int i = 0 ; i < MeshCount; ++i)
+	{
+		std::shared_ptr<FStaticMeshSceneProxy> SceneProxy = std::make_shared<FStaticMeshSceneProxy>(PrimitiveID,i,StaticMesh);
+		SceneProxies.emplace_back(SceneProxy);
+	}
+
+	return SceneProxies;
 
 }
 

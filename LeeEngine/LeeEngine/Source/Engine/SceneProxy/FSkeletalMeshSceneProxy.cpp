@@ -9,15 +9,14 @@
 #include "Engine/Mesh/USkeletalMesh.h"
 #include "Engine/RenderCore/EditorScene.h"
 
-FSkeletalMeshSceneProxy::FSkeletalMeshSceneProxy(UINT PrimitiveID, const std::shared_ptr<USkeletalMesh>& InSkeletalMesh)
+
+FSkeletalMeshSceneProxy::FSkeletalMeshSceneProxy(UINT PrimitiveID, UINT InMeshIndex,
+	const std::shared_ptr<USkeletalMesh>& InSkeletalMesh)
 	: FPrimitiveSceneProxy(PrimitiveID)
 {
+	MeshIndex = InMeshIndex;
 	RenderData = InSkeletalMesh->GetSkeletalMeshRenderData();
-	for(int i = 0 ; i < RenderData->MaterialInterfaces.size(); ++i)
-	{
-		MaterialInterfaces.emplace_back(RenderData->MaterialInterfaces[i]);
-	}
-
+	MaterialInterface = RenderData->MaterialInterfaces[MeshIndex];
 
 	BoneFinalMatrices.resize(MAX_BONES);
 	for(int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
@@ -46,12 +45,12 @@ void FSkeletalMeshSceneProxy::Draw()
 	GDirectXDevice->GetDeviceContext()->IASetInputLayout(GDirectXDevice->GetSkeletalMeshInputLayout().Get());
 
 
-	ComPtr<ID3D11VertexShader> VS = MaterialInterfaces[0]->GetVertexShader();
+	ComPtr<ID3D11VertexShader> VS = MaterialInterface->GetVertexShader();
 	if(VS)
 	{
 	GDirectXDevice->GetDeviceContext()->VSSetShader(VS.Get(), nullptr, 0);	
 	}
-	ComPtr<ID3D11PixelShader> PS = MaterialInterfaces[0]->GetPixelShader();
+	ComPtr<ID3D11PixelShader> PS = MaterialInterface->GetPixelShader();
 	if(PS)
 	{
 		GDirectXDevice->GetDeviceContext()->PSSetShader(PS.Get(), nullptr, 0);
@@ -75,17 +74,8 @@ void FSkeletalMeshSceneProxy::Draw()
 	for(int MeshIndex= 0; MeshIndex < MeshCount; ++MeshIndex)
 	{
 		ID3D11DeviceContext* DeviceContext = GDirectXDevice->GetDeviceContext().Get();
-		// SRV 설정(텍스쳐)
-		{
-			int MaterialIndex = 0;
-			if(MaterialInterfaces.size() > MeshIndex)
-			{
-				MaterialIndex = MeshIndex;
-			}
-			MaterialInterfaces[MaterialIndex]->Binding();
-			//RenderData->MaterialInterfaces[MaterialIndex]->Binding();
-			
-		}
+		
+		MaterialInterface->Binding();
 		UINT stride = sizeof(MySkeletalMeshVertexData);
 		UINT offset = 0;
 		DeviceContext->IASetVertexBuffers(0, 1, RenderData->VertexBuffer[MeshIndex].GetAddressOf(), &stride, &offset);

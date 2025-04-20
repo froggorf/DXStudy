@@ -13,7 +13,7 @@ class USkeletalMesh;
 class FSkeletalMeshSceneProxy : public FPrimitiveSceneProxy
 {
 public:
-	FSkeletalMeshSceneProxy(UINT PrimitiveID, const std::shared_ptr<USkeletalMesh>& SkeletalMesh);
+	FSkeletalMeshSceneProxy(UINT PrimitiveID, UINT InMeshIndex, const std::shared_ptr<USkeletalMesh>& SkeletalMesh);
 	virtual ~FSkeletalMeshSceneProxy() override;
 
 	// 메쉬 정보
@@ -23,8 +23,9 @@ public:
 	std::vector<DirectX::XMMATRIX> BoneFinalMatrices;
 
 	// 머테리얼 정보
-	std::vector<std::shared_ptr<UMaterialInterface>> MaterialInterfaces;
-	
+	std::shared_ptr<UMaterialInterface> MaterialInterface;
+
+	UINT MeshIndex;
 
 	virtual void Draw() override;
 };

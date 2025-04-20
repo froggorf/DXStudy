@@ -37,10 +37,18 @@ void USkeletalMeshComponent::Register()
 	}
 }
 
-std::shared_ptr<FPrimitiveSceneProxy> USkeletalMeshComponent::CreateSceneProxy() const
+std::vector<std::shared_ptr<FPrimitiveSceneProxy>> USkeletalMeshComponent::CreateSceneProxy() const
 {
-	std::shared_ptr<FSkeletalMeshSceneProxy> SceneProxy = std::make_shared<FSkeletalMeshSceneProxy>(PrimitiveID,SkeletalMesh);
-	return SceneProxy;
+	std::vector<std::shared_ptr<FPrimitiveSceneProxy>> SceneProxies;
+
+	UINT MeshCount = SkeletalMesh->GetSkeletalMeshRenderData()->MeshCount;
+	for(int i = 0; i < MeshCount; ++i)
+	{
+		std::shared_ptr<FSkeletalMeshSceneProxy> SceneProxy = std::make_shared<FSkeletalMeshSceneProxy>(PrimitiveID,i,SkeletalMesh);
+		SceneProxies.emplace_back(SceneProxy);
+	}
+	
+	return SceneProxies;
 
 }
 

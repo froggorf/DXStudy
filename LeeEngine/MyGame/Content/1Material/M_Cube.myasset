@@ -9,6 +9,7 @@
 	"FilePath" : "/Shader/LightColor.hlsl",
 	"Func": "PS"
     },
-    "Textures" : [ "T_Cube" ]
+    "Textures" : [ "T_Cube" ],
+    "BlendMode": "Opaque"
 	
 }

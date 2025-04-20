@@ -30,8 +30,8 @@ protected:
 private:
 public:
 protected:
-private:
 	UINT PrimitiveID;
+private:
 
 	FTransform ComponentToWorld;
 

@@ -9,6 +9,7 @@
 	"FilePath" : "/Shader/LightColor.hlsl",
 	"Func": "PS"
     },
-    "Textures" : [ "T_MyUEFN" ]
+    "Textures" : [ "T_MyUEFN" ],
+    "BlendMode": "Opaque"
 	
 }
