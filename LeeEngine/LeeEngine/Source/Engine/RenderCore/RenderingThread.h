@@ -101,6 +101,15 @@ inline std::atomic<bool> bIsGameKill = false;
 inline std::atomic<UINT> RenderingThreadFrameCount = 0;
 
 
+struct PrimitiveRenderData
+{
+	UINT PrimitiveID;
+	UINT MeshIndex;
+	std::shared_ptr<FPrimitiveSceneProxy> SceneProxy;
+
+
+};
+
 // 렌더링에 대한 정보를 가지고 있는 클래스 (씬 단위)
 // 03.10 렌더링 쓰레드의 경우 단일 소비로 진행할 예정이므로
 // 멀티쓰레드 동기화에 대한 처리 x
@@ -110,7 +119,10 @@ public:
 	FScene(){}
 	virtual ~FScene(){}
 	// ==================== FPrimitiveSceneProxy ====================
-	std::map<UINT, std::shared_ptr<FPrimitiveSceneProxy>> PrimitiveSceneProxies;
+	std::vector<PrimitiveRenderData> OpaqueSceneProxyRenderData;
+	std::vector<PrimitiveRenderData> MaskedSceneProxyRenderData;
+	std::vector<PrimitiveRenderData> TranslucentSceneProxyRenderData;
+	
 	std::map<UINT, std::shared_ptr<FPrimitiveSceneProxy>> PendingAddSceneProxies;
 	std::map<UINT, std::shared_ptr<FPrimitiveSceneProxy>> PendingDeleteSceneProxies;
 

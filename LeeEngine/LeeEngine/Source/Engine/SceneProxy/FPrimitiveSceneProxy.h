@@ -5,6 +5,7 @@
 
 #pragma once
 #include "Engine/MyEngineUtils.h"
+#include "Engine/Material/UMaterial.h"
 
 
 // 언리얼엔진에서는 Func_GameThread(); Func_RenderThread(); 방식으로 쓰레드를 나누어 작업
@@ -26,11 +27,17 @@ public:
 
 	// 복사되도록 설정
 	void SetSceneProxyWorldTransform(FTransform NewComponentToWorld){ComponentToWorld = NewComponentToWorld;}
+
+	EBlendMode GetBlendMode() const {return MaterialInterface->BlendMode;}
+	UINT GetMeshIndex() const {return MeshIndex;}
 protected:
 private:
 public:
 protected:
 	UINT PrimitiveID;
+	UINT MeshIndex;
+	// 머테리얼 정보
+	std::shared_ptr<UMaterialInterface> MaterialInterface;
 private:
 
 	FTransform ComponentToWorld;

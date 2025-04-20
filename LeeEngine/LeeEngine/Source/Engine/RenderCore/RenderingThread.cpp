@@ -11,7 +11,10 @@ std::shared_ptr<FScene> FRenderCommandExecutor::CurrentSceneData = nullptr;
 
 void FScene::InitLevelData()
 {
-	PrimitiveSceneProxies.clear();
+	OpaqueSceneProxyRenderData.clear();
+	MaskedSceneProxyRenderData.clear();
+	TranslucentSceneProxyRenderData.clear();
+	
 	PendingAddSceneProxies.clear();
 	PendingDeleteSceneProxies.clear();
 
@@ -40,11 +43,70 @@ void FScene::BeginRenderFrame()
 
 	for(const auto& NewPrimitiveProxy : PendingAddSceneProxies)
 	{
-		PrimitiveSceneProxies[NewPrimitiveProxy.first] = NewPrimitiveProxy.second;
+		PrimitiveRenderData RenderData;
+		RenderData.MeshIndex = NewPrimitiveProxy.second->GetMeshIndex();
+		RenderData.PrimitiveID = NewPrimitiveProxy.first;
+		RenderData.SceneProxy = NewPrimitiveProxy.second;
 
-		/*MY_LOG("SceneProxy Add New Proxy - PrimitiveID = " + std::to_string(NewPrimitiveProxy.first), EDebugLogLevel::DLL_Display, "");*/
+		switch(NewPrimitiveProxy.second->GetBlendMode())
+		{
+		case EBlendMode::BM_Opaque:
+		OpaqueSceneProxyRenderData.emplace_back(RenderData);
+		break;
+		case EBlendMode::BM_Masked:
+		MaskedSceneProxyRenderData.emplace_back(RenderData);
+		break;
+		case EBlendMode::BM_Translucent:
+		TranslucentSceneProxyRenderData.emplace_back(RenderData);
+		break;
+		default:
+		// 잘못된 데이터
+			assert(0);
+			break;
+		}
 	}
 	PendingAddSceneProxies.clear();
+
+	// 새로운 위치정보 갱신
+	for(const auto& NewTransform : PendingNewTransformProxies)
+	{
+		UINT FindPrimitiveID = NewTransform.first;
+
+		// Opaque
+		for(auto Iter = OpaqueSceneProxyRenderData.begin(); Iter != OpaqueSceneProxyRenderData.end() ; )
+		{
+			Iter = std::find_if(Iter, OpaqueSceneProxyRenderData.end(), [FindPrimitiveID](const PrimitiveRenderData& A){return A.PrimitiveID == FindPrimitiveID; });
+			if(Iter != OpaqueSceneProxyRenderData.end())
+			{
+				Iter->SceneProxy->SetSceneProxyWorldTransform(NewTransform.second);
+				++Iter;
+			}
+		}
+
+
+		// Masked
+		for(auto Iter = MaskedSceneProxyRenderData.begin(); Iter != MaskedSceneProxyRenderData.end() ; )
+		{
+			Iter = std::find_if(Iter, MaskedSceneProxyRenderData.end(), [FindPrimitiveID](const PrimitiveRenderData& A){return A.PrimitiveID == FindPrimitiveID; });
+			if(Iter != MaskedSceneProxyRenderData.end())
+			{
+				Iter->SceneProxy->SetSceneProxyWorldTransform(NewTransform.second);
+				++Iter;
+			}
+		}
+
+		// Opaque
+		for(auto Iter = TranslucentSceneProxyRenderData.begin(); Iter != TranslucentSceneProxyRenderData.end() ; )
+		{
+			Iter = std::find_if(Iter, TranslucentSceneProxyRenderData.end(), [FindPrimitiveID](const PrimitiveRenderData& A){return A.PrimitiveID == FindPrimitiveID; });
+			if(Iter != TranslucentSceneProxyRenderData.end())
+			{
+				Iter->SceneProxy->SetSceneProxyWorldTransform(NewTransform.second);
+				++Iter;
+			}
+		}
+	}
+	PendingNewTransformProxies.clear();
 
 }
 
@@ -55,22 +117,79 @@ void FScene::UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std:
 	{
 		auto Lambda = [PrimitiveID, FinalMatrices](std::shared_ptr<FScene>& SceneData)
 			{
-				auto p = SceneData->PrimitiveSceneProxies.find(PrimitiveID);\
 				FSkeletalMeshSceneProxy* SkeletalMeshSceneProxy = nullptr;
-				if(p != SceneData->PrimitiveSceneProxies.end())
+
+				// Opaque
+				auto OpaqueRenderData = SceneData->OpaqueSceneProxyRenderData;
+				for(auto Iter = OpaqueRenderData.begin(); Iter != OpaqueRenderData.end() ; )
 				{
-					SkeletalMeshSceneProxy = dynamic_cast<FSkeletalMeshSceneProxy*>(p->second.get());
-					
-				}
-				else
-				{
-					p = SceneData->PendingAddSceneProxies.find(PrimitiveID);
-					if(p != SceneData->PendingAddSceneProxies.end())
+					Iter = std::find_if(Iter, OpaqueRenderData.end(), [PrimitiveID](const PrimitiveRenderData& A){return A.PrimitiveID == PrimitiveID; });
+					if(Iter != OpaqueRenderData.end())
 					{
-						SkeletalMeshSceneProxy = dynamic_cast<FSkeletalMeshSceneProxy*>(p->second.get());	
+						SkeletalMeshSceneProxy = dynamic_cast<FSkeletalMeshSceneProxy*>(Iter->SceneProxy.get());
+						if(SkeletalMeshSceneProxy)
+						{
+							for(int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
+							{
+								SkeletalMeshSceneProxy->BoneFinalMatrices[BoneIndex] = FinalMatrices[BoneIndex];	
+							}
+
+						}	
+						++Iter;
+					}
+				}
+
+				// Masked
+				{
+					auto MaskedRenderData = SceneData->MaskedSceneProxyRenderData;
+					for(auto Iter = MaskedRenderData.begin(); Iter != MaskedRenderData.end() ; )
+					{
+						Iter = std::find_if(Iter, MaskedRenderData.end(), [PrimitiveID](const PrimitiveRenderData& A){return A.PrimitiveID == PrimitiveID;});
+						if(Iter != MaskedRenderData.end())
+						{
+							SkeletalMeshSceneProxy = dynamic_cast<FSkeletalMeshSceneProxy*>(Iter->SceneProxy.get());
+							if(SkeletalMeshSceneProxy)
+							{
+								for(int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
+								{
+									SkeletalMeshSceneProxy->BoneFinalMatrices[BoneIndex] = FinalMatrices[BoneIndex];	
+								}
+
+							}
+							++Iter;	
+						}
+					}
+				}
+
+				//Translucent
+				{
+					auto TranslucentRenderData = SceneData->TranslucentSceneProxyRenderData;
+					for(auto Iter = TranslucentRenderData.begin(); Iter != TranslucentRenderData.end() ; )
+					{
+						Iter = std::find_if(Iter, TranslucentRenderData.end(), [PrimitiveID](const PrimitiveRenderData& A){return A.PrimitiveID == PrimitiveID;});
+						if(Iter != TranslucentRenderData.end())
+						{
+							SkeletalMeshSceneProxy = dynamic_cast<FSkeletalMeshSceneProxy*>(Iter->SceneProxy.get());
+							if(SkeletalMeshSceneProxy)
+							{
+								for(int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
+								{
+									SkeletalMeshSceneProxy->BoneFinalMatrices[BoneIndex] = FinalMatrices[BoneIndex];	
+								}
+
+							}	
+							++Iter;
+						}
 					}
 				}
 				
+				//Pending Add
+				auto p = SceneData->PendingAddSceneProxies.find(PrimitiveID);
+				if(p != SceneData->PendingAddSceneProxies.end())
+				{
+					SkeletalMeshSceneProxy = dynamic_cast<FSkeletalMeshSceneProxy*>(p->second.get());
+
+				}
 				if(SkeletalMeshSceneProxy)
 				{
 					for(int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
@@ -79,7 +198,7 @@ void FScene::UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std:
 					}
 
 				}	
-				
+
 			};
 		ENQUEUE_RENDER_COMMAND(Lambda);
 	}
@@ -200,9 +319,17 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 			// Sampler State 설정
 			GDirectXDevice->GetDeviceContext()->PSSetSamplers(0, 1, GDirectXDevice->GetSamplerState().GetAddressOf());
 
-			for(const auto& SceneProxy : SceneData->PrimitiveSceneProxies)
+			for(const auto& SceneProxyRenderData : SceneData->OpaqueSceneProxyRenderData)
 			{
-				SceneProxy.second->Draw();
+				SceneProxyRenderData.SceneProxy->Draw();
+			}
+			for(const auto& SceneProxyRenderData : SceneData->MaskedSceneProxyRenderData)
+			{
+				SceneProxyRenderData.SceneProxy->Draw();
+			}
+			for(const auto& SceneProxyRenderData : SceneData->TranslucentSceneProxyRenderData)
+			{
+				SceneProxyRenderData.SceneProxy->Draw();
 			}
 			
 			//if(CurrentWorld)
@@ -244,27 +371,7 @@ void FScene::EndRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData)
 	if(SceneData->bMustResetLevelDataAtEndFrame)
 	{
 		SceneData->InitLevelData();
-
 	}
-
-
-	for(const auto& NewPrimitiveProxy : SceneData->PendingAddSceneProxies)
-	{
-		SceneData->PrimitiveSceneProxies[NewPrimitiveProxy.first] = NewPrimitiveProxy.second;
-
-	}
-	SceneData->PendingAddSceneProxies.clear();
-
-	for(const auto& NewTransform : SceneData->PendingNewTransformProxies)
-	{
-		const auto& SceneProxy = SceneData->PrimitiveSceneProxies.find(NewTransform.first);
-		if(SceneProxy != SceneData->PrimitiveSceneProxies.end())
-		{
-			SceneProxy->second->SetSceneProxyWorldTransform(NewTransform.second);
-		}	
-	}
-	SceneData->PendingNewTransformProxies.clear();
-	
 
 	SceneData->bIsFrameStart = false;
 }

@@ -1,0 +1,15 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_TranslucentCube",
+    "VertexShader" : {
+	"FilePath" : "/Shader/LightColor.hlsl",
+	"Func" : "VS"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/LightColor.hlsl",
+	"Func": "PS"
+    },
+    "Textures" : [ "T_TranslucentCube" ],
+    "BlendMode": "Translucent"
+	
+}

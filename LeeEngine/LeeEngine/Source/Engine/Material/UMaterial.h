@@ -89,7 +89,7 @@ public:
 	virtual void Binding() {};
 protected:
 	static std::unordered_map<std::string, std::shared_ptr<UMaterialInterface>> MaterialCache;
-
+public:
 	EBlendMode BlendMode;
 };
 

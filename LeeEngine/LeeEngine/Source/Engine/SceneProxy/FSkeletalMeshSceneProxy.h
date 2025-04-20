@@ -22,10 +22,5 @@ public:
 	// 애니메이션 정보
 	std::vector<DirectX::XMMATRIX> BoneFinalMatrices;
 
-	// 머테리얼 정보
-	std::shared_ptr<UMaterialInterface> MaterialInterface;
-
-	UINT MeshIndex;
-
 	virtual void Draw() override;
 };

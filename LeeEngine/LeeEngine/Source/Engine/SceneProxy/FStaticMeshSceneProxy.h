@@ -16,9 +16,7 @@ public:
 	FStaticMeshSceneProxy(UINT InPrimitiveID, UINT InMeshIndex, const std::shared_ptr<UStaticMesh>& StaticMesh);
 	virtual ~FStaticMeshSceneProxy() override;
 
-	UINT MeshIndex;
 	FStaticMeshRenderData* RenderData;
-	std::shared_ptr<UMaterialInterface> MaterialInterface;
 
 	virtual void Draw() override;
 };
