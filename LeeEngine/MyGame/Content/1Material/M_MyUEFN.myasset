@@ -10,6 +10,7 @@
 	"Func": "PS"
     },
     "Textures" : [ "T_MyUEFN" ],
-    "BlendMode": "Opaque"
+    "BlendMode": "Opaque",
+    "TwoSided" : 0
 	
 }

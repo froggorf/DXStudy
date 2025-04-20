@@ -39,22 +39,10 @@ void FStaticMeshSceneProxy::Draw()
 
 	ID3D11DeviceContext* DeviceContext = GDirectXDevice->GetDeviceContext().Get();
 
-	// 셰이더 설정
-	DeviceContext->IASetInputLayout(GDirectXDevice->GetStaticMeshInputLayout().Get());
-	ComPtr<ID3D11VertexShader> VS = MaterialInterface->GetVertexShader();
-	if(VS)
-	{
-		DeviceContext->VSSetShader(VS.Get(), nullptr, 0);	
-	}
-	ComPtr<ID3D11PixelShader> PS = MaterialInterface->GetPixelShader();
-	if(PS)
-	{
-		DeviceContext->PSSetShader(PS.Get(), nullptr, 0);
-	}
+
 
 
 	// 셰이더 설정
-	MaterialInterface->Binding();
 	UINT stride = sizeof(MyVertexData);
 	UINT offset = 0;
 	DeviceContext->IASetVertexBuffers(0, 1, RenderData->VertexBuffer[MeshIndex].GetAddressOf(), &stride, &offset);

@@ -8,9 +8,32 @@
 #include "Engine/MyEngineUtils.h"
 #include <wrl/client.h>
 
+enum class ERasterizerType
+{
+	RT_CullBack,
+	RT_TwoSided,
+	RT_WireFrame,
+	RT_END
+};
+enum class EBlendStateType
+{
+	BST_Default,
+	BST_AlphaBlend,				// src(A) / Dest(1-A)
+	BST_AlphaBlend_Coverage,		// 알파값에 따른 깊이 문제 해결
+	BST_One_One,				// Src(1), Dest(1) - 검은색 색상 제거 or 색상 누적
+	BST_END
+};
+enum class DepthStencilStateType
+{
+	DSST_Less,			// 적으면 깊이 작성
+	DSST_Less_Equal,	// <= 시 깊이값 작성
+	DSST_Greater,		// 클시, 깊이값 작성 x // VolumeMesh Check
+	DSST_NoTest_NoWrite,// Less, 깊이값 작성 x
+	DSST_END
+};
+
 // 언리얼엔진의 경우 RHI 를 통해 렌더링을 진행하지만 (// 언리얼엔진의 경우 GDynamicRHI 로 관리, GDynamicRHI->RHICreateBuffer(*this, BufferDesc, ResourceState, CreateInfo);)
 // LeeEngine에서는 DirectX 만을 활용하므로 FDirectXDevice로 작명
-
 class FDirectXDevice
 {
 public:
@@ -43,6 +66,8 @@ public:
 	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetObjConstantBuffer() const {return m_ObjConstantBuffer;}
 	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetLightConstantBuffer() const {return m_LightConstantBuffer;}
 	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetSkeletalMeshConstantBuffer() const {return m_SkeletalMeshConstantBuffer;}
+
+
 #ifdef WITH_EDITOR
 public:
 	const Microsoft::WRL::ComPtr<ID3D11Texture2D>& GetEditorRenderTargetTexture() const {return m_EditorRenderTargetTexture;}
@@ -55,6 +80,22 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>	m_SRVEditorRenderTarget;
 #endif	
 	
+// RasterizerState / BlendState / DepthStencilState
+public:
+	ID3D11RasterizerState* GetRasterizerState(ERasterizerType RSType) const {return m_RSState[static_cast<UINT>(RSType)].Get();}
+
+private:
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState>	m_RSState[static_cast<UINT>(ERasterizerType::RT_END)];
+	Microsoft::WRL::ComPtr<ID3D11BlendState>	m_BSState[static_cast<UINT>(EBlendStateType::BST_END)];
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>	m_DSState[static_cast<UINT>(DepthStencilStateType::DSST_END)];
+	void CreateRasterizerState();
+	void CreateBlendState();
+	void CreateDepthStencilState();
+
+// =================================================
+
+
+
 
 protected:
 private:

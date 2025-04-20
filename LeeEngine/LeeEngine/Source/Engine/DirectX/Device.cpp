@@ -117,6 +117,9 @@ bool FDirectXDevice::InitDirect3D()
 
 
 	InitSamplerState();
+	CreateRasterizerState();
+	CreateBlendState();
+	CreateDepthStencilState();
 	CreateBuffers();
 
 	return true;
@@ -147,6 +150,31 @@ void FDirectXDevice::ResizeEditorRenderTarget(float NewX, float NewY)
 	// 셰이더 리소스 뷰 생성
 	hr = m_d3dDevice->CreateShaderResourceView(m_EditorRenderTargetTexture.Get(), nullptr, m_SRVEditorRenderTarget.GetAddressOf());
 
+}
+
+void FDirectXDevice::CreateRasterizerState()
+{
+	m_RSState[static_cast<UINT>(ERasterizerType::RT_CullBack)] = nullptr;
+
+	D3D11_RASTERIZER_DESC RasterizerDesc{};
+
+	// Two Sided
+	RasterizerDesc.CullMode = D3D11_CULL_NONE;
+	RasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	m_d3dDevice->CreateRasterizerState(&RasterizerDesc, m_RSState[static_cast<UINT>(ERasterizerType::RT_TwoSided)].GetAddressOf());
+
+	// Wire Frame
+	RasterizerDesc.CullMode = D3D11_CULL_NONE;
+	RasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
+	m_d3dDevice->CreateRasterizerState(&RasterizerDesc, m_RSState[static_cast<UINT>(ERasterizerType::RT_WireFrame)].GetAddressOf());
+}
+
+void FDirectXDevice::CreateBlendState()
+{
+}
+
+void FDirectXDevice::CreateDepthStencilState()
+{
 }
 
 void FDirectXDevice::InitSamplerState()

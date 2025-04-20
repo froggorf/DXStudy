@@ -110,6 +110,19 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 		}
 	}
 
+	// Rasterizer State
+	{
+		int bIsTwoSided = AssetData["TwoSided"];
+		if(bIsTwoSided)
+		{
+			RasterizerType = ERasterizerType::RT_TwoSided;	
+		}
+		else
+		{
+			RasterizerType = ERasterizerType::RT_CullBack;
+		}
+	}
+
 	UMaterialInterface::MaterialCache[GetName()] = shared_from_this();
 
 
