@@ -42,6 +42,7 @@ public:
 
 	Microsoft::WRL::ComPtr<ID3DBlob>			VSBlob;
 	Microsoft::WRL::ComPtr<ID3D11VertexShader>	VertexShader;
+	EInputLayoutType InputLayoutType = EInputLayoutType::ILT_Count;
 
 public:
 	void CompileVertexShader(const std::string& FilePath, const std::string& FuncName);
@@ -87,6 +88,7 @@ public:
 
 	virtual Microsoft::WRL::ComPtr<ID3D11VertexShader> GetVertexShader() const {return nullptr;}
 	virtual Microsoft::WRL::ComPtr<ID3D11PixelShader> GetPixelShader() const {return nullptr;}
+	virtual EInputLayoutType GetInputLayoutType() const {return EInputLayoutType::ILT_Count;}
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
@@ -109,7 +111,8 @@ public:
 	void Binding() override;
 
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> GetVertexShader() const override{return VertexShader->VertexShader;}
-	Microsoft::WRL::ComPtr<ID3D11PixelShader> GetPixelShader() const override {return PixelShader->PixelShader;} 
+	Microsoft::WRL::ComPtr<ID3D11PixelShader> GetPixelShader() const override {return PixelShader->PixelShader;}
+	EInputLayoutType GetInputLayoutType() const override {return VertexShader->InputLayoutType;}
 protected:
 	std::shared_ptr<FVertexShader> VertexShader;
 	std::shared_ptr<FPixelShader> PixelShader;

@@ -54,11 +54,26 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 		auto VertexShaderData = AssetData["VertexShader"];
 		std::string VSName = VertexShaderData["FilePath"];
 		std::string FuncName = VertexShaderData["Func"];
+		std::string InputLayoutType = VertexShaderData["InputLayoutType"];
 		auto VSTarget = FShader::ShaderCache.find(VSName+FuncName);
 		if(VSTarget == FShader::ShaderCache.end())
 		{
 			std::shared_ptr<FVertexShader> NewVS = std::make_shared<FVertexShader>();
 			NewVS->CompileVertexShader(VSName,FuncName);
+			if(InputLayoutType == "StaticMesh")
+			{
+				NewVS->InputLayoutType = EInputLayoutType::ILT_StaticMesh;	
+			}
+			else if(InputLayoutType == "SkeletalMesh")
+			{
+				NewVS->InputLayoutType = EInputLayoutType::ILT_SkeletalMesh;	
+			}
+			else
+			{
+				// 잘못된 데이터
+				assert(0);
+			}
+
 			VSTarget = FShader::ShaderCache.insert(std::pair<std::string, std::shared_ptr<FShader>>{ VSName+FuncName, NewVS}).first;
 			VSTarget->second->SetShaderID(FShader::ShaderCache.size());
 		}
@@ -145,4 +160,7 @@ void UMaterial::Binding()
 	{
 		DeviceContext->PSSetShaderResources(i,1, Textures[i]->GetSRV().GetAddressOf());	
 	}
+
+
+	GDirectXDevice->SetInputLayout(GetInputLayoutType());
 }

@@ -263,12 +263,6 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 
 
 		{
-			// 상수버퍼 설정
-			
-
-			// 인풋 레이아웃
-			GDirectXDevice->GetDeviceContext()->IASetInputLayout(GDirectXDevice->GetStaticMeshInputLayout().Get());
-			GDirectXDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 			// Frame 상수 버퍼 설정
 			{

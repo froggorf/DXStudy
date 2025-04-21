@@ -26,10 +26,5 @@ void FPrimitiveSceneProxy::Draw()
 
 	// Rasterizer State
 	GDirectXDevice->SetRSState(MaterialInterface->RasterizerType);
-	//DeviceContext->RSSetState(GDirectXDevice->GetRasterizerState(MaterialInterface->RasterizerType));
 
-	
-	
-	// 셰이더 설정
-	DeviceContext->IASetInputLayout(GDirectXDevice->GetStaticMeshInputLayout().Get());
 }

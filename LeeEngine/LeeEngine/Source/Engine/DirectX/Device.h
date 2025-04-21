@@ -17,6 +17,13 @@ enum class EConstantBufferType
 	CBT_Count
 };
 
+enum class EInputLayoutType
+{
+	ILT_StaticMesh,
+	ILT_SkeletalMesh,
+	ILT_Count
+};
+
 enum class ERasterizerType
 {
 	RT_CullBack,
@@ -69,6 +76,13 @@ public:
 	void MapConstantBuffer(EConstantBufferType Type, void* Data, size_t Size) const;
 //===================================
 
+// InputLayout
+private:
+	EInputLayoutType CurrentInputLayout = EInputLayoutType::ILT_Count;
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> InputLayouts[static_cast<UINT>(EInputLayoutType::ILT_Count)];
+public:
+	void SetInputLayout(EInputLayoutType Type);
+
 public:
 	const Microsoft::WRL::ComPtr<ID3D11Device>& GetDevice() const { return m_d3dDevice; }
 	const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& GetDeviceContext() const { return m_d3dDeviceContext; }
@@ -76,8 +90,6 @@ public:
 	const Microsoft::WRL::ComPtr<ID3D11RenderTargetView>& GetRenderTargetView() const { return m_RenderTargetView; }
 	const Microsoft::WRL::ComPtr<ID3D11DepthStencilView>& GetDepthStencilView() const { return m_DepthStencilView; }
 	const D3D11_VIEWPORT* GetScreenViewport() const { return &m_ScreenViewport; }
-	const Microsoft::WRL::ComPtr<ID3D11InputLayout>& GetStaticMeshInputLayout() const {return m_StaticMeshInputLayout;}
-	const Microsoft::WRL::ComPtr<ID3D11InputLayout>& GetSkeletalMeshInputLayout() const {return m_SkeletalMeshInputLayout;}
 	const Microsoft::WRL::ComPtr<ID3D11SamplerState>& GetSamplerState() const {return m_SamplerState;}
 
 	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetLightConstantBuffer() const {return m_LightConstantBuffer;}
@@ -143,10 +155,8 @@ private:
 	D3D11_VIEWPORT										m_ScreenViewport;
 
 	// 파이프라인
-	Microsoft::WRL::ComPtr<ID3D11InputLayout>	m_StaticMeshInputLayout;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState>	m_SamplerState;
 
-	Microsoft::WRL::ComPtr<ID3D11InputLayout>	m_SkeletalMeshInputLayout;
 	// 상수버퍼
 	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_LightConstantBuffer;
 	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_SkeletalMeshConstantBuffer;

@@ -41,10 +41,6 @@ void FSkeletalMeshSceneProxy::Draw()
 
 	FPrimitiveSceneProxy::Draw();
 
-	// 셰이더 설정
-	GDirectXDevice->GetDeviceContext()->IASetInputLayout(GDirectXDevice->GetSkeletalMeshInputLayout().Get());
-
-
 	{
 		SkeletalMeshBoneTransformConstantBuffer cb;
 		for(int i = 0; i < MAX_BONES; ++i)
@@ -53,7 +49,6 @@ void FSkeletalMeshSceneProxy::Draw()
 		}
 
 		GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_SkeletalData, &cb, sizeof(cb));
-		//GDirectXDevice->GetDeviceContext()->UpdateSubresource(GDirectXDevice->GetSkeletalMeshConstantBuffer().Get(),0,nullptr,&cb, 0,0);
 	}
 
 	unsigned int MeshCount = RenderData->MeshCount;

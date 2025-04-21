@@ -123,6 +123,9 @@ bool FDirectXDevice::InitDirect3D()
 	CreateDepthStencilState();
 	CreateConstantBuffers();
 
+
+	GDirectXDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 	return true;
 }
 
@@ -243,8 +246,7 @@ void FDirectXDevice::BuildStaticMeshShader()
 	};
 	UINT numElements = ARRAYSIZE(inputLayout);
 
-	HR(GDirectXDevice->GetDevice()->CreateInputLayout(inputLayout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), m_StaticMeshInputLayout.GetAddressOf()));
-	GDirectXDevice->GetDeviceContext()->IASetInputLayout(m_StaticMeshInputLayout.Get());
+	HR(GDirectXDevice->GetDevice()->CreateInputLayout(inputLayout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), InputLayouts[static_cast<UINT>(EInputLayoutType::ILT_StaticMesh)].GetAddressOf()));
 
 }
 
@@ -268,7 +270,7 @@ void FDirectXDevice::BuildSkeletalMeshVertexShader()
 	};
 	UINT numElements = ARRAYSIZE(inputLayout);
 
-	HR(GDirectXDevice->GetDevice()->CreateInputLayout(inputLayout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), m_SkeletalMeshInputLayout.GetAddressOf()));
+	HR(GDirectXDevice->GetDevice()->CreateInputLayout(inputLayout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), InputLayouts[static_cast<UINT>(EInputLayoutType::ILT_SkeletalMesh)].GetAddressOf()));
 }
 
 
@@ -431,4 +433,14 @@ void FDirectXDevice::MapConstantBuffer(EConstantBufferType Type, void* Data, siz
 	HR(m_d3dDeviceContext->Map(ConstantBuffers[static_cast<UINT>(Type)].Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &cbMapSub));
 	memcpy(cbMapSub.pData, Data, Size);
 	m_d3dDeviceContext->Unmap(ConstantBuffers[static_cast<UINT>(Type)].Get(), 0);
+}
+
+void FDirectXDevice::SetInputLayout(EInputLayoutType Type)
+{
+	if(Type != CurrentInputLayout)
+	{
+		CurrentInputLayout = Type;
+		m_d3dDeviceContext->IASetInputLayout(InputLayouts[static_cast<UINT>(Type)].Get());
+	}
+	
 }
