@@ -133,7 +133,7 @@ void FScene::UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std:
 
 				// Opaque
 				auto OpaqueRenderData = SceneData->OpaqueSceneProxyRenderData;
-				for(auto Iter = OpaqueRenderData.begin(); Iter != OpaqueRenderData.end() ; )
+				for(auto Iter = OpaqueRenderData.begin(); Iter != OpaqueRenderData.end() ; ++Iter)
 				{
 
 					for(auto PrimitiveIter = Iter->second.begin(); PrimitiveIter != Iter->second.end(); )
@@ -157,7 +157,7 @@ void FScene::UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std:
 
 				// Masked
 				auto MaskedRenderData = SceneData->MaskedSceneProxyRenderData;
-				for(auto Iter = MaskedRenderData.begin(); Iter != MaskedRenderData.end() ; )
+				for(auto Iter = MaskedRenderData.begin(); Iter != MaskedRenderData.end() ; ++Iter)
 				{
 
 					for(auto PrimitiveIter = Iter->second.begin(); PrimitiveIter != Iter->second.end(); )
@@ -181,7 +181,7 @@ void FScene::UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std:
 
 				//Translucent
 				auto TranslucentRenderData = SceneData->TranslucentSceneProxyRenderData;
-				for(auto Iter = TranslucentRenderData.begin(); Iter != TranslucentRenderData.end() ; )
+				for(auto Iter = TranslucentRenderData.begin(); Iter != TranslucentRenderData.end() ; ++Iter)
 				{
 
 					for(auto PrimitiveIter = Iter->second.begin(); PrimitiveIter != Iter->second.end(); )

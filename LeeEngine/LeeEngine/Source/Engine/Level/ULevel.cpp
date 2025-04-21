@@ -75,6 +75,7 @@ void ULevel::BeginPlay()
 	{
 		Actor->BeginPlay();
 	}
+
 }
 
 void ULevel::TickLevel(float DeltaSeconds)
