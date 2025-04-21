@@ -51,8 +51,9 @@ void FSkeletalMeshSceneProxy::Draw()
 		{
 			cb.BoneFinalTransforms[i] = XMMatrixTranspose(BoneFinalMatrices[i]);
 		}
-		
-		GDirectXDevice->GetDeviceContext()->UpdateSubresource(GDirectXDevice->GetSkeletalMeshConstantBuffer().Get(),0,nullptr,&cb, 0,0);
+
+		GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_SkeletalData, &cb, sizeof(cb));
+		//GDirectXDevice->GetDeviceContext()->UpdateSubresource(GDirectXDevice->GetSkeletalMeshConstantBuffer().Get(),0,nullptr,&cb, 0,0);
 	}
 
 	unsigned int MeshCount = RenderData->MeshCount;

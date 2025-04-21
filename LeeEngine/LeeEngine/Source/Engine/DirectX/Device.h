@@ -12,6 +12,8 @@ enum class EConstantBufferType
 {
 	CBT_PerFrame,
 	CBT_PerObject,
+	CBT_Light,
+	CBT_SkeletalData,
 	CBT_Count
 };
 
@@ -64,7 +66,6 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_Count)];
 	void CreateConstantBuffers();
 public:
-	//Microsoft::WRL::ComPtr<ID3D11Buffer> GetConstantBuffer(EConstantBufferType Type) const {return ConstantBuffers[static_cast<UINT>(Type)];}
 	void MapConstantBuffer(EConstantBufferType Type, void* Data, size_t Size) const;
 //===================================
 
@@ -79,7 +80,6 @@ public:
 	const Microsoft::WRL::ComPtr<ID3D11InputLayout>& GetSkeletalMeshInputLayout() const {return m_SkeletalMeshInputLayout;}
 	const Microsoft::WRL::ComPtr<ID3D11SamplerState>& GetSamplerState() const {return m_SamplerState;}
 
-	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetFrameConstantBuffer() const {return m_FrameConstantBuffer;}
 	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetLightConstantBuffer() const {return m_LightConstantBuffer;}
 	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetSkeletalMeshConstantBuffer() const {return m_SkeletalMeshConstantBuffer;}
 
@@ -128,7 +128,6 @@ private:
 
 	void BuildStaticMeshShader();
 	void BuildSkeletalMeshVertexShader();
-	void CreateBuffers();
 	
 public:
 protected:
@@ -149,7 +148,6 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D11InputLayout>	m_SkeletalMeshInputLayout;
 	// 상수버퍼
-	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_FrameConstantBuffer;
 	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_LightConstantBuffer;
 	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_SkeletalMeshConstantBuffer;
 

@@ -264,12 +264,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 
 		{
 			// 상수버퍼 설정
-			GDirectXDevice->GetDeviceContext()->VSSetConstantBuffers(0, 1, GDirectXDevice->GetFrameConstantBuffer().GetAddressOf());
-			GDirectXDevice->GetDeviceContext()->PSSetConstantBuffers(0,1,GDirectXDevice->GetFrameConstantBuffer().GetAddressOf());
-			//GDirectXDevice->GetDeviceContext()->VSSetConstantBuffers(1, 1, GDirectXDevice->GetObjConstantBuffer().GetAddressOf());
-			//GDirectXDevice->GetDeviceContext()->PSSetConstantBuffers(1,1, GDirectXDevice->GetObjConstantBuffer().GetAddressOf());
-			GDirectXDevice->GetDeviceContext()->PSSetConstantBuffers(2,1, GDirectXDevice->GetLightConstantBuffer().GetAddressOf());
-			GDirectXDevice->GetDeviceContext()->VSSetConstantBuffers(3, 1, GDirectXDevice->GetSkeletalMeshConstantBuffer().GetAddressOf());
+			
 
 			// 인풋 레이아웃
 			GDirectXDevice->GetDeviceContext()->IASetInputLayout(GDirectXDevice->GetStaticMeshInputLayout().Get());
@@ -288,7 +283,8 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 					fcb.Projection = XMMatrixTranspose(SceneData->GetProjectionMatrix());
 					fcb.LightView = XMMatrixTranspose(XMMatrixIdentity());//m_LightView
 					fcb.LightProj = XMMatrixTranspose(XMMatrixIdentity()); //m_LightProj
-					GDirectXDevice->GetDeviceContext()->UpdateSubresource(GDirectXDevice->GetFrameConstantBuffer().Get(), 0, nullptr, &fcb, 0, 0);
+					GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_PerFrame, &fcb, sizeof(fcb));
+					
 
 				}
 
@@ -307,13 +303,12 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 					TempPointLight.Diffuse  = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 					TempPointLight.Specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 					TempPointLight.Att      = XMFLOAT3(0.0f, 0.1f, 0.0f);
-					//m_PointLight.Position = XMFLOAT3(796.5f, 700.0f, 0.7549f);
 					TempPointLight.Position = XMFLOAT3(0.0f,-2.5f,0.0f);
 					TempPointLight.Range    = 0.0f;
 					lfcb.gPointLight = TempPointLight;
 					// Convert Spherical to Cartesian coordinates.
 					lfcb.gEyePosW = XMFLOAT3{GEngine->Test_DeleteLater_GetCameraPosition()};
-					GDirectXDevice->GetDeviceContext()->UpdateSubresource(GDirectXDevice->GetLightConstantBuffer().Get(),0,nullptr,&lfcb, 0,0);
+					GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_Light, &lfcb, sizeof(lfcb));
 				}
 			}
 
