@@ -8,12 +8,19 @@
 #include "Engine/MyEngineUtils.h"
 #include <wrl/client.h>
 
+enum class EConstantBufferType
+{
+	CBT_PerFrame,
+	CBT_PerObject,
+	CBT_Count
+};
+
 enum class ERasterizerType
 {
 	RT_CullBack,
 	RT_TwoSided,
 	RT_WireFrame,
-	RT_END
+	RT_Count
 };
 enum class EBlendStateType
 {
@@ -21,7 +28,7 @@ enum class EBlendStateType
 	BST_AlphaBlend,				// src(A) / Dest(1-A)
 	BST_AlphaBlend_Coverage,		// 알파값에 따른 깊이 문제 해결
 	BST_One_One,				// Src(1), Dest(1) - 검은색 색상 제거 or 색상 누적
-	BST_END
+	BST_Count
 };
 enum class DepthStencilStateType
 {
@@ -29,7 +36,7 @@ enum class DepthStencilStateType
 	DSST_Less_Equal,	// <= 시 깊이값 작성
 	DSST_Greater,		// 클시, 깊이값 작성 x // VolumeMesh Check
 	DSST_NoTest_NoWrite,// Less, 깊이값 작성 x
-	DSST_END
+	DSST_Count
 };
 
 // 언리얼엔진의 경우 RHI 를 통해 렌더링을 진행하지만 (// 언리얼엔진의 경우 GDynamicRHI 로 관리, GDynamicRHI->RHICreateBuffer(*this, BufferDesc, ResourceState, CreateInfo);)
@@ -52,6 +59,16 @@ public:
 
 	float GetAspectRatio() const {return static_cast<float>(*m_ClientWidth) / *m_ClientHeight; }
 
+// ConstantBuffers
+private:
+	Microsoft::WRL::ComPtr<ID3D11Buffer> ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_Count)];
+	void CreateConstantBuffers();
+public:
+	//Microsoft::WRL::ComPtr<ID3D11Buffer> GetConstantBuffer(EConstantBufferType Type) const {return ConstantBuffers[static_cast<UINT>(Type)];}
+	void MapConstantBuffer(EConstantBufferType Type, void* Data, size_t Size) const;
+//===================================
+
+public:
 	const Microsoft::WRL::ComPtr<ID3D11Device>& GetDevice() const { return m_d3dDevice; }
 	const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& GetDeviceContext() const { return m_d3dDeviceContext; }
 	const Microsoft::WRL::ComPtr<IDXGISwapChain>& GetSwapChain() const { return m_SwapChain; }
@@ -63,7 +80,6 @@ public:
 	const Microsoft::WRL::ComPtr<ID3D11SamplerState>& GetSamplerState() const {return m_SamplerState;}
 
 	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetFrameConstantBuffer() const {return m_FrameConstantBuffer;}
-	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetObjConstantBuffer() const {return m_ObjConstantBuffer;}
 	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetLightConstantBuffer() const {return m_LightConstantBuffer;}
 	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetSkeletalMeshConstantBuffer() const {return m_SkeletalMeshConstantBuffer;}
 
@@ -84,17 +100,18 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>		m_EditorRenderTargetView;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>	m_SRVEditorRenderTarget;
 #endif	
-	
+
+
 // RasterizerState / BlendState / DepthStencilState
 public:
 	ID3D11RasterizerState* GetRasterizerState(ERasterizerType RSType) const {return m_RSState[static_cast<UINT>(RSType)].Get();}
 	void SetRSState(ERasterizerType InRSType);
 private:
-	ERasterizerType CurrentRSType = ERasterizerType::RT_END;
+	ERasterizerType CurrentRSType = ERasterizerType::RT_Count;
 
-	Microsoft::WRL::ComPtr<ID3D11RasterizerState>	m_RSState[static_cast<UINT>(ERasterizerType::RT_END)];
-	Microsoft::WRL::ComPtr<ID3D11BlendState>	m_BSState[static_cast<UINT>(EBlendStateType::BST_END)];
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>	m_DSState[static_cast<UINT>(DepthStencilStateType::DSST_END)];
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState>	m_RSState[static_cast<UINT>(ERasterizerType::RT_Count)];
+	Microsoft::WRL::ComPtr<ID3D11BlendState>	m_BSState[static_cast<UINT>(EBlendStateType::BST_Count)];
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>	m_DSState[static_cast<UINT>(DepthStencilStateType::DSST_Count)];
 	void CreateRasterizerState();
 	void CreateBlendState();
 	void CreateDepthStencilState();
@@ -133,7 +150,6 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11InputLayout>	m_SkeletalMeshInputLayout;
 	// 상수버퍼
 	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_FrameConstantBuffer;
-	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_ObjConstantBuffer;
 	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_LightConstantBuffer;
 	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_SkeletalMeshConstantBuffer;
 

@@ -47,12 +47,11 @@ void FSkeletalMeshSceneProxy::Draw()
 
 	{
 		SkeletalMeshBoneTransformConstantBuffer cb;
-		
-		//auto boneFinalTransforms = m_PaladinAnimator->GetFinalBoneMatrices();
 		for(int i = 0; i < MAX_BONES; ++i)
 		{
 			cb.BoneFinalTransforms[i] = XMMatrixTranspose(BoneFinalMatrices[i]);
 		}
+		
 		GDirectXDevice->GetDeviceContext()->UpdateSubresource(GDirectXDevice->GetSkeletalMeshConstantBuffer().Get(),0,nullptr,&cb, 0,0);
 	}
 
