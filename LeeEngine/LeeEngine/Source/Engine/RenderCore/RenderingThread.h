@@ -227,8 +227,7 @@ public:
 
 	// 게임쓰레드 호출_ 씬 렌더링 요청 함수
 	static void DrawScene_GameThread()
-	{
-		ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData)
+	{ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData)
 		{
 			FScene::DrawScene_RenderThread(SceneData);
 			

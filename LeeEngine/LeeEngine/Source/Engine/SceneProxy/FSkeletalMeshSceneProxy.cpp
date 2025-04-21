@@ -55,8 +55,6 @@ void FSkeletalMeshSceneProxy::Draw()
 	{
 		GDirectXDevice->GetDeviceContext()->PSSetShader(PS.Get(), nullptr, 0);
 	}
-	
-
 
 	{
 		SkeletalMeshBoneTransformConstantBuffer cb;
@@ -67,25 +65,22 @@ void FSkeletalMeshSceneProxy::Draw()
 			cb.BoneFinalTransforms[i] = XMMatrixTranspose(BoneFinalMatrices[i]);
 		}
 		GDirectXDevice->GetDeviceContext()->UpdateSubresource(GDirectXDevice->GetSkeletalMeshConstantBuffer().Get(),0,nullptr,&cb, 0,0);
-		
 	}
 
 	unsigned int MeshCount = RenderData->MeshCount;
-	for(int MeshIndex= 0; MeshIndex < MeshCount; ++MeshIndex)
-	{
-		ID3D11DeviceContext* DeviceContext = GDirectXDevice->GetDeviceContext().Get();
-		
-		MaterialInterface->Binding();
-		UINT stride = sizeof(MySkeletalMeshVertexData);
-		UINT offset = 0;
-		DeviceContext->IASetVertexBuffers(0, 1, RenderData->VertexBuffer[MeshIndex].GetAddressOf(), &stride, &offset);
-		DeviceContext->IASetIndexBuffer(RenderData->IndexBuffer[MeshIndex].Get(), DXGI_FORMAT_R32_UINT, 0);
+	
+	ID3D11DeviceContext* DeviceContext = GDirectXDevice->GetDeviceContext().Get();
 
-		D3D11_BUFFER_DESC indexBufferDesc;
-		RenderData->IndexBuffer[MeshIndex]->GetDesc(&indexBufferDesc);
-		UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
-		DeviceContext->DrawIndexed(indexSize, 0, 0);
-	}
+	UINT stride = sizeof(MySkeletalMeshVertexData);
+	UINT offset = 0;
+	DeviceContext->IASetVertexBuffers(0, 1, RenderData->VertexBuffer[MeshIndex].GetAddressOf(), &stride, &offset);
+	DeviceContext->IASetIndexBuffer(RenderData->IndexBuffer[MeshIndex].Get(), DXGI_FORMAT_R32_UINT, 0);
+
+	D3D11_BUFFER_DESC indexBufferDesc;
+	RenderData->IndexBuffer[MeshIndex]->GetDesc(&indexBufferDesc);
+	UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
+	DeviceContext->DrawIndexed(indexSize, 0, 0);
+	
 	
 }
 

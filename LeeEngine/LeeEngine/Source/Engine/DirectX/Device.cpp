@@ -7,6 +7,7 @@
 #include "Device.h"
 
 #include "Engine/UEngine.h"
+#include "Engine/RenderCore/EditorScene.h"
 #include "Engine/RenderCore/RenderingThread.h"
 
 std::unique_ptr<FDirectXDevice> GDirectXDevice = nullptr;
@@ -150,6 +151,15 @@ void FDirectXDevice::ResizeEditorRenderTarget(float NewX, float NewY)
 	// 셰이더 리소스 뷰 생성
 	hr = m_d3dDevice->CreateShaderResourceView(m_EditorRenderTargetTexture.Get(), nullptr, m_SRVEditorRenderTarget.GetAddressOf());
 
+}
+
+void FDirectXDevice::SetRSState(ERasterizerType InRSType)
+{
+	if(InRSType != CurrentRSType)
+	{
+		m_d3dDeviceContext->RSSetState(m_RSState[static_cast<UINT>(InRSType)].Get());
+		CurrentRSType = InRSType;
+	}
 }
 
 void FDirectXDevice::CreateRasterizerState()

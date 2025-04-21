@@ -68,7 +68,7 @@ class UMaterialInterface : public UObject
 
 
 public:
-	UMaterialInterface() : BlendMode(EBlendMode::BM_Opaque), RasterizerType(ERasterizerType::RT_CullBack) {};
+	UMaterialInterface() : BlendMode(EBlendMode::BM_Opaque), RasterizerType(ERasterizerType::RT_CullBack), BlendStateType(EBlendStateType::BST_Default) {};
 	~UMaterialInterface() override = default;
 
 	static std::shared_ptr<UMaterialInterface> GetMaterialCache(const std::string& MaterialName)
@@ -92,6 +92,7 @@ protected:
 public:
 	EBlendMode BlendMode;
 	ERasterizerType RasterizerType;
+	EBlendStateType BlendStateType;
 };
 
 class UMaterial : public UMaterialInterface, public std::enable_shared_from_this<UMaterial>

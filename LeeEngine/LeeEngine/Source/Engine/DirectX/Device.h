@@ -83,8 +83,10 @@ private:
 // RasterizerState / BlendState / DepthStencilState
 public:
 	ID3D11RasterizerState* GetRasterizerState(ERasterizerType RSType) const {return m_RSState[static_cast<UINT>(RSType)].Get();}
-
+	void SetRSState(ERasterizerType InRSType);
 private:
+	ERasterizerType CurrentRSType = ERasterizerType::RT_END;
+
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState>	m_RSState[static_cast<UINT>(ERasterizerType::RT_END)];
 	Microsoft::WRL::ComPtr<ID3D11BlendState>	m_BSState[static_cast<UINT>(EBlendStateType::BST_END)];
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>	m_DSState[static_cast<UINT>(DepthStencilStateType::DSST_END)];

@@ -27,8 +27,11 @@ void FPrimitiveSceneProxy::Draw()
 	ID3D11DeviceContext* DeviceContext = GDirectXDevice->GetDeviceContext().Get();
 
 	// Rasterizer State
-	DeviceContext->RSSetState(GDirectXDevice->GetRasterizerState(MaterialInterface->RasterizerType));
+	GDirectXDevice->SetRSState(MaterialInterface->RasterizerType);
+	//DeviceContext->RSSetState(GDirectXDevice->GetRasterizerState(MaterialInterface->RasterizerType));
 
+	
+	
 	// 셰이더 설정
 	DeviceContext->IASetInputLayout(GDirectXDevice->GetStaticMeshInputLayout().Get());
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> VS = MaterialInterface->GetVertexShader();

@@ -3,6 +3,8 @@
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
 #include "CoreMinimal.h"
+
+#include "EditorScene.h"
 #include "renderingthread.h"
 #include "Engine/SceneProxy/FSkeletalMeshSceneProxy.h"
 
@@ -206,45 +208,32 @@ void FScene::UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std:
 
 void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 {
+	//RenderFPS 측정
+	{
+		using clock = std::chrono::high_resolution_clock;
+		using microseconds = std::chrono::microseconds;
 
-{	// 임시 렌더링 쓰레드 FPS 측정
-	//{
-	//	static GameTimer test;
-	//	static bool startbool = false;
-	//	if(!startbool)
-	//	{
-	//		test.Reset();
-	//		startbool = true;
-	//	}
-	//	test.Tick();
-	//	static int frameCnt = 0;
-	//	static float timeElapsed = 0.0f;
+		static auto prevTime = clock::now();
+		static auto prevUpdateTime = clock::now();
+		static int frameCount = 0;
 
-	//	frameCnt++;
+		// 현재 시간
+		auto currentTime = clock::now();
+		auto duration = std::chrono::duration_cast<microseconds>(currentTime - prevTime);
+		prevTime = currentTime;
 
-	//	// Compute averages over one second period.
-	//	if( (test.TotalTime() - timeElapsed) >= 1.0f )
-	//	{
-	//		float fps = (float)frameCnt; // fps = frameCnt / 1
-	//		float mspf = 1000.0f / fps;
+		++frameCount;
 
-	//		std::wostringstream outs;
-	//		outs.precision(6);
-	//		outs  << L"Rendering Thread  "
-	//			<< L"FPS: " << fps << L"    " 
-	//			<< L"Frame Time: " << mspf << L" (ms)";
-	//		//SetWindowText(m_hMainWnd, outs.str().c_str());
-	//		if(GEngine)
-	//		{
-	//			GEngine->GetApplication()->TestSetWindowBarName(outs);
-	//		}
+		auto elapsed = std::chrono::duration_cast<microseconds>(currentTime - prevUpdateTime).count();
+		if (elapsed >= 1'000'000) {
+			RenderFPS = static_cast<float>(frameCount) * 1'000'000.0f / elapsed;
+			
+			frameCount = 0;
+			prevUpdateTime = currentTime;
+		}
+	}
 
-	//		// Reset for next average.
-	//		frameCnt = 0;
-	//		timeElapsed += 1.0f;
-	//	}
-	//}
-}
+
 
 	// 프레임 단위 세팅
 	{

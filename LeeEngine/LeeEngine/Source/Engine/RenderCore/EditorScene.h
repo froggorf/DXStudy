@@ -26,7 +26,7 @@ struct DebugText
 	static std::map<EDebugLogLevel, ImVec4> Color;
 };
 
-
+inline float RenderFPS = 0;
 
 #ifdef WITH_EDITOR
 class FEditorScene : public FScene
