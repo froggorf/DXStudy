@@ -126,6 +126,27 @@ bool FDirectXDevice::InitDirect3D()
 	return true;
 }
 
+
+void FDirectXDevice::SetVertexShader(class FVertexShader* InVertexShader)
+{
+	UINT NewShaderID = InVertexShader->GetShaderID();
+	if(NewShaderID != CurrentVertexShaderID)
+	{
+		CurrentVertexShaderID = NewShaderID;
+		m_d3dDeviceContext->VSSetShader(InVertexShader->VertexShader.Get(), nullptr,0);
+	}
+}
+
+void FDirectXDevice::SetPixelShader(class FPixelShader* InPixelShader)
+{
+	UINT NewShaderID = InPixelShader->GetShaderID();
+	if(NewShaderID != CurrentPixelShaderID)
+	{
+		CurrentPixelShaderID = NewShaderID;
+		m_d3dDeviceContext->PSSetShader(InPixelShader->PixelShader.Get(), nullptr,0);
+	}
+}
+
 void FDirectXDevice::ResizeEditorRenderTarget(float NewX, float NewY)
 {
 	NewX = max(2.0f,NewX);

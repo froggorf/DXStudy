@@ -30,6 +30,9 @@ public:
 
 	EBlendMode GetBlendMode() const {return MaterialInterface->BlendMode;}
 	UINT GetMeshIndex() const {return MeshIndex;}
+	UINT GetMaterialID() const {return MaterialInterface->GetMaterialID();}
+
+	std::shared_ptr<UMaterialInterface> GetMaterialInterface() const  {return MaterialInterface;}
 protected:
 private:
 public:

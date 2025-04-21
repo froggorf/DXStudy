@@ -68,6 +68,11 @@ public:
 	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetSkeletalMeshConstantBuffer() const {return m_SkeletalMeshConstantBuffer;}
 
 
+	UINT CurrentVertexShaderID = -1;
+	void SetVertexShader(class FVertexShader* InVertexShader);
+	UINT CurrentPixelShaderID = -1;
+	void SetPixelShader(class FPixelShader* InPixelShader);
+
 #ifdef WITH_EDITOR
 public:
 	const Microsoft::WRL::ComPtr<ID3D11Texture2D>& GetEditorRenderTargetTexture() const {return m_EditorRenderTargetTexture;}

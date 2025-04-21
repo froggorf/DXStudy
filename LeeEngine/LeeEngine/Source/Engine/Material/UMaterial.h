@@ -17,8 +17,11 @@ class FShader
 public:
 	FShader() {}
 	virtual ~FShader() {}
-protected:
 
+	void SetShaderID(UINT NewID);
+	UINT GetShaderID() const {return ShaderID;}
+protected:
+	UINT ShaderID = -1;
 	static std::unordered_map<std::string, std::shared_ptr<FShader>> ShaderCache;
 
 	friend class UMaterial;
@@ -49,7 +52,7 @@ class FPixelShader : public FGraphicsShader
 public:
 	FPixelShader() {};
 	~FPixelShader() override {}
-	void CompileVertexShader(const std::string& FilePath, const std::string& FuncName);;
+	void CompilePixelShader(const std::string& FilePath, const std::string& FuncName);;
 
 	Microsoft::WRL::ComPtr<ID3DBlob>			PSBlob;
 	Microsoft::WRL::ComPtr<ID3D11PixelShader>	PixelShader;
@@ -70,6 +73,7 @@ class UMaterialInterface : public UObject
 public:
 	UMaterialInterface() : BlendMode(EBlendMode::BM_Opaque), RasterizerType(ERasterizerType::RT_CullBack), BlendStateType(EBlendStateType::BST_Default) {};
 	~UMaterialInterface() override = default;
+	virtual UINT GetMaterialID() const {return -1;}
 
 	static std::shared_ptr<UMaterialInterface> GetMaterialCache(const std::string& MaterialName)
 	{
@@ -101,6 +105,7 @@ class UMaterial : public UMaterialInterface, public std::enable_shared_from_this
 
 public:
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
+	UINT GetMaterialID() const override {return MaterialID;}
 	void Binding() override;
 
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> GetVertexShader() const override{return VertexShader->VertexShader;}
@@ -110,5 +115,7 @@ protected:
 	std::shared_ptr<FPixelShader> PixelShader;
 
 	std::vector<std::shared_ptr<UTexture>> Textures;
+
+	UINT MaterialID = -1;
 	
 };

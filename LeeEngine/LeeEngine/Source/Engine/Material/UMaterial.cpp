@@ -2,9 +2,15 @@
 #include "UMaterial.h"
 
 #include "Engine/UEngine.h"
+#include "Engine/RenderCore/EditorScene.h"
 
 std::unordered_map<std::string, std::shared_ptr<FShader>> FShader::ShaderCache;
 std::unordered_map<std::string, std::shared_ptr<UMaterialInterface>> UMaterialInterface::MaterialCache;
+
+void FShader::SetShaderID(UINT NewID)
+{
+	ShaderID = NewID;
+}
 
 void FVertexShader::CompileVertexShader(const std::string& FilePath, const std::string& FuncName)
 {
@@ -16,7 +22,7 @@ void FVertexShader::CompileVertexShader(const std::string& FilePath, const std::
 	HR(GDirectXDevice->GetDevice()->CreateVertexShader(VSBlob->GetBufferPointer(), VSBlob->GetBufferSize(), nullptr, VertexShader.GetAddressOf()));
 }
 
-void FPixelShader::CompileVertexShader(const std::string& FilePath, const std::string& FuncName)
+void FPixelShader::CompilePixelShader(const std::string& FilePath, const std::string& FuncName)
 {
 	std::string TempDirectoryPath =  GEngine->GetDirectoryPath();
 	std::wstring TempShaderPath = std::wstring(TempDirectoryPath.begin(), TempDirectoryPath.end());
@@ -54,7 +60,7 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 			std::shared_ptr<FVertexShader> NewVS = std::make_shared<FVertexShader>();
 			NewVS->CompileVertexShader(VSName,FuncName);
 			VSTarget = FShader::ShaderCache.insert(std::pair<std::string, std::shared_ptr<FShader>>{ VSName+FuncName, NewVS}).first;
-
+			VSTarget->second->SetShaderID(FShader::ShaderCache.size());
 		}
 		VertexShader = std::dynamic_pointer_cast<FVertexShader>(VSTarget->second);
 	}
@@ -68,9 +74,9 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 		if(PSTarget == FShader::ShaderCache.end())
 		{
 			std::shared_ptr<FPixelShader> NewPS = std::make_shared<FPixelShader>();
-			NewPS->CompileVertexShader(PSName,FuncName);
+			NewPS->CompilePixelShader(PSName,FuncName);
 			PSTarget = FShader::ShaderCache.insert(std::pair<std::string, std::shared_ptr<FShader>>{ PSName+FuncName, NewPS}).first;
-
+			PSTarget->second->SetShaderID(FShader::ShaderCache.size());
 		}
 		PixelShader = std::dynamic_pointer_cast<FPixelShader>(PSTarget->second);
 	}
@@ -124,13 +130,15 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 	}
 
 	UMaterialInterface::MaterialCache[GetName()] = shared_from_this();
-
-
+	MaterialID = MaterialCache.size();
 }
 
 void UMaterial::Binding()
 {
 	UMaterialInterface::Binding();
+
+	GDirectXDevice->SetVertexShader(VertexShader.get());
+	GDirectXDevice->SetPixelShader(PixelShader.get());
 
 	ComPtr<ID3D11DeviceContext> DeviceContext = GDirectXDevice->GetDeviceContext();
 	for(int i = 0; i < Textures.size(); ++i)

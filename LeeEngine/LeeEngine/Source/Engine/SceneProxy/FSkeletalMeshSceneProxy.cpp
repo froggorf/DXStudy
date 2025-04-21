@@ -45,17 +45,6 @@ void FSkeletalMeshSceneProxy::Draw()
 	GDirectXDevice->GetDeviceContext()->IASetInputLayout(GDirectXDevice->GetSkeletalMeshInputLayout().Get());
 
 
-	ComPtr<ID3D11VertexShader> VS = MaterialInterface->GetVertexShader();
-	if(VS)
-	{
-	GDirectXDevice->GetDeviceContext()->VSSetShader(VS.Get(), nullptr, 0);	
-	}
-	ComPtr<ID3D11PixelShader> PS = MaterialInterface->GetPixelShader();
-	if(PS)
-	{
-		GDirectXDevice->GetDeviceContext()->PSSetShader(PS.Get(), nullptr, 0);
-	}
-
 	{
 		SkeletalMeshBoneTransformConstantBuffer cb;
 		

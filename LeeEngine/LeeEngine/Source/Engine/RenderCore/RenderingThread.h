@@ -119,9 +119,13 @@ public:
 	FScene(){}
 	virtual ~FScene(){}
 	// ==================== FPrimitiveSceneProxy ====================
-	std::vector<PrimitiveRenderData> OpaqueSceneProxyRenderData;
+	// { UINT(MaterialID) , RenderData }
+	std::unordered_map<UINT, std::vector<PrimitiveRenderData>> OpaqueSceneProxyRenderData;
+	std::unordered_map<UINT, std::vector<PrimitiveRenderData>> MaskedSceneProxyRenderData;
+	std::unordered_map<UINT, std::vector<PrimitiveRenderData>> TranslucentSceneProxyRenderData;
+	/*std::vector<PrimitiveRenderData> OpaqueSceneProxyRenderData;
 	std::vector<PrimitiveRenderData> MaskedSceneProxyRenderData;
-	std::vector<PrimitiveRenderData> TranslucentSceneProxyRenderData;
+	std::vector<PrimitiveRenderData> TranslucentSceneProxyRenderData;*/
 	
 	std::map<UINT, std::shared_ptr<FPrimitiveSceneProxy>> PendingAddSceneProxies;
 	std::map<UINT, std::shared_ptr<FPrimitiveSceneProxy>> PendingDeleteSceneProxies;
