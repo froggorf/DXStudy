@@ -104,11 +104,15 @@ public:
 		return nullptr;
 	}
 
+	virtual bool IsMaterialInstance() const {return false;}
+
 	virtual Microsoft::WRL::ComPtr<ID3D11VertexShader> GetVertexShader() const {return nullptr;}
 	virtual Microsoft::WRL::ComPtr<ID3D11PixelShader> GetPixelShader() const {return nullptr;}
 	virtual EInputLayoutType GetInputLayoutType() const {return EInputLayoutType::ILT_Count;}
 
 	virtual void BindingMaterialInstanceUserParam() const {}
+
+	virtual void SetScalarParam(const std::string& Name, float NewValue) {}
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
@@ -159,6 +163,9 @@ public:
 	UINT GetMaterialID() const override {return ParentMaterial->GetMaterialID();};
 	void Binding() override;
 	ERasterizerType GetRSType() const override {return ParentMaterial->RasterizerType;};
+
+	bool IsMaterialInstance() const override {return true;}
+	void SetScalarParam(const std::string& Name, float NewValue) override;
 
 	void BindingMaterialInstanceUserParam() const override;
 

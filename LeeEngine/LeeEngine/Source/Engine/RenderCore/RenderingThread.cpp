@@ -49,18 +49,43 @@ void FScene::BeginRenderFrame()
 		RenderData.MeshIndex = NewPrimitiveProxy.second->GetMeshIndex();
 		RenderData.PrimitiveID = NewPrimitiveProxy.first;
 		RenderData.SceneProxy = NewPrimitiveProxy.second;
+		
 		UINT MaterialID = RenderData.SceneProxy->GetMaterialID();
 
+		bool bUseMaterialInterface = RenderData.SceneProxy->GetMaterialInterface()->IsMaterialInstance();
+
+		// 머테리얼 ID 로 관리하는데, 머테리얼 -> 머테리얼인스턴스 순으로 배열에 배치되도록 설정
 		switch(NewPrimitiveProxy.second->GetBlendMode())
 		{
 		case EBlendMode::BM_Opaque:
-		OpaqueSceneProxyRenderData[MaterialID].emplace_back(RenderData);
+		if(bUseMaterialInterface)
+		{
+			OpaqueSceneProxyRenderData[MaterialID].emplace_back(RenderData);	
+		}
+		else
+		{
+			OpaqueSceneProxyRenderData[MaterialID].insert(OpaqueSceneProxyRenderData[MaterialID].begin(),RenderData);
+		}
 		break;
 		case EBlendMode::BM_Masked:
-			MaskedSceneProxyRenderData[MaterialID].emplace_back(RenderData);
+			if(bUseMaterialInterface)
+			{
+				MaskedSceneProxyRenderData[MaterialID].emplace_back(RenderData);	
+			}
+			else
+			{
+				MaskedSceneProxyRenderData[MaterialID].insert(MaskedSceneProxyRenderData[MaterialID].begin(),RenderData);
+			}
 		break;
 		case EBlendMode::BM_Translucent:
-			TranslucentSceneProxyRenderData[MaterialID].emplace_back(RenderData);
+			if(bUseMaterialInterface)
+			{
+				TranslucentSceneProxyRenderData[MaterialID].emplace_back(RenderData);	
+			}
+			else
+			{
+				TranslucentSceneProxyRenderData[MaterialID].insert(TranslucentSceneProxyRenderData[MaterialID].begin(),RenderData);
+			}
 		break;
 		default:
 		// 잘못된 데이터
@@ -222,6 +247,51 @@ void FScene::UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std:
 			};
 		ENQUEUE_RENDER_COMMAND(Lambda);
 	}
+}
+
+void FScene::SetMaterialScalarParam_RenderThread(UINT PrimitiveID, UINT MeshIndex, const std::string& ParamName,
+	float Value)
+{
+	// Opaque
+	for(const auto& RenderData : OpaqueSceneProxyRenderData)
+	{
+		auto TargetRenderData = std::ranges::find_if(RenderData.second, [PrimitiveID, MeshIndex](const PrimitiveRenderData& A)
+		{
+			return A.PrimitiveID == PrimitiveID && A.MeshIndex == MeshIndex;
+		});
+
+		if(TargetRenderData != RenderData.second.end())
+		{
+			TargetRenderData->SceneProxy->GetMaterialInterface()->SetScalarParam(ParamName,Value);
+		}
+	}
+	// Masked
+	for(const auto& RenderData : MaskedSceneProxyRenderData)
+	{
+		auto TargetRenderData = std::ranges::find_if(RenderData.second, [PrimitiveID, MeshIndex](const PrimitiveRenderData& A)
+			{
+				return A.PrimitiveID == PrimitiveID && A.MeshIndex == MeshIndex;
+			});
+
+		if(TargetRenderData != RenderData.second.end())
+		{
+			TargetRenderData->SceneProxy->GetMaterialInterface()->SetScalarParam(ParamName,Value);
+		}
+	}
+	// Translucent
+	for(const auto& RenderData : TranslucentSceneProxyRenderData)
+	{
+		auto TargetRenderData = std::ranges::find_if(RenderData.second, [PrimitiveID, MeshIndex](const PrimitiveRenderData& A)
+			{
+				return A.PrimitiveID == PrimitiveID && A.MeshIndex == MeshIndex;
+			});
+
+		if(TargetRenderData != RenderData.second.end())
+		{
+			TargetRenderData->SceneProxy->GetMaterialInterface()->SetScalarParam(ParamName,Value);
+		}
+	}
+
 }
 
 void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)

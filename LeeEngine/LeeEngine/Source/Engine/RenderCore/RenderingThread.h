@@ -106,7 +106,7 @@ struct PrimitiveRenderData
 	UINT PrimitiveID;
 	UINT MeshIndex;
 	std::shared_ptr<FPrimitiveSceneProxy> SceneProxy;
-
+	std::shared_ptr<UMaterialInterface> MaterialInterface;
 
 };
 
@@ -118,6 +118,7 @@ class FScene
 public:
 	FScene(){}
 	virtual ~FScene(){}
+	
 	// ==================== FPrimitiveSceneProxy ====================
 	// { UINT(MaterialID) , RenderData }
 	std::unordered_map<UINT, std::vector<PrimitiveRenderData>> OpaqueSceneProxyRenderData;
@@ -126,7 +127,8 @@ public:
 	/*std::vector<PrimitiveRenderData> OpaqueSceneProxyRenderData;
 	std::vector<PrimitiveRenderData> MaskedSceneProxyRenderData;
 	std::vector<PrimitiveRenderData> TranslucentSceneProxyRenderData;*/
-	
+
+	// PrimitiveID, 
 	std::map<UINT, std::shared_ptr<FPrimitiveSceneProxy>> PendingAddSceneProxies;
 	std::map<UINT, std::shared_ptr<FPrimitiveSceneProxy>> PendingDeleteSceneProxies;
 
@@ -239,8 +241,19 @@ public:
 		
 	}
 
-	
+	// 특정 ID의 머테리얼의 파라미터를 바꾸는 함수
+	static void SetMaterialScalarParam_GameThread(UINT PrimitiveID, UINT MeshIndex, const std::string& ParamName, float Value)
+	{
+		auto Lambda = [PrimitiveID,MeshIndex,ParamName,Value](std::shared_ptr<FScene>& SceneData)
+			{
+				SceneData->SetMaterialScalarParam_RenderThread(PrimitiveID, MeshIndex, ParamName, Value);
 
+			};
+		ENQUEUE_RENDER_COMMAND(Lambda);
+		
+	}
+
+	void SetMaterialScalarParam_RenderThread(UINT PrimitiveID, UINT MeshIndex, const std::string& ParamName, float Value);
 	
 	static void DrawScene_RenderThread(std::shared_ptr<FScene> SceneData);
 	virtual void SetDrawScenePipeline(const float* ClearColor);

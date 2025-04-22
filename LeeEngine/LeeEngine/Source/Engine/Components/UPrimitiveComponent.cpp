@@ -33,3 +33,8 @@ void UPrimitiveComponent::Register()
 	}
 	
 }
+
+void UPrimitiveComponent::SetScalarParam(UINT MeshIndex, const std::string& ParamName, float Value) const
+{
+	FScene::SetMaterialScalarParam_GameThread(PrimitiveID, MeshIndex, ParamName, Value);
+}

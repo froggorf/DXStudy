@@ -22,6 +22,22 @@ public:
 		return std::vector<std::shared_ptr<FPrimitiveSceneProxy>>{};
 	}
 
+	void SetScalarParam(UINT MeshIndex, const std::string& ParamName, float Value) const;
+
+#ifdef WITH_EDITOR
+	void DrawDetailPanel(UINT ComponentDepth) override
+	{
+		static float NewSpeedX = 1, NewSpeedY = 1;
+		if(ImGui::SliderFloat("NewSpeedX", &NewSpeedX, -1.0f, 1.0f))
+		{
+			SetScalarParam(0, "WaterSpeedX", NewSpeedX);
+		}
+		if(ImGui::SliderFloat("NewSpeedY", &NewSpeedY, -1.0f, 1.0f))
+		{
+			SetScalarParam(0, "WaterSpeedY", NewSpeedY);
+		}
+	}
+#endif
 
 protected:
 	

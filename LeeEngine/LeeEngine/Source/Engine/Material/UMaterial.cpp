@@ -297,6 +297,34 @@ void UMaterialInstance::Binding()
 	
 }
 
+void UMaterialInstance::SetScalarParam(const std::string& Name, float NewValue)
+{
+	// 부모에 유효한 파라미터인지 확인
+	auto ParentTargetParamIter = std::ranges::find_if(ParentMaterial->DefaultParams.FloatParams, [Name](const FMaterialParameterDesc<float>& A)
+	{
+		return A.Name == Name;
+	});
+	if(ParentTargetParamIter == ParentMaterial->DefaultParams.FloatParams.end())
+	{
+		MY_LOG("Warning", EDebugLogLevel::DLL_Warning, "SetScalarParam no valid ParamName");
+		return;
+	}
+
+	// 현재 머테리얼 인스턴스에서 파라미터로 되어있는지
+	auto OverrideParamIter = std::ranges::find_if(OverrideParams.FloatParams, [Name](const FMaterialParameterDesc<float>& A)
+		{
+			return A.Name == Name;
+		});
+	if(OverrideParamIter != OverrideParams.FloatParams.end())
+	{
+		OverrideParamIter->Value = NewValue;
+	}
+	else
+	{
+		OverrideParams.FloatParams.emplace_back(Name,4,0,NewValue);
+	}
+}
+
 void UMaterialInstance::BindingMaterialInstanceUserParam() const
 {
 	D3D11_MAPPED_SUBRESOURCE cbMapSub{};
