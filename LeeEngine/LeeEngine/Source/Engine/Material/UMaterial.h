@@ -11,7 +11,6 @@
 
 
 
-
 class FShader
 {
 public:
@@ -104,7 +103,7 @@ public:
 class UMaterial : public UMaterialInterface, public std::enable_shared_from_this<UMaterial>
 {
 	MY_GENERATED_BODY(UMaterial)
-
+	friend class UMaterialInstance;
 public:
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 	UINT GetMaterialID() const override {return MaterialID;}

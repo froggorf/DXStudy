@@ -189,5 +189,5 @@ void UMaterialInstance::Binding()
 		ParentMaterial->Binding();
 	}
 
-
+	
 }
