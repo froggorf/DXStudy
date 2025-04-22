@@ -62,7 +62,7 @@ void FScene::BeginRenderFrame()
 
 
 		// 머테리얼 ID 로 관리하는데, 머테리얼 -> 머테리얼인스턴스 순으로 배열에 배치되도록 설정
-		switch(NewPrimitiveProxy.second->GetBlendMode())
+		switch(RenderData.MaterialInterface->GetBlendModeType())
 		{
 		case EBlendMode::BM_Opaque:
 		if(bUseMaterialInstance)
@@ -272,7 +272,8 @@ void FScene::SetMaterialScalarParam_RenderThread(UINT PrimitiveID, UINT MeshInde
 			std::shared_ptr<UMaterialInstance> MaterialInstance = std::dynamic_pointer_cast<UMaterialInstance>(TargetRenderData->MaterialInterface);
 			if(MaterialInstance)
 			{
-				MaterialInstance->SetScalarParam(ParamName,Value);	
+				MaterialInstance->SetScalarParam(ParamName,Value);
+				return;
 			}
 			
 		}
@@ -290,7 +291,8 @@ void FScene::SetMaterialScalarParam_RenderThread(UINT PrimitiveID, UINT MeshInde
 			std::shared_ptr<UMaterialInstance> MaterialInstance = std::dynamic_pointer_cast<UMaterialInstance>(TargetRenderData->MaterialInterface);
 			if(MaterialInstance)
 			{
-				MaterialInstance->SetScalarParam(ParamName,Value);	
+				MaterialInstance->SetScalarParam(ParamName,Value);
+				return;
 			}
 		}
 	}
@@ -307,11 +309,72 @@ void FScene::SetMaterialScalarParam_RenderThread(UINT PrimitiveID, UINT MeshInde
 			std::shared_ptr<UMaterialInstance> MaterialInstance = std::dynamic_pointer_cast<UMaterialInstance>(TargetRenderData->MaterialInterface);
 			if(MaterialInstance)
 			{
-				MaterialInstance->SetScalarParam(ParamName,Value);	
+				MaterialInstance->SetScalarParam(ParamName,Value);
+				return;
 			}
 		}
 	}
 
+}
+
+void FScene::SetTextureParam_RenderThread(UINT PrimitiveID, UINT MeshIndex, UINT TextureSlot,
+	std::shared_ptr<UTexture> Texture)
+{
+	// Opaque
+	for(const auto& RenderData : OpaqueSceneProxyRenderData)
+	{
+		auto TargetRenderData = std::ranges::find_if(RenderData.second, [PrimitiveID, MeshIndex](const PrimitiveRenderData& A)
+			{
+				return A.PrimitiveID == PrimitiveID && A.MeshIndex == MeshIndex;
+			});
+
+		if(TargetRenderData != RenderData.second.end())
+		{
+			std::shared_ptr<UMaterialInstance> MaterialInstance = std::dynamic_pointer_cast<UMaterialInstance>(TargetRenderData->MaterialInterface);
+			if(MaterialInstance)
+			{
+				MaterialInstance->SetTextureParam(TextureSlot, Texture);
+				return;
+			}
+
+		}
+	}
+	// Masked
+	for(const auto& RenderData : MaskedSceneProxyRenderData)
+	{
+		auto TargetRenderData = std::ranges::find_if(RenderData.second, [PrimitiveID, MeshIndex](const PrimitiveRenderData& A)
+			{
+				return A.PrimitiveID == PrimitiveID && A.MeshIndex == MeshIndex;
+			});
+
+		if(TargetRenderData != RenderData.second.end())
+		{
+			std::shared_ptr<UMaterialInstance> MaterialInstance = std::dynamic_pointer_cast<UMaterialInstance>(TargetRenderData->MaterialInterface);
+			if(MaterialInstance)
+			{
+				MaterialInstance->SetTextureParam(TextureSlot, Texture);
+				return;
+			}
+		}
+	}
+	// Translucent
+	for(const auto& RenderData : TranslucentSceneProxyRenderData)
+	{
+		auto TargetRenderData = std::ranges::find_if(RenderData.second, [PrimitiveID, MeshIndex](const PrimitiveRenderData& A)
+			{
+				return A.PrimitiveID == PrimitiveID && A.MeshIndex == MeshIndex;
+			});
+
+		if(TargetRenderData != RenderData.second.end())
+		{
+			std::shared_ptr<UMaterialInstance> MaterialInstance = std::dynamic_pointer_cast<UMaterialInstance>(TargetRenderData->MaterialInterface);
+			if(MaterialInstance)
+			{
+				MaterialInstance->SetTextureParam(TextureSlot, Texture);
+				return;	
+			}
+		}
+	}
 }
 
 void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)

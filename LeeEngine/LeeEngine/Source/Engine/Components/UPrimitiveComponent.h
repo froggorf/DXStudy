@@ -22,20 +22,37 @@ public:
 		return std::vector<std::shared_ptr<FPrimitiveSceneProxy>>{};
 	}
 
+	// 해당 프리미티브 머테리얼의 스칼라 파라미터를 변경하는 함수
 	void SetScalarParam(UINT MeshIndex, const std::string& ParamName, float Value) const;
-
+	// 해당 프리미티브 머테리얼의 텍스쳐 파라미터를 변경하는 함수
+	void SetTextureParam(UINT MeshIndex, UINT TextureSlot, std::shared_ptr<UTexture>);
 #ifdef WITH_EDITOR
 	void DrawDetailPanel(UINT ComponentDepth) override
 	{
-		static float NewSpeedX = 1, NewSpeedY = 1;
-		if(ImGui::SliderFloat("NewSpeedX", &NewSpeedX, -1.0f, 1.0f))
+		if(ComponentDepth == 0)
 		{
-			SetScalarParam(0, "WaterSpeedX", NewSpeedX);
+			static float NewSpeedX = 0.0f, NewSpeedY = 0.0f;
+			ImGui::Text("SetScalarParam");
+			if(ImGui::SliderFloat("NewSpeedX", &NewSpeedX, -1.0f, 1.0f))
+			{
+				SetScalarParam(0, "WaterSpeedX", NewSpeedX);
+			}
+			if(ImGui::SliderFloat("NewSpeedY", &NewSpeedY, -1.0f, 1.0f))
+			{
+				SetScalarParam(0, "WaterSpeedY", NewSpeedY);
+			}
+
+			ImGui::Text("SetTextureParam");
+			if(ImGui::Button("Water"))
+			{
+				SetTextureParam(0, 0, UTexture::GetTextureCache("T_TranslucentCube"));
+			}
+			if(ImGui::Button("Grass"))
+			{
+				SetTextureParam(0, 0, UTexture::GetTextureCache("T_Cube2"));
+			}
 		}
-		if(ImGui::SliderFloat("NewSpeedY", &NewSpeedY, -1.0f, 1.0f))
-		{
-			SetScalarParam(0, "WaterSpeedY", NewSpeedY);
-		}
+		
 	}
 #endif
 

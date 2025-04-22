@@ -28,7 +28,6 @@ public:
 	// 복사되도록 설정
 	void SetSceneProxyWorldTransform(FTransform NewComponentToWorld){ComponentToWorld = NewComponentToWorld;}
 
-	EBlendMode GetBlendMode() const {return MaterialInterface->BlendMode;}
 	UINT GetMeshIndex() const {return MeshIndex;}
 	UINT GetMaterialID() const {return MaterialInterface->GetMaterialID();}
 

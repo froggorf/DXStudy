@@ -252,8 +252,19 @@ public:
 		ENQUEUE_RENDER_COMMAND(Lambda);
 		
 	}
-
 	void SetMaterialScalarParam_RenderThread(UINT PrimitiveID, UINT MeshIndex, const std::string& ParamName, float Value);
+
+	// 특정 ID의 머테리얼의 텍스쳐 파라미터를 바꾸는 함수
+	static void SetTextureParam_GameThread(UINT PrimitiveID, UINT MeshIndex, UINT TextureSlot, std::shared_ptr<UTexture> Texture)
+	{
+		auto Lambda = [PrimitiveID,MeshIndex,TextureSlot,Texture](std::shared_ptr<FScene>& SceneData)
+			{
+				SceneData->SetTextureParam_RenderThread(PrimitiveID, MeshIndex, TextureSlot,Texture);
+
+			};
+		ENQUEUE_RENDER_COMMAND(Lambda);
+	}
+	void SetTextureParam_RenderThread(UINT PrimitiveID, UINT MeshIndex, UINT TextureSlot, std::shared_ptr<UTexture> Texture);
 	
 	static void DrawScene_RenderThread(std::shared_ptr<FScene> SceneData);
 	virtual void SetDrawScenePipeline(const float* ClearColor);

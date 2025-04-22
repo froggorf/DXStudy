@@ -10,7 +10,7 @@
 	"FilePath" : "/Shader/LightColor.hlsl",
 	"Func": "TestWater"
     },
-    "Textures" : [ "T_TranslucentCube" ],
+    "Textures" : [  ],
     "BlendMode": "Translucent",
     "TwoSided" : 1,
 	
@@ -18,5 +18,6 @@
 	{"Name": "WaterSpeedX", "Type": "float", "Offset" : 0, "DefaultValue" : 0.0},
 	{"Name": "WaterSpeedY", "Type": "float", "Offset" : 4, "DefaultValue" : 0.0}
     ],
+    "TextureParams" : ["T_TranslucentCube"],
     "TotalSize" : 16
 }

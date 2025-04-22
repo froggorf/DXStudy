@@ -93,7 +93,7 @@ public:
 	~UMaterialInterface() override = default;
 	virtual UINT GetMaterialID() const {return -1;}
 	virtual ERasterizerType GetRSType() const {return RasterizerType;};
-
+	virtual EBlendMode GetBlendModeType() const {return BlendMode;}
 	static std::shared_ptr<UMaterialInterface> GetMaterialCache(const std::string& MaterialName)
 	{
 		auto Target = MaterialCache.find(MaterialName);
@@ -112,7 +112,9 @@ public:
 
 	virtual void BindingMaterialInstanceUserParam() const {}
 
+	// 파라미터 변경 함수
 	virtual void SetScalarParam(const std::string& Name, float NewValue) {}
+	virtual void SetTextureParam(UINT TextureSlot, std::shared_ptr<UTexture> NewTexture){}
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
@@ -144,7 +146,11 @@ protected:
 	std::shared_ptr<FVertexShader> VertexShader;
 	std::shared_ptr<FPixelShader> PixelShader;
 
+	// 디폴트 텍스쳐 데이터
 	std::vector<std::shared_ptr<UTexture>> Textures;
+
+	// 텍스쳐 파라미터
+	std::vector<std::shared_ptr<UTexture>> TextureParams;
 
 	FMaterialParameterLayout	DefaultParams;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> ParamConstantBuffer;
@@ -163,10 +169,14 @@ public:
 	UINT GetMaterialID() const override {return ParentMaterial->GetMaterialID();};
 	void Binding() override;
 	ERasterizerType GetRSType() const override {return ParentMaterial->RasterizerType;};
-
+	EBlendMode GetBlendModeType() const override {return ParentMaterial->BlendMode;}
 	bool IsMaterialInstance() const override {return true;}
-	void SetScalarParam(const std::string& Name, float NewValue) override;
 
+	// 파라미터 설정 함수
+	void SetScalarParam(const std::string& Name, float NewValue) override;
+	void SetTextureParam(UINT TextureSlot, std::shared_ptr<UTexture> NewTexture) override;
+
+	// 유저 파라미터 바인딩 함수
 	void BindingMaterialInstanceUserParam() const override;
 
 	std::shared_ptr<UMaterialInstance> GetInstance() const
@@ -178,7 +188,10 @@ public:
 	}
 
 	FMaterialParameterLayout	OverrideParams;
+	// 텍스쳐 슬롯, 오버라이드 텍스쳐
+	std::vector<std::shared_ptr<UTexture>> OverrideTextures;
 private:
 	std::shared_ptr<UMaterial> ParentMaterial;
+
 
 };
