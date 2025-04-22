@@ -277,6 +277,8 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 					fcb.Projection = XMMatrixTranspose(SceneData->GetProjectionMatrix());
 					fcb.LightView = XMMatrixTranspose(XMMatrixIdentity());//m_LightView
 					fcb.LightProj = XMMatrixTranspose(XMMatrixIdentity()); //m_LightProj
+					
+					fcb.Time = GEngine->GetTimeSeconds();
 					GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_PerFrame, &fcb, sizeof(fcb));
 					
 

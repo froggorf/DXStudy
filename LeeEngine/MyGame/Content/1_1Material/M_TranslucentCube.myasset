@@ -8,7 +8,7 @@
     },
     "PixelShader" : {
 	"FilePath" : "/Shader/LightColor.hlsl",
-	"Func": "PS"
+	"Func": "TestWater"
     },
     "Textures" : [ "T_TranslucentCube" ],
     "BlendMode": "Translucent",

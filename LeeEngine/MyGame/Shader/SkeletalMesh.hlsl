@@ -17,6 +17,8 @@ cbuffer cbPerFrame : register(b0)
 	matrix Projection;
     matrix LightView;
     matrix LightProj;
+    float Time;
+    float3 Padding;
 }
 
 cbuffer cbPerObject : register(b1)

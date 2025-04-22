@@ -16,6 +16,8 @@ cbuffer cbPerFrame : register(b0)
 	matrix Projection;
     matrix LightView;
     matrix LightProj;
+    float Time;
+    float3 Padding;
 }
 
 cbuffer cbPerObject : register(b1)
@@ -75,8 +77,6 @@ VS_OUTPUT VS( float4 Pos : POSITION, float3 Normal : NORMAL, float2 TexCoord : T
 //--------------------------------------------------------------------------------------
 float4 PS( VS_OUTPUT input ) : SV_Target
 {
-	
-
     float4 color = txDiffuse.Sample( samLinear, input.Tex );
 
     // 조명 계산시 사용될 변수 초기화
@@ -119,5 +119,58 @@ float4 PS( VS_OUTPUT input ) : SV_Target
         //}
     }
 
+    return color;
+}
+
+float4 TestWater( VS_OUTPUT input ) : SV_Target
+{
+    float TestWaterSpeed = 0.1f;
+    float2 NewWaterUV = input.Tex;
+    NewWaterUV.y = NewWaterUV.y + Time*TestWaterSpeed;
+    float4 color = txDiffuse.Sample( samLinear, NewWaterUV );
+
+
+    //float4 color = txDiffuse.Sample( samLinear, input.Tex );
+
+    // 조명 계산시 사용될 변수 초기화
+    float4 ambient = 0;
+    float4 diffuse = 0;
+    float4 spec    = 0;
+    
+    float3 toEye = normalize(gEyePosW - input.PosWorld);
+    
+    float4 A, D, S;
+    
+    ComputeDirectionalLight(ObjectMaterial, gDirLight, input.NormalW, toEye,A,D,S);
+    ambient += A; diffuse += D; spec += S;
+    
+    ComputePointLight(ObjectMaterial,gPointLight,input.PosWorld ,input.NormalW, toEye, A,D,S);
+    ambient += A;
+    diffuse += D;
+    spec += S;
+    
+    // 조명 적용
+    color.rgb = color.rgb * (ambient + diffuse) + spec;
+    
+    // 그림자 매핑
+    float3 shadowCoord = input.PosLightSpace.xyz/ input.PosLightSpace.w;
+    // [-1~1] -> [0~1] 텍스쳐 NDC
+    shadowCoord.x = shadowCoord / 2 + 0.5f;
+    shadowCoord.y = -shadowCoord.y / 2 + 0.5f;
+    if((saturate(shadowCoord.x) == shadowCoord.x) && (saturate(shadowCoord.y) == shadowCoord.y))
+    {
+        float depthValue = gShadowMap.Sample(gShadowSampler, shadowCoord.xy).r;
+    
+        // TODO: 03.09 임시적 수정 추후 꼭 정상화하기
+        float bias = 0.001f;
+        float lightDepthValue = shadowCoord.z - bias;
+    
+        //if(lightDepthValue > depthValue)
+        //{
+        //	float shadowfactor = 0.5f;
+        //	color.rgb = color.rgb * shadowfactor;
+        //}
+    }
+    
     return color;
 }

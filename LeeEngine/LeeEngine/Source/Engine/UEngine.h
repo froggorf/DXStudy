@@ -101,7 +101,7 @@ private:
 	D3DApp* Application;
 	std::shared_ptr<UWorld> CurrentWorld;
 	float DeltaSeconds;
-	float TimeSeconds;
+	float TimeSeconds = 0.0f;
 
 
 
