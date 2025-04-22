@@ -27,4 +27,8 @@ void FPrimitiveSceneProxy::Draw()
 	// Rasterizer State
 	GDirectXDevice->SetRSState(MaterialInterface->GetRSType());
 
+	// 머테리얼 파라미터 설정 (Material::Binding 내에서 기본 디폴트값이 매핑되며,
+	// MaterialInstance에서 오버라이드 한 파라미터만 세팅됨
+	MaterialInterface->BindingMaterialInstanceUserParam();
+
 }

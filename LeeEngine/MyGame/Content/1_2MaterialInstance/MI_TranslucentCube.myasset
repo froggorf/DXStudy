@@ -1,5 +1,9 @@
 {
     "Class": "UMaterialInstance",
     "Name": "MI_TranslucentCube",
-    "ParentMaterial" : "M_TranslucentCube"	
+    "ParentMaterial" : "M_TranslucentCube",
+    "OverrideParams" : [
+        {"Name" : "WaterSpeedX",  "Type" : "float", "Value" : 1.0},
+        {"Name" : "WaterSpeedY", "Type" : "float", "Value" : 1.0}
+    ]
 }

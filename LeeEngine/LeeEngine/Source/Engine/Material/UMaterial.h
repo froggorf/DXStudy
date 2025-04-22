@@ -15,7 +15,7 @@ struct FMaterialParameterDesc
 	std::string Name;
 	uint32_t Size;
 	uint32_t Offset; // cbuffer 내 오프셋
-	Type DefaultValue;
+	Type Value;
 };
 
 struct FMaterialParameterLayout
@@ -108,6 +108,8 @@ public:
 	virtual Microsoft::WRL::ComPtr<ID3D11PixelShader> GetPixelShader() const {return nullptr;}
 	virtual EInputLayoutType GetInputLayoutType() const {return EInputLayoutType::ILT_Count;}
 
+	virtual void BindingMaterialInstanceUserParam() const {}
+
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
 	virtual void Binding() {};
@@ -140,7 +142,7 @@ protected:
 
 	std::vector<std::shared_ptr<UTexture>> Textures;
 
-	FMaterialParameterLayout	Params;
+	FMaterialParameterLayout	DefaultParams;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> ParamConstantBuffer;
 
 	UINT MaterialID = -1;
@@ -158,6 +160,7 @@ public:
 	void Binding() override;
 	ERasterizerType GetRSType() const override {return ParentMaterial->RasterizerType;};
 
+	void BindingMaterialInstanceUserParam() const override;
 
 	FMaterialParameterLayout	OverrideParams;
 private:

@@ -158,8 +158,8 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 				FloatParam.Name = Data["Name"];
 				FloatParam.Offset = Data["Offset"];
 				FloatParam.Size = 4;
-				FloatParam.DefaultValue = Data["DefaultValue"];
-				Params.FloatParams.emplace_back(FloatParam);
+				FloatParam.Value = Data["DefaultValue"];
+				DefaultParams.FloatParams.emplace_back(FloatParam);
 			}
 			else if("int" == Type)
 			{
@@ -167,8 +167,8 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 				IntParam.Name = Data["Name"];
 				IntParam.Offset = Data["Offset"];
 				IntParam.Size = 4;
-				IntParam.DefaultValue = Data["DefaultValue"];
-				Params.IntParams.emplace_back(IntParam);
+				IntParam.Value = Data["DefaultValue"];
+				DefaultParams.IntParams.emplace_back(IntParam);
 			}
 			else
 			{
@@ -176,16 +176,16 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 				assert(0);
 			}
 		}
-		Params.TotalSize = AssetData["TotalSize"];
+		DefaultParams.TotalSize = AssetData["TotalSize"];
 
-		if(Params.TotalSize > 0)
+		if(DefaultParams.TotalSize > 0)
 		{
 			// Constant Buffer 생성
 			D3D11_BUFFER_DESC bufferDesc = {};
 			bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 			bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 			bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-			bufferDesc.ByteWidth = Params.TotalSize;
+			bufferDesc.ByteWidth = DefaultParams.TotalSize;
 			HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ParamConstantBuffer.GetAddressOf()));	
 		}
 		
@@ -216,7 +216,7 @@ void UMaterial::Binding()
 void UMaterial::MapAndBindParameterConstantBuffer() const
 {
 	// 파라미터가 없음
-	if(Params.TotalSize == 0)
+	if(DefaultParams.TotalSize == 0)
 	{
 		return;
 	}
@@ -224,13 +224,13 @@ void UMaterial::MapAndBindParameterConstantBuffer() const
 	D3D11_MAPPED_SUBRESOURCE cbMapSub{};
 	HR(GDirectXDevice->GetDeviceContext()->Map(ParamConstantBuffer.Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &cbMapSub));
 
-	for(const auto& FloatParam : Params.FloatParams)
+	for(const auto& FloatParam : DefaultParams.FloatParams)
 	{
-		memcpy(static_cast<char*>(cbMapSub.pData) + FloatParam.Offset, (&FloatParam.DefaultValue), FloatParam.Size);	
+		memcpy(static_cast<char*>(cbMapSub.pData) + FloatParam.Offset, (&FloatParam.Value), FloatParam.Size);	
 	}
-	for(const auto& IntParam : Params.IntParams)
+	for(const auto& IntParam : DefaultParams.IntParams)
 	{
-		memcpy(static_cast<char*>(cbMapSub.pData)+ IntParam.Offset, &IntParam.DefaultValue, IntParam.Size);	
+		memcpy(static_cast<char*>(cbMapSub.pData)+ IntParam.Offset, &IntParam.Value, IntParam.Size);	
 	}
 
 	GDirectXDevice->GetDeviceContext()->Unmap(ParamConstantBuffer.Get(),0);
@@ -250,6 +250,37 @@ void UMaterialInstance::LoadDataFromFileData(const nlohmann::json& AssetData)
 		// 잘못된 부모 머테리얼
 		assert(0);
 	}
+
+	if(AssetData.contains("OverrideParams"))
+	{
+		auto OverrideParamData = AssetData["OverrideParams"];
+		for(const auto& Data : OverrideParamData)
+		{
+			std::string Type = Data["Type"];
+			if("float" == Type)
+			{
+				FMaterialParameterDesc<float> FloatParam;
+				FloatParam.Name = Data["Name"];
+				FloatParam.Value = Data["Value"];
+				OverrideParams.FloatParams.emplace_back(FloatParam);
+			}
+			else if("int" == Type)
+			{
+				FMaterialParameterDesc<int> IntParam;
+				IntParam.Name = Data["Name"];
+				IntParam.Value = Data["Value"];
+				OverrideParams.IntParams.emplace_back(IntParam);
+			}
+			else
+			{
+				// 04.22 float 와 int 만 파라미터로 되도록
+				assert(0);
+			}
+		}
+	}
+
+
+
 	UMaterialInterface::MaterialCache[GetName()] = shared_from_this();
 }
 
@@ -264,4 +295,42 @@ void UMaterialInstance::Binding()
 	}
 
 	
+}
+
+void UMaterialInstance::BindingMaterialInstanceUserParam() const
+{
+	D3D11_MAPPED_SUBRESOURCE cbMapSub{};
+	HR(GDirectXDevice->GetDeviceContext()->Map(ParentMaterial->ParamConstantBuffer.Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &cbMapSub));
+
+	for(const auto& FloatParam : ParentMaterial->DefaultParams.FloatParams)
+	{
+		auto OverrideParam = std::ranges::find_if(OverrideParams.FloatParams, [&](const FMaterialParameterDesc<float>& A ){return A.Name == FloatParam.Name;});
+		// Override 되었음
+		if(OverrideParam != OverrideParams.FloatParams.end())
+		{
+			memcpy(static_cast<char*>(cbMapSub.pData) + FloatParam.Offset, (&OverrideParam->Value), FloatParam.Size);		
+		}
+		// Override 안됨
+		else
+		{
+			memcpy(static_cast<char*>(cbMapSub.pData) + FloatParam.Offset, (&FloatParam.Value), FloatParam.Size);		
+		}
+		
+	}
+	for(const auto& IntParam : ParentMaterial->DefaultParams.IntParams)
+	{
+		auto OverrideParam = std::ranges::find_if(OverrideParams.IntParams, [&](const FMaterialParameterDesc<int>& A ){return A.Name == IntParam.Name;});
+		// Override 되었음
+		if(OverrideParam != OverrideParams.IntParams.end())
+		{
+			memcpy(static_cast<char*>(cbMapSub.pData) + IntParam.Offset, (&OverrideParam->Value), IntParam.Size);		
+		}
+		// Override 안됨
+		else
+		{
+			memcpy(static_cast<char*>(cbMapSub.pData) + IntParam.Offset, (&IntParam.Value), IntParam.Size);		
+		}
+	}
+
+	GDirectXDevice->GetDeviceContext()->Unmap(ParentMaterial->ParamConstantBuffer.Get(),0);
 }
