@@ -164,3 +164,30 @@ void UMaterial::Binding()
 
 	GDirectXDevice->SetInputLayout(GetInputLayoutType());
 }
+
+void UMaterialInstance::LoadDataFromFileData(const nlohmann::json& AssetData)
+{
+	UMaterialInterface::LoadDataFromFileData(AssetData);
+
+	std::string ParentMaterialName = AssetData["ParentMaterial"];
+	ParentMaterial = std::dynamic_pointer_cast<UMaterial>(UMaterial::GetMaterialCache(ParentMaterialName));
+	if(!ParentMaterial)
+	{
+		// 잘못된 부모 머테리얼
+		assert(0);
+	}
+	UMaterialInterface::MaterialCache[GetName()] = shared_from_this();
+}
+
+void UMaterialInstance::Binding()
+{
+	UMaterialInterface::Binding();
+
+	// 머테리얼 인스턴스로만 SceneProxy가 이루어져 있을 수 있으므로 바인딩을 진행 (Pipeline State가 중복적으로 값을 설정하지는 않음)
+	if(ParentMaterial)
+	{
+		ParentMaterial->Binding();
+	}
+
+
+}

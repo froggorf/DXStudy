@@ -25,4 +25,6 @@ private:
 	std::shared_ptr<USkeletalMeshComponent> TestSKComp;
 
 	std::shared_ptr<UTestComponent> TestComponent;
+
+	std::shared_ptr<UMaterialInstance> MI_Dummy;
 };

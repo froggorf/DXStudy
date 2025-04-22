@@ -1,0 +1,5 @@
+{
+    "Class": "UMaterialInstance",
+    "Name": "MI_TranslucentCube",
+    "ParentMaterial" : "M_TranslucentCube"	
+}

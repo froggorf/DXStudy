@@ -1,0 +1,17 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_MyUEFN",
+    "VertexShader" : {
+	"FilePath" : "/Shader/SkeletalMesh.hlsl",
+	"Func" : "VS",
+	"InputLayoutType" : "SkeletalMesh"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/LightColor.hlsl",
+	"Func": "PS"
+    },
+    "Textures" : [ "T_MyUEFN" ],
+    "BlendMode": "Opaque",
+    "TwoSided" : 0
+	
+}

@@ -348,7 +348,8 @@ UObject* AssetManager::ReadMyAsset(const std::string& FilePath)
     }
     nlohmann::json AssetData = nlohmann::json::parse(AssetFile);
 
-
+    std::string Test = AssetData["Class"];
+   
     std::shared_ptr<UObject> Object = UObject::GetDefaultObject(AssetData["Class"])->CreateInstance();
     Object->LoadDataFromFileData(AssetData);
     AssetNameAndAssetPathCacheMap[Object->GetName()] = FilePath;

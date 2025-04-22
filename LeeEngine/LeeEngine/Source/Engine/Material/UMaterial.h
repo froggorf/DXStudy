@@ -122,3 +122,19 @@ protected:
 	UINT MaterialID = -1;
 	
 };
+
+class UMaterialInstance : public UMaterialInterface, public std::enable_shared_from_this<UMaterialInstance>
+{
+	MY_GENERATED_BODY(UMaterialInstance)
+public:
+	UMaterialInstance() = default;
+	~UMaterialInstance() override = default;
+	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
+	UINT GetMaterialID() const override {return ParentMaterial->GetMaterialID();};
+	void Binding() override;
+
+private:
+	std::shared_ptr<UMaterial> ParentMaterial;
+	bool bIsOverrideParam = false;
+
+};
