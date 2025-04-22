@@ -144,6 +144,12 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 		}
 	}
 
+	// Params
+	if(AssetData.contains("Params"))
+	{
+		auto ParamData = AssetData
+	}
+
 	UMaterialInterface::MaterialCache[GetName()] = shared_from_this();
 	MaterialID = MaterialCache.size();
 }
@@ -163,6 +169,15 @@ void UMaterial::Binding()
 
 
 	GDirectXDevice->SetInputLayout(GetInputLayoutType());
+}
+
+void UMaterial::MapParameterConstantBuffer() const
+{
+	// 파라미터가 없음
+	if(Params.TotalSize == 0)
+	{
+		return;
+	}
 }
 
 void UMaterialInstance::LoadDataFromFileData(const nlohmann::json& AssetData)

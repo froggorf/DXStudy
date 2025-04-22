@@ -12,6 +12,9 @@
     },
     "Textures" : [ "T_TranslucentCube" ],
     "BlendMode": "Translucent",
-    "TwoSided" : 1
+    "TwoSided" : 1,
 	
+    "Params" : [
+	{"Name": "WaterSpeed", "Type": "float", "Offset" : 0, "DefaultValue" : 0.1}
+    ]
 }

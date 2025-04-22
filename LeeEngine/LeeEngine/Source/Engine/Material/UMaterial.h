@@ -9,7 +9,27 @@
 #include "Engine/Class/UTexture.h"
 #include "Engine/UObject/UObject.h"
 
+template<typename Type>
+struct FMaterialParameterDesc
+{
+	std::string Name;
+	uint32_t Size;
+	uint32_t Offset; // cbuffer 내 오프셋
+	Type DefaultValue;
+};
 
+struct FMaterialParameterLayout
+{
+	std::vector<FMaterialParameterDesc<int>> IntParams;
+	std::vector<FMaterialParameterDesc<bool>> BoolParams;
+	std::vector<FMaterialParameterDesc<float>> FloatParams;
+	std::vector<FMaterialParameterDesc<XMFLOAT2>> Float2Params;
+	std::vector<FMaterialParameterDesc<XMFLOAT3>> Float3Params;
+	std::vector<FMaterialParameterDesc<XMFLOAT4>> Float4Params;
+	
+	// 정렬을 위해 무조건 16의 배수로 설정되어야함 
+ 	uint32_t TotalSize = 0;
+};
 
 class FShader
 {
@@ -109,14 +129,20 @@ public:
 	UINT GetMaterialID() const override {return MaterialID;}
 	void Binding() override;
 
+
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> GetVertexShader() const override{return VertexShader->VertexShader;}
 	Microsoft::WRL::ComPtr<ID3D11PixelShader> GetPixelShader() const override {return PixelShader->PixelShader;}
 	EInputLayoutType GetInputLayoutType() const override {return VertexShader->InputLayoutType;}
+
+	void MapParameterConstantBuffer() const;
 protected:
 	std::shared_ptr<FVertexShader> VertexShader;
 	std::shared_ptr<FPixelShader> PixelShader;
 
 	std::vector<std::shared_ptr<UTexture>> Textures;
+
+	FMaterialParameterLayout	Params;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> ParamConstantBuffer;
 
 	UINT MaterialID = -1;
 	
@@ -133,6 +159,8 @@ public:
 	void Binding() override;
 	ERasterizerType GetRSType() const override {return ParentMaterial->RasterizerType;};
 
+
+	FMaterialParameterLayout	OverrideParams;
 private:
 	std::shared_ptr<UMaterial> ParentMaterial;
 	bool bIsOverrideParam = false;
