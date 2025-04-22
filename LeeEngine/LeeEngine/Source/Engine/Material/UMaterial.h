@@ -21,11 +21,10 @@ struct FMaterialParameterDesc
 struct FMaterialParameterLayout
 {
 	std::vector<FMaterialParameterDesc<int>> IntParams;
-	std::vector<FMaterialParameterDesc<bool>> BoolParams;
 	std::vector<FMaterialParameterDesc<float>> FloatParams;
-	std::vector<FMaterialParameterDesc<XMFLOAT2>> Float2Params;
+	/*std::vector<FMaterialParameterDesc<XMFLOAT2>> Float2Params;
 	std::vector<FMaterialParameterDesc<XMFLOAT3>> Float3Params;
-	std::vector<FMaterialParameterDesc<XMFLOAT4>> Float4Params;
+	std::vector<FMaterialParameterDesc<XMFLOAT4>> Float4Params;*/
 	
 	// 정렬을 위해 무조건 16의 배수로 설정되어야함 
  	uint32_t TotalSize = 0;
@@ -134,7 +133,7 @@ public:
 	Microsoft::WRL::ComPtr<ID3D11PixelShader> GetPixelShader() const override {return PixelShader->PixelShader;}
 	EInputLayoutType GetInputLayoutType() const override {return VertexShader->InputLayoutType;}
 
-	void MapParameterConstantBuffer() const;
+	void MapAndBindParameterConstantBuffer() const;
 protected:
 	std::shared_ptr<FVertexShader> VertexShader;
 	std::shared_ptr<FPixelShader> PixelShader;

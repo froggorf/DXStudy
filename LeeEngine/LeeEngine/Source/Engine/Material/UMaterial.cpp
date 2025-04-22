@@ -147,7 +147,48 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 	// Params
 	if(AssetData.contains("Params"))
 	{
-		auto ParamData = AssetData
+		auto ParamData = AssetData["Params"];
+
+		for(const auto& Data : ParamData)
+		{
+			std::string Type = Data["Type"];
+			if("float" == Type)
+			{
+				FMaterialParameterDesc<float> FloatParam;
+				FloatParam.Name = Data["Name"];
+				FloatParam.Offset = Data["Offset"];
+				FloatParam.Size = 4;
+				FloatParam.DefaultValue = Data["DefaultValue"];
+				Params.FloatParams.emplace_back(FloatParam);
+			}
+			else if("int" == Type)
+			{
+				FMaterialParameterDesc<int> IntParam;
+				IntParam.Name = Data["Name"];
+				IntParam.Offset = Data["Offset"];
+				IntParam.Size = 4;
+				IntParam.DefaultValue = Data["DefaultValue"];
+				Params.IntParams.emplace_back(IntParam);
+			}
+			else
+			{
+				// 04.22 float 와 int 만 파라미터로 되도록
+				assert(0);
+			}
+		}
+		Params.TotalSize = AssetData["TotalSize"];
+
+		if(Params.TotalSize > 0)
+		{
+			// Constant Buffer 생성
+			D3D11_BUFFER_DESC bufferDesc = {};
+			bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+			bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+			bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+			bufferDesc.ByteWidth = Params.TotalSize;
+			HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ParamConstantBuffer.GetAddressOf()));	
+		}
+		
 	}
 
 	UMaterialInterface::MaterialCache[GetName()] = shared_from_this();
@@ -167,17 +208,35 @@ void UMaterial::Binding()
 		DeviceContext->PSSetShaderResources(i,1, Textures[i]->GetSRV().GetAddressOf());	
 	}
 
+	MapAndBindParameterConstantBuffer();
 
 	GDirectXDevice->SetInputLayout(GetInputLayoutType());
 }
 
-void UMaterial::MapParameterConstantBuffer() const
+void UMaterial::MapAndBindParameterConstantBuffer() const
 {
 	// 파라미터가 없음
 	if(Params.TotalSize == 0)
 	{
 		return;
 	}
+
+	D3D11_MAPPED_SUBRESOURCE cbMapSub{};
+	HR(GDirectXDevice->GetDeviceContext()->Map(ParamConstantBuffer.Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &cbMapSub));
+
+	for(const auto& FloatParam : Params.FloatParams)
+	{
+		memcpy(static_cast<char*>(cbMapSub.pData) + FloatParam.Offset, (&FloatParam.DefaultValue), FloatParam.Size);	
+	}
+	for(const auto& IntParam : Params.IntParams)
+	{
+		memcpy(static_cast<char*>(cbMapSub.pData)+ IntParam.Offset, &IntParam.DefaultValue, IntParam.Size);	
+	}
+
+	GDirectXDevice->GetDeviceContext()->Unmap(ParamConstantBuffer.Get(),0);
+
+	GDirectXDevice->GetDeviceContext()->PSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_UserParam),1,ParamConstantBuffer.GetAddressOf());
+	
 }
 
 void UMaterialInstance::LoadDataFromFileData(const nlohmann::json& AssetData)

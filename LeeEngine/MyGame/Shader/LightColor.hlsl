@@ -122,12 +122,18 @@ float4 PS( VS_OUTPUT input ) : SV_Target
     return color;
 }
 
+cbuffer cbTest : register(b4)
+{
+    float TestSpeedX;
+    float TestSpeedY;
+    float2 Pad;
+}
+
 float4 TestWater( VS_OUTPUT input ) : SV_Target
 {
-    float TestWaterSpeed = 0.1f;
-
     float2 NewWaterUV = input.Tex;
-    NewWaterUV.y = NewWaterUV.y + Time*TestWaterSpeed;
+    NewWaterUV.x = NewWaterUV.x + Time * TestSpeedX;
+    NewWaterUV.y = NewWaterUV.y + Time*TestSpeedY;
     float4 color = txDiffuse.Sample( samLinear, NewWaterUV );
 
 
