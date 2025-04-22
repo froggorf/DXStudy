@@ -25,6 +25,6 @@ void FPrimitiveSceneProxy::Draw()
 	ID3D11DeviceContext* DeviceContext = GDirectXDevice->GetDeviceContext().Get();
 
 	// Rasterizer State
-	GDirectXDevice->SetRSState(MaterialInterface->RasterizerType);
+	GDirectXDevice->SetRSState(MaterialInterface->GetRSType());
 
 }

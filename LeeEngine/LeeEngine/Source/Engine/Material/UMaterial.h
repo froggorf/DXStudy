@@ -70,11 +70,11 @@ class UMaterialInterface : public UObject
 {
 	MY_GENERATED_BODY(UMaterialInterface)
 
-
 public:
 	UMaterialInterface() : BlendMode(EBlendMode::BM_Opaque), RasterizerType(ERasterizerType::RT_CullBack), BlendStateType(EBlendStateType::BST_Default) {};
 	~UMaterialInterface() override = default;
 	virtual UINT GetMaterialID() const {return -1;}
+	virtual ERasterizerType GetRSType() const {return RasterizerType;};
 
 	static std::shared_ptr<UMaterialInterface> GetMaterialCache(const std::string& MaterialName)
 	{
@@ -132,6 +132,7 @@ public:
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 	UINT GetMaterialID() const override {return ParentMaterial->GetMaterialID();};
 	void Binding() override;
+	ERasterizerType GetRSType() const override {return ParentMaterial->RasterizerType;};
 
 private:
 	std::shared_ptr<UMaterial> ParentMaterial;

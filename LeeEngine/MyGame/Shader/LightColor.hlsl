@@ -125,6 +125,7 @@ float4 PS( VS_OUTPUT input ) : SV_Target
 float4 TestWater( VS_OUTPUT input ) : SV_Target
 {
     float TestWaterSpeed = 0.1f;
+
     float2 NewWaterUV = input.Tex;
     NewWaterUV.y = NewWaterUV.y + Time*TestWaterSpeed;
     float4 color = txDiffuse.Sample( samLinear, NewWaterUV );
