@@ -169,9 +169,16 @@ public:
 
 	void BindingMaterialInstanceUserParam() const override;
 
+	std::shared_ptr<UMaterialInstance> GetInstance() const
+	{
+		std::shared_ptr<UMaterialInstance> NewInstance = std::make_shared<UMaterialInstance>();
+		NewInstance->OverrideParams = OverrideParams;
+		NewInstance->ParentMaterial = ParentMaterial;
+		return NewInstance;
+	}
+
 	FMaterialParameterLayout	OverrideParams;
 private:
 	std::shared_ptr<UMaterial> ParentMaterial;
-	bool bIsOverrideParam = false;
 
 };

@@ -49,16 +49,23 @@ void FScene::BeginRenderFrame()
 		RenderData.MeshIndex = NewPrimitiveProxy.second->GetMeshIndex();
 		RenderData.PrimitiveID = NewPrimitiveProxy.first;
 		RenderData.SceneProxy = NewPrimitiveProxy.second;
+		RenderData.MaterialInterface = NewPrimitiveProxy.second->GetMaterialInterface();
 		
 		UINT MaterialID = RenderData.SceneProxy->GetMaterialID();
 
-		bool bUseMaterialInterface = RenderData.SceneProxy->GetMaterialInterface()->IsMaterialInstance();
+		bool bUseMaterialInstance = RenderData.SceneProxy->GetMaterialInterface()->IsMaterialInstance();
+		// 만약 머테리얼 인스턴스를 쓸 경우 새로 인스턴싱 해줘야함
+		if(bUseMaterialInstance)
+		{
+			RenderData.MaterialInterface = std::dynamic_pointer_cast<UMaterialInstance>(NewPrimitiveProxy.second->GetMaterialInterface())->GetInstance(); 
+		}
+
 
 		// 머테리얼 ID 로 관리하는데, 머테리얼 -> 머테리얼인스턴스 순으로 배열에 배치되도록 설정
 		switch(NewPrimitiveProxy.second->GetBlendMode())
 		{
 		case EBlendMode::BM_Opaque:
-		if(bUseMaterialInterface)
+		if(bUseMaterialInstance)
 		{
 			OpaqueSceneProxyRenderData[MaterialID].emplace_back(RenderData);	
 		}
@@ -68,7 +75,7 @@ void FScene::BeginRenderFrame()
 		}
 		break;
 		case EBlendMode::BM_Masked:
-			if(bUseMaterialInterface)
+			if(bUseMaterialInstance)
 			{
 				MaskedSceneProxyRenderData[MaterialID].emplace_back(RenderData);	
 			}
@@ -78,7 +85,7 @@ void FScene::BeginRenderFrame()
 			}
 		break;
 		case EBlendMode::BM_Translucent:
-			if(bUseMaterialInterface)
+			if(bUseMaterialInstance)
 			{
 				TranslucentSceneProxyRenderData[MaterialID].emplace_back(RenderData);	
 			}
@@ -262,7 +269,12 @@ void FScene::SetMaterialScalarParam_RenderThread(UINT PrimitiveID, UINT MeshInde
 
 		if(TargetRenderData != RenderData.second.end())
 		{
-			TargetRenderData->SceneProxy->GetMaterialInterface()->SetScalarParam(ParamName,Value);
+			std::shared_ptr<UMaterialInstance> MaterialInstance = std::dynamic_pointer_cast<UMaterialInstance>(TargetRenderData->MaterialInterface);
+			if(MaterialInstance)
+			{
+				MaterialInstance->SetScalarParam(ParamName,Value);	
+			}
+			
 		}
 	}
 	// Masked
@@ -275,7 +287,11 @@ void FScene::SetMaterialScalarParam_RenderThread(UINT PrimitiveID, UINT MeshInde
 
 		if(TargetRenderData != RenderData.second.end())
 		{
-			TargetRenderData->SceneProxy->GetMaterialInterface()->SetScalarParam(ParamName,Value);
+			std::shared_ptr<UMaterialInstance> MaterialInstance = std::dynamic_pointer_cast<UMaterialInstance>(TargetRenderData->MaterialInterface);
+			if(MaterialInstance)
+			{
+				MaterialInstance->SetScalarParam(ParamName,Value);	
+			}
 		}
 	}
 	// Translucent
@@ -288,7 +304,11 @@ void FScene::SetMaterialScalarParam_RenderThread(UINT PrimitiveID, UINT MeshInde
 
 		if(TargetRenderData != RenderData.second.end())
 		{
-			TargetRenderData->SceneProxy->GetMaterialInterface()->SetScalarParam(ParamName,Value);
+			std::shared_ptr<UMaterialInstance> MaterialInstance = std::dynamic_pointer_cast<UMaterialInstance>(TargetRenderData->MaterialInterface);
+			if(MaterialInstance)
+			{
+				MaterialInstance->SetScalarParam(ParamName,Value);	
+			}
 		}
 	}
 
@@ -394,9 +414,12 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				{
 					if(!bIsBinding)
 					{
-						SceneProxy.SceneProxy->GetMaterialInterface()->Binding();
+						SceneProxy.MaterialInterface->Binding();
 						bIsBinding = true;
 					}
+					// 머테리얼 파라미터 설정 (Material::Binding 내에서 기본 디폴트값이 매핑되며,
+					// MaterialInstance에서 오버라이드 한 파라미터만 세팅됨
+					SceneProxy.MaterialInterface->BindingMaterialInstanceUserParam();
 					SceneProxy.SceneProxy->Draw();
 				}
 			}
@@ -407,9 +430,12 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				{
 					if(!bIsBinding)
 					{
-						SceneProxy.SceneProxy->GetMaterialInterface()->Binding();
+						SceneProxy.MaterialInterface->Binding();
 						bIsBinding = true;
 					}
+					// 머테리얼 파라미터 설정 (Material::Binding 내에서 기본 디폴트값이 매핑되며,
+					// MaterialInstance에서 오버라이드 한 파라미터만 세팅됨
+					SceneProxy.MaterialInterface->BindingMaterialInstanceUserParam();
 					SceneProxy.SceneProxy->Draw();
 				}
 			}
@@ -420,9 +446,12 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				{
 					if(!bIsBinding)
 					{
-						SceneProxy.SceneProxy->GetMaterialInterface()->Binding();
+						SceneProxy.MaterialInterface->Binding();
 						bIsBinding = true;
 					}
+					// 머테리얼 파라미터 설정 (Material::Binding 내에서 기본 디폴트값이 매핑되며,
+					// MaterialInstance에서 오버라이드 한 파라미터만 세팅됨
+					SceneProxy.MaterialInterface->BindingMaterialInstanceUserParam();
 					SceneProxy.SceneProxy->Draw();
 				}
 			}
