@@ -219,6 +219,10 @@ void UMaterial::Binding()
 	{
 		DeviceContext->PSSetShaderResources(i,1, Textures[i]->GetSRV().GetAddressOf());	
 	}
+	for(int i = 0; i < TextureParams.size(); ++i)
+	{
+		DeviceContext->PSSetShaderResources(Textures.size() + i , 1 , TextureParams[i]->GetSRV().GetAddressOf());
+	}
 
 	MapAndBindParameterConstantBuffer();
 
