@@ -39,7 +39,8 @@ void UPrimitiveComponent::SetScalarParam(UINT MeshIndex, const std::string& Para
 	FScene::SetMaterialScalarParam_GameThread(PrimitiveID, MeshIndex, ParamName, Value);
 }
 
-void UPrimitiveComponent::SetTextureParam(UINT MeshIndex, UINT TextureSlot, std::shared_ptr<UTexture> Texture)
+void UPrimitiveComponent::SetTextureParam(UINT MeshIndex, UINT TextureSlot,
+	const std::shared_ptr<UTexture>& Texture) const
 {
 	FScene::SetTextureParam_GameThread(PrimitiveID,MeshIndex,TextureSlot,Texture);
 }

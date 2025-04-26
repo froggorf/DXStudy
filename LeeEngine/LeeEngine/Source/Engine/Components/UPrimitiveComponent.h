@@ -25,7 +25,9 @@ public:
 	// 해당 프리미티브 머테리얼의 스칼라 파라미터를 변경하는 함수
 	void SetScalarParam(UINT MeshIndex, const std::string& ParamName, float Value) const;
 	// 해당 프리미티브 머테리얼의 텍스쳐 파라미터를 변경하는 함수
-	void SetTextureParam(UINT MeshIndex, UINT TextureSlot, std::shared_ptr<UTexture>);
+	void SetTextureParam(UINT MeshIndex, UINT TextureSlot, const std::shared_ptr<UTexture>& Texture) const;
+
+
 #ifdef WITH_EDITOR
 	void DrawDetailPanel(UINT ComponentDepth) override
 	{
