@@ -53,10 +53,10 @@ void UWorld::BeginPlay()
 			, DXGI_FORMAT_R8G8B8A8_UNORM
 			, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS );
 
-		std::shared_ptr<FSetColorCS> SetColorCS = std::reinterpret_pointer_cast<FSetColorCS>(FShader::GetShader("FSetColorCS"));
-		SetColorCS->SetTargetTexture(Texture);
-		SetColorCS->SetClearColor(XMFLOAT4{0.0f,1.0f,1.0f,1.0f});
-		SetColorCS->Execute();
+		//std::shared_ptr<FSetColorCS> SetColorCS = std::reinterpret_pointer_cast<FSetColorCS>(FShader::GetShader("FSetColorCS"));
+		//SetColorCS->SetTargetTexture(Texture);
+		//SetColorCS->SetClearColor(XMFLOAT4{0.0f,1.0f,1.0f,1.0f});
+		//SetColorCS->Execute();
 	}
 	
 

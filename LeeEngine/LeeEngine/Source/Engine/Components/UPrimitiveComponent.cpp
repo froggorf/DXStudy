@@ -81,7 +81,8 @@ void UPrimitiveComponent::DrawDetailPanel(UINT ComponentDepth)
 			if(ImGui::Button("ComputeShader_SetColor"))
 			{
 				std::shared_ptr<FSetColorCS> SetColorCS = std::reinterpret_pointer_cast<FSetColorCS>(FShader::GetShader("FSetColorCS"));
-				SetColorCS->SetTargetTexture(UTexture::GetTextureCache("TestTexture"));
+				std::shared_ptr<UTexture> Texture = UTexture::GetTextureCache("TestTexture");
+				SetColorCS->SetTargetTexture(Texture);
 				SetColorCS->SetClearColor(XMFLOAT4{colors[0],colors[1],colors[2],1.0f});
 				SetColorCS->Execute();
 			}

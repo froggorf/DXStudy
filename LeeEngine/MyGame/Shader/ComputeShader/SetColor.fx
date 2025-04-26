@@ -31,9 +31,13 @@ void CS_SetColor( int3 _ID              : SV_DispatchThreadID
     , int  _GroupIndex      : SV_GroupIndex
     , int3 _GroupID        : SV_GroupID)
 {    
-   
+    // 담당 픽셀을 벗어난 스레드의 경우
+    if (TextureWidth <= _ID.x || TextureHeight <= _ID.y)
+    {
+        return;
+    }     
 
-    g_Target[_ID.xy] = float4(0.0, 1.0,1.0,1.0);
+    g_Target[_ID.xy] = ClearColor;
 }
 
 #endif
