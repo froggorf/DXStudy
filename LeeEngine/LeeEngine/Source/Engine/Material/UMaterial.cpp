@@ -403,3 +403,133 @@ void UMaterialInstance::BindingMaterialInstanceUserParam() const
 		}
 	}
 }
+
+FComputeShader::FComputeShader( const std::string& FilePath, const std::string& FuncName, UINT ThreadPerGroupX,
+	UINT ThreadPerGroupY, UINT ThreadPerGroupZ)
+		: ThreadPerGroupX(ThreadPerGroupX), ThreadPerGroupY(ThreadPerGroupY), ThreadPerGroupZ(ThreadPerGroupZ)
+{
+	CreateComputeShader(FilePath,FuncName);
+}
+
+void FComputeShader::Execute()
+{
+	auto Lambda = [&](std::shared_ptr<FScene>& SceneData)
+	{
+
+		if(!Binding())
+		{
+			return;
+		}
+
+		CalculateGroupCount();
+
+		GDirectXDevice->GetDeviceContext()->CSSetShader(ComputeShader.Get(),nullptr,0);
+
+		GDirectXDevice->GetDeviceContext()->Dispatch(GroupX,GroupY,GroupZ);
+
+		ClearBinding();
+	};
+	ENQUEUE_RENDER_COMMAND(Lambda);
+}
+
+void FComputeShader::CreateComputeShader( const std::string& FilePath, const std::string& FuncName)
+{
+	std::string Path = GEngine->GetDirectoryPath() + FilePath;
+	std::wstring ShaderFilePath = std::wstring{Path.begin(),Path.end()};
+
+	int Flag = 0;
+#ifdef _DEBUG
+	Flag = D3DCOMPILE_DEBUG;
+#endif
+
+	ComPtr<ID3DBlob> ErrorBlob;
+	if (FAILED(D3DCompileFromFile(ShaderFilePath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE
+		, FuncName.c_str(), "cs_5_0", Flag, 0
+		, CSBlob.GetAddressOf(), ErrorBlob.GetAddressOf())))
+	{
+		if (3 == GetLastError())
+		{
+			MessageBox(nullptr, L"파일이 존재하지 않습니다", L"쉐이더 컴파일 실패", MB_OK);
+		}
+		else
+		{
+			MessageBoxA(nullptr, (char*)ErrorBlob->GetBufferPointer(), "쉐이더 컴파일 실패", MB_OK);
+		}
+
+		return;
+	}
+
+	// 컴파일한 코드로 쉐이더 객체 생성하기
+	GDirectXDevice->GetDevice()->CreateComputeShader(CSBlob->GetBufferPointer()
+		, CSBlob->GetBufferSize(), nullptr
+		, ComputeShader.GetAddressOf());
+
+}
+
+FSetColorCS::FSetColorCS()
+	: FComputeShader("/Shader/ComputeShader/SetColor.fx", "CS_SetColor", 32, 32,1), Color(0.0f,1.0f,1.0f,1.0f)
+{
+	// Constant Buffer 생성
+	D3D11_BUFFER_DESC bufferDesc = {};
+	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	bufferDesc.ByteWidth = 32;
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ConstantBuffer.GetAddressOf()));	
+}
+
+bool FSetColorCS::Binding()
+{
+	if (nullptr == TargetTexture || nullptr == TargetTexture->GetUAV())
+	{
+		return false;
+	}
+
+	// 색칠할 텍스쳐럴 U0 레지스터에 Binding
+	UINT i = -1;
+	GDirectXDevice->GetDeviceContext()->CSSetUnorderedAccessViews(0, 1, TargetTexture->GetUAV().GetAddressOf(), &i);
+
+	MapAndBindConstantBuffer();
+
+	return true;
+}
+
+void FSetColorCS::CalculateGroupCount()
+{
+	UINT Width = TargetTexture->GetWidth();
+	UINT Height = TargetTexture->GetHeight();
+
+	GroupX = Width / ThreadPerGroupX;
+	GroupY = Height / ThreadPerGroupY;
+	GroupZ = 1;
+
+	if (Width % ThreadPerGroupX)
+		GroupX += 1;
+	if (Height % ThreadPerGroupY)
+		GroupY += 1;
+}
+
+void FSetColorCS::ClearBinding()
+{
+	UINT i = -1;
+	ID3D11UnorderedAccessView* nullUAV = nullptr;
+	GDirectXDevice->GetDeviceContext()->CSSetUnorderedAccessViews(0, 1, &nullUAV,&i);
+	TargetTexture = nullptr;
+}
+
+void FSetColorCS::MapAndBindConstantBuffer()
+{
+	D3D11_MAPPED_SUBRESOURCE cbMapSub{};
+	HR(GDirectXDevice->GetDeviceContext()->Map(ConstantBuffer.Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &cbMapSub));
+
+	int Width = TargetTexture->GetWidth();
+	int Height = TargetTexture->GetHeight();
+
+	memcpy(cbMapSub.pData, &Color, 16);
+	memcpy(static_cast<char*>(cbMapSub.pData)+16, &Width, 4);
+	memcpy(static_cast<char*>(cbMapSub.pData)+20, &Height, 4);
+	
+	GDirectXDevice->GetDeviceContext()->Unmap(ConstantBuffer.Get(),0);
+
+	GDirectXDevice->GetDeviceContext()->CSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_ComputeShader),1,ConstantBuffer.GetAddressOf());
+}

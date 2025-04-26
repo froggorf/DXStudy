@@ -15,8 +15,10 @@ enum class EConstantBufferType
 	CBT_Light,
 	CBT_SkeletalData,
 	CBT_UserParam,
+	CBT_ComputeShader,
 	CBT_Count
 };
+
 
 enum class EInputLayoutType
 {
@@ -59,6 +61,7 @@ public:
 
 	bool InitDirect3D();
 
+	
 	// 엔진 초기화 시 호출
 	void BuildAllShaders();
 	void OnWindowResize();
@@ -71,6 +74,7 @@ public:
 
 // ConstantBuffers
 private:
+	// 그래픽스 파이프라인에서 사용되는 상수버퍼
 	Microsoft::WRL::ComPtr<ID3D11Buffer> ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_Count)];
 	void CreateConstantBuffers();
 public:
@@ -141,6 +145,7 @@ private:
 
 	void BuildStaticMeshShader();
 	void BuildSkeletalMeshVertexShader();
+	void BuildAllComputeShader();
 	
 public:
 protected:

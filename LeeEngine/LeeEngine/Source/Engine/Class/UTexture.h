@@ -17,7 +17,13 @@ public:
 	void Release();
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
+	UINT GetWidth() const {return Desc.Width;}
+	UINT GetHeight() const {return Desc.Height;}
+
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetSRV() const {return SRView;}
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> GetRTV() const {return RTView;}
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> GetDSV() const {return DSView;}
+	Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> GetUAV() const {return UAView;}
 
 	static std::shared_ptr<UTexture> GetTextureCache(const std::string& TextureName)
 	{
@@ -35,7 +41,10 @@ protected:
 private:
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> Texture2D;
 	// SRV / RTV / DSV / UAV
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> SRView;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>	SRView;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>		RTView;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>		DSView;
+	Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView>	UAView;
 	//...
 	D3D11_TEXTURE2D_DESC Desc{};
 

@@ -333,6 +333,59 @@ void AssetManager::LoadTexture(class UTexture* Texture, const nlohmann::json& As
     MY_LOG("TextureLoad", EDebugLogLevel::DLL_Display, "Texture Load Success");
 }
 
+std::shared_ptr<UTexture> AssetManager::CreateTexture(const std::string& Name, UINT Width, UINT Height, DXGI_FORMAT PixelFormat, UINT BindFlag, D3D11_USAGE Usage)
+{
+	std::shared_ptr<UTexture> Texture = std::make_shared<UTexture>();
+    
+	Texture->Desc.Format = PixelFormat;
+    Texture->Desc.Width = Width;
+    Texture->Desc.Height = Height;
+    Texture->Desc.ArraySize = 1;
+    Texture->Desc.BindFlags = BindFlag;
+    Texture->Desc.CPUAccessFlags = 0;
+    Texture->Desc.Usage = Usage;
+    Texture->Desc.MipLevels = 1; 
+    Texture->Desc.SampleDesc.Count = 1;
+    Texture->Desc.SampleDesc.Quality = 0;
+    Texture->Desc.MiscFlags = 0;
+
+    HRESULT hr = GDirectXDevice->GetDevice()->CreateTexture2D(&Texture->Desc, nullptr, Texture->Texture2D.GetAddressOf());
+    if (FAILED(hr))
+    {
+        assert(0 && "Texture 생성 실패");
+        return nullptr;
+    }
+
+    // View 제작
+    if (Texture->Desc.BindFlags & D3D11_BIND_RENDER_TARGET)
+    {
+        if (FAILED(GDirectXDevice->GetDevice()->CreateRenderTargetView(Texture->Texture2D.Get(), nullptr, Texture->RTView.GetAddressOf())))
+            assert(0 && "RTV 생성 실패");
+    }
+
+    if (Texture->Desc.BindFlags & D3D11_BIND_DEPTH_STENCIL)
+    {
+        if (FAILED(GDirectXDevice->GetDevice()->CreateDepthStencilView(Texture->Texture2D.Get(), nullptr, Texture->DSView.GetAddressOf())))
+            assert(0 && "DSV 생성 실패");
+    }
+
+    if (Texture->Desc.BindFlags & D3D11_BIND_SHADER_RESOURCE)
+    {
+        if (FAILED(GDirectXDevice->GetDevice()->CreateShaderResourceView(Texture->Texture2D.Get(), nullptr, Texture->SRView.GetAddressOf())))
+            assert(0 && "SRV 생성 실패");   
+    }
+
+    if (Texture->Desc.BindFlags & D3D11_BIND_UNORDERED_ACCESS)
+    {
+        if (FAILED(GDirectXDevice->GetDevice()->CreateUnorderedAccessView(Texture->Texture2D.Get(), nullptr, Texture->UAView.GetAddressOf())))
+            assert(0 && "UAV 생성 실패");
+    }
+
+    UTexture::TextureCacheMap[Name] = Texture;
+
+    return Texture;
+}
+
 UObject* AssetManager::ReadMyAsset(const std::string& FilePath)
 {
     if(AssetCache.find(FilePath.data())!= AssetCache.end())

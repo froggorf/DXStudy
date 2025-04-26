@@ -273,11 +273,19 @@ void FDirectXDevice::BuildSkeletalMeshVertexShader()
 	HR(GDirectXDevice->GetDevice()->CreateInputLayout(inputLayout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), InputLayouts[static_cast<UINT>(EInputLayoutType::ILT_SkeletalMesh)].GetAddressOf()));
 }
 
+void FDirectXDevice::BuildAllComputeShader()
+{
+	std::shared_ptr<FSetColorCS> SetColorCS = std::make_shared<FSetColorCS>();
+	FShader::AddShaderCache("FSetColorCS", SetColorCS);
+}
+
 
 void FDirectXDevice::BuildAllShaders()
 {
 	BuildStaticMeshShader();
 	BuildSkeletalMeshVertexShader();
+
+	BuildAllComputeShader();
 }
 
 void FDirectXDevice::OnWindowResize()

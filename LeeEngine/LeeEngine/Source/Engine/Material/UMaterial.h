@@ -38,6 +38,21 @@ public:
 
 	void SetShaderID(UINT NewID);
 	UINT GetShaderID() const {return ShaderID;}
+
+	static std::shared_ptr<FShader> GetShader(const std::string& Name)
+	{
+		auto Shader = ShaderCache.find(Name);
+		if(Shader != ShaderCache.end())
+		{
+			return Shader->second;
+		}
+		return nullptr;
+	}
+
+	static void AddShaderCache(const std::string& Name, const std::shared_ptr<FShader>& NewShader)
+	{
+		ShaderCache[Name] = NewShader;
+	}
 protected:
 	UINT ShaderID = -1;
 	static std::unordered_map<std::string, std::shared_ptr<FShader>> ShaderCache;
@@ -195,3 +210,67 @@ private:
 
 
 };
+
+
+
+
+// ==============================================
+// ================ 컴퓨트 셰이더 ================
+class FComputeShader : public FShader, public std::enable_shared_from_this<FComputeShader>
+{
+public:
+	FComputeShader( const std::string& FilePath, const std::string& FuncName, UINT ThreadPerGroupX, UINT ThreadPerGroupY, UINT ThreadPerGroupZ);
+	~FComputeShader() override = default;
+
+	// 상속받은 컴퓨트 셰이더에서 UAV등을 바인딩 하는 함수
+	virtual bool Binding() = 0;
+	// 상속받은 컴퓨트 셰이더에서 Dispath 그룹개수를 계산하는 함수
+	virtual void CalculateGroupCount() = 0;
+	// 상속받은 컴퓨트 셰이더에서 상수버퍼를 바인딩 하는 함수
+	virtual void MapAndBindConstantBuffer() = 0;
+	// 상속받은 컴퓨트 셰이더에서 바인딩한 UAV를 초기화하는 함수
+	virtual void ClearBinding() = 0;
+
+	void Execute();
+protected:
+private:
+	void CreateComputeShader(const std::string& FilePath, const std::string& FuncName);
+public:
+protected:
+	UINT		GroupX;
+	UINT		GroupY;
+	UINT		GroupZ;
+
+	const UINT	ThreadPerGroupX;
+	const UINT	ThreadPerGroupY;
+	const UINT	ThreadPerGroupZ;
+
+	Microsoft::WRL::ComPtr<ID3D11Buffer> ConstantBuffer;
+private:
+	Microsoft::WRL::ComPtr<ID3DBlob>			CSBlob;
+	Microsoft::WRL::ComPtr<ID3D11ComputeShader> ComputeShader;
+};
+
+class FSetColorCS : public FComputeShader
+{
+
+public:
+	FSetColorCS();
+
+private:
+
+
+	std::shared_ptr<UTexture> TargetTexture;
+	XMFLOAT4 Color;
+public:
+	void SetTargetTexture(const std::shared_ptr<UTexture>& Target){TargetTexture = Target;}
+	void SetClearColor(XMFLOAT4 NewColor) { Color = NewColor;}
+
+public:
+	bool Binding() override;
+	void CalculateGroupCount() override;
+	void ClearBinding() override;
+	void MapAndBindConstantBuffer() override;
+};
+
+// ==============================================

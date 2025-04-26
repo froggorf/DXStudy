@@ -44,6 +44,9 @@ public:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& vTextureShaderResourceView);
 	static void LoadTexture(class UTexture* Texture, const nlohmann::json& AssetData);
 
+	// UINT BindFlag -> D3D11_BIND_FLAG
+	static std::shared_ptr<UTexture> CreateTexture(const std::string& Name, UINT Width, UINT Height, DXGI_FORMAT PixelFormat, UINT BindFlag, D3D11_USAGE Usage = D3D11_USAGE_DEFAULT);
+
 
 	// myasset 파일 읽기
 	// myasset을 통해 읽은 UObject 데이터를 unique_ptr를 통해 관리하고 반환

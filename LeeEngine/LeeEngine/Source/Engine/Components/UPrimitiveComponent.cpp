@@ -44,3 +44,48 @@ void UPrimitiveComponent::SetTextureParam(UINT MeshIndex, UINT TextureSlot,
 {
 	FScene::SetTextureParam_GameThread(PrimitiveID,MeshIndex,TextureSlot,Texture);
 }
+
+void UPrimitiveComponent::DrawDetailPanel(UINT ComponentDepth)
+{
+	{
+		if(ComponentDepth == 0)
+		{
+			static float NewSpeedX = 0.0f, NewSpeedY = 0.0f;
+			ImGui::Text("SetScalarParam");
+			if(ImGui::SliderFloat("NewSpeedX", &NewSpeedX, -1.0f, 1.0f))
+			{
+				SetScalarParam(0, "WaterSpeedX", NewSpeedX);
+			}
+			if(ImGui::SliderFloat("NewSpeedY", &NewSpeedY, -1.0f, 1.0f))
+			{
+				SetScalarParam(0, "WaterSpeedY", NewSpeedY);
+			}
+
+			ImGui::Text("SetTextureParam");
+			if(ImGui::Button("Water"))
+			{
+				SetTextureParam(0, 0, UTexture::GetTextureCache("T_TranslucentCube"));
+			}
+			if(ImGui::Button("Grass"))
+			{
+				SetTextureParam(0, 0, UTexture::GetTextureCache("T_Cube2"));
+			}
+
+			if(ImGui::Button("TestTexture"))
+			{
+				SetTextureParam(0,0,UTexture::GetTextureCache("TestTexture"));
+			}
+
+			static float colors[3] = {0.0f,1.0f,1.0f};
+			ImGui::SliderFloat3("CS_SetColor",colors,0.0f,1.0f);
+			if(ImGui::Button("ComputeShader_SetColor"))
+			{
+				std::shared_ptr<FSetColorCS> SetColorCS = std::reinterpret_pointer_cast<FSetColorCS>(FShader::GetShader("FSetColorCS"));
+				SetColorCS->SetTargetTexture(UTexture::GetTextureCache("TestTexture"));
+				SetColorCS->SetClearColor(XMFLOAT4{colors[0],colors[1],colors[2],1.0f});
+				SetColorCS->Execute();
+			}
+		}
+
+	}
+}

@@ -29,33 +29,8 @@ public:
 
 
 #ifdef WITH_EDITOR
-	void DrawDetailPanel(UINT ComponentDepth) override
-	{
-		if(ComponentDepth == 0)
-		{
-			static float NewSpeedX = 0.0f, NewSpeedY = 0.0f;
-			ImGui::Text("SetScalarParam");
-			if(ImGui::SliderFloat("NewSpeedX", &NewSpeedX, -1.0f, 1.0f))
-			{
-				SetScalarParam(0, "WaterSpeedX", NewSpeedX);
-			}
-			if(ImGui::SliderFloat("NewSpeedY", &NewSpeedY, -1.0f, 1.0f))
-			{
-				SetScalarParam(0, "WaterSpeedY", NewSpeedY);
-			}
-
-			ImGui::Text("SetTextureParam");
-			if(ImGui::Button("Water"))
-			{
-				SetTextureParam(0, 0, UTexture::GetTextureCache("T_TranslucentCube"));
-			}
-			if(ImGui::Button("Grass"))
-			{
-				SetTextureParam(0, 0, UTexture::GetTextureCache("T_Cube2"));
-			}
-		}
-		
-	}
+	void DrawDetailPanel(UINT ComponentDepth) override;
+	
 #endif
 
 protected:
