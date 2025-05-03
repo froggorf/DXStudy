@@ -1,0 +1,6 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_Point",
+    "ModelData": "/Content/Resource/Model/Point.obj",
+    "Material" : [ "M_Cube" ]
+}

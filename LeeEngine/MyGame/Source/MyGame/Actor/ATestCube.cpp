@@ -9,6 +9,10 @@
 ATestCube::ATestCube()
 {
 	//GetRootComponent()->SetRelativeRotation(XMFLOAT3(0.0f,0.0f,0.0f));
+	TestCubeStaticMeshComp = std::make_shared<UStaticMeshComponent>();
+	TestCubeStaticMeshComp->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Point"));
+	TestCubeStaticMeshComp->SetupAttachment(GetRootComponent());
+	TestCubeStaticMeshComp->SetRelativeScale3D(XMFLOAT3{30.0f,30.0f,30.0f});
 	//
 	//TestCubeStaticMeshComp->SetRelativeLocation(XMFLOAT3(0.0f,0.0f,0.0f));
 	////TestCubeStaticMeshComp->SetRelativeRotation(XMFLOAT3(0.0f,0.0f,0.0f));
