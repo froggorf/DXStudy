@@ -10,7 +10,7 @@ FNiagaraSceneProxy::FNiagaraSceneProxy(UINT InPrimitiveID)
 {
 	MaterialInterface = UMaterial::GetMaterialCache("M_NiagaraBillboardSprite");
 	ParticleBuffer = std::make_shared<FStructuredBuffer>();
-	ParticleBuffer->Create(sizeof(FParticleData), MaxParticleCount, SB_TYPE::SRV_UAV, true);
+	ParticleBuffer->Create(sizeof(FParticleData), MaxParticleCount, SB_TYPE::SRV_UAV, false);
 	SpawnBuffer = std::make_shared<FStructuredBuffer>();
 	SpawnBuffer->Create(sizeof(FParticleSpawn), 1, SB_TYPE::SRV_UAV, true);
 	ModuleBuffer = std::make_shared<FStructuredBuffer>();
@@ -22,26 +22,9 @@ FNiagaraSceneProxy::FNiagaraSceneProxy(UINT InPrimitiveID)
 	Module.SpawnRate = 20.0f;
 	Module.SpawnShape = 0;
 	Module.SpawnShapeScale = XMFLOAT3{500.0f,500.0f,500.0f};
-	Module.MinScale = XMFLOAT3{30.0f,30.0f,30.0f};
-	Module.MaxScale = XMFLOAT3{ 200.0f,200.0f,200.0f};
+	Module.MinScale = XMFLOAT3{1.0f,1.0f,1.0f};
+	Module.MaxScale = XMFLOAT3{ 5.0f,5.0f,5.0f};
 
-	FParticleData Data[MaxParticleCount];
-	for(int i =0; i < 5; ++i)
-	{
-		Data[i].LocalPos = XMFLOAT3{ 0.0f,0.0f,0.0f };
-		Data[i].WorldPos = XMFLOAT3{ i*50+0.0f,0.0f,0.0f };
-		Data[i].WorldInitScale = XMFLOAT3{ 1.0f,1.0f,1.0f };
-		Data[i].WorldScale = XMFLOAT3{ 1.0f,1.0f,1.0f };
-		Data[i].Color = XMFLOAT4{ 1.0f,1.0f,1.0f,1.0f };
-		Data[i].Force = XMFLOAT3{ 0.0f,0.0f,0.0f };
-		Data[i].Velocity = XMFLOAT3{ 0.0f,0.0f,0.0f };
-		Data[i].Mass = 1.0f;
-		Data[i].Age = 0.0f;
-		Data[i].Life = 1.0f;
-		Data[i].NormalizedAge = 0.0f;
-		Data[i].Active = 1;
-	}
-	ParticleBuffer->SetData(Data);
 
 }
 
@@ -106,7 +89,7 @@ void FNiagaraSceneProxy::CalcSpawnCount(float DeltaSeconds)
 	if (AccTime >= Term)
 	{
 	    AccTime -= Term;
-		Count.SpawnCount = 10;
+		Count.SpawnCount = 1;
 	}
 
 	if(Module.Module[static_cast<int>(EParticleModule::PM_SPAWN_BURST)] && 0 < Module.SpawnBurstRepeat)

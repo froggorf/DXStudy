@@ -98,8 +98,8 @@ struct FParticleModule
 
 struct FParticleSpawn
 {
-	int	SpawnCount;	
-	int arrPaddding[3];
+	UINT	SpawnCount;	
+	float arrPaddding[3];
 };
 
 class FNiagaraSceneProxy : public FPrimitiveSceneProxy

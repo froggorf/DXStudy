@@ -803,6 +803,7 @@ void FStructuredBuffer::Clear(UINT _TexRegisterNum)
 
 void FStructuredBuffer::Binding_CS_UAV(UINT RegisterNum)
 {
+	assert(UAV.Get() != nullptr && "UAV is nullptr");
 	UINT i = -1;
 	GDirectXDevice->GetDeviceContext()->CSSetUnorderedAccessViews(RegisterNum, 1, UAV.GetAddressOf(), &i);
 }
@@ -816,6 +817,7 @@ void FStructuredBuffer::Clear_CS_UAV(UINT RegisterNum)
 
 void FStructuredBuffer::Binding_CS_SRV(UINT RegisterNum)
 {
+	assert(SRV.Get() != nullptr && "SRV is nullptr");
 	GDirectXDevice->GetDeviceContext()->CSSetShaderResources(RegisterNum,1,SRV.GetAddressOf());
 }
 

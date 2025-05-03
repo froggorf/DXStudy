@@ -25,8 +25,8 @@ StructuredBuffer<FParticleData> gParticle : register(t20);
 
 struct FParticleSpawn
 {
-	int     SpawnCount;
-	int3    vPadding;
+	uint     SpawnCount;
+	float3    vPadding;
 };
 
 // Particle Module

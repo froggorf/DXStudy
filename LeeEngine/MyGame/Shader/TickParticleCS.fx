@@ -32,13 +32,12 @@ void ParticleInit(inout FParticleData _Particle, in FParticleModule _Module
 
         // 랜덤 범위를 -0.5 ~ 0.5f 로 변경 후, 스폰영역 크기를 곱해서 위치값을 구한다.
         float3 vSpawnPos = (vRandom - 0.5f) * _Module.SpawnShapeScale;
-        //_Particle.LocalPos.xyz = vSpanwPos;
-        _Particle.WorldPos.xyz = vSpawnPos;
+        _Particle.LocalPos.xyz = vSpawnPos;
     }
     // Sphere
     else if (1 == _Module.SpawnShape)
     {
-
+        _Particle.LocalPos.xyz = float3(0.0f,0.0f,0.0f);
     }
 
     // 파티클 Life 랜덤 설정
@@ -99,7 +98,7 @@ void CS_TickParticle(int3 ThreadID : SV_DispatchThreadID)
 		return;
 	}
 
-    if (!gBuffer[ThreadID.x].Active)
+    if (gBuffer[ThreadID.x].Active == 0)
     {
         int Success = 0;
 
