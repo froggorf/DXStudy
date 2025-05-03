@@ -22,7 +22,7 @@ void ParticleInit(inout FParticleData _Particle, in FParticleModule _Module
     _Particle = (FParticleData) 0.f;
 
     // 파티클 활성화
-    _Particle.Active = true;
+    _Particle.Active = 1;
 
     // Spawm Module
     // Box
@@ -31,8 +31,9 @@ void ParticleInit(inout FParticleData _Particle, in FParticleModule _Module
         float3 vRandom = GetRandom(_NomalizedThreadID);
 
         // 랜덤 범위를 -0.5 ~ 0.5f 로 변경 후, 스폰영역 크기를 곱해서 위치값을 구한다.
-        float3 vSpanwPos = (vRandom - 0.5f) * _Module.SpawnShapeScale;
-        _Particle.LocalPos.xyz = vSpanwPos;
+        float3 vSpawnPos = (vRandom - 0.5f) * _Module.SpawnShapeScale;
+        //_Particle.LocalPos.xyz = vSpanwPos;
+        _Particle.WorldPos.xyz = vSpawnPos;
     }
     // Sphere
     else if (1 == _Module.SpawnShape)
@@ -98,7 +99,6 @@ void CS_TickParticle(int3 ThreadID : SV_DispatchThreadID)
 		return;
 	}
 
-    // 파티클 생성 도전
     if (!gBuffer[ThreadID.x].Active)
     {
         int Success = 0;
@@ -115,7 +115,6 @@ void CS_TickParticle(int3 ThreadID : SV_DispatchThreadID)
             // 교환 성공
             if (OriginalValue == DestValue)
             {
-                gBuffer[ThreadID.x].Active = 1;
                 Success = 1;
             }
         }    
@@ -131,8 +130,8 @@ void CS_TickParticle(int3 ThreadID : SV_DispatchThreadID)
     // 파티클 업데이트
     else
     {
-	    gBuffer[ThreadID.x].WorldScale += float3(1.0f,1.0f,1.0f);
-		gBuffer[ThreadID.x].WorldPos += float3(0.01f,0.01f,0.01f);
+	    gBuffer[ThreadID.x].WorldScale += float3(0.0001f,0.0001f,0.0001f);
+		gBuffer[ThreadID.x].WorldPos += float3(0.0001f,0.0001f,0.0001f);
     }
 }
 

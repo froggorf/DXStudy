@@ -41,7 +41,7 @@ FNiagaraSceneProxy::FNiagaraSceneProxy(UINT InPrimitiveID)
 		Data[i].NormalizedAge = 0.0f;
 		Data[i].Active = 1;
 	}
-	ParticleBuffer->SetData(&Data);
+	ParticleBuffer->SetData(Data);
 
 }
 
@@ -93,9 +93,8 @@ void FNiagaraSceneProxy::TickCS(float DeltaSeconds)
 	TickParticleCS->SetSpawnBuffer(SpawnBuffer);
 	TickParticleCS->SetParticleBuffer(ParticleBuffer);
 	TickParticleCS->SetModuleBuffer(ModuleBuffer);
-	
-	// ComputeShader Execute
-	TickParticleCS->Execute();
+
+	TickParticleCS->Execute_Immediately();
 }
 
 void FNiagaraSceneProxy::CalcSpawnCount(float DeltaSeconds)

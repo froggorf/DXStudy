@@ -431,7 +431,7 @@ FComputeShader::FComputeShader( const std::string& FilePath, const std::string& 
 	CreateComputeShader(FilePath,FuncName);
 }
 
-void FComputeShader::Execute()
+void FComputeShader::Execute_Enqueue()
 {
 	auto Lambda = [this](std::shared_ptr<FScene>& SceneData)
 	{
@@ -451,6 +451,23 @@ void FComputeShader::Execute()
 		ClearBinding();
 	};
 	ENQUEUE_RENDER_COMMAND(Lambda);
+}
+
+void FComputeShader::Execute_Immediately()
+{
+	if(!Binding())
+	{
+		return;
+	}
+
+	CalculateGroupCount();
+
+	//GDirectXDevice->SetComputeShader(this);
+	GDirectXDevice->GetDeviceContext()->CSSetShader(ComputeShader.Get(),nullptr,0);
+
+	GDirectXDevice->GetDeviceContext()->Dispatch(GroupX,GroupY,GroupZ);
+
+	ClearBinding();
 }
 
 void FComputeShader::CreateComputeShader( const std::string& FilePath, const std::string& FuncName)
@@ -637,7 +654,7 @@ int FStructuredBuffer::Create(UINT _ElementSize, UINT _ElementCount, SB_TYPE _Ty
 
 	ElementSize = _ElementSize;
 	ElementCount = _ElementCount;
-
+	Type = _Type;
 	// Desc 작성
 	Desc.ByteWidth = ElementSize * ElementCount;
 

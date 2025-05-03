@@ -281,7 +281,9 @@ public:
 	// 상속받은 컴퓨트 셰이더에서 바인딩한 UAV를 초기화하는 함수
 	virtual void ClearBinding() = 0;
 
-	void Execute();
+	void Execute_Enqueue();
+	void Execute_Immediately();
+
 protected:
 private:
 	void CreateComputeShader(const std::string& FilePath, const std::string& FuncName);
