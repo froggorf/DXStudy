@@ -11,6 +11,7 @@
 #include "Engine/Level/ULevel.h"
 #include "Engine/UObject/UObject.h"
 
+class FNiagaraSceneProxy;
 class USceneComponent;
 class ULevel;
 class AActor;
@@ -38,7 +39,10 @@ public:
 	void AddLevel(const std::shared_ptr<ULevel>& NewLevel);
 	void RemoveLevel(const std::shared_ptr<ULevel>& Level);
 
-	
+	void AddToBeTickedNiagaraSceneProxy(const std::shared_ptr<FNiagaraSceneProxy>& NewNiagaraSceneProxy)
+	{
+		ToBeTickedNiagaraSceneProxies.emplace_back(NewNiagaraSceneProxy);
+	}
 protected:
 private:
 public:
@@ -50,10 +54,19 @@ private:
 	// 콜렉션에 있는 모든 레벨정보
 	std::set<std::shared_ptr<ULevel>> Levels;
 
+	// Tick을 진행할 이펙트 들에 대한 SceneProxies
+	std::vector<std::shared_ptr<FNiagaraSceneProxy>> ToBeTickedNiagaraSceneProxies;
+
+
+
+
+
 	// 현재 선택된 액터
 	// TODO: 추후 에디터 기능으로 분리하기
 	std::shared_ptr<AActor> CurrentSelectedActor;
 	std::vector<std::shared_ptr<USceneComponent>> SelectActorComponents;
 	std::vector<std::string> SelectActorComponentNames;
 	int CurrentSelectedComponentIndex = -1;
+
+
 };

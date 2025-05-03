@@ -17,7 +17,7 @@ UStaticMeshComponent::UStaticMeshComponent()
 }
 
 
-std::vector<std::shared_ptr<FPrimitiveSceneProxy>> UStaticMeshComponent::CreateSceneProxy() const
+std::vector<std::shared_ptr<FPrimitiveSceneProxy>> UStaticMeshComponent::CreateSceneProxy()
 {
 	std::vector<
 	std::shared_ptr<FPrimitiveSceneProxy>> SceneProxies;

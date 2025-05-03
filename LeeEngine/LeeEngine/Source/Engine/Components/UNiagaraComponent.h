@@ -5,9 +5,16 @@
 #pragma once
 
 #include "UPrimitiveComponent.h"
+
+class FNiagaraSceneProxy;
+
 class UNiagaraComponent : public UPrimitiveComponent
 {
 	MY_GENERATED_BODY(UNiagaraComponent)
 public:
-	std::vector<std::shared_ptr<FPrimitiveSceneProxy>> CreateSceneProxy() const override;
+	std::vector<std::shared_ptr<FPrimitiveSceneProxy>> CreateSceneProxy() override;
+
+	std::vector<std::shared_ptr<FNiagaraSceneProxy>> SceneProxies;
+
+	void TickComponent(float DeltaSeconds) override;
 };

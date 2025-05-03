@@ -13,7 +13,7 @@ class UStaticMeshComponent : public UMeshComponent
 	MY_GENERATED_BODY(UStaticMeshComponent)
 public:
 	UStaticMeshComponent();
-	virtual std::vector<std::shared_ptr<FPrimitiveSceneProxy>> CreateSceneProxy() const override;
+	virtual std::vector<std::shared_ptr<FPrimitiveSceneProxy>> CreateSceneProxy() override;
 	virtual bool SetStaticMesh(const std::shared_ptr<UStaticMesh>& NewMesh);
 	const std::shared_ptr<UStaticMesh>& GetStaticMesh() const { return StaticMesh; }
 

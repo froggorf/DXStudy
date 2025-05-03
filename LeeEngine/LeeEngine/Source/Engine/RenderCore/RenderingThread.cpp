@@ -424,10 +424,10 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 					FrameConstantBuffer fcb;
 					// TODO: 카메라 구현 시 수정
 
-					fcb.View = XMMatrixTranspose(SceneData->GetViewMatrix());
+					fcb.View = (SceneData->GetViewMatrix());
 					// TODO: 카메라 구현 시 수정
 					//XMMATRIX ProjMat = XMMatrixPerspectiveFovLH(0.5*XM_PI, 1600.0f/1200.0f, 1.0f, 1000.0f);
-					fcb.Projection = XMMatrixTranspose(SceneData->GetProjectionMatrix());
+					fcb.Projection = (SceneData->GetProjectionMatrix());
 					fcb.LightView = XMMatrixTranspose(XMMatrixIdentity());//m_LightView
 					fcb.LightProj = XMMatrixTranspose(XMMatrixIdentity()); //m_LightProj
 					

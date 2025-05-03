@@ -17,7 +17,7 @@ public:
 
 	virtual void Register() override;
 
-	virtual std::vector< std::shared_ptr<FPrimitiveSceneProxy> > CreateSceneProxy() const
+	virtual std::vector< std::shared_ptr<FPrimitiveSceneProxy> > CreateSceneProxy()
 	{
 		return std::vector<std::shared_ptr<FPrimitiveSceneProxy>>{};
 	}

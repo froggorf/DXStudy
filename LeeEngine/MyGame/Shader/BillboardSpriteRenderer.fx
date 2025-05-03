@@ -1,4 +1,5 @@
 #include "Global.fx"
+#include "ParticleHelper.fx"
 
 struct VS_IN
 {
@@ -16,7 +17,7 @@ VS_OUT VS_BillboardSpriteParticle(VS_IN _in)
 {
     VS_OUT output = (VS_OUT) 0.f;
 
-    output.vPos   = float3(0.0f,0.0f,0.0f);
+    output.vPos   = _in.vPos;
     output.InstID = _in.InstID;
 
     return output;
@@ -40,13 +41,13 @@ struct GS_OUT
 [maxvertexcount(6)]
 void GS_Billboard(point VS_OUT _in[1], inout TriangleStream<GS_OUT> _OutStream)
 {
-    tParticle particle = g_Particle[_in[0].InstID];
+    FParticleData particle = gParticle[_in[0].InstID];
 
     if (false == particle.Active)
         return;
 
     // WorldSpace -> ViewSpace
-    float4 vViewPos = mul(float4(particle.WorldPos, 1.f), g_matView);
+    float4 vViewPos = mul(float4(particle.WorldPos, 1.f), gView);
 	
     // 정점 4개 위치 설정
     // 0 -- 1

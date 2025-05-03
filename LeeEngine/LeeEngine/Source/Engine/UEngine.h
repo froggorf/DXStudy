@@ -61,7 +61,7 @@ public:
 	}
 	XMMATRIX Test_DeleteLater_GetProjectionMatrix() const
 	{
-		return XMMatrixPerspectiveFovLH(0.5*XM_PI, 2540.0f/1440.0f, 1.0f, 1000.0f);
+		return XMMatrixPerspectiveFovLH(0.5*XM_PI, 2540.0f/1440.0f, 0.01f, 10000.0f);
 	}
 	XMFLOAT3 Test_DeleteLater_GetCameraPosition() const {return Application->Test_DELETELATER_GetCameraPosition();}
 

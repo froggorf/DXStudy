@@ -2,8 +2,8 @@
 #include "LightHelper.hlsl"
 cbuffer cbPerFrame : register(b0)
 {
-    matrix gView;
-    matrix gProjection;
+    row_major matrix gView;
+    row_major matrix gProjection;
     matrix gLightView;
     matrix gLightProj;
     float gTime;

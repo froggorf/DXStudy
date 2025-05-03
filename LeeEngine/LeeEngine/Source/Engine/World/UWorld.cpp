@@ -10,6 +10,7 @@
 #include "Engine/UEngine.h"
 #include "Engine/RenderCore/EditorScene.h"
 #include "Engine/RenderCore/RenderingThread.h"
+#include "Engine/SceneProxy/FNiagaraSceneProxy.h"
 
 UWorld::UWorld()
 {
@@ -75,6 +76,16 @@ void UWorld::TickWorld(float DeltaSeconds)
 
 		PersistentLevel->TickLevel(DeltaSeconds);
 
+	}
+
+	for(auto& TickNiagaraSceneProxy: ToBeTickedNiagaraSceneProxies)
+	{
+		auto Lambda = [TickNiagaraSceneProxy](std::shared_ptr<FScene>& SceneData)
+		{
+			TickNiagaraSceneProxy->TickCS();
+		};
+		ENQUEUE_RENDER_COMMAND(Lambda);
+		
 	}
 }
 

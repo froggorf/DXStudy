@@ -18,7 +18,7 @@ public:
 	USkeletalMeshComponent();
 	void BeginPlay() override;
 	virtual void Register() override;
-	virtual std::vector<std::shared_ptr<FPrimitiveSceneProxy>> CreateSceneProxy() const override;
+	virtual std::vector<std::shared_ptr<FPrimitiveSceneProxy>> CreateSceneProxy() override;
 	virtual bool SetSkeletalMesh(const std::shared_ptr<USkeletalMesh>& NewMesh);
 	const std::shared_ptr<USkeletalMesh>& GetSkeletalMesh() const { return SkeletalMesh; }
 

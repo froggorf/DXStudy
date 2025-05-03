@@ -37,7 +37,7 @@ void USkeletalMeshComponent::Register()
 	}
 }
 
-std::vector<std::shared_ptr<FPrimitiveSceneProxy>> USkeletalMeshComponent::CreateSceneProxy() const
+std::vector<std::shared_ptr<FPrimitiveSceneProxy>> USkeletalMeshComponent::CreateSceneProxy()
 {
 	std::vector<std::shared_ptr<FPrimitiveSceneProxy>> SceneProxies;
 

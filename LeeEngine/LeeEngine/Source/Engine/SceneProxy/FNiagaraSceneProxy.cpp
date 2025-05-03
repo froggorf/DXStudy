@@ -1,13 +1,20 @@
 #include "CoreMinimal.h"
 #include "FNiagaraSceneProxy.h"
 
+#include <stdbool.h>
+
 #include "Engine/Mesh/UStaticMesh.h"
 
 FNiagaraSceneProxy::FNiagaraSceneProxy(UINT InPrimitiveID)
 	: FPrimitiveSceneProxy(InPrimitiveID)
 {
 	MaterialInterface = UMaterial::GetMaterialCache("M_NiagaraBillboardSprite");
+	ParticleBuffer = std::make_shared<FStructuredBuffer>();
+	ParticleBuffer->Create(sizeof(FParticleData), MaxParticleCount, SB_TYPE::SRV_UAV, false);
+
 }
+
+
 
 void FNiagaraSceneProxy::Draw()
 {
@@ -16,6 +23,7 @@ void FNiagaraSceneProxy::Draw()
 	
 	UMaterial::GetMaterialCache("M_NiagaraBillboardSprite")->Binding();
 
+	ParticleBuffer->Binding(20);
 
 	auto DeviceContext = GDirectXDevice->GetDeviceContext();
 	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
@@ -32,11 +40,16 @@ void FNiagaraSceneProxy::Draw()
 	D3D11_BUFFER_DESC indexBufferDesc;
 	RenderData->IndexBuffer[MeshIndex]->GetDesc(&indexBufferDesc);
 	UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
-	DeviceContext->DrawIndexedInstanced(1,500,0,0, 0);
+	DeviceContext->DrawIndexedInstanced(1,MaxParticleCount,0,0, 0);
 
 
 
 
 
 	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+}
+
+void FNiagaraSceneProxy::TickCS()
+{
+
 }
