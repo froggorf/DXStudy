@@ -413,7 +413,7 @@ FComputeShader::FComputeShader( const std::string& FilePath, const std::string& 
 
 void FComputeShader::Execute()
 {
-	auto Lambda = [&](std::shared_ptr<FScene>& SceneData)
+	auto Lambda = [this](std::shared_ptr<FScene>& SceneData)
 	{
 
 		if(!Binding())
@@ -423,6 +423,7 @@ void FComputeShader::Execute()
 
 		CalculateGroupCount();
 
+		//GDirectXDevice->SetComputeShader(this);
 		GDirectXDevice->GetDeviceContext()->CSSetShader(ComputeShader.Get(),nullptr,0);
 
 		GDirectXDevice->GetDeviceContext()->Dispatch(GroupX,GroupY,GroupZ);

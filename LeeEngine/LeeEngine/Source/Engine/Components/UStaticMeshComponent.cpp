@@ -16,12 +16,6 @@ UStaticMeshComponent::UStaticMeshComponent()
 
 }
 
-void UStaticMeshComponent::Register()
-{
-	UMeshComponent::Register();
-
-
-}
 
 std::vector<std::shared_ptr<FPrimitiveSceneProxy>> UStaticMeshComponent::CreateSceneProxy() const
 {

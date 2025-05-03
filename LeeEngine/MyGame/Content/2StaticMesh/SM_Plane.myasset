@@ -1,0 +1,6 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_Plane",
+    "ModelData": "/Content/Resource/Model/SM_Plane.obj",
+    "Material" : [ "M_Cube" ]
+}

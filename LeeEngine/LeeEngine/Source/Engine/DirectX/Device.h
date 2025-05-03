@@ -105,6 +105,10 @@ public:
 	void SetVertexShader(class FVertexShader* InVertexShader);
 	UINT CurrentPixelShaderID = -1;
 	void SetPixelShader(class FPixelShader* InPixelShader);
+	UINT CurrentComputeShaderID = -1;
+	void SetComputeShader(class FComputeShader* InComputeShader);
+	UINT CurrentGeometryShaderID = -1;
+	void SetGeometryShader(class FGeometryShader* InGeometryShader);
 
 #ifdef WITH_EDITOR
 public:

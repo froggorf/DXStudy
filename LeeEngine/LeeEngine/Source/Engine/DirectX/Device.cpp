@@ -150,6 +150,44 @@ void FDirectXDevice::SetPixelShader(class FPixelShader* InPixelShader)
 	}
 }
 
+void FDirectXDevice::SetComputeShader(class FComputeShader* InComputeShader)
+{
+	UINT NewShaderID = InComputeShader->GetShaderID();
+	if(InComputeShader == nullptr)
+	{
+		if(CurrentComputeShaderID != -1)
+		{
+			CurrentComputeShaderID = -1;
+			ID3D11ComputeShader* CS = nullptr;
+			m_d3dDeviceContext->CSSetShader(CS, nullptr,0);
+		}
+	}
+	if(NewShaderID != CurrentComputeShaderID)
+	{
+		CurrentComputeShaderID = NewShaderID;
+		m_d3dDeviceContext->CSSetShader(InComputeShader->GetComputeShader().Get(), nullptr,0);
+	}
+}
+
+void FDirectXDevice::SetGeometryShader(class FGeometryShader* InGeometryShader)
+{
+	//UINT NewShaderID = InGeometryShader->GetShaderID();
+	//if(InGeometryShader == nullptr)
+	//{
+	//	if(CurrentGeometryShaderID != -1)
+	//	{
+	//		CurrentGeometryShaderID = -1;
+	//		ID3D11ComputeShader* CS = nullptr;
+	//		m_d3dDeviceContext->CSSetShader(CS, nullptr,0);
+	//	}
+	//}
+	//if(NewShaderID != CurrentGeometryShaderID)
+	//{
+	//	CurrentGeometryShaderID = NewShaderID;
+	//	m_d3dDeviceContext->CSSetShader(InGeometryShader->GetGeometryShader().Get(), nullptr,0);
+	//}
+}
+
 void FDirectXDevice::ResizeEditorRenderTarget(float NewX, float NewY)
 {
 	NewX = max(2.0f,NewX);

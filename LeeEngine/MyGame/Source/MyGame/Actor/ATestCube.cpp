@@ -9,9 +9,6 @@
 ATestCube::ATestCube()
 {
 	//GetRootComponent()->SetRelativeRotation(XMFLOAT3(0.0f,0.0f,0.0f));
-	//TestCubeStaticMeshComp = std::make_shared<UStaticMeshComponent>();
-	//TestCubeStaticMeshComp->SetStaticMesh(UStaticMesh::GetStaticMesh/("SM_SkySphere"));
-	//TestCubeStaticMeshComp->SetupAttachment(GetRootComponent());
 	//
 	//TestCubeStaticMeshComp->SetRelativeLocation(XMFLOAT3(0.0f,0.0f,0.0f));
 	////TestCubeStaticMeshComp->SetRelativeRotation(XMFLOAT3(0.0f,0.0f,0.0f));
@@ -22,6 +19,7 @@ ATestCube::ATestCube()
 	//TestCube2->SetupAttachment(GetRootComponent());
 	//TestCube2->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Cube"));
 	//TestCube2->SetRelativeScale3D(XMFLOAT3(100.0f,1.0f,100.0f));
+
 	
 
 	TestCube3 = std::make_shared<UStaticMeshComponent>();

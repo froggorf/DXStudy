@@ -222,6 +222,8 @@ public:
 	FComputeShader( const std::string& FilePath, const std::string& FuncName, UINT ThreadPerGroupX, UINT ThreadPerGroupY, UINT ThreadPerGroupZ);
 	~FComputeShader() override = default;
 
+	Microsoft::WRL::ComPtr<ID3D11ComputeShader> GetComputeShader() const { return ComputeShader; }
+
 	// 상속받은 컴퓨트 셰이더에서 UAV등을 바인딩 하는 함수
 	virtual bool Binding() = 0;
 	// 상속받은 컴퓨트 셰이더에서 Dispath 그룹개수를 계산하는 함수
@@ -320,3 +322,16 @@ public:
 };
 
 // ==============================================
+
+
+// ===========GeometryShader===================
+class FGeometryShader : public FShader
+{
+public:
+	FGeometryShader() {};
+	~FGeometryShader() override {};
+	Microsoft::WRL::ComPtr<ID3DBlob>			GSBlob;
+	Microsoft::WRL::ComPtr<ID3D11GeometryShader> GeometryShader;
+	void CompileGeometryShader(const std::string& FilePath, const std::string& FuncName);
+
+};
