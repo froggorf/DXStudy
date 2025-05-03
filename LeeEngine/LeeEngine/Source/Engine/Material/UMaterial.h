@@ -274,3 +274,49 @@ public:
 };
 
 // ==============================================
+
+// ================= StructuredBuffer ====================
+
+enum class SB_TYPE
+{
+	SRV_ONLY, // t
+	SRV_UAV,  // t u
+};
+
+class FStructuredBuffer
+{
+	Microsoft::WRL::ComPtr<ID3D11Buffer>            MainBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer>                WriteBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer>                ReadBuffer;
+
+	D3D11_BUFFER_DESC                   Desc;
+
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>    SRV; // t 레지스터 바인딩
+	Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView>   UAV; // u 레지스터 바인딩
+
+	UINT                                ElementSize;      // 크기
+	UINT                                ElementCount;     // 개수
+
+	SB_TYPE                             Type;             // t u 레지스터 바인딩 설정
+	bool                                bSysMove;          // SystemMemory 와 데이터 전송 가능
+
+public:
+	int Create(UINT _ElementSize, UINT _ElementCount, SB_TYPE _Type, bool _SysMemMove, void* _SysMem = nullptr);
+
+	UINT GetElementCount() const { return ElementCount; }
+	UINT GetElementSize() const { return ElementSize; }
+	UINT GetBufferSize() const { return ElementSize * ElementCount; }
+
+	void SetData(void* _SysMem, UINT _ElementCount = 0);
+	void GetData(void* _SysMem, UINT _ElementCount = 0);
+	void Binding(UINT _TexRegisterNum);
+	void Clear(UINT _TexRegisterNum);
+
+
+public:
+	FStructuredBuffer();
+	virtual ~FStructuredBuffer();
+
+};
+
+// ==============================================

@@ -533,3 +533,174 @@ void FSetColorCS::MapAndBindConstantBuffer()
 
 	GDirectXDevice->GetDeviceContext()->CSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_ComputeShader),1,ConstantBuffer.GetAddressOf());
 }
+
+
+
+
+
+FStructuredBuffer::FStructuredBuffer()
+	: Desc{}
+	, ElementSize(0)
+	, ElementCount(0)
+{
+}
+
+FStructuredBuffer::~FStructuredBuffer()
+{
+}
+
+int FStructuredBuffer::Create(UINT _ElementSize, UINT _ElementCount, SB_TYPE _Type, bool _SysMemMove, void* _SysMem)
+{
+	MainBuffer = nullptr;
+	SRV = nullptr;
+	UAV = nullptr;
+
+	ElementSize = _ElementSize;
+	ElementCount = _ElementCount;
+
+	// Desc 작성
+	Desc.ByteWidth = ElementSize * ElementCount;
+
+	if (SB_TYPE::SRV_ONLY == _Type)
+		Desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	else
+		Desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+
+	Desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;	
+	Desc.Usage = D3D11_USAGE_DEFAULT;
+	Desc.CPUAccessFlags = 0;
+
+	// 구조화버퍼 생성시 추가 설정
+	Desc.StructureByteStride = ElementSize;
+
+	if (nullptr == _SysMem)
+	{
+		if (FAILED(GDirectXDevice->GetDevice()->CreateBuffer(&Desc, nullptr, MainBuffer.GetAddressOf())))
+		{
+			return E_FAIL;
+		}
+	}
+
+	else
+	{
+		D3D11_SUBRESOURCE_DATA tSub = {};
+		tSub.pSysMem = _SysMem;
+
+		if (FAILED(GDirectXDevice->GetDevice()->CreateBuffer(&Desc, &tSub, MainBuffer.GetAddressOf())))
+		{
+			assert(nullptr);
+			return E_FAIL;
+		}
+	}
+
+
+	// 구조화 버퍼가 SystemMemory 랑 통신이 가능해야 한다.
+	if (_SysMemMove)
+	{
+		D3D11_BUFFER_DESC BufferDesc = Desc;
+
+		// Write Bufer
+		BufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+		BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+		if (FAILED(GDirectXDevice->GetDevice()->CreateBuffer(&BufferDesc, nullptr, WriteBuffer.GetAddressOf())))
+		{
+			return E_FAIL;
+		}
+
+		// ReadBuffer
+		BufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		BufferDesc.Usage	 = D3D11_USAGE_DEFAULT;
+		BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+
+		if (FAILED(GDirectXDevice->GetDevice()->CreateBuffer(&BufferDesc, nullptr, ReadBuffer.GetAddressOf())))
+		{
+			return E_FAIL;
+		}	
+	}
+
+	// ShaderResourceView 생성
+	D3D11_SHADER_RESOURCE_VIEW_DESC tSRVDesc = {};
+	tSRVDesc.ViewDimension = D3D_SRV_DIMENSION_BUFFER;
+	tSRVDesc.BufferEx.NumElements = _ElementCount;
+
+	if (FAILED(GDirectXDevice->GetDevice()->CreateShaderResourceView(MainBuffer.Get(), &tSRVDesc, SRV.GetAddressOf())))
+	{
+		assert(nullptr);
+		return E_FAIL;
+	}
+
+	if (SB_TYPE::SRV_UAV == Type)
+	{
+		D3D11_UNORDERED_ACCESS_VIEW_DESC tUAVDesc = {};
+		tUAVDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
+		tUAVDesc.Buffer.NumElements = _ElementCount;
+
+		if (FAILED(GDirectXDevice->GetDevice()->CreateUnorderedAccessView(MainBuffer.Get(), &tUAVDesc, UAV.GetAddressOf())))
+		{
+			assert(nullptr);
+			return E_FAIL;
+		}
+	}
+
+	return S_OK;
+}
+
+void FStructuredBuffer::SetData(void* _SysMem, UINT _ElementCount)
+{
+	assert(_ElementCount <= ElementCount);
+
+	if (0 == _ElementCount)
+	{
+		_ElementCount = ElementCount;
+	}
+	
+	// SysMem -> WirteBuffer
+	D3D11_MAPPED_SUBRESOURCE tSub = {};
+	GDirectXDevice->GetDeviceContext()->Map(WriteBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &tSub);
+	memcpy(tSub.pData, _SysMem, ElementSize * _ElementCount);
+	GDirectXDevice->GetDeviceContext()->Unmap(WriteBuffer.Get(), 0);
+
+	// WriteBuffer -> MainBuffer
+	GDirectXDevice->GetDeviceContext()->CopyResource(MainBuffer.Get(), WriteBuffer.Get());
+}
+
+void FStructuredBuffer::GetData(void* _SysMem, UINT _ElementCount)
+{
+	//assert(_ElementCount <= ElementCount);
+
+	//if (_ElementCount == 0)
+	//{
+	//	_ElementCount = ElementCount;
+	//}
+
+	//// MainBuffer -> ReadBuffer
+	//CONTEXT->CopyResource(ReadBuffer.Get(), MainBuffer.Get());
+
+	//// ReadBuffer -> SysMem
+	//D3D11_MAPPED_SUBRESOURCE tSub = {};
+	//CONTEXT->Map(ReadBuffer.Get(), 0, D3D11_MAP_READ, 0, &tSub);
+	//memcpy(_SysMem, tSub.pData, ElementSize * _ElementCount);
+	//CONTEXT->Unmap(ReadBuffer.Get(), 0);
+}
+
+void FStructuredBuffer::Binding(UINT _TexRegisterNum)
+{
+	GDirectXDevice->GetDeviceContext()->VSSetShaderResources(_TexRegisterNum, 1, SRV.GetAddressOf());
+	GDirectXDevice->GetDeviceContext()->HSSetShaderResources(_TexRegisterNum, 1, SRV.GetAddressOf());
+	GDirectXDevice->GetDeviceContext()->DSSetShaderResources(_TexRegisterNum, 1, SRV.GetAddressOf());
+	GDirectXDevice->GetDeviceContext()->GSSetShaderResources(_TexRegisterNum, 1, SRV.GetAddressOf());
+	GDirectXDevice->GetDeviceContext()->PSSetShaderResources(_TexRegisterNum, 1, SRV.GetAddressOf());	
+}
+
+void FStructuredBuffer::Clear(UINT _TexRegisterNum)
+{
+	ID3D11ShaderResourceView* pSRV = nullptr;
+	GDirectXDevice->GetDeviceContext()->VSSetShaderResources(_TexRegisterNum, 1, &pSRV);
+	GDirectXDevice->GetDeviceContext()->HSSetShaderResources(_TexRegisterNum, 1, &pSRV);
+	GDirectXDevice->GetDeviceContext()->DSSetShaderResources(_TexRegisterNum, 1, &pSRV);
+	GDirectXDevice->GetDeviceContext()->GSSetShaderResources(_TexRegisterNum, 1, &pSRV);
+	GDirectXDevice->GetDeviceContext()->PSSetShaderResources(_TexRegisterNum, 1, &pSRV);
+}
+
