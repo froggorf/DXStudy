@@ -172,7 +172,7 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const Microsof
     }
 
     // VertexData를 SkeletalVertexData로 변환
-    std::vector<std::vector<MySkeletalMeshVertexData>> allSkeletalVertices(scene->mNumMeshes);
+    std::vector<std::vector<MyVertexData>> allSkeletalVertices(scene->mNumMeshes);
     for(int meshIndex = 0; meshIndex < allVertices.size(); ++meshIndex)
     {
         
@@ -208,7 +208,7 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const Microsof
         vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
         vertexBufferDesc.CPUAccessFlags = 0;
         vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-        vertexBufferDesc.ByteWidth = sizeof(MySkeletalMeshVertexData) * allSkeletalVertices[i].size();
+        vertexBufferDesc.ByteWidth = sizeof(MyVertexData) * allSkeletalVertices[i].size();
         D3D11_SUBRESOURCE_DATA initVertexData = {};
         initVertexData.pSysMem = allSkeletalVertices[i].data();
         HR(pDevice->CreateBuffer(&vertexBufferDesc,&initVertexData, vertexBuffer.GetAddressOf()));
@@ -472,7 +472,7 @@ void AssetManager::ProcessMesh(aiMesh* mesh, std::vector<MyVertexData>& vertices
     }	
 }
 
-void AssetManager::SetVertexBoneData(MySkeletalMeshVertexData& vertexData, int boneID, float weight)
+void AssetManager::SetVertexBoneData(MyVertexData& vertexData, int boneID, float weight)
 {
     for(int i = 0; i< MAX_BONE_INFLUENCE; ++i)
     {
@@ -485,7 +485,7 @@ void AssetManager::SetVertexBoneData(MySkeletalMeshVertexData& vertexData, int b
     }
 }
 
-void AssetManager::ExtractBoneWeightForVertices(std::vector<MySkeletalMeshVertexData>& vVertexData, aiMesh* mesh,
+void AssetManager::ExtractBoneWeightForVertices(std::vector<MyVertexData>& vVertexData, aiMesh* mesh,
 	std::map<std::string, BoneInfo>& modelBoneInfoMap)
 {
     for (int boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex)

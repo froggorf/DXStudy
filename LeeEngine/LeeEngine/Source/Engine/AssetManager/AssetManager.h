@@ -63,9 +63,9 @@ private:
 	static void ProcessMesh(aiMesh* mesh, std::vector<MyVertexData>& vertices, std::vector<UINT>& indices);
 
 	// SkeletalMesh 모델의 버텍스 데이터 내 본 데이터를 설정하는 함수
-	static void SetVertexBoneData(MySkeletalMeshVertexData& vertexData, int boneID, float weight);
+	static void SetVertexBoneData(MyVertexData& vertexData, int boneID, float weight);
 	// 버텍스의 BoneWeight 정보를 추출하는 함수
-	static void ExtractBoneWeightForVertices(std::vector<MySkeletalMeshVertexData>& vVertexData, aiMesh* mesh, std::map<std::string, BoneInfo>& modelBoneInfoMap);
+	static void ExtractBoneWeightForVertices(std::vector<MyVertexData>& vVertexData, aiMesh* mesh, std::map<std::string, BoneInfo>& modelBoneInfoMap);
 
 
 public:

@@ -55,7 +55,7 @@ void FSkeletalMeshSceneProxy::Draw()
 	
 	ID3D11DeviceContext* DeviceContext = GDirectXDevice->GetDeviceContext().Get();
 
-	UINT stride = sizeof(MySkeletalMeshVertexData);
+	UINT stride = sizeof(MyVertexData);
 	UINT offset = 0;
 	DeviceContext->IASetVertexBuffers(0, 1, RenderData->VertexBuffer[MeshIndex].GetAddressOf(), &stride, &offset);
 	DeviceContext->IASetIndexBuffer(RenderData->IndexBuffer[MeshIndex].Get(), DXGI_FORMAT_R32_UINT, 0);

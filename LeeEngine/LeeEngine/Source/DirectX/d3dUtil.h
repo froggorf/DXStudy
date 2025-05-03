@@ -105,16 +105,9 @@ inline HRESULT CompileShaderFromFile( const WCHAR* szFileName, LPCSTR szEntryPoi
 #endif  //COMPILE_SHADER_FROM_FILE
 
 // ======================== Mesh Data ========================
-struct MyVertexData
-{
-	DirectX::XMFLOAT3 Pos;
-	DirectX::XMFLOAT3 Normal;
-    DirectX::XMFLOAT2 TexCoords;
-};
-
 #define MAX_BONE_INFLUENCE 4
 #define MAX_BONES 100
-__declspec(align(16)) struct MySkeletalMeshVertexData
+__declspec(align(16)) struct MyVertexData
 {
     DirectX::XMFLOAT3 Pos;
     DirectX::XMFLOAT3 Normal;
