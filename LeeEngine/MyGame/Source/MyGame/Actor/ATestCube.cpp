@@ -29,10 +29,10 @@ ATestCube::ATestCube()
 	NiagaraComp->SetupAttachment(GetRootComponent());
 	
 
-	TestCube3 = std::make_shared<UStaticMeshComponent>();
-	TestCube3->SetupAttachment(GetRootComponent());
-	TestCube3->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_TranslucentCube"));
-	TestCube3->SetRelativeScale3D(XMFLOAT3{30.0f,30.0f,30.0f});
+	//TestCube3 = std::make_shared<UStaticMeshComponent>();
+	//TestCube3->SetupAttachment(GetRootComponent());
+	//TestCube3->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_TranslucentCube"));
+	//TestCube3->SetRelativeScale3D(XMFLOAT3{30.0f,30.0f,30.0f});
 
 	Rename("ATestCube" + std::to_string(ActorID));
 }

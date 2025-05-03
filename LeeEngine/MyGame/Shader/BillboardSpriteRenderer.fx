@@ -40,30 +40,25 @@ struct GS_OUT
 [maxvertexcount(6)]
 void GS_Billboard(point VS_OUT _in[1], inout TriangleStream<GS_OUT> _OutStream)
 {
-    //tParticle particle = g_Particle[_in[0].InstID];
+    tParticle particle = g_Particle[_in[0].InstID];
 
-    //if (false == particle.Active)
-    //    return;
+    if (false == particle.Active)
+        return;
 
     // WorldSpace -> ViewSpace
-    //float4 vViewPos = mul(float4(particle.WorldPos, 1.f), g_matView);
-	float4 vViewPos = mul(float4(0.0f,0.0f,0.0f, 1.f), gView);
-
+    float4 vViewPos = mul(float4(particle.WorldPos, 1.f), g_matView);
+	
     // 정점 4개 위치 설정
     // 0 -- 1
     // | \  |
     // 3 -- 2
     GS_OUT arrOut[4] = { (GS_OUT) 0.f, (GS_OUT) 0.f, (GS_OUT) 0.f, (GS_OUT) 0.f };
 
-    //arrOut[0].vPosition = float4(vViewPos.x - particle.WorldScale.x / 2.f, vViewPos.y + particle.WorldScale.y / 2.f, vViewPos.z, 1.f);
-    //arrOut[1].vPosition = float4(vViewPos.x + particle.WorldScale.x / 2.f, vViewPos.y + particle.WorldScale.y / 2.f, vViewPos.z, 1.f);
-    //arrOut[2].vPosition = float4(vViewPos.x + particle.WorldScale.x / 2.f, vViewPos.y - particle.WorldScale.y / 2.f, vViewPos.z, 1.f);
-    //arrOut[3].vPosition = float4(vViewPos.x - particle.WorldScale.x / 2.f, vViewPos.y - particle.WorldScale.y / 2.f, vViewPos.z, 1.f);
+    arrOut[0].vPosition = float4(vViewPos.x - particle.WorldScale.x / 2.f, vViewPos.y + particle.WorldScale.y / 2.f, vViewPos.z, 1.f);
+    arrOut[1].vPosition = float4(vViewPos.x + particle.WorldScale.x / 2.f, vViewPos.y + particle.WorldScale.y / 2.f, vViewPos.z, 1.f);
+    arrOut[2].vPosition = float4(vViewPos.x + particle.WorldScale.x / 2.f, vViewPos.y - particle.WorldScale.y / 2.f, vViewPos.z, 1.f);
+    arrOut[3].vPosition = float4(vViewPos.x - particle.WorldScale.x / 2.f, vViewPos.y - particle.WorldScale.y / 2.f, vViewPos.z, 1.f);
 
-    arrOut[0].vPosition = float4(vViewPos.x - 5000.0f / 2.f, vViewPos.y + 3000.0f / 2.f, vViewPos.z, 1.f);
-    arrOut[1].vPosition = float4(vViewPos.x + 5000.0f / 2.f, vViewPos.y + 3000.0f / 2.f, vViewPos.z, 1.f);
-    arrOut[2].vPosition = float4(vViewPos.x + 5000.0f / 2.f, vViewPos.y - 3000.0f / 2.f, vViewPos.z, 1.f);
-    arrOut[3].vPosition = float4(vViewPos.x - 5000.0f / 2.f, vViewPos.y - 3000.0f / 2.f, vViewPos.z, 1.f);
 
     arrOut[0].vUV = float2(0.f, 0.f);
     arrOut[1].vUV = float2(1.f, 0.f);
@@ -76,6 +71,7 @@ void GS_Billboard(point VS_OUT _in[1], inout TriangleStream<GS_OUT> _OutStream)
         arrOut[i].vPosition = mul(arrOut[i].vPosition, gProjection);
         arrOut[i].InstID = _in[0].InstID;
     }    
+
 
     _OutStream.Append(arrOut[0]);
     _OutStream.Append(arrOut[1]);

@@ -20,7 +20,7 @@ void FNiagaraSceneProxy::Draw()
 	auto DeviceContext = GDirectXDevice->GetDeviceContext();
 	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
-	auto sm = UStaticMesh::GetStaticMesh("SM_Cube");
+	auto sm = UStaticMesh::GetStaticMesh("SM_Point");
 	auto RenderData = sm->GetStaticMeshRenderData();
 	UINT MeshIndex = 0;
 	// 셰이더 설정
@@ -32,7 +32,7 @@ void FNiagaraSceneProxy::Draw()
 	D3D11_BUFFER_DESC indexBufferDesc;
 	RenderData->IndexBuffer[MeshIndex]->GetDesc(&indexBufferDesc);
 	UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
-	DeviceContext->Draw(1, 0);
+	DeviceContext->DrawIndexedInstanced(1,500,0,0, 0);
 
 
 
