@@ -17,6 +17,12 @@
     <Filter Include="Source\MyGame\Component">
       <UniqueIdentifier>{3e8daa15-35b2-46a9-9f85-96ae9e4a110c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Shader">
+      <UniqueIdentifier>{392ceba9-5813-4722-8c3a-0e6cade08705}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Shader\Niagara">
+      <UniqueIdentifier>{7de389fc-f13a-4ed7-b8de-9eb3830de917}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -48,5 +54,37 @@
     <ClInclude Include="Source\MyGame\Component\UTestComponent.h">
       <Filter>Source\MyGame\Component</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader\Global.fx">
+      <Filter>Source\Shader</Filter>
+    </None>
+    <None Include="Shader\AnimationHelpers.hlsl">
+      <Filter>Source\Shader</Filter>
+    </None>
+    <None Include="Shader\BuildShadowMap.hlsl">
+      <Filter>Source\Shader</Filter>
+    </None>
+    <None Include="Shader\DebuggingTexture.hlsl">
+      <Filter>Source\Shader</Filter>
+    </None>
+    <None Include="Shader\LightColor.hlsl">
+      <Filter>Source\Shader</Filter>
+    </None>
+    <None Include="Shader\LightHelper.hlsl">
+      <Filter>Source\Shader</Filter>
+    </None>
+    <None Include="Shader\SkeletalMesh.hlsl">
+      <Filter>Source\Shader</Filter>
+    </None>
+    <None Include="Shader\TransformHelpers.hlsl">
+      <Filter>Source\Shader</Filter>
+    </None>
+    <None Include="Shader\ParticleHelper.fx">
+      <Filter>Source\Shader\Niagara</Filter>
+    </None>
+    <None Include="Shader\BillboardSpriteRenderer.fx">
+      <Filter>Source\Shader\Niagara</Filter>
+    </None>
   </ItemGroup>
 </Project>

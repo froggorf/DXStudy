@@ -82,6 +82,9 @@
     <Filter Include="Source\Engine\Material">
       <UniqueIdentifier>{3415f7d7-eaa3-400b-8619-a5dcea17efa9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Engine\Niagara">
+      <UniqueIdentifier>{81ca5280-403d-46ad-bf3c-da4936362b27}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\DirectX\ShadowMap.cpp">
@@ -281,6 +284,15 @@
     </ClCompile>
     <ClCompile Include="Source\Engine\Class\UTexture.cpp">
       <Filter>Source\Engine\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Components\UNiagaraComponent.cpp">
+      <Filter>Source\Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\SceneProxy\FNiagaraSceneProxy.cpp">
+      <Filter>Source\Engine\SceneProxy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Niagara\UNiagaraSystem.cpp">
+      <Filter>Source\Engine\Niagara</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -502,6 +514,15 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\Class\UTexture.h">
       <Filter>Source\Engine\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Components\UNiagaraComponent.h">
+      <Filter>Source\Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\SceneProxy\FNiagaraSceneProxy.h">
+      <Filter>Source\Engine\SceneProxy</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Niagara\UNiagaraSystem.h">
+      <Filter>Source\Engine\Niagara</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -5,6 +5,7 @@
 
 #include "Engine/GameFramework/AActor.h"
 
+class UNiagaraComponent;
 class UStaticMeshComponent;
 
 class ATestCube : public AActor
@@ -23,4 +24,5 @@ private:
 	std::shared_ptr<UStaticMeshComponent> TestCube2;
 	std::shared_ptr<UStaticMeshComponent> TestCube3;
 	std::shared_ptr<UStaticMeshComponent> TestCube4;
+	std::shared_ptr<UNiagaraComponent> NiagaraComp;
 };

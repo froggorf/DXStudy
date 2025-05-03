@@ -1,0 +1,7 @@
+{
+	"Name": "NS_Test",
+	"Class": "UNiagaraSystem",
+	"Emitters" : [
+		{ "RenderType": 0, "Material": "M_NiagaraBillboardSprite" }
+	]
+}

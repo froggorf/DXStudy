@@ -3,16 +3,16 @@
 #include "Engine/UEditorEngine.h"
 #include "Engine/Components/USceneComponent.h"
 #include "Engine/Components/UStaticMeshComponent.h"
+#include "Engine/Components/UNiagaraComponent.h"
 #include "Engine/Mesh/UStaticMesh.h"
 
 
 ATestCube::ATestCube()
 {
 	//GetRootComponent()->SetRelativeRotation(XMFLOAT3(0.0f,0.0f,0.0f));
-	TestCubeStaticMeshComp = std::make_shared<UStaticMeshComponent>();
-	TestCubeStaticMeshComp->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Point"));
-	TestCubeStaticMeshComp->SetupAttachment(GetRootComponent());
-	TestCubeStaticMeshComp->SetRelativeScale3D(XMFLOAT3{30.0f,30.0f,30.0f});
+	NiagaraComp = std::make_shared<UNiagaraComponent>();
+	NiagaraComp->SetupAttachment(GetRootComponent());
+	NiagaraComp->SetNiagaraAsset(UNiagaraSystem::GetNiagaraSystem("NS_Test"));
 	//
 	//TestCubeStaticMeshComp->SetRelativeLocation(XMFLOAT3(0.0f,0.0f,0.0f));
 	////TestCubeStaticMeshComp->SetRelativeRotation(XMFLOAT3(0.0f,0.0f,0.0f));
@@ -26,10 +26,10 @@ ATestCube::ATestCube()
 
 	
 
-	TestCube3 = std::make_shared<UStaticMeshComponent>();
-	TestCube3->SetupAttachment(GetRootComponent());
-	TestCube3->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_TranslucentCube"));
-	TestCube3->SetRelativeScale3D(XMFLOAT3{30.0f,30.0f,30.0f});
+	//TestCube3 = std::make_shared<UStaticMeshComponent>();
+	//TestCube3->SetupAttachment(GetRootComponent());
+	//TestCube3->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_TranslucentCube"));
+	//TestCube3->SetRelativeScale3D(XMFLOAT3{30.0f,30.0f,30.0f});
 
 	Rename("ATestCube" + std::to_string(ActorID));
 }

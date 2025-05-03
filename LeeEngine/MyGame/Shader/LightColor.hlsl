@@ -1,6 +1,7 @@
 #pragma target 4.0
 #pragma enable_d3d11_debug_symbols
 
+#include "Global.fx"
 #include "LightHelper.hlsl"
 #include "TransformHelpers.hlsl"
 
@@ -9,16 +10,6 @@ SamplerState samLinear : register( s0 );
 
 Texture2D gShadowMap : register(t1);
 SamplerState gShadowSampler : register(s1);
-
-cbuffer cbPerFrame : register(b0)
-{
-	matrix View;
-	matrix Projection;
-    matrix LightView;
-    matrix LightProj;
-    float Time;
-    float3 Padding;
-}
 
 cbuffer cbPerObject : register(b1)
 {
@@ -57,7 +48,7 @@ VS_OUTPUT VS( float4 Pos : POSITION, float3 Normal : NORMAL, float2 TexCoord : T
     output.PosWorld =  mul( Pos, World ).xyz;
 
     // PosScreen
-    output.PosScreen = CalculateScreenPosition(Pos, World,View,Projection);
+    output.PosScreen = CalculateScreenPosition(Pos, World,gView,gProjection);
     output.Depth = output.PosScreen.z;
 
     // 노말벡터를 월드좌표계로
@@ -67,7 +58,7 @@ VS_OUTPUT VS( float4 Pos : POSITION, float3 Normal : NORMAL, float2 TexCoord : T
     output.Tex = TexCoord;
 
     // light source에서 버텍스로의 position
-    output.PosLightSpace = CalculateScreenPosition(Pos, World,LightView,LightProj);
+    output.PosLightSpace = CalculateScreenPosition(Pos, World,gLightView,gLightProj);
 		
     return output;
 }
@@ -132,8 +123,8 @@ cbuffer cbTest : register(b4)
 float4 TestWater( VS_OUTPUT input ) : SV_Target
 {
     float2 NewWaterUV = input.Tex;
-    NewWaterUV.x = NewWaterUV.x + Time * TestSpeedX;
-    NewWaterUV.y = NewWaterUV.y + Time*TestSpeedY;
+    NewWaterUV.x = NewWaterUV.x + gTime * TestSpeedX;
+    NewWaterUV.y = NewWaterUV.y + gTime*TestSpeedY;
     float4 color = txDiffuse.Sample( samLinear, NewWaterUV );
 
 

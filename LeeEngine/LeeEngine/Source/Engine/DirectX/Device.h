@@ -8,6 +8,8 @@
 #include "Engine/MyEngineUtils.h"
 #include <wrl/client.h>
 
+class FGeometryShader;
+
 enum class EConstantBufferType
 {
 	CBT_PerFrame,
@@ -97,7 +99,7 @@ public:
 	UINT CurrentComputeShaderID = -1;
 	void SetComputeShader(class FComputeShader* InComputeShader);
 	UINT CurrentGeometryShaderID = -1;
-	void SetGeometryShader(class FGeometryShader* InGeometryShader);
+	void SetGeometryShader(const std::shared_ptr<FGeometryShader>& InGeometryShader);
 
 #ifdef WITH_EDITOR
 public:

@@ -1,6 +1,6 @@
 #pragma target 4.0
 #pragma enable_d3d11_debug_symbols
-
+#include "Global.fx"
 #include "LightHelper.hlsl"
 #include "TransformHelpers.hlsl"
 #include "AnimationHelpers.hlsl"
@@ -10,16 +10,6 @@ SamplerState samLinear : register( s0 );
 
 Texture2D gShadowMap : register(t1);
 SamplerState gShadowSampler : register(s1);
-
-cbuffer cbPerFrame : register(b0)
-{
-	matrix View;
-	matrix Projection;
-    matrix LightView;
-    matrix LightProj;
-    float Time;
-    float3 Padding;
-}
 
 cbuffer cbPerObject : register(b1)
 {
@@ -94,7 +84,7 @@ VS_OUTPUT VS( VS_INPUT input )
 
     // PosScreen
     {
-        output.PosScreen = CalculateScreenPosition(input.Pos, World,View,Projection);
+        output.PosScreen = CalculateScreenPosition(input.Pos, World,gView,gProjection);
         output.Depth = output.PosScreen.z;    
     }
 
@@ -105,7 +95,7 @@ VS_OUTPUT VS( VS_INPUT input )
     }
 
     // light source에서 버텍스로의 position
-    output.PosLightSpace = CalculateScreenPosition(input.Pos, World,LightView,LightProj);
+    output.PosLightSpace = CalculateScreenPosition(input.Pos, World,gLightView,gLightProj);
     
     output.Tex = input.TexCoord;
 

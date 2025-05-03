@@ -76,6 +76,9 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 
 			VSTarget = FShader::ShaderCache.insert(std::pair<std::string, std::shared_ptr<FShader>>{ VSName+FuncName, NewVS}).first;
 			VSTarget->second->SetShaderID(FShader::ShaderCache.size());
+#ifdef MYENGINE_BUILD_DEBUG
+			VSTarget->second->SetName(VSName,FuncName);
+#endif
 		}
 		VertexShader = std::dynamic_pointer_cast<FVertexShader>(VSTarget->second);
 	}
@@ -92,8 +95,35 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 			NewPS->CompilePixelShader(PSName,FuncName);
 			PSTarget = FShader::ShaderCache.insert(std::pair<std::string, std::shared_ptr<FShader>>{ PSName+FuncName, NewPS}).first;
 			PSTarget->second->SetShaderID(FShader::ShaderCache.size());
+#ifdef MYENGINE_BUILD_DEBUG
+			PSTarget->second->SetName(PSName,FuncName);
+#endif
 		}
 		PixelShader = std::dynamic_pointer_cast<FPixelShader>(PSTarget->second);
+	}
+
+	// GeometryShader 가 있다면 로드
+	{
+		if(AssetData.contains("GeometryShader"))
+		{
+			auto GeometryShaderData = AssetData["GeometryShader"];
+			std::string GSName = GeometryShaderData["FilePath"];
+			std::string FuncName = GeometryShaderData["Func"];
+			auto GSTarget = FShader::ShaderCache.find(GSName+FuncName);
+			if (GSTarget == FShader::ShaderCache.end())
+			{
+				std::shared_ptr<FGeometryShader> NewGS = std::make_shared<FGeometryShader>();
+				NewGS->CompileGeometryShader(GSName, FuncName);
+				GSTarget = FShader::ShaderCache.insert(std::pair<std::string, std::shared_ptr<FShader>>{ GSName + FuncName, NewGS}).first;
+				GSTarget->second->SetShaderID(FShader::ShaderCache.size());
+#ifdef MYENGINE_BUILD_DEBUG
+				GSTarget->second->SetName(GSName,FuncName);
+#endif
+			}
+			GeometryShader = std::dynamic_pointer_cast<FGeometryShader>(GSTarget->second);
+		}
+		
+
 	}
 
 	// 텍스쳐 정보가 있다면 텍스쳐 로드
@@ -213,6 +243,7 @@ void UMaterial::Binding()
 
 	GDirectXDevice->SetVertexShader(VertexShader.get());
 	GDirectXDevice->SetPixelShader(PixelShader.get());
+	GDirectXDevice->SetGeometryShader(GeometryShader);
 
 	ComPtr<ID3D11DeviceContext> DeviceContext = GDirectXDevice->GetDeviceContext();
 	for(int i = 0; i < Textures.size(); ++i)
@@ -403,6 +434,17 @@ void UMaterialInstance::BindingMaterialInstanceUserParam() const
 	}
 }
 
+FStructuredBuffer::FStructuredBuffer()
+	: Desc{}
+	, ElementSize(0)
+	, ElementCount(0)
+{
+}
+
+FStructuredBuffer::~FStructuredBuffer()
+{
+}
+
 FComputeShader::FComputeShader( const std::string& FilePath, const std::string& FuncName, UINT ThreadPerGroupX,
 	UINT ThreadPerGroupY, UINT ThreadPerGroupZ)
 		: ThreadPerGroupX(ThreadPerGroupX), ThreadPerGroupY(ThreadPerGroupY), ThreadPerGroupZ(ThreadPerGroupZ)
@@ -534,19 +576,77 @@ void FSetColorCS::MapAndBindConstantBuffer()
 	GDirectXDevice->GetDeviceContext()->CSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_ComputeShader),1,ConstantBuffer.GetAddressOf());
 }
 
+FTickParticleCS::FTickParticleCS()
+	:FComputeShader("/Shader/TickParticle.fx", "CS_TickParticle", 256, 1,1)
+{
+	// Constant Buffer 생성
+	D3D11_BUFFER_DESC bufferDesc = {};
+	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	bufferDesc.ByteWidth = 16;
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ConstantBuffer.GetAddressOf()));	
+}
 
-
-
-
-FStructuredBuffer::FStructuredBuffer()
-	: Desc{}
-	, ElementSize(0)
-	, ElementCount(0)
+FTickParticleCS::~FTickParticleCS()
 {
 }
 
-FStructuredBuffer::~FStructuredBuffer()
+
+bool FTickParticleCS::Binding()
 {
+	if (   nullptr == ParticleBuffer
+		|| nullptr == SpawnBuffer )
+		return E_FAIL;
+
+	ParticleBuffer->Binding_CS_UAV(0);
+	SpawnBuffer->Binding_CS_UAV(1);
+	ModuleBuffer->Binding_CS_SRV(20);
+
+	MapAndBindConstantBuffer();
+	return true;
+}
+
+void FTickParticleCS::CalculateGroupCount()
+{
+	GroupX = ParticleBuffer->GetElementCount() / ThreadPerGroupX;
+	if (ParticleBuffer->GetElementCount() % ThreadPerGroupX)
+		GroupX += 1;
+	
+	GroupY = 1;
+	GroupZ = 1;
+}
+
+void FTickParticleCS::ClearBinding()
+{
+	ParticleBuffer->Clear_CS_UAV(0);
+	ParticleBuffer = nullptr;
+	SpawnBuffer->Clear_CS_UAV(1);
+	SpawnBuffer = nullptr;
+	ModuleBuffer->Clear_CS_SRV(20);
+	ModuleBuffer = nullptr;
+}
+
+void FTickParticleCS::MapAndBindConstantBuffer()
+{
+	D3D11_MAPPED_SUBRESOURCE cbMapSub{};
+	HR(GDirectXDevice->GetDeviceContext()->Map(ConstantBuffer.Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &cbMapSub));
+
+	UINT ParticleCount = ParticleBuffer->GetElementCount();
+	memcpy(cbMapSub.pData, &ParticleCount, 4);
+
+	GDirectXDevice->GetDeviceContext()->Unmap(ConstantBuffer.Get(),0);
+
+	GDirectXDevice->GetDeviceContext()->CSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_ComputeShader),1,ConstantBuffer.GetAddressOf());
+}
+
+void FGeometryShader::CompileGeometryShader(const std::string& FilePath, const std::string& FuncName)
+{
+	std::string TempDirectoryPath = GEngine->GetDirectoryPath();
+	std::wstring TempShaderPath = std::wstring(TempDirectoryPath.begin(), TempDirectoryPath.end());
+	std::wstring ShaderFilePath = TempShaderPath + std::wstring{ FilePath.begin(),FilePath.end() };
+	HR(CompileShaderFromFile(ShaderFilePath.c_str(), FuncName.c_str(), "gs_4_0", GSBlob.GetAddressOf()));
+	HR(GDirectXDevice->GetDevice()->CreateGeometryShader(GSBlob->GetBufferPointer(), GSBlob->GetBufferSize(), nullptr, GeometryShader.GetAddressOf()));
 }
 
 int FStructuredBuffer::Create(UINT _ElementSize, UINT _ElementCount, SB_TYPE _Type, bool _SysMemMove, void* _SysMem)
@@ -702,5 +802,29 @@ void FStructuredBuffer::Clear(UINT _TexRegisterNum)
 	GDirectXDevice->GetDeviceContext()->DSSetShaderResources(_TexRegisterNum, 1, &pSRV);
 	GDirectXDevice->GetDeviceContext()->GSSetShaderResources(_TexRegisterNum, 1, &pSRV);
 	GDirectXDevice->GetDeviceContext()->PSSetShaderResources(_TexRegisterNum, 1, &pSRV);
+}
+
+void FStructuredBuffer::Binding_CS_SRV(UINT RegisterNum) const
+{
+	GDirectXDevice->GetDeviceContext()->CSSetShaderResources(RegisterNum, 1, SRV.GetAddressOf());
+}
+
+void FStructuredBuffer::Binding_CS_UAV(UINT RegisterNum) const
+{
+	UINT i = -1;
+	GDirectXDevice->GetDeviceContext()->CSSetUnorderedAccessViews(RegisterNum, 1, UAV.GetAddressOf(), &i);
+}
+
+void FStructuredBuffer::Clear_CS_SRV(UINT RegisterNum) const
+{
+	ID3D11ShaderResourceView* NullSRV = nullptr;
+	GDirectXDevice->GetDeviceContext()->CSSetShaderResources(RegisterNum, 1, &NullSRV);
+}
+
+void FStructuredBuffer::Clear_CS_UAV(UINT _RegisterNum) const
+{
+	UINT i = -1;
+	ID3D11UnorderedAccessView* NullUAV = nullptr;
+	GDirectXDevice->GetDeviceContext()->CSSetUnorderedAccessViews(_RegisterNum, 1, &NullUAV, &i);
 }
 

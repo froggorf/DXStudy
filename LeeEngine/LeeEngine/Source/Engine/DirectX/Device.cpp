@@ -153,7 +153,6 @@ void FDirectXDevice::SetPixelShader(class FPixelShader* InPixelShader)
 
 void FDirectXDevice::SetComputeShader(class FComputeShader* InComputeShader)
 {
-	UINT NewShaderID = InComputeShader->GetShaderID();
 	if(InComputeShader == nullptr)
 	{
 		if(CurrentComputeShaderID != -1)
@@ -162,7 +161,10 @@ void FDirectXDevice::SetComputeShader(class FComputeShader* InComputeShader)
 			ID3D11ComputeShader* CS = nullptr;
 			m_d3dDeviceContext->CSSetShader(CS, nullptr,0);
 		}
+		return;
 	}
+
+	UINT NewShaderID = InComputeShader->GetShaderID();
 	if(NewShaderID != CurrentComputeShaderID)
 	{
 		CurrentComputeShaderID = NewShaderID;
@@ -170,23 +172,25 @@ void FDirectXDevice::SetComputeShader(class FComputeShader* InComputeShader)
 	}
 }
 
-void FDirectXDevice::SetGeometryShader(class FGeometryShader* InGeometryShader)
+void FDirectXDevice::SetGeometryShader(const std::shared_ptr<FGeometryShader>& InGeometryShader)
 {
-	//UINT NewShaderID = InGeometryShader->GetShaderID();
-	//if(InGeometryShader == nullptr)
-	//{
-	//	if(CurrentGeometryShaderID != -1)
-	//	{
-	//		CurrentGeometryShaderID = -1;
-	//		ID3D11ComputeShader* CS = nullptr;
-	//		m_d3dDeviceContext->CSSetShader(CS, nullptr,0);
-	//	}
-	//}
-	//if(NewShaderID != CurrentGeometryShaderID)
-	//{
-	//	CurrentGeometryShaderID = NewShaderID;
-	//	m_d3dDeviceContext->CSSetShader(InGeometryShader->GetGeometryShader().Get(), nullptr,0);
-	//}
+	if(InGeometryShader == nullptr)
+	{
+		if(CurrentGeometryShaderID != -1)
+		{
+			CurrentGeometryShaderID = -1;
+			ID3D11GeometryShader* GS = nullptr;
+			m_d3dDeviceContext->GSSetShader(GS, nullptr,0);
+		}
+		return;
+	}
+
+	UINT NewShaderID = InGeometryShader->GetShaderID();
+	if(NewShaderID != CurrentGeometryShaderID)
+	{
+		CurrentGeometryShaderID = NewShaderID;
+		m_d3dDeviceContext->GSSetShader(InGeometryShader->GeometryShader.Get(), nullptr,0);
+	}
 }
 
 void FDirectXDevice::ResizeEditorRenderTarget(float NewX, float NewY)

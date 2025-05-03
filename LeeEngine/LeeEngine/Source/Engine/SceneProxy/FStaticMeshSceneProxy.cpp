@@ -39,9 +39,6 @@ void FStaticMeshSceneProxy::Draw()
 
 	ID3D11DeviceContext* DeviceContext = GDirectXDevice->GetDeviceContext().Get();
 
-
-
-
 	// 셰이더 설정
 	UINT stride = sizeof(MyVertexData);
 	UINT offset = 0;
