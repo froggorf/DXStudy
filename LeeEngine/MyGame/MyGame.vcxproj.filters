@@ -68,5 +68,8 @@
     <None Include="Shader\ParticleHelper.fx">
       <Filter>Shader</Filter>
     </None>
+    <None Include="Shader\TickParticleCS.fx">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -21,3 +21,63 @@ struct FParticleData
 // CPU 코드 내에도 ParticleDataRegister 로 20이 지정되어있음
 #define ParticleDataRegister t20
 StructuredBuffer<FParticleData> gParticle : register(t20);
+
+
+struct FParticleSpawn
+{
+	int     SpawnCount;
+	int3    vPadding;
+};
+
+// Particle Module
+struct FParticleModule
+{
+	// Spawn Modlue
+	float	SpawnRate;			// 초당 파티클 생성량
+	float4	StartColor;			// 초기 파티클 색상
+
+	float3	MinScale;			// 생성 시 최소 크기
+	float3	MaxScale;			// 생성 시 최대 크기
+	float	MinLife;			// 생성 시 최소 주기
+	float	MaxLife;			// 생성 시 최대 주기
+	int		SpawnShape;			// 0 : Box, 1 : Sphere
+	float3 SpawnShapeScale;
+	int		SpaceType;			// 0 : Local, 1 : World
+
+	uint	BlockSpawnShape;		// 0 : Box,  1: Sphere
+	float3	BlockSpawnShapeScale;	// SpawnShapeScale.x == Radius
+
+	// Spawn Burst
+	uint	SpawnBurstCount;		// 한번에 발생시키는 Particle 수
+	uint	SpawnBurstRepeat;
+	float	SpawnBurstRepeatTime;
+	float   AccSpawnBurstRepeatTime;
+
+
+	// Add Velocity
+	uint	AddVelocityType;		// 0 : Random, 1 : FromCenter, 2 : ToCenter, 4 : Fixed 
+	float3	AddVelocityFixedDir;
+	float	AddMinSpeed;
+	float	AddMaxSpeed;
+
+	// Scale Module
+	float	StartScale;
+	float	EndScale;
+
+	// Drag Module (감속 모듈)
+	float	DestNormalizedAge;
+	float	LimitSpeed;
+
+	// Render Module
+	float4	EndColor;			// 파티클 최종 색상
+	int		FadeOut;			// 0 : Off, 1 : Normalized Age
+	float   StartRatio;			// FadeOut 효과가 시작되는 Normalized Age 지점
+	uint	VelocityAlignment;  // 속도 정렬 0 : Off, 1 : On
+	uint	CrossMesh;			// 십자형태 메쉬 사용 0 : Off, 1 : ON
+
+	// 추가 데이터
+	float3 ObjectWorldPos;
+
+	// Module On / Off
+	int		Module[6];
+};

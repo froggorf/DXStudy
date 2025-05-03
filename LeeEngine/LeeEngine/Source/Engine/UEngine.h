@@ -22,7 +22,6 @@ class UEngine : public UObject
 	MY_GENERATED_BODY(UEngine)
 
 public:
-
 	UEngine() = default;
 	UEngine(D3DApp* CurrentApplication)
 	{
@@ -35,6 +34,7 @@ public:
 	virtual void LoadDataFromDefaultEngineIni();
 	virtual void LoadDefaultMap();
 	virtual const std::string& GetDefaultMapName();
+	
 	float GetDeltaSeconds() const {return DeltaSeconds;}
 	float GetTimeSeconds() const {return TimeSeconds;}
 

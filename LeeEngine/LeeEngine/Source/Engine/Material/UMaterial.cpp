@@ -3,6 +3,7 @@
 
 #include "Engine/UEngine.h"
 #include "Engine/RenderCore/EditorScene.h"
+#include "Engine/SceneProxy/FNiagaraSceneProxy.h"
 
 std::unordered_map<std::string, std::shared_ptr<FShader>> FShader::ShaderCache;
 std::unordered_map<std::string, std::shared_ptr<UMaterialInterface>> UMaterialInterface::MaterialCache;
@@ -444,7 +445,7 @@ void FComputeShader::Execute()
 
 		//GDirectXDevice->SetComputeShader(this);
 		GDirectXDevice->GetDeviceContext()->CSSetShader(ComputeShader.Get(),nullptr,0);
-
+		
 		GDirectXDevice->GetDeviceContext()->Dispatch(GroupX,GroupY,GroupZ);
 
 		ClearBinding();
@@ -554,8 +555,56 @@ void FSetColorCS::MapAndBindConstantBuffer()
 	GDirectXDevice->GetDeviceContext()->CSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_ComputeShader),1,ConstantBuffer.GetAddressOf());
 }
 
+FTickParticleCS::FTickParticleCS()
+	:FComputeShader("/Shader/TickParticleCS.fx", "CS_TickParticle",256,1,1)
+{
+}
 
+bool FTickParticleCS::Binding()
+{
+	if (nullptr == ParticleBuffer || nullptr == SpawnBuffer)
+	{
+		return false;
+	}
 
+	ParticleBuffer->Binding_CS_UAV(0);
+	SpawnBuffer->Binding_CS_UAV(1);
+	// 렌더링 시 사용되는 t 레지스터지만,
+	// CS에서 같은 번호를 사용해 파티클 관련 레지스터 번호임을 명시
+	ModuleBuffer->Binding_CS_SRV(ParticleDataRegister);
+
+	return true;
+}
+
+void FTickParticleCS::CalculateGroupCount()
+{
+	GroupX = ParticleBuffer->GetElementCount() / ThreadPerGroupX;
+	if (ParticleBuffer->GetElementCount() % ThreadPerGroupX)
+		++GroupX;
+
+	GroupY = 1;
+	GroupZ = 1;
+}
+
+void FTickParticleCS::ClearBinding()
+{
+	ParticleBuffer->Clear_CS_UAV(0);
+	ParticleBuffer = nullptr;
+
+	SpawnBuffer->Clear_CS_UAV(1);
+	SpawnBuffer = nullptr;
+
+	ModuleBuffer->Clear_CS_SRV(ParticleDataRegister);
+	ModuleBuffer = nullptr;
+}
+
+void FTickParticleCS::MapAndBindConstantBuffer()
+{
+	// 원래는 파티클 최대 개수를 상수버퍼를 통해 건네줘야하지만,
+	// 모든 파티클이 최대 MaxParticleCount (500) 개의 파티클을 지정했으며,
+	// CS hlsl 코드 내에도 #define 으로 같은 값을 지정하므로,
+	// 상수버퍼로 건네주지 않음
+}
 
 
 FStructuredBuffer::FStructuredBuffer()
@@ -733,5 +782,29 @@ void FStructuredBuffer::Clear(UINT _TexRegisterNum)
 	GDirectXDevice->GetDeviceContext()->DSSetShaderResources(_TexRegisterNum, 1, &pSRV);
 	GDirectXDevice->GetDeviceContext()->GSSetShaderResources(_TexRegisterNum, 1, &pSRV);
 	GDirectXDevice->GetDeviceContext()->PSSetShaderResources(_TexRegisterNum, 1, &pSRV);
+}
+
+void FStructuredBuffer::Binding_CS_UAV(UINT RegisterNum)
+{
+	UINT i = -1;
+	GDirectXDevice->GetDeviceContext()->CSSetUnorderedAccessViews(RegisterNum, 1, UAV.GetAddressOf(), &i);
+}
+
+void FStructuredBuffer::Clear_CS_UAV(UINT RegisterNum)
+{
+	UINT i = -1;
+	ID3D11UnorderedAccessView* NullUAV = nullptr;
+	GDirectXDevice->GetDeviceContext()->CSSetUnorderedAccessViews(RegisterNum, 1, &NullUAV, &i);
+}
+
+void FStructuredBuffer::Binding_CS_SRV(UINT RegisterNum)
+{
+	GDirectXDevice->GetDeviceContext()->CSSetShaderResources(RegisterNum,1,SRV.GetAddressOf());
+}
+
+void FStructuredBuffer::Clear_CS_SRV(UINT RegisterNum)
+{
+	ID3D11ShaderResourceView* NullSRV = nullptr;
+	GDirectXDevice->GetDeviceContext()->CSSetShaderResources(RegisterNum, 1, &NullSRV);
 }
 

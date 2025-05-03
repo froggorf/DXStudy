@@ -40,8 +40,8 @@ protected:
 	UINT MeshIndex;
 	// 머테리얼 정보
 	std::shared_ptr<UMaterialInterface> MaterialInterface;
-private:
 
 	FTransform ComponentToWorld;
+private:
 
 };

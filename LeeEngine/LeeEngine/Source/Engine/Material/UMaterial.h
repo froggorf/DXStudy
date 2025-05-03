@@ -214,6 +214,55 @@ private:
 
 
 // ==============================================
+// ================= StructuredBuffer ====================
+
+enum class SB_TYPE
+{
+	SRV_ONLY, // t
+	SRV_UAV,  // t u
+};
+
+class FStructuredBuffer
+{
+	Microsoft::WRL::ComPtr<ID3D11Buffer>            MainBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer>                WriteBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer>                ReadBuffer;
+
+	D3D11_BUFFER_DESC                   Desc;
+
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>    SRV; // t 레지스터 바인딩
+	Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView>   UAV; // u 레지스터 바인딩
+
+	UINT                                ElementSize;      // 크기
+	UINT                                ElementCount;     // 개수
+
+	SB_TYPE                             Type;             // t u 레지스터 바인딩 설정
+	bool                                bSysMove;          // SystemMemory 와 데이터 전송 가능
+
+public:
+	int Create(UINT _ElementSize, UINT _ElementCount, SB_TYPE _Type, bool _SysMemMove, void* _SysMem = nullptr);
+
+	UINT GetElementCount() const { return ElementCount; }
+	UINT GetElementSize() const { return ElementSize; }
+	UINT GetBufferSize() const { return ElementSize * ElementCount; }
+
+	void SetData(void* _SysMem, UINT _ElementCount = 0);
+	void GetData(void* _SysMem, UINT _ElementCount = 0);
+	void Binding(UINT _TexRegisterNum);
+	void Clear(UINT _TexRegisterNum);
+
+	void Binding_CS_UAV(UINT RegisterNum);
+	void Clear_CS_UAV(UINT RegisterNum);
+	void Binding_CS_SRV(UINT RegisterNum);
+	void Clear_CS_SRV(UINT RegisterNum);
+
+public:
+	FStructuredBuffer();
+	virtual ~FStructuredBuffer();
+
+};
+
+// ==============================================
 // ================ 컴퓨트 셰이더 ================
 class FComputeShader : public FShader, public std::enable_shared_from_this<FComputeShader>
 {
@@ -274,53 +323,31 @@ public:
 	void MapAndBindConstantBuffer() override;
 };
 
-// ==============================================
-
-// ================= StructuredBuffer ====================
-
-enum class SB_TYPE
+class FTickParticleCS : public FComputeShader
 {
-	SRV_ONLY, // t
-	SRV_UAV,  // t u
-};
-
-class FStructuredBuffer
-{
-	Microsoft::WRL::ComPtr<ID3D11Buffer>            MainBuffer;
-	Microsoft::WRL::ComPtr<ID3D11Buffer>                WriteBuffer;
-	Microsoft::WRL::ComPtr<ID3D11Buffer>                ReadBuffer;
-
-	D3D11_BUFFER_DESC                   Desc;
-
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>    SRV; // t 레지스터 바인딩
-	Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView>   UAV; // u 레지스터 바인딩
-
-	UINT                                ElementSize;      // 크기
-	UINT                                ElementCount;     // 개수
-
-	SB_TYPE                             Type;             // t u 레지스터 바인딩 설정
-	bool                                bSysMove;          // SystemMemory 와 데이터 전송 가능
 
 public:
-	int Create(UINT _ElementSize, UINT _ElementCount, SB_TYPE _Type, bool _SysMemMove, void* _SysMem = nullptr);
+	FTickParticleCS();
 
-	UINT GetElementCount() const { return ElementCount; }
-	UINT GetElementSize() const { return ElementSize; }
-	UINT GetBufferSize() const { return ElementSize * ElementCount; }
-
-	void SetData(void* _SysMem, UINT _ElementCount = 0);
-	void GetData(void* _SysMem, UINT _ElementCount = 0);
-	void Binding(UINT _TexRegisterNum);
-	void Clear(UINT _TexRegisterNum);
-
+private:
+	std::shared_ptr<FStructuredBuffer> ParticleBuffer;
+	std::shared_ptr<FStructuredBuffer> SpawnBuffer;
+	std::shared_ptr<FStructuredBuffer> ModuleBuffer;
+public:
+	void SetParticleBuffer(const std::shared_ptr<FStructuredBuffer>& InBuffer) {ParticleBuffer = InBuffer;}
+	void SetSpawnBuffer(const std::shared_ptr<FStructuredBuffer>& InBuffer) {SpawnBuffer = InBuffer;}
+	void SetModuleBuffer(const std::shared_ptr<FStructuredBuffer>& InBuffer) {ModuleBuffer = InBuffer;}
 
 public:
-	FStructuredBuffer();
-	virtual ~FStructuredBuffer();
-
+	bool Binding() override;
+	void CalculateGroupCount() override;
+	void ClearBinding() override;
+	void MapAndBindConstantBuffer() override;
 };
 
 // ==============================================
+
+
 
 
 // ===========GeometryShader===================
