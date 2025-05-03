@@ -25,8 +25,8 @@ ATestCube::ATestCube()
 	//TestCube2->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Cube"));
 	//TestCube2->SetRelativeScale3D(XMFLOAT3(100.0f,1.0f,100.0f));
 
-	//NiagaraComp = std::make_shared<UNiagaraComponent>();
-	//NiagaraComp->SetupAttachment(GetRootComponent());
+	NiagaraComp = std::make_shared<UNiagaraComponent>();
+	NiagaraComp->SetupAttachment(GetRootComponent());
 	
 
 	TestCube3 = std::make_shared<UStaticMeshComponent>();

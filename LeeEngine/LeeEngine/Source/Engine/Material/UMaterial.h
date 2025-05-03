@@ -158,6 +158,7 @@ public:
 protected:
 	std::shared_ptr<FVertexShader> VertexShader;
 	std::shared_ptr<FPixelShader> PixelShader;
+	std::shared_ptr<FGeometryShader> GeometryShader;
 
 	// 디폴트 텍스쳐 데이터
 	std::vector<std::shared_ptr<UTexture>> Textures;

@@ -1,3 +1,5 @@
+#include "Global.fx"
+
 struct VS_IN
 {
     float3 vPos : POSITION;  
@@ -10,7 +12,7 @@ struct VS_OUT
     uint InstID : FOG;
 };
 
-VS_OUT VS_Particle(VS_IN _in)
+VS_OUT VS_BillboardSpriteParticle(VS_IN _in)
 {
     VS_OUT output = (VS_OUT) 0.f;
 
@@ -36,7 +38,7 @@ struct GS_OUT
 };
 
 [maxvertexcount(6)]
-void GS_Particle(point VS_OUT _in[1], inout TriangleStream<GS_OUT> _OutStream)
+void GS_Billboard(point VS_OUT _in[1], inout TriangleStream<GS_OUT> _OutStream)
 {
     //tParticle particle = g_Particle[_in[0].InstID];
 
@@ -45,7 +47,7 @@ void GS_Particle(point VS_OUT _in[1], inout TriangleStream<GS_OUT> _OutStream)
 
     // WorldSpace -> ViewSpace
     //float4 vViewPos = mul(float4(particle.WorldPos, 1.f), g_matView);
-    //float4 vViewPos = mul(float4(particle.WorldPos, 1.f), g_matView);
+	float4 vViewPos = mul(float4(0.0f,0.0f,0.0f, 1.f), gView);
 
     // 정점 4개 위치 설정
     // 0 -- 1
@@ -53,10 +55,15 @@ void GS_Particle(point VS_OUT _in[1], inout TriangleStream<GS_OUT> _OutStream)
     // 3 -- 2
     GS_OUT arrOut[4] = { (GS_OUT) 0.f, (GS_OUT) 0.f, (GS_OUT) 0.f, (GS_OUT) 0.f };
 
-    arrOut[0].vPosition = float4(vViewPos.x - particle.WorldScale.x / 2.f, vViewPos.y + particle.WorldScale.y / 2.f, vViewPos.z, 1.f);
-    arrOut[1].vPosition = float4(vViewPos.x + particle.WorldScale.x / 2.f, vViewPos.y + particle.WorldScale.y / 2.f, vViewPos.z, 1.f);
-    arrOut[2].vPosition = float4(vViewPos.x + particle.WorldScale.x / 2.f, vViewPos.y - particle.WorldScale.y / 2.f, vViewPos.z, 1.f);
-    arrOut[3].vPosition = float4(vViewPos.x - particle.WorldScale.x / 2.f, vViewPos.y - particle.WorldScale.y / 2.f, vViewPos.z, 1.f);
+    //arrOut[0].vPosition = float4(vViewPos.x - particle.WorldScale.x / 2.f, vViewPos.y + particle.WorldScale.y / 2.f, vViewPos.z, 1.f);
+    //arrOut[1].vPosition = float4(vViewPos.x + particle.WorldScale.x / 2.f, vViewPos.y + particle.WorldScale.y / 2.f, vViewPos.z, 1.f);
+    //arrOut[2].vPosition = float4(vViewPos.x + particle.WorldScale.x / 2.f, vViewPos.y - particle.WorldScale.y / 2.f, vViewPos.z, 1.f);
+    //arrOut[3].vPosition = float4(vViewPos.x - particle.WorldScale.x / 2.f, vViewPos.y - particle.WorldScale.y / 2.f, vViewPos.z, 1.f);
+
+    arrOut[0].vPosition = float4(vViewPos.x - 5000.0f / 2.f, vViewPos.y + 3000.0f / 2.f, vViewPos.z, 1.f);
+    arrOut[1].vPosition = float4(vViewPos.x + 5000.0f / 2.f, vViewPos.y + 3000.0f / 2.f, vViewPos.z, 1.f);
+    arrOut[2].vPosition = float4(vViewPos.x + 5000.0f / 2.f, vViewPos.y - 3000.0f / 2.f, vViewPos.z, 1.f);
+    arrOut[3].vPosition = float4(vViewPos.x - 5000.0f / 2.f, vViewPos.y - 3000.0f / 2.f, vViewPos.z, 1.f);
 
     arrOut[0].vUV = float2(0.f, 0.f);
     arrOut[1].vUV = float2(1.f, 0.f);
@@ -66,7 +73,7 @@ void GS_Particle(point VS_OUT _in[1], inout TriangleStream<GS_OUT> _OutStream)
     // ViewSpace -> Projection
     for (int i = 0; i < 4; ++i)
     {
-        arrOut[i].vPosition = mul(arrOut[i].vPosition, g_matProj);
+        arrOut[i].vPosition = mul(arrOut[i].vPosition, gProjection);
         arrOut[i].InstID = _in[0].InstID;
     }    
 
@@ -79,4 +86,12 @@ void GS_Particle(point VS_OUT _in[1], inout TriangleStream<GS_OUT> _OutStream)
     _OutStream.Append(arrOut[2]);
     _OutStream.Append(arrOut[3]);
     _OutStream.RestartStrip();
+}
+
+
+float4 PS_Particle(GS_OUT _in) : SV_Target
+{  
+    float4 vColor = float4(1.f, 0.f, 1.f, 1.f);
+
+	return vColor;    
 }

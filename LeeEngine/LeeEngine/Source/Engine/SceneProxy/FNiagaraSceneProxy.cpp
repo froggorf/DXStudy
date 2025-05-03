@@ -6,14 +6,19 @@
 FNiagaraSceneProxy::FNiagaraSceneProxy(UINT InPrimitiveID)
 	: FPrimitiveSceneProxy(InPrimitiveID)
 {
-	MaterialInterface = UMaterial::GetMaterialCache("M_Cube");
+	MaterialInterface = UMaterial::GetMaterialCache("M_NiagaraBillboardSprite");
 }
 
 void FNiagaraSceneProxy::Draw()
 {
 	FPrimitiveSceneProxy::Draw();
+
+	
+	UMaterial::GetMaterialCache("M_NiagaraBillboardSprite")->Binding();
+
+
 	auto DeviceContext = GDirectXDevice->GetDeviceContext();
-	//DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
 	auto sm = UStaticMesh::GetStaticMesh("SM_Cube");
 	auto RenderData = sm->GetStaticMeshRenderData();
@@ -27,7 +32,7 @@ void FNiagaraSceneProxy::Draw()
 	D3D11_BUFFER_DESC indexBufferDesc;
 	RenderData->IndexBuffer[MeshIndex]->GetDesc(&indexBufferDesc);
 	UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
-	DeviceContext->DrawIndexed(indexSize, 0, 0);
+	DeviceContext->Draw(1, 0);
 
 
 

@@ -69,7 +69,7 @@ VS_OUTPUT VS( VS_INPUT input )
 
     // PosScreen
     {
-        output.PosScreen = CalculateScreenPosition(input.Pos, World,View,Projection);
+        output.PosScreen = CalculateScreenPosition(input.Pos, World,gView,gProjection);
         output.Depth = output.PosScreen.z;    
     }
 
@@ -80,7 +80,7 @@ VS_OUTPUT VS( VS_INPUT input )
     }
 
     // light source에서 버텍스로의 position
-    output.PosLightSpace = CalculateScreenPosition(input.Pos, World,LightView,LightProj);
+    output.PosLightSpace = CalculateScreenPosition(input.Pos, World,gLightView,gLightProj);
     
     output.Tex = input.TexCoord;
 

@@ -96,6 +96,25 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 		PixelShader = std::dynamic_pointer_cast<FPixelShader>(PSTarget->second);
 	}
 
+	// GeometryShader 로드
+	{
+		if(AssetData.contains("GeometryShader"))
+		{
+			auto GeometryShaderData = AssetData["GeometryShader"];
+			std::string GSName = GeometryShaderData["FilePath"];
+			std::string FuncName = GeometryShaderData["Func"];
+			auto GSTarget = FShader::ShaderCache.find(GSName + FuncName);
+			if (GSTarget == FShader::ShaderCache.end())
+			{
+				std::shared_ptr<FGeometryShader> NewGS = std::make_shared<FGeometryShader>();
+				NewGS->CompileGeometryShader(GSName, FuncName);
+				GSTarget = FShader::ShaderCache.insert(std::pair<std::string, std::shared_ptr<FShader>>{ GSName + FuncName, NewGS}).first;
+				GSTarget->second->SetShaderID(FShader::ShaderCache.size());
+			}
+			GeometryShader = std::dynamic_pointer_cast<FGeometryShader>(GSTarget->second);
+		}
+	}
+
 	// 텍스쳐 정보가 있다면 텍스쳐 로드
 	{
 		if(AssetData.contains("Textures") && AssetData["Textures"].size() != 0)
@@ -213,6 +232,7 @@ void UMaterial::Binding()
 
 	GDirectXDevice->SetVertexShader(VertexShader.get());
 	GDirectXDevice->SetPixelShader(PixelShader.get());
+	GDirectXDevice->SetGeometryShader(GeometryShader.get());
 
 	ComPtr<ID3D11DeviceContext> DeviceContext = GDirectXDevice->GetDeviceContext();
 	for(int i = 0; i < Textures.size(); ++i)
@@ -547,6 +567,17 @@ FStructuredBuffer::FStructuredBuffer()
 
 FStructuredBuffer::~FStructuredBuffer()
 {
+}
+
+void FGeometryShader::CompileGeometryShader(const std::string& FilePath, const std::string& FuncName)
+{
+	std::string TempDirectoryPath =  GEngine->GetDirectoryPath();
+	std::wstring TempShaderPath = std::wstring(TempDirectoryPath.begin(), TempDirectoryPath.end());
+	std::wstring ShaderFilePath = TempShaderPath + std::wstring{FilePath.begin(),FilePath.end()};
+
+	HR(CompileShaderFromFile(ShaderFilePath.c_str(), FuncName.c_str(), "gs_4_0", GSBlob.GetAddressOf()));
+
+	HR(GDirectXDevice->GetDevice()->CreateGeometryShader(GSBlob->GetBufferPointer(), GSBlob->GetBufferSize(), nullptr, GeometryShader.GetAddressOf()));
 }
 
 int FStructuredBuffer::Create(UINT _ElementSize, UINT _ElementCount, SB_TYPE _Type, bool _SysMemMove, void* _SysMem)
