@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "Engine/Components/UNiagaraComponent.h"
 #include "Engine/GameFramework/AActor.h"
 
 class UStaticMeshComponent;
@@ -23,4 +24,6 @@ private:
 	std::shared_ptr<UStaticMeshComponent> TestCube2;
 	std::shared_ptr<UStaticMeshComponent> TestCube3;
 	std::shared_ptr<UStaticMeshComponent> TestCube4;
+
+	std::shared_ptr<UNiagaraComponent> NiagaraComp;
 };

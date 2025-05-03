@@ -31,6 +31,24 @@
     <ClInclude Include="Source\MyGame\AnimInstance\UMyAnimInstance.h" />
     <ClInclude Include="Source\MyGame\Component\UTestComponent.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader\BillboardSpriteRenderer.fx">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader\LightColor.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Shader\SkeletalMesh.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader\Global.fx">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

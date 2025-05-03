@@ -282,6 +282,12 @@
     <ClCompile Include="Source\Engine\Class\UTexture.cpp">
       <Filter>Source\Engine\Class</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Components\UNiagaraComponent.cpp">
+      <Filter>Source\Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\SceneProxy\FNiagaraSceneProxy.cpp">
+      <Filter>Source\Engine\SceneProxy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DirectX\ShadowMap.h">
@@ -502,6 +508,12 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\Class\UTexture.h">
       <Filter>Source\Engine\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Components\UNiagaraComponent.h">
+      <Filter>Source\Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\SceneProxy\FNiagaraSceneProxy.h">
+      <Filter>Source\Engine\SceneProxy</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

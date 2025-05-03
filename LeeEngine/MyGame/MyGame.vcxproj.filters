@@ -17,6 +17,9 @@
     <Filter Include="Source\MyGame\Component">
       <UniqueIdentifier>{3e8daa15-35b2-46a9-9f85-96ae9e4a110c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{c608a04d-5d71-4d68-8a1d-175dcef44b29}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -48,5 +51,19 @@
     <ClInclude Include="Source\MyGame\Component\UTestComponent.h">
       <Filter>Source\MyGame\Component</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader\BillboardSpriteRenderer.fx">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\LightColor.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\SkeletalMesh.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\Global.fx">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -1,7 +1,7 @@
 #pragma target 4.0
 #pragma enable_d3d11_debug_symbols
 
-#include "LightHelper.hlsl"
+#include "Global.fx"
 #include "TransformHelpers.hlsl"
 
 Texture2D txDiffuse : register( t0 );
@@ -9,31 +9,6 @@ SamplerState samLinear : register( s0 );
 
 Texture2D gShadowMap : register(t1);
 SamplerState gShadowSampler : register(s1);
-
-cbuffer cbPerFrame : register(b0)
-{
-	matrix View;
-	matrix Projection;
-    matrix LightView;
-    matrix LightProj;
-    float Time;
-    float3 Padding;
-}
-
-cbuffer cbPerObject : register(b1)
-{
-	matrix World;
-    float4x4 WorldInvTranspose;
-    Material ObjectMaterial;
-};
-
-cbuffer cbLight : register(b2)
-{
-	DirectionalLight gDirLight;
-    PointLight gPointLight;
-    float3 gEyePosW;
-    float pad;
-}
 
 
 struct VS_OUTPUT
