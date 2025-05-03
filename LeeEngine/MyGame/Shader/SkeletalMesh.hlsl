@@ -43,11 +43,11 @@ cbuffer cbLight : register(b2)
 
 struct VS_INPUT
 {
-    int4 boneIDs : BONEIDS;
-    float4 boneWeights : BONEWEIGHTS;
 	float4 Pos : POSITION;
 	float3 Normal : NORMAL;
 	float2 TexCoord : TEXCOORD;
+    int4 boneIDs : BONEIDS;
+    float4 boneWeights : BONEWEIGHTS;
 };
 
 struct VS_OUTPUT

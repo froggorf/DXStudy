@@ -3,8 +3,7 @@
     "Name": "M_MyUEFN",
     "VertexShader" : {
 	"FilePath" : "/Shader/SkeletalMesh.hlsl",
-	"Func" : "VS",
-	"InputLayoutType" : "SkeletalMesh"
+	"Func" : "VS"
     },
     "PixelShader" : {
 	"FilePath" : "/Shader/LightColor.hlsl",

@@ -116,11 +116,11 @@ struct MyVertexData
 #define MAX_BONES 100
 __declspec(align(16)) struct MySkeletalMeshVertexData
 {
-    int m_BoneIDs[MAX_BONE_INFLUENCE];
-    float m_Weights[MAX_BONE_INFLUENCE];
     DirectX::XMFLOAT3 Pos;
     DirectX::XMFLOAT3 Normal;
     DirectX::XMFLOAT2 TexCoords;
+    int m_BoneIDs[MAX_BONE_INFLUENCE];
+    float m_Weights[MAX_BONE_INFLUENCE];
 };
 struct BoneInfo
 {

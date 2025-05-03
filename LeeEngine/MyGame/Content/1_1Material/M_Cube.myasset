@@ -3,8 +3,7 @@
     "Name": "M_Cube",
     "VertexShader" : {
 	"FilePath" : "/Shader/LightColor.hlsl",
-	"Func" : "VS",
-	"InputLayoutType" : "StaticMesh"
+	"Func" : "VS"
     },
     "PixelShader" : {
 	"FilePath" : "/Shader/LightColor.hlsl",

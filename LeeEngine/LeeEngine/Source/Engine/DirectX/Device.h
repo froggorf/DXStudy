@@ -20,13 +20,6 @@ enum class EConstantBufferType
 };
 
 
-enum class EInputLayoutType
-{
-	ILT_StaticMesh,
-	ILT_SkeletalMesh,
-	ILT_Count
-};
-
 enum class ERasterizerType
 {
 	RT_CullBack,
@@ -83,10 +76,6 @@ public:
 
 // InputLayout
 private:
-	EInputLayoutType CurrentInputLayout = EInputLayoutType::ILT_Count;
-	Microsoft::WRL::ComPtr<ID3D11InputLayout> InputLayouts[static_cast<UINT>(EInputLayoutType::ILT_Count)];
-public:
-	void SetInputLayout(EInputLayoutType Type);
 
 public:
 	const Microsoft::WRL::ComPtr<ID3D11Device>& GetDevice() const { return m_d3dDevice; }
@@ -147,11 +136,10 @@ private:
 
 	void InitSamplerState();
 
-	void BuildStaticMeshShader();
-	void BuildSkeletalMeshVertexShader();
 	void BuildAllComputeShader();
 	
 public:
+	
 protected:
 private:
 	Microsoft::WRL::ComPtr<ID3D11Device>				m_d3dDevice;

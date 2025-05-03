@@ -20,6 +20,20 @@ void FVertexShader::CompileVertexShader(const std::string& FilePath, const std::
 	std::wstring ShaderFilePath = TempShaderPath + std::wstring{FilePath.begin(),FilePath.end()};
 	HR(CompileShaderFromFile(ShaderFilePath.c_str(), FuncName.c_str(), "vs_4_0", VSBlob.GetAddressOf()));
 	HR(GDirectXDevice->GetDevice()->CreateVertexShader(VSBlob->GetBufferPointer(), VSBlob->GetBufferSize(), nullptr, VertexShader.GetAddressOf()));
+
+	// Input Layout
+
+	D3D11_INPUT_ELEMENT_DESC inputLayout[] =
+	{
+		{"POSITION",     0, DXGI_FORMAT_R32G32B32_FLOAT,     0,  0,  D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"NORMAL",       0, DXGI_FORMAT_R32G32B32_FLOAT,     0, 12,  D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"TEXCOORD",     0, DXGI_FORMAT_R32G32_FLOAT,        0, 24,  D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"BONEIDS",      0, DXGI_FORMAT_R32G32B32A32_SINT,   0, 32,  D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"BONEWEIGHTS",  0, DXGI_FORMAT_R32G32B32A32_FLOAT,  0, 48,  D3D11_INPUT_PER_VERTEX_DATA, 0},
+	};
+	UINT numElements = ARRAYSIZE(inputLayout);
+	HR(GDirectXDevice->GetDevice()->CreateInputLayout(inputLayout, numElements, VSBlob->GetBufferPointer(), VSBlob->GetBufferSize(), InputLayout.GetAddressOf()));
+
 }
 
 void FPixelShader::CompilePixelShader(const std::string& FilePath, const std::string& FuncName)
@@ -54,25 +68,11 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 		auto VertexShaderData = AssetData["VertexShader"];
 		std::string VSName = VertexShaderData["FilePath"];
 		std::string FuncName = VertexShaderData["Func"];
-		std::string InputLayoutType = VertexShaderData["InputLayoutType"];
 		auto VSTarget = FShader::ShaderCache.find(VSName+FuncName);
 		if(VSTarget == FShader::ShaderCache.end())
 		{
 			std::shared_ptr<FVertexShader> NewVS = std::make_shared<FVertexShader>();
 			NewVS->CompileVertexShader(VSName,FuncName);
-			if(InputLayoutType == "StaticMesh")
-			{
-				NewVS->InputLayoutType = EInputLayoutType::ILT_StaticMesh;	
-			}
-			else if(InputLayoutType == "SkeletalMesh")
-			{
-				NewVS->InputLayoutType = EInputLayoutType::ILT_SkeletalMesh;	
-			}
-			else
-			{
-				// 잘못된 데이터
-				assert(0);
-			}
 
 			VSTarget = FShader::ShaderCache.insert(std::pair<std::string, std::shared_ptr<FShader>>{ VSName+FuncName, NewVS}).first;
 			VSTarget->second->SetShaderID(FShader::ShaderCache.size());
@@ -226,7 +226,6 @@ void UMaterial::Binding()
 
 	MapAndBindParameterConstantBuffer();
 
-	GDirectXDevice->SetInputLayout(GetInputLayoutType());
 }
 
 void UMaterial::MapAndBindParameterConstantBuffer() const

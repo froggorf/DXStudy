@@ -137,6 +137,7 @@ void FDirectXDevice::SetVertexShader(class FVertexShader* InVertexShader)
 	{
 		CurrentVertexShaderID = NewShaderID;
 		m_d3dDeviceContext->VSSetShader(InVertexShader->VertexShader.Get(), nullptr,0);
+		m_d3dDeviceContext->IASetInputLayout(InVertexShader->InputLayout.Get());
 	}
 }
 
@@ -263,53 +264,7 @@ void FDirectXDevice::InitSamplerState()
 	HR(GDirectXDevice->GetDevice()->CreateSamplerState(&sampDesc, m_SamplerState.GetAddressOf()));
 }
 
-void FDirectXDevice::BuildStaticMeshShader()
-{
-	Microsoft::WRL::ComPtr<ID3DBlob> pVSBlob = nullptr;
 
-	/*TODO: 02.07 추후 셰이더도 엔진 위치로 옮길 수 있도록 수정예정*/
-
-	std::string TempDirectoryPath =  GEngine->GetDirectoryPath();
-	std::wstring TempShaderPath = std::wstring(TempDirectoryPath.begin(), TempDirectoryPath.end());
-	ComPtr<ID3D11VertexShader> m_StaticMeshVertexShader;
-	HR(CompileShaderFromFile((TempShaderPath +  L"/Shader/LightColor.hlsl").c_str(), "VS", "vs_4_0", pVSBlob.GetAddressOf()));
-	HR(GDirectXDevice->GetDevice()->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, m_StaticMeshVertexShader.GetAddressOf()));
-
-	D3D11_INPUT_ELEMENT_DESC inputLayout[] =
-	{
-		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA,0},
-		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,0,24,D3D11_INPUT_PER_VERTEX_DATA, 0}
-
-	};
-	UINT numElements = ARRAYSIZE(inputLayout);
-
-	HR(GDirectXDevice->GetDevice()->CreateInputLayout(inputLayout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), InputLayouts[static_cast<UINT>(EInputLayoutType::ILT_StaticMesh)].GetAddressOf()));
-
-}
-
-void FDirectXDevice::BuildSkeletalMeshVertexShader()
-{
-	ComPtr<ID3DBlob> pVSBlob = nullptr;
-	std::string TempDirectoryPath =  GEngine->GetDirectoryPath();
-	std::wstring TempShaderPath = std::wstring(TempDirectoryPath.begin(), TempDirectoryPath.end());
-	HR(CompileShaderFromFile((TempShaderPath +  L"/Shader/SkeletalMesh.hlsl").c_str(), "VS", "vs_4_0", pVSBlob.GetAddressOf()));
-	ComPtr<ID3D11VertexShader> m_SkeletalMeshVertexShader;
-	HR(GDirectXDevice->GetDevice()->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, m_SkeletalMeshVertexShader.GetAddressOf()));
-
-	D3D11_INPUT_ELEMENT_DESC inputLayout[] =
-	{
-		{"BONEIDS", 0, DXGI_FORMAT_R32G32B32A32_SINT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"BONEWEIGHTS",0,DXGI_FORMAT_R32G32B32A32_FLOAT, 0,16, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 44, D3D11_INPUT_PER_VERTEX_DATA,0},
-		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,0,56,D3D11_INPUT_PER_VERTEX_DATA, 0},
-
-	};
-	UINT numElements = ARRAYSIZE(inputLayout);
-
-	HR(GDirectXDevice->GetDevice()->CreateInputLayout(inputLayout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), InputLayouts[static_cast<UINT>(EInputLayoutType::ILT_SkeletalMesh)].GetAddressOf()));
-}
 
 void FDirectXDevice::BuildAllComputeShader()
 {
@@ -320,9 +275,6 @@ void FDirectXDevice::BuildAllComputeShader()
 
 void FDirectXDevice::BuildAllShaders()
 {
-	BuildStaticMeshShader();
-	BuildSkeletalMeshVertexShader();
-
 	BuildAllComputeShader();
 }
 
@@ -479,14 +431,4 @@ void FDirectXDevice::MapConstantBuffer(EConstantBufferType Type, void* Data, siz
 	HR(m_d3dDeviceContext->Map(ConstantBuffers[static_cast<UINT>(Type)].Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &cbMapSub));
 	memcpy(cbMapSub.pData, Data, Size);
 	m_d3dDeviceContext->Unmap(ConstantBuffers[static_cast<UINT>(Type)].Get(), 0);
-}
-
-void FDirectXDevice::SetInputLayout(EInputLayoutType Type)
-{
-	if(Type != CurrentInputLayout)
-	{
-		CurrentInputLayout = Type;
-		m_d3dDeviceContext->IASetInputLayout(InputLayouts[static_cast<UINT>(Type)].Get());
-	}
-	
 }
