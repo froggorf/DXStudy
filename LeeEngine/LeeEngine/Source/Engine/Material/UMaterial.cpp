@@ -283,8 +283,7 @@ void UMaterialInstance::LoadDataFromFileData(const nlohmann::json& AssetData)
 	ParentMaterial = std::dynamic_pointer_cast<UMaterial>(UMaterial::GetMaterialCache(ParentMaterialName));
 	if(!ParentMaterial)
 	{
-		// 잘못된 부모 머테리얼
-		assert(0);
+		assert(0&&"잘못된 부모 머테리얼");
 	}
 
 	if(AssetData.contains("OverrideParams"))
@@ -372,44 +371,50 @@ void UMaterialInstance::SetTextureParam(UINT TextureSlot, std::shared_ptr<UTextu
 
 void UMaterialInstance::BindingMaterialInstanceUserParam() const
 {
+	
 	// Constant Buffer
 	D3D11_MAPPED_SUBRESOURCE cbMapSub{};
-	HR(GDirectXDevice->GetDeviceContext()->Map(ParentMaterial->ParamConstantBuffer.Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &cbMapSub));
-
-	for(const auto& FloatParam : ParentMaterial->DefaultParams.FloatParams)
+	if(ParentMaterial->ParamConstantBuffer)
 	{
-		auto OverrideParam = std::ranges::find_if(OverrideParams.FloatParams, [&](const FMaterialParameterDesc<float>& A ){return A.Name == FloatParam.Name;});
-		// Override 되었음
-		if(OverrideParam != OverrideParams.FloatParams.end())
-		{
-			memcpy(static_cast<char*>(cbMapSub.pData) + FloatParam.Offset, (&OverrideParam->Value), FloatParam.Size);		
-		}
-		// Override 안됨
-		else
-		{
-			memcpy(static_cast<char*>(cbMapSub.pData) + FloatParam.Offset, (&FloatParam.Value), FloatParam.Size);		
-		}
-		
-	}
-	for(const auto& IntParam : ParentMaterial->DefaultParams.IntParams)
-	{
-		auto OverrideParam = std::ranges::find_if(OverrideParams.IntParams, [&](const FMaterialParameterDesc<int>& A ){return A.Name == IntParam.Name;});
-		// Override 되었음
-		if(OverrideParam != OverrideParams.IntParams.end())
-		{
-			memcpy(static_cast<char*>(cbMapSub.pData) + IntParam.Offset, (&OverrideParam->Value), IntParam.Size);		
-		}
-		// Override 안됨
-		else
-		{
-			memcpy(static_cast<char*>(cbMapSub.pData) + IntParam.Offset, (&IntParam.Value), IntParam.Size);		
-		}
-	}
+		HR(GDirectXDevice->GetDeviceContext()->Map(ParentMaterial->ParamConstantBuffer.Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &cbMapSub));
 
-	GDirectXDevice->GetDeviceContext()->Unmap(ParentMaterial->ParamConstantBuffer.Get(),0);
+		for(const auto& FloatParam : ParentMaterial->DefaultParams.FloatParams)
+		{
+			auto OverrideParam = std::ranges::find_if(OverrideParams.FloatParams, [&](const FMaterialParameterDesc<float>& A ){return A.Name == FloatParam.Name;});
+			// Override 되었음
+			if(OverrideParam != OverrideParams.FloatParams.end())
+			{
+				memcpy(static_cast<char*>(cbMapSub.pData) + FloatParam.Offset, (&OverrideParam->Value), FloatParam.Size);		
+			}
+			// Override 안됨
+			else
+			{
+				memcpy(static_cast<char*>(cbMapSub.pData) + FloatParam.Offset, (&FloatParam.Value), FloatParam.Size);		
+			}
+
+		}
+		for(const auto& IntParam : ParentMaterial->DefaultParams.IntParams)
+		{
+			auto OverrideParam = std::ranges::find_if(OverrideParams.IntParams, [&](const FMaterialParameterDesc<int>& A ){return A.Name == IntParam.Name;});
+			// Override 되었음
+			if(OverrideParam != OverrideParams.IntParams.end())
+			{
+				memcpy(static_cast<char*>(cbMapSub.pData) + IntParam.Offset, (&OverrideParam->Value), IntParam.Size);		
+			}
+			// Override 안됨
+			else
+			{
+				memcpy(static_cast<char*>(cbMapSub.pData) + IntParam.Offset, (&IntParam.Value), IntParam.Size);		
+			}
+		}
+
+		GDirectXDevice->GetDeviceContext()->Unmap(ParentMaterial->ParamConstantBuffer.Get(),0);	
+	}
+	
 
 
 	// 텍스쳐
+	std::cout<<OverrideTextures.size()<<std::endl;
 	ComPtr<ID3D11DeviceContext> DeviceContext = GDirectXDevice->GetDeviceContext();
 	for(int i = 0; i < ParentMaterial->TextureParams.size(); ++i)
 	{

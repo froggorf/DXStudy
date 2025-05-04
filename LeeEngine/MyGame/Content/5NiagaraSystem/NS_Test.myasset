@@ -4,6 +4,7 @@
     "Emitters" : [
 	{ 
 		"Property" : 0, 
+		"OverrideTex" : "T_CandleFire",
 		"SpawnRate" : 0.5,
 		"Life" : [ 1.0, 3.0 ],
 		"Scale" : [ [11.0,11.0,11.0] , [15.0,15.0,15.0] ],
@@ -12,7 +13,12 @@
 		{
 			"Render" : {		  
 			    "StartColor" : [1.0,0.0,0.0,1.0],
-			    "EndColor" : [0.0,0.0,0.0,1.0]
+			    "EndColor" : [0.0,0.0,0.0,1.0],
+			    "FadeOut" : [1, 0.5]
+			},
+			"Scale" :{
+			    "StartScale" : 0.5,
+			    "EndScale" : 1.0
 			}
 		}
 	},
@@ -26,7 +32,12 @@
 		{
 			"Render" : {
   			    "StartColor" : [1.0,1.0,1.0,1.0],
-			    "EndColor" : [1.0,1.0,0.0,1.0]
+			    "EndColor" : [1.0,1.0,0.0,1.0],
+			    "FadeOut" : [0, 0]
+			},
+			"Scale" :{
+			    "StartScale" : 0.5,
+			    "EndScale" : 1.0
 			}
 		}
 	}

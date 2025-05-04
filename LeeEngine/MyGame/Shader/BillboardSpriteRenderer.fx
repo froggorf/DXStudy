@@ -1,6 +1,9 @@
 #include "Global.fx"
 #include "ParticleHelper.fx"
 
+Texture2D gParticleTexture : register(t0);
+SamplerState DefaultSampler : register(s0);
+
 struct VS_IN
 {
     float3 vPos : POSITION;  
@@ -90,7 +93,9 @@ float4 PS_Particle(GS_OUT _in) : SV_Target
 {  
     float4 vColor = float4(1.f, 0.f, 1.f, 1.f);
 
-	vColor = float4(1.0f,1.0f,1.0f,1.0f);
+    vColor = gParticleTexture.Sample(DefaultSampler, _in.vUV);
+    vColor.a = 1.f;
+
 
 	vColor *= gParticle[_in.InstID].Color;
 

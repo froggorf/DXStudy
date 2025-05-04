@@ -32,6 +32,17 @@ void UNiagaraSystem::LoadDataFromFileData(const nlohmann::json& AssetData)
 			break;
 		}
 
+		// Override Texture 세팅
+		if(EmitterData.contains("OverrideTex"))
+		{
+			std::string_view TextureName = EmitterData["OverrideTex"];
+			// 머테리얼 인스턴스에 등록을 하는 방향으로 하려했으나,
+			// 새로 머테리얼인스턴스를 생성하는 방식으로 인해 실패
+			// 따라서 RenderData 내에 데이터를 넣고, 렌더링 시 바인딩 하는 방향으로 진행
+			NewEmitter->RenderData->SetParticleTexture(UTexture::GetTextureCache(TextureName.data()));
+
+		}
+
 		// SpawnRate
 		if (EmitterData.contains("SpawnRate"))
 		{
@@ -67,6 +78,8 @@ void UNiagaraSystem::LoadDataFromFileData(const nlohmann::json& AssetData)
 		if(EmitterData.contains("Modules"))
 		{
 			auto ModuleData = EmitterData["Modules"];
+
+			//Render 모듈
 			if(ModuleData.contains("Render"))
 			{
 				NewEmitter->Module.Module[static_cast<int>(EParticleModule::PM_RENDER)] = 1;
@@ -81,7 +94,24 @@ void UNiagaraSystem::LoadDataFromFileData(const nlohmann::json& AssetData)
 					auto Colors = RenderData["EndColor"];
 					NewEmitter->Module.EndColor = XMFLOAT4{ Colors[0],Colors[1],Colors[2],Colors[3] };
 				}
+				if (RenderData.contains("FadeOut"))
+				{
+					const auto& FadeData = RenderData["FadeOut"];
+					NewEmitter->Module.FadeOut = FadeData[0];
+					NewEmitter->Module.FadeOut = FadeData[1];
+				}
 			}
+
+			// Scale 모듈
+			if (ModuleData.contains("Scale"))
+			{
+				NewEmitter->Module.Module[static_cast<int>(EParticleModule::PM_SCALE)] = 1;
+				auto ScaleData = ModuleData["Scale"];
+				NewEmitter->Module.StartScale = ScaleData["StartScale"];
+				NewEmitter->Module.EndScale = ScaleData["EndScale"];
+			}
+
+			
 		}
 		
 		this->Emitters.push_back(NewEmitter);

@@ -14,6 +14,7 @@
 	"Func": "PS_Particle"
     },
     "BlendMode": "Translucent",
+    "TextureParams" : ["T_Fire"],
     "TwoSided" : 1
 	
 }

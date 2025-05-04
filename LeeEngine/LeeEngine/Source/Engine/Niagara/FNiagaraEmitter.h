@@ -102,6 +102,7 @@ public:
 	virtual void Render() = 0;
 
 	virtual std::shared_ptr<UMaterialInterface> GetMaterialInterface() const { return MaterialInterface; }
+	virtual void SetParticleTexture(const std::shared_ptr<UTexture>& InTexture) {}
 
 protected:
 	std::shared_ptr<UMaterialInterface> MaterialInterface;
@@ -112,12 +113,15 @@ class FNiagaraRendererBillboardSprites : public FNiagaraRendererProperty
 public:
 	FNiagaraRendererBillboardSprites()
 	{
-		MaterialInterface = UMaterial::GetMaterialCache("M_NiagaraBillboardSprite");
+		MaterialInterface = UMaterial::GetMaterialCache("MI_NiagaraBillboardSprite");
 	}
 	~FNiagaraRendererBillboardSprites() override = default;
 
-	void Render() override {}
+	void Render() override;
 
+	void SetParticleTexture(const std::shared_ptr<UTexture>& InTexture) override{OverrideSpriteTexture = InTexture;}
+
+	std::shared_ptr<UTexture> OverrideSpriteTexture;
 };
 
 
@@ -135,8 +139,6 @@ public:
 		Module.StartScale = 0.5f;
 		Module.EndScale = 1.0f;
 
-		Module.Module[static_cast<int>(EParticleModule::PM_RENDER)] = 1;
-		Module.EndColor = XMFLOAT4{ 0.0f,0.0f,0.0f,1.0f };
 		Module.FadeOut = 1;
 		Module.StartRatio=0.5f;
 	}
