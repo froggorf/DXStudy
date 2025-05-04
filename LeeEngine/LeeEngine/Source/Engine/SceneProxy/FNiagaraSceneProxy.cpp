@@ -13,18 +13,21 @@ FNiagaraSceneProxy::FNiagaraSceneProxy(UINT InPrimitiveID)
 	ParticleBuffer->Create(sizeof(FParticleData), MaxParticleCount, SB_TYPE::SRV_UAV, false);
 	SpawnBuffer = std::make_shared<FStructuredBuffer>();
 	SpawnBuffer->Create(sizeof(FParticleSpawn), 1, SB_TYPE::SRV_UAV, true);
+
+	Module.SpawnRate = 1.0f;
+	Module.SpawnShape = 0;
+	Module.SpawnShapeScale = XMFLOAT3{50.0f,50.0f,50.0f};
+	Module.MinScale = XMFLOAT3{1.0f,1.0f,1.0f};
+	Module.MaxScale = XMFLOAT3{ 5.0f,5.0f,5.0f};
+	Module.SpaceType = 0;
+
 	ModuleBuffer = std::make_shared<FStructuredBuffer>();
-	ModuleBuffer->Create(sizeof(FParticleModule), 1, SB_TYPE::SRV_UAV, true);
+	ModuleBuffer->Create(sizeof(FParticleModule), 1, SB_TYPE::SRV_ONLY, true,&Module);
 	TickParticleCS = std::make_shared<FTickParticleCS>();
 
 	AccTime = 0.0f;
 
-	Module.SpawnRate = 20.0f;
-	Module.SpawnShape = 0;
-	Module.SpawnShapeScale = XMFLOAT3{500.0f,500.0f,500.0f};
-	Module.MinScale = XMFLOAT3{1.0f,1.0f,1.0f};
-	Module.MaxScale = XMFLOAT3{ 5.0f,5.0f,5.0f};
-
+	
 
 }
 
@@ -78,6 +81,7 @@ void FNiagaraSceneProxy::TickCS(float DeltaSeconds)
 	TickParticleCS->SetModuleBuffer(ModuleBuffer);
 
 	TickParticleCS->Execute_Immediately();
+
 }
 
 void FNiagaraSceneProxy::CalcSpawnCount(float DeltaSeconds)

@@ -1,6 +1,7 @@
 #include "Global.fx"
 #include "ParticleHelper.fx"
 
+// float 1개의 seed 기반 random 값 생성 함수
 float3 GetRandom(float seed)
 {
     // 여러 해시와 삼각함수, 상수 조합
@@ -15,7 +16,7 @@ float3 GetRandom(float seed)
     return v;
 }
 
-
+// 새로운 파티클을 추가하는 함수
 void ParticleInit(inout FParticleData _Particle, in FParticleModule _Module
     , float _NomalizedThreadID)
 {
@@ -57,7 +58,7 @@ void ParticleInit(inout FParticleData _Particle, in FParticleModule _Module
     // 파티클 초기 속도 추가
     _Particle.Velocity = (float4) 0.f;
 
-    if (_Module.Module[2])
+    if (0 != _Module.Module[2])
     {
         float3 vRandom = GetRandom(_NomalizedThreadID + 0.2f);
 
@@ -129,8 +130,33 @@ void CS_TickParticle(int3 ThreadID : SV_DispatchThreadID)
     // 파티클 업데이트
     else
     {
-	    gBuffer[ThreadID.x].WorldScale += float3(0.0001f,0.0001f,0.0001f);
-		gBuffer[ThreadID.x].WorldPos += float3(0.0001f,0.0001f,0.0001f);
+		// NormalizedAge (0~1)
+        gBuffer[ThreadID.x].NormalizedAge = gBuffer[ThreadID.x].Age / gBuffer[ThreadID.x].Life;
+
+        // 이번 프레임의 누적된 힘을 초기화
+        gBuffer[ThreadID.x].Force.xyz = float3(0.0f, 0.0f,0.0f);
+
+        //TODO: 속도관련 이동이 있을 시 이곳에 추가 구현하기
+
+        // 속도에 따른 이동
+        float Accel = gBuffer[ThreadID.x].Force / gBuffer[ThreadID.x].Mass;
+
+        // Module[0] : Space
+		// 0 : Local Space
+		// 1 : World Space
+        if(0 == gModule[0].SpaceType)
+        {
+            gBuffer[ThreadID.x].LocalPos += gBuffer[ThreadID.x].Velocity * gDeltaTime;
+            gBuffer[ThreadID.x].WorldPos = gBuffer[ThreadID.x].LocalPos + gModule[0].ObjectWorldPos;
+        }
+        else
+        {
+            gBuffer[ThreadID.x].LocalPos += gBuffer[ThreadID.x].Velocity * gDeltaTime;
+            gBuffer[ThreadID.x].WorldPos = gBuffer[ThreadID.x].Velocity * gDeltaTime;
+        }
+
+		
+
     }
 }
 

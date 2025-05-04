@@ -579,7 +579,7 @@ FTickParticleCS::FTickParticleCS()
 
 bool FTickParticleCS::Binding()
 {
-	if (nullptr == ParticleBuffer || nullptr == SpawnBuffer)
+	if (nullptr == ParticleBuffer || nullptr == SpawnBuffer || nullptr == ModuleBuffer)
 	{
 		return false;
 	}

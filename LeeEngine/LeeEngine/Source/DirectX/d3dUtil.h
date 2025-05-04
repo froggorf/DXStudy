@@ -138,7 +138,8 @@ struct FrameConstantBuffer
     XMMATRIX LightView;
     XMMATRIX LightProj;
     float Time;
-    float Padding[3];
+    float DeltaTime;
+    float Padding[2];
 };
 
 

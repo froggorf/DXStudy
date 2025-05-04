@@ -93,7 +93,7 @@ struct FParticleModule
 	XMFLOAT3 ObjectWorldPos;
 
 	// Module On / Off
-	int		Module[(UINT)EParticleModule::PM_END];
+	int		Module[(UINT)EParticleModule::PM_END] = {0,};
 };
 
 struct FParticleSpawn

@@ -7,7 +7,8 @@ cbuffer cbPerFrame : register(b0)
     matrix gLightView;
     matrix gLightProj;
     float gTime;
-    float3 Padding;
+    float gDeltaTime;
+    float2 Padding;
 }
 
 
