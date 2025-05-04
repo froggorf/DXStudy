@@ -32,6 +32,13 @@ void UNiagaraSystem::LoadDataFromFileData(const nlohmann::json& AssetData)
 			break;
 		}
 
+		// Override Material 세팅
+		if(EmitterData.contains("OverrideMat"))
+		{
+			std::string_view MaterialName = EmitterData["OverrideMat"];
+			NewEmitter->RenderData->SetMaterialInterface(UMaterialInterface::GetMaterialCache(MaterialName.data()));
+		}
+
 		// Override Texture 세팅
 		if(EmitterData.contains("OverrideTex"))
 		{
@@ -111,7 +118,14 @@ void UNiagaraSystem::LoadDataFromFileData(const nlohmann::json& AssetData)
 				NewEmitter->Module.EndScale = ScaleData["EndScale"];
 			}
 
-			
+			// UVAnim 모듈
+			if(ModuleData.contains("UVAnim"))
+			{
+				NewEmitter->Module.Module[static_cast<int>(EParticleModule::PM_UVAnim)]=1;
+				const auto& UVData  = ModuleData["UVAnim"];
+				NewEmitter->Module.UCount = UVData["UCount"];
+				NewEmitter->Module.VCount = UVData["VCount"];
+			}
 		}
 		
 		this->Emitters.push_back(NewEmitter);

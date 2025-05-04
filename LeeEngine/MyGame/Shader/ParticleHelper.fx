@@ -15,6 +15,9 @@ struct FParticleData
 	float	Life;			// 파티클 최대 수명
 	float	NormalizedAge;  // 전체 수명 대비, 현재 Age 비율. 자신의 Age 를 Life 대비 정규화 한 값
 
+	int UCount;
+	int VCount;
+
 	int		Active;			// 파티클 활성화 여부
 };
 
@@ -75,9 +78,13 @@ struct FParticleModule
 	uint	VelocityAlignment;  // 속도 정렬 0 : Off, 1 : On
 	uint	CrossMesh;			// 십자형태 메쉬 사용 0 : Off, 1 : ON
 
+	// UVAnim
+	int UCount;
+	int VCount;
+
 	// 추가 데이터
 	float3 ObjectWorldPos;
 
 	// Module On / Off
-	int		Module[6];
+	int		Module[7];
 };

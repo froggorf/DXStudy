@@ -188,6 +188,18 @@ void CS_TickParticle(int3 ThreadID : SV_DispatchThreadID)
 
         }
 
+        // UVAnim
+        if(gModule[0].Module[6])
+        {
+	        gBuffer[ThreadID.x].UCount = gModule[0].UCount;
+            gBuffer[ThreadID.x].VCount = gModule[0].VCount;
+        }
+        else
+        {
+	        gBuffer[ThreadID.x].UCount = 0;
+            gBuffer[ThreadID.x].VCount = 0;
+        }
+
 		gBuffer[ThreadID.x].Age += gDeltaTime;
 		// 파티클의 수명이 다했는지 체크
 		if (gBuffer[ThreadID.x].Age >= gBuffer[ThreadID.x].Life)

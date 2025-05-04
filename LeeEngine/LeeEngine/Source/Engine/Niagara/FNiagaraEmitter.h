@@ -24,6 +24,9 @@ struct FParticleData
 	float	Life;			// 파티클 최대 수명
 	float	NormalizedAge;  // 전체 수명 대비, 현재 Age 비율. 자신의 Age 를 Life 대비 정규화 한 값
 
+	int UCount{};
+	int VCount{};
+
 	int		Active;			// 파티클 활성화 여부
 };
 
@@ -36,6 +39,7 @@ enum class EParticleModule
 	PM_SCALE,
 	PM_DRAG,
 	PM_RENDER,
+	PM_UVAnim,
 
 	PM_END,
 };
@@ -85,6 +89,10 @@ struct FParticleModule
 	UINT	VelocityAlignment{};  // 속도 정렬 0 : Off, 1 : On
 	UINT	CrossMesh{};			// 십자형태 메쉬 사용 0 : Off, 1 : ON
 
+	// UVAnim 모듈
+	int UCount{};
+	int VCount{};
+
 	// 추가 데이터
 	XMFLOAT3 ObjectWorldPos{};
 
@@ -102,6 +110,7 @@ public:
 	virtual void Render() = 0;
 
 	virtual std::shared_ptr<UMaterialInterface> GetMaterialInterface() const { return MaterialInterface; }
+	void SetMaterialInterface(const std::shared_ptr<UMaterialInterface>& NewMaterialInterface) { MaterialInterface = NewMaterialInterface; }
 	virtual void SetParticleTexture(const std::shared_ptr<UTexture>& InTexture) {}
 
 protected:
