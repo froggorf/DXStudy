@@ -7,14 +7,14 @@
 		"OverrideMat": "M_NiagaraBillboardSprite_UV",
 		"SpawnRate" : 1.0,
 		"Life" : [ 3,5 ],
-		"Scale" : [ [15.0,15.0,15.0] , [15.0,15.0,15.0] ],
+		"Scale" : [ [15.0,15.0,15.0] , [25.0,15.0,15.0] ],
 		"SpaceType": 1,
 		"Modules" : 
 		{
 			"Render" : {
   			    "StartColor" : [1.0,1.0,1.0,1.0],
 			    "EndColor" : [1.0,1.0,1.0,1.0],
-			    "FadeOut" : [0, 0]
+			    "FadeOut" : [1, 0.8]
 			},
 			"Scale" :{
 			    "StartScale" : 1.0,

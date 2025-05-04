@@ -141,15 +141,7 @@ public:
 	FNiagaraEmitter()
 	{
 		Module.SpawnShape = 0;
-		Module.SpawnShapeScale = XMFLOAT3{50.0f,50.0f,50.0f};
-
-
-		Module.Module[static_cast<int>(EParticleModule::PM_SCALE)] = 1;
-		Module.StartScale = 0.5f;
-		Module.EndScale = 1.0f;
-
-		Module.FadeOut = 1;
-		Module.StartRatio=0.5f;
+		Module.SpawnShapeScale = XMFLOAT3{3.0f,0.1f,3.0f};
 	}
 	~FNiagaraEmitter() = default;
 
