@@ -82,6 +82,9 @@
     <Filter Include="Source\Engine\Material">
       <UniqueIdentifier>{3415f7d7-eaa3-400b-8619-a5dcea17efa9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Engine\Niagara">
+      <UniqueIdentifier>{43cf8b61-2a3a-4ce4-927f-d211270b4b11}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\DirectX\ShadowMap.cpp">
@@ -287,6 +290,12 @@
     </ClCompile>
     <ClCompile Include="Source\Engine\SceneProxy\FNiagaraSceneProxy.cpp">
       <Filter>Source\Engine\SceneProxy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Niagara\UNiagaraSystem.cpp">
+      <Filter>Source\Engine\Niagara</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Niagara\FNiagaraEmitter.cpp">
+      <Filter>Source\Engine\Niagara</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -514,6 +523,12 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\SceneProxy\FNiagaraSceneProxy.h">
       <Filter>Source\Engine\SceneProxy</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Niagara\UNiagaraSystem.h">
+      <Filter>Source\Engine\Niagara</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Niagara\FNiagaraEmitter.h">
+      <Filter>Source\Engine\Niagara</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
