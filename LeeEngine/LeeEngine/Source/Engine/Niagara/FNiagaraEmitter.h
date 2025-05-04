@@ -71,8 +71,8 @@ struct FParticleModule
 	// Add Velocity
 	UINT	AddVelocityType{};		// 0 : Random, 1 : FromCenter, 2 : ToCenter, 4 : Fixed 
 	XMFLOAT3	AddVelocityFixedDir{};
-	float	AddMinSpeed{};
-	float	AddMaxSpeed{};
+	XMFLOAT3	AddMinSpeed{};
+	XMFLOAT3	AddMaxSpeed{};
 
 	// Scale Module
 	float	StartScale{};
@@ -141,7 +141,7 @@ public:
 	FNiagaraEmitter()
 	{
 		Module.SpawnShape = 0;
-		Module.SpawnShapeScale = XMFLOAT3{3.0f,0.1f,3.0f};
+
 	}
 	~FNiagaraEmitter() = default;
 

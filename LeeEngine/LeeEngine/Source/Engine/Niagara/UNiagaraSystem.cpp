@@ -80,6 +80,12 @@ void UNiagaraSystem::LoadDataFromFileData(const nlohmann::json& AssetData)
 			NewEmitter->Module.SpaceType = EmitterData["SpaceType"];
 		}
 
+		// SpawnShapeScale
+		if(EmitterData.contains("SpawnScale"))
+		{
+			const auto& SpawnShapeScale = EmitterData["SpawnScale"];
+			NewEmitter->Module.SpawnShapeScale = XMFLOAT3{SpawnShapeScale[0],SpawnShapeScale[1],SpawnShapeScale[2]};
+		}
 
 		// 모듈값 지정 시작
 		if(EmitterData.contains("Modules"))
@@ -105,7 +111,7 @@ void UNiagaraSystem::LoadDataFromFileData(const nlohmann::json& AssetData)
 				{
 					const auto& FadeData = RenderData["FadeOut"];
 					NewEmitter->Module.FadeOut = FadeData[0];
-					NewEmitter->Module.FadeOut = FadeData[1];
+					NewEmitter->Module.StartRatio = FadeData[1];
 				}
 			}
 
@@ -125,6 +131,17 @@ void UNiagaraSystem::LoadDataFromFileData(const nlohmann::json& AssetData)
 				const auto& UVData  = ModuleData["UVAnim"];
 				NewEmitter->Module.UCount = UVData["UCount"];
 				NewEmitter->Module.VCount = UVData["VCount"];
+			}
+
+			// AddVelocity 모듈
+			if(ModuleData.contains("AddVelocity"))
+			{
+				NewEmitter->Module.Module[static_cast<int>(EParticleModule::PM_ADD_VELOCITY)]=1;
+				const auto& UVData  = ModuleData["AddVelocity"];
+				const auto& MinVel = UVData["MinVel"];
+				const auto& MaxVel = UVData["MaxVel"];
+				NewEmitter->Module.AddMinSpeed = XMFLOAT3{MinVel[0],MinVel[1],MinVel[2]};
+				NewEmitter->Module.AddMaxSpeed = XMFLOAT3{MaxVel[0],MaxVel[1],MaxVel[2]};
 			}
 		}
 		

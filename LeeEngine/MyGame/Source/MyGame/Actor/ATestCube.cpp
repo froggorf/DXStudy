@@ -20,10 +20,11 @@ ATestCube::ATestCube()
 	//TestCubeStaticMeshComp->SetRelativeRotation(XMFLOAT3(0.0f,0.0f,0.0f));
 	//TestCubeStaticMeshComp->SetRelativeScale3D(XMFLOAT3(0.2f,0.2f,0.2f));
 	//
-	//TestCube2 = std::make_shared<UStaticMeshComponent>();
-	//TestCube2->SetupAttachment(GetRootComponent());
-	//TestCube2->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Cube"));
-	//TestCube2->SetRelativeScale3D(XMFLOAT3(100.0f,1.0f,100.0f));
+	TestCube2 = std::make_shared<UStaticMeshComponent>();
+	TestCube2->SetupAttachment(GetRootComponent());
+	TestCube2->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Cube"));
+	TestCube2->SetRelativeScale3D(XMFLOAT3(100.0f,1.0f,100.0f));
+	TestCube2->SetRelativeLocation(XMFLOAT3(0.0f,-50.0f,0.0f));
 
 	NiagaraComp = std::make_shared<UNiagaraComponent>();
 	NiagaraComp->SetupAttachment(GetRootComponent());

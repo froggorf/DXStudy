@@ -62,16 +62,18 @@ void ParticleInit(inout FParticleData _Particle, in FParticleModule _Module
     {
         float3 vRandom = GetRandom(_NomalizedThreadID + 0.2f);
 
-        float fSpeed = _Module.AddMinSpeed + (_Module.AddMaxSpeed - _Module.AddMinSpeed) * vRandom.x;
+        float3 fSpeed = _Module.AddMinSpeed + (_Module.AddMaxSpeed - _Module.AddMinSpeed) * vRandom;
 
         // Random
-        if (0 == _Module.AddVelocityType)                        
+        if(0 == _Module.AddVelocityType)
+            _Particle.Velocity.xyz = fSpeed;
+        else if (1 == _Module.AddVelocityType)                        
             _Particle.Velocity.xyz = normalize(vRandom - 0.5f) * fSpeed;
         // FromCenter
-        else if (1 == _Module.AddVelocityType)                        
+        else if (2 == _Module.AddVelocityType)                        
             _Particle.Velocity.xyz = normalize(_Particle.LocalPos) * fSpeed;
         // ToCenter
-        else if (2 == _Module.AddVelocityType)
+        else if (3 == _Module.AddVelocityType)
             _Particle.Velocity.xyz = -normalize(_Particle.LocalPos) * fSpeed;
         // Fixed
         else
@@ -180,10 +182,11 @@ void CS_TickParticle(int3 ThreadID : SV_DispatchThreadID)
         if(gModule[0].Module[5])
         {
 			gBuffer[ThreadID.x].Color = (gModule[0].EndColor - gModule[0].StartColor) * gBuffer[ThreadID.x].NormalizedAge + gModule[0].StartColor;
-            if(gModule[0].FadeOut)
+            if(gModule[0].FadeOut && gBuffer[ThreadID.x].NormalizedAge >= gModule[0].StartRatio)
             {
 	            float fRatio = saturate(1.f - (gBuffer[ThreadID.x].NormalizedAge - gModule[0].StartRatio) / (1.f - gModule[0].StartRatio));
-                gBuffer[ThreadID.x].Color.a = fRatio;
+
+                gBuffer[ThreadID.x].Color.a = gModule[0].EndColor.a * fRatio;
             }
 
         }

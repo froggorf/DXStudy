@@ -26,8 +26,6 @@ void FPrimitiveSceneProxy::Draw()
 
 	// Rasterizer State
 	GDirectXDevice->SetRSState(MaterialInterface->GetRSType());
-
-
 	
 
 }

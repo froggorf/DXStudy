@@ -411,10 +411,7 @@ void UMaterialInstance::BindingMaterialInstanceUserParam() const
 		GDirectXDevice->GetDeviceContext()->Unmap(ParentMaterial->ParamConstantBuffer.Get(),0);	
 	}
 	
-
-
 	// 텍스쳐
-	std::cout<<OverrideTextures.size()<<std::endl;
 	ComPtr<ID3D11DeviceContext> DeviceContext = GDirectXDevice->GetDeviceContext();
 	for(int i = 0; i < ParentMaterial->TextureParams.size(); ++i)
 	{

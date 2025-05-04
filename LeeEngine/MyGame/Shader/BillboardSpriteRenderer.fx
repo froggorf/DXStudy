@@ -93,8 +93,8 @@ float4 PS_Particle(GS_OUT _in) : SV_Target
 {  
     float4 vColor = float4(1.f, 0.f, 1.f, 1.f);
 
-    vColor = gParticleTexture.Sample(DefaultSampler, _in.vUV);
-    vColor.a = 1.f;
+    vColor = gParticleTexture.Sample(DefaultSampler,  _in.vUV);
+    vColor.rgb *= vColor.a;
 
 
 	vColor *= gParticle[_in.InstID].Color;
@@ -127,12 +127,11 @@ float4 PS_Particle_UV(GS_OUT _in) : SV_Target
     
     // 6. 텍스처 샘플링
     vColor = gParticleTexture.Sample(DefaultSampler, atlasUV);
-    // 프리멀티플 알파가 아니라면
-    vColor.rgb /= max(vColor.a, 0.0001);
-    // 알파 컷오프 적용 (선택)
-    if (vColor.a < 0.1) discard;
-
-	vColor.rgb *= gParticle[_in.InstID].Color.rgb;
-
-return vColor;    
+    
+    vColor*= gParticle[_in.InstID].Color;
+	if(vColor.a < 0.1)
+	{
+		discard;
+	}
+	return vColor;    
 }

@@ -60,8 +60,8 @@ struct FParticleModule
 	// Add Velocity
 	uint	AddVelocityType;		// 0 : Random, 1 : FromCenter, 2 : ToCenter, 4 : Fixed 
 	float3	AddVelocityFixedDir;
-	float	AddMinSpeed;
-	float	AddMaxSpeed;
+	float3	AddMinSpeed;
+	float3	AddMaxSpeed;
 
 	// Scale Module
 	float	StartScale;

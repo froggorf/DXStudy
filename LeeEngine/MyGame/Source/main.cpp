@@ -271,6 +271,9 @@ void AnimationApp::InitSamplerState()
 	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f }; // 블렌드 팩터 (기본값)
 	UINT sampleMask = 0xFFFFFFFF; // 샘플 마스크 (기본값)
 	GDirectXDevice->GetDeviceContext()->OMSetBlendState(blendState, blendFactor, sampleMask);
+
+	// DepthgStencilState
+
 }
 
 

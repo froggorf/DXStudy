@@ -6,6 +6,9 @@
 
 void FNiagaraRendererBillboardSprites::Render()
 {
+
+	GDirectXDevice->SetDSState(EDepthStencilStateType::DST_NO_WRITE);
+	GDirectXDevice->SetBSState(EBlendStateType::BST_AlphaBlend);
 	auto DeviceContext = GDirectXDevice->GetDeviceContext();
 
 	if(OverrideSpriteTexture)
@@ -28,5 +31,5 @@ void FNiagaraRendererBillboardSprites::Render()
 	UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
 	DeviceContext->DrawIndexedInstanced(1,MaxParticleCount,0,0, 0);
 
-
+	GDirectXDevice->SetDSState(EDepthStencilStateType::DST_LESS);
 }

@@ -227,6 +227,25 @@ void FDirectXDevice::SetRSState(ERasterizerType InRSType)
 	}
 }
 
+void FDirectXDevice::SetDSState(EDepthStencilStateType InDSType)
+{
+	if(InDSType != CurrentDSType)
+	{
+		m_d3dDeviceContext->OMSetDepthStencilState(m_DSState[static_cast<UINT>(InDSType)].Get(),0);
+		CurrentDSType = InDSType;
+	}
+}
+
+void FDirectXDevice::SetBSState(EBlendStateType InBSType)
+{
+	if(InBSType != CurrentBSType)
+	{
+		float BlendFactor[4] = {0.0f,0.0f,0.0f,0.0f};
+		m_d3dDeviceContext->OMSetBlendState(m_BSState[static_cast<UINT>(InBSType)].Get(), BlendFactor, 0xffffffff);
+		CurrentBSType = InBSType;
+	}
+}
+
 void FDirectXDevice::CreateRasterizerState()
 {
 	m_RSState[static_cast<UINT>(ERasterizerType::RT_CullBack)] = nullptr;
@@ -246,10 +265,80 @@ void FDirectXDevice::CreateRasterizerState()
 
 void FDirectXDevice::CreateBlendState()
 {
+	// Default
+	m_BSState[(UINT)EBlendStateType::BST_Default] = nullptr;
+
+
+	// Alphablend
+	D3D11_BLEND_DESC BlendDesc = {};
+
+	BlendDesc.AlphaToCoverageEnable = false;
+	BlendDesc.IndependentBlendEnable = false;
+
+
+	BlendDesc.RenderTarget[0].BlendEnable = true;
+	BlendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	BlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	BlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+
+	BlendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	BlendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	BlendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+
+	BlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	m_d3dDevice->CreateBlendState(&BlendDesc, m_BSState[(UINT)EBlendStateType::BST_AlphaBlend].GetAddressOf());
+
+
+	// Alphablend_Coverave
+	BlendDesc.AlphaToCoverageEnable = true;
+	m_d3dDevice->CreateBlendState(&BlendDesc, m_BSState[(UINT)EBlendStateType::BST_AlphaBlend_Coverage].GetAddressOf());
+
+	// One One
+	BlendDesc.AlphaToCoverageEnable = false;
+
+	BlendDesc.RenderTarget[0].BlendEnable = true;
+	BlendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	BlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	BlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+
+	m_d3dDevice->CreateBlendState(&BlendDesc, m_BSState[(UINT)EBlendStateType::BST_One_One].GetAddressOf());
+
+	SetBSState(EBlendStateType::BST_AlphaBlend);
 }
 
 void FDirectXDevice::CreateDepthStencilState()
 {
+	// Less
+	m_DSState[(UINT)EDepthStencilStateType::DST_LESS] = nullptr;
+
+	// LessEqual
+	D3D11_DEPTH_STENCIL_DESC Desc = {};
+
+	Desc.DepthEnable = true;
+	Desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+	Desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	Desc.StencilEnable = false;
+	m_d3dDevice->CreateDepthStencilState(&Desc, m_DSState[(UINT)EDepthStencilStateType::DST_LESS_EQUAL].GetAddressOf());
+
+	// Greater
+	Desc.DepthEnable = true;
+	Desc.DepthFunc = D3D11_COMPARISON_GREATER;
+	Desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	Desc.StencilEnable = false;
+	m_d3dDevice->CreateDepthStencilState(&Desc, m_DSState[(UINT)EDepthStencilStateType::DST_GREATER].GetAddressOf());
+
+	// NO_WRITE
+	Desc.DepthEnable = true;
+	Desc.DepthFunc = D3D11_COMPARISON_LESS;
+	Desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	Desc.StencilEnable = false;
+	m_d3dDevice->CreateDepthStencilState(&Desc, m_DSState[(UINT)EDepthStencilStateType::DST_NO_WRITE].GetAddressOf());
+
+	// NO_TEST_NO_WRITE
+	Desc.DepthEnable = false;	
+	m_d3dDevice->CreateDepthStencilState(&Desc, m_DSState[(UINT)EDepthStencilStateType::DST_NO_TEST_NO_WRITE].GetAddressOf());
+
 }
 
 void FDirectXDevice::InitSamplerState()

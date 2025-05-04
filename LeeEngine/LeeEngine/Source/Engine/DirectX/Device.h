@@ -35,13 +35,16 @@ enum class EBlendStateType
 	BST_One_One,				// Src(1), Dest(1) - 검은색 색상 제거 or 색상 누적
 	BST_Count
 };
-enum class DepthStencilStateType
+
+enum class EDepthStencilStateType
 {
-	DSST_Less,			// 적으면 깊이 작성
-	DSST_Less_Equal,	// <= 시 깊이값 작성
-	DSST_Greater,		// 클시, 깊이값 작성 x // VolumeMesh Check
-	DSST_NoTest_NoWrite,// Less, 깊이값 작성 x
-	DSST_Count
+	DST_LESS,				// Less, Depth Write
+	DST_LESS_EQUAL,			// LessEqual, Depth Write
+	DST_GREATER,			// Greater, No Write VolumeMesh Check
+	DST_NO_WRITE,			// Less, No write
+	DST_NO_TEST_NO_WRITE,	
+	
+	DST_COUNT
 };
 
 // 언리얼엔진의 경우 RHI 를 통해 렌더링을 진행하지만 (// 언리얼엔진의 경우 GDynamicRHI 로 관리, GDynamicRHI->RHICreateBuffer(*this, BufferDesc, ResourceState, CreateInfo);)
@@ -116,12 +119,16 @@ private:
 public:
 	ID3D11RasterizerState* GetRasterizerState(ERasterizerType RSType) const {return m_RSState[static_cast<UINT>(RSType)].Get();}
 	void SetRSState(ERasterizerType InRSType);
+	void SetDSState(EDepthStencilStateType InDSType);
+	void SetBSState(EBlendStateType InBSType);
 private:
 	ERasterizerType CurrentRSType = ERasterizerType::RT_Count;
+	EDepthStencilStateType CurrentDSType = EDepthStencilStateType::DST_COUNT;
+	EBlendStateType CurrentBSType = EBlendStateType::BST_Count;
 
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState>	m_RSState[static_cast<UINT>(ERasterizerType::RT_Count)];
 	Microsoft::WRL::ComPtr<ID3D11BlendState>	m_BSState[static_cast<UINT>(EBlendStateType::BST_Count)];
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>	m_DSState[static_cast<UINT>(DepthStencilStateType::DSST_Count)];
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>	m_DSState[static_cast<UINT>(EDepthStencilStateType::DST_COUNT)];
 	void CreateRasterizerState();
 	void CreateBlendState();
 	void CreateDepthStencilState();
