@@ -17,9 +17,16 @@ FNiagaraSceneProxy::FNiagaraSceneProxy(UINT InPrimitiveID)
 	Module.SpawnRate = 1.0f;
 	Module.SpawnShape = 0;
 	Module.SpawnShapeScale = XMFLOAT3{50.0f,50.0f,50.0f};
+	Module.MinLife = 1.0f;
+	Module.MaxLife = 3.0f;
 	Module.MinScale = XMFLOAT3{1.0f,1.0f,1.0f};
 	Module.MaxScale = XMFLOAT3{ 5.0f,5.0f,5.0f};
-	Module.SpaceType = 0;
+	Module.SpaceType = 1;
+	
+
+	Module.Module[static_cast<int>(EParticleModule::PM_SCALE)] = 1;
+	Module.StartScale = 0.5f;
+	Module.EndScale = 1.0f;
 
 	ModuleBuffer = std::make_shared<FStructuredBuffer>();
 	ModuleBuffer->Create(sizeof(FParticleModule), 1, SB_TYPE::SRV_ONLY, true,&Module);
