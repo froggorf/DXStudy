@@ -5,9 +5,16 @@
 
 #include "Engine/Mesh/UStaticMesh.h"
 
+std::shared_ptr<FTickParticleCS> FNiagaraSceneProxy::TickParticleCS;
+
 FNiagaraSceneProxy::FNiagaraSceneProxy(UINT InPrimitiveID)
 	: FPrimitiveSceneProxy(InPrimitiveID)
 {
+	if(nullptr == TickParticleCS)
+	{
+		TickParticleCS = std::make_shared<FTickParticleCS>();	
+	}
+
 	MaterialInterface = UMaterial::GetMaterialCache("M_NiagaraBillboardSprite");
 	ParticleBuffer = std::make_shared<FStructuredBuffer>();
 	ParticleBuffer->Create(sizeof(FParticleData), MaxParticleCount, SB_TYPE::SRV_UAV, false);
@@ -36,7 +43,9 @@ FNiagaraSceneProxy::FNiagaraSceneProxy(UINT InPrimitiveID)
 
 	ModuleBuffer = std::make_shared<FStructuredBuffer>();
 	ModuleBuffer->Create(sizeof(FParticleModule), 1, SB_TYPE::SRV_ONLY, true,&Module);
-	TickParticleCS = std::make_shared<FTickParticleCS>();
+
+	
+	
 
 	AccTime = 0.0f;
 

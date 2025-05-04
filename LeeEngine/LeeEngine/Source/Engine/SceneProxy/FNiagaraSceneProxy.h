@@ -121,5 +121,5 @@ protected:
 	std::shared_ptr<FStructuredBuffer> SpawnBuffer;
 	std::shared_ptr<FStructuredBuffer> ModuleBuffer;
 
-	std::shared_ptr<FTickParticleCS> TickParticleCS;
+	static std::shared_ptr<FTickParticleCS> TickParticleCS;
 };
