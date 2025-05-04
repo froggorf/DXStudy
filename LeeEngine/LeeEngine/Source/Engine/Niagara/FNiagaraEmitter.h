@@ -43,50 +43,50 @@ enum class EParticleModule
 struct FParticleModule
 {
 	// Spawn Modlue
-	float	SpawnRate;			// 초당 파티클 생성량
-	XMFLOAT4	StartColor;			// 초기 파티클 색상
+	float	SpawnRate{};			// 초당 파티클 생성량
+	XMFLOAT4	StartColor{};			// 초기 파티클 색상
 
-	XMFLOAT3	MinScale;			// 생성 시 최소 크기
-	XMFLOAT3	MaxScale;			// 생성 시 최대 크기
-	float	MinLife;			// 생성 시 최소 주기
-	float	MaxLife;			// 생성 시 최대 주기
-	int		SpawnShape;			// 0 : Box, 1 : Sphere
-	XMFLOAT3 SpawnShapeScale;
-	int		SpaceType;			// 0 : Local, 1 : World
+	XMFLOAT3	MinScale{};			// 생성 시 최소 크기
+	XMFLOAT3	MaxScale{};			// 생성 시 최대 크기
+	float	MinLife{};			// 생성 시 최소 주기
+	float	MaxLife{};			// 생성 시 최대 주기
+	int		SpawnShape{};			// 0 : Box, 1 : Sphere
+	XMFLOAT3 SpawnShapeScale{};
+	int		SpaceType{};			// 0 : Local, 1 : World
 
-	UINT	BlockSpawnShape;		// 0 : Box,  1: Sphere
-	XMFLOAT3	BlockSpawnShapeScale;	// SpawnShapeScale.x == Radius
+	UINT	BlockSpawnShape{};		// 0 : Box,  1: Sphere
+	XMFLOAT3	BlockSpawnShapeScale{};	// SpawnShapeScale.x == Radius
 
 	// Spawn Burst
-	UINT	SpawnBurstCount;		// 한번에 발생시키는 Particle 수
-	UINT	SpawnBurstRepeat;
-	float	SpawnBurstRepeatTime;
-	float   AccSpawnBurstRepeatTime;
+	UINT	SpawnBurstCount{};		// 한번에 발생시키는 Particle 수
+	UINT	SpawnBurstRepeat{};
+	float	SpawnBurstRepeatTime{};
+	float   AccSpawnBurstRepeatTime{};
 
 
 	// Add Velocity
-	UINT	AddVelocityType;		// 0 : Random, 1 : FromCenter, 2 : ToCenter, 4 : Fixed 
-	XMFLOAT3	AddVelocityFixedDir;
-	float	AddMinSpeed;
-	float	AddMaxSpeed;
+	UINT	AddVelocityType{};		// 0 : Random, 1 : FromCenter, 2 : ToCenter, 4 : Fixed 
+	XMFLOAT3	AddVelocityFixedDir{};
+	float	AddMinSpeed{};
+	float	AddMaxSpeed{};
 
 	// Scale Module
-	float	StartScale;
-	float	EndScale;
+	float	StartScale{};
+	float	EndScale{};
 
 	// Drag Module (감속 모듈)
-	float	DestNormalizedAge;
-	float	LimitSpeed;
+	float	DestNormalizedAge{};
+	float	LimitSpeed{};
 
 	// Render Module
-	XMFLOAT4	EndColor;			// 파티클 최종 색상
-	int		FadeOut;			// 0 : Off, 1 : Normalized Age
-	float   StartRatio;			// FadeOut 효과가 시작되는 Normalized Age 지점
-	UINT	VelocityAlignment;  // 속도 정렬 0 : Off, 1 : On
-	UINT	CrossMesh;			// 십자형태 메쉬 사용 0 : Off, 1 : ON
+	XMFLOAT4	EndColor{};			// 파티클 최종 색상
+	int		FadeOut{};			// 0 : Off, 1 : Normalized Age
+	float   StartRatio{};			// FadeOut 효과가 시작되는 Normalized Age 지점
+	UINT	VelocityAlignment{};  // 속도 정렬 0 : Off, 1 : On
+	UINT	CrossMesh{};			// 십자형태 메쉬 사용 0 : Off, 1 : ON
 
 	// 추가 데이터
-	XMFLOAT3 ObjectWorldPos;
+	XMFLOAT3 ObjectWorldPos{};
 
 	// Module On / Off
 	int		Module[(UINT)EParticleModule::PM_END] = {0,};
@@ -127,14 +127,8 @@ class FNiagaraEmitter
 public:
 	FNiagaraEmitter()
 	{
-		Module.SpawnRate = 1.0f;
 		Module.SpawnShape = 0;
 		Module.SpawnShapeScale = XMFLOAT3{50.0f,50.0f,50.0f};
-		Module.MinLife = 1.0f;
-		Module.MaxLife = 3.0f;
-		Module.MinScale = XMFLOAT3{1.0f,1.0f,1.0f};
-		Module.MaxScale = XMFLOAT3{ 5.0f,5.0f,5.0f};
-		Module.SpaceType = 1;
 
 
 		Module.Module[static_cast<int>(EParticleModule::PM_SCALE)] = 1;

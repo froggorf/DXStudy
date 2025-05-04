@@ -32,8 +32,38 @@ void UNiagaraSystem::LoadDataFromFileData(const nlohmann::json& AssetData)
 			break;
 		}
 
+		// SpawnRate
+		if (EmitterData.contains("SpawnRate"))
+		{
+			NewEmitter->Module.SpawnRate = EmitterData["SpawnRate"];
+		}
+
+		// Life
+		if (EmitterData.contains("Life"))
+		{
+			auto LifeData = EmitterData["Life"];
+			NewEmitter->Module.MinLife = LifeData[0];
+			NewEmitter->Module.MaxLife = LifeData[1];
+		}
+
+		// Scale
+		if (EmitterData.contains("Scale"))
+		{
+			auto ScaleData = EmitterData["Scale"];
+			auto MinScaleData = ScaleData[0];
+			auto MaxScaleData = ScaleData[1];
+			NewEmitter->Module.MinScale = XMFLOAT3{ MinScaleData[0],MinScaleData[1],MinScaleData[2] };
+			NewEmitter->Module.MaxScale = XMFLOAT3{ MaxScaleData[0],MaxScaleData[1],MaxScaleData[2] };
+		}
+
+		//SpaceType
+		if (EmitterData.contains("SpaceType"))
+		{
+			NewEmitter->Module.SpaceType = EmitterData["SpaceType"];
+		}
+
+
 		// 모듈값 지정 시작
-		// StartColor
 		if(EmitterData.contains("Modules"))
 		{
 			auto ModuleData = EmitterData["Modules"];

@@ -4,10 +4,13 @@
     "Emitters" : [
 	{ 
 		"Property" : 0, 
+		"SpawnRate" : 0.5,
+		"Life" : [ 1.0, 3.0 ],
+		"Scale" : [ [11.0,11.0,11.0] , [15.0,15.0,15.0] ],
+		"SpaceType": 0,
 		"Modules" : 
 		{
-			"Render" : {
-			  
+			"Render" : {		  
 			    "StartColor" : [1.0,0.0,0.0,1.0],
 			    "EndColor" : [0.0,0.0,0.0,1.0]
 			}
@@ -15,10 +18,14 @@
 	},
 	{ 
 		"Property" : 0, 
+		"SpawnRate" : 1.0,
+		"Life" : [ 1.0, 3.0 ],
+		"Scale" : [ [1.0,1.0,1.0] , [5.0,5.0,5.0] ],
+		"SpaceType": 1,
 		"Modules" : 
 		{
 			"Render" : {
-  "StartColor" : [1.0,1.0,1.0,1.0] ,
+  			    "StartColor" : [1.0,1.0,1.0,1.0],
 			    "EndColor" : [1.0,1.0,0.0,1.0]
 			}
 		}
