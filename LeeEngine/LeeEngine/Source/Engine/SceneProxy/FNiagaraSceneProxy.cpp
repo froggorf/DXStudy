@@ -28,6 +28,12 @@ FNiagaraSceneProxy::FNiagaraSceneProxy(UINT InPrimitiveID)
 	Module.StartScale = 0.5f;
 	Module.EndScale = 1.0f;
 
+	Module.Module[static_cast<int>(EParticleModule::PM_RENDER)] = 1;
+	Module.StartColor = XMFLOAT4{ 1.0f,1.0f,1.0f,1.0f };
+	Module.EndColor = XMFLOAT4{ 0.0f,0.0f,0.0f,1.0f };
+	Module.FadeOut = 1;
+	Module.StartRatio=0.5f;
+
 	ModuleBuffer = std::make_shared<FStructuredBuffer>();
 	ModuleBuffer->Create(sizeof(FParticleModule), 1, SB_TYPE::SRV_ONLY, true,&Module);
 	TickParticleCS = std::make_shared<FTickParticleCS>();

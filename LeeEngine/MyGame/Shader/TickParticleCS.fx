@@ -162,6 +162,32 @@ void CS_TickParticle(int3 ThreadID : SV_DispatchThreadID)
 			gBuffer[ThreadID.x].WorldScale = gBuffer[ThreadID.x].WorldInitScale * CurScale;
 		}
 
+        // Drag 감속 모듈
+		if (gModule[0].Module[4])
+		{
+			if(gBuffer[ThreadID.x].NormalizedAge < gModule[0].DestNormalizedAge)
+			{
+				float Gradient = (gModule[0].LimitSpeed - length(gBuffer[0].Velocity)) / (gModule[0].DestNormalizedAge - gBuffer[0].NormalizedAge);
+                float NADT = gDeltaTime / gBuffer[ThreadID.x].Life;
+
+				float NewSpeed = length(gBuffer[ThreadID.x].Velocity) + Gradient * NADT;
+				gBuffer[ThreadID.x].Velocity = normalize(gBuffer[ThreadID.x].Velocity) * NewSpeed;
+			}
+		}
+
+
+        // 렌더링 관련 옵션들
+        if(gModule[0].Module[5])
+        {
+			gBuffer[ThreadID.x].Color = (gModule[0].EndColor - gModule[0].StartColor) * gBuffer[ThreadID.x].NormalizedAge + gModule[0].StartColor;
+            if(gModule[0].FadeOut)
+            {
+	            float fRatio = saturate(1.f - (gBuffer[ThreadID.x].NormalizedAge - gModule[0].StartRatio) / (1.f - gModule[0].StartRatio));
+                gBuffer[ThreadID.x].Color.a = fRatio;
+            }
+
+        }
+
 		gBuffer[ThreadID.x].Age += gDeltaTime;
 		// 파티클의 수명이 다했는지 체크
 		if (gBuffer[ThreadID.x].Age >= gBuffer[ThreadID.x].Life)
