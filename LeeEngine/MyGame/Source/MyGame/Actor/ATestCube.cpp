@@ -27,7 +27,8 @@ ATestCube::ATestCube()
 
 	NiagaraComp = std::make_shared<UNiagaraComponent>();
 	NiagaraComp->SetupAttachment(GetRootComponent());
-	
+	std::shared_ptr<UNiagaraSystem> System = UNiagaraSystem::GetNiagaraAsset("NS_Test");
+	NiagaraComp->SetNiagaraAsset(System);
 
 	//TestCube3 = std::make_shared<UStaticMeshComponent>();
 	//TestCube3->SetupAttachment(GetRootComponent());

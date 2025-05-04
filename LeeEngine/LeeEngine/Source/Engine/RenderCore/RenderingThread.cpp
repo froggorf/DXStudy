@@ -43,62 +43,69 @@ void FScene::BeginRenderFrame()
 	
 	bIsFrameStart = true;
 
-	for(const auto& NewPrimitiveProxy : PendingAddSceneProxies)
+	for(const auto& NewPrimitiveProxies : PendingAddSceneProxies)
 	{
-		PrimitiveRenderData RenderData;
-		RenderData.MeshIndex = NewPrimitiveProxy.second->GetMeshIndex();
-		RenderData.PrimitiveID = NewPrimitiveProxy.first;
-		RenderData.SceneProxy = NewPrimitiveProxy.second;
-		RenderData.MaterialInterface = NewPrimitiveProxy.second->GetMaterialInterface();
+		for (int i = 0; i < NewPrimitiveProxies.second.size(); ++i)
+		{
+			const auto& NewPrimitiveProxy = NewPrimitiveProxies;
 		
-		UINT MaterialID = RenderData.SceneProxy->GetMaterialID();
+			PrimitiveRenderData RenderData;
+			RenderData.MeshIndex = NewPrimitiveProxy.second[i]->GetMeshIndex();
+			RenderData.PrimitiveID = NewPrimitiveProxy.first;
+			RenderData.SceneProxy = NewPrimitiveProxy.second[i];
+			RenderData.MaterialInterface = NewPrimitiveProxy.second[i]->GetMaterialInterface();
 
-		bool bUseMaterialInstance = RenderData.SceneProxy->GetMaterialInterface()->IsMaterialInstance();
-		// 만약 머테리얼 인스턴스를 쓸 경우 새로 인스턴싱 해줘야함
-		if(bUseMaterialInstance)
-		{
-			RenderData.MaterialInterface = std::dynamic_pointer_cast<UMaterialInstance>(NewPrimitiveProxy.second->GetMaterialInterface())->GetInstance(); 
-		}
+			UINT MaterialID = RenderData.SceneProxy->GetMaterialID();
 
-
-		// 머테리얼 ID 로 관리하는데, 머테리얼 -> 머테리얼인스턴스 순으로 배열에 배치되도록 설정
-		switch(RenderData.MaterialInterface->GetBlendModeType())
-		{
-		case EBlendMode::BM_Opaque:
-		if(bUseMaterialInstance)
-		{
-			OpaqueSceneProxyRenderData[MaterialID].emplace_back(RenderData);	
-		}
-		else
-		{
-			OpaqueSceneProxyRenderData[MaterialID].insert(OpaqueSceneProxyRenderData[MaterialID].begin(),RenderData);
-		}
-		break;
-		case EBlendMode::BM_Masked:
+			bool bUseMaterialInstance = RenderData.SceneProxy->GetMaterialInterface()->IsMaterialInstance();
+			// 만약 머테리얼 인스턴스를 쓸 경우 새로 인스턴싱 해줘야함
 			if(bUseMaterialInstance)
 			{
-				MaskedSceneProxyRenderData[MaterialID].emplace_back(RenderData);	
+				RenderData.MaterialInterface = std::dynamic_pointer_cast<UMaterialInstance>(NewPrimitiveProxy.second[i]->GetMaterialInterface())->GetInstance(); 
 			}
-			else
+
+
+			// 머테리얼 ID 로 관리하는데, 머테리얼 -> 머테리얼인스턴스 순으로 배열에 배치되도록 설정
+			switch(RenderData.MaterialInterface->GetBlendModeType())
 			{
-				MaskedSceneProxyRenderData[MaterialID].insert(MaskedSceneProxyRenderData[MaterialID].begin(),RenderData);
+			case EBlendMode::BM_Opaque:
+				if(bUseMaterialInstance)
+				{
+					OpaqueSceneProxyRenderData[MaterialID].emplace_back(RenderData);	
+				}
+				else
+				{
+					OpaqueSceneProxyRenderData[MaterialID].insert(OpaqueSceneProxyRenderData[MaterialID].begin(),RenderData);
+				}
+				break;
+			case EBlendMode::BM_Masked:
+				if(bUseMaterialInstance)
+				{
+					MaskedSceneProxyRenderData[MaterialID].emplace_back(RenderData);	
+				}
+				else
+				{
+					MaskedSceneProxyRenderData[MaterialID].insert(MaskedSceneProxyRenderData[MaterialID].begin(),RenderData);
+				}
+				break;
+			case EBlendMode::BM_Translucent:
+				if(bUseMaterialInstance)
+				{
+					TranslucentSceneProxyRenderData[MaterialID].emplace_back(RenderData);	
+				}
+				else
+				{
+					TranslucentSceneProxyRenderData[MaterialID].insert(TranslucentSceneProxyRenderData[MaterialID].begin(),RenderData);
+				}
+				break;
+			default:
+				// 잘못된 데이터
+				assert(0);
+				break;
 			}
-		break;
-		case EBlendMode::BM_Translucent:
-			if(bUseMaterialInstance)
-			{
-				TranslucentSceneProxyRenderData[MaterialID].emplace_back(RenderData);	
-			}
-			else
-			{
-				TranslucentSceneProxyRenderData[MaterialID].insert(TranslucentSceneProxyRenderData[MaterialID].begin(),RenderData);
-			}
-		break;
-		default:
-		// 잘못된 데이터
-			assert(0);
-			break;
 		}
+		
+		
 	}
 	PendingAddSceneProxies.clear();
 
@@ -239,17 +246,22 @@ void FScene::UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std:
 				auto p = SceneData->PendingAddSceneProxies.find(PrimitiveID);
 				if(p != SceneData->PendingAddSceneProxies.end())
 				{
-					SkeletalMeshSceneProxy = dynamic_cast<FSkeletalMeshSceneProxy*>(p->second.get());
+					for (int i = 0; i < p->second.size(); ++i)
+					{
+						SkeletalMeshSceneProxy = dynamic_cast<FSkeletalMeshSceneProxy*>(p->second[i].get());
+						if(SkeletalMeshSceneProxy)
+						{
+							for(int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
+							{
+								SkeletalMeshSceneProxy->BoneFinalMatrices[BoneIndex] = FinalMatrices[BoneIndex];	
+							}
+
+						}	
+					}
+					
 
 				}
-				if(SkeletalMeshSceneProxy)
-				{
-					for(int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
-					{
-						SkeletalMeshSceneProxy->BoneFinalMatrices[BoneIndex] = FinalMatrices[BoneIndex];	
-					}
-
-				}	
+				
 
 			};
 		ENQUEUE_RENDER_COMMAND(Lambda);

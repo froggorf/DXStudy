@@ -1,0 +1,28 @@
+{
+    "Class": "UNiagaraSystem",
+    "Name": "NS_Test",
+    "Emitters" : [
+	{ 
+		"Property" : 0, 
+		"Modules" : 
+		{
+			"Render" : {
+			  
+			    "StartColor" : [1.0,0.0,0.0,1.0],
+			    "EndColor" : [0.0,0.0,0.0,1.0]
+			}
+		}
+	},
+	{ 
+		"Property" : 0, 
+		"Modules" : 
+		{
+			"Render" : {
+  "StartColor" : [1.0,1.0,1.0,1.0] ,
+			    "EndColor" : [1.0,1.0,0.0,1.0]
+			}
+		}
+	}
+    ]
+
+}

@@ -6,12 +6,21 @@
 
 std::vector<std::shared_ptr<FPrimitiveSceneProxy>> UNiagaraComponent::CreateSceneProxy()
 {
-	std::vector<std::shared_ptr<FPrimitiveSceneProxy>> SceneProxies;
-	std::shared_ptr<FNiagaraSceneProxy> NiagaraSceneProxy = std::make_shared<FNiagaraSceneProxy>(GetPrimitiveID());
-	SceneProxies.emplace_back(NiagaraSceneProxy);
+	if(nullptr == NiagaraAsset)
+	{
+		return {};
+	}
 
-	this->SceneProxies.emplace_back(NiagaraSceneProxy);
+	const auto& RenderData = NiagaraAsset->CreateDynamicRenderData();
+	std::vector<std::shared_ptr<FPrimitiveSceneProxy>> SceneProxies(RenderData.size());
 
+	for(int i =0 ;i < RenderData.size(); ++i)
+	{
+		std::shared_ptr<FNiagaraSceneProxy> NiagaraSceneProxy = std::make_shared<FNiagaraSceneProxy>(GetPrimitiveID(),RenderData[i]);
+		SceneProxies.emplace_back(NiagaraSceneProxy);
+		this->SceneProxies.emplace_back(NiagaraSceneProxy);
+	}
+	
 	return SceneProxies;
 }
 

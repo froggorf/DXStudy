@@ -7,7 +7,7 @@
 
 std::shared_ptr<FTickParticleCS> FNiagaraSceneProxy::TickParticleCS;
 
-FNiagaraSceneProxy::FNiagaraSceneProxy(UINT InPrimitiveID)
+FNiagaraSceneProxy::FNiagaraSceneProxy(UINT InPrimitiveID, std::shared_ptr<FNiagaraEmitter> InEmitter)
 	: FPrimitiveSceneProxy(InPrimitiveID)
 {
 	if(nullptr == TickParticleCS)
@@ -15,37 +15,20 @@ FNiagaraSceneProxy::FNiagaraSceneProxy(UINT InPrimitiveID)
 		TickParticleCS = std::make_shared<FTickParticleCS>();	
 	}
 
-	MaterialInterface = UMaterial::GetMaterialCache("M_NiagaraBillboardSprite");
+	Emitter = InEmitter;
+	MaterialInterface = Emitter->RenderData->GetMaterialInterface();
+	//MaterialInterface = UMaterial::GetMaterialCache("M_NiagaraBillboardSprite");
+
 	ParticleBuffer = std::make_shared<FStructuredBuffer>();
 	ParticleBuffer->Create(sizeof(FParticleData), MaxParticleCount, SB_TYPE::SRV_UAV, false);
 	SpawnBuffer = std::make_shared<FStructuredBuffer>();
 	SpawnBuffer->Create(sizeof(FParticleSpawn), 1, SB_TYPE::SRV_UAV, true);
 
-	Module.SpawnRate = 5.0f;
-	Module.SpawnShape = 0;
-	Module.SpawnShapeScale = XMFLOAT3{50.0f,50.0f,50.0f};
-	Module.MinLife = 1.0f;
-	Module.MaxLife = 3.0f;
-	Module.MinScale = XMFLOAT3{1.0f,1.0f,1.0f};
-	Module.MaxScale = XMFLOAT3{ 5.0f,5.0f,5.0f};
-	Module.SpaceType = 1;
-	
-
-	Module.Module[static_cast<int>(EParticleModule::PM_SCALE)] = 1;
-	Module.StartScale = 0.5f;
-	Module.EndScale = 1.0f;
-
-	Module.Module[static_cast<int>(EParticleModule::PM_RENDER)] = 1;
-	Module.StartColor = XMFLOAT4{ 1.0f,1.0f,1.0f,1.0f };
-	Module.EndColor = XMFLOAT4{ 0.0f,0.0f,0.0f,1.0f };
-	Module.FadeOut = 1;
-	Module.StartRatio=0.5f;
+	/**/
 
 	ModuleBuffer = std::make_shared<FStructuredBuffer>();
-	ModuleBuffer->Create(sizeof(FParticleModule), 1, SB_TYPE::SRV_ONLY, true,&Module);
+	ModuleBuffer->Create(sizeof(FParticleModule), 1, SB_TYPE::SRV_ONLY, true,&Emitter->Module);
 
-	
-	
 
 	AccTime = 0.0f;
 
@@ -61,7 +44,7 @@ void FNiagaraSceneProxy::Draw()
 
 	
 	UMaterial::GetMaterialCache("M_NiagaraBillboardSprite")->Binding();
-
+	float time = GEngine->GetTimeSeconds();
 	ParticleBuffer->Binding(20);
 
 	auto DeviceContext = GDirectXDevice->GetDeviceContext();
@@ -91,12 +74,12 @@ void FNiagaraSceneProxy::Draw()
 void FNiagaraSceneProxy::TickCS(float DeltaSeconds)
 {
 	// 오브젝트의 월드 좌표 계산
-	Module.ObjectWorldPos = ComponentToWorld.GetTranslation();
+	Emitter->Module.ObjectWorldPos = ComponentToWorld.GetTranslation();
 
 	// 이번 프레임에 활성화 될 파티클 수 계산
 	CalcSpawnCount(DeltaSeconds);
 
-	ModuleBuffer->SetData(&Module);
+	ModuleBuffer->SetData(&Emitter->Module);
 	// SpawnCount, ParticleBuffer, ModuleBuffer 연결하고
 	TickParticleCS->SetSpawnBuffer(SpawnBuffer);
 	TickParticleCS->SetParticleBuffer(ParticleBuffer);
@@ -108,8 +91,9 @@ void FNiagaraSceneProxy::TickCS(float DeltaSeconds)
 
 void FNiagaraSceneProxy::CalcSpawnCount(float DeltaSeconds)
 {
+
 	AccTime += DeltaSeconds;
-	float Term = 1.f / Module.SpawnRate;
+	float Term = 1.f / Emitter->Module.SpawnRate;
 
 	FParticleSpawn Count{};
 	if (AccTime >= Term)
@@ -118,14 +102,14 @@ void FNiagaraSceneProxy::CalcSpawnCount(float DeltaSeconds)
 		Count.SpawnCount = 1;
 	}
 
-	if(Module.Module[static_cast<int>(EParticleModule::PM_SPAWN_BURST)] && 0 < Module.SpawnBurstRepeat)
+	if(Emitter->Module.Module[static_cast<int>(EParticleModule::PM_SPAWN_BURST)] && 0 < Emitter->Module.SpawnBurstRepeat)
 	{
-		Module.AccSpawnBurstRepeatTime += DeltaSeconds;
-		if(Module.SpawnBurstRepeatTime < Module.AccSpawnBurstRepeatTime)
+		Emitter->Module.AccSpawnBurstRepeatTime += DeltaSeconds;
+		if(Emitter->Module.SpawnBurstRepeatTime < Emitter->Module.AccSpawnBurstRepeatTime)
 		{
-			Count.SpawnCount += Module.SpawnBurstCount;
-			Module.SpawnBurstRepeat -= 1;
-			Module.AccSpawnBurstRepeatTime-= Module.SpawnBurstRepeatTime;
+			Count.SpawnCount += Emitter->Module.SpawnBurstCount;
+			Emitter->Module.SpawnBurstRepeat -= 1;
+			Emitter->Module.AccSpawnBurstRepeatTime-= Emitter->Module.SpawnBurstRepeatTime;
 		}
 	}
 

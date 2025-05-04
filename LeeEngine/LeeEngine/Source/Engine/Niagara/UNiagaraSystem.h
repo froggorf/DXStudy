@@ -10,17 +10,33 @@
 #include "Engine/MyEngineUtils.h"
 #include "Engine/UObject/UObject.h"
 
-class UNiagaraSystem : public UObject
+class UNiagaraSystem : public UObject, public std::enable_shared_from_this<UNiagaraSystem>
 {
 	MY_GENERATED_BODY(UNiagaraSystem)
 public:
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
 	std::vector<std::shared_ptr<FNiagaraEmitter>> CreateDynamicRenderData() const;
+
+	static std::shared_ptr<UNiagaraSystem> GetNiagaraAsset(const std::string& NiagaraAssetName)
+	{
+		auto NiagaraAssetCacheMap = GetNiagaraAssetCacheMap();
+		if (NiagaraAssetCacheMap.contains(NiagaraAssetName))
+		{
+			return NiagaraAssetCacheMap[NiagaraAssetName];
+		}
+		return nullptr;
+	}
 protected:
+	
 private:
 public:
 protected:
-private:
 	std::vector<std::shared_ptr<FNiagaraEmitter>> Emitters;
+private:
+	static std::map<std::string, std::shared_ptr<UNiagaraSystem>>& GetNiagaraAssetCacheMap()
+	{
+		static std::map<std::string, std::shared_ptr<UNiagaraSystem>> NiagaraAssetCacheMap;
+		return NiagaraAssetCacheMap;
+	}
 };

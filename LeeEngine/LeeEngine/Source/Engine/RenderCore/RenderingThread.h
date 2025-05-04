@@ -129,7 +129,7 @@ public:
 	std::vector<PrimitiveRenderData> TranslucentSceneProxyRenderData;*/
 
 	// PrimitiveID, 
-	std::map<UINT, std::shared_ptr<FPrimitiveSceneProxy>> PendingAddSceneProxies;
+	std::map<UINT, std::vector<std::shared_ptr<FPrimitiveSceneProxy>>> PendingAddSceneProxies;
 	std::map<UINT, std::shared_ptr<FPrimitiveSceneProxy>> PendingDeleteSceneProxies;
 
 	std::map<UINT, FTransform> PendingNewTransformProxies;
@@ -213,7 +213,7 @@ public:
 			/*MY_LOG("SceneDataError", EDebugLogLevel::DLL_Error, "No SceneData");*/
 			return;
 		}
-		SceneData->PendingAddSceneProxies[PrimitiveID] = NewProxy;
+		SceneData->PendingAddSceneProxies[PrimitiveID].emplace_back(NewProxy);
 	}
 
 	static void NewTransformToPrimitive_GameThread(UINT PrimitiveID, const FTransform& NewTransform)
