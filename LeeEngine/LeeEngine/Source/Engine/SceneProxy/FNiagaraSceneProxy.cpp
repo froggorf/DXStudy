@@ -14,7 +14,7 @@ FNiagaraSceneProxy::FNiagaraSceneProxy(UINT InPrimitiveID)
 	SpawnBuffer = std::make_shared<FStructuredBuffer>();
 	SpawnBuffer->Create(sizeof(FParticleSpawn), 1, SB_TYPE::SRV_UAV, true);
 
-	Module.SpawnRate = 1.0f;
+	Module.SpawnRate = 5.0f;
 	Module.SpawnShape = 0;
 	Module.SpawnShapeScale = XMFLOAT3{50.0f,50.0f,50.0f};
 	Module.MinLife = 1.0f;

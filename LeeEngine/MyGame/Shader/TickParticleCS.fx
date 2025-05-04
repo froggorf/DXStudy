@@ -155,12 +155,12 @@ void CS_TickParticle(int3 ThreadID : SV_DispatchThreadID)
             gBuffer[ThreadID.x].WorldPos += gBuffer[ThreadID.x].Velocity * gDeltaTime;
         }
 
-  //      // Scale 모듈에 따라 현재 크기 업데이트
-		//if(gModule[0].Module[3])
-		//{
-		//	float CurScale = (gModule[0].EndScale - gModule[0].StartScale) * gBuffer[ThreadID.x].NormalizedAge + gModule[0].StartScale;
-		//	gBuffer[ThreadID.x].WorldScale = gBuffer[ThreadID.x].WorldInitScale * CurScale;
-		//}
+        // Scale 모듈에 따라 현재 크기 업데이트
+		if(gModule[0].Module[3])
+		{
+			float CurScale = (gModule[0].EndScale - gModule[0].StartScale) * gBuffer[ThreadID.x].NormalizedAge + gModule[0].StartScale;
+			gBuffer[ThreadID.x].WorldScale = gBuffer[ThreadID.x].WorldInitScale * CurScale;
+		}
 
 		gBuffer[ThreadID.x].Age += gDeltaTime;
 		// 파티클의 수명이 다했는지 체크
