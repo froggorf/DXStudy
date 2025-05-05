@@ -6,12 +6,14 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "Engine/Material/UMaterial.h"
+#include "Engine/Mesh/UStaticMesh.h"
 
 // 파티클 구조체
 struct FParticleData
 {
 	XMFLOAT3	LocalPos;		// 소유 오브젝트로 부터의 상대 좌표
 	XMFLOAT3	WorldPos;		// 파티클의 월드 좌표
+	XMFLOAT3	WorldRotation;	// 파티클의 월드 로테이션
 	XMFLOAT3	WorldInitScale; // 파티클 생성 시 초기 크기
 	XMFLOAT3	WorldScale;		// 파티클 월드 크기
 	XMFLOAT4	Color;			// 파티클 색상
@@ -123,14 +125,29 @@ public:
 	FNiagaraRendererBillboardSprites()
 	{
 		MaterialInterface = UMaterial::GetMaterialCache("MI_NiagaraBillboardSprite");
+		StaticMesh = UStaticMesh::GetStaticMesh("SM_Point");
 	}
 	~FNiagaraRendererBillboardSprites() override = default;
 
 	void Render() override;
 
 	void SetParticleTexture(const std::shared_ptr<UTexture>& InTexture) override{OverrideSpriteTexture = InTexture;}
-
+protected:
 	std::shared_ptr<UTexture> OverrideSpriteTexture;
+	std::shared_ptr<UStaticMesh> StaticMesh;
+};
+
+class FNiagaraRendererSprites : public FNiagaraRendererBillboardSprites
+{
+public:
+	FNiagaraRendererSprites()
+	{
+		MaterialInterface = UMaterial::GetMaterialCache("M_NiagaraSprite");
+		StaticMesh = UStaticMesh::GetStaticMesh("SM_Point");
+	}
+	~FNiagaraRendererSprites() override =default;
+
+	void Render() override;
 };
 
 

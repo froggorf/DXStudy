@@ -6,7 +6,6 @@
 
 void FNiagaraRendererBillboardSprites::Render()
 {
-
 	GDirectXDevice->SetDSState(EDepthStencilStateType::DST_NO_WRITE);
 	GDirectXDevice->SetBSState(EBlendStateType::BST_AlphaBlend);
 	auto DeviceContext = GDirectXDevice->GetDeviceContext();
@@ -17,8 +16,7 @@ void FNiagaraRendererBillboardSprites::Render()
 	}
 
 
-	auto sm = UStaticMesh::GetStaticMesh("SM_Point");
-	auto RenderData = sm->GetStaticMeshRenderData();
+	auto RenderData = StaticMesh->GetStaticMeshRenderData();
 	UINT MeshIndex = 0;
 	// 셰이더 설정
 	UINT stride = sizeof(MyVertexData);
@@ -32,4 +30,10 @@ void FNiagaraRendererBillboardSprites::Render()
 	DeviceContext->DrawIndexedInstanced(1,MaxParticleCount,0,0, 0);
 
 	GDirectXDevice->SetDSState(EDepthStencilStateType::DST_LESS);
+}
+
+void FNiagaraRendererSprites::Render()
+{
+	// 머테리얼만 다른 머테리얼을 사용
+	FNiagaraRendererBillboardSprites::Render();
 }

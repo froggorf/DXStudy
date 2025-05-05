@@ -41,6 +41,8 @@ void ParticleInit(inout FParticleData _Particle, in FParticleModule _Module
         _Particle.LocalPos.xyz = float3(0.0f,0.0f,0.0f);
     }
 
+    _Particle.WorldRotation.xyz = GetRandom(_NomalizedThreadID).xyz * 360.0f - 180.0f;
+
     // 파티클 Life 랜덤 설정
     _Particle.Age = 0.f;
     float3 vRandom = GetRandom(_NomalizedThreadID + 0.1f);

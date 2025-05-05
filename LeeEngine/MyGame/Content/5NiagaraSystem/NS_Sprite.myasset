@@ -3,8 +3,8 @@
     "Name": "NS_Sprite",
     "Emitters" : [
 	{ 
-		"Property" : 0, 
-		"OverrideMat": "M_NiagaraBillboardSprite_UV",
+		"Property" : 1, 
+		"OverrideMat": "M_NiagaraSprite_UV",
 		"OverrideTex": "T_BigFire",
 		"SpawnRate" : 2.0,
 		"Life" : [ 3,5 ],

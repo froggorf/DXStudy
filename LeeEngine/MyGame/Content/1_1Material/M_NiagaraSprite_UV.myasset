@@ -1,0 +1,20 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_NiagaraSprite_UV",
+    "VertexShader" : {
+	"FilePath" : "/Shader/SpriteRenderer.fx",
+	"Func" : "VS_SpriteParticle"
+    },
+    "GeometryShader": {
+	"FilePath" : "/Shader/SpriteRenderer.fx",
+	"Func": "GS_Sprite"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/BillboardSpriteRenderer.fx",
+	"Func": "PS_Particle_UV"
+    },
+    "BlendMode": "Translucent",
+    "TextureParams" : ["T_BigFire"],
+    "TwoSided" : 1
+	
+}

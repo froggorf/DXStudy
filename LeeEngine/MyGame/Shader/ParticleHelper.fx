@@ -3,6 +3,7 @@ struct FParticleData
 {
 	float3	LocalPos;		// 소유 오브젝트로 부터의 상대 좌표
 	float3	WorldPos;		// 파티클의 월드 좌표
+	float3  WorldRotation;
 	float3	WorldInitScale; // 파티클 생성 시 초기 크기
 	float3	WorldScale;		// 파티클 월드 크기
 	float4	Color;			// 파티클 색상

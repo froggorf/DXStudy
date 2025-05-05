@@ -20,6 +20,21 @@
     <Filter Include="Shader">
       <UniqueIdentifier>{c608a04d-5d71-4d68-8a1d-175dcef44b29}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader\Niagara">
+      <UniqueIdentifier>{7ccb398f-8864-4998-a507-167683bfdeb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Niagara\Compute">
+      <UniqueIdentifier>{be4749e0-386d-4a8e-8793-8d73bf908dd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Niagara\Render">
+      <UniqueIdentifier>{40820e1b-ea68-4a13-8d58-c0c544345b41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Niagara\Render\Billboard">
+      <UniqueIdentifier>{6040c05f-4beb-44d1-b447-1bc9911d570f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Niagara\Render\Sprite">
+      <UniqueIdentifier>{42e26ab2-6578-4fc7-b884-bfb69609d72e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -53,9 +68,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shader\BillboardSpriteRenderer.fx">
-      <Filter>Shader</Filter>
-    </None>
     <None Include="Shader\LightColor.hlsl">
       <Filter>Shader</Filter>
     </None>
@@ -65,11 +77,17 @@
     <None Include="Shader\Global.fx">
       <Filter>Shader</Filter>
     </None>
-    <None Include="Shader\ParticleHelper.fx">
-      <Filter>Shader</Filter>
+    <None Include="Shader\BillboardSpriteRenderer.fx">
+      <Filter>Shader\Niagara\Render\Billboard</Filter>
     </None>
     <None Include="Shader\TickParticleCS.fx">
-      <Filter>Shader</Filter>
+      <Filter>Shader\Niagara\Compute</Filter>
+    </None>
+    <None Include="Shader\ParticleHelper.fx">
+      <Filter>Shader\Niagara</Filter>
+    </None>
+    <None Include="Shader\SpriteRenderer.fx">
+      <Filter>Shader\Niagara\Render\Sprite</Filter>
     </None>
   </ItemGroup>
 </Project>
