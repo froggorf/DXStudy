@@ -82,6 +82,11 @@ void FNiagaraSceneProxy::CalcSpawnCount(float DeltaSeconds)
 	float Term = 1.f / Emitter->Module.SpawnRate;
 
 	FParticleSpawn Count{};
+	if(bFirstTick)
+	{
+		Count.SpawnCount = 1;
+		bFirstTick = false;
+	}
 	if (AccTime >= Term)
 	{
 	    AccTime -= Term;

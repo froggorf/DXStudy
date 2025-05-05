@@ -4,10 +4,10 @@
     "Emitters" : [
 	{ 
 		"Property" : 1, 
-		"OverrideMat": "M_NiagaraSprite_UV",
-		"OverrideTex": "T_BigFire",
-		"SpawnRate" : 2.0,
-		"Life" : [ 3,5 ],
+		"OverrideMat": "M_NiagaraSprite",
+		"OverrideTex": "T_CircleEffect",
+		"SpawnRate" : 0.01,
+		"Life" : [ 100,100 ],
 		"Scale" : [ [30,30,30] , [30,30,30] ],
 		"Rot" : [ [90,0,0] , [90, 0, 0]],
 		"SpaceType": 0,

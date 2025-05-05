@@ -41,4 +41,6 @@ protected:
 	std::shared_ptr<FStructuredBuffer> ModuleBuffer;
 
 	static std::shared_ptr<FTickParticleCS> TickParticleCS;
+
+	bool bFirstTick = true;
 };
