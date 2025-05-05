@@ -23,12 +23,12 @@ ATestCube::ATestCube()
 	TestCube2 = std::make_shared<UStaticMeshComponent>();
 	TestCube2->SetupAttachment(GetRootComponent());
 	TestCube2->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Cube"));
-	TestCube2->SetRelativeScale3D(XMFLOAT3(100.0f,1.0f,100.0f));
-	TestCube2->SetRelativeLocation(XMFLOAT3(0.0f,-50.0f,0.0f));
+	TestCube2->SetRelativeScale3D(XMFLOAT3(200.0f,1.0f,200.0f));
+	TestCube2->SetRelativeLocation(XMFLOAT3(0.0f,-25.0f,0.0f));
 
 	NiagaraComp = std::make_shared<UNiagaraComponent>();
 	NiagaraComp->SetupAttachment(GetRootComponent());
-	std::shared_ptr<UNiagaraSystem> System = UNiagaraSystem::GetNiagaraAsset("NS_Test");
+	std::shared_ptr<UNiagaraSystem> System = UNiagaraSystem::GetNiagaraAsset("NS_Sprite");
 	NiagaraComp->SetNiagaraAsset(System);
 
 	//TestCube3 = std::make_shared<UStaticMeshComponent>();
