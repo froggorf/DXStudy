@@ -16,7 +16,9 @@ void UActorComponent::TickComponent(float DeltaSeconds)
 {
 }
 
+#ifdef WITH_EDITOR
 void UActorComponent::DrawDetailPanel(UINT ComponentDepth)
 {
 	
 }
+#endif

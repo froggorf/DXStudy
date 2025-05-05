@@ -202,7 +202,7 @@ void FDirectXDevice::ResizeEditorRenderTarget(float NewX, float NewY)
 	textureDesc.Height = static_cast<int>(NewY);
 	textureDesc.MipLevels = 1;
 	textureDesc.ArraySize = 1;
-	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	textureDesc.Format = DXGI_FORMAT_B8G8R8X8_UNORM;
 	textureDesc.SampleDesc.Count = 1;
 	textureDesc.Usage = D3D11_USAGE_DEFAULT;
 	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
@@ -240,8 +240,7 @@ void FDirectXDevice::SetBSState(EBlendStateType InBSType)
 {
 	if(InBSType != CurrentBSType)
 	{
-		float BlendFactor[4] = {0.0f,0.0f,0.0f,0.0f};
-		m_d3dDeviceContext->OMSetBlendState(m_BSState[static_cast<UINT>(InBSType)].Get(), BlendFactor, 0xffffffff);
+		m_d3dDeviceContext->OMSetBlendState(m_BSState[static_cast<UINT>(InBSType)].Get(), nullptr, 0xffffffff);
 		CurrentBSType = InBSType;
 	}
 }
@@ -272,19 +271,13 @@ void FDirectXDevice::CreateBlendState()
 	// Alphablend
 	D3D11_BLEND_DESC BlendDesc = {};
 
-	BlendDesc.AlphaToCoverageEnable = false;
-	BlendDesc.IndependentBlendEnable = false;
-
-
 	BlendDesc.RenderTarget[0].BlendEnable = true;
-	BlendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 	BlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
 	BlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-
-	BlendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	BlendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 	BlendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
 	BlendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-
+	BlendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	BlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
 	m_d3dDevice->CreateBlendState(&BlendDesc, m_BSState[(UINT)EBlendStateType::BST_AlphaBlend].GetAddressOf());
@@ -295,7 +288,7 @@ void FDirectXDevice::CreateBlendState()
 	m_d3dDevice->CreateBlendState(&BlendDesc, m_BSState[(UINT)EBlendStateType::BST_AlphaBlend_Coverage].GetAddressOf());
 
 	// One One
-	BlendDesc.AlphaToCoverageEnable = false;
+	BlendDesc.AlphaToCoverageEnable = true;
 
 	BlendDesc.RenderTarget[0].BlendEnable = true;
 	BlendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
@@ -319,25 +312,25 @@ void FDirectXDevice::CreateDepthStencilState()
 	Desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 	Desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	Desc.StencilEnable = false;
-	m_d3dDevice->CreateDepthStencilState(&Desc, m_DSState[(UINT)EDepthStencilStateType::DST_LESS_EQUAL].GetAddressOf());
+	HR(m_d3dDevice->CreateDepthStencilState(&Desc, m_DSState[(UINT)EDepthStencilStateType::DST_LESS_EQUAL].GetAddressOf()));
 
 	// Greater
 	Desc.DepthEnable = true;
 	Desc.DepthFunc = D3D11_COMPARISON_GREATER;
 	Desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	Desc.StencilEnable = false;
-	m_d3dDevice->CreateDepthStencilState(&Desc, m_DSState[(UINT)EDepthStencilStateType::DST_GREATER].GetAddressOf());
+	HR(m_d3dDevice->CreateDepthStencilState(&Desc, m_DSState[(UINT)EDepthStencilStateType::DST_GREATER].GetAddressOf()));
 
 	// NO_WRITE
 	Desc.DepthEnable = true;
 	Desc.DepthFunc = D3D11_COMPARISON_LESS;
 	Desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 	Desc.StencilEnable = false;
-	m_d3dDevice->CreateDepthStencilState(&Desc, m_DSState[(UINT)EDepthStencilStateType::DST_NO_WRITE].GetAddressOf());
+	HR(m_d3dDevice->CreateDepthStencilState(&Desc, m_DSState[(UINT)EDepthStencilStateType::DST_NO_WRITE].GetAddressOf()));
 
 	// NO_TEST_NO_WRITE
 	Desc.DepthEnable = false;	
-	m_d3dDevice->CreateDepthStencilState(&Desc, m_DSState[(UINT)EDepthStencilStateType::DST_NO_TEST_NO_WRITE].GetAddressOf());
+	HR(m_d3dDevice->CreateDepthStencilState(&Desc, m_DSState[(UINT)EDepthStencilStateType::DST_NO_TEST_NO_WRITE].GetAddressOf()));
 
 }
 
@@ -345,14 +338,35 @@ void FDirectXDevice::InitSamplerState()
 {
 	D3D11_SAMPLER_DESC sampDesc;
 	ZeroMemory(&sampDesc, sizeof(sampDesc));
-	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sampDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+	sampDesc.MaxLOD = 0; // mipmap
 	sampDesc.MinLOD = 0;
-	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	HR(GDirectXDevice->GetDevice()->CreateSamplerState(&sampDesc, m_SamplerState.GetAddressOf()));
+	m_d3dDeviceContext->VSSetSamplers(1, 1, m_SamplerState.GetAddressOf());
+	m_d3dDeviceContext->HSSetSamplers(1, 1, m_SamplerState.GetAddressOf());
+	m_d3dDeviceContext->DSSetSamplers(1, 1, m_SamplerState.GetAddressOf());
+	m_d3dDeviceContext->GSSetSamplers(1, 1, m_SamplerState.GetAddressOf());
+	m_d3dDeviceContext->PSSetSamplers(1, 1, m_SamplerState.GetAddressOf());
+	m_d3dDeviceContext->CSSetSamplers(1, 1, m_SamplerState.GetAddressOf());
+
+	// MinMagMip 필터링 셈플러
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	sampDesc.MaxLOD = 0; // mipmap
+	sampDesc.MinLOD = 0;
+	m_d3dDevice->CreateSamplerState(&sampDesc, m_SamplerState2.GetAddressOf());
+	m_d3dDeviceContext->VSSetSamplers(1, 1, m_SamplerState2.GetAddressOf());
+	m_d3dDeviceContext->HSSetSamplers(1, 1, m_SamplerState2.GetAddressOf());
+	m_d3dDeviceContext->DSSetSamplers(1, 1, m_SamplerState2.GetAddressOf());
+	m_d3dDeviceContext->GSSetSamplers(1, 1, m_SamplerState2.GetAddressOf());
+	m_d3dDeviceContext->PSSetSamplers(1, 1, m_SamplerState2.GetAddressOf());
+	m_d3dDeviceContext->CSSetSamplers(1, 1, m_SamplerState2.GetAddressOf());
+
 }
 
 
@@ -413,13 +427,16 @@ void FDirectXDevice::ResizeWindow()
 	
 #endif
 
+	m_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(backBuffer.GetAddressOf()));
+	D3D11_TEXTURE2D_DESC backBufferDesc;
+	backBuffer->GetDesc(&backBufferDesc);
 
 	// backBuffer 는 ComPtr로 관리되므로 제거 x
 
 	// 뎁스 스텐실 버퍼, 뷰 생성
 	D3D11_TEXTURE2D_DESC depthStencilDesc{};
-	depthStencilDesc.Width		= *m_ClientWidth;
-	depthStencilDesc.Height		= *m_ClientHeight;
+	depthStencilDesc.Width		= backBufferDesc.Width;
+	depthStencilDesc.Height		= backBufferDesc.Height;
 	depthStencilDesc.MipLevels	= 1;
 	depthStencilDesc.ArraySize	= 1;
 	depthStencilDesc.Format		= DXGI_FORMAT_D24_UNORM_S8_UINT;

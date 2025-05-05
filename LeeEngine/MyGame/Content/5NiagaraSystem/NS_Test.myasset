@@ -70,9 +70,9 @@
 		"Modules" : 
 		{
 			"Render" : {
-  			    "StartColor" : [1,1,1,0.15],
-			    "EndColor" : [1,1,1,0.1],
-			    "FadeOut" : [1, 0.9]
+  			    "StartColor" : [1.0,0.1,0.1,0.55],
+			    "EndColor" : [1.0,1,1,0.01],
+			    "FadeOut" : [0,0]
 			},
 			"Scale" :{
 			    "StartScale" : 1.0,
@@ -83,7 +83,7 @@
 			    "VCount": 6
 			},
 			"AddVelocity":{
-			    "MinVel" : [-4.0,20, -2.0],
+			    "MinVel" : [-4.0,25, -2.0],
 			    "MaxVel" : [4.0, 30, 2]
 			}
 		}

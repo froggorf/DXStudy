@@ -161,6 +161,7 @@ private:
 
 	// 파이프라인
 	Microsoft::WRL::ComPtr<ID3D11SamplerState>	m_SamplerState;
+	Microsoft::WRL::ComPtr<ID3D11SamplerState>	m_SamplerState2;
 
 	// 상수버퍼
 	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_LightConstantBuffer;

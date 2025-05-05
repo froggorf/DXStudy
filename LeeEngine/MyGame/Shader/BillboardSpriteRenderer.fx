@@ -96,9 +96,7 @@ float4 PS_Particle(GS_OUT _in) : SV_Target
     vColor = gParticleTexture.Sample(DefaultSampler,  _in.vUV);
     vColor.rgb *= vColor.a;
 
-
 	vColor *= gParticle[_in.InstID].Color;
-
 	return vColor;    
 }
 
@@ -128,10 +126,7 @@ float4 PS_Particle_UV(GS_OUT _in) : SV_Target
     // 6. 텍스처 샘플링
     vColor = gParticleTexture.Sample(DefaultSampler, atlasUV);
     
-    vColor*= gParticle[_in.InstID].Color;
-	if(vColor.a < 0.1)
-	{
-		discard;
-	}
+    vColor *= gParticle[_in.InstID].Color;
+    
 	return vColor;    
 }

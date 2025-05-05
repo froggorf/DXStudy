@@ -5,7 +5,7 @@
 
 #include "CoreMinimal.h"
 #include "ImguiActorDetail.h"
-
+#ifdef WITH_EDITOR
 FImguiActorDetail::FImguiActorDetail(FScene* Scene, class FImguiLevelViewport* Owner)
 	: FImguiPanel(Scene)
 {
@@ -129,3 +129,4 @@ void FImguiActorDetail::FindComponentsAndNamesFromActor(const std::shared_ptr<US
 		}
 	}
 }
+#endif

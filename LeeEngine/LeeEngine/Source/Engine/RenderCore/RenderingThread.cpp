@@ -481,8 +481,9 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 
 
 			// Sampler State 설정
-			GDirectXDevice->GetDeviceContext()->PSSetSamplers(0, 1, GDirectXDevice->GetSamplerState().GetAddressOf());
+			//GDirectXDevice->GetDeviceContext()->PSSetSamplers(0, 1, GDirectXDevice->GetSamplerState().GetAddressOf());
 
+			GDirectXDevice->SetBSState(EBlendStateType::BST_Default);
 			for(const auto& SceneProxies : SceneData->OpaqueSceneProxyRenderData | std::views::values)
 			{
 				bool bIsBinding = false;
@@ -499,6 +500,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 					SceneProxy.SceneProxy->Draw();
 				}
 			}
+			GDirectXDevice->SetBSState(EBlendStateType::BST_AlphaBlend);
 			for(const auto& SceneProxies : SceneData->MaskedSceneProxyRenderData | std::views::values)
 			{
 				bool bIsBinding = false;
@@ -515,6 +517,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 					SceneProxy.SceneProxy->Draw();
 				}
 			}
+			
 			for(const auto& SceneProxies : SceneData->TranslucentSceneProxyRenderData | std::views::values)
 			{
 				bool bIsBinding = false;
