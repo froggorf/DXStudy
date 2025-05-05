@@ -85,9 +85,12 @@ struct FParticleModule
 	int UCount;
 	int VCount;
 
+	// AddRotation 모듈
+	float3 AddRotation;
+
 	// 추가 데이터
 	float3 ObjectWorldPos;
 
 	// Module On / Off
-	int		Module[7];
+	int		Module[8];
 };

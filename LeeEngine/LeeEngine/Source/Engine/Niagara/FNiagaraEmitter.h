@@ -42,6 +42,7 @@ enum class EParticleModule
 	PM_DRAG,
 	PM_RENDER,
 	PM_UVAnim,
+	PM_AddRotation,
 
 	PM_END,
 };
@@ -96,6 +97,9 @@ struct FParticleModule
 	// UVAnim 모듈
 	int UCount{};
 	int VCount{};
+
+	// AddRotation 모듈
+	XMFLOAT3 AddRotation;
 
 	// 추가 데이터
 	XMFLOAT3 ObjectWorldPos{};

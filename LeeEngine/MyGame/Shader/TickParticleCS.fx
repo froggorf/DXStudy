@@ -205,6 +205,13 @@ void CS_TickParticle(int3 ThreadID : SV_DispatchThreadID)
             gBuffer[ThreadID.x].VCount = 0;
         }
 
+
+        // Add Rotation
+        if(gModule[0].Module[7])
+        {
+	        gBuffer[ThreadID.x].WorldRotation += gModule[0].AddRotation * gDeltaTime;
+        }
+
 		gBuffer[ThreadID.x].Age += gDeltaTime;
 		// 파티클의 수명이 다했는지 체크
 		if (gBuffer[ThreadID.x].Age >= gBuffer[ThreadID.x].Life)

@@ -154,6 +154,14 @@ void UNiagaraSystem::LoadDataFromFileData(const nlohmann::json& AssetData)
 				NewEmitter->Module.AddMinSpeed = XMFLOAT3{MinVel[0],MinVel[1],MinVel[2]};
 				NewEmitter->Module.AddMaxSpeed = XMFLOAT3{MaxVel[0],MaxVel[1],MaxVel[2]};
 			}
+
+			// Add Rotation 모듈
+			if(ModuleData.contains("AddRot"))
+			{
+				NewEmitter->Module.Module[static_cast<int>(EParticleModule::PM_AddRotation)] = 1;
+				const auto& AddRotData = ModuleData["AddRot"];
+				NewEmitter->Module.AddRotation = XMFLOAT3{AddRotData[0],AddRotData[1],AddRotData[2]};
+			}
 		}
 		
 		this->Emitters.push_back(NewEmitter);

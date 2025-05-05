@@ -26,7 +26,8 @@
 			"UVAnim" : {
 			    "UCount": 8,
 			    "VCount": 8
-			}
+			},
+			"AddRot" : [0,90,0]
 		}
 	},
 	{ 

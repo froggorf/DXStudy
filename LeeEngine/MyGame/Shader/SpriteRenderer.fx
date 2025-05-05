@@ -29,37 +29,48 @@ VS_OUT VS_SpriteParticle(VS_IN _in)
 }
 
 
-float3x3 DegreeToMatrix(float3 euler)
+// 쿼터니언 → 3x3 회전행렬
+float3x3 QuaternionToMatrix(float4 q)
 {
-    // DirectX11의 좌표계를 기준으로 값이 설정되어 있기에
-    euler *= -1;
-    euler *= (PI/180);
-    float cz = cos(euler.z); float sz = sin(euler.z); // Roll (Z)
-    float cx = cos(euler.x); float sx = sin(euler.x); // Pitch (X)
-    float cy = cos(euler.y); float sy = sin(euler.y); // Yaw (Y)
+    float x = q.x, y = q.y, z = q.z, w = q.w;
+    float xx = x * x, yy = y * y, zz = z * z;
+    float xy = x * y, xz = x * z, yz = y * z;
+    float wx = w * x, wy = w * y, wz = w * z;
 
-    // Z축(roll) 회전
-    float3x3 rotZ = float3x3(
-        cz, -sz, 0,
-        sz,  cz, 0,
-        0,   0,  1
+    return float3x3(
+        1.0 - 2.0 * (yy + zz), 2.0 * (xy - wz),     2.0 * (xz + wy),
+        2.0 * (xy + wz),     1.0 - 2.0 * (xx + zz), 2.0 * (yz - wx),
+        2.0 * (xz - wy),     2.0 * (yz + wx),     1.0 - 2.0 * (xx + yy)
     );
-    // X축(pitch) 회전
-    float3x3 rotX = float3x3(
-        1,  0,   0,
-        0, cx, -sx,
-        0, sx,  cx
-    );
-    // Y축(yaw) 회전
-    float3x3 rotY = float3x3(
-        cy, 0, sy,
-        0,  1, 0,
-        -sy,0, cy
-    );
+}
 
-    // 최종 회전 행렬: Roll(Z) → Pitch(X) → Yaw(Y) 순서
-    // HLSL(row vector)에서는 mul(rotY, mul(rotX, rotZ))가 맞음
-    return mul(rotY, mul(rotX, rotZ));
+// Roll-Pitch-Yaw (Z-X-Y) 순서로 쿼터니언 생성 (도 단위 입력)
+float4 EulerToQuaternion_RollPitchYaw(float3 euler)
+{
+    float3 rad = euler * (PI / 180.0f); // 도 → 라디안
+
+    float cz = cos(rad.z * 0.5); // Roll (Z)
+    float sz = sin(rad.z * 0.5);
+    float cx = cos(rad.x * 0.5); // Pitch (X)
+    float sx = sin(rad.x * 0.5);
+    float cy = cos(rad.y * 0.5); // Yaw (Y)
+    float sy = sin(rad.y * 0.5);
+
+    float4 q;
+    q.x = sx * cy * cz + cx * sy * sz;
+    q.y = cx * sy * cz - sx * cy * sz;
+    q.z = cx * cy * sz + sx * sy * cz;
+    q.w = cx * cy * cz - sx * sy * sz;
+    return q;
+}
+
+// Euler → 쿼터니언 → 회전행렬 (Roll-Pitch-Yaw 기본)
+float3x3 QuaternionRotationMatrix(float3 euler)
+{
+    // 다이렉트 X11 좌표계를 활용했으므로 역수를 취해줘야함
+    euler *=-1;
+    float4 quat = EulerToQuaternion_RollPitchYaw(euler);
+    return QuaternionToMatrix(quat);
 }
 
 // GeometryShader
@@ -99,7 +110,7 @@ void GS_Sprite(point VS_OUT _in[1], inout TriangleStream<GS_OUT> _OutStream)
     };
 
     // 3. 월드 회전 행렬 만들기 (오일러 각 기반, radians 단위라고 가정)
-    float3x3 rotMat = DegreeToMatrix(particle.WorldRotation);
+    float3x3 rotMat = QuaternionRotationMatrix(particle.WorldRotation);
 
     // 4. 각 꼭짓점 변환
     GS_OUT verts[4];
