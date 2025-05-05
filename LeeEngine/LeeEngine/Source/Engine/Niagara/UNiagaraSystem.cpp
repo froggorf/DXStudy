@@ -162,6 +162,14 @@ void UNiagaraSystem::LoadDataFromFileData(const nlohmann::json& AssetData)
 				const auto& AddRotData = ModuleData["AddRot"];
 				NewEmitter->Module.AddRotation = XMFLOAT3{AddRotData[0],AddRotData[1],AddRotData[2]};
 			}
+
+			// AddTickVelocity 모듈
+			if(ModuleData.contains("TickVel"))
+			{
+				NewEmitter->Module.Module[static_cast<int>(EParticleModule::PM_AddTickVelocity)] = 1;
+				const auto& AddTickVelData = ModuleData["TickVel"];
+				NewEmitter->Module.AddTickVelocity = XMFLOAT3{AddTickVelData[0],AddTickVelData[1],AddTickVelData[2]};
+			}
 		}
 		
 		this->Emitters.push_back(NewEmitter);

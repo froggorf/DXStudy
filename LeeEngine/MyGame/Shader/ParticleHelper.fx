@@ -70,9 +70,8 @@ struct FParticleModule
 	float	StartScale;
 	float	EndScale;
 
-	// Drag Module (감속 모듈)
-	float	DestNormalizedAge;
-	float	LimitSpeed;
+	// Add Tick Velocity 모듈
+	float3 AddTickVelocity;
 
 	// Render Module
 	float4	EndColor;			// 파티클 최종 색상

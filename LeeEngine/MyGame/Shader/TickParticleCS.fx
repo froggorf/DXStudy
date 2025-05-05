@@ -169,14 +169,7 @@ void CS_TickParticle(int3 ThreadID : SV_DispatchThreadID)
         // Drag 감속 모듈
 		if (gModule[0].Module[4])
 		{
-			if(gBuffer[ThreadID.x].NormalizedAge < gModule[0].DestNormalizedAge)
-			{
-				float Gradient = (gModule[0].LimitSpeed - length(gBuffer[0].Velocity)) / (gModule[0].DestNormalizedAge - gBuffer[0].NormalizedAge);
-                float NADT = gDeltaTime / gBuffer[ThreadID.x].Life;
-
-				float NewSpeed = length(gBuffer[ThreadID.x].Velocity) + Gradient * NADT;
-				gBuffer[ThreadID.x].Velocity = normalize(gBuffer[ThreadID.x].Velocity) * NewSpeed;
-			}
+			gBuffer[ThreadID.x].Velocity += gModule[0].AddTickVelocity * gDeltaTime;
 		}
 
 

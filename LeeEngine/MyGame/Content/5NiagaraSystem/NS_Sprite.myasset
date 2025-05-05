@@ -34,16 +34,16 @@
 		"Property" : 0, 
 		"OverrideMat": "M_NiagaraBillboardSprite",
 		"OverrideTex": "T_Feather",
-		"SpawnRate" : 30.0,
+		"SpawnRate" : 15.0,
 		"Life" : [ 1.5,2 ],
 		"Scale" : [ [4,2,1] , [6,3,1] ],
 		"SpaceType": 0,
-		"SpawnScale" : [10,0.1,10],
+		"SpawnScale" : [30,0.1,30],
 		"Modules" : 
 		{
 			"Render" : {
-  			    "StartColor" : [1.0,0.25,0.0,1.0],
-			    "EndColor" : [1.0,0.5,0.0,1.0],
+  			    "StartColor" : [0.3,0.3,0.3,1.0],
+			    "EndColor" : [0.3,0.3,0.3,0.0],
 			    "FadeOut" : [1, 0.8]
 			},
 			"Scale" :{
@@ -55,9 +55,10 @@
 			    "VCount": 2
 			},
 			"AddVelocity":{
-			    "MinVel" : [0.0,10,0.0],
-			    "MaxVel" : [0.0, 20, 0]
+			    "MinVel" : [0.0,20,0.0],
+			    "MaxVel" : [0.0, 30, 0]
 			},
+			"TickVel" : [0,-20,0],
 			"AddRot" : [0, 0, 90]
 		}
 	}

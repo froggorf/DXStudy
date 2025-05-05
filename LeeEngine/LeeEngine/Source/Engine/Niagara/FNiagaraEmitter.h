@@ -39,7 +39,7 @@ enum class EParticleModule
 	PM_SPAWN_BURST,
 	PM_ADD_VELOCITY,
 	PM_SCALE,
-	PM_DRAG,
+	PM_AddTickVelocity,
 	PM_RENDER,
 	PM_UVAnim,
 	PM_AddRotation,
@@ -83,9 +83,8 @@ struct FParticleModule
 	float	StartScale{};
 	float	EndScale{};
 
-	// Drag Module (감속 모듈)
-	float	DestNormalizedAge{};
-	float	LimitSpeed{};
+	// Add Tick Velocity 모듈
+	XMFLOAT3 AddTickVelocity;
 
 	// Render Module
 	XMFLOAT4	EndColor{};			// 파티클 최종 색상
@@ -100,6 +99,8 @@ struct FParticleModule
 
 	// AddRotation 모듈
 	XMFLOAT3 AddRotation;
+
+	
 
 	// 추가 데이터
 	XMFLOAT3 ObjectWorldPos{};
