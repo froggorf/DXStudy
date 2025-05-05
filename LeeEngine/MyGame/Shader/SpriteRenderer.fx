@@ -29,31 +29,36 @@ VS_OUT VS_SpriteParticle(VS_IN _in)
 }
 
 
-float3x3 EulerToMatrix(float3 euler)
+float3x3 DegreeToMatrix(float3 euler)
 {
-    float cz = cos(euler.z); float sz = sin(euler.z); // Roll
-    float cx = cos(euler.x); float sx = sin(euler.x); // Pitch
-    float cy = cos(euler.y); float sy = sin(euler.y); // Yaw
+    // DirectX11의 좌표계를 기준으로 값이 설정되어 있기에
+    euler *= -1;
+    euler *= (PI/180);
+    float cz = cos(euler.z); float sz = sin(euler.z); // Roll (Z)
+    float cx = cos(euler.x); float sx = sin(euler.x); // Pitch (X)
+    float cy = cos(euler.y); float sy = sin(euler.y); // Yaw (Y)
 
-    // 각 축 회전 행렬
+    // Z축(roll) 회전
     float3x3 rotZ = float3x3(
         cz, -sz, 0,
         sz,  cz, 0,
         0,   0,  1
     );
+    // X축(pitch) 회전
     float3x3 rotX = float3x3(
         1,  0,   0,
         0, cx, -sx,
         0, sx,  cx
     );
+    // Y축(yaw) 회전
     float3x3 rotY = float3x3(
         cy, 0, sy,
         0,  1, 0,
         -sy,0, cy
     );
 
-    // Roll(Z) → Pitch(X) → Yaw(Y) 순서로 곱셈
-    // 주의: HLSL의 mul(a, b)는 v * b * a 임!
+    // 최종 회전 행렬: Roll(Z) → Pitch(X) → Yaw(Y) 순서
+    // HLSL(row vector)에서는 mul(rotY, mul(rotX, rotZ))가 맞음
     return mul(rotY, mul(rotX, rotZ));
 }
 
@@ -94,7 +99,7 @@ void GS_Sprite(point VS_OUT _in[1], inout TriangleStream<GS_OUT> _OutStream)
     };
 
     // 3. 월드 회전 행렬 만들기 (오일러 각 기반, radians 단위라고 가정)
-    float3x3 rotMat = EulerToMatrix(particle.WorldRotation);
+    float3x3 rotMat = DegreeToMatrix(particle.WorldRotation);
 
     // 4. 각 꼭짓점 변환
     GS_OUT verts[4];

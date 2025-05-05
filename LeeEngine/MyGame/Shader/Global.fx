@@ -26,3 +26,5 @@ cbuffer cbLight : register(b2)
     float3 gEyePosW;
     float pad;
 }
+
+#define PI 3.141592

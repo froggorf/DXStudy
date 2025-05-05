@@ -75,6 +75,16 @@ void UNiagaraSystem::LoadDataFromFileData(const nlohmann::json& AssetData)
 			NewEmitter->Module.MaxScale = XMFLOAT3{ MaxScaleData[0],MaxScaleData[1],MaxScaleData[2] };
 		}
 
+		// Rotation
+		if(EmitterData.contains("Rot"))
+		{
+			const auto& RotData = EmitterData["Rot"];
+			const auto& MinRotData = RotData[0];
+			const auto& MaxRotData = RotData[1];
+			NewEmitter->Module.MinRotation = XMFLOAT3{MinRotData[0],MinRotData[1],MinRotData[2]};
+			NewEmitter->Module.MaxRotation = XMFLOAT3{MaxRotData[0],MaxRotData[1],MaxRotData[2]};
+		}
+
 		//SpaceType
 		if (EmitterData.contains("SpaceType"))
 		{

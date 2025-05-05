@@ -42,6 +42,8 @@ struct FParticleModule
 
 	float3	MinScale;			// 생성 시 최소 크기
 	float3	MaxScale;			// 생성 시 최대 크기
+	float3  MinRotation;		// 생성 시 최소 회전
+	float3  MaxRotation;		// 생성 시 최대 회전
 	float	MinLife;			// 생성 시 최소 주기
 	float	MaxLife;			// 생성 시 최대 주기
 	int		SpawnShape;			// 0 : Box, 1 : Sphere
