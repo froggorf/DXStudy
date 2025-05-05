@@ -32,11 +32,11 @@
 	},
 	{ 
 		"Property" : 0, 
-		"OverrideMat": "M_NiagaraBillboardSprite_UV",
-		"OverrideTex": "T_Flame",
+		"OverrideMat": "M_NiagaraBillboardSprite",
+		"OverrideTex": "T_Feather",
 		"SpawnRate" : 30.0,
-		"Life" : [ 0.5,1 ],
-		"Scale" : [ [1,1,1] , [2,2,2] ],
+		"Life" : [ 1.5,2 ],
+		"Scale" : [ [4,2,1] , [6,3,1] ],
 		"SpaceType": 0,
 		"SpawnScale" : [10,0.1,10],
 		"Modules" : 
@@ -55,9 +55,10 @@
 			    "VCount": 2
 			},
 			"AddVelocity":{
-			    "MinVel" : [-20.0,20,20.0],
-			    "MaxVel" : [20.0, 60, 20]
-			}
+			    "MinVel" : [0.0,10,0.0],
+			    "MaxVel" : [0.0, 20, 0]
+			},
+			"AddRot" : [0, 0, 90]
 		}
 	}
     ]

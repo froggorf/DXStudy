@@ -94,3 +94,51 @@ struct FParticleModule
 	// Module On / Off
 	int		Module[8];
 };
+
+
+
+
+
+// 쿼터니언 → 3x3 회전행렬
+float3x3 QuaternionToMatrix(float4 q)
+{
+	float x = q.x, y = q.y, z = q.z, w = q.w;
+	float xx = x * x, yy = y * y, zz = z * z;
+	float xy = x * y, xz = x * z, yz = y * z;
+	float wx = w * x, wy = w * y, wz = w * z;
+
+	return float3x3(
+		1.0 - 2.0 * (yy + zz), 2.0 * (xy - wz),     2.0 * (xz + wy),
+		2.0 * (xy + wz),     1.0 - 2.0 * (xx + zz), 2.0 * (yz - wx),
+		2.0 * (xz - wy),     2.0 * (yz + wx),     1.0 - 2.0 * (xx + yy)
+	);
+}
+
+// Roll-Pitch-Yaw (Z-X-Y) 순서로 쿼터니언 생성 (도 단위 입력)
+float4 EulerToQuaternion_RollPitchYaw(float3 euler)
+{
+	float3 rad = euler * (PI / 180.0f); // 도 → 라디안
+
+	float cz = cos(rad.z * 0.5); // Roll (Z)
+	float sz = sin(rad.z * 0.5);
+	float cx = cos(rad.x * 0.5); // Pitch (X)
+	float sx = sin(rad.x * 0.5);
+	float cy = cos(rad.y * 0.5); // Yaw (Y)
+	float sy = sin(rad.y * 0.5);
+
+	float4 q;
+	q.x = sx * cy * cz + cx * sy * sz;
+	q.y = cx * sy * cz - sx * cy * sz;
+	q.z = cx * cy * sz + sx * sy * cz;
+	q.w = cx * cy * cz - sx * sy * sz;
+	return q;
+}
+
+// Euler → 쿼터니언 → 회전행렬 (Roll-Pitch-Yaw 기본)
+float3x3 QuaternionRotationMatrix(float3 euler)
+{
+	// 다이렉트 X11 좌표계를 활용했으므로 역수를 취해줘야함
+	euler *=-1;
+	float4 quat = EulerToQuaternion_RollPitchYaw(euler);
+	return QuaternionToMatrix(quat);
+}
