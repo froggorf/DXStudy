@@ -40,6 +40,23 @@ void ParticleInit(inout FParticleData _Particle, in FParticleModule _Module
     {
         _Particle.LocalPos.xyz = float3(0.0f,0.0f,0.0f);
     }
+    // Cylinder
+    else if (2 == _Module.SpawnShape)
+    {
+        float3 vRandom = GetRandom(_NomalizedThreadID);
+        float radius = (_Module.SpawnShapeScale.x + _Module.SpawnShapeScale.z) / 2 * 0.5f;
+        float height = _Module.SpawnShapeScale.y;
+
+        float theta = vRandom.x * 2.0f * 3.14159265f;
+        float r = sqrt(vRandom.y) * radius;
+
+        float x = r * cos(theta);
+        float y = (vRandom.z - 0.5f) * height;
+        float z = r * sin(theta);
+
+        float3 vSpawnPos = float3(x, y, z);
+        _Particle.LocalPos.xyz = vSpawnPos;
+    }
 
     _Particle.WorldRotation.xyz = GetRandom(_NomalizedThreadID).xyz * (_Module.MaxRotation - _Module.MinRotation) + _Module.MinRotation;
 

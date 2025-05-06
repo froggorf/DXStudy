@@ -6,8 +6,8 @@
 		"Property" : 1, 
 		"OverrideMat": "M_NiagaraSprite",
 		"OverrideTex": "T_CircleEffect",
-		"SpawnRate" : 0.01,
-		"Life" : [ 100,100 ],
+		"SpawnRate" : 0.0,
+		"Life" : [ 99999999,99999999 ],
 		"Scale" : [ [30,30,30] , [30,30,30] ],
 		"Rot" : [ [90,0,0] , [90, 0, 0]],
 		"SpaceType": 0,
@@ -37,8 +37,10 @@
 		"SpawnRate" : 15.0,
 		"Life" : [ 1.5,2 ],
 		"Scale" : [ [4,2,1] , [6,3,1] ],
+		"Rot" : [ [0,0,-180] , [0, 0, 180]],
 		"SpaceType": 0,
-		"SpawnScale" : [30,0.1,30],
+		"SpawnShape" : 2,
+		"SpawnScale" : [30,1, 30],
 		"Modules" : 
 		{
 			"Render" : {
@@ -56,9 +58,9 @@
 			},
 			"AddVelocity":{
 			    "MinVel" : [0.0,20,0.0],
-			    "MaxVel" : [0.0, 30, 0]
+			    "MaxVel" : [0.0, 40, 0]
 			},
-			"TickVel" : [0,-20,0],
+			"TickVel" : [0,-30,0],
 			"AddRot" : [0, 0, 90]
 		}
 	}

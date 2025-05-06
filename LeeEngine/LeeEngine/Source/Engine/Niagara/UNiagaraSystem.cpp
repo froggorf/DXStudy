@@ -91,6 +91,12 @@ void UNiagaraSystem::LoadDataFromFileData(const nlohmann::json& AssetData)
 			NewEmitter->Module.SpaceType = EmitterData["SpaceType"];
 		}
 
+		// Spawn Shape
+		if(EmitterData.contains("SpawnShape"))
+		{
+			NewEmitter->Module.SpawnShape = EmitterData["SpawnShape"];
+		}
+
 		// SpawnShapeScale
 		if(EmitterData.contains("SpawnScale"))
 		{
