@@ -13,7 +13,7 @@ class UNiagaraComponent : public UPrimitiveComponent
 {
 	MY_GENERATED_BODY(UNiagaraComponent)
 
-	UNiagaraComponent() = default;
+	UNiagaraComponent();
 	~UNiagaraComponent() override = default; 
 public:
 	std::vector<std::shared_ptr<FPrimitiveSceneProxy>> CreateSceneProxy() override;

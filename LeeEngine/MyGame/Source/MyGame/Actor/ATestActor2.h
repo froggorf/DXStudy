@@ -27,4 +27,6 @@ private:
 	std::shared_ptr<UTestComponent> TestComponent;
 
 	std::shared_ptr<UMaterialInstance> MI_Dummy;
+
+	std::shared_ptr<UNiagaraComponent> NiagaraComp;
 };

@@ -21,7 +21,12 @@ ATestActor2::ATestActor2()
 	{
 		TestComponent = std::make_shared<UTestComponent>(*NewTestComp);	
 	}
-	
+
+	NiagaraComp = std::make_shared<UNiagaraComponent>();
+	NiagaraComp->SetupAttachment(GetRootComponent());
+	std::shared_ptr<UNiagaraSystem> System = UNiagaraSystem::GetNiagaraAsset("NS_Sprite");
+	NiagaraComp->SetNiagaraAsset(System);
+	NiagaraComp->SetRelativeLocation(XMFLOAT3{0.0f,50.0f-44.5f,0.0f});
 
 }
 

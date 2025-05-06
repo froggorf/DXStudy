@@ -4,6 +4,12 @@
 #include "Engine/SceneProxy/FNiagaraSceneProxy.h"
 #include "Engine/World/UWorld.h"
 
+UNiagaraComponent::UNiagaraComponent()
+{
+
+	Rename("NiagaraComponent_" + std::to_string(ComponentID));
+}
+
 std::vector<std::shared_ptr<FPrimitiveSceneProxy>> UNiagaraComponent::CreateSceneProxy()
 {
 	if(nullptr == NiagaraAsset)

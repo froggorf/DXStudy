@@ -65,7 +65,7 @@
 		"SpawnRate" : 10.0,
 		"Life" : [ 2,3 ],
 		"Scale" : [ [10,10,10] , [15,15,15] ],
-		"SpaceType": 0,
+		"SpaceType": 1,
 		"SpawnScale" : [5,0.1,5],
 		"Modules" : 
 		{
