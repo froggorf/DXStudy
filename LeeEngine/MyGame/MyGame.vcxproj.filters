@@ -35,6 +35,9 @@
     <Filter Include="Shader\Niagara\Render\Sprite">
       <UniqueIdentifier>{42e26ab2-6578-4fc7-b884-bfb69609d72e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader\Niagara\Render\Mesh">
+      <UniqueIdentifier>{8a51f196-fa93-4e85-92d8-fa1bb40e1d8d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -88,6 +91,9 @@
     </None>
     <None Include="Shader\SpriteRenderer.fx">
       <Filter>Shader\Niagara\Render\Sprite</Filter>
+    </None>
+    <None Include="Shader\MeshRenderer.fx">
+      <Filter>Shader\Niagara\Render\Mesh</Filter>
     </None>
   </ItemGroup>
 </Project>

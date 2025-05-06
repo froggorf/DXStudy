@@ -1,0 +1,20 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_NiagaraMesh",
+    "VertexShader" : {
+	"FilePath" : "/Shader/MeshRenderer.fx",
+	"Func" : "VS_MeshParticle"
+    },
+    "GeometryShader": {
+	"FilePath" : "/Shader/MeshRenderer.fx",
+	"Func": "GS_Mesh"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/MeshRenderer.fx",
+	"Func": "PS_Particle"
+    },
+    "BlendMode": "Translucent",
+    "TextureParams" : ["T_BigFire"],
+    "TwoSided" : 1
+	
+}

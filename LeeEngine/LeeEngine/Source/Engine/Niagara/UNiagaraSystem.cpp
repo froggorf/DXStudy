@@ -23,6 +23,7 @@ void UNiagaraSystem::LoadDataFromFileData(const nlohmann::json& AssetData)
 			break;
 			// 2 : Mesh
 		case 2:
+			NewEmitter->RenderData=std::make_shared<FNiagaraRendererMeshes>();
 		break;
 		// 3 : Ribbon
 		case 3:

@@ -109,7 +109,7 @@ struct FParticleModule
 	int		Module[(UINT)EParticleModule::PM_END] = {0,};
 };
 
-
+// 모든 이펙트 렌더링의 기본이 되는 클래스
 class FNiagaraRendererProperty
 {
 public:
@@ -126,6 +126,7 @@ protected:
 	std::shared_ptr<UMaterialInterface> MaterialInterface;
 };
 
+// 빌보드 스프라이트를 렌더링 하기 위한 데이터가 들어있는 클래스
 class FNiagaraRendererBillboardSprites : public FNiagaraRendererProperty
 {
 public:
@@ -144,6 +145,8 @@ protected:
 	std::shared_ptr<UStaticMesh> StaticMesh;
 };
 
+// 일반 스프라이트를 렌더링 하기 위한 데이터가 들어있는 클래스
+// 빌보드 클래스에서 머테리얼만 다른 클래스,
 class FNiagaraRendererSprites : public FNiagaraRendererBillboardSprites
 {
 public:
@@ -155,6 +158,26 @@ public:
 	~FNiagaraRendererSprites() override =default;
 
 	void Render() override;
+};
+
+// 스태틱 메쉬를 이펙트의 요소로 렌더링 하는 클래스
+class FNiagaraRendererMeshes : public FNiagaraRendererProperty
+{
+public:
+	FNiagaraRendererMeshes()
+	{
+		BaseStaticMesh = UStaticMesh::GetStaticMesh("SM_Cube");
+		MaterialInterface = UMaterial::GetMaterialCache("M_NiagaraMesh");
+	}
+	~FNiagaraRendererMeshes() override = default;
+
+	void Render();
+	virtual void SetParticleTexture(const std::shared_ptr<UTexture>& InTexture) override { Textures.emplace_back(InTexture);}
+
+protected:
+	std::vector<std::shared_ptr<UTexture>> Textures;
+	std::shared_ptr<UStaticMesh> BaseStaticMesh;
+
 };
 
 

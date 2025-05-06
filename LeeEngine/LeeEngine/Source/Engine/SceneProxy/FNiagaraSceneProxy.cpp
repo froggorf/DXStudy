@@ -49,12 +49,9 @@ void FNiagaraSceneProxy::Draw()
 	ParticleBuffer->Binding(20);
 
 	auto DeviceContext = GDirectXDevice->GetDeviceContext();
-	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
 
 	Emitter->RenderData->Render();
-
-	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
 void FNiagaraSceneProxy::TickCS(float DeltaSeconds)
