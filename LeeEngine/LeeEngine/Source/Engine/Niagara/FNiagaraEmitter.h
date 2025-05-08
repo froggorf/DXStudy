@@ -8,6 +8,16 @@
 #include "Engine/Material/UMaterial.h"
 #include "Engine/Mesh/UStaticMesh.h"
 
+#define MaxParticleCount 500
+#define ParticleDataRegister 20
+
+// 파티클 스폰 구조체
+struct FParticleSpawn
+{
+	UINT	SpawnCount;	
+	float arrPaddding[3];
+};
+
 // 파티클 구조체
 struct FParticleData
 {
@@ -188,11 +198,43 @@ public:
 	{
 		Module.SpawnShape = 0;
 
+		if(nullptr == TickParticleCS)
+		{
+			TickParticleCS = std::make_shared<FTickParticleCS>();	
+		}
+
+		ParticleBuffer = std::make_shared<FStructuredBuffer>();
+		ParticleBuffer->Create(sizeof(FParticleData), MaxParticleCount, SB_TYPE::SRV_UAV, false);
+		SpawnBuffer = std::make_shared<FStructuredBuffer>();
+		SpawnBuffer->Create(sizeof(FParticleSpawn), 1, SB_TYPE::SRV_UAV, true);
+
+		/**/
+
+		ModuleBuffer = std::make_shared<FStructuredBuffer>();
+		ModuleBuffer->Create(sizeof(FParticleModule), 1, SB_TYPE::SRV_ONLY, true,&Module);
+
+		AccTime = 0;
 	}
 	~FNiagaraEmitter() = default;
 
+	virtual void Tick(float DeltaSeconds) ;
+	virtual void Render() const;
+
+	void CalcSpawnCount(float DeltaSeconds);
 	FParticleModule Module;
 
+	// 파티클을 렌더링 하기 위한 데이터가 들은 변수
+	// 머테리얼, 메쉬 등
 	std::shared_ptr<FNiagaraRendererProperty> RenderData;
 
+	std::shared_ptr<FStructuredBuffer> ParticleBuffer;
+	std::shared_ptr<FStructuredBuffer> SpawnBuffer;
+	std::shared_ptr<FStructuredBuffer> ModuleBuffer;
+
+	// 파티클 활성화 시간
+	float AccTime;
+	bool bFirstTick = true;
+
+	// 파티클의 업데이트를 담당하는 ComputeShader
+	static std::shared_ptr<FTickParticleCS> TickParticleCS;
 };

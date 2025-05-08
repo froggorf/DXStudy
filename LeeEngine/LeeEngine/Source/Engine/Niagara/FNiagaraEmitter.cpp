@@ -70,3 +70,63 @@ void FNiagaraRendererMeshes::Render()
 
 	GDirectXDevice->SetDSState(EDepthStencilStateType::DST_LESS);
 }
+
+
+std::shared_ptr<FTickParticleCS> FNiagaraEmitter::TickParticleCS;
+
+void FNiagaraEmitter::Tick(float DeltaSeconds)
+{
+	// 이번 프레임에 활성화 될 파티클 수 계산
+	CalcSpawnCount(DeltaSeconds);
+
+	ModuleBuffer->SetData(&Module);
+	TickParticleCS->SetSpawnBuffer(SpawnBuffer);
+	TickParticleCS->SetParticleBuffer(ParticleBuffer);
+	TickParticleCS->SetModuleBuffer(ModuleBuffer);
+
+	TickParticleCS->Execute_Immediately();
+}
+
+void FNiagaraEmitter::Render() const
+{
+	if(RenderData)
+	{
+		ParticleBuffer->Binding(20);
+
+		RenderData->Render();
+	}
+}
+
+void FNiagaraEmitter::CalcSpawnCount(float DeltaSeconds)
+{
+	AccTime += DeltaSeconds;
+	float Term = 1.f / Module.SpawnRate;
+
+	FParticleSpawn Count{};
+	if(bFirstTick)
+	{
+		Count.SpawnCount = 1;
+		bFirstTick = false;
+	}
+	if (AccTime >= Term)
+	{
+		AccTime -= Term;
+		Count.SpawnCount = 1;
+	}
+
+	if(Module.Module[static_cast<int>(EParticleModule::PM_SPAWN_BURST)] && 0 < Module.SpawnBurstRepeat)
+	{
+		Module.AccSpawnBurstRepeatTime += DeltaSeconds;
+		if(Module.SpawnBurstRepeatTime < Module.AccSpawnBurstRepeatTime)
+		{
+			Count.SpawnCount += Module.SpawnBurstCount;
+			Module.SpawnBurstRepeat -= 1;
+			Module.AccSpawnBurstRepeatTime-= Module.SpawnBurstRepeatTime;
+		}
+	}
+
+	if(0< Count.SpawnCount)
+	{
+		SpawnBuffer->SetData(&Count);
+	}
+}

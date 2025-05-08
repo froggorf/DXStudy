@@ -9,16 +9,6 @@
 #include "Engine/MyEngineUtils.h"
 #include "Engine/Niagara/FNiagaraEmitter.h"
 
-#define MaxParticleCount 500
-#define ParticleDataRegister 20
-
-
-struct FParticleSpawn
-{
-	UINT	SpawnCount;	
-	float arrPaddding[3];
-};
-
 class FNiagaraSceneProxy : public FPrimitiveSceneProxy
 {
 public:
@@ -28,19 +18,9 @@ public:
 
 	void Draw() override;
 	void TickCS(float DeltaSeconds);
-	void CalcSpawnCount(float DeltaSeconds);
 
 public:
 protected:
 	std::shared_ptr<FNiagaraEmitter> Emitter;
 	//FParticleModule Module;
-	float AccTime;
-
-	std::shared_ptr<FStructuredBuffer> ParticleBuffer;
-	std::shared_ptr<FStructuredBuffer> SpawnBuffer;
-	std::shared_ptr<FStructuredBuffer> ModuleBuffer;
-
-	static std::shared_ptr<FTickParticleCS> TickParticleCS;
-
-	bool bFirstTick = true;
 };
