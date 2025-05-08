@@ -177,7 +177,8 @@ FNiagaraRibbonEmitter::FNiagaraRibbonEmitter()
 {
 	D3D11_BUFFER_DESC BufferDesc = {};
 	BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	BufferDesc.ByteWidth = sizeof(MyVertexData) * MaxRibbonPointCount;
+	// 한개의 리본 포인트 점당 6개의 버텍스가 생기므로
+	BufferDesc.ByteWidth = sizeof(MyVertexData) * MaxRibbonPointCount * 6;
 	BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
@@ -201,27 +202,34 @@ void FNiagaraRibbonEmitter::CreateAndAddNewRibbonPoint(XMFLOAT3 PointPos, XMVECT
 	{
 		return;
 	}
-
+	
 	// 새로운 데이터 생성
 	FRibbonPointData Data;
 	Data.PointPos = PointPos;
 	Data.RemainTime = Module.MaxLife;
 
 	float HalfWidth = RibbonWidth * 0.5f;
+	if(bIsBillboard)
+	{
+		
+	}
+	else
+	{
+		XMVECTOR UpVec = XMVectorSet(0, HalfWidth, 0, 0);
+		XMVECTOR DownVec = XMVectorSet(0, -HalfWidth, 0, 0);
 
-	XMVECTOR UpVec = XMVectorSet(0, HalfWidth, 0, 0);
-	XMVECTOR DownVec = XMVectorSet(0, -HalfWidth, 0, 0);
+		XMVECTOR RotatedUp = XMVector3Rotate(UpVec, PointRot);
+		XMVECTOR RotatedDown = XMVector3Rotate(DownVec, PointRot);
 
-	XMVECTOR RotatedUp = XMVector3Rotate(UpVec, PointRot);
-	XMVECTOR RotatedDown = XMVector3Rotate(DownVec, PointRot);
+		XMVECTOR Center = XMLoadFloat3(&PointPos);
 
-	XMVECTOR Center = XMLoadFloat3(&PointPos);
+		XMVECTOR UpPoint = Center + RotatedUp;
+		XMVECTOR DownPoint = Center + RotatedDown;
 
-	XMVECTOR UpPoint = Center + RotatedUp;
-	XMVECTOR DownPoint = Center + RotatedDown;
-
-	XMStoreFloat3(&Data.UpPointPos, UpPoint);
-	XMStoreFloat3(&Data.DownPointPos, DownPoint);
+		XMStoreFloat3(&Data.UpPointPos, UpPoint);
+		XMStoreFloat3(&Data.DownPointPos, DownPoint);
+	}
+	
 
 	// 새로운 점 데이터 추가
 	int NewDataIndex = (CurRibbonPointDataStartIndex + CurPointCount) % MaxRibbonPointCount;
@@ -265,15 +273,15 @@ void FNiagaraRibbonEmitter::Tick(float DeltaSeconds, const FTransform& SceneTran
 
 	// 위치 정보가 변경되었다면 새로운 점 추가
 	float LocationDelta = XMVectorGetX(XMVector3LengthSq(XMVectorSubtract(CurLocationVec, LastFrameWorldPos)) );
-	if(LocationDelta> FLT_EPSILON)
+	if(LocationDelta> 1.0f)
 	{
 		CreateAndAddNewRibbonPoint(CurLoc, SceneTransform.GetRotationQuat());
+		LastFrameWorldPos = CurLocationVec;
 	}
 
 	// 새로운 데이터를 버텍스 버퍼에 Map 해주기
 	MapPointDataToVertexBuffer();
 
-	LastFrameWorldPos = CurLocationVec;
 }
 
 void FNiagaraRibbonEmitter::Render() const

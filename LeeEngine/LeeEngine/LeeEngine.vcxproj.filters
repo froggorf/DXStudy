@@ -177,9 +177,6 @@
     <ClCompile Include="Source\Engine\SceneProxy\FPrimitiveSceneProxy.cpp">
       <Filter>Source\Engine\SceneProxy</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Engine\RenderCore\RenderingThread.cpp">
-      <Filter>Source\Engine\RenderCore</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Engine\DirectX\Device.cpp">
       <Filter>Source\Engine\DirectX</Filter>
     </ClCompile>
@@ -296,6 +293,9 @@
     </ClCompile>
     <ClCompile Include="Source\Engine\Niagara\FNiagaraEmitter.cpp">
       <Filter>Source\Engine\Niagara</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\RenderCore\RenderingThread.cpp">
+      <Filter>Source\Engine\World</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
