@@ -74,7 +74,7 @@ void FNiagaraRendererMeshes::Render()
 
 void FNiagaraRendererRibbons::Render()
 {
-	int a=  0;
+	
 }
 // ===========================================================================================
 
@@ -173,8 +173,20 @@ void FNiagaraEmitter::CalcSpawnCount(float DeltaSeconds)
 	}
 }
 
+Microsoft::WRL::ComPtr<ID3D11Buffer> FNiagaraRibbonEmitter::VB_Ribbon;
+
 FNiagaraRibbonEmitter::FNiagaraRibbonEmitter()
 {
+	if(nullptr == VB_Ribbon)
+	{
+		D3D11_BUFFER_DESC BufferDesc = {};
+		BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+		BufferDesc.ByteWidth = sizeof(MyVertexData) * MaxParticleCount;
+		BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+		HR(GDirectXDevice->GetDevice()->CreateBuffer(&BufferDesc, nullptr, VB_Ribbon.GetAddressOf()));
+	}
 }
 
 std::shared_ptr<FNiagaraEmitter> FNiagaraRibbonEmitter::GetEmitterInstance() const
@@ -189,7 +201,10 @@ std::shared_ptr<FNiagaraEmitter> FNiagaraRibbonEmitter::GetEmitterInstance() con
 
 void FNiagaraRibbonEmitter::Tick(float DeltaSeconds, const FTransform& SceneTransform)
 {
-	
+	// 시간이 다 된 점 삭제
+	// 위치 정보가 변경되었다면 새로운 점 추가
+	// LastFrameWorldPos 와 SceneTransform의 월드 포즈가 변경되었다면,
+
 }
 
 void FNiagaraRibbonEmitter::Render() const

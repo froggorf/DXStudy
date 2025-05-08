@@ -249,5 +249,8 @@ public:
 	void SetRibbonWidth(int InRibbonWidth) {RibbonWidth = InRibbonWidth; }
 protected:
 	int RibbonWidth = 5.0f;
+
+	XMFLOAT3 LastFrameWorldPos{0,0,0};
+	static Microsoft::WRL::ComPtr<ID3D11Buffer> VB_Ribbon; 
 };
 
