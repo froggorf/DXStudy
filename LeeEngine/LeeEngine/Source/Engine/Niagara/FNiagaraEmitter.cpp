@@ -4,6 +4,7 @@
 #include "Engine/Mesh/UStaticMesh.h"
 #include "Engine/SceneProxy/FNiagaraSceneProxy.h"
 
+// ================= Niagara Renderer ================
 void FNiagaraRendererBillboardSprites::Render()
 {
 	GDirectXDevice->SetDSState(EDepthStencilStateType::DST_NO_WRITE);
@@ -71,11 +72,44 @@ void FNiagaraRendererMeshes::Render()
 	GDirectXDevice->SetDSState(EDepthStencilStateType::DST_LESS);
 }
 
+void FNiagaraRendererRibbons::Render()
+{
+
+}
+// ===========================================================================================
+
+// ==================================== Niagara Emitter ========================================
 
 std::shared_ptr<FTickParticleCS> FNiagaraEmitter::TickParticleCS;
 
-void FNiagaraEmitter::Tick(float DeltaSeconds)
+FNiagaraEmitter::FNiagaraEmitter()
 {
+	
+	Module.SpawnShape = 0;
+
+	if(nullptr == TickParticleCS)
+	{
+		TickParticleCS = std::make_shared<FTickParticleCS>();	
+	}
+
+	ParticleBuffer = std::make_shared<FStructuredBuffer>();
+	ParticleBuffer->Create(sizeof(FParticleData), MaxParticleCount, SB_TYPE::SRV_UAV, false);
+	SpawnBuffer = std::make_shared<FStructuredBuffer>();
+	SpawnBuffer->Create(sizeof(FParticleSpawn), 1, SB_TYPE::SRV_UAV, true);
+
+	/**/
+
+	ModuleBuffer = std::make_shared<FStructuredBuffer>();
+	ModuleBuffer->Create(sizeof(FParticleModule), 1, SB_TYPE::SRV_ONLY, true,&Module);
+
+	AccTime = 0;
+	
+}
+
+void FNiagaraEmitter::Tick(float DeltaSeconds, const FTransform& SceneTransform)
+{
+	Module.ObjectWorldPos = SceneTransform.GetTranslation();
+
 	// 이번 프레임에 활성화 될 파티클 수 계산
 	CalcSpawnCount(DeltaSeconds);
 
@@ -129,4 +163,18 @@ void FNiagaraEmitter::CalcSpawnCount(float DeltaSeconds)
 	{
 		SpawnBuffer->SetData(&Count);
 	}
+}
+
+FNiagaraRibbonEmitter::FNiagaraRibbonEmitter()
+{
+}
+
+void FNiagaraRibbonEmitter::Tick(float DeltaSeconds, const FTransform& SceneTransform)
+{
+	
+}
+
+void FNiagaraRibbonEmitter::Render() const
+{
+
 }

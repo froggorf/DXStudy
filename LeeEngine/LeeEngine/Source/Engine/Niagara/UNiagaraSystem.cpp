@@ -9,7 +9,16 @@ void UNiagaraSystem::LoadDataFromFileData(const nlohmann::json& AssetData)
 	for (const auto& EmitterData : EmittersData)
 	{
 		int PropertyType = EmitterData["Property"];
-		auto NewEmitter = std::make_shared<FNiagaraEmitter>();
+		// 리본렌더러의 경우에는 FNiagaraRibbonEmitter를 사용
+		std::shared_ptr<FNiagaraEmitter> NewEmitter;
+		if(PropertyType == 3)
+		{
+			NewEmitter = std::make_shared<FNiagaraRibbonEmitter>();
+		}
+		else
+		{
+			NewEmitter = std::make_shared<FNiagaraEmitter>();
+		}
 
 		switch (PropertyType)
 		{
@@ -24,10 +33,11 @@ void UNiagaraSystem::LoadDataFromFileData(const nlohmann::json& AssetData)
 			// 2 : Mesh
 		case 2:
 			NewEmitter->RenderData=std::make_shared<FNiagaraRendererMeshes>();
-		break;
+			break;
 		// 3 : Ribbon
 		case 3:
-		break;
+			NewEmitter->RenderData = std::make_shared<FNiagaraRendererRibbons>();
+			break;
 
 		default:
 			assert(0 && "잘못된 PropertyType");

@@ -190,51 +190,56 @@ protected:
 
 };
 
+// 리본을 이펙트의 요소로 렌더링 하는데 필요한 데이터를 관리하는 클래스
+class FNiagaraRendererRibbons : public FNiagaraRendererProperty
+{
+public:
+	FNiagaraRendererRibbons()
+	{
+		MaterialInterface = UMaterial::GetMaterialCache("");
+	}
+
+	void Render() override;
+
+};
+
 
 class FNiagaraEmitter
 {
 public:
-	FNiagaraEmitter()
-	{
-		Module.SpawnShape = 0;
+	FNiagaraEmitter();
+	virtual ~FNiagaraEmitter() = default;
 
-		if(nullptr == TickParticleCS)
-		{
-			TickParticleCS = std::make_shared<FTickParticleCS>();	
-		}
-
-		ParticleBuffer = std::make_shared<FStructuredBuffer>();
-		ParticleBuffer->Create(sizeof(FParticleData), MaxParticleCount, SB_TYPE::SRV_UAV, false);
-		SpawnBuffer = std::make_shared<FStructuredBuffer>();
-		SpawnBuffer->Create(sizeof(FParticleSpawn), 1, SB_TYPE::SRV_UAV, true);
-
-		/**/
-
-		ModuleBuffer = std::make_shared<FStructuredBuffer>();
-		ModuleBuffer->Create(sizeof(FParticleModule), 1, SB_TYPE::SRV_ONLY, true,&Module);
-
-		AccTime = 0;
-	}
-	~FNiagaraEmitter() = default;
-
-	virtual void Tick(float DeltaSeconds) ;
+	virtual void Tick(float DeltaSeconds, const FTransform& SceneTransform) ;
 	virtual void Render() const;
 
 	void CalcSpawnCount(float DeltaSeconds);
-	FParticleModule Module;
-
+protected:
+private:
+public:
 	// 파티클을 렌더링 하기 위한 데이터가 들은 변수
 	// 머테리얼, 메쉬 등
 	std::shared_ptr<FNiagaraRendererProperty> RenderData;
-
-	std::shared_ptr<FStructuredBuffer> ParticleBuffer;
-	std::shared_ptr<FStructuredBuffer> SpawnBuffer;
-	std::shared_ptr<FStructuredBuffer> ModuleBuffer;
-
+	FParticleModule Module;
+protected:
 	// 파티클 활성화 시간
 	float AccTime;
 	bool bFirstTick = true;
 
-	// 파티클의 업데이트를 담당하는 ComputeShader
+	// 파티클의 업데이트를 담당하는 ComputeShader & 구조화버퍼들
 	static std::shared_ptr<FTickParticleCS> TickParticleCS;
+	std::shared_ptr<FStructuredBuffer> ParticleBuffer;
+	std::shared_ptr<FStructuredBuffer> SpawnBuffer;
+	std::shared_ptr<FStructuredBuffer> ModuleBuffer;
 };
+
+// 리본의 경우 일반적인 파티클과 다른 Tick과 렌더방식을 가지기에 상속하여 가상함수로 진행
+class FNiagaraRibbonEmitter : public FNiagaraEmitter
+{
+public:
+	FNiagaraRibbonEmitter();
+
+	void Tick(float DeltaSeconds, const FTransform& SceneTransform) override;
+	void Render() const override;
+};
+

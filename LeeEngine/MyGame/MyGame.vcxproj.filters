@@ -38,6 +38,9 @@
     <Filter Include="Shader\Niagara\Render\Mesh">
       <UniqueIdentifier>{8a51f196-fa93-4e85-92d8-fa1bb40e1d8d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader\Niagara\Render\Ribbon">
+      <UniqueIdentifier>{d3dc4b1c-64f0-4f86-bb3b-e1d76fd0bd85}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
