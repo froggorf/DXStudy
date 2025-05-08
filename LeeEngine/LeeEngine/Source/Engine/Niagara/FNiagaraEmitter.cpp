@@ -173,20 +173,15 @@ void FNiagaraEmitter::CalcSpawnCount(float DeltaSeconds)
 	}
 }
 
-Microsoft::WRL::ComPtr<ID3D11Buffer> FNiagaraRibbonEmitter::VB_Ribbon;
-
 FNiagaraRibbonEmitter::FNiagaraRibbonEmitter()
 {
-	if(nullptr == VB_Ribbon)
-	{
-		D3D11_BUFFER_DESC BufferDesc = {};
-		BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-		BufferDesc.ByteWidth = sizeof(MyVertexData) * MaxParticleCount;
-		BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	D3D11_BUFFER_DESC BufferDesc = {};
+	BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	BufferDesc.ByteWidth = sizeof(MyVertexData) * MaxRibbonPointCount;
+	BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-		HR(GDirectXDevice->GetDevice()->CreateBuffer(&BufferDesc, nullptr, VB_Ribbon.GetAddressOf()));
-	}
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&BufferDesc, nullptr, VB_Ribbon.GetAddressOf()));
 }
 
 std::shared_ptr<FNiagaraEmitter> FNiagaraRibbonEmitter::GetEmitterInstance() const
@@ -199,18 +194,160 @@ std::shared_ptr<FNiagaraEmitter> FNiagaraRibbonEmitter::GetEmitterInstance() con
 	return Instance;
 }
 
+void FNiagaraRibbonEmitter::CreateAndAddNewRibbonPoint(XMFLOAT3 PointPos, XMVECTOR PointRot)
+{
+	// 최대 갯수를 넘으면 못만들게 설정
+	if(CurPointCount >= MaxRibbonPointCount)
+	{
+		return;
+	}
+
+	// 새로운 데이터 생성
+	FRibbonPointData Data;
+	Data.PointPos = PointPos;
+	Data.RemainTime = Module.MaxLife;
+
+	float HalfWidth = RibbonWidth * 0.5f;
+
+	XMVECTOR UpVec = XMVectorSet(0, HalfWidth, 0, 0);
+	XMVECTOR DownVec = XMVectorSet(0, -HalfWidth, 0, 0);
+
+	XMVECTOR RotatedUp = XMVector3Rotate(UpVec, PointRot);
+	XMVECTOR RotatedDown = XMVector3Rotate(DownVec, PointRot);
+
+	XMVECTOR Center = XMLoadFloat3(&PointPos);
+
+	XMVECTOR UpPoint = Center + RotatedUp;
+	XMVECTOR DownPoint = Center + RotatedDown;
+
+	XMStoreFloat3(&Data.UpPointPos, UpPoint);
+	XMStoreFloat3(&Data.DownPointPos, DownPoint);
+
+	// 새로운 점 데이터 추가
+	int NewDataIndex = (CurRibbonPointDataStartIndex + CurPointCount) % MaxRibbonPointCount;
+	// array의 최대치를 넘김
+	RibbonPointData[NewDataIndex] = Data;
+	++CurPointCount;
+
+	
+}
+
 void FNiagaraRibbonEmitter::Tick(float DeltaSeconds, const FTransform& SceneTransform)
 {
-	// 시간이 다 된 점 삭제
-	// 위치 정보가 변경되었다면 새로운 점 추가
-	// LastFrameWorldPos 와 SceneTransform의 월드 포즈가 변경되었다면,
+	XMFLOAT3 CurLoc = SceneTransform.GetTranslation();
+	XMVECTOR CurLocationVec = XMLoadFloat3(&CurLoc);
 
+	// 시간 줄이기 + 시간이 다 된 점 삭제
+	// 이 때, 항상 현재의 시작 타겟 인덱스부터 시간이 적은 순으로 배치되어 있으므로
+	// 일단 현재 활성화된 점들에 대해서 dt만큼 줄여준다음에
+	// 시간이 0 이하일경우 해당 자리는 그대로 냅두고(데이터를 지울 필요가 굳이 없음 (현재 활성화중인 개수를 따로 관리하니까)
+	// 시작위치를 1칸 뒤로 보내주고 활성화된 점 개수도 1개 줄여줌
+	for(int Count = 0; Count < CurPointCount; ++Count)
+	{
+		int CurIndex = (Count + CurRibbonPointDataStartIndex) % MaxRibbonPointCount;
+		RibbonPointData[CurIndex].RemainTime -= DeltaSeconds;
+		// 시간이 다 된 포인트면 활성화 개수 1개 줄이기
+		if(RibbonPointData[CurIndex].RemainTime <= 0.0f)
+		{
+			CurPointCount -=1;
+			CurRibbonPointDataStartIndex = (CurRibbonPointDataStartIndex+1)%MaxRibbonPointCount;
+		}
+	}
+
+	// 첫 프레임에는 위치를 고정해주고 해당위치에 포인트 생성
+	// TODO : 5/8) 이 부분은 LastFrameWorldPos 를 엄청 멀리 두면 시작위치가 다르니까 적용되지 않을까 싶음
+	if(bFirstTick)
+	{
+		bFirstTick = false;
+		LastFrameWorldPos = CurLocationVec;
+		CreateAndAddNewRibbonPoint(CurLoc, SceneTransform.GetRotationQuat());
+	}
+
+	// 위치 정보가 변경되었다면 새로운 점 추가
+	float LocationDelta = XMVectorGetX(XMVector3LengthSq(XMVectorSubtract(CurLocationVec, LastFrameWorldPos)) );
+	if(LocationDelta> FLT_EPSILON)
+	{
+		CreateAndAddNewRibbonPoint(CurLoc, SceneTransform.GetRotationQuat());
+	}
+
+	// 새로운 데이터를 버텍스 버퍼에 Map 해주기
+	MapPointDataToVertexBuffer();
+
+	LastFrameWorldPos = CurLocationVec;
 }
 
 void FNiagaraRibbonEmitter::Render() const
 {
-	if(RenderData)
+	if(CurPointCount < 2)
 	{
-		RenderData->Render();
+		return;
 	}
+
+	GDirectXDevice->SetDSState(EDepthStencilStateType::DST_NO_WRITE);
+	GDirectXDevice->SetBSState(EBlendStateType::BST_AlphaBlend);
+
+	auto DeviceContext = GDirectXDevice->GetDeviceContext();
+	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	//size_t TextureSize = Textures.size();
+	//for(int i = 0 ; i < TextureSize; ++i)
+	//{
+	//	DeviceContext->PSSetShaderResources(i,1,Textures[i]->GetSRV().GetAddressOf());
+	//}
+
+
+	UINT MeshIndex = 0;
+	// 셰이더 설정
+	UINT stride = sizeof(MyVertexData);
+	UINT offset = 0;
+	DeviceContext->IASetVertexBuffers(0, 1, VB_Ribbon.GetAddressOf(), &stride, &offset);
+
+	DeviceContext->Draw(CurVertexCount, 0);
+
+	GDirectXDevice->SetDSState(EDepthStencilStateType::DST_LESS);
+}
+
+void FNiagaraRibbonEmitter::MapPointDataToVertexBuffer()
+{
+	// 버텍스 버퍼 내 포인트 개수랑 다른 경우에는 버텍스 버퍼를 갱신해주기
+	if(CurPointCount == CurVertexBufferPointCount)
+	{
+		return;
+	}
+
+	// 갱신
+	D3D11_MAPPED_SUBRESOURCE cbMapSub{};
+	ComPtr<ID3D11DeviceContext> DeviceContext = GDirectXDevice->GetDeviceContext();
+	HR(DeviceContext->Map(VB_Ribbon.Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &cbMapSub));
+
+
+	CurVertexCount = 0;
+	for (int i = 0; i < CurPointCount - 1; ++i)
+	{
+		int idx0 = (CurRibbonPointDataStartIndex + i) % MaxRibbonPointCount;
+		int idx1 = (CurRibbonPointDataStartIndex + i + 1) % MaxRibbonPointCount;
+
+		const FRibbonPointData& P0 = RibbonPointData[idx0];
+		const FRibbonPointData& P1 = RibbonPointData[idx1];
+
+		// 네 점
+		MyVertexData vA; vA.Pos = { P0.UpPointPos };
+		MyVertexData vB; vB.Pos = { P0.DownPointPos };
+		MyVertexData vC; vC.Pos = { P1.UpPointPos };
+		MyVertexData vD; vD.Pos = { P1.DownPointPos };
+
+		// 삼각형 1: A, B, C
+		memcpy(static_cast<char*>(cbMapSub.pData) + sizeof(MyVertexData) * CurVertexCount++, &vA, sizeof(MyVertexData));
+		memcpy(static_cast<char*>(cbMapSub.pData) + sizeof(MyVertexData) * CurVertexCount++, &vB, sizeof(MyVertexData));
+		memcpy(static_cast<char*>(cbMapSub.pData) + sizeof(MyVertexData) * CurVertexCount++, &vC, sizeof(MyVertexData));
+		// 삼각형 2: C, B, D
+		memcpy(static_cast<char*>(cbMapSub.pData) + sizeof(MyVertexData) * CurVertexCount++, &vC, sizeof(MyVertexData));
+		memcpy(static_cast<char*>(cbMapSub.pData) + sizeof(MyVertexData) * CurVertexCount++, &vB, sizeof(MyVertexData));
+		memcpy(static_cast<char*>(cbMapSub.pData) + sizeof(MyVertexData) * CurVertexCount++, &vD, sizeof(MyVertexData));
+	}
+
+	DeviceContext->Unmap(VB_Ribbon.Get(), 0);
+
+
+	CurVertexBufferPointCount = CurPointCount;
 }

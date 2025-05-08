@@ -5,7 +5,7 @@
 	{ 
 		"Property" : 3, 
 		"Life" : [ 2,2 ],
-		"RibbonWidth" : 30.0,
+		"RibbonWidth" : 15.0,
 		"Modules" : 
 		{
 			"Render" : {
@@ -20,66 +20,6 @@
 			"UVAnim" : {
 			    "UCount": 8,
 			    "VCount": 8
-			}
-		}
-	},
-	{ 
-		"Property" : 0, 
-		"OverrideMat": "M_NiagaraBillboardSprite_UV",
-		"OverrideTex": "T_Flame",
-		"SpawnRate" : 30.0,
-		"Life" : [ 0.5,1 ],
-		"Scale" : [ [1,1,1] , [2,2,2] ],
-		"SpaceType": 0,
-		"SpawnScale" : [10,0.1,10],
-		"Modules" : 
-		{
-			"Render" : {
-  			    "StartColor" : [1.0,0.25,0.0,1.0],
-			    "EndColor" : [1.0,0.5,0.0,1.0],
-			    "FadeOut" : [1, 0.8]
-			},
-			"Scale" :{
-			    "StartScale" : 1.0,
-			    "EndScale" : 1.0
-			},
-			"UVAnim" : {
-			    "UCount": 2,
-			    "VCount": 2
-			},
-			"AddVelocity":{
-			    "MinVel" : [-20.0,20,20.0],
-			    "MaxVel" : [20.0, 60, 20]
-			}
-		}
-	},
-{ 
-		"Property" : 0, 
-		"OverrideMat": "M_NiagaraBillboardSprite_UV",
-		"OverrideTex": "T_Smoke",
-		"SpawnRate" : 10.0,
-		"Life" : [ 2,3 ],
-		"Scale" : [ [10,10,10] , [15,15,15] ],
-		"SpaceType": 1,
-		"SpawnScale" : [5,0.1,5],
-		"Modules" : 
-		{
-			"Render" : {
-  			    "StartColor" : [0.5,0.5,0.5,0.5],
-			    "EndColor" : [0.7,0.65,0.65,0.0],
-			    "FadeOut" : [1,0.95]
-			},
-			"Scale" :{
-			    "StartScale" : 1.0,
-			    "EndScale" : 1.5
-			},
-			"UVAnim" : {
-			    "UCount": 6,
-			    "VCount": 6
-			},
-			"AddVelocity":{
-			    "MinVel" : [-4.0,20, -2.0],
-			    "MaxVel" : [4.0, 30, 2]
 			}
 		}
 	}

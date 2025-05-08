@@ -9,6 +9,7 @@
 #include "Engine/Mesh/UStaticMesh.h"
 
 #define MaxParticleCount 500
+#define MaxRibbonPointCount 2000
 #define ParticleDataRegister 20
 
 // 파티클 스폰 구조체
@@ -236,6 +237,18 @@ protected:
 	std::shared_ptr<FStructuredBuffer> ModuleBuffer;
 };
 
+struct FRibbonPointData
+{
+	// 중앙점 위치
+	XMFLOAT3 PointPos;
+	// 왼쪽 점 위치
+	XMFLOAT3 UpPointPos;
+	// 오른쪽 점 위치
+	XMFLOAT3 DownPointPos;
+
+	float RemainTime;
+};
+
 // 리본의 경우 일반적인 파티클과 다른 Tick과 렌더방식을 가지기에 상속하여 가상함수로 진행
 class FNiagaraRibbonEmitter : public FNiagaraEmitter
 {
@@ -243,14 +256,34 @@ public:
 	FNiagaraRibbonEmitter();
 
 	std::shared_ptr<FNiagaraEmitter> GetEmitterInstance() const override;
+	void CreateAndAddNewRibbonPoint(XMFLOAT3 PointPos, XMVECTOR PointRot);
+	
 	void Tick(float DeltaSeconds, const FTransform& SceneTransform) override;
 	void Render() const override;
 
 	void SetRibbonWidth(int InRibbonWidth) {RibbonWidth = InRibbonWidth; }
+
+protected:
+	void MapPointDataToVertexBuffer();
 protected:
 	int RibbonWidth = 5.0f;
 
-	XMFLOAT3 LastFrameWorldPos{0,0,0};
-	static Microsoft::WRL::ComPtr<ID3D11Buffer> VB_Ribbon; 
+
+	// Array를 환형 큐처럼 사용
+	std::array<FRibbonPointData, MaxRibbonPointCount> RibbonPointData;
+	int CurRibbonPointDataStartIndex = 0;
+
+	int CurPointCount = 0;
+	DirectX::XMVECTOR LastFrameWorldPos{0,0,0};
+	bool bFirstTick = true;
+
+	// 기존에는 static 으로 고안했으나,
+	// 만약 내 리본 점의 개수가 변경되지 않는 경우에는
+	// 버텍스버퍼의 데이터를 조정하지 않도록 만들 수 있기에
+	// 정적으로 관리하지 않고 멤버변수로 배치
+	Microsoft::WRL::ComPtr<ID3D11Buffer> VB_Ribbon;
+
+	int CurVertexBufferPointCount = 0;
+	int CurVertexCount;
 };
 
