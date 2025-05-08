@@ -13,7 +13,14 @@ void UNiagaraSystem::LoadDataFromFileData(const nlohmann::json& AssetData)
 		std::shared_ptr<FNiagaraEmitter> NewEmitter;
 		if(PropertyType == 3)
 		{
-			NewEmitter = std::make_shared<FNiagaraRibbonEmitter>();
+			std::shared_ptr<FNiagaraRibbonEmitter> NewRibbonEmitter = std::make_shared<FNiagaraRibbonEmitter>();
+			int RibbonWidth = 5.0f;
+			if(EmitterData.contains("RibbonWidth"))
+			{
+				RibbonWidth = EmitterData["RibbonWidth"];
+			}
+			NewRibbonEmitter->SetRibbonWidth(RibbonWidth);
+			NewEmitter = NewRibbonEmitter;
 		}
 		else
 		{
@@ -36,7 +43,12 @@ void UNiagaraSystem::LoadDataFromFileData(const nlohmann::json& AssetData)
 			break;
 		// 3 : Ribbon
 		case 3:
-			NewEmitter->RenderData = std::make_shared<FNiagaraRendererRibbons>();
+			{
+				std::shared_ptr<FNiagaraRendererRibbons> RibbonRenderData = std::make_shared<FNiagaraRendererRibbons>();;
+
+				NewEmitter->RenderData = RibbonRenderData;	
+			}
+			
 			break;
 
 		default:
@@ -207,9 +219,7 @@ std::vector<std::shared_ptr<FNiagaraEmitter>> UNiagaraSystem::CreateDynamicRende
 	std::vector<std::shared_ptr<FNiagaraEmitter>> EmitterRenderData;
 	for (const auto& Emitter : Emitters)
 	{
-		auto NewEmitter = std::make_shared<FNiagaraEmitter>();
-		NewEmitter->Module = Emitter->Module;
-		NewEmitter->RenderData = Emitter->RenderData;
+		auto NewEmitter = Emitter->GetEmitterInstance();
 		EmitterRenderData.push_back(NewEmitter);
 	}
 	return EmitterRenderData;

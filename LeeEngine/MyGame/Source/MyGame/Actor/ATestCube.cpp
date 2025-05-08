@@ -29,7 +29,7 @@ ATestCube::ATestCube()
 
 	NiagaraComp = std::make_shared<UNiagaraComponent>();
 	NiagaraComp->SetupAttachment(GetRootComponent());
-	std::shared_ptr<UNiagaraSystem> System = UNiagaraSystem::GetNiagaraAsset("NS_Test");
+	std::shared_ptr<UNiagaraSystem> System = UNiagaraSystem::GetNiagaraAsset("NS_Ribbon");
 	NiagaraComp->SetNiagaraAsset(System);
 	NiagaraComp->SetRelativeLocation(XMFLOAT3{-45.0f,-15.0f,0.0f});
 

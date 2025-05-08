@@ -15,7 +15,7 @@ struct VS_OUTPUT
 //--------------------------------------------------------------------------------------
 // Vertex Shader
 //--------------------------------------------------------------------------------------
-VS_OUTPUT VS_Ribbon( float4 Pos : POSITION, float2 TexCoord : TEXCOORD )
+VS_OUTPUT VS_RibbonParticle( float4 Pos : POSITION, float2 TexCoord : TEXCOORD )
 {
     VS_OUTPUT output = (VS_OUTPUT)0;
 
@@ -30,7 +30,7 @@ VS_OUTPUT VS_Ribbon( float4 Pos : POSITION, float2 TexCoord : TEXCOORD )
 //--------------------------------------------------------------------------------------
 // Pixel Shader
 //--------------------------------------------------------------------------------------
-float4 PS_Ribbon( VS_OUTPUT input ) : SV_Target
+float4 PS_RibbonParticle( VS_OUTPUT input ) : SV_Target
 {
     //float4 color = txDiffuse.Sample( samLinear, input.Tex );
     //color.rgb *= color.a;

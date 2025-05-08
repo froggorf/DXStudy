@@ -74,7 +74,7 @@ void FNiagaraRendererMeshes::Render()
 
 void FNiagaraRendererRibbons::Render()
 {
-
+	int a=  0;
 }
 // ===========================================================================================
 
@@ -131,6 +131,14 @@ void FNiagaraEmitter::Render() const
 	}
 }
 
+std::shared_ptr<FNiagaraEmitter> FNiagaraEmitter::GetEmitterInstance() const
+{
+	std::shared_ptr<FNiagaraEmitter> Instance = std::make_shared<FNiagaraEmitter>();
+	Instance->Module = Module;
+	Instance->RenderData = RenderData;
+	return Instance;
+}
+
 void FNiagaraEmitter::CalcSpawnCount(float DeltaSeconds)
 {
 	AccTime += DeltaSeconds;
@@ -169,6 +177,16 @@ FNiagaraRibbonEmitter::FNiagaraRibbonEmitter()
 {
 }
 
+std::shared_ptr<FNiagaraEmitter> FNiagaraRibbonEmitter::GetEmitterInstance() const
+{
+	std::shared_ptr<FNiagaraRibbonEmitter> Instance = std::make_shared<FNiagaraRibbonEmitter>();
+	// 부모의 데이터를 그대로 복사해줘야함
+	Instance->Module = Module;
+	Instance->RenderData = RenderData;
+	Instance->RibbonWidth = RibbonWidth;
+	return Instance;
+}
+
 void FNiagaraRibbonEmitter::Tick(float DeltaSeconds, const FTransform& SceneTransform)
 {
 	
@@ -176,5 +194,8 @@ void FNiagaraRibbonEmitter::Tick(float DeltaSeconds, const FTransform& SceneTran
 
 void FNiagaraRibbonEmitter::Render() const
 {
-	
+	if(RenderData)
+	{
+		RenderData->Render();
+	}
 }

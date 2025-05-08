@@ -196,10 +196,11 @@ class FNiagaraRendererRibbons : public FNiagaraRendererProperty
 public:
 	FNiagaraRendererRibbons()
 	{
-		MaterialInterface = 
+		MaterialInterface = UMaterial::GetMaterialCache("M_NiagaraRibbon");
 	}
 
 	void Render() override;
+
 
 };
 
@@ -212,6 +213,8 @@ public:
 
 	virtual void Tick(float DeltaSeconds, const FTransform& SceneTransform) ;
 	virtual void Render() const;
+
+	virtual std::shared_ptr<FNiagaraEmitter> GetEmitterInstance() const;
 
 	void CalcSpawnCount(float DeltaSeconds);
 protected:
@@ -239,7 +242,12 @@ class FNiagaraRibbonEmitter : public FNiagaraEmitter
 public:
 	FNiagaraRibbonEmitter();
 
+	std::shared_ptr<FNiagaraEmitter> GetEmitterInstance() const override;
 	void Tick(float DeltaSeconds, const FTransform& SceneTransform) override;
 	void Render() const override;
+
+	void SetRibbonWidth(int InRibbonWidth) {RibbonWidth = InRibbonWidth; }
+protected:
+	int RibbonWidth = 5.0f;
 };
 

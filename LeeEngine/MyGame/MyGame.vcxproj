@@ -70,7 +70,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shader\RibbonRenderer.fx" />
+    <None Include="Shader\RibbonRenderer.fx">
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

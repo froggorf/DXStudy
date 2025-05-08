@@ -98,10 +98,8 @@
     <None Include="Shader\MeshRenderer.fx">
       <Filter>Shader\Niagara\Render\Mesh</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="Shader\RibbonRenderer.fx">
+    <None Include="Shader\RibbonRenderer.fx">
       <Filter>Shader\Niagara\Render\Ribbon</Filter>
-    </FxCompile>
+    </None>
   </ItemGroup>
 </Project>
