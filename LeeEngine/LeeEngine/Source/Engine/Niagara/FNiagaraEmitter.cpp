@@ -208,10 +208,23 @@ void FNiagaraRibbonEmitter::CreateAndAddNewRibbonPoint(XMFLOAT3 PointPos, XMVECT
 	Data.PointPos = PointPos;
 	Data.RemainTime = Module.MaxLife;
 
+
+	XMVECTOR Center = XMLoadFloat3(&PointPos);
 	float HalfWidth = RibbonWidth * 0.5f;
+	XMVECTOR UpPoint, DownPoint;
 	if(bIsBillboard)
 	{
-		
+		// TODO: 05/09, 렌더쓰레드의 ViewMatrix를 갖고올 좋은 방법이 생각 안나서 SceneData자체를 갖고와서 사용
+		// 추후 가능하다면 전역변수로 바꿔 관리하거나 좋은 방법을 생각해보기
+		XMMATRIX ViewMat = FRenderCommandExecutor::CurrentSceneData->GetViewMatrix();
+
+		// 카메라의 업벡터는 ViewMat의 역행렬의 두번째 행이라고 함
+		XMMATRIX InvView = XMMatrixInverse(nullptr, ViewMat);
+		XMVECTOR CameraUpVec = InvView.r[1];
+
+		UpPoint = Center + CameraUpVec * HalfWidth;
+		DownPoint = Center + CameraUpVec * -HalfWidth;
+
 	}
 	else
 	{
@@ -221,15 +234,12 @@ void FNiagaraRibbonEmitter::CreateAndAddNewRibbonPoint(XMFLOAT3 PointPos, XMVECT
 		XMVECTOR RotatedUp = XMVector3Rotate(UpVec, PointRot);
 		XMVECTOR RotatedDown = XMVector3Rotate(DownVec, PointRot);
 
-		XMVECTOR Center = XMLoadFloat3(&PointPos);
-
-		XMVECTOR UpPoint = Center + RotatedUp;
-		XMVECTOR DownPoint = Center + RotatedDown;
-
-		XMStoreFloat3(&Data.UpPointPos, UpPoint);
-		XMStoreFloat3(&Data.DownPointPos, DownPoint);
+		UpPoint = Center + RotatedUp;
+		DownPoint = Center + RotatedDown;
 	}
-	
+
+	XMStoreFloat3(&Data.UpPointPos, UpPoint);
+	XMStoreFloat3(&Data.DownPointPos, DownPoint);
 
 	// 새로운 점 데이터 추가
 	int NewDataIndex = (CurRibbonPointDataStartIndex + CurPointCount) % MaxRibbonPointCount;

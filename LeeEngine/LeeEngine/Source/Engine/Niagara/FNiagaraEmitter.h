@@ -267,7 +267,7 @@ protected:
 	void MapPointDataToVertexBuffer();
 protected:
 	int RibbonWidth = 5.0f;
-	bool bIsBillboard = false;
+	bool bIsBillboard = true;
 
 
 	// Array를 환형 큐처럼 사용
