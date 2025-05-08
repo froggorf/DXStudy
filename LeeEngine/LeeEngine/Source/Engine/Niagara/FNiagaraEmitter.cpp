@@ -176,5 +176,5 @@ void FNiagaraRibbonEmitter::Tick(float DeltaSeconds, const FTransform& SceneTran
 
 void FNiagaraRibbonEmitter::Render() const
 {
-
+	
 }

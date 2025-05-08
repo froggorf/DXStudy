@@ -196,7 +196,7 @@ class FNiagaraRendererRibbons : public FNiagaraRendererProperty
 public:
 	FNiagaraRendererRibbons()
 	{
-		MaterialInterface = UMaterial::GetMaterialCache("");
+		MaterialInterface = 
 	}
 
 	void Render() override;
