@@ -262,12 +262,12 @@ public:
 	void Render() const override;
 
 	void SetRibbonWidth(int InRibbonWidth) {RibbonWidth = InRibbonWidth; }
-
+	void SetRibbonFaceCamera(bool bInIsBillboard) { bIsBillboard = bInIsBillboard;}
 protected:
 	void MapPointDataToVertexBuffer();
 protected:
 	int RibbonWidth = 5.0f;
-	bool bIsBillboard = true;
+	bool bIsBillboard = false;
 
 
 	// Array를 환형 큐처럼 사용

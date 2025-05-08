@@ -27,16 +27,18 @@ ATestCube::ATestCube()
 	TestCube2->SetRelativeScale3D(XMFLOAT3(200.0f,1.0f,200.0f));
 	TestCube2->SetRelativeLocation(XMFLOAT3(0.0f,-25.0f,0.0f));
 
+	DummyComp = std::make_shared<USceneComponent>();
+	DummyComp->Rename("DummyComp");
+	DummyComp->SetupAttachment(GetRootComponent());
+	DummyComp->SetRelativeLocation(XMFLOAT3{-45.0f,50.0f,0.0f});
+
 	NiagaraComp = std::make_shared<UNiagaraComponent>();
-	NiagaraComp->SetupAttachment(GetRootComponent());
+	NiagaraComp->SetupAttachment(DummyComp);
 	std::shared_ptr<UNiagaraSystem> System = UNiagaraSystem::GetNiagaraAsset("NS_Ribbon");
 	NiagaraComp->SetNiagaraAsset(System);
-	NiagaraComp->SetRelativeLocation(XMFLOAT3{-45.0f,-15.0f,0.0f});
+	NiagaraComp->SetRelativeLocation(XMFLOAT3{0.0,30.0f,0.0f});
+	NiagaraComp->SetRelativeRotation(XMFLOAT3{90.0f,0.0f,0.0f});
 
-	//TestCube3 = std::make_shared<UStaticMeshComponent>();
-	//TestCube3->SetupAttachment(GetRootComponent());
-	//TestCube3->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_TranslucentCube"));
-	//TestCube3->SetRelativeScale3D(XMFLOAT3{30.0f,30.0f,30.0f});
 
 	Rename("ATestCube" + std::to_string(ActorID));
 }
@@ -46,5 +48,12 @@ void ATestCube::Tick(float DeltaSeconds)
 	AActor::Tick(DeltaSeconds);
 
 	//SetActorRotation(XMFLOAT4(0.0f,0.0f,0.0f,1.0f));
+	XMFLOAT4 RR = DummyComp->GetRelativeRotation();
+	XMVECTOR RRVec = XMLoadFloat4(&RR);
+
+	XMVECTOR Z1Quat = XMQuaternionRotationAxis(XMVectorSet(0,0,1,0), DeltaSeconds);
+	
+	
+	DummyComp->SetRelativeRotation(XMQuaternionMultiply(RRVec,Z1Quat));
 
 }

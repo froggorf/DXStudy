@@ -26,4 +26,5 @@ private:
 	std::shared_ptr<UStaticMeshComponent> TestCube4;
 
 	std::shared_ptr<UNiagaraComponent> NiagaraComp;
+	std::shared_ptr<USceneComponent> DummyComp;
 };

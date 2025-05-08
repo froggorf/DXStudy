@@ -20,7 +20,13 @@ void UNiagaraSystem::LoadDataFromFileData(const nlohmann::json& AssetData)
 				RibbonWidth = EmitterData["RibbonWidth"];
 			}
 			NewRibbonEmitter->SetRibbonWidth(RibbonWidth);
+			if(EmitterData.contains("FaceCamera"))
+			{
+				int bFaceCamera = EmitterData["FaceCamera"];
+				NewRibbonEmitter->SetRibbonFaceCamera(bFaceCamera);
+			}
 			NewEmitter = NewRibbonEmitter;
+			
 		}
 		else
 		{
@@ -43,12 +49,7 @@ void UNiagaraSystem::LoadDataFromFileData(const nlohmann::json& AssetData)
 			break;
 		// 3 : Ribbon
 		case 3:
-			{
-				std::shared_ptr<FNiagaraRendererRibbons> RibbonRenderData = std::make_shared<FNiagaraRendererRibbons>();;
-
-				NewEmitter->RenderData = RibbonRenderData;	
-			}
-			
+			NewEmitter->RenderData = std::make_shared<FNiagaraRendererRibbons>();
 			break;
 
 		default:

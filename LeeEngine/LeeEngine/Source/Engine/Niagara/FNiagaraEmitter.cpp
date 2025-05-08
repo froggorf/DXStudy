@@ -192,6 +192,7 @@ std::shared_ptr<FNiagaraEmitter> FNiagaraRibbonEmitter::GetEmitterInstance() con
 	Instance->Module = Module;
 	Instance->RenderData = RenderData;
 	Instance->RibbonWidth = RibbonWidth;
+	Instance->bIsBillboard = bIsBillboard;
 	return Instance;
 }
 

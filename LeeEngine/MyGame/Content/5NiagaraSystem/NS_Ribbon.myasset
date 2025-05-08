@@ -4,7 +4,8 @@
     "Emitters" : [
 	{ 
 		"Property" : 3, 
-		"Life" : [ 2,2 ],
+		"FaceCamera": 1,
+		"Life" : [ 0.5,0.5 ],
 		"RibbonWidth" : 15.0,
 		"Modules" : 
 		{
