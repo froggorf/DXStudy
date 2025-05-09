@@ -218,13 +218,25 @@ void FNiagaraRibbonEmitter::CreateAndAddNewRibbonPoint(XMFLOAT3 PointPos, XMVECT
 		// TODO: 05/09, 렌더쓰레드의 ViewMatrix를 갖고올 좋은 방법이 생각 안나서 SceneData자체를 갖고와서 사용
 		// 추후 가능하다면 전역변수로 바꿔 관리하거나 좋은 방법을 생각해보기
 		XMMATRIX ViewMat = FRenderCommandExecutor::CurrentSceneData->GetViewMatrix();
+		XMMATRIX InvViewMat = XMMatrixInverse(nullptr, ViewMat);
+		XMVECTOR CameraFrontVec = XMVector3Rotate(XMVectorSet(0,0,1,0), XMQuaternionRotationMatrix(InvViewMat));
+		XMVECTOR DeltaVec = XMVector3Normalize(Center - LastFrameWorldPos);
+		XMVECTOR NewPointVec;
 
-		// 카메라의 업벡터는 ViewMat의 역행렬의 두번째 행이라고 함
-		XMMATRIX InvView = XMMatrixInverse(nullptr, ViewMat);
-		XMVECTOR CameraUpVec = InvView.r[1];
+		// 카메라 front 벡터와 궤적의 이동 벡터가 거의 평행할경우에 대한 조정
+		float dot = fabs(XMVectorGetX(XMVector3Dot(DeltaVec, CameraFrontVec)));
+		if(dot > 0.99f) // 거의 평행
+		{
+			// 월드 업 벡터 사용
+			NewPointVec = XMVector3Normalize(XMVector3Cross(DeltaVec, XMVectorSet(0,1,0,0)));
+		}
+		else
+		{
+			NewPointVec = XMVector3Normalize(XMVector3Cross(DeltaVec, CameraFrontVec));
+		}
 
-		UpPoint = Center + CameraUpVec * HalfWidth;
-		DownPoint = Center + CameraUpVec * -HalfWidth;
+		UpPoint = Center + NewPointVec * HalfWidth;
+		DownPoint = Center + NewPointVec * -HalfWidth;
 
 	}
 	else
@@ -349,11 +361,13 @@ void FNiagaraRibbonEmitter::MapPointDataToVertexBuffer()
 		const FRibbonPointData& P0 = RibbonPointData[idx0];
 		const FRibbonPointData& P1 = RibbonPointData[idx1];
 
+		const int UV_X = static_cast<float>(1) / CurPointCount * i;
+
 		// 네 점
-		MyVertexData vA; vA.Pos = { P0.UpPointPos };
-		MyVertexData vB; vB.Pos = { P0.DownPointPos };
-		MyVertexData vC; vC.Pos = { P1.UpPointPos };
-		MyVertexData vD; vD.Pos = { P1.DownPointPos };
+		MyVertexData vA; vA.Pos = { P0.UpPointPos };	vA.TexCoords = {static_cast<float>(1) / CurPointCount * i, 0};
+		MyVertexData vB; vB.Pos = { P0.DownPointPos };	vB.TexCoords = {static_cast<float>(1) / CurPointCount * i, 1};
+		MyVertexData vC; vC.Pos = { P1.UpPointPos };	vC.TexCoords = {static_cast<float>(1) / CurPointCount * (i+1), 0};
+		MyVertexData vD; vD.Pos = { P1.DownPointPos };	vD.TexCoords = {static_cast<float>(1) / CurPointCount * (i+1), 1};
 
 		// 삼각형 1: A, B, C
 		memcpy(static_cast<char*>(cbMapSub.pData) + sizeof(MyVertexData) * CurVertexCount++, &vA, sizeof(MyVertexData));

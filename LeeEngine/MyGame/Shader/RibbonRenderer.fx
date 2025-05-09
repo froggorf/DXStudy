@@ -35,6 +35,6 @@ float4 PS_RibbonParticle( VS_OUTPUT input ) : SV_Target
     //float4 color = txDiffuse.Sample( samLinear, input.Tex );
     //color.rgb *= color.a;
 
-    float4 color =  float4(1.0f,0.0f,1.0f,1.0f);
+    float4 color =  float4(input.Tex.x,input.Tex.y,0.0f,1.0f);
 	return color;
 }
