@@ -62,7 +62,7 @@ public:
 	void BuildAllShaders();
 	void OnWindowResize();
 	void ResizeWindow();
-
+	void ResetRenderTargets();
 	void SetViewPortSize(float x, float y);
 	void SetDefaultViewPort();
 

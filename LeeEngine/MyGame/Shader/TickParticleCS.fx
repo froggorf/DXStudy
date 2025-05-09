@@ -226,8 +226,17 @@ void CS_TickParticle(int3 ThreadID : SV_DispatchThreadID)
 		// 파티클의 수명이 다했는지 체크
 		if (gBuffer[ThreadID.x].Age >= gBuffer[ThreadID.x].Life)
 		{
-			gBuffer[ThreadID.x].Active = 0;
-			gBuffer[ThreadID.x].Age = 0.f;
+            // 반복 재생이 아닐 경우 삭제
+            if(gModule[0].bIsLoop == 0)
+            {
+                gBuffer[ThreadID.x].Active = 0;
+                gBuffer[ThreadID.x].Age = 0.f;    
+            }
+            else
+            {
+	            gBuffer[ThreadID.x].Age -= gBuffer[ThreadID.x].Life;
+            }
+			
             return;
 		}
 

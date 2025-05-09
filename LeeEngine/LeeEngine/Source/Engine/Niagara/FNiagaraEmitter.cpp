@@ -193,6 +193,7 @@ std::shared_ptr<FNiagaraEmitter> FNiagaraRibbonEmitter::GetEmitterInstance() con
 	Instance->RenderData = RenderData;
 	Instance->RibbonWidth = RibbonWidth;
 	Instance->bIsBillboard = bIsBillboard;
+	Instance->RibbonColor = RibbonColor;
 	return Instance;
 }
 
@@ -221,19 +222,7 @@ void FNiagaraRibbonEmitter::CreateAndAddNewRibbonPoint(XMFLOAT3 PointPos, XMVECT
 		XMMATRIX InvViewMat = XMMatrixInverse(nullptr, ViewMat);
 		XMVECTOR CameraFrontVec = XMVector3Rotate(XMVectorSet(0,0,1,0), XMQuaternionRotationMatrix(InvViewMat));
 		XMVECTOR DeltaVec = XMVector3Normalize(Center - LastFrameWorldPos);
-		XMVECTOR NewPointVec;
-
-		// 카메라 front 벡터와 궤적의 이동 벡터가 거의 평행할경우에 대한 조정
-		float dot = fabs(XMVectorGetX(XMVector3Dot(DeltaVec, CameraFrontVec)));
-		if(dot > 0.99f) // 거의 평행
-		{
-			// 월드 업 벡터 사용
-			NewPointVec = XMVector3Normalize(XMVector3Cross(DeltaVec, XMVectorSet(0,1,0,0)));
-		}
-		else
-		{
-			NewPointVec = XMVector3Normalize(XMVector3Cross(DeltaVec, CameraFrontVec));
-		}
+		XMVECTOR NewPointVec = XMVector3Normalize(XMVector3Cross(DeltaVec, CameraFrontVec));;
 
 		UpPoint = Center + NewPointVec * HalfWidth;
 		DownPoint = Center + NewPointVec * -HalfWidth;
@@ -296,7 +285,7 @@ void FNiagaraRibbonEmitter::Tick(float DeltaSeconds, const FTransform& SceneTran
 
 	// 위치 정보가 변경되었다면 새로운 점 추가
 	float LocationDelta = XMVectorGetX(XMVector3LengthSq(XMVectorSubtract(CurLocationVec, LastFrameWorldPos)) );
-	if(LocationDelta> 1.0f)
+	if(LocationDelta> 0.1f)
 	{
 		CreateAndAddNewRibbonPoint(CurLoc, SceneTransform.GetRotationQuat());
 		LastFrameWorldPos = CurLocationVec;
@@ -368,6 +357,16 @@ void FNiagaraRibbonEmitter::MapPointDataToVertexBuffer()
 		MyVertexData vB; vB.Pos = { P0.DownPointPos };	vB.TexCoords = {static_cast<float>(1) / CurPointCount * i, 1};
 		MyVertexData vC; vC.Pos = { P1.UpPointPos };	vC.TexCoords = {static_cast<float>(1) / CurPointCount * (i+1), 0};
 		MyVertexData vD; vD.Pos = { P1.DownPointPos };	vD.TexCoords = {static_cast<float>(1) / CurPointCount * (i+1), 1};
+
+		// 파티클 컬러 정보를 float4인 BONEWEIGHT 시맨틱에 담음
+		float ParticleColor[4] = {RibbonColor.x, RibbonColor.y, RibbonColor.z, RibbonColor.w};
+		for(int i = 0; i < 4; ++i)
+		{
+			vA.m_Weights[i] = ParticleColor[i];
+			vB.m_Weights[i] = ParticleColor[i];
+			vC.m_Weights[i] = ParticleColor[i];
+			vD.m_Weights[i] = ParticleColor[i];
+		}
 
 		// 삼각형 1: A, B, C
 		memcpy(static_cast<char*>(cbMapSub.pData) + sizeof(MyVertexData) * CurVertexCount++, &vA, sizeof(MyVertexData));

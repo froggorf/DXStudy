@@ -25,6 +25,11 @@ void UNiagaraSystem::LoadDataFromFileData(const nlohmann::json& AssetData)
 				int bFaceCamera = EmitterData["FaceCamera"];
 				NewRibbonEmitter->SetRibbonFaceCamera(bFaceCamera);
 			}
+			if(EmitterData.contains("RibbonColor"))
+			{
+				const auto& RibbonColor = EmitterData["RibbonColor"];
+				NewRibbonEmitter->SetRibbonColor(XMFLOAT4{RibbonColor[0],RibbonColor[1],RibbonColor[2],RibbonColor[3]});
+			}
 			NewEmitter = NewRibbonEmitter;
 			
 		}
@@ -45,7 +50,16 @@ void UNiagaraSystem::LoadDataFromFileData(const nlohmann::json& AssetData)
 			break;
 			// 2 : Mesh
 		case 2:
-			NewEmitter->RenderData=std::make_shared<FNiagaraRendererMeshes>();
+			{
+				std::shared_ptr<FNiagaraRendererMeshes> MeshRenderData = std::make_shared<FNiagaraRendererMeshes>();
+				// TODO : 05.09 스태틱 메시 설정하기
+				if(EmitterData.contains("StaticMesh"))
+				{
+					std::string_view StaticMeshName = EmitterData["StaticMesh"];
+					MeshRenderData->SetStaticMesh(UStaticMesh::GetStaticMesh(StaticMeshName.data()));
+				}
+				NewEmitter->RenderData= MeshRenderData;
+			}
 			break;
 		// 3 : Ribbon
 		case 3:
@@ -87,6 +101,13 @@ void UNiagaraSystem::LoadDataFromFileData(const nlohmann::json& AssetData)
 			auto LifeData = EmitterData["Life"];
 			NewEmitter->Module.MinLife = LifeData[0];
 			NewEmitter->Module.MaxLife = LifeData[1];
+		}
+
+		// bIsLoop
+		if(EmitterData.contains("Loop"))
+		{
+			int bIsLoop = EmitterData["Loop"];
+			NewEmitter->Module.bIsLoop = bIsLoop;
 		}
 
 		// Scale

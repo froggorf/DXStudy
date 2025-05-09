@@ -9,6 +9,7 @@
 #include "Engine/RenderCore/RenderingThread.h"
 
 
+
 FEditorClient::FEditorClient(FScene* SceneData)
 {
 	ImguiPanels.resize(static_cast<UINT>(EImguiPanelType::IPT_Count));
@@ -55,14 +56,18 @@ void FEditorClient::Draw()
 		}
 	}
 
-
+	//bool bOpen = true;
+	//ImGui::ShowDemoWindow(&bOpen);
 	
 	ImGui::PopFont();
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-	ImGui::EndFrame();
-
-	
+	ImGuiIO& io = ImGui::GetIO();
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
+	}
 }

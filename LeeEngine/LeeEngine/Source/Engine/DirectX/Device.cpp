@@ -477,6 +477,13 @@ void FDirectXDevice::ResizeWindow()
 	m_d3dDeviceContext->RSSetViewports(1, &m_ScreenViewport);
 }
 
+void FDirectXDevice::ResetRenderTargets()
+{
+	// 파이프라인에 바인딩
+	m_d3dDeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf() , m_DepthStencilView.Get());
+
+}
+
 void FDirectXDevice::SetViewPortSize(float x, float y)
 {
 	m_ScreenViewport.TopLeftX	= 0;

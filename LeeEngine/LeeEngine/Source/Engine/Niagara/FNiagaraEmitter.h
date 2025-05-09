@@ -63,6 +63,7 @@ struct FParticleModule
 	// Spawn Modlue
 	float	SpawnRate{};			// 초당 파티클 생성량
 	XMFLOAT4	StartColor{};			// 초기 파티클 색상
+	int bIsLoop{};
 
 	XMFLOAT3	MinScale{};			// 생성 시 최소 크기
 	XMFLOAT3	MaxScale{};			// 생성 시 최대 크기
@@ -184,7 +185,7 @@ public:
 
 	void Render();
 	virtual void SetParticleTexture(const std::shared_ptr<UTexture>& InTexture) override { Textures.emplace_back(InTexture);}
-
+	virtual void SetStaticMesh(const std::shared_ptr<UStaticMesh> InStaticMesh) {BaseStaticMesh = InStaticMesh;}
 protected:
 	std::vector<std::shared_ptr<UTexture>> Textures;
 	std::shared_ptr<UStaticMesh> BaseStaticMesh;
@@ -263,11 +264,13 @@ public:
 
 	void SetRibbonWidth(int InRibbonWidth) {RibbonWidth = InRibbonWidth; }
 	void SetRibbonFaceCamera(bool bInIsBillboard) { bIsBillboard = bInIsBillboard;}
+	void SetRibbonColor(XMFLOAT4 InRibbonColor) {RibbonColor = InRibbonColor;}
 protected:
 	void MapPointDataToVertexBuffer();
 protected:
 	int RibbonWidth = 5.0f;
 	bool bIsBillboard = false;
+	XMFLOAT4 RibbonColor{1,1,1,1};
 
 
 	// Array를 환형 큐처럼 사용

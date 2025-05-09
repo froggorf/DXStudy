@@ -39,6 +39,7 @@ struct FParticleModule
 	// Spawn Modlue
 	float	SpawnRate;			// 초당 파티클 생성량
 	float4	StartColor;			// 초기 파티클 색상
+	int		bIsLoop;			// 반복되는 파티클
 
 	float3	MinScale;			// 생성 시 최소 크기
 	float3	MaxScale;			// 생성 시 최대 크기

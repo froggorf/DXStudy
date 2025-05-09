@@ -179,21 +179,8 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	
 	if(GEditorEngine)
 	{
-		// ImGui 이벤트 처리
-		if(ImGui::GetCurrentContext())
-		{
-			GEditorEngine->HandleInput(msg,wParam,lParam);
-			ImGuiIO& io = ImGui::GetIO();
-			if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam)) {
-
-				return TRUE;
-			}
-			if(io.WantCaptureMouse || io.WantCaptureKeyboard)
-			{
-				return TRUE;
-			}
-		}
-
+		if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam))
+			return true;
 	}
 	
 	switch( msg )

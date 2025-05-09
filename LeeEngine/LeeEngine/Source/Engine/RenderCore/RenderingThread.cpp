@@ -420,9 +420,13 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 
 	// 프레임 단위 세팅
 	{
+		//GDirectXDevice->ResetRenderTargets();
+
 		const float ClearColor[] = {0.0f, 0.0f, 0.0f,1.0f};
 		SceneData->SetDrawScenePipeline(ClearColor);
-		
+
+
+
 		GDirectXDevice->GetDeviceContext()->ClearRenderTargetView( GDirectXDevice->GetRenderTargetView().Get(), ClearColor);
 		GDirectXDevice->GetDeviceContext()->ClearDepthStencilView( GDirectXDevice->GetDepthStencilView().Get(), D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
 

@@ -10,12 +10,13 @@ struct VS_OUTPUT
 {
     float4 PosScreen : SV_POSITION;
     float2 Tex : TEXCOORD;
+    float4 ParticleColor : POSITION;
 };
 
 //--------------------------------------------------------------------------------------
 // Vertex Shader
 //--------------------------------------------------------------------------------------
-VS_OUTPUT VS_RibbonParticle( float4 Pos : POSITION, float2 TexCoord : TEXCOORD )
+VS_OUTPUT VS_RibbonParticle( float4 Pos : POSITION, float2 TexCoord : TEXCOORD, float4 ParticleColor : BONEWEIGHTS)
 {
     VS_OUTPUT output = (VS_OUTPUT)0;
 
@@ -23,6 +24,8 @@ VS_OUTPUT VS_RibbonParticle( float4 Pos : POSITION, float2 TexCoord : TEXCOORD )
     output.PosScreen = mul(mul(Pos, gView),gProjection);
 
     output.Tex = TexCoord;
+
+    output.ParticleColor = ParticleColor;
 
     return output;
 }
@@ -32,9 +35,7 @@ VS_OUTPUT VS_RibbonParticle( float4 Pos : POSITION, float2 TexCoord : TEXCOORD )
 //--------------------------------------------------------------------------------------
 float4 PS_RibbonParticle( VS_OUTPUT input ) : SV_Target
 {
-    //float4 color = txDiffuse.Sample( samLinear, input.Tex );
-    //color.rgb *= color.a;
-
-    float4 color =  float4(input.Tex.x,input.Tex.y,0.0f,1.0f);
+    float4 ParticleColor = input.ParticleColor;
+    float4 color =  float4(ParticleColor.r,ParticleColor.g,ParticleColor.b, input.Tex.x);
 	return color;
 }
