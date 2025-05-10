@@ -81,14 +81,12 @@ void UNiagaraSystem::LoadDataFromFileData(const nlohmann::json& AssetData)
 		// Override Texture 세팅
 		if(EmitterData.contains("OverrideTex"))
 		{
-			std::string_view TextureName = EmitterData["OverrideTex"];
 			// 머테리얼 인스턴스에 등록을 하는 방향으로 하려했으나,
 			// 새로 머테리얼인스턴스를 생성하는 방식으로 인해 실패
 			// 따라서 RenderData 내에 데이터를 넣고, 렌더링 시 바인딩 하는 방향으로 진행
-			NewEmitter->RenderData->SetParticleTexture(UTexture::GetTextureCache(TextureName.data()));
-
-		}
-
+			NewEmitter->RenderData->SetParticleTextures(EmitterData["OverrideTex"]);
+		} 
+	
 		// SpawnRate
 		if (EmitterData.contains("SpawnRate"))
 		{

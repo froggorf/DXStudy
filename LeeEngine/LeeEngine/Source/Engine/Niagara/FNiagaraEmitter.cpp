@@ -4,19 +4,37 @@
 #include "Engine/Mesh/UStaticMesh.h"
 #include "Engine/SceneProxy/FNiagaraSceneProxy.h"
 
+void FNiagaraRendererProperty::Render()
+{
+	size_t TextureSize = OverrideTextures.size();
+	for(int i = 0 ; i < TextureSize; ++i)
+	{
+		GDirectXDevice->GetDeviceContext()->PSSetShaderResources(i,1,OverrideTextures[i]->GetSRV().GetAddressOf());
+	}
+}
+
+void FNiagaraRendererProperty::SetParticleTextures(const nlohmann::basic_json<>& Data)
+{
+	OverrideTextures.clear();
+
+	size_t TextureCount = Data.size();
+	OverrideTextures.resize(TextureCount);
+	for(int i = 0; i < TextureCount; ++i)
+	{
+		OverrideTextures[i] = UTexture::GetTextureCache(Data[i]); 
+	}
+}
+
 // ================= Niagara Renderer ================
 void FNiagaraRendererBillboardSprites::Render()
 {
+	FNiagaraRendererProperty::Render();
+
 	GDirectXDevice->SetDSState(EDepthStencilStateType::DST_NO_WRITE);
 	GDirectXDevice->SetBSState(EBlendStateType::BST_AlphaBlend);
 	auto DeviceContext = GDirectXDevice->GetDeviceContext();
 
 	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-	if(OverrideSpriteTexture)
-	{
-		DeviceContext->PSSetShaderResources(0,1,OverrideSpriteTexture->GetSRV().GetAddressOf()); 
-	}
-
 
 	auto RenderData = StaticMesh->GetStaticMeshRenderData();
 	UINT MeshIndex = 0;
@@ -43,17 +61,14 @@ void FNiagaraRendererSprites::Render()
 
 void FNiagaraRendererMeshes::Render()
 {
+	FNiagaraRendererProperty::Render();
 	GDirectXDevice->SetDSState(EDepthStencilStateType::DST_NO_WRITE);
 	GDirectXDevice->SetBSState(EBlendStateType::BST_AlphaBlend);
 
 	auto DeviceContext = GDirectXDevice->GetDeviceContext();
 	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	size_t TextureSize = Textures.size();
-	for(int i = 0 ; i < TextureSize; ++i)
-	{
-		DeviceContext->PSSetShaderResources(i,1,Textures[i]->GetSRV().GetAddressOf());
-	}
+	
 
 
 	auto RenderData = BaseStaticMesh->GetStaticMeshRenderData();
@@ -74,7 +89,7 @@ void FNiagaraRendererMeshes::Render()
 
 void FNiagaraRendererRibbons::Render()
 {
-	
+	// FNiagaraRibbonEmitter 에서 렌더링을 진행
 }
 // ===========================================================================================
 
@@ -309,11 +324,12 @@ void FNiagaraRibbonEmitter::Render() const
 	auto DeviceContext = GDirectXDevice->GetDeviceContext();
 	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	//size_t TextureSize = Textures.size();
-	//for(int i = 0 ; i < TextureSize; ++i)
-	//{
-	//	DeviceContext->PSSetShaderResources(i,1,Textures[i]->GetSRV().GetAddressOf());
-	//}
+	const std::vector<std::shared_ptr<UTexture>>& OverrideTex = RenderData->GetTextureData();
+	size_t TextureSize = OverrideTex.size();
+	for(int i = 0 ; i < TextureSize; ++i)
+	{
+		DeviceContext->PSSetShaderResources(i,1,OverrideTex[i]->GetSRV().GetAddressOf());
+	}
 
 
 	UINT MeshIndex = 0;

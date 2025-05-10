@@ -5,7 +5,7 @@
 	{ 
 		"Property" : 0, 
 		"OverrideMat": "M_NiagaraBillboardSprite_UV",
-		"OverrideTex": "T_BigFire",
+		"OverrideTex": ["T_BigFire"],
 		"SpawnRate" : 2.0,
 		"Life" : [ 3,5 ],
 		"Scale" : [ [15.0,15.0,15.0] , [25.0,15.0,15.0] ],
@@ -31,7 +31,7 @@
 	{ 
 		"Property" : 0, 
 		"OverrideMat": "M_NiagaraBillboardSprite_UV",
-		"OverrideTex": "T_Flame",
+		"OverrideTex": ["T_Flame"],
 		"SpawnRate" : 30.0,
 		"Life" : [ 0.5,1 ],
 		"Scale" : [ [1,1,1] , [2,2,2] ],
@@ -61,7 +61,7 @@
 { 
 		"Property" : 0, 
 		"OverrideMat": "M_NiagaraBillboardSprite_UV",
-		"OverrideTex": "T_Smoke",
+		"OverrideTex": ["T_Smoke"],
 		"SpawnRate" : 10.0,
 		"Life" : [ 2,3 ],
 		"Scale" : [ [10,10,10] , [15,15,15] ],

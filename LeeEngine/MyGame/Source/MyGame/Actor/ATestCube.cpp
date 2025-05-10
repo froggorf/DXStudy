@@ -48,12 +48,45 @@ void ATestCube::Tick(float DeltaSeconds)
 	AActor::Tick(DeltaSeconds);
 
 	//SetActorRotation(XMFLOAT4(0.0f,0.0f,0.0f,1.0f));
-	XMFLOAT4 RR = DummyComp->GetRelativeRotation();
-	XMVECTOR RRVec = XMLoadFloat4(&RR);
+	static bool Turn = false;
+	if(Turn)
+	{
+		XMFLOAT4 RR = DummyComp->GetRelativeRotation();
+		XMVECTOR RRVec = XMLoadFloat4(&RR);
 
-	XMVECTOR Z1Quat = XMQuaternionRotationAxis(XMVectorSet(0,0,1,0), DeltaSeconds);
-	
-	
-	DummyComp->SetRelativeRotation(XMQuaternionMultiply(RRVec,Z1Quat));
+		XMVECTOR Z1Quat = XMQuaternionRotationAxis(XMVectorSet(0,0,1,0), DeltaSeconds);
 
+
+		DummyComp->SetRelativeRotation(XMQuaternionMultiply(RRVec,Z1Quat));
+
+	}
+	else
+	{
+		static XMVECTOR A{-100,30,-100};
+		static XMVECTOR B{100,30,-100};
+		static XMVECTOR C{100,30,100};
+		static float t = 0.0f;
+		t += DeltaSeconds/2;
+		XMVECTOR Target;
+		if(t < 1.0f)
+		{
+			Target = XMVectorLerp(A,B, t);
+		}
+		else if(t < 2.0f)
+		{
+			Target = XMVectorLerp(B,C, t-1);
+		}
+		else if(t <= 3.5f)
+		{
+			Target = XMVectorLerp(C,A, t-2);
+			if(t >= 3.0f)
+			{
+				t-=3.0f;
+			}
+		}
+		XMFLOAT3 Loc;
+		XMStoreFloat3(&Loc, Target);
+		DummyComp->SetWorldLocation(Loc);
+	}
+	
 }

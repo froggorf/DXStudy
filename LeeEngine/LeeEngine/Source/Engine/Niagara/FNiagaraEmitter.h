@@ -128,13 +128,17 @@ public:
 	FNiagaraRendererProperty() = default;
 	virtual ~FNiagaraRendererProperty() = default;
 
-	virtual void Render() = 0;
+	virtual void Render();
 
 	virtual std::shared_ptr<UMaterialInterface> GetMaterialInterface() const { return MaterialInterface; }
 	void SetMaterialInterface(const std::shared_ptr<UMaterialInterface>& NewMaterialInterface) { MaterialInterface = NewMaterialInterface; }
-	virtual void SetParticleTexture(const std::shared_ptr<UTexture>& InTexture) {}
 
+	// TODO: 리본데이터에서 렌더링을 진행하기 떄문에 해당 함수를 통해 텍스쳐 데이터를 얻어오지만,
+	// 추후에는 리본렌더링의 Render에서 진행하는 방향으로 수정하는 것이 타당해보임
+	const std::vector<std::shared_ptr<UTexture>>& GetTextureData() const {return OverrideTextures;}
+	virtual void SetParticleTextures(const nlohmann::basic_json<>& Data);
 protected:
+	std::vector<std::shared_ptr<UTexture>> OverrideTextures;
 	std::shared_ptr<UMaterialInterface> MaterialInterface;
 };
 
@@ -151,9 +155,7 @@ public:
 
 	void Render() override;
 
-	void SetParticleTexture(const std::shared_ptr<UTexture>& InTexture) override{OverrideSpriteTexture = InTexture;}
 protected:
-	std::shared_ptr<UTexture> OverrideSpriteTexture;
 	std::shared_ptr<UStaticMesh> StaticMesh;
 };
 
@@ -183,11 +185,9 @@ public:
 	}
 	~FNiagaraRendererMeshes() override = default;
 
-	void Render();
-	virtual void SetParticleTexture(const std::shared_ptr<UTexture>& InTexture) override { Textures.emplace_back(InTexture);}
+	void Render() override;
 	virtual void SetStaticMesh(const std::shared_ptr<UStaticMesh> InStaticMesh) {BaseStaticMesh = InStaticMesh;}
 protected:
-	std::vector<std::shared_ptr<UTexture>> Textures;
 	std::shared_ptr<UStaticMesh> BaseStaticMesh;
 
 };
@@ -195,6 +195,7 @@ protected:
 // 리본을 이펙트의 요소로 렌더링 하는데 필요한 데이터를 관리하는 클래스
 class FNiagaraRendererRibbons : public FNiagaraRendererProperty
 {
+	friend class FNiagaraRibbonEmitter;
 public:
 	FNiagaraRendererRibbons()
 	{

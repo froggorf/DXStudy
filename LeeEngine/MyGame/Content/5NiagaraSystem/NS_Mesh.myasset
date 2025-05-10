@@ -5,7 +5,7 @@
 	{ 
 		"Property" : 2, 
 		"OverrideMat": "M_NiagaraMesh",
-		"OverrideTex": "T_TranslucentCube",
+		"OverrideTex": ["T_TranslucentCube"],
 		"SpawnRate" : 0,
 		"Life" : [ 9999999,9999999 ],
 		"Scale" : [ [50,50,50] , [50,50,50] ],
