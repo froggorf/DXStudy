@@ -1,0 +1,6 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_Arrow",
+    "ModelData": "/Content/Resource/Model/Arrow.fbx",
+    "Material" : [ "M_Cube" ]
+}

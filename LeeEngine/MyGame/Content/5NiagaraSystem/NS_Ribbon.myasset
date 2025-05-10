@@ -5,21 +5,23 @@
 	{ 
 		"Property" : 3, 
 		"FaceCamera": 1,
-		"Life" : [ 0, 0.5 ],
-		"RibbonWidth" : 3.0,
+		"OverrideMat" : "M_NiagaraRibbonMaskTrail",
+		"OverrideTex" : [ "T_RibbonTrail", "T_RibbonTrailMask" ],
+		"Life" : [ 0, 0.15 ],
+		"RibbonWidth" : 10.0,
 		"RibbonColor": [0.0 , 0.7 , 0.8 , 1.0]
 	},
 	{ 
 		"Property" : 0, 
 		"OverrideMat": "M_NiagaraBillboardSprite_UV",
 		"OverrideTex": ["T_Lightning"],
-		"SpawnRate" : 6.0,
+		"SpawnRate" : 10.0,
 		"Life" : [ 1.5,2 ],
-		"Scale" : [ [5,5,5], [7,7,7] ],
+		"Scale" : [ [3,3,3], [5,5,5] ],
 		"Rot" : [ [0,0,-180] , [0, 0, 180]],
 		"SpaceType": 0,
 		"SpawnShape" : 0,
-		"SpawnScale" : [5,5,5],
+		"SpawnScale" : [0.1,0.1,0.1],
 		"Modules" : 
 		{
 			"Render" : {
@@ -64,7 +66,7 @@
 			    "MaxVel" : [3,3,3]
 			}
 		}
-	}	
+	}		
     ]
 
 }

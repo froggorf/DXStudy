@@ -330,6 +330,8 @@ void AssetManager::LoadTexture(class UTexture* Texture, const nlohmann::json& As
     Texture->SRView->GetResource((ID3D11Resource**)Texture->Texture2D.GetAddressOf());
     Texture->Texture2D->GetDesc(&Texture->Desc);
 
+    assert(Texture->GetSRV()&& "No valid Texture");
+
     MY_LOG("TextureLoad", EDebugLogLevel::DLL_Display, "Texture Load Success");
 }
 

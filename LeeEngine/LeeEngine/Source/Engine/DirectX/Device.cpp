@@ -345,12 +345,12 @@ void FDirectXDevice::InitSamplerState()
 	sampDesc.MaxLOD = 0; // mipmap
 	sampDesc.MinLOD = 0;
 	HR(GDirectXDevice->GetDevice()->CreateSamplerState(&sampDesc, m_SamplerState.GetAddressOf()));
-	m_d3dDeviceContext->VSSetSamplers(1, 1, m_SamplerState.GetAddressOf());
-	m_d3dDeviceContext->HSSetSamplers(1, 1, m_SamplerState.GetAddressOf());
-	m_d3dDeviceContext->DSSetSamplers(1, 1, m_SamplerState.GetAddressOf());
-	m_d3dDeviceContext->GSSetSamplers(1, 1, m_SamplerState.GetAddressOf());
-	m_d3dDeviceContext->PSSetSamplers(1, 1, m_SamplerState.GetAddressOf());
-	m_d3dDeviceContext->CSSetSamplers(1, 1, m_SamplerState.GetAddressOf());
+	m_d3dDeviceContext->VSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
+	m_d3dDeviceContext->HSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
+	m_d3dDeviceContext->DSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
+	m_d3dDeviceContext->GSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
+	m_d3dDeviceContext->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
+	m_d3dDeviceContext->CSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
 
 	// MinMagMip 필터링 셈플러
 	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;

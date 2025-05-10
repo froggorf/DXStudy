@@ -48,8 +48,8 @@ void ATestCube::Tick(float DeltaSeconds)
 	AActor::Tick(DeltaSeconds);
 
 	//SetActorRotation(XMFLOAT4(0.0f,0.0f,0.0f,1.0f));
-	static bool Turn = false;
-	if(Turn)
+	
+	if(false)
 	{
 		XMFLOAT4 RR = DummyComp->GetRelativeRotation();
 		XMVECTOR RRVec = XMLoadFloat4(&RR);
@@ -74,15 +74,12 @@ void ATestCube::Tick(float DeltaSeconds)
 		}
 		else if(t < 2.0f)
 		{
-			Target = XMVectorLerp(B,C, t-1);
+			Target = XMVectorLerp(B,A, t-1);
 		}
-		else if(t <= 3.5f)
+		else
 		{
-			Target = XMVectorLerp(C,A, t-2);
-			if(t >= 3.0f)
-			{
-				t-=3.0f;
-			}
+			Target = XMVectorLerp(B,A, t-1);
+			t-=2.0f;
 		}
 		XMFLOAT3 Loc;
 		XMStoreFloat3(&Loc, Target);

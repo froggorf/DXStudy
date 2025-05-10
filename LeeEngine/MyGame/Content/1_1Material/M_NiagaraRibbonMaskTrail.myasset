@@ -1,0 +1,15 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_NiagaraRibbonMaskTrail",
+    "VertexShader" : {
+	"FilePath" : "/Shader/RibbonRenderer.fx",
+	"Func" : "VS_RibbonParticle"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/RibbonRenderer.fx",
+	"Func": "PS_RibbonMaskTrail"
+    },
+    "BlendMode": "Translucent",
+    "TwoSided" : 1
+	
+}
