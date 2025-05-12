@@ -29,8 +29,8 @@ D3DApp::D3DApp(HINSTANCE hInstance)
 {
 	m_hAppInstance = hInstance;
 	m_MainWndTitle = L"2019180031 D3D11";
-	m_ClientWidth = 2540;
-	m_ClientHeight = 1440;
+	m_ClientWidth = 2540/2;
+	m_ClientHeight = 1440/2;
 	m_hMainWnd = nullptr;
 	m_AppPaused = m_Minimized = m_Maximized = m_Resizing = false;
 
@@ -83,7 +83,7 @@ int D3DApp::Run()
 		// 애니메이션, 게임 업데이트
 		else
 		{
-			auto FrameStartTime = std::chrono::high_resolution_clock::now();
+			/*auto FrameStartTime = std::chrono::high_resolution_clock::now();
 			while(true)
 			{
 				auto CurrentTime = std::chrono::high_resolution_clock::now();
@@ -92,7 +92,7 @@ int D3DApp::Run()
 				if(ElapsedTime.count() > TargetFrameTime) break;
 
 				std::this_thread::yield();
-			}
+			}*/
 			m_Timer.Tick();
 
 			if(!m_AppPaused)
@@ -177,12 +177,13 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		return 0;
 	}
 	
-	if(GEditorEngine)
-	{
-		if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam))
+
+#ifdef WITH_EDITOR
+	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam))
 			return true;
-	}
 	
+#endif
+
 	switch( msg )
 	{
 	case WM_NCPAINT:
@@ -219,8 +220,9 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		{
 			// 비클라이언트 영역을 강제로 다시 그리기
 			RedrawWindow(m_hMainWnd, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE);
-			m_AppPaused = true;
-			m_Timer.Stop();
+
+			//m_AppPaused = true;
+			//m_Timer.Stop();
 		}
 		else
 		{
