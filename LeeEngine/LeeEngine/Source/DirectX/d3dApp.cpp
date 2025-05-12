@@ -29,8 +29,8 @@ D3DApp::D3DApp(HINSTANCE hInstance)
 {
 	m_hAppInstance = hInstance;
 	m_MainWndTitle = L"2019180031 D3D11";
-	m_ClientWidth = 2540/1.5;
-	m_ClientHeight = 1440/1.5;
+	m_ClientWidth = 2540;
+	m_ClientHeight = 1440;
 	m_hMainWnd = nullptr;
 	m_AppPaused = m_Minimized = m_Maximized = m_Resizing = false;
 
@@ -83,7 +83,7 @@ int D3DApp::Run()
 		// 애니메이션, 게임 업데이트
 		else
 		{
-			/*auto FrameStartTime = std::chrono::high_resolution_clock::now();
+			auto FrameStartTime = std::chrono::high_resolution_clock::now();
 			while(true)
 			{
 				auto CurrentTime = std::chrono::high_resolution_clock::now();
@@ -92,7 +92,7 @@ int D3DApp::Run()
 				if(ElapsedTime.count() > TargetFrameTime) break;
 
 				std::this_thread::yield();
-			}*/
+			}
 			m_Timer.Tick();
 
 			if(!m_AppPaused)
@@ -330,7 +330,7 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		//OnMouseDown(wParam, LOWORD(lParam), HIWORD(lParam));
 		std::cout<<"??";
 	case WM_LBUTTONUP:
-	case WM_MBUTTONUP:
+	case WM_MBUTTONUP: 
 	case WM_RBUTTONUP:
 		//OnMouseUp(wParam, LOWORD(lParam), HIWORD(lParam));
 	//case WM_MOUSEMOVE:

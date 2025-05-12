@@ -40,7 +40,7 @@ void FEditorScene::BeginRenderFrame()
 
 void FEditorScene::SetDrawScenePipeline(const float* ClearColor)
 {
-	GDirectXDevice->GetDeviceContext()->OMSetRenderTargets(1, GDirectXDevice->GetEditorRenderTargetView().GetAddressOf(), GDirectXDevice->GetEditorDepthStencilView().Get());
+	GDirectXDevice->GetDeviceContext()->OMSetRenderTargets(1, GDirectXDevice->GetEditorRenderTargetView().GetAddressOf(), GDirectXDevice->GetDepthStencilView().Get());
 	GDirectXDevice->GetDeviceContext()->ClearRenderTargetView(GDirectXDevice->GetEditorRenderTargetView().Get(),ClearColor);
 
 	// 에디터 뷰포트 사이즈 설정하기
