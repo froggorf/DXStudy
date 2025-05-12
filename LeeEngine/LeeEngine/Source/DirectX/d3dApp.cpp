@@ -29,8 +29,8 @@ D3DApp::D3DApp(HINSTANCE hInstance)
 {
 	m_hAppInstance = hInstance;
 	m_MainWndTitle = L"2019180031 D3D11";
-	m_ClientWidth = 2540/2;
-	m_ClientHeight = 1440/2;
+	m_ClientWidth = 2540/1.5;
+	m_ClientHeight = 1440/1.5;
 	m_hMainWnd = nullptr;
 	m_AppPaused = m_Minimized = m_Maximized = m_Resizing = false;
 
@@ -221,8 +221,8 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			// 비클라이언트 영역을 강제로 다시 그리기
 			RedrawWindow(m_hMainWnd, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE);
 
-			//m_AppPaused = true;
-			//m_Timer.Stop();
+			m_AppPaused = true;
+			m_Timer.Stop();
 		}
 		else
 		{
@@ -325,7 +325,7 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_MBUTTONDOWN:
 	case WM_RBUTTONDOWN:
 		//OnMouseDown(wParam, LOWORD(lParam), HIWORD(lParam));
-		
+		std::cout<<"??";
 	case WM_LBUTTONUP:
 	case WM_MBUTTONUP:
 	case WM_RBUTTONUP:
