@@ -32,15 +32,37 @@ ATestCube::ATestCube()
 	DummyComp->SetupAttachment(GetRootComponent());
 	DummyComp->SetRelativeLocation(XMFLOAT3{-45.0f,50.0f,0.0f});
 
-	NiagaraComp = std::make_shared<UNiagaraComponent>();
-	NiagaraComp->SetupAttachment(DummyComp);
+	NC_BillboardRibbon = std::make_shared<UNiagaraComponent>();
+	NC_BillboardRibbon->SetupAttachment(DummyComp);
 	std::shared_ptr<UNiagaraSystem> System = UNiagaraSystem::GetNiagaraAsset("NS_Ribbon");
-	NiagaraComp->SetNiagaraAsset(System);
-	NiagaraComp->SetRelativeLocation(XMFLOAT3{0.0,30.0f,0.0f});
-	NiagaraComp->SetRelativeRotation(XMFLOAT3{90.0f,0.0f,0.0f});
+	NC_BillboardRibbon->SetNiagaraAsset(System);
+	NC_BillboardRibbon->SetRelativeLocation(XMFLOAT3{0.0,30.0f,0.0f});
+	NC_BillboardRibbon->SetRelativeRotation(XMFLOAT3{90.0f,0.0f,0.0f});
+
+
+	DummyComp2 = std::make_shared<USceneComponent>();
+	DummyComp2->Rename("DummyComp2");
+	DummyComp2->SetupAttachment(GetRootComponent());
+	DummyComp2->SetRelativeLocation(XMFLOAT3{45.0f,50.0f,0.0f});
+
+	NC_Ribbon = std::make_shared<UNiagaraComponent>();
+	NC_Ribbon->SetupAttachment(DummyComp2);
+	std::shared_ptr<UNiagaraSystem> System2 = UNiagaraSystem::GetNiagaraAsset("NS_RibbonX");
+	NC_Ribbon->SetNiagaraAsset(System2);
+	NC_Ribbon->SetRelativeLocation(XMFLOAT3{0.0,30.0f,0.0f});
+	NC_Ribbon->SetRelativeRotation(XMFLOAT3{0.0f,0.0f,0.0f});
+
+	NC_Ribbon = std::make_shared<UNiagaraComponent>();
+	NC_Ribbon->SetupAttachment(GetRootComponent());
+	
+	NC_Ribbon->SetNiagaraAsset(UNiagaraSystem::GetNiagaraAsset("NS_Test"));
+	NC_Ribbon->SetRelativeLocation(XMFLOAT3{-50.0,-15.0f,0.0f});
+	NC_Ribbon->SetRelativeRotation(XMFLOAT3{0.0f,0.0f,0.0f});
 
 
 	Rename("ATestCube" + std::to_string(ActorID));
+
+
 }
 
 void ATestCube::Tick(float DeltaSeconds)
@@ -49,6 +71,8 @@ void ATestCube::Tick(float DeltaSeconds)
 
 	//SetActorRotation(XMFLOAT4(0.0f,0.0f,0.0f,1.0f));
 	
+	DummyComp2->AddWorldRotation(XMFLOAT3(0.0f,0.0f,DeltaSeconds*90));
+	//NiagaraComp2->AddWorldRotation(XMFLOAT3(0.0f,.0f*DeltaSeconds,0.0f));
 	if(false)
 	{
 		XMFLOAT4 RR = DummyComp->GetRelativeRotation();
@@ -63,10 +87,10 @@ void ATestCube::Tick(float DeltaSeconds)
 	else
 	{
 		static XMVECTOR A{-100,30,-100};
-		static XMVECTOR B{100,30,-100};
+		static XMVECTOR B{-100,30,-50};
 		static XMVECTOR C{100,30,100};
 		static float t = 0.0f;
-		t += DeltaSeconds/2;
+		t += DeltaSeconds;
 		XMVECTOR Target;
 		if(t < 1.0f)
 		{

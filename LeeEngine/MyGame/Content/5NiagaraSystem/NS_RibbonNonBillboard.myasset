@@ -1,0 +1,14 @@
+{
+    "Class": "UNiagaraSystem",
+    "Name": "NS_RibbonX",
+    "Emitters" : [
+	{ 
+		"Property" : 3, 
+		"FaceCamera": 0,
+		"Life" : [ 0, 0.5 ],
+		"RibbonWidth" : 10.0,
+		"RibbonColor": [1,1,1, 1.0]
+	}		
+    ]
+
+}
