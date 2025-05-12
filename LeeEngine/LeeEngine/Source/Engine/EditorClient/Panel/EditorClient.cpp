@@ -48,16 +48,16 @@ void FEditorClient::Draw()
 	static ImFont* RobotoFont = ImGui::GetIO().Fonts->Fonts[0];
 	ImGui::PushFont(RobotoFont);
 
-	for(UINT Type = 0; Type < static_cast<UINT>(EImguiPanelType::IPT_Count); ++Type)
+	/*for(UINT Type = 0; Type < static_cast<UINT>(EImguiPanelType::IPT_Count); ++Type)
 	{
 		if(ImguiPanels[Type])
 		{
 			ImguiPanels[Type]->Draw();	
 		}
-	}
+	}*/
 
-	//bool bOpen = true;
-	//ImGui::ShowDemoWindow(&bOpen);
+	bool bOpen = true;
+	ImGui::ShowDemoWindow(&bOpen);
 	
 	ImGui::PopFont();
 

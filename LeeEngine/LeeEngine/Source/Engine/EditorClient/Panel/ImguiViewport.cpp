@@ -53,7 +53,7 @@ void FImguiLevelViewport::Draw()
 		ScreenPos = ImGui::GetCursorScreenPos();
 		if(GDirectXDevice->GetSRVEditorRenderTarget())
 		{
-			ImGui::Image((void*)GDirectXDevice->GetSRVEditorRenderTarget().Get(), ViewPortSize);
+			ImGui::Image(reinterpret_cast<ImTextureID>(GDirectXDevice->GetSRVEditorRenderTarget().Get()), ViewPortSize);
 
 		}
 		if(PreviousViewPortSize != CurrentViewPortSize)

@@ -213,6 +213,32 @@ void FDirectXDevice::ResizeEditorRenderTarget(float NewX, float NewY)
 	// 렌더 타겟 뷰 생성
 	hr = m_d3dDevice->CreateRenderTargetView(m_EditorRenderTargetTexture.Get(), nullptr, m_EditorRenderTargetView.GetAddressOf());
 
+	// DSV 생성
+	// 뎁스 스텐실 버퍼/뷰 생성
+	D3D11_TEXTURE2D_DESC depthStencilDesc = {};
+	depthStencilDesc.Width = textureDesc.Width;
+	depthStencilDesc.Height = textureDesc.Height;
+	depthStencilDesc.MipLevels = 1;
+	depthStencilDesc.ArraySize = 1;
+	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilDesc.SampleDesc.Count = 1; // 멀티샘플링 필요시 조절
+	depthStencilDesc.SampleDesc.Quality = 0;
+	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthStencilDesc.CPUAccessFlags = 0;
+	depthStencilDesc.MiscFlags = 0;
+
+
+	// 기존 뎁스 스텐실 리소스 해제 (ComPtr 사용시 자동이지만 명확하게 하려면)
+	m_EditorDepthStencilBuffer.Reset();
+	m_EditorDepthStencilView.Reset();
+
+	// 텍스처2D 생성
+	hr = m_d3dDevice->CreateTexture2D(&depthStencilDesc, nullptr, m_EditorDepthStencilBuffer.GetAddressOf());
+
+	// 뷰 생성
+	hr = m_d3dDevice->CreateDepthStencilView(m_EditorDepthStencilBuffer.Get(), nullptr, m_EditorDepthStencilView.GetAddressOf());
+	
 	// 셰이더 리소스 뷰 생성
 	hr = m_d3dDevice->CreateShaderResourceView(m_EditorRenderTargetTexture.Get(), nullptr, m_SRVEditorRenderTarget.GetAddressOf());
 

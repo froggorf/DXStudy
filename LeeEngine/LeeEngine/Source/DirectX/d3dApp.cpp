@@ -151,7 +151,7 @@ void D3DApp::OnResize()
 	
 }
 
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 
 void D3DApp::DrawTitleBar()
 {
@@ -165,8 +165,15 @@ void D3DApp::DrawTitleBar()
 	
 }
 
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+#ifdef WITH_EDITOR
+	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam))
+		return true;
+#endif
+
 	if(msg == WM_CLOSE)
 	{
 		FScene::KillRenderingThread();
@@ -178,11 +185,7 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	}
 	
 
-#ifdef WITH_EDITOR
-	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam))
-			return true;
-	
-#endif
+
 
 	switch( msg )
 	{

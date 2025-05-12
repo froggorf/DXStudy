@@ -107,11 +107,14 @@ public:
 	const Microsoft::WRL::ComPtr<ID3D11Texture2D>& GetEditorRenderTargetTexture() const {return m_EditorRenderTargetTexture;}
 	const Microsoft::WRL::ComPtr<ID3D11RenderTargetView>& GetEditorRenderTargetView() const {return m_EditorRenderTargetView;}
 	const Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>&  GetSRVEditorRenderTarget() const {return m_SRVEditorRenderTarget; }
+	const Microsoft::WRL::ComPtr<ID3D11DepthStencilView>& GetEditorDepthStencilView() const {return m_EditorDepthStencilView;}
 	void ResizeEditorRenderTarget(float NewX,float NewY);
 private:
 	Microsoft::WRL::ComPtr<ID3D11Texture2D>				m_EditorRenderTargetTexture;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>		m_EditorRenderTargetView;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>	m_SRVEditorRenderTarget;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D>				m_EditorDepthStencilBuffer;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>		m_EditorDepthStencilView;
 #endif	
 
 

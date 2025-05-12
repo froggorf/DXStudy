@@ -297,6 +297,9 @@
     <ClCompile Include="Source\Engine\RenderCore\RenderingThread.cpp">
       <Filter>Source\Engine\World</Filter>
     </ClCompile>
+    <ClCompile Include="Source\ThirdParty\ImGui\imgui_demo.cpp">
+      <Filter>Source\ThirdParty\Imgui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DirectX\ShadowMap.h">

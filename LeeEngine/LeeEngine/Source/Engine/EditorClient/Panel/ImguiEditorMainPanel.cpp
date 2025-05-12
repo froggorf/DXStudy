@@ -31,11 +31,11 @@ void FImguiEditorMainPanel::Draw()
 			float PlayButtonSize=  WindowSize.y - TitleBarHeight - 20 - 5;
 			if(GEditorEngine->bGameStart)
 			{
-				ImGui::ImageButton(" ", (void*)StopIcon.Get(), ImVec2{PlayButtonSize,PlayButtonSize});
+				ImGui::ImageButton(" ", reinterpret_cast<ImTextureID>(StopIcon.Get()), ImVec2{PlayButtonSize,PlayButtonSize});
 			}
 			else
 			{
-				if(ImGui::ImageButton(" ", (void*)PlayIcon.Get(), ImVec2{PlayButtonSize,PlayButtonSize}))
+				if(ImGui::ImageButton(" ", reinterpret_cast<ImTextureID>(PlayIcon.Get()), ImVec2{PlayButtonSize,PlayButtonSize}))
 				{
 					ENQUEUE_IMGUI_COMMAND([]()
 						{
