@@ -241,6 +241,10 @@ public:
 	// 머테리얼, 메쉬 등
 	std::shared_ptr<FNiagaraRendererProperty> RenderData;
 	FParticleModule Module;
+
+	// 리본 렌더러에서는 Deactivated 된 상태에서도 Tick만 안될 뿐, 렌더링은 되어야한다.
+	// 그렇기에 해당 변수를 통해 제어
+	bool bUpdateAndRenderAtDeactivate = false;
 protected:
 	// 파티클 활성화 시간
 	float AccTime;

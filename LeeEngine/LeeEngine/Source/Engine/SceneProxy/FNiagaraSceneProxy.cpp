@@ -18,7 +18,7 @@ FNiagaraSceneProxy::FNiagaraSceneProxy(UINT InPrimitiveID, std::shared_ptr<FNiag
 void FNiagaraSceneProxy::Draw()
 {
 	FPrimitiveSceneProxy::Draw();
-	if(bIsActivate)
+	if(bIsActivate || Emitter->bUpdateAndRenderAtDeactivate)
 	{
 		Emitter->Render();
 	}
@@ -34,7 +34,7 @@ enum class EParticleActivateState
 
 void FNiagaraSceneProxy::TickCS(float DeltaSeconds)
 {
-	if(bIsActivate || bMustTickThisFrame)
+	if(bIsActivate || bMustTickThisFrame || Emitter->bUpdateAndRenderAtDeactivate)
 	{
 		Emitter->Tick(DeltaSeconds, ComponentToWorld);	
 		bMustTickThisFrame = false;

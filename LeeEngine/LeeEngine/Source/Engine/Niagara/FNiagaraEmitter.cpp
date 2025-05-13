@@ -397,6 +397,8 @@ FNiagaraRibbonEmitter::FNiagaraRibbonEmitter()
 	BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
 	HR(GDirectXDevice->GetDevice()->CreateBuffer(&BufferDesc, nullptr, VB_Ribbon.GetAddressOf()));
+
+	bUpdateAndRenderAtDeactivate = true;
 }
 
 std::shared_ptr<FNiagaraEmitter> FNiagaraRibbonEmitter::GetEmitterInstance() const
@@ -489,7 +491,6 @@ void FNiagaraRibbonEmitter::Tick(float DeltaSeconds, const FTransform& SceneTran
 	}
 
 	// 첫 프레임에는 위치를 고정해주고 해당위치에 포인트 생성
-	// TODO : 5/8) 이 부분은 LastFrameWorldPos 를 엄청 멀리 두면 시작위치가 다르니까 적용되지 않을까 싶음
 	if(bFirstTick)
 	{
 		bFirstTick = false;
@@ -498,12 +499,17 @@ void FNiagaraRibbonEmitter::Tick(float DeltaSeconds, const FTransform& SceneTran
 	}
 
 	// 위치 정보가 변경되었다면 새로운 점 추가
-	float LocationDelta = XMVectorGetX(XMVector3LengthSq(XMVectorSubtract(CurLocationVec, LastFrameWorldPos)) );
-	if(LocationDelta> 0.1f)
+	// 05.13 : 리본렌더러가 Deactivate 되었을 때에는 궤적은 그대로 남아있어야함, 따라서 새로운 점을 생성하지 못하게만 제어
+	if(Module.ActivateState == 0)
 	{
-		CreateAndAddNewRibbonPoint(CurLoc, SceneTransform.GetRotationQuat());
-		LastFrameWorldPos = CurLocationVec;
+		float LocationDelta = XMVectorGetX(XMVector3LengthSq(XMVectorSubtract(CurLocationVec, LastFrameWorldPos)) );
+		if(LocationDelta> 0.1f)
+		{
+			CreateAndAddNewRibbonPoint(CurLoc, SceneTransform.GetRotationQuat());
+			LastFrameWorldPos = CurLocationVec;
+		}	
 	}
+	
 
 	// 새로운 데이터를 버텍스 버퍼에 Map 해주기
 	MapPointDataToVertexBuffer();
