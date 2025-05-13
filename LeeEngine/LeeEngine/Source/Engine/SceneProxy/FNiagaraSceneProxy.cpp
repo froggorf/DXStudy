@@ -18,17 +18,47 @@ FNiagaraSceneProxy::FNiagaraSceneProxy(UINT InPrimitiveID, std::shared_ptr<FNiag
 void FNiagaraSceneProxy::Draw()
 {
 	FPrimitiveSceneProxy::Draw();
-
-	Emitter->Render();
+	if(bIsActivate)
+	{
+		Emitter->Render();
+	}
+	
 	
 }
+enum class EParticleActivateState
+{
+	EPAS_Activate,
+	EPAS_Deactivate,
+	EPAS_Reset,
+};
 
 void FNiagaraSceneProxy::TickCS(float DeltaSeconds)
 {
-	// 오브젝트의 월드 좌표 계산
+	if(bIsActivate || bMustTickThisFrame)
+	{
+		Emitter->Tick(DeltaSeconds, ComponentToWorld);	
+		bMustTickThisFrame = false;
+		// 리셋 상태였다면 다시 Activate 상태로 바꿔주기
+		if(Emitter->Module.ActivateState == static_cast<int>(EParticleActivateState::EPAS_Reset))
+		{
+			Emitter->Module.ActivateState = static_cast<int>(EParticleActivateState::EPAS_Activate);
+		}
+	}
+}
 
-	
 
-	Emitter->Tick(DeltaSeconds, ComponentToWorld);
+void FNiagaraSceneProxy::Activate()
+{
+	bIsActivate = true;
+	Emitter->Module.ActivateState = Emitter->Module.ActivateState == static_cast<int>(EParticleActivateState::EPAS_Deactivate) ? 
+														static_cast<int>(EParticleActivateState::EPAS_Reset) :
+														static_cast<int>(EParticleActivateState::EPAS_Activate);
+	bMustTickThisFrame = true;
+}
 
+void FNiagaraSceneProxy::Deactivate()
+{
+	bIsActivate = false;
+	bMustTickThisFrame = true;
+	Emitter->Module.ActivateState = static_cast<int>(EParticleActivateState::EPAS_Deactivate);
 }

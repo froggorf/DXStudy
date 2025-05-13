@@ -120,6 +120,17 @@ void CS_TickParticle(int3 ThreadID : SV_DispatchThreadID)
 		return;
 	}
 
+    // 만약 비활성화 / 리셋 상태라면
+    if(gModule[0].ActivateState > 0)
+    {
+	    gBuffer[ThreadID.x].Active = 0;
+        // 비활성화일 경우 종료
+        if(gModule[0].ActivateState==1)
+        {
+            return;    
+        }
+    }
+
     if (gBuffer[ThreadID.x].Active == 0)
     {
         int Success = 0;

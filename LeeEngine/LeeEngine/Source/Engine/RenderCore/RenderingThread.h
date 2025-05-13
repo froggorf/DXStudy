@@ -94,8 +94,10 @@ private:
 };
 
 #define ENQUEUE_RENDER_COMMAND(Lambda) \
+	{\
 	std::function<void(std::shared_ptr<FScene>&)> temp = Lambda;\
-		FRenderCommandPipe::Enqueue(temp);
+		FRenderCommandPipe::Enqueue(temp);\
+	}
 
 inline std::atomic<bool> bIsGameKill = false;
 inline std::atomic<UINT> RenderingThreadFrameCount = 0;
@@ -265,7 +267,11 @@ public:
 		ENQUEUE_RENDER_COMMAND(Lambda);
 	}
 	void SetTextureParam_RenderThread(UINT PrimitiveID, UINT MeshIndex, UINT TextureSlot, std::shared_ptr<UTexture> Texture);
+
+	// 특정 씬 프록시의 이펙트를 Activate 시키는 함수
+	static void SetNiagaraEffectActivate_GameThread(std::vector<std::shared_ptr<class FNiagaraSceneProxy>>& TargetSceneProxies, bool bNewActivate);
 	
+
 	static void DrawScene_RenderThread(std::shared_ptr<FScene> SceneData);
 	virtual void SetDrawScenePipeline(const float* ClearColor);
 	virtual void AfterDrawSceneAction(const std::shared_ptr<FScene> SceneData){}

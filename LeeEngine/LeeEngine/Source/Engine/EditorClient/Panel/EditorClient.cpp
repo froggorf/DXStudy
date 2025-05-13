@@ -55,9 +55,6 @@ void FEditorClient::Draw()
 			ImguiPanels[Type]->Draw();	
 		}
 	}
-
-	bool bOpen = true;
-	ImGui::ShowDemoWindow(&bOpen);
 	
 	ImGui::PopFont();
 

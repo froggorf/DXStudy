@@ -36,6 +36,9 @@ struct FParticleSpawn
 // Particle Module
 struct FParticleModule
 {
+	// Activate State
+	int ActivateState;		// 파티클 전체에 대한 활성 상태 (0 : Activate, 1 : Deactivate, 2 : Reset)
+
 	// Spawn Modlue
 	float	SpawnRate;			// 초당 파티클 생성량
 	float4	StartColor;			// 초기 파티클 색상

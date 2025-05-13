@@ -22,7 +22,16 @@ public:
 
 	void TickComponent(float DeltaSeconds) override;
 
+	// 이펙트를 활성화 / 비활성화 시키는 함수
+	void Activate();
+	void Deactivate();
+
 	void SetNiagaraAsset(const std::shared_ptr<UNiagaraSystem>& InNiagaraAsset) { NiagaraAsset = InNiagaraAsset; }
+
+#ifdef WITH_EDITOR
+	void DrawDetailPanel(UINT ComponentDepth) override;
+#endif
 protected:
 	std::shared_ptr<UNiagaraSystem> NiagaraAsset;
+	bool bIsActivate = true;
 };

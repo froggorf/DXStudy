@@ -6,6 +6,7 @@
 
 #include "EditorScene.h"
 #include "renderingthread.h"
+#include "Engine/SceneProxy/FNiagaraSceneProxy.h"
 #include "Engine/SceneProxy/FSkeletalMeshSceneProxy.h"
 
 std::shared_ptr<FScene> FRenderCommandExecutor::CurrentSceneData = nullptr;
@@ -387,6 +388,21 @@ void FScene::SetTextureParam_RenderThread(UINT PrimitiveID, UINT MeshIndex, UINT
 			}
 		}
 	}
+}
+
+void FScene::SetNiagaraEffectActivate_GameThread(std::vector<std::shared_ptr<FNiagaraSceneProxy>>& TargetSceneProxies, bool bNewActivate)
+{
+	// 벡터의 크기가 클 경우를 대비하여 참조 캡쳐를 전달
+	auto Lambda = [&TargetSceneProxies, bNewActivate](std::shared_ptr<FScene>& SceneData)
+		{
+			for(auto& Target : TargetSceneProxies)
+			{
+				bNewActivate?  Target->Activate() : Target->Deactivate();
+			}
+			
+			
+		};
+	ENQUEUE_RENDER_COMMAND(Lambda);
 }
 
 void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)

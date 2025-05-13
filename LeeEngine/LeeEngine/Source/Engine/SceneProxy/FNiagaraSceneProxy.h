@@ -19,8 +19,12 @@ public:
 	void Draw() override;
 	void TickCS(float DeltaSeconds);
 
+	void Activate();
+	void Deactivate();
 public:
 protected:
 	std::shared_ptr<FNiagaraEmitter> Emitter;
+	bool bIsActivate = true;
+	bool bMustTickThisFrame = false;
 	//FParticleModule Module;
 };
