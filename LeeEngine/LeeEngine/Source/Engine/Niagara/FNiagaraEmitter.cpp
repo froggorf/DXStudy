@@ -4,6 +4,143 @@
 #include "Engine/Mesh/UStaticMesh.h"
 #include "Engine/SceneProxy/FNiagaraSceneProxy.h"
 
+void FParticleModule::LoadDataFromFile(const nlohmann::basic_json<>& Data)
+{
+	// SpawnRate
+	if (Data.contains("SpawnRate"))
+	{
+		SpawnRate = Data["SpawnRate"];
+	}
+
+	// Life
+	if (Data.contains("Life"))
+	{
+		auto LifeData = Data["Life"];
+		MinLife = LifeData[0];
+		MaxLife = LifeData[1];
+	}
+
+	// bIsLoop
+	if(Data.contains("Loop"))
+	{
+		int bIsLoop = Data["Loop"];
+		bIsLoop = bIsLoop;
+	}
+
+	// Scale
+	if (Data.contains("Scale"))
+	{
+		auto ScaleData = Data["Scale"];
+		auto MinScaleData = ScaleData[0];
+		auto MaxScaleData = ScaleData[1];
+		MinScale = XMFLOAT3{ MinScaleData[0],MinScaleData[1],MinScaleData[2] };
+		MaxScale = XMFLOAT3{ MaxScaleData[0],MaxScaleData[1],MaxScaleData[2] };
+	}
+
+	// Rotation
+	if(Data.contains("Rot"))
+	{
+		const auto& RotData = Data["Rot"];
+		const auto& MinRotData = RotData[0];
+		const auto& MaxRotData = RotData[1];
+		MinRotation = XMFLOAT3{MinRotData[0],MinRotData[1],MinRotData[2]};
+		MaxRotation = XMFLOAT3{MaxRotData[0],MaxRotData[1],MaxRotData[2]};
+	}
+
+	//SpaceType
+	if (Data.contains("SpaceType"))
+	{
+		SpaceType = Data["SpaceType"];
+	}
+
+	// Spawn Shape
+	if(Data.contains("SpawnShape"))
+	{
+		SpawnShape = Data["SpawnShape"];
+	}
+
+	// SpawnShapeScale
+	if(Data.contains("SpawnScale"))
+	{
+		const auto& SpawnShapeScale = Data["SpawnScale"];
+		this->SpawnShapeScale = XMFLOAT3{SpawnShapeScale[0],SpawnShapeScale[1],SpawnShapeScale[2]};
+	}
+
+	// 모듈값 지정 시작
+	if(Data.contains("Modules"))
+	{
+		auto ModuleData = Data["Modules"];
+
+		//Render 모듈
+		if(ModuleData.contains("Render"))
+		{
+			Module[static_cast<int>(EParticleModule::PM_RENDER)] = 1;
+			auto RenderData = ModuleData["Render"];
+			if (RenderData.contains("StartColor"))
+			{
+				auto Colors = RenderData["StartColor"];
+				StartColor = XMFLOAT4{ Colors[0],Colors[1],Colors[2],Colors[3] };
+			}
+			if(RenderData.contains("EndColor"))
+			{
+				auto Colors = RenderData["EndColor"];
+				EndColor = XMFLOAT4{ Colors[0],Colors[1],Colors[2],Colors[3] };
+			}
+			if (RenderData.contains("FadeOut"))
+			{
+				const auto& FadeData = RenderData["FadeOut"];
+				FadeOut = FadeData[0];
+				StartRatio = FadeData[1];
+			}
+		}
+
+		// Scale 모듈
+		if (ModuleData.contains("Scale"))
+		{
+			Module[static_cast<int>(EParticleModule::PM_SCALE)] = 1;
+			auto ScaleData = ModuleData["Scale"];
+			StartScale = ScaleData["StartScale"];
+			EndScale = ScaleData["EndScale"];
+		}
+
+		// UVAnim 모듈
+		if(ModuleData.contains("UVAnim"))
+		{
+			Module[static_cast<int>(EParticleModule::PM_UVAnim)]=1;
+			const auto& UVData  = ModuleData["UVAnim"];
+			UCount = UVData["UCount"];
+			VCount = UVData["VCount"];
+		}
+
+		// AddVelocity 모듈
+		if(ModuleData.contains("AddVelocity"))
+		{
+			Module[static_cast<int>(EParticleModule::PM_ADD_VELOCITY)]=1;
+			const auto& UVData  = ModuleData["AddVelocity"];
+			const auto& MinVel = UVData["MinVel"];
+			const auto& MaxVel = UVData["MaxVel"];
+			AddMinSpeed = XMFLOAT3{MinVel[0],MinVel[1],MinVel[2]};
+			AddMaxSpeed = XMFLOAT3{MaxVel[0],MaxVel[1],MaxVel[2]};
+		}
+
+		// Add Rotation 모듈
+		if(ModuleData.contains("AddRot"))
+		{
+			Module[static_cast<int>(EParticleModule::PM_AddRotation)] = 1;
+			const auto& AddRotData = ModuleData["AddRot"];
+			AddRotation = XMFLOAT3{AddRotData[0],AddRotData[1],AddRotData[2]};
+		}
+
+		// AddTickVelocity 모듈
+		if(ModuleData.contains("TickVel"))
+		{
+			Module[static_cast<int>(EParticleModule::PM_AddTickVelocity)] = 1;
+			const auto& AddTickVelData = ModuleData["TickVel"];
+			AddTickVelocity = XMFLOAT3{AddTickVelData[0],AddTickVelData[1],AddTickVelData[2]};
+		}
+	}
+}
+
 void FNiagaraRendererProperty::Render()
 {
 	size_t TextureSize = OverrideTextures.size();
@@ -23,6 +160,25 @@ void FNiagaraRendererProperty::SetParticleTextures(const nlohmann::basic_json<>&
 	{
 		OverrideTextures[i] = UTexture::GetTextureCache(Data[i]); 
 	}
+}
+
+void FNiagaraRendererProperty::LoadDataFromFile(const nlohmann::basic_json<>& Data)
+{
+	// Override Material 세팅
+	if(Data.contains("OverrideMat"))
+	{
+		std::string_view MaterialName = Data["OverrideMat"];
+		SetMaterialInterface(UMaterialInterface::GetMaterialCache(MaterialName.data()));
+	}
+
+	// Override Texture 세팅
+	if(Data.contains("OverrideTex"))
+	{
+		// 머테리얼 인스턴스에 등록을 하는 방향으로 하려했으나,
+		// 새로 머테리얼인스턴스를 생성하는 방식으로 인해 실패
+		// 따라서 RenderData 내에 데이터를 넣고, 렌더링 시 바인딩 하는 방향으로 진행
+		SetParticleTextures(Data["OverrideTex"]);
+	} 
 }
 
 // ================= Niagara Renderer ================
@@ -53,11 +209,6 @@ void FNiagaraRendererBillboardSprites::Render()
 	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
-void FNiagaraRendererSprites::Render()
-{
-	// 머테리얼만 다른 머테리얼을 사용
-	FNiagaraRendererBillboardSprites::Render();
-}
 
 void FNiagaraRendererMeshes::Render()
 {
@@ -88,6 +239,16 @@ void FNiagaraRendererMeshes::Render()
 	}
 	
 	GDirectXDevice->SetDSState(EDepthStencilStateType::DST_LESS);
+}
+
+void FNiagaraRendererMeshes::LoadDataFromFile(const nlohmann::basic_json<>& Data)
+{
+	FNiagaraRendererProperty::LoadDataFromFile(Data);
+	if(Data.contains("StaticMesh"))
+	{
+		std::string_view StaticMeshName = Data["StaticMesh"];
+		SetStaticMesh(UStaticMesh::GetStaticMesh(StaticMeshName.data()));
+	}
 }
 
 void FNiagaraRendererRibbons::Render()
@@ -144,7 +305,9 @@ void FNiagaraEmitter::Render() const
 	if(RenderData)
 	{
 		ParticleBuffer->Binding(20);
-
+		// TODO: RenderData는 데이터만 보관하고 렌더링은 Emitter에서 진행하는것이 이상적이나,
+		// 스프라이트/메쉬/리본을 모두 Emitter를 생성할 수 없을 뿐더러,
+		// 각 메쉬마다 드로우콜이 다르므로 RenderData에서 Render을 호출하도록 구현
 		RenderData->Render();
 	}
 }
@@ -189,6 +352,39 @@ void FNiagaraEmitter::CalcSpawnCount(float DeltaSeconds)
 	{
 		SpawnBuffer->SetData(&Count);
 	}
+}
+
+void FNiagaraEmitter::LoadDataFromFile(const nlohmann::basic_json<>& Data)
+{
+	int PropertyType = Data["Property"];
+	switch (PropertyType)
+	{
+		// 0: BillboardSprite
+	case 0:
+		RenderData = std::make_shared<FNiagaraRendererBillboardSprites>();
+		break;
+		// 1 : Sprite
+	case 1:
+		RenderData = std::make_shared<FNiagaraRendererSprites>();
+		break;
+		// 2 : Mesh
+	case 2:
+		RenderData= std::make_shared<FNiagaraRendererMeshes>();
+	
+		break;
+		// 3: Ribbon
+	case 3:
+		RenderData = std::make_shared<FNiagaraRendererRibbons>();
+		break;
+
+	default:
+		assert(0 && "잘못된 PropertyType");
+		break;
+	}
+	RenderData->LoadDataFromFile(Data);
+
+	Module.LoadDataFromFile(Data);
+
 }
 
 FNiagaraRibbonEmitter::FNiagaraRibbonEmitter()
@@ -344,6 +540,29 @@ void FNiagaraRibbonEmitter::Render() const
 	DeviceContext->Draw(CurVertexCount, 0);
 
 	GDirectXDevice->SetDSState(EDepthStencilStateType::DST_LESS);
+}
+
+void FNiagaraRibbonEmitter::LoadDataFromFile(const nlohmann::basic_json<>& Data)
+{
+	FNiagaraEmitter::LoadDataFromFile(Data);
+
+	int RibbonWidth = 5.0f;
+	if(Data.contains("RibbonWidth"))
+	{
+		RibbonWidth = Data["RibbonWidth"];
+	}
+	SetRibbonWidth(RibbonWidth);
+	if(Data.contains("FaceCamera"))
+	{
+		int bFaceCamera = Data["FaceCamera"];
+		SetRibbonFaceCamera(bFaceCamera);
+	}
+	if(Data.contains("RibbonColor"))
+	{
+		const auto& RibbonColor = Data["RibbonColor"];
+		SetRibbonColor(XMFLOAT4{RibbonColor[0],RibbonColor[1],RibbonColor[2],RibbonColor[3]});
+	}
+
 }
 
 void FNiagaraRibbonEmitter::MapPointDataToVertexBuffer()

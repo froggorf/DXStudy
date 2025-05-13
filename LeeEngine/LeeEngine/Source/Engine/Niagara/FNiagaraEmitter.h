@@ -122,6 +122,8 @@ struct FParticleModule
 
 	// Module On / Off
 	int		Module[(UINT)EParticleModule::PM_END] = {0,};
+
+	void LoadDataFromFile(const nlohmann::basic_json<>& Data);
 };
 
 // 모든 이펙트 렌더링의 기본이 되는 클래스
@@ -140,6 +142,8 @@ public:
 	// 추후에는 리본렌더링의 Render에서 진행하는 방향으로 수정하는 것이 타당해보임
 	const std::vector<std::shared_ptr<UTexture>>& GetTextureData() const {return OverrideTextures;}
 	virtual void SetParticleTextures(const nlohmann::basic_json<>& Data);
+
+	virtual void LoadDataFromFile(const nlohmann::basic_json<>& Data);
 protected:
 	std::vector<std::shared_ptr<UTexture>> OverrideTextures;
 	std::shared_ptr<UMaterialInterface> MaterialInterface;
@@ -174,7 +178,6 @@ public:
 	}
 	~FNiagaraRendererSprites() override =default;
 
-	void Render() override;
 };
 
 // 스태틱 메쉬를 이펙트의 요소로 렌더링 하는 클래스
@@ -190,6 +193,8 @@ public:
 
 	void Render() override;
 	virtual void SetStaticMesh(const std::shared_ptr<UStaticMesh> InStaticMesh) {BaseStaticMesh = InStaticMesh;}
+
+	void LoadDataFromFile(const nlohmann::basic_json<>& Data) override;
 protected:
 	std::shared_ptr<UStaticMesh> BaseStaticMesh;
 
@@ -222,8 +227,13 @@ public:
 
 	virtual std::shared_ptr<FNiagaraEmitter> GetEmitterInstance() const;
 
+	// 매 프레임 생성되는 파티클 수를 계산하는 함수
 	void CalcSpawnCount(float DeltaSeconds);
+
+	// 파티클을 리셋하여 다시 처음부터 실행되게 하도록 하는 함수
 	void Reset(){bFirstTick = true;}
+
+	virtual void LoadDataFromFile(const nlohmann::basic_json<>& Data);
 protected:
 private:
 public:
@@ -270,6 +280,8 @@ public:
 	void SetRibbonWidth(int InRibbonWidth) {RibbonWidth = InRibbonWidth; }
 	void SetRibbonFaceCamera(bool bInIsBillboard) { bIsBillboard = bInIsBillboard;}
 	void SetRibbonColor(XMFLOAT4 InRibbonColor) {RibbonColor = InRibbonColor;}
+
+	void LoadDataFromFile(const nlohmann::basic_json<>& Data) override;
 protected:
 	void MapPointDataToVertexBuffer();
 protected:
