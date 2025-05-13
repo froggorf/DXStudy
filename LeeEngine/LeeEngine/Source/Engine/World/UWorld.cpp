@@ -81,10 +81,11 @@ void UWorld::TickWorld(float DeltaSeconds)
 	for(auto& TickNiagaraSceneProxy: ToBeTickedNiagaraSceneProxies)
 	{
 		auto Lambda = [TickNiagaraSceneProxy, DeltaSeconds](std::shared_ptr<FScene>& SceneData)
-		{
-			TickNiagaraSceneProxy->TickCS(DeltaSeconds);
-		};
-		ENQUEUE_RENDER_COMMAND(Lambda);
+			{
+				TickNiagaraSceneProxy->TickCS(DeltaSeconds);
+			};
+		ENQUEUE_RENDER_COMMAND(Lambda);	
+		
 		
 	}
 	ToBeTickedNiagaraSceneProxies.clear();

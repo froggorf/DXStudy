@@ -54,6 +54,7 @@ void FNiagaraSceneProxy::Activate()
 														static_cast<int>(EParticleActivateState::EPAS_Reset) :
 														static_cast<int>(EParticleActivateState::EPAS_Activate);
 	bMustTickThisFrame = true;
+	Emitter->Reset();
 }
 
 void FNiagaraSceneProxy::Deactivate()

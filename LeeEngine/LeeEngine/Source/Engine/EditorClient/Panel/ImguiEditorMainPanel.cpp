@@ -20,7 +20,7 @@ void FImguiEditorMainPanel::Draw()
 	//ImGui::SetNextWindowPos(ImVec2(ClientRect.left,ClientRect.top));
 	//ImGui::SetNextWindowSize(ImVec2{ static_cast<float>(ClientRect.right-ClientRect.left),static_cast<float>( ClientRect.bottom- ClientRect.top)});
 	//
-	if(ImGui::Begin("  ", nullptr, ImGuiWindowFlags_NoTitleBar))
+	if(ImGui::Begin("  ##MainPanel", nullptr, ImGuiWindowFlags_NoTitleBar))
 	{
 		ImVec2 WindowSize = ImGui::GetWindowSize();
 		float TitleBarHeight = 30.0f;

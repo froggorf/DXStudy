@@ -223,6 +223,7 @@ public:
 	virtual std::shared_ptr<FNiagaraEmitter> GetEmitterInstance() const;
 
 	void CalcSpawnCount(float DeltaSeconds);
+	void Reset(){bFirstTick = true;}
 protected:
 private:
 public:
