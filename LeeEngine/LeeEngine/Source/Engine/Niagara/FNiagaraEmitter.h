@@ -22,25 +22,25 @@ struct FParticleSpawn
 // 파티클 구조체
 struct FParticleData
 {
-	XMFLOAT3	LocalPos;		// 소유 오브젝트로 부터의 상대 좌표
-	XMFLOAT3	WorldPos;		// 파티클의 월드 좌표
-	XMFLOAT3	WorldRotation;	// 파티클의 월드 로테이션
-	XMFLOAT3	WorldInitScale; // 파티클 생성 시 초기 크기
-	XMFLOAT3	WorldScale;		// 파티클 월드 크기
-	XMFLOAT4	Color;			// 파티클 색상
+	XMFLOAT3	LocalPos{};			// 소유 오브젝트로 부터의 상대 좌표
+	XMFLOAT3	WorldPos{};			// 파티클의 월드 좌표
+	XMFLOAT3	WorldRotation{};	// 파티클의 월드 로테이션
+	XMFLOAT3	WorldInitScale{};	// 파티클 생성 시 초기 크기
+	XMFLOAT3	WorldScale{};		// 파티클 월드 크기
+	XMFLOAT4	Color{};			// 파티클 색상
 
-	XMFLOAT3	Force;			// 파티클에 주어지고 있는 힘의 총합
-	XMFLOAT3	Velocity;		// 파티클 속도
-	float	Mass;			// 파티클 질량
+	XMFLOAT3	Force{};			// 파티클에 주어지고 있는 힘의 총합
+	XMFLOAT3	Velocity{};			// 파티클 속도
+	float		Mass{};				// 파티클 질량
 
-	float	Age;			// 파티클 나이, Age 가 Life 에 도달하면 수명이 다한 것
-	float	Life;			// 파티클 최대 수명
-	float	NormalizedAge;  // 전체 수명 대비, 현재 Age 비율. 자신의 Age 를 Life 대비 정규화 한 값
+	float		Age{};				// 파티클 나이, Age 가 Life 에 도달하면 수명이 다한 것
+	float		Life{};				// 파티클 최대 수명
+	float		NormalizedAge{};	// 전체 수명 대비, 현재 Age 비율. 자신의 Age 를 Life 대비 정규화 한 값
 
-	int UCount{};
-	int VCount{};
+	int			UCount{};			// 파티클의 텍스쳐 UV
+	int			VCount{};			
 
-	int		Active;			// 파티클 활성화 여부
+	int			Active;				// 파티클 활성화 여부
 };
 
 // 파티클에 적용될 각각의 기능들
@@ -57,71 +57,70 @@ enum class EParticleModule
 
 	PM_END,
 };
+
 // Particle Module
 struct FParticleModule
 {
 	// Activate State
-	int ActivateState = 0;		// 파티클 전체에 대한 활성 상태 (0 : Activate, 1 : Deactivate, 2 : Reset)
+	int				ActivateState{};	// 파티클 전체에 대한 활성 상태 (0 : Activate, 1 : Deactivate, 2 : Reset)
 
 	// Spawn Modlue
-	float	SpawnRate{};			// 초당 파티클 생성량
-	XMFLOAT4	StartColor{};			// 초기 파티클 색상
-	int bIsLoop{};
+	float			SpawnRate{};		// 초당 파티클 생성량
+	XMFLOAT4		StartColor{};		// 초기 파티클 색상
+	int				bIsLoop{};
 
-	XMFLOAT3	MinScale{};			// 생성 시 최소 크기
-	XMFLOAT3	MaxScale{};			// 생성 시 최대 크기
-	XMFLOAT3    MinRotation{};		// 생성 시 최소 회전
-	XMFLOAT3    MaxRotation{};		// 생성 시 최대 회전
-	float	MinLife{};			// 생성 시 최소 주기
-	float	MaxLife{};			// 생성 시 최대 주기
-	int		SpawnShape{};			// 0 : Box, 1 : Sphere
-	XMFLOAT3 SpawnShapeScale{};
-	int		SpaceType{};			// 0 : Local, 1 : World
+	XMFLOAT3		MinScale{};			// 생성 시 최소 크기
+	XMFLOAT3		MaxScale{};			// 생성 시 최대 크기
+	XMFLOAT3		MinRotation{};		// 생성 시 최소 회전
+	XMFLOAT3		MaxRotation{};		// 생성 시 최대 회전
+	float			MinLife{};			// 생성 시 최소 주기
+	float			MaxLife{};			// 생성 시 최대 주기
+	int				SpawnShape{};			// 0 : Box, 1 : Sphere
+	XMFLOAT3		SpawnShapeScale{};
+	int				SpaceType{};			// 0 : Local, 1 : World
 
-	UINT	BlockSpawnShape{};		// 0 : Box,  1: Sphere
-	XMFLOAT3	BlockSpawnShapeScale{};	// SpawnShapeScale.x == Radius
+	UINT			BlockSpawnShape{};		// 0 : Box,  1: Sphere
+	XMFLOAT3		BlockSpawnShapeScale{};	// SpawnShapeScale.x == Radius
 
 	// Spawn Burst
-	UINT	SpawnBurstCount{};		// 한번에 발생시키는 Particle 수
-	UINT	SpawnBurstRepeat{};
-	float	SpawnBurstRepeatTime{};
-	float   AccSpawnBurstRepeatTime{};
+	UINT			SpawnBurstCount{};		// 한번에 발생시키는 Particle 수
+	UINT			SpawnBurstRepeat{};
+	float			SpawnBurstRepeatTime{};
+	float			AccSpawnBurstRepeatTime{};
 
 
 	// Add Velocity
-	UINT	AddVelocityType{};		// 0 : Random, 1 : FromCenter, 2 : ToCenter, 4 : Fixed 
-	XMFLOAT3	AddVelocityFixedDir{};
-	XMFLOAT3	AddMinSpeed{};
-	XMFLOAT3	AddMaxSpeed{};
+	UINT			AddVelocityType{};		// 0 : Random, 1 : FromCenter, 2 : ToCenter, 4 : Fixed 
+	XMFLOAT3		AddVelocityFixedDir{};
+	XMFLOAT3		AddMinSpeed{};
+	XMFLOAT3		AddMaxSpeed{};
 
 	// Scale Module
-	float	StartScale{};
-	float	EndScale{};
+	float			StartScale{};
+	float			EndScale{};
 
 	// Add Tick Velocity 모듈
-	XMFLOAT3 AddTickVelocity;
+	XMFLOAT3		AddTickVelocity;
 
 	// Render Module
-	XMFLOAT4	EndColor{};			// 파티클 최종 색상
-	int		FadeOut{};			// 0 : Off, 1 : Normalized Age
-	float   StartRatio{};			// FadeOut 효과가 시작되는 Normalized Age 지점
-	UINT	VelocityAlignment{};  // 속도 정렬 0 : Off, 1 : On
-	UINT	CrossMesh{};			// 십자형태 메쉬 사용 0 : Off, 1 : ON
+	XMFLOAT4		EndColor{};				// 파티클 최종 색상
+	int				FadeOut{};				// 0 : Off, 1 : Normalized Age
+	float			StartRatio{};			// FadeOut 효과가 시작되는 Normalized Age 지점
+	UINT			VelocityAlignment{};	// 속도 정렬 0 : Off, 1 : On
+	UINT			CrossMesh{};			// 십자형태 메쉬 사용 0 : Off, 1 : ON
 
 	// UVAnim 모듈
-	int UCount{};
-	int VCount{};
+	int				UCount{};				// 스프라이트 텍스쳐의 UV 갯수
+	int				VCount{};
 
 	// AddRotation 모듈
-	XMFLOAT3 AddRotation;
-
-	
+	XMFLOAT3		AddRotation;
 
 	// 추가 데이터
 	XMFLOAT3 ObjectWorldPos{};
 
 	// Module On / Off
-	int		Module[(UINT)EParticleModule::PM_END] = {0,};
+	int				Module[(UINT)EParticleModule::PM_END] = {0,};
 
 	void LoadDataFromFile(const nlohmann::basic_json<>& Data);
 };
@@ -135,14 +134,15 @@ public:
 
 	virtual void Render();
 
-	virtual std::shared_ptr<UMaterialInterface> GetMaterialInterface() const { return MaterialInterface; }
+	// Material Interface
+	std::shared_ptr<UMaterialInterface> GetMaterialInterface() const { return MaterialInterface; }
 	void SetMaterialInterface(const std::shared_ptr<UMaterialInterface>& NewMaterialInterface) { MaterialInterface = NewMaterialInterface; }
 
-	// TODO: 리본데이터에서 렌더링을 진행하기 떄문에 해당 함수를 통해 텍스쳐 데이터를 얻어오지만,
-	// 추후에는 리본렌더링의 Render에서 진행하는 방향으로 수정하는 것이 타당해보임
+	// Texture
 	const std::vector<std::shared_ptr<UTexture>>& GetTextureData() const {return OverrideTextures;}
 	virtual void SetParticleTextures(const nlohmann::basic_json<>& Data);
 
+	// Load
 	virtual void LoadDataFromFile(const nlohmann::basic_json<>& Data);
 protected:
 	std::vector<std::shared_ptr<UTexture>> OverrideTextures;
@@ -239,7 +239,7 @@ private:
 public:
 	// 파티클을 렌더링 하기 위한 데이터가 들은 변수
 	// 머테리얼, 메쉬 등
-	std::shared_ptr<FNiagaraRendererProperty> RenderData;
+	std::shared_ptr<FNiagaraRendererProperty> RenderProperty;
 	FParticleModule Module;
 
 	// 리본 렌더러에서는 Deactivated 된 상태에서도 Tick만 안될 뿐, 렌더링은 되어야한다.
@@ -255,6 +255,9 @@ protected:
 	std::shared_ptr<FStructuredBuffer> ParticleBuffer;
 	std::shared_ptr<FStructuredBuffer> SpawnBuffer;
 	std::shared_ptr<FStructuredBuffer> ModuleBuffer;
+
+	// 이펙트에 대한 버퍼를 바인딩할 레지스터 번호
+	constexpr int EffectBufferRegNum = 20;
 };
 
 struct FRibbonPointData

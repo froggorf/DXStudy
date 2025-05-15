@@ -71,13 +71,13 @@ void UWorld::BeginPlay()
 
 void UWorld::TickWorld(float DeltaSeconds)
 {
+	// Level Tick
 	if(PersistentLevel)
 	{
-
 		PersistentLevel->TickLevel(DeltaSeconds);
-
 	}
 
+	// Niagara Proxy Tick 요청
 	for(auto& TickNiagaraSceneProxy: ToBeTickedNiagaraSceneProxies)
 	{
 		auto Lambda = [TickNiagaraSceneProxy, DeltaSeconds](std::shared_ptr<FScene>& SceneData)
@@ -85,8 +85,6 @@ void UWorld::TickWorld(float DeltaSeconds)
 				TickNiagaraSceneProxy->TickCS(DeltaSeconds);
 			};
 		ENQUEUE_RENDER_COMMAND(Lambda);	
-		
-		
 	}
 	ToBeTickedNiagaraSceneProxies.clear();
 }

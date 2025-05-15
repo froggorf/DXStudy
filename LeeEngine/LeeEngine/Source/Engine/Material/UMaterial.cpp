@@ -462,9 +462,9 @@ void FComputeShader::Execute_Immediately()
 		return;
 	}
 
+	// Dispath시 GroupXYZ의 크기를 계산
 	CalculateGroupCount();
 
-	//GDirectXDevice->SetComputeShader(this);
 	GDirectXDevice->GetDeviceContext()->CSSetShader(ComputeShader.Get(),nullptr,0);
 
 	GDirectXDevice->GetDeviceContext()->Dispatch(GroupX,GroupY,GroupZ);

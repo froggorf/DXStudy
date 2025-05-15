@@ -131,6 +131,7 @@ void CS_TickParticle(int3 ThreadID : SV_DispatchThreadID)
         }
     }
 
+    // 현재 파티클이 비활성화 중이라면 새로운 파티클을 생성
     if (gBuffer[ThreadID.x].Active == 0)
     {
         int Success = 0;

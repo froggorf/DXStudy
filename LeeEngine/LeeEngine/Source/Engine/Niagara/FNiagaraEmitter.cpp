@@ -218,10 +218,7 @@ void FNiagaraRendererMeshes::Render()
 
 	auto DeviceContext = GDirectXDevice->GetDeviceContext();
 	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
 	
-
-
 	auto RenderData = BaseStaticMesh->GetStaticMeshRenderData();
 	for(int MeshIndex = 0 ; MeshIndex < RenderData->MeshCount; ++MeshIndex)
 	{
@@ -263,16 +260,17 @@ std::shared_ptr<FTickParticleCS> FNiagaraEmitter::TickParticleCS;
 
 FNiagaraEmitter::FNiagaraEmitter()
 {
-	
-	Module.SpawnShape = 0;
-
+	// Particle Tick 컴퓨트 셰이더 생성
 	if(nullptr == TickParticleCS)
 	{
 		TickParticleCS = std::make_shared<FTickParticleCS>();	
 	}
 
+	// 파티클 구조화 버퍼 생성
 	ParticleBuffer = std::make_shared<FStructuredBuffer>();
 	ParticleBuffer->Create(sizeof(FParticleData), MaxParticleCount, SB_TYPE::SRV_UAV, false);
+
+
 	SpawnBuffer = std::make_shared<FStructuredBuffer>();
 	SpawnBuffer->Create(sizeof(FParticleSpawn), 1, SB_TYPE::SRV_UAV, true);
 
@@ -292,6 +290,7 @@ void FNiagaraEmitter::Tick(float DeltaSeconds, const FTransform& SceneTransform)
 	// 이번 프레임에 활성화 될 파티클 수 계산
 	CalcSpawnCount(DeltaSeconds);
 
+	// ComputeShader 바인딩
 	ModuleBuffer->SetData(&Module);
 	TickParticleCS->SetSpawnBuffer(SpawnBuffer);
 	TickParticleCS->SetParticleBuffer(ParticleBuffer);
@@ -300,15 +299,13 @@ void FNiagaraEmitter::Tick(float DeltaSeconds, const FTransform& SceneTransform)
 	TickParticleCS->Execute_Immediately();
 }
 
+
 void FNiagaraEmitter::Render() const
 {
-	if(RenderData)
+	if(RenderProperty)
 	{
-		ParticleBuffer->Binding(20);
-		// TODO: RenderData는 데이터만 보관하고 렌더링은 Emitter에서 진행하는것이 이상적이나,
-		// 스프라이트/메쉬/리본을 모두 Emitter를 생성할 수 없을 뿐더러,
-		// 각 메쉬마다 드로우콜이 다르므로 RenderData에서 Render을 호출하도록 구현
-		RenderData->Render();
+		ParticleBuffer->Binding(EffectBufferRegNum);
+		RenderProperty->Render();
 	}
 }
 
@@ -316,7 +313,7 @@ std::shared_ptr<FNiagaraEmitter> FNiagaraEmitter::GetEmitterInstance() const
 {
 	std::shared_ptr<FNiagaraEmitter> Instance = std::make_shared<FNiagaraEmitter>();
 	Instance->Module = Module;
-	Instance->RenderData = RenderData;
+	Instance->RenderProperty = RenderProperty;
 	return Instance;
 }
 
@@ -361,27 +358,27 @@ void FNiagaraEmitter::LoadDataFromFile(const nlohmann::basic_json<>& Data)
 	{
 		// 0: BillboardSprite
 	case 0:
-		RenderData = std::make_shared<FNiagaraRendererBillboardSprites>();
+		RenderProperty = std::make_shared<FNiagaraRendererBillboardSprites>();
 		break;
 		// 1 : Sprite
 	case 1:
-		RenderData = std::make_shared<FNiagaraRendererSprites>();
+		RenderProperty = std::make_shared<FNiagaraRendererSprites>();
 		break;
 		// 2 : Mesh
 	case 2:
-		RenderData= std::make_shared<FNiagaraRendererMeshes>();
+		RenderProperty= std::make_shared<FNiagaraRendererMeshes>();
 	
 		break;
 		// 3: Ribbon
 	case 3:
-		RenderData = std::make_shared<FNiagaraRendererRibbons>();
+		RenderProperty = std::make_shared<FNiagaraRendererRibbons>();
 		break;
 
 	default:
 		assert(0 && "잘못된 PropertyType");
 		break;
 	}
-	RenderData->LoadDataFromFile(Data);
+	RenderProperty->LoadDataFromFile(Data);
 
 	Module.LoadDataFromFile(Data);
 
@@ -406,7 +403,7 @@ std::shared_ptr<FNiagaraEmitter> FNiagaraRibbonEmitter::GetEmitterInstance() con
 	std::shared_ptr<FNiagaraRibbonEmitter> Instance = std::make_shared<FNiagaraRibbonEmitter>();
 	// 부모의 데이터를 그대로 복사해줘야함
 	Instance->Module = Module;
-	Instance->RenderData = RenderData;
+	Instance->RenderProperty = RenderProperty;
 	Instance->RibbonWidth = RibbonWidth;
 	Instance->bIsBillboard = bIsBillboard;
 	Instance->RibbonColor = RibbonColor;
@@ -461,11 +458,8 @@ void FNiagaraRibbonEmitter::CreateAndAddNewRibbonPoint(XMFLOAT3 PointPos, XMVECT
 
 	// 새로운 점 데이터 추가
 	int NewDataIndex = (CurRibbonPointDataStartIndex + CurPointCount) % MaxRibbonPointCount;
-	// array의 최대치를 넘김
 	RibbonPointData[NewDataIndex] = Data;
 	++CurPointCount;
-
-	
 }
 
 void FNiagaraRibbonEmitter::Tick(float DeltaSeconds, const FTransform& SceneTransform)
@@ -490,18 +484,17 @@ void FNiagaraRibbonEmitter::Tick(float DeltaSeconds, const FTransform& SceneTran
 		}
 	}
 
-	// 첫 프레임에는 위치를 고정해주고 해당위치에 포인트 생성
-	if(bFirstTick)
-	{
-		bFirstTick = false;
-		LastFrameWorldPos = CurLocationVec;
-		CreateAndAddNewRibbonPoint(CurLoc, SceneTransform.GetRotationQuat());
-	}
-
 	// 위치 정보가 변경되었다면 새로운 점 추가
 	// 05.13 : 리본렌더러가 Deactivate 되었을 때에는 궤적은 그대로 남아있어야함, 따라서 새로운 점을 생성하지 못하게만 제어
 	if(Module.ActivateState == 0)
 	{
+		// 첫 프레임에는 위치를 고정해주고 해당위치에 포인트 생성
+		if(bFirstTick)
+		{
+			bFirstTick = false;
+			LastFrameWorldPos = CurLocationVec;
+		}
+
 		float LocationDelta = XMVectorGetX(XMVector3LengthSq(XMVectorSubtract(CurLocationVec, LastFrameWorldPos)) );
 		if(LocationDelta> 0.1f)
 		{
@@ -509,11 +502,9 @@ void FNiagaraRibbonEmitter::Tick(float DeltaSeconds, const FTransform& SceneTran
 			LastFrameWorldPos = CurLocationVec;
 		}	
 	}
-	
 
 	// 새로운 데이터를 버텍스 버퍼에 Map 해주기
 	MapPointDataToVertexBuffer();
-
 }
 
 void FNiagaraRibbonEmitter::Render() const
@@ -529,7 +520,7 @@ void FNiagaraRibbonEmitter::Render() const
 	auto DeviceContext = GDirectXDevice->GetDeviceContext();
 	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	const std::vector<std::shared_ptr<UTexture>>& OverrideTex = RenderData->GetTextureData();
+	const std::vector<std::shared_ptr<UTexture>>& OverrideTex = RenderProperty->GetTextureData();
 	size_t TextureSize = OverrideTex.size();
 	for(int i = 0 ; i < TextureSize; ++i)
 	{
@@ -579,11 +570,10 @@ void FNiagaraRibbonEmitter::MapPointDataToVertexBuffer()
 		return;
 	}
 
-	// 갱신
+	// 버텍스 버퍼를 동적으로 갱신
 	D3D11_MAPPED_SUBRESOURCE cbMapSub{};
 	ComPtr<ID3D11DeviceContext> DeviceContext = GDirectXDevice->GetDeviceContext();
 	HR(DeviceContext->Map(VB_Ribbon.Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &cbMapSub));
-
 
 	CurVertexCount = 0;
 	for (int i = 0; i < CurPointCount - 1; ++i)

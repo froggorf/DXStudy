@@ -16,15 +16,19 @@ public:
 	FNiagaraSceneProxy(UINT InPrimitiveID, std::shared_ptr<FNiagaraEmitter> InEmitter);
 	~FNiagaraSceneProxy() override = default;
 
+	// 렌더링
 	void Draw() override;
+	// ComputeShader Tick
 	void TickCS(float DeltaSeconds);
 
+	// 이펙트 활성화 / 비활성화
 	void Activate();
 	void Deactivate();
-public:
+
 protected:
+	// Niagara Emitter
 	std::shared_ptr<FNiagaraEmitter> Emitter;
+
 	bool bIsActivate = true;
 	bool bMustTickThisFrame = false;
-	//FParticleModule Module;
 };
