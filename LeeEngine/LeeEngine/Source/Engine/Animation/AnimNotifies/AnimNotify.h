@@ -9,7 +9,7 @@
 
 class UAnimNotify : public UObject
 {
-	MY_GENERATED_BODY(UAnimNotify)
+	MY_GENERATE_BODY(UAnimNotify)
 	UAnimNotify()           = default;
 	~UAnimNotify() override = default;
 
@@ -19,7 +19,7 @@ class UAnimNotify : public UObject
 
 class UAnimNotify_PlaySound : public UAnimNotify
 {
-	MY_GENERATED_BODY(UAnimNotify_PlaySound)
+	MY_GENERATE_BODY(UAnimNotify_PlaySound)
 	UAnimNotify_PlaySound()           = default;
 	~UAnimNotify_PlaySound() override = default;
 

@@ -18,7 +18,7 @@ class USceneComponent;
 
 class UEngine : public UObject
 {
-	MY_GENERATED_BODY(UEngine)
+	MY_GENERATE_BODY(UEngine)
 
 	UEngine() = default;
 

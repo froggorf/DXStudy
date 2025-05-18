@@ -17,7 +17,7 @@ enum class EEditorModificationType
 
 class UEditorEngine : public UEngine
 {
-	MY_GENERATED_BODY(UEditorEngine)
+	MY_GENERATE_BODY(UEditorEngine)
 
 	UEditorEngine()
 		: UEngine(nullptr)

@@ -29,7 +29,7 @@ public:
 
 class USkeletalMesh : public UObject, public std::enable_shared_from_this<USkeletalMesh>
 {
-	MY_GENERATED_BODY(USkeletalMesh)
+	MY_GENERATE_BODY(USkeletalMesh)
 	USkeletalMesh();
 	~USkeletalMesh() override;
 

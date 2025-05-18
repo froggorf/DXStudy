@@ -19,7 +19,7 @@ public:\
 };\
 inline static MakeCDO _initializer;
 
-#define MY_GENERATED_BODY(CLASS)\
+#define MY_GENERATE_BODY(CLASS)\
 GENERATE_UOBJECT_DERIVED_CLASS(CLASS)\
 public:\
 	const virtual std::unique_ptr<UObject>& CreateUniqueInstance() const {return std::make_unique<CLASS>();}\
@@ -30,6 +30,8 @@ class UWorld;
 
 class UObject
 {
+	// UObject와 UObject를 상속받은 클래스들의 virtual override 키워드가 일부 다르기때문에
+	// UObject용 GENERATE_BODY와 상속받은 클래스용 GENERATE_BODY를 분리
 	GENERATE_UOBJECT_DERIVED_CLASS(UObject)
 
 public:
@@ -54,9 +56,7 @@ public:
 
 	UObject();
 
-	UObject(const UObject& other)
-	{
-	};
+	UObject(const UObject& other) = default;
 	virtual ~UObject();
 
 	virtual void Init();
@@ -76,7 +76,7 @@ public:
 		return bIsRegister;
 	}
 
-	std::string GetName() const
+	const std::string& GetName() const
 	{
 		return NamePrivate;
 	}
@@ -91,7 +91,7 @@ private:
 	std::string NamePrivate;
 
 	bool bIsRegister = false;
-	//MY_GENERATED_BODY(UObject)
+
 	// Class Default Object 보관
 	static std::unordered_map<std::string, std::unique_ptr<UObject>>& GetCDOMap()
 	{

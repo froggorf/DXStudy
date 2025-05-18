@@ -17,7 +17,7 @@ class AActor;
 
 class UWorld : public UObject, public std::enable_shared_from_this<UWorld>
 {
-	MY_GENERATED_BODY(UWorld)
+	MY_GENERATE_BODY(UWorld)
 	UWorld();
 	~UWorld() override;
 	void Init() override;

@@ -80,13 +80,28 @@ public:
 #define MY_LOG(Category, DebugLogLevel, DebugText) ""	
 #endif
 
-#define XMFLOAT2_TO_TEXT(Data) std::format("x = {:.3f}, y = {:.3f}", Data.x,Data.y)
+// std::format 자체가 컴파일타임에 판정을 하지 못하기때문에 constexpr 함수로 만들 수 없었음
+// 다만, XMFLOAT2_TO_TEXT는 대부분 MY_LOG를 통해 사용하며
+// MY_LOG는 에디터가 아닐 경우엔 ""로 공백처리 되므로 실행되지 않는다.
+inline std::string XMFLOAT2_TO_TEXT(const XMFLOAT2& Data)
+{
+	return std::format("x = {:.3f}, y = {:.3f}", Data.x,Data.y);
+}
 
-#define XMFLOAT3_TO_TEXT(Data) std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}", Data.x,Data.y,Data.z)
+inline std::string XMFLOAT3_TO_TEXT(const XMFLOAT3& Data)
+{
+	return std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}", Data.x,Data.y,Data.z);
+}
 
-#define XMFLOAT4_TO_TEXT(Data) std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}, w = {:.3f}", Data.x,Data.y,Data.z, Data.w)
+inline std::string XMFLOAT4_TO_TEXT(const XMFLOAT4& Data)
+{
+	return std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}, w = {:.3f}", Data.x,Data.y,Data.z, Data.w);
+}
 
-#define XMVECTOR_TO_TEXT(Data) std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}, w = {:.3f}", DirectX::XMVectorGetX(Data),DirectX::XMVectorGetY(Data),DirectX::XMVectorGetZ(Data),DirectX::XMVectorGetW(Data))
+inline std::string XMVECTOR_TO_TEXT(const XMVECTOR& Data)
+{
+	return std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}, w = {:.3f}", DirectX::XMVectorGetX(Data),DirectX::XMVectorGetY(Data),DirectX::XMVectorGetZ(Data),DirectX::XMVectorGetW(Data));
+}
 
 // typeid와 __func__ 를 쓰기위해 매크로로 설정
 #define GetFunctionName std::format("{}::{}", typeid(*this).name(), __func__)

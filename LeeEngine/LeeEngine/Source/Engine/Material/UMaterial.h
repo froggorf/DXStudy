@@ -121,7 +121,7 @@ enum class EBlendMode
 
 class UMaterialInterface : public UObject
 {
-	MY_GENERATED_BODY(UMaterialInterface)
+	MY_GENERATE_BODY(UMaterialInterface)
 
 	UMaterialInterface()
 		: BlendMode(EBlendMode::BM_Opaque), RasterizerType(ERasterizerType::RT_CullBack),
@@ -200,7 +200,7 @@ public:
 
 class UMaterial : public UMaterialInterface, public std::enable_shared_from_this<UMaterial>
 {
-	MY_GENERATED_BODY(UMaterial)
+	MY_GENERATE_BODY(UMaterial)
 	friend class UMaterialInstance;
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
@@ -242,7 +242,7 @@ protected:
 
 class UMaterialInstance : public UMaterialInterface, public std::enable_shared_from_this<UMaterialInstance>
 {
-	MY_GENERATED_BODY(UMaterialInstance)
+	MY_GENERATE_BODY(UMaterialInstance)
 	UMaterialInstance()           = default;
 	~UMaterialInstance() override = default;
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;

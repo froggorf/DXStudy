@@ -13,7 +13,7 @@ class USceneComponent;
 
 class AActor : public UObject, public std::enable_shared_from_this<AActor>
 {
-	MY_GENERATED_BODY(AActor)
+	MY_GENERATE_BODY(AActor)
 
 	AActor();
 
@@ -41,6 +41,8 @@ class AActor : public UObject, public std::enable_shared_from_this<AActor>
 	UActorComponent* CreateDefaultSubobject(const std::string& SubobjectName,
 											const std::string& ClassToCreateByDefault);
 
+	// OwnedComponents의 GetClass()를 인자로 받은 Class와 비교하는것을 N번 진행함
+	// Tick에서는 사용하면 성능감소가 일어날 수 있음
 	const std::shared_ptr<UActorComponent>& FindComponentByClass(const std::string& Class) const;
 
 	const std::unordered_set<std::shared_ptr<UActorComponent>>& GetComponents() const

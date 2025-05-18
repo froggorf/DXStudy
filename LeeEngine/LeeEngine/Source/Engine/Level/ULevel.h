@@ -12,7 +12,7 @@ class UWorld;
 
 class ULevel : public UObject
 {
-	MY_GENERATED_BODY(ULevel)
+	MY_GENERATE_BODY(ULevel)
 
 	ULevel();
 	//ULevel(const std::shared_ptr<UWorld>& World);

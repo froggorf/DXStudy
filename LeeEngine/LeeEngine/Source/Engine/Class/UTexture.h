@@ -9,7 +9,7 @@
 
 class UTexture : public UObject, public std::enable_shared_from_this<UTexture>
 {
-	MY_GENERATED_BODY(UTexture)
+	MY_GENERATE_BODY(UTexture)
 
 	friend class AssetManager;
 	UTexture() = default;

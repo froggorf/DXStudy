@@ -12,7 +12,7 @@
 
 class USceneComponent : public UActorComponent, public std::enable_shared_from_this<USceneComponent>
 {
-	MY_GENERATED_BODY(USceneComponent)
+	MY_GENERATE_BODY(USceneComponent)
 	USceneComponent();
 
 	void Register() override;

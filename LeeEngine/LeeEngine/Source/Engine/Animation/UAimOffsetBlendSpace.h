@@ -13,7 +13,7 @@
 
 class UAimOffsetBlendSpace : public UBlendSpace
 {
-	MY_GENERATED_BODY(UAimOffsetBlendSpace);
+	MY_GENERATE_BODY(UAimOffsetBlendSpace);
 	UAimOffsetBlendSpace();
 
 	static const std::shared_ptr<UAimOffsetBlendSpace>& GetAnimationAsset(const std::string& AnimationName)

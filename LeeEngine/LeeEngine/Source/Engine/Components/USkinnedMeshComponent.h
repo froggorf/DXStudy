@@ -8,5 +8,5 @@
 
 class USkinnedMeshComponent : public UMeshComponent
 {
-	MY_GENERATED_BODY(USkinnedMeshComponent)
+	MY_GENERATE_BODY(USkinnedMeshComponent)
 };

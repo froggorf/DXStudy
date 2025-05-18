@@ -12,7 +12,7 @@
 
 class UNiagaraSystem : public UObject, public std::enable_shared_from_this<UNiagaraSystem>
 {
-	MY_GENERATED_BODY(UNiagaraSystem)
+	MY_GENERATE_BODY(UNiagaraSystem)
 	// 데이터 로드 함수
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 

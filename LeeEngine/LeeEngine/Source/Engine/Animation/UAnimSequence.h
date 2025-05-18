@@ -28,7 +28,7 @@ struct FPrecomputedBoneData
 
 class UAnimSequence : public UAnimCompositeBase
 {
-	MY_GENERATED_BODY(UAnimSequence)
+	MY_GENERATE_BODY(UAnimSequence)
 	UAnimSequence() = default;
 	UAnimSequence(const UAnimSequence& Other);
 

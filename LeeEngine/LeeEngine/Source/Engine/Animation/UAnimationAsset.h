@@ -10,7 +10,7 @@
 
 class UAnimationAsset : public UObject, public std::enable_shared_from_this<UAnimationAsset>
 {
-	MY_GENERATED_BODY(UAnimationAsset)
+	MY_GENERATE_BODY(UAnimationAsset)
 
 	const std::shared_ptr<USkeletalMesh>& GetAnimationSkeleton() const
 	{

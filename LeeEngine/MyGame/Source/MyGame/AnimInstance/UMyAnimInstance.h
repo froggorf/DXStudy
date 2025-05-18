@@ -9,7 +9,7 @@
 
 class UMyAnimInstance : public UAnimInstance
 {
-	MY_GENERATED_BODY(UMyAnimInstance)
+	MY_GENERATE_BODY(UMyAnimInstance)
 	static UMyAnimInstance* MyAnimInstance;
 
 	UMyAnimInstance();

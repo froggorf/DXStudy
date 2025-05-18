@@ -14,7 +14,7 @@
 
 class UStaticMesh : public UObject, public std::enable_shared_from_this<UStaticMesh>
 {
-	MY_GENERATED_BODY(UStaticMesh)
+	MY_GENERATE_BODY(UStaticMesh)
 	UStaticMesh();
 	~UStaticMesh() override;
 

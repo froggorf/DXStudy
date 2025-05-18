@@ -27,7 +27,7 @@ struct FAnimTrack
 
 class UAnimMontage : public UAnimCompositeBase
 {
-	MY_GENERATED_BODY(UAnimMontage)
+	MY_GENERATE_BODY(UAnimMontage)
 
 	static std::shared_ptr<UAnimMontage> GetAnimationAsset(const std::string& AnimationName)
 	{

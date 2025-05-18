@@ -12,7 +12,7 @@ class UStaticMeshComponent;
 
 class ATestActor2 : public AActor
 {
-	MY_GENERATED_BODY(ATestActor2)
+	MY_GENERATE_BODY(ATestActor2)
 	ATestActor2();
 	void Tick(float DeltaSeconds) override;
 

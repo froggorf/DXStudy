@@ -8,5 +8,5 @@
 
 class UAnimCompositeBase : public UAnimSequenceBase
 {
-	MY_GENERATED_BODY(UAnimCompositeBase)
+	MY_GENERATE_BODY(UAnimCompositeBase)
 };

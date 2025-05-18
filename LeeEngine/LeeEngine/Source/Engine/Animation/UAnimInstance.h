@@ -12,7 +12,7 @@ class USkeletalMeshComponent;
 
 class UAnimInstance : public UObject
 {
-	MY_GENERATED_BODY(UAnimInstance)
+	MY_GENERATE_BODY(UAnimInstance)
 	UAnimInstance();
 
 	~UAnimInstance() override

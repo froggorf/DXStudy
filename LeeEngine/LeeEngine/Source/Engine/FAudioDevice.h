@@ -13,7 +13,7 @@
 
 class USoundBase : public UObject, public std::enable_shared_from_this<USoundBase>
 {
-	MY_GENERATED_BODY(USoundBase)
+	MY_GENERATE_BODY(USoundBase)
 
 	USoundBase() = default;
 	~USoundBase() override;
@@ -38,9 +38,9 @@ class USoundBase : public UObject, public std::enable_shared_from_this<USoundBas
 	}
 
 private:
-	static std::map<std::string, std::shared_ptr<USoundBase>>& GetSoundAssetCacheMap()
+	static std::unordered_map<std::string, std::shared_ptr<USoundBase>>& GetSoundAssetCacheMap()
 	{
-		static std::map<std::string, std::shared_ptr<USoundBase>> SoundAssetCacheMap;
+		static std::unordered_map<std::string, std::shared_ptr<USoundBase>> SoundAssetCacheMap;
 		return SoundAssetCacheMap;
 	}
 };

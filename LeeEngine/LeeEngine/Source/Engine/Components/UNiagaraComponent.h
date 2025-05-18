@@ -11,7 +11,7 @@ class FNiagaraSceneProxy;
 
 class UNiagaraComponent : public UPrimitiveComponent
 {
-	MY_GENERATED_BODY(UNiagaraComponent)
+	MY_GENERATE_BODY(UNiagaraComponent)
 
 	UNiagaraComponent();
 	~UNiagaraComponent() override = default;

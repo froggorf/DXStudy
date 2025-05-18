@@ -10,7 +10,7 @@ class AActor;
 
 class UActorComponent : public UObject
 {
-	MY_GENERATED_BODY(UActorComponent)
+	MY_GENERATE_BODY(UActorComponent)
 	UActorComponent();
 
 	virtual void UpdateComponentToWorld()

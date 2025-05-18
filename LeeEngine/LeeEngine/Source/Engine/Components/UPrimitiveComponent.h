@@ -9,7 +9,7 @@ class FPrimitiveSceneProxy;
 
 class UPrimitiveComponent : public USceneComponent
 {
-	MY_GENERATED_BODY(UPrimitiveComponent)
+	MY_GENERATE_BODY(UPrimitiveComponent)
 
 	UPrimitiveComponent();
 	~UPrimitiveComponent() override;

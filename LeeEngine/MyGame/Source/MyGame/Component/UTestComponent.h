@@ -10,7 +10,7 @@
 
 class UTestComponent : public UActorComponent
 {
-	MY_GENERATED_BODY(UTestComponent)
+	MY_GENERATE_BODY(UTestComponent)
 	UTestComponent();
 
 #ifdef WITH_EDITOR

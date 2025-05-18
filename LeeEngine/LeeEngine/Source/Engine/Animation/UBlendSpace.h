@@ -56,7 +56,7 @@ struct FAnimClipTriangle
 
 class UBlendSpace : public UAnimationAsset
 {
-	MY_GENERATED_BODY(UBlendSpace)
+	MY_GENERATE_BODY(UBlendSpace)
 
 	static std::shared_ptr<UBlendSpace> GetAnimationAsset(const std::string& AnimationName)
 	{

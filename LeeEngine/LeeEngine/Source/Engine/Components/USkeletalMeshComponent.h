@@ -12,7 +12,7 @@ class USkeletalMesh;
 
 class USkeletalMeshComponent : public USkinnedMeshComponent
 {
-	MY_GENERATED_BODY(USkeletalMeshComponent)
+	MY_GENERATE_BODY(USkeletalMeshComponent)
 	USkeletalMeshComponent();
 	void                                               BeginPlay() override;
 	void                                               Register() override;

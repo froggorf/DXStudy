@@ -38,7 +38,7 @@ struct FRichCurve
 
 class UCurveBase : public UObject, public std::enable_shared_from_this<UCurveBase>
 {
-	MY_GENERATED_BODY(UCurveBase)
+	MY_GENERATE_BODY(UCurveBase)
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
 	static std::shared_ptr<UCurveBase> GetCurveAssetCache(const std::string& CurveName)
@@ -61,7 +61,7 @@ private:
 
 class UCurveFloat : public UCurveBase
 {
-	MY_GENERATED_BODY(UCurveFloat)
+	MY_GENERATE_BODY(UCurveFloat)
 	float GetFloatValue(float InTime) const;
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;

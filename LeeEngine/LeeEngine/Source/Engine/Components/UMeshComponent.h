@@ -7,7 +7,7 @@
 
 class UMeshComponent : public UPrimitiveComponent
 {
-	MY_GENERATED_BODY(UMeshComponent)
+	MY_GENERATE_BODY(UMeshComponent)
 	UMeshComponent();
 	~UMeshComponent() override;
 };

@@ -10,7 +10,7 @@ class UStaticMeshComponent;
 
 class ATestCube : public AActor
 {
-	MY_GENERATED_BODY(ATestCube)
+	MY_GENERATE_BODY(ATestCube)
 	ATestCube();
 
 	void Tick(float DeltaSeconds) override;

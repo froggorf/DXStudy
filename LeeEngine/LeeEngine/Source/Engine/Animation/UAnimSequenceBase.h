@@ -9,7 +9,7 @@
 
 class UAnimSequenceBase : public UAnimationAsset
 {
-	MY_GENERATED_BODY(UAnimSequenceBase)
+	MY_GENERATE_BODY(UAnimSequenceBase)
 	// 더 이른 시간을 기준으로 notify 정렬
 	void SortNotifies();
 
