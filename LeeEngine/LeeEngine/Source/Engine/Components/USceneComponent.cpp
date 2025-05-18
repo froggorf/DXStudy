@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "USceneComponent.h"
 #include "Engine/UEditorEngine.h"
+#include "Engine/RenderCore/EditorScene.h"
 
 USceneComponent::USceneComponent()
 {
@@ -54,18 +55,14 @@ void USceneComponent::SetupAttachment(const std::shared_ptr<USceneComponent>& In
 
 	if (InParent.get() == this)
 	{
-#if defined(DEBUG) || defined(_DEBUG)
-		std::cout << "Warning : can't attach to itself" << std::endl;
+		MY_LOG("SetupAttachment", EDebugLogLevel::DLL_Error, "Can't attach to itself");
 		return;
-#endif
 	}
 
 	if (InParent->AttachParent.get() == this)
 	{
-#if defined(DEBUG) || defined(_DEBUG)
-		std::cout << "Warning : Setting up Attachment create a cycle !" << std::endl;
+		MY_LOG("SetupAttachment", EDebugLogLevel::DLL_Error, "Setting up Attachment create a cycle !");
 		return;
-#endif
 	}
 
 	SetAttachParent(InParent);
