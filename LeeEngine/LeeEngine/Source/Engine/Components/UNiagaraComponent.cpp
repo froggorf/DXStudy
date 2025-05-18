@@ -6,13 +6,12 @@
 
 UNiagaraComponent::UNiagaraComponent()
 {
-
 	Rename("NiagaraComponent_" + std::to_string(ComponentID));
 }
 
 std::vector<std::shared_ptr<FPrimitiveSceneProxy>> UNiagaraComponent::CreateSceneProxy()
 {
-	if(nullptr == NiagaraAsset)
+	if (nullptr == NiagaraAsset)
 	{
 		return {};
 	}
@@ -21,13 +20,13 @@ std::vector<std::shared_ptr<FPrimitiveSceneProxy>> UNiagaraComponent::CreateScen
 
 	std::vector<std::shared_ptr<FPrimitiveSceneProxy>> SceneProxies(RenderData.size());
 	this->SceneProxies.reserve(RenderData.size());
-	for(int i =0 ;i < RenderData.size(); ++i)
+	for (int i = 0; i < RenderData.size(); ++i)
 	{
-		std::shared_ptr<FNiagaraSceneProxy> NiagaraSceneProxy = std::make_shared<FNiagaraSceneProxy>(GetPrimitiveID(),RenderData[i]);
+		auto NiagaraSceneProxy = std::make_shared<FNiagaraSceneProxy>(GetPrimitiveID(), RenderData[i]);
 		SceneProxies.emplace_back(NiagaraSceneProxy);
 		this->SceneProxies.emplace_back(NiagaraSceneProxy);
 	}
-	
+
 	return SceneProxies;
 }
 
@@ -35,7 +34,7 @@ void UNiagaraComponent::TickComponent(float DeltaSeconds)
 {
 	UPrimitiveComponent::TickComponent(DeltaSeconds);
 
-	if(bIsActivate)
+	if (bIsActivate)
 	{
 		for (const auto& SceneProxy : SceneProxies)
 		{
@@ -46,9 +45,10 @@ void UNiagaraComponent::TickComponent(float DeltaSeconds)
 
 void UNiagaraComponent::Activate()
 {
-	if(bIsActivate)
+	if (bIsActivate)
 	{
-		MY_LOG("Activate", EDebugLogLevel::DLL_Warning, "effect is already activate, if you want to reset, call activate after Deactivate");
+		MY_LOG("Activate", EDebugLogLevel::DLL_Warning,
+				"effect is already activate, if you want to reset, call activate after Deactivate");
 		return;
 	}
 	bIsActivate = true;
@@ -58,7 +58,7 @@ void UNiagaraComponent::Activate()
 
 void UNiagaraComponent::Deactivate()
 {
-	if(!bIsActivate)
+	if (!bIsActivate)
 	{
 		MY_LOG("Deactivate", EDebugLogLevel::DLL_Warning, "effect is already deactivate");
 		return;
@@ -70,15 +70,13 @@ void UNiagaraComponent::Deactivate()
 
 void UNiagaraComponent::DrawDetailPanel(UINT ComponentDepth)
 {
-
-	if(ImGui::Button("Activate"))
+	if (ImGui::Button("Activate"))
 	{
 		Activate();
 	}
 
-	if(ImGui::Button("Deactivate"))
+	if (ImGui::Button("Deactivate"))
 	{
 		Deactivate();
 	}
-
 }

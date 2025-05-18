@@ -5,12 +5,10 @@
 #include "CoreMinimal.h"
 #include "UObject.h"
 
-
 //std::unordered_map<std::string, std::unique_ptr<UObject>> UObject::ClassDefaultObject;
 
 UObject::UObject()
 {
-	
 }
 
 UObject::~UObject()
@@ -19,7 +17,6 @@ UObject::~UObject()
 
 void UObject::Init()
 {
-	
 }
 
 void UObject::PostLoad()
@@ -35,15 +32,14 @@ void UObject::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
 	// 이름이 없는 에셋의 경우도 존재 (ex)UAnimNotify)
 	//assert(AssetData.contains("Name"));
-	if(AssetData.contains("Name"))
+	if (AssetData.contains("Name"))
 	{
-		Rename(AssetData["Name"]);	
+		Rename(AssetData["Name"]);
 	}
-	
 }
 
 void UObject::SaveDataFromAssetToFile(nlohmann::json& Json)
 {
-	Json["Name"] = GetName();
+	Json["Name"]  = GetName();
 	Json["Class"] = GetClass();
 }

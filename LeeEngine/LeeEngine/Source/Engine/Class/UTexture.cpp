@@ -7,22 +7,21 @@ std::unordered_map<std::string, std::shared_ptr<UTexture>> UTexture::TextureCach
 
 void UTexture::Release()
 {
-	if(Texture2D)
+	if (Texture2D)
 	{
-		Texture2D->Release();	
+		Texture2D->Release();
 	}
-	if(SRView)
+	if (SRView)
 	{
-		SRView->Release();	
+		SRView->Release();
 	}
-	
 }
 
 void UTexture::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
 	UObject::LoadDataFromFileData(AssetData);
 
-	if(TextureCacheMap.contains(GetName()))
+	if (TextureCacheMap.contains(GetName()))
 	{
 		// 이미 존재하는 텍스쳐
 		assert(0);

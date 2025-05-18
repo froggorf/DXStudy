@@ -7,30 +7,21 @@
 #include "Engine/FAudioDevice.h"
 #include "Engine/UObject/UObject.h"
 
-
 class UAnimNotify : public UObject
 {
 	MY_GENERATED_BODY(UAnimNotify)
-public:
-	UAnimNotify() = default;
+	UAnimNotify()           = default;
 	~UAnimNotify() override = default;
 
-	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
+	void         LoadDataFromFileData(const nlohmann::json& AssetData) override;
 	virtual void Notify();
-protected:
-private:
-public:
-protected:
-private:
 };
 
 class UAnimNotify_PlaySound : public UAnimNotify
 {
 	MY_GENERATED_BODY(UAnimNotify_PlaySound)
-public:
-	UAnimNotify_PlaySound() = default;
+	UAnimNotify_PlaySound()           = default;
 	~UAnimNotify_PlaySound() override = default;
-
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 	void Notify() override;

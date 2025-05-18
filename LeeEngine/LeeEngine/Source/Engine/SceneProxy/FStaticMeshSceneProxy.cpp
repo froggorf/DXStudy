@@ -10,13 +10,12 @@
 #include "Engine/Mesh/UStaticMesh.h"
 #include "Engine/RenderCore/EditorScene.h"
 
-
-FStaticMeshSceneProxy::FStaticMeshSceneProxy(UINT InPrimitiveID, UINT InMeshIndex,
-	const std::shared_ptr<UStaticMesh>& StaticMesh)
+FStaticMeshSceneProxy::FStaticMeshSceneProxy(UINT                               InPrimitiveID, UINT InMeshIndex,
+											const std::shared_ptr<UStaticMesh>& StaticMesh)
 	: FPrimitiveSceneProxy(InPrimitiveID)
 {
-	MeshIndex = InMeshIndex;
-	RenderData = StaticMesh->GetStaticMeshRenderData();
+	MeshIndex         = InMeshIndex;
+	RenderData        = StaticMesh->GetStaticMeshRenderData();
 	MaterialInterface = RenderData->Materials[MeshIndex];
 
 	std::string Text = "FStaticMeshSceneProxy Create StaticMeshSceneProxy - " + std::to_string(InPrimitiveID);
@@ -29,18 +28,14 @@ FStaticMeshSceneProxy::~FStaticMeshSceneProxy()
 
 void FStaticMeshSceneProxy::Draw()
 {
-	if(!RenderData)
+	if (!RenderData)
 	{
 		return;
 	}
 
 	FPrimitiveSceneProxy::Draw();
 
-
 	ID3D11DeviceContext* DeviceContext = GDirectXDevice->GetDeviceContext().Get();
-
-
-
 
 	// 셰이더 설정
 	UINT stride = sizeof(MyVertexData);
@@ -52,5 +47,4 @@ void FStaticMeshSceneProxy::Draw()
 	RenderData->IndexBuffer[MeshIndex]->GetDesc(&indexBufferDesc);
 	UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
 	DeviceContext->DrawIndexed(indexSize, 0, 0);
-	
 }

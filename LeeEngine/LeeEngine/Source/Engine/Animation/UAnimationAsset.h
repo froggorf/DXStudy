@@ -12,35 +12,32 @@ class UAnimationAsset : public UObject, public std::enable_shared_from_this<UAni
 {
 	MY_GENERATED_BODY(UAnimationAsset)
 
-public:
-    const std::shared_ptr<USkeletalMesh>& GetAnimationSkeleton() const {return AnimationSkeleton;}
+	const std::shared_ptr<USkeletalMesh>& GetAnimationSkeleton() const
+	{
+		return AnimationSkeleton;
+	}
 
-
-    static std::shared_ptr<UAnimationAsset> GetAnimationAsset(const std::string& AnimationAssetName)
-    {
+	static std::shared_ptr<UAnimationAsset> GetAnimationAsset(const std::string& AnimationAssetName)
+	{
 		const auto& Map = GetAnimationAssetCacheMap();
-        if(Map.size()==0) return nullptr;
-        if(Map.contains(AnimationAssetName))
-        {
-            return GetAnimationAssetCacheMap()[AnimationAssetName];    
-        }
-	    return nullptr;
-    }
-    virtual void LoadDataFromFileData(const nlohmann::json& AssetData) override;
+		if (Map.size() == 0)
+			return nullptr;
+		if (Map.contains(AnimationAssetName))
+		{
+			return GetAnimationAssetCacheMap()[AnimationAssetName];
+		}
+		return nullptr;
+	}
+
+	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
 protected:
-private:
-public:
-protected:
-
-    std::shared_ptr<USkeletalMesh> AnimationSkeleton;
+	std::shared_ptr<USkeletalMesh> AnimationSkeleton;
 
 private:
-
-    static std::map<std::string, std::shared_ptr<UAnimationAsset>>& GetAnimationAssetCacheMap()
-    {
-        static std::map<std::string, std::shared_ptr<UAnimationAsset>> AnimationAssetCache{};
-        return AnimationAssetCache;
-    }
+	static std::map<std::string, std::shared_ptr<UAnimationAsset>>& GetAnimationAssetCacheMap()
+	{
+		static std::map<std::string, std::shared_ptr<UAnimationAsset>> AnimationAssetCache{};
+		return AnimationAssetCache;
+	}
 };
-

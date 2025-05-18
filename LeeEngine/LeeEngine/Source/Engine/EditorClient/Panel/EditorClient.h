@@ -10,14 +10,12 @@
 #include "ImguiPanel.h"
 #include "Engine/MyEngineUtils.h"
 
-
-
 enum class EImguiPanelType
 {
 	IPT_NULL,
-	IPT_MainPanel,				// 메인 패널
-	IPT_LevelViewport,			// FImguiViewport (+ FImguiWorldOutliner + FImguiActorDetail
-	IPT_DebugConsole,			// FImguiDebugConsole
+	IPT_MainPanel,     // 메인 패널
+	IPT_LevelViewport, // FImguiViewport (+ FImguiWorldOutliner + FImguiActorDetail
+	IPT_DebugConsole,  // FImguiDebugConsole
 
 	IPT_Count,
 };
@@ -26,14 +24,12 @@ class FEditorClient
 {
 public:
 	FEditorClient(class FScene* SceneData);
-protected:
-private:
+
 public:
 	void AddPanelCommand(const std::shared_ptr<FImguiPanelCommandData>& CommandData);
 
 	void Draw();
-	
+
 protected:
 	std::vector<std::unique_ptr<FImguiPanel>> ImguiPanels;
-private:
 };

@@ -19,7 +19,6 @@ enum class EConstantBufferType
 	CBT_Count
 };
 
-
 enum class ERasterizerType
 {
 	RT_CullBack,
@@ -27,23 +26,24 @@ enum class ERasterizerType
 	RT_WireFrame,
 	RT_Count
 };
+
 enum class EBlendStateType
 {
 	BST_Default,
-	BST_AlphaBlend,				// src(A) / Dest(1-A)
-	BST_AlphaBlend_Coverage,		// 알파값에 따른 깊이 문제 해결
-	BST_One_One,				// Src(1), Dest(1) - 검은색 색상 제거 or 색상 누적
+	BST_AlphaBlend,          // src(A) / Dest(1-A)
+	BST_AlphaBlend_Coverage, // 알파값에 따른 깊이 문제 해결
+	BST_One_One,             // Src(1), Dest(1) - 검은색 색상 제거 or 색상 누적
 	BST_Count
 };
 
 enum class EDepthStencilStateType
 {
-	DST_LESS,				// Less, Depth Write
-	DST_LESS_EQUAL,			// LessEqual, Depth Write
-	DST_GREATER,			// Greater, No Write VolumeMesh Check
-	DST_NO_WRITE,			// Less, No write
-	DST_NO_TEST_NO_WRITE,	
-	
+	DST_LESS,       // Less, Depth Write
+	DST_LESS_EQUAL, // LessEqual, Depth Write
+	DST_GREATER,    // Greater, No Write VolumeMesh Check
+	DST_NO_WRITE,   // Less, No write
+	DST_NO_TEST_NO_WRITE,
+
 	DST_COUNT
 };
 
@@ -57,7 +57,6 @@ public:
 
 	bool InitDirect3D();
 
-	
 	// 엔진 초기화 시 호출
 	void BuildAllShaders();
 	void OnWindowResize();
@@ -66,32 +65,68 @@ public:
 	void SetViewPortSize(float x, float y);
 	void SetDefaultViewPort();
 
-	float GetAspectRatio() const {return static_cast<float>(*m_ClientWidth) / *m_ClientHeight; }
+	float GetAspectRatio() const
+	{
+		return static_cast<float>(*m_ClientWidth) / *m_ClientHeight;
+	}
 
-// ConstantBuffers
+	// ConstantBuffers
 private:
 	// 그래픽스 파이프라인에서 사용되는 상수버퍼
 	Microsoft::WRL::ComPtr<ID3D11Buffer> ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_Count)];
-	void CreateConstantBuffers();
+	void                                 CreateConstantBuffers();
+
 public:
 	void MapConstantBuffer(EConstantBufferType Type, void* Data, size_t Size) const;
-//===================================
+	//===================================
 
-// InputLayout
-private:
+	// InputLayout
 
 public:
-	const Microsoft::WRL::ComPtr<ID3D11Device>& GetDevice() const { return m_d3dDevice; }
-	const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& GetDeviceContext() const { return m_d3dDeviceContext; }
-	const Microsoft::WRL::ComPtr<IDXGISwapChain>& GetSwapChain() const { return m_SwapChain; }
-	const Microsoft::WRL::ComPtr<ID3D11RenderTargetView>& GetRenderTargetView() const { return m_RenderTargetView; }
-	const Microsoft::WRL::ComPtr<ID3D11DepthStencilView>& GetDepthStencilView() const { return m_DepthStencilView; }
-	const D3D11_VIEWPORT* GetScreenViewport() const { return &m_ScreenViewport; }
-	const Microsoft::WRL::ComPtr<ID3D11SamplerState>& GetSamplerState() const {return m_SamplerState;}
+	const Microsoft::WRL::ComPtr<ID3D11Device>& GetDevice() const
+	{
+		return m_d3dDevice;
+	}
 
-	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetLightConstantBuffer() const {return m_LightConstantBuffer;}
-	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetSkeletalMeshConstantBuffer() const {return m_SkeletalMeshConstantBuffer;}
+	const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& GetDeviceContext() const
+	{
+		return m_d3dDeviceContext;
+	}
 
+	const Microsoft::WRL::ComPtr<IDXGISwapChain>& GetSwapChain() const
+	{
+		return m_SwapChain;
+	}
+
+	const Microsoft::WRL::ComPtr<ID3D11RenderTargetView>& GetRenderTargetView() const
+	{
+		return m_RenderTargetView;
+	}
+
+	const Microsoft::WRL::ComPtr<ID3D11DepthStencilView>& GetDepthStencilView() const
+	{
+		return m_DepthStencilView;
+	}
+
+	const D3D11_VIEWPORT* GetScreenViewport() const
+	{
+		return &m_ScreenViewport;
+	}
+
+	const Microsoft::WRL::ComPtr<ID3D11SamplerState>& GetSamplerState() const
+	{
+		return m_SamplerState;
+	}
+
+	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetLightConstantBuffer() const
+	{
+		return m_LightConstantBuffer;
+	}
+
+	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetSkeletalMeshConstantBuffer() const
+	{
+		return m_SkeletalMeshConstantBuffer;
+	}
 
 	UINT CurrentVertexShaderID = -1;
 	void SetVertexShader(class FVertexShader* InVertexShader);
@@ -103,80 +138,89 @@ public:
 	void SetGeometryShader(class FGeometryShader* InGeometryShader);
 
 #ifdef WITH_EDITOR
-public:
-	const Microsoft::WRL::ComPtr<ID3D11Texture2D>& GetEditorRenderTargetTexture() const {return m_EditorRenderTargetTexture;}
-	const Microsoft::WRL::ComPtr<ID3D11RenderTargetView>& GetEditorRenderTargetView() const {return m_EditorRenderTargetView;}
-	const Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>&  GetSRVEditorRenderTarget() const {return m_SRVEditorRenderTarget; }
-	const Microsoft::WRL::ComPtr<ID3D11DepthStencilView>& GetEditorDepthStencilView() const {return m_EditorDepthStencilView;}
-	void ResizeEditorRenderTarget(float NewX,float NewY);
+	const Microsoft::WRL::ComPtr<ID3D11Texture2D>& GetEditorRenderTargetTexture() const
+	{
+		return m_EditorRenderTargetTexture;
+	}
+
+	const Microsoft::WRL::ComPtr<ID3D11RenderTargetView>& GetEditorRenderTargetView() const
+	{
+		return m_EditorRenderTargetView;
+	}
+
+	const Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& GetSRVEditorRenderTarget() const
+	{
+		return m_SRVEditorRenderTarget;
+	}
+
+	const Microsoft::WRL::ComPtr<ID3D11DepthStencilView>& GetEditorDepthStencilView() const
+	{
+		return m_EditorDepthStencilView;
+	}
+
+	void ResizeEditorRenderTarget(float NewX, float NewY);
+
 private:
-	Microsoft::WRL::ComPtr<ID3D11Texture2D>				m_EditorRenderTargetTexture;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>		m_EditorRenderTargetView;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>	m_SRVEditorRenderTarget;
-	Microsoft::WRL::ComPtr<ID3D11Texture2D>				m_EditorDepthStencilBuffer;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>		m_EditorDepthStencilView;
-#endif	
+	Microsoft::WRL::ComPtr<ID3D11Texture2D>          m_EditorRenderTargetTexture;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>   m_EditorRenderTargetView;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_SRVEditorRenderTarget;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D>          m_EditorDepthStencilBuffer;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>   m_EditorDepthStencilView;
+#endif
 
-
-// RasterizerState / BlendState / DepthStencilState
+	// RasterizerState / BlendState / DepthStencilState
 public:
-	ID3D11RasterizerState* GetRasterizerState(ERasterizerType RSType) const {return m_RSState[static_cast<UINT>(RSType)].Get();}
+	ID3D11RasterizerState* GetRasterizerState(ERasterizerType RSType) const
+	{
+		return m_RSState[static_cast<UINT>(RSType)].Get();
+	}
+
 	void SetRSState(ERasterizerType InRSType);
 	void SetDSState(EDepthStencilStateType InDSType);
 	void SetBSState(EBlendStateType InBSType);
+
 private:
-	ERasterizerType CurrentRSType = ERasterizerType::RT_Count;
+	ERasterizerType        CurrentRSType = ERasterizerType::RT_Count;
 	EDepthStencilStateType CurrentDSType = EDepthStencilStateType::DST_COUNT;
-	EBlendStateType CurrentBSType = EBlendStateType::BST_Count;
+	EBlendStateType        CurrentBSType = EBlendStateType::BST_Count;
 
-	Microsoft::WRL::ComPtr<ID3D11RasterizerState>	m_RSState[static_cast<UINT>(ERasterizerType::RT_Count)];
-	Microsoft::WRL::ComPtr<ID3D11BlendState>	m_BSState[static_cast<UINT>(EBlendStateType::BST_Count)];
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>	m_DSState[static_cast<UINT>(EDepthStencilStateType::DST_COUNT)];
-	void CreateRasterizerState();
-	void CreateBlendState();
-	void CreateDepthStencilState();
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState>   m_RSState[static_cast<UINT>(ERasterizerType::RT_Count)];
+	Microsoft::WRL::ComPtr<ID3D11BlendState>        m_BSState[static_cast<UINT>(EBlendStateType::BST_Count)];
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_DSState[static_cast<UINT>(EDepthStencilStateType::DST_COUNT)];
+	void                                            CreateRasterizerState();
+	void                                            CreateBlendState();
+	void                                            CreateDepthStencilState();
 
-// =================================================
+	// =================================================
 
-
-
-
-protected:
 private:
-
 	void InitSamplerState();
 
 	void BuildAllComputeShader();
-	
-public:
-	
-protected:
-private:
-	Microsoft::WRL::ComPtr<ID3D11Device>				m_d3dDevice;
-	Microsoft::WRL::ComPtr<ID3D11DeviceContext>			m_d3dDeviceContext;
-	Microsoft::WRL::ComPtr<IDXGISwapChain>				m_SwapChain;
-	Microsoft::WRL::ComPtr<ID3D11Texture2D>				m_DepthStencilBuffer;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>		m_RenderTargetView;
 
-	
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>		m_DepthStencilView;
-	D3D11_VIEWPORT										m_ScreenViewport;
+private:
+	Microsoft::WRL::ComPtr<ID3D11Device>           m_d3dDevice;
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext>    m_d3dDeviceContext;
+	Microsoft::WRL::ComPtr<IDXGISwapChain>         m_SwapChain;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D>        m_DepthStencilBuffer;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_RenderTargetView;
+
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_DepthStencilView;
+	D3D11_VIEWPORT                                 m_ScreenViewport;
 
 	// 파이프라인
-	Microsoft::WRL::ComPtr<ID3D11SamplerState>	m_SamplerState;
-	Microsoft::WRL::ComPtr<ID3D11SamplerState>	m_SamplerState2;
+	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_SamplerState;
+	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_SamplerState2;
 
 	// 상수버퍼
-	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_LightConstantBuffer;
-	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_SkeletalMeshConstantBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_LightConstantBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_SkeletalMeshConstantBuffer;
 
-	int* m_ClientWidth;
-	int* m_ClientHeight;
-	UINT		m_4xMsaaQuality;
-	bool m_Enable4xMsaa;
+	int*            m_ClientWidth;
+	int*            m_ClientHeight;
+	UINT            m_4xMsaaQuality;
+	bool            m_Enable4xMsaa;
 	D3D_DRIVER_TYPE m_d3dDriverType;
 
-
 	HWND* m_hWnd;
-
 };

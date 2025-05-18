@@ -6,7 +6,7 @@
 float FAnimTrack::GetLength() const
 {
 	float TotalLength = 0.0f;
-	for(const auto& AnimSegment : AnimSegments)
+	for (const auto& AnimSegment : AnimSegments)
 	{
 		TotalLength += AnimSegment->GetLength();
 	}
@@ -18,64 +18,59 @@ void UAnimMontage::LoadDataFromFileData(const nlohmann::json& AssetData)
 	UAnimCompositeBase::LoadDataFromFileData(AssetData);
 
 	SlotName = AssetData["SlotName"];
-	if(AssetData.contains("AnimTrack"))
+	if (AssetData.contains("AnimTrack"))
 	{
 		auto AnimSequencesData = AssetData["AnimTrack"];
-		for(const auto& SequenceData : AnimSequencesData)
+		for (const auto& SequenceData : AnimSequencesData)
 		{
 			AnimTrack.AnimSegments.emplace_back(UAnimSequence::GetAnimationAsset(SequenceData["AnimName"]));
 		}
 	}
 
-	if(AssetData.contains("Sections"))
+	if (AssetData.contains("Sections"))
 	{
 		auto SectionsData = AssetData["Sections"];
-		for(const auto& SectionData : SectionsData)
+		for (const auto& SectionData : SectionsData)
 		{
 			FCompositeSection NewSection;
 			NewSection.SectionName = SectionData["SectionName"];
-			NewSection.StartTime = SectionData["StartTime"];
-			if(SectionData.contains("NextSectionName"))
+			NewSection.StartTime   = SectionData["StartTime"];
+			if (SectionData.contains("NextSectionName"))
 			{
-				NewSection.NextSectionName = SectionData["NextSectionName"];	
+				NewSection.NextSectionName = SectionData["NextSectionName"];
 			}
 			CompositeSections.emplace_back(NewSection);
 		}
-		
 	}
 
 	// 반드시 있어야 하는 데이터
 	{
 		// BlendIn
-		auto BlendInData =  AssetData["BlendIn"];
-		std::string BlendInCurveName =  BlendInData["CurveName"];
-		std::shared_ptr<UCurveFloat> CustomCurveFloat = std::dynamic_pointer_cast<UCurveFloat>(UCurveBase::GetCurveAssetCache(BlendInCurveName));
+		auto                         BlendInData      = AssetData["BlendIn"];
+		std::string                  BlendInCurveName = BlendInData["CurveName"];
+		std::shared_ptr<UCurveFloat> CustomCurveFloat = std::dynamic_pointer_cast<UCurveFloat>(
+			UCurveBase::GetCurveAssetCache(BlendInCurveName));
 		assert(CustomCurveFloat);
 		BlendIn.SetCurveFloat(CustomCurveFloat);
 		float BlendInBlendTime = BlendInData["BlendTime"];
 		BlendIn.SetBlendTime(BlendInBlendTime);
 
 		// BlendOut
-		auto BlendOutData =  AssetData["BlendOut"];
-		std::string BlendOutCurveName =  BlendOutData["CurveName"];
-		std::shared_ptr<UCurveFloat> BlendOutCustomCurveFloat = std::dynamic_pointer_cast<UCurveFloat>(UCurveBase::GetCurveAssetCache(BlendOutCurveName));
+		auto                         BlendOutData             = AssetData["BlendOut"];
+		std::string                  BlendOutCurveName        = BlendOutData["CurveName"];
+		std::shared_ptr<UCurveFloat> BlendOutCustomCurveFloat = std::dynamic_pointer_cast<UCurveFloat>(
+			UCurveBase::GetCurveAssetCache(BlendOutCurveName));
 		assert(BlendOutCustomCurveFloat);
 		BlendOut.SetCurveFloat(BlendOutCustomCurveFloat);
 		float BlendOutBlendTime = BlendOutData["BlendTime"];
-		BlendOut.SetBlendTime(BlendOutBlendTime);	
+		BlendOut.SetBlendTime(BlendOutBlendTime);
 	}
-	
-
-
-
-
-
 }
 
 float UAnimMontage::GetStartTimeFromSectionName(const std::string& SectionName)
 {
 	int SectionID = GetSectionIndex(SectionName);
-	if(0 <= SectionID)
+	if (0 <= SectionID)
 	{
 		return CompositeSections[SectionID].StartTime;
 	}
@@ -86,26 +81,26 @@ float UAnimMontage::GetStartTimeFromSectionName(const std::string& SectionName)
 void UAnimMontage::GetSectionStartAndEndTime(UINT SectionIndex, float& OutStartTime, float& OutEndTime)
 {
 	OutStartTime = 0.0f;
-	OutEndTime = GetPlayLength();
+	OutEndTime   = GetPlayLength();
 
-	if(SectionIndex < CompositeSections.size())
+	if (SectionIndex < CompositeSections.size())
 	{
-		OutStartTime =  CompositeSections[SectionIndex].StartTime;
+		OutStartTime = CompositeSections[SectionIndex].StartTime;
 	}
-	if(SectionIndex + 1 < CompositeSections.size())
+	if (SectionIndex + 1 < CompositeSections.size())
 	{
-		OutEndTime = CompositeSections[SectionIndex+1].StartTime;
+		OutEndTime = CompositeSections[SectionIndex + 1].StartTime;
 	}
 }
 
 bool UAnimMontage::IsWithinPos(UINT SectionIndex1, UINT SectionIndex2, float InPosition)
 {
 	float StartTime = 0.0f, EndTime = GetPlayLength();
-	if(SectionIndex1 < CompositeSections.size())
+	if (SectionIndex1 < CompositeSections.size())
 	{
 		StartTime = CompositeSections[SectionIndex1].StartTime;
 	}
-	if(SectionIndex2 < CompositeSections.size())
+	if (SectionIndex2 < CompositeSections.size())
 	{
 		EndTime = CompositeSections[SectionIndex2].StartTime;
 	}
@@ -113,12 +108,11 @@ bool UAnimMontage::IsWithinPos(UINT SectionIndex1, UINT SectionIndex2, float InP
 	return (StartTime <= InPosition && InPosition < EndTime);
 }
 
-
 int UAnimMontage::GetSectionIndexFromPosition(float InPosition)
 {
-	for(UINT i = 0; i < CompositeSections.size(); ++i)
+	for (UINT i = 0; i < CompositeSections.size(); ++i)
 	{
-		if(IsWithinPos(i, i+1, InPosition))
+		if (IsWithinPos(i, i + 1, InPosition))
 		{
 			return i;
 		}
@@ -128,9 +122,9 @@ int UAnimMontage::GetSectionIndexFromPosition(float InPosition)
 
 int UAnimMontage::GetSectionIndex(const std::string& InSectionName) const
 {
-	for(UINT i = 0; i < CompositeSections.size(); ++i)
+	for (UINT i = 0; i < CompositeSections.size(); ++i)
 	{
-		if(CompositeSections[i].SectionName == InSectionName)
+		if (CompositeSections[i].SectionName == InSectionName)
 		{
 			return i;
 		}
@@ -143,38 +137,37 @@ void FAnimMontageInstance::Play()
 	bIsPlaying = true;
 
 	// 30프레임에 한번 업데이트
-	CurrentPlayTime += static_cast<float>(1)/30;
+	CurrentPlayTime += static_cast<float>(1) / 30;
 
 	Position += 1;
 	// 현재 섹션 끝났을 때
-	if(Position >= CurPlayingEndPosition)
+	if (Position >= CurPlayingEndPosition)
 	{
 		// 다음 섹션이 있다면
-		if(!NextSectionName.empty())
+		if (!NextSectionName.empty())
 		{
-			int NextSectionID =  Montage->GetSectionIndex(NextSectionName);
+			int NextSectionID = Montage->GetSectionIndex(NextSectionName);
 			SetPosition(Montage->CompositeSections[NextSectionID].StartTime);
 		}
 		else
 		{
-			bIsPlaying =false;	
+			bIsPlaying = false;
 			return;
 		}
 	}
 
-	const std::vector<std::shared_ptr<UAnimSequence>> AnimSegments =  Montage->AnimTrack.AnimSegments;
-	float AnimSegmentPosition = Position;
+	const std::vector<std::shared_ptr<UAnimSequence>> AnimSegments        = Montage->AnimTrack.AnimSegments;
+	float                                             AnimSegmentPosition = Position;
 
-	for(const auto& Anim : AnimSegments)
+	for (const auto& Anim : AnimSegments)
 	{
-		if(AnimSegmentPosition >= Anim->GetDuration())
+		if (AnimSegmentPosition >= Anim->GetDuration())
 		{
 			AnimSegmentPosition -= Anim->GetDuration();
 			continue;
 		}
-		
+
 		Anim->GetBoneTransform(AnimSegmentPosition, MontageBones);
-		
 	}
 	Notifies.clear();
 	Montage->GetAnimNotifies(Position, Notifies);
@@ -182,9 +175,9 @@ void FAnimMontageInstance::Play()
 
 void FAnimMontageInstance::SetPosition(float InPosition)
 {
-	Position = InPosition;
-	int SectionID =  Montage->GetSectionIndexFromPosition(Position);
-	if(SectionID >= 0)
+	Position      = InPosition;
+	int SectionID = Montage->GetSectionIndexFromPosition(Position);
+	if (SectionID >= 0)
 	{
 		Montage->GetSectionStartAndEndTime(SectionID, CurPlayingStartPosition, CurPlayingEndPosition);
 		NextSectionName = Montage->CompositeSections[SectionID].NextSectionName;
@@ -195,10 +188,10 @@ void FAnimMontageInstance::JumpToSectionName(const std::string& SectionName)
 {
 	const int SectionID = Montage->GetSectionIndex(SectionName);
 
-	if(0<=SectionID)
+	if (0 <= SectionID)
 	{
-		FCompositeSection CurSection = Montage->CompositeSections[SectionID];
-		const float NewPosition = CurSection.StartTime;
+		FCompositeSection CurSection  = Montage->CompositeSections[SectionID];
+		const float       NewPosition = CurSection.StartTime;
 		SetPosition(NewPosition);
 	}
 }

@@ -13,51 +13,45 @@
 #include "Misc/QueuedThreadPool.h"
 #include "RenderCore/EditorScene.h"
 
-
-
-
 std::shared_ptr<UEngine> GEngine = nullptr;
 
 UEngine::~UEngine()
 {
-	
 }
 
 void UEngine::InitEngine()
 {
 	TCHAR test[100];
-	GetCurrentDirectory(100,test);
+	GetCurrentDirectory(100, test);
 	std::wstring temp = test;
-	CurrentDirectory = std::string(temp.begin(),temp.end());
-	while(true)
+	CurrentDirectory  = std::string(temp.begin(), temp.end());
+	while (true)
 	{
 		auto p = CurrentDirectory.find("\\");
 		if (p == std::string::npos)
 		{
 			break;
 		}
-		CurrentDirectory.replace(p,1, "/");
+		CurrentDirectory.replace(p, 1, "/");
 	}
 	EngineDirectory = CurrentDirectory;
-	if(auto p = EngineDirectory.find("MyGame"))
+	if (auto p = EngineDirectory.find("MyGame"))
 	{
-		EngineDirectory.replace(p, p+5, "LeeEngine");
+		EngineDirectory.replace(p, p + 5, "LeeEngine");
 	}
 
-	GThreadPool = std::make_unique<FQueuedThreadPool>(std::thread::hardware_concurrency()-2); // GameThread, RenderThread
+	GThreadPool = std::make_unique<FQueuedThreadPool>(std::thread::hardware_concurrency() - 2);
+	// GameThread, RenderThread
 
 	CreateAudioThread();
 
 	PostLoad();
 
-
 	CurrentWorld = std::make_shared<UWorld>();
 
 	InitImGui();
 
-
 	LoadDataFromDefaultEngineIni();
-
 
 	LoadDefaultMap();
 
@@ -65,10 +59,6 @@ void UEngine::InitEngine()
 
 	//RenderThread = std::thread(&UEngine::Draw,this);
 	CreateRenderThread();
-
-
-	
-	
 }
 
 void UEngine::PostLoad()
@@ -78,11 +68,9 @@ void UEngine::PostLoad()
 	LoadAllObjectsFromFile();
 
 	GDirectXDevice->BuildAllShaders();
-	
+
 	// TODO: 추후엔 Level을 직렬화를 통해 저장 및 로드를 할 수 있는 기능을 만드는게 낫지 않을까?
 	// 그렇다면 여기에서 로드를 진행하기
-
-
 }
 
 void UEngine::LoadDataFromDefaultEngineIni()
@@ -91,11 +79,11 @@ void UEngine::LoadDataFromDefaultEngineIni()
 	std::string FinalFilePath = GetDirectoryPath() + "/Config/DefaultEngine.ini";
 
 	std::ifstream DataFile(FinalFilePath.data());
-	std::string DataName;
+	std::string   DataName;
 	while (DataFile >> DataName)
 	{
 		std::string Data;
-		DataFile >> Data;	// =
+		DataFile >> Data; // =
 		DataFile >> Data;
 		EngineData[DataName] = Data;
 	}
@@ -104,7 +92,7 @@ void UEngine::LoadDataFromDefaultEngineIni()
 void UEngine::LoadDefaultMap()
 {
 	const ULevel* DefaultLevelInstance = ULevel::GetLevelInstanceByName(GetDefaultMapName());
-	std::shared_ptr<ULevel> LoadLevel = std::make_shared<ULevel>(DefaultLevelInstance);
+	auto          LoadLevel            = std::make_shared<ULevel>(DefaultLevelInstance);
 	CurrentWorld->SetPersistentLevel(LoadLevel);
 }
 
@@ -116,18 +104,18 @@ const std::string& UEngine::GetDefaultMapName()
 void UEngine::GameStart()
 {
 	// 게임 시작
-	if(bGameStart)
+	if (bGameStart)
 	{
 		MY_LOG("Error call", EDebugLogLevel::DLL_Error, "Already start game");
 		return;
 	}
-	if(!GetWorld() || !GetWorld()->GetPersistentLevel())
+	if (!GetWorld() || !GetWorld()->GetPersistentLevel())
 	{
 		MY_LOG("Error call", EDebugLogLevel::DLL_Error, "No valid PersistentLevel");
 		return;
 	}
 
-	bGameStart= true;
+	bGameStart  = true;
 	TimeSeconds = 0;
 
 	GetWorld()->BeginPlay();
@@ -138,60 +126,57 @@ void UEngine::Tick(float DeltaSeconds)
 	this->DeltaSeconds = DeltaSeconds;
 #ifdef WITH_EDITOR
 	std::shared_ptr<FImGUITask> Task;
-	while(FImGuizmoCommandPipe::Dequeue(Task))
+	while (FImGuizmoCommandPipe::Dequeue(Task))
 	{
 		Task->CommandLambda();
 	}
 #endif
-	if(GAudioDevice)
+	if (GAudioDevice)
 	{
 		GAudioDevice->GameThread_AudioUpdate();
 	}
 
 	++GameThreadFrameCount;
 
-
 	FScene::BeginRenderFrame_GameThread(GameThreadFrameCount);
 
-	if(bGameStart)
+	if (bGameStart)
 	{
 		TimeSeconds += DeltaSeconds;
-		if(CurrentWorld)
+		if (CurrentWorld)
 		{
 			CurrentWorld->TickWorld(DeltaSeconds);
-		}	
+		}
 	}
-	
 
-
-	for(const auto& IDAndComponent : ComponentsTransformDirty)
+	for (const auto& IDAndComponent : ComponentsTransformDirty)
 	{
 		UINT PrimitiveID = IDAndComponent.first;
-		if(IDAndComponent.second && IDAndComponent.second->IsPrimitive())
+		if (IDAndComponent.second && IDAndComponent.second->IsPrimitive())
 		{
-			FScene::NewTransformToPrimitive_GameThread(PrimitiveID, IDAndComponent.second->GetComponentTransform());	
+			FScene::NewTransformToPrimitive_GameThread(PrimitiveID, IDAndComponent.second->GetComponentTransform());
 		}
 	}
 	ComponentsTransformDirty.clear();
 
-	if(GameThreadFrameCount > RenderingThreadFrameCount + 3)
+	if (GameThreadFrameCount > RenderingThreadFrameCount + 3)
 	{
 		FScene::EndRenderFrame_GameThread();
-	}else
-	{
-		FScene::DrawScene_GameThread();	
 	}
-	
+	else
+	{
+		FScene::DrawScene_GameThread();
+	}
 }
 
 void UEngine::MakeComponentTransformDirty(std::shared_ptr<USceneComponent>& SceneComponent)
 {
-	if(!SceneComponent->IsPrimitive())
+	if (!SceneComponent->IsPrimitive())
 	{
 		return;
 	}
-	UINT PrimitiveID = SceneComponent->GetPrimitiveID() ;
-	if(SceneComponent && PrimitiveID> 0)
+	UINT PrimitiveID = SceneComponent->GetPrimitiveID();
+	if (SceneComponent && PrimitiveID > 0)
 	{
 		ComponentsTransformDirty[PrimitiveID] = SceneComponent;
 	}
@@ -199,19 +184,17 @@ void UEngine::MakeComponentTransformDirty(std::shared_ptr<USceneComponent>& Scen
 
 void UEngine::JoinThreadsAtDestroy()
 {
-	if(RenderThread.joinable())
+	if (RenderThread.joinable())
 	{
 		RenderThread.join();
 	}
 
 	GAudioDevice->GameKill();
-	if(AudioThread.joinable())
+	if (AudioThread.joinable())
 	{
 		AudioThread.join();
 	}
-	
 }
-
 
 void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -226,64 +209,57 @@ void UEngine::CreateRenderThread()
 void UEngine::CreateAudioThread()
 {
 	GAudioDevice = std::make_shared<FAudioDevice>();
-	AudioThread = std::thread(&FAudioThread::Execute);
+	AudioThread  = std::thread(&FAudioThread::Execute);
 }
 
 void MyCreateWindow(ImGuiViewport* Viewport)
 {
-	std::mutex mtx;
+	std::mutex              mtx;
 	std::condition_variable cv;
-	bool done = false;
+	bool                    done = false;
 
-	ENQUEUE_IMGUI_COMMAND([&]()
-		{
-			 ImGui_ImplWin32_CreateWindow(Viewport);
-			{
-				std::lock_guard<std::mutex> lock(mtx);
-				done = true;
-			}
-			cv.notify_one();
-		});
+	ENQUEUE_IMGUI_COMMAND(
+		[&]() { ImGui_ImplWin32_CreateWindow(Viewport); { std::lock_guard<std::mutex> lock(mtx); done = true; } cv.
+		notify_one(); });
 
 	// 메인쓰레드에서 완료될 때까지 대기
 	std::unique_lock<std::mutex> lock(mtx);
-	cv.wait(lock, [&](){ return done; });
+	cv.wait(lock, [&]()
+	{
+		return done;
+	});
 }
 
 void MyShowWindow(ImGuiViewport* Viewport)
 {
-	std::mutex mtx;
+	std::mutex              mtx;
 	std::condition_variable cv;
-	bool done = false;
+	bool                    done = false;
 
-	ENQUEUE_IMGUI_COMMAND([&]()
-		{
-			ImGui_ImplWin32_ShowWindow(Viewport);
-			{
-				std::lock_guard<std::mutex> lock(mtx);
-				done = true;
-			}
-			cv.notify_one();
-		});
+	ENQUEUE_IMGUI_COMMAND(
+		[&]() { ImGui_ImplWin32_ShowWindow(Viewport); { std::lock_guard<std::mutex> lock(mtx); done = true; } cv.
+		notify_one(); });
 
 	// 메인쓰레드에서 완료될 때까지 대기
 	std::unique_lock<std::mutex> lock(mtx);
-	cv.wait(lock, [&](){ return done; });
+	cv.wait(lock, [&]()
+	{
+		return done;
+	});
 }
 
 LRESULT CALLBACK MyWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	// Application 인스턴스 접근 (싱글턴, 전역 포인터 등)
-	if(GEngine)
+	if (GEngine)
 	{
-		if(GEngine->GetApplication())
+		if (GEngine->GetApplication())
 		{
-			return GEngine->GetApplication()->MsgProc(hWnd,msg,wParam,lParam);
+			return GEngine->GetApplication()->MsgProc(hWnd, msg, wParam, lParam);
 		}
 	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
-
 
 void UEngine::InitImGui()
 {
@@ -300,59 +276,60 @@ void UEngine::InitImGui()
 	// 또한 아래의 윈도우 정보를 미리 만들어놓고,
 	// lpszClassName 이 Imgui 내부에서 만드는것과 동일하면 미리 만든 윈도우를 사용한다고함
 	// 따라서 내 윈도우 메시지 프록이 그대로 전달돼서 진행되는것
-	WNDCLASSEXW wc = {};
-	wc.cbSize = sizeof(WNDCLASSEXW);
-	wc.style = CS_OWNDC;
-	wc.lpfnWndProc = MyWndProc; // <- 네 메시지 처리 함수
-	wc.cbClsExtra = 0;
-	wc.cbWndExtra = 0;
-	wc.hInstance = ::GetModuleHandle(nullptr);
-	wc.hIcon = nullptr;
-	wc.hCursor = nullptr;
+	WNDCLASSEXW wc   = {};
+	wc.cbSize        = sizeof(WNDCLASSEXW);
+	wc.style         = CS_OWNDC;
+	wc.lpfnWndProc   = MyWndProc; // <- 네 메시지 처리 함수
+	wc.cbClsExtra    = 0;
+	wc.cbWndExtra    = 0;
+	wc.hInstance     = ::GetModuleHandle(nullptr);
+	wc.hIcon         = nullptr;
+	wc.hCursor       = nullptr;
 	wc.hbrBackground = nullptr;
-	wc.lpszMenuName = nullptr;
+	wc.lpszMenuName  = nullptr;
 	wc.lpszClassName = L"ImGui Platform"; // ImGui가 사용하는 클래스명과 같게!
-	wc.hIconSm = nullptr;
+	wc.hIconSm       = nullptr;
 	RegisterClassExW(&wc);
 
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	ImGuiIO& io = ImGui::GetIO();
+	(void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 	ImGuiStyle& style = ImGui::GetStyle();
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
-		style.WindowRounding = 0.0f;
+		style.WindowRounding              = 0.0f;
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 	}
-	
+
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
-	
+
 	// Setup Platform/Renderer backends
-	
+
 	ImGui_ImplWin32_Init(Application->GetMainWnd());
 	ImGui_ImplDX11_Init(GDirectXDevice->GetDevice().Get(), GDirectXDevice->GetDeviceContext().Get());
 
-	MY_LOG("Init",EDebugLogLevel::DLL_Display, "Imgui init success");
+	MY_LOG("Init", EDebugLogLevel::DLL_Display, "Imgui init success");
 
 	// 폰트 로드
-	std::string FontPath = EngineDirectory+"/Content/Editor/Font/Roboto.ttf";
-	float FontSize = 18.0f;
+	std::string  FontPath = EngineDirectory + "/Content/Editor/Font/Roboto.ttf";
+	float        FontSize = 18.0f;
 	ImFontConfig FontConfig;
-	FontConfig.OversampleH= 3;
-	FontConfig.OversampleV= 3;
-	FontConfig.PixelSnapH = true;
-	io.Fonts->AddFontFromFileTTF(FontPath.c_str(),FontSize, &FontConfig, io.Fonts->GetGlyphRangesKorean());
+	FontConfig.OversampleH = 3;
+	FontConfig.OversampleV = 3;
+	FontConfig.PixelSnapH  = true;
+	io.Fonts->AddFontFromFileTTF(FontPath.c_str(), FontSize, &FontConfig, io.Fonts->GetGlyphRangesKorean());
 	ImGui_ImplDX11_InvalidateDeviceObjects();
 	ImGui_ImplDX11_CreateDeviceObjects();
 
-	ImGuiPlatformIO& PlatformIO = ImGui::GetPlatformIO();
+	ImGuiPlatformIO& PlatformIO      = ImGui::GetPlatformIO();
 	PlatformIO.Platform_CreateWindow = MyCreateWindow;
 }
 
@@ -362,31 +339,29 @@ void UEngine::LoadAllObjectsFromFile()
 	std::vector<std::filesystem::path> MyAssetFiles;
 	MyAssetFiles.reserve(100);
 	std::string ContentDirectory = CurrentDirectory + "/Content";
-	for(const auto& Entry : std::filesystem::recursive_directory_iterator(ContentDirectory))
+	for (const auto& Entry : std::filesystem::recursive_directory_iterator(ContentDirectory))
 	{
-		if(Entry.is_regular_file()&&Entry.path().extension() == ".myasset")
+		if (Entry.is_regular_file() && Entry.path().extension() == ".myasset")
 		{
 			MyAssetFiles.push_back(Entry.path());
 		}
 	}
 
-	for(const auto& File : MyAssetFiles)
+	for (const auto& File : MyAssetFiles)
 	{
 		std::string FilePath = File.string();
-		while(true)
+		while (true)
 		{
 			auto p = FilePath.find("\\");
 			if (p == std::string::npos)
 			{
 				break;
 			}
-			FilePath.replace(p,1, "/");	
+			FilePath.replace(p, 1, "/");
 		}
 
-		
 		AssetManager::ReadMyAsset(FilePath);
 	}
 
-
-	MY_LOG("Load",EDebugLogLevel::DLL_Warning, "Load All Objects From File Success");
+	MY_LOG("Load", EDebugLogLevel::DLL_Warning, "Load All Objects From File Success");
 }

@@ -10,7 +10,6 @@
 class UAnimSequenceBase : public UAnimationAsset
 {
 	MY_GENERATED_BODY(UAnimSequenceBase)
-public:
 	// 더 이른 시간을 기준으로 notify 정렬
 	void SortNotifies();
 
@@ -18,15 +17,10 @@ public:
 	void GetAnimNotifies(const float& CurrentTime, std::vector<FAnimNotifyEvent>& OutActiveNotifies);
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
-protected:
-private:
+
 public:
 	std::vector<FAnimNotifyEvent> Notifies;
 
-	float LastUpdateTime = 1000.0f;
+	float LastUpdateTime        = 1000.0f;
 	float LastUpdateTimeSeconds = 0.0f;
-
-	
-protected:
-private:
 };

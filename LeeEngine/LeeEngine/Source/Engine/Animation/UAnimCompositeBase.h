@@ -9,10 +9,4 @@
 class UAnimCompositeBase : public UAnimSequenceBase
 {
 	MY_GENERATED_BODY(UAnimCompositeBase)
-public:
-protected:
-private:
-public:
-protected:
-private:
 };

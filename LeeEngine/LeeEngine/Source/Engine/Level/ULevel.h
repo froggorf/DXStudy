@@ -14,38 +14,48 @@ class ULevel : public UObject
 {
 	MY_GENERATED_BODY(ULevel)
 
-public:
 	ULevel();
 	//ULevel(const std::shared_ptr<UWorld>& World);
 	ULevel(const ULevel* LevelInstance);
 	~ULevel() override;
 
-	virtual void PostLoad() override;
-	virtual void Register() override;
+	void PostLoad() override;
+	void Register() override;
 	void BeginPlay() override;
 	void TickLevel(float DeltaSeconds);
 
-	void SetOwningWorld(const std::shared_ptr<UWorld>& NewOwningWorld){ OwningWorld = NewOwningWorld; }
-	std::shared_ptr<UWorld> GetWorld() const { return OwningWorld; }
+	void SetOwningWorld(const std::shared_ptr<UWorld>& NewOwningWorld)
+	{
+		OwningWorld = NewOwningWorld;
+	}
 
-	const std::vector<std::shared_ptr<AActor>>& GetLevelActors() const {return Actors;};
+	std::shared_ptr<UWorld> GetWorld() const
+	{
+		return OwningWorld;
+	}
 
+	const std::vector<std::shared_ptr<AActor>>& GetLevelActors() const
+	{
+		return Actors;
+	};
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 	void SaveDataFromAssetToFile(nlohmann::json& Json) override;
-	static const ULevel* GetLevelInstanceByName(const std::string& LevelName) {return GetLevelInstanceMap()[LevelName].get();}
-protected:
+
+	static const ULevel* GetLevelInstanceByName(const std::string& LevelName)
+	{
+		return GetLevelInstanceMap()[LevelName].get();
+	}
+
 private:
 	static std::map<std::string, std::unique_ptr<ULevel>>& GetLevelInstanceMap()
 	{
 		static std::map<std::string, std::unique_ptr<ULevel>> LevelInstanceMap;
 		return LevelInstanceMap;
 	}
-public:
-protected:
+
 private:
-	std::shared_ptr<UWorld>	OwningWorld;
+	std::shared_ptr<UWorld> OwningWorld;
 
 	std::vector<std::shared_ptr<AActor>> Actors;
-
 };

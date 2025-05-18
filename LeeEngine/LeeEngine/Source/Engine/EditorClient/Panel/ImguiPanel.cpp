@@ -4,7 +4,6 @@
 UINT CommandIDGenerator::IDCount = 0;
 
 FImguiPanel::FImguiPanel(FScene* InSceneData)
-	:SceneData(InSceneData)
+	: SceneData(InSceneData)
 {
-	
 }

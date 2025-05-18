@@ -18,35 +18,40 @@ enum class EEditorModificationType
 class UEditorEngine : public UEngine
 {
 	MY_GENERATED_BODY(UEditorEngine)
-public:
-	UEditorEngine() : UEngine(nullptr) {	}
 
-	UEditorEngine(D3DApp* Application) : UEngine(Application)	{	};
+	UEditorEngine()
+		: UEngine(nullptr)
+	{
+	}
+
+	UEditorEngine(D3DApp* Application)
+		: UEngine(Application)
+	{
+	};
 	~UEditorEngine() override;
-	virtual void InitEngine() override;
-	virtual void PostLoad() override;
-	virtual const std::string& GetDefaultMapName() override;
-
-
+	void               InitEngine() override;
+	void               PostLoad() override;
+	const std::string& GetDefaultMapName() override;
 
 	void DrawEngineTitleBar();
 
-
 	void SaveModifiedLevel();
 	void SaveModifiedData();
-	virtual void HandleInput(UINT msg, WPARAM wParam, LPARAM lParam) override;
+	void HandleInput(UINT msg, WPARAM wParam, LPARAM lParam) override;
 
 	void EditorModify(EEditorModificationType Type, std::function<void(bool)> Func = nullptr);
-	bool IsEditorModify(EEditorModificationType Type) const {return EditorModificationTypes[static_cast<UINT>(Type)];}
+
+	bool IsEditorModify(EEditorModificationType Type) const
+	{
+		return EditorModificationTypes[static_cast<UINT>(Type)];
+	}
+
 protected:
 	void CreateRenderThread() override;
-private:
-public:
-protected:
+
 private:
 	CImage LogoImage;
 
-	bool EditorModificationTypes[static_cast<UINT>( EEditorModificationType::EMT_Count)] = {false,};
-	bool bEditorModified = false;
-	
+	bool EditorModificationTypes[static_cast<UINT>(EEditorModificationType::EMT_Count)] = {false,};
+	bool bEditorModified                                                                = false;
 };

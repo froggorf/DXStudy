@@ -14,8 +14,7 @@ class UNiagaraComponent : public UPrimitiveComponent
 	MY_GENERATED_BODY(UNiagaraComponent)
 
 	UNiagaraComponent();
-	~UNiagaraComponent() override = default; 
-public:
+	~UNiagaraComponent() override = default;
 	std::vector<std::shared_ptr<FPrimitiveSceneProxy>> CreateSceneProxy() override;
 
 	std::vector<std::shared_ptr<FNiagaraSceneProxy>> SceneProxies;
@@ -26,12 +25,16 @@ public:
 	void Activate();
 	void Deactivate();
 
-	void SetNiagaraAsset(const std::shared_ptr<UNiagaraSystem>& InNiagaraAsset) { NiagaraAsset = InNiagaraAsset; }
+	void SetNiagaraAsset(const std::shared_ptr<UNiagaraSystem>& InNiagaraAsset)
+	{
+		NiagaraAsset = InNiagaraAsset;
+	}
 
 #ifdef WITH_EDITOR
 	void DrawDetailPanel(UINT ComponentDepth) override;
 #endif
+
 protected:
 	std::shared_ptr<UNiagaraSystem> NiagaraAsset;
-	bool bIsActivate = true;
+	bool                            bIsActivate = true;
 };

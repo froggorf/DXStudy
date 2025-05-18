@@ -14,59 +14,61 @@ FImguiActorDetail::FImguiActorDetail(FScene* Scene, class FImguiLevelViewport* O
 
 void FImguiActorDetail::Draw()
 {
-	if(ImGui::Begin("Detail", nullptr, ImGuiWindowFlags_NoMove))
+	if (ImGui::Begin("Detail", nullptr, ImGuiWindowFlags_NoMove))
 	{
-		if(CurrentSelectedActor)
+		if (CurrentSelectedActor)
 		{
 			// 컴퍼넌트들 렌더링
 			{
-				if(ImGui::BeginListBox(" ", ImVec2(-FLT_MIN,100.0f)))
+				if (ImGui::BeginListBox(" ", ImVec2(-FLT_MIN, 100.0f)))
 				{
 					int ComponentCount = SelectActorSceneComponentNames.size();
-					for (int i = 0; i < ComponentCount; ++i) {
+					for (int i = 0; i < ComponentCount; ++i)
+					{
 						const bool is_selected = (CurrentSelectedComponentIndex == i);
-						if (ImGui::Selectable(SelectActorSceneComponentNames[i].data(), is_selected)) {
+						if (ImGui::Selectable(SelectActorSceneComponentNames[i].data(), is_selected))
+						{
 							CurrentSelectedComponentIndex = i;
 						}
 
-						if (is_selected) {
+						if (is_selected)
+						{
 							ImGui::SetItemDefaultFocus();
 						}
-
-						
 					}
 
 					int ActorComponentCount = SelectActorActorComponentNames.size();
-					for(int index = 0; index < ActorComponentCount; ++index)
+					for (int index = 0; index < ActorComponentCount; ++index)
 					{
 						const bool is_selected = (CurrentSelectedComponentIndex == index + ComponentCount);
-						if (ImGui::Selectable(SelectActorActorComponentNames[index].data(), is_selected)) {
+						if (ImGui::Selectable(SelectActorActorComponentNames[index].data(), is_selected))
+						{
 							CurrentSelectedComponentIndex = index + ComponentCount;
 						}
-						if (is_selected) {
+						if (is_selected)
+						{
 							ImGui::SetItemDefaultFocus();
 						}
 					}
 					ImGui::EndListBox();
 					ImGui::BeginChild("Detail");
-					if(const auto& CurrentSelectedComponent = GetCurrentSelectedComponent())
+					if (const auto& CurrentSelectedComponent = GetCurrentSelectedComponent())
 					{
 						CurrentSelectedComponent->DrawDetailPanel(0);
 					}
-					else if(const auto& CurrentSelectedActorComponent = GetCurrentSelectedActorComponent())
+					else if (const auto& CurrentSelectedActorComponent = GetCurrentSelectedActorComponent())
 					{
 						CurrentSelectedActorComponent->DrawDetailPanel(0);
 					}
 					ImGui::EndChild();
 				}
 			}
-
 		}
 		else
 		{
 			ImGui::Text("No Select");
 		}
-		ImGui::End();	
+		ImGui::End();
 	}
 }
 
@@ -77,7 +79,7 @@ void FImguiActorDetail::InitLevelData()
 	SelectActorSceneComponentNames.clear();
 	SelectActorActorComponents.clear();
 	SelectActorActorComponentNames.clear();
-	CurrentSelectedComponentIndex=-1;
+	CurrentSelectedComponentIndex = -1;
 }
 
 void FImguiActorDetail::SelectActorFromWorldOutliner(const std::shared_ptr<AActor>& NewSelectedActor)
@@ -88,22 +90,22 @@ void FImguiActorDetail::SelectActorFromWorldOutliner(const std::shared_ptr<AActo
 	SelectActorActorComponentNames.clear();
 
 	CurrentSelectedComponentIndex = 0;
-	CurrentSelectedActor = NewSelectedActor;
+	CurrentSelectedActor          = NewSelectedActor;
 	FindComponentsAndNamesFromActor(CurrentSelectedActor->GetRootComponent(), 0);
 }
 
 void FImguiActorDetail::FindComponentsAndNamesFromActor(const std::shared_ptr<USceneComponent>& TargetComponent,
-	int CurrentHierarchyDepth)
+														int                                     CurrentHierarchyDepth)
 {
-	if(!CurrentSelectedActor)
+	if (!CurrentSelectedActor)
 	{
 		return;
 	}
 
 	// 계층에 따른 SceneComponent 찾기
 	std::string HierarchyTabString;
-	HierarchyTabString.reserve(2*CurrentHierarchyDepth);
-	for(int i = 0; i < CurrentHierarchyDepth; ++i)
+	HierarchyTabString.reserve(2 * CurrentHierarchyDepth);
+	for (int i = 0; i < CurrentHierarchyDepth; ++i)
 	{
 		HierarchyTabString += "  ";
 	}
@@ -114,13 +116,13 @@ void FImguiActorDetail::FindComponentsAndNamesFromActor(const std::shared_ptr<US
 	SelectActorSceneComponentNames.push_back(TargetComponentName);
 
 	const std::vector<std::shared_ptr<USceneComponent>>& TargetComponentChildren = TargetComponent->GetAttachChildren();
-	for(const auto& ChildComponent : TargetComponentChildren)
+	for (const auto& ChildComponent : TargetComponentChildren)
 	{
-		FindComponentsAndNamesFromActor(ChildComponent, CurrentHierarchyDepth+1);
+		FindComponentsAndNamesFromActor(ChildComponent, CurrentHierarchyDepth + 1);
 	}
 
 	// UActorComponent에 대해서 조사
-	if(CurrentHierarchyDepth == 0)
+	if (CurrentHierarchyDepth == 0)
 	{
 		for (const auto& Component : CurrentSelectedActor->GetComponents())
 		{

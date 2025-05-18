@@ -14,13 +14,13 @@ class FSkeletalMeshSceneProxy : public FPrimitiveSceneProxy
 {
 public:
 	FSkeletalMeshSceneProxy(UINT PrimitiveID, UINT InMeshIndex, const std::shared_ptr<USkeletalMesh>& SkeletalMesh);
-	virtual ~FSkeletalMeshSceneProxy() override;
+	~FSkeletalMeshSceneProxy() override;
 
 	// 메쉬 정보
 	FSkeletalMeshRenderData* RenderData;
 
 	// 애니메이션 정보
-	std::vector<DirectX::XMMATRIX> BoneFinalMatrices;
+	std::vector<XMMATRIX> BoneFinalMatrices;
 
-	virtual void Draw() override;
+	void Draw() override;
 };

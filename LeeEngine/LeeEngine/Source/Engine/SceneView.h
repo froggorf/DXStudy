@@ -10,11 +10,13 @@ struct FViewMatrices
 {
 	FViewMatrices()
 	{
-		ViewMatrix = XMMatrixLookToLH(XMVectorSet(0.0f,0.0f,0.0f,0.0f), XMVectorSet(0.0f,0.0f,1.0f,0.0f),XMVectorSet(0.0f,1.0f,0.0f,0.0f));
+		ViewMatrix = XMMatrixLookToLH(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f),
+									XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
 		ProjectionMatrix = XMMatrixIdentity();
-		ViewOrigin = XMFLOAT3(0.0f,0.0f,0.0f);
-		CameraRotQuat = XMQuaternionRotationRollPitchYaw(0.0f,0.0f,0.0f);
+		ViewOrigin       = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		CameraRotQuat    = XMQuaternionRotationRollPitchYaw(0.0f, 0.0f, 0.0f);
 	}
+
 	// World To View
 	XMMATRIX ViewMatrix;
 	// View To Clip
@@ -23,24 +25,26 @@ struct FViewMatrices
 	// 월드 좌표에서의 카메라 위치정보
 	XMFLOAT3 ViewOrigin;
 	XMVECTOR CameraRotQuat;
-	
 
-public:
-	void UpdateViewMatrix(const XMFLOAT3 ViewLocation, const XMVECTOR& ViewRotation);
+	void UpdateViewMatrix(XMFLOAT3 ViewLocation, const XMVECTOR& ViewRotation);
 	void UpdateProjectionMatrix(const XMMATRIX& NewProjectionMatrix);
-	inline const XMMATRIX GetProjectionMatrix() const
+
+	const XMMATRIX GetProjectionMatrix() const
 	{
 		return ProjectionMatrix;
 	}
-	inline const XMMATRIX GetViewMatrix() const
+
+	const XMMATRIX GetViewMatrix() const
 	{
 		return ViewMatrix;
 	}
-	inline const XMFLOAT3 GetViewOrigin() const
+
+	const XMFLOAT3 GetViewOrigin() const
 	{
 		return ViewOrigin;
 	}
-	inline const XMVECTOR GetCameraRotQuat() const
+
+	const XMVECTOR GetCameraRotQuat() const
 	{
 		return CameraRotQuat;
 	}

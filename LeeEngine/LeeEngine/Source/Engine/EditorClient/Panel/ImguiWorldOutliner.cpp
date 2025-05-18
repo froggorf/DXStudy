@@ -17,7 +17,7 @@ FImguiWorldOutliner::FImguiWorldOutliner(FScene* Scene, class FImguiLevelViewpor
 void FImguiWorldOutliner::Draw()
 {
 	// Pending Add
-	for(const auto& NewOutlinerActor : PendingAddWorldOutlinerActors)
+	for (const auto& NewOutlinerActor : PendingAddWorldOutlinerActors)
 	{
 		WorldOutlinerActors.push_back(NewOutlinerActor);
 	}
@@ -25,30 +25,32 @@ void FImguiWorldOutliner::Draw()
 
 	// WorldOutliner
 	static int CurrentItem = -1;
-	if(ImGui::Begin("World Outliner", nullptr))
+	if (ImGui::Begin("World Outliner", nullptr))
 	{
-		if (ImGui::BeginListBox(" ", ImVec2(-FLT_MIN,-FLT_MIN))) {
-		int ActorCount = WorldOutlinerActors.size();
-		for (int i = 0; i < ActorCount; i++) {
-			const bool is_selected = (CurrentItem== i);
-			if (ImGui::Selectable(WorldOutlinerActors[i]->GetName().c_str(), is_selected)) {
-				CurrentItem = i;
+		if (ImGui::BeginListBox(" ", ImVec2(-FLT_MIN, -FLT_MIN)))
+		{
+			int ActorCount = WorldOutlinerActors.size();
+			for (int i = 0; i < ActorCount; i++)
+			{
+				const bool is_selected = (CurrentItem == i);
+				if (ImGui::Selectable(WorldOutlinerActors[i]->GetName().c_str(), is_selected))
+				{
+					CurrentItem = i;
 
-				LevelViewportOwnerPanel->SelectActorFromWorldOutliner(WorldOutlinerActors[i]);
-			}
+					LevelViewportOwnerPanel->SelectActorFromWorldOutliner(WorldOutlinerActors[i]);
+				}
 
-			// 선택된 항목에 대한 포커스 처리
-			if (is_selected) {
-				ImGui::SetItemDefaultFocus();
+				// 선택된 항목에 대한 포커스 처리
+				if (is_selected)
+				{
+					ImGui::SetItemDefaultFocus();
+				}
 			}
+			ImGui::EndListBox();
 		}
-		ImGui::EndListBox();
-	}
 
-	ImGui::End();
+		ImGui::End();
 	}
-
-	
 }
 
 void FImguiWorldOutliner::InitLevelData()
@@ -59,6 +61,5 @@ void FImguiWorldOutliner::InitLevelData()
 
 void FImguiWorldOutliner::PendingAddWorldOutlinerActor(const std::shared_ptr<AActor>& NewActor)
 {
-
 	PendingAddWorldOutlinerActors.push_back(NewActor);
 }

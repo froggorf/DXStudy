@@ -9,13 +9,11 @@
 
 struct FAnimNotifyEvent
 {
-public:
 	FAnimNotifyEvent();
-protected:
-private:
+
 public:
-	float TriggerTimeOffset;
-	float EndTriggerTimeOffset;
+	float                        TriggerTimeOffset;
+	float                        EndTriggerTimeOffset;
 	std::shared_ptr<UAnimNotify> Notify;
 	//std::shared_ptr<UAnimNotifyState> NotifyState;
 
@@ -24,8 +22,13 @@ public:
 		return TriggerTimeOffset < Other.TriggerTimeOffset;
 	}
 
-	float GetTriggerTime() const { return TriggerTimeOffset; }
-	float GetEndTriggerTime() const {return EndTriggerTimeOffset;}
-protected:
-private:
+	float GetTriggerTime() const
+	{
+		return TriggerTimeOffset;
+	}
+
+	float GetEndTriggerTime() const
+	{
+		return EndTriggerTimeOffset;
+	}
 };

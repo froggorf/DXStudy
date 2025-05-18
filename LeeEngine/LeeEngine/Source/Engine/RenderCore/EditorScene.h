@@ -11,18 +11,23 @@
 
 enum class EDebugLogLevel
 {
-	DLL_Fatal, DLL_Error, DLL_Warning, DLL_Display, 
+	DLL_Fatal, DLL_Error, DLL_Warning, DLL_Display,
 };
+
 struct DebugText
 {
-	DebugText(){};
+	DebugText()
+	{
+	};
+
 	DebugText(const std::string& Text, EDebugLogLevel Level)
 	{
-		this->Text = Text;
+		this->Text  = Text;
 		this->Level = Level;
 	}
-	std::string Text;
-	EDebugLogLevel Level;
+
+	std::string                             Text;
+	EDebugLogLevel                          Level;
 	static std::map<EDebugLogLevel, ImVec4> Color;
 };
 
@@ -33,7 +38,10 @@ class FEditorScene : public FScene
 {
 public:
 	FEditorScene();
-	~FEditorScene() override {}
+
+	~FEditorScene() override
+	{
+	}
 
 	std::unique_ptr<FEditorClient> EditorClient;
 
@@ -41,7 +49,7 @@ public:
 	void InitLevelData() override;
 	void BeginRenderFrame() override;
 	void SetDrawScenePipeline(const float* ClearColor) override;
-	void AfterDrawSceneAction(const std::shared_ptr<FScene> SceneData) override;
+	void AfterDrawSceneAction(std::shared_ptr<FScene> SceneData) override;
 
 	XMMATRIX GetViewMatrix() override;
 	XMMATRIX GetProjectionMatrix() override;
@@ -50,7 +58,8 @@ public:
 	// ==================== IMGUI / IMGUIZMO ===================
 
 	// 디버깅 콘솔 텍스트 추가 함수
-	static void AddConsoleText_GameThread(const std::string& Category, EDebugLogLevel DebugLevel, const std::string& InDebugText);
+	static void AddConsoleText_GameThread(const std::string& Category, EDebugLogLevel DebugLevel,
+										const std::string&   InDebugText);
 
 	// 게임쓰레드 호출_월드 아웃라이너 내 액터 추가 함수 (register 시 호출)
 	static void AddWorldOutlinerActor_GameThread(std::shared_ptr<AActor> NewActor);
@@ -60,11 +69,8 @@ public:
 
 #endif
 
-
-
 // ================================ 디버깅 로그 ================================
 #ifdef WITH_EDITOR
-
 
 #define MY_LOG(Category, DebugLogLevel, InDebugText) \
 {\

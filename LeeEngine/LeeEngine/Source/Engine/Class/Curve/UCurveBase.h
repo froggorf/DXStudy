@@ -6,13 +6,13 @@
 #include "Engine/MyEngineUtils.h"
 #include "Engine/UObject/UObject.h"
 
-
 float HermiteCurve(float t, float P0, float P1, float T0, float T1);
 
 enum class ECurveMode
 {
 	ECM_Linear, ECM_Hermite
 };
+
 struct FRichCurveKey
 {
 	float Time;
@@ -23,11 +23,10 @@ struct FRichCurveKey
 
 struct FRichCurve
 {
-	ECurveMode CurveMode;
+	ECurveMode                 CurveMode;
 	std::vector<FRichCurveKey> Keys;
 
 	float Eval(float InTime) const;
-
 
 #ifdef WITH_EDITOR
 	void DrawLinearCurve(ImDrawList* DrawList, ImVec2 CanvasPos, ImVec2 CanvasSize) const;
@@ -37,29 +36,21 @@ struct FRichCurve
 #endif
 };
 
-
 class UCurveBase : public UObject, public std::enable_shared_from_this<UCurveBase>
 {
 	MY_GENERATED_BODY(UCurveBase)
-public:
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
-	static std::shared_ptr<UCurveBase> GetCurveAssetCache(const std::string& CurveName) 
+	static std::shared_ptr<UCurveBase> GetCurveAssetCache(const std::string& CurveName)
 	{
 		auto TargetAssetIter = GetCurveMap().find(CurveName);
-		if(TargetAssetIter != GetCurveMap().end())
+		if (TargetAssetIter != GetCurveMap().end())
 		{
 			return (TargetAssetIter->second);
 		}
 		return nullptr;
 	}
 
-
-protected:
-private:
-public:
-	
-protected:
 private:
 	static std::unordered_map<std::string, std::shared_ptr<UCurveBase>>& GetCurveMap()
 	{
@@ -71,33 +62,48 @@ private:
 class UCurveFloat : public UCurveBase
 {
 	MY_GENERATED_BODY(UCurveFloat)
-public:
 	float GetFloatValue(float InTime) const;
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
-	const FRichCurve& GetRichCurve() const {return FloatCurve;}
-protected:
-private:
+	const FRichCurve& GetRichCurve() const
+	{
+		return FloatCurve;
+	}
+
 public:
 	FRichCurve FloatCurve;
-protected:
-private:
-	
 };
 
 struct FAlphaBlend
 {
-public:
-	FAlphaBlend() : CustomCurve(nullptr), BlendTime(0.0f) {};
-	void SetCurveFloat(const std::shared_ptr<UCurveFloat>& InCustomCurve){CustomCurve = InCustomCurve;}
+	FAlphaBlend()
+		: CustomCurve(nullptr), BlendTime(0.0f)
+	{
+	};
 
-	void SetBlendTime(float InBlendTime){BlendTime=  InBlendTime;}
-	float GetBlendTime() const {return BlendTime;}
+	void SetCurveFloat(const std::shared_ptr<UCurveFloat>& InCustomCurve)
+	{
+		CustomCurve = InCustomCurve;
+	}
+
+	void SetBlendTime(float InBlendTime)
+	{
+		BlendTime = InBlendTime;
+	}
+
+	float GetBlendTime() const
+	{
+		return BlendTime;
+	}
 
 	void Update(float DeltaSeconds);
 
-	const std::shared_ptr<UCurveFloat>& GetCurve() const {return CustomCurve;}
+	const std::shared_ptr<UCurveFloat>& GetCurve() const
+	{
+		return CustomCurve;
+	}
+
 private:
 	std::shared_ptr<UCurveFloat> CustomCurve;
 	// Blend Time

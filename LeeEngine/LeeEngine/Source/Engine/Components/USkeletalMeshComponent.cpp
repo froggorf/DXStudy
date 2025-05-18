@@ -14,7 +14,6 @@ USkeletalMeshComponent::USkeletalMeshComponent()
 	Rename("SkeletalMeshComponent_" + std::to_string(ComponentID));
 	AnimInstance = std::make_shared<UAnimInstance>();
 	AnimInstance->SetSkeletalMeshComponent(this);
-
 }
 
 void USkeletalMeshComponent::BeginPlay()
@@ -31,7 +30,7 @@ void USkeletalMeshComponent::Register()
 {
 	USkinnedMeshComponent::Register();
 
-	if(AnimInstance)
+	if (AnimInstance)
 	{
 		AnimInstance->UpdateAnimation(0.0f);
 	}
@@ -42,25 +41,24 @@ std::vector<std::shared_ptr<FPrimitiveSceneProxy>> USkeletalMeshComponent::Creat
 	std::vector<std::shared_ptr<FPrimitiveSceneProxy>> SceneProxies;
 
 	UINT MeshCount = SkeletalMesh->GetSkeletalMeshRenderData()->MeshCount;
-	for(int i = 0; i < MeshCount; ++i)
+	for (int i = 0; i < MeshCount; ++i)
 	{
-		std::shared_ptr<FSkeletalMeshSceneProxy> SceneProxy = std::make_shared<FSkeletalMeshSceneProxy>(PrimitiveID,i,SkeletalMesh);
+		auto SceneProxy = std::make_shared<FSkeletalMeshSceneProxy>(PrimitiveID, i, SkeletalMesh);
 		SceneProxies.emplace_back(SceneProxy);
 	}
-	
-	return SceneProxies;
 
+	return SceneProxies;
 }
 
 bool USkeletalMeshComponent::SetSkeletalMesh(const std::shared_ptr<USkeletalMesh>& NewMesh)
 {
-	if(nullptr == NewMesh)
+	if (nullptr == NewMesh)
 	{
 		MY_LOG("SetStaticMesh", EDebugLogLevel::DLL_Warning, "nullptr StaticMesh");
 		return false;
 	}
 
-	if(NewMesh.get() == GetSkeletalMesh().get())
+	if (NewMesh.get() == GetSkeletalMesh().get())
 	{
 		return false;
 	}
@@ -73,31 +71,29 @@ bool USkeletalMeshComponent::SetSkeletalMesh(const std::shared_ptr<USkeletalMesh
 void USkeletalMeshComponent::DrawDetailPanel(UINT ComponentDepth)
 {
 	USkinnedMeshComponent::DrawDetailPanel(ComponentDepth);
-
 }
 
 void USkeletalMeshComponent::SetAnimInstanceClass(const std::string& InAnimInstanceClass)
 {
-	if(const UObject* AnimDefaultObject = GetDefaultObject(InAnimInstanceClass))
+	if (const UObject* AnimDefaultObject = GetDefaultObject(InAnimInstanceClass))
 	{
-		std::shared_ptr<UAnimInstance> NewAnimInstance = std::dynamic_pointer_cast<UAnimInstance>(AnimDefaultObject->CreateInstance());
-		if(NewAnimInstance)
+		std::shared_ptr<UAnimInstance> NewAnimInstance = std::dynamic_pointer_cast<UAnimInstance>(
+			AnimDefaultObject->CreateInstance());
+		if (NewAnimInstance)
 		{
-			AnimInstance =  NewAnimInstance;
+			AnimInstance = NewAnimInstance;
 			AnimInstance->SetSkeletalMeshComponent(this);
 			return;
 		}
 		MY_LOG("SetAnimInstanceClass", EDebugLogLevel::DLL_Warning, "Invalid AnimInstanceClass");
 	}
-	
 }
-
 
 void USkeletalMeshComponent::TickComponent(float DeltaSeconds)
 {
 	USkinnedMeshComponent::TickComponent(DeltaSeconds);
 
-	if(AnimInstance)
+	if (AnimInstance)
 	{
 		AnimInstance->Tick(DeltaSeconds);
 	}

@@ -3,14 +3,12 @@
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
 
-
 #pragma once
 
 #include "ImguiPanel.h"
 #include "Engine/MyEngineUtils.h"
 #include "Engine/SceneView.h"
 #include "Engine/RenderCore/EditorScene.h"
-
 
 /*
  * 레벨의 에디터 뷰포트와
@@ -31,15 +29,20 @@ enum class ELevelViewportCommandType
 	LVCT_SelectActorFromWorldOutliner,
 };
 
-struct FImguiLevelViewportCommandData: public FImguiPanelCommandData
+struct FImguiLevelViewportCommandData : FImguiPanelCommandData
 {
-	FImguiLevelViewportCommandData() {};
-	~FImguiLevelViewportCommandData() override {};
+	FImguiLevelViewportCommandData()
+	{
+	};
+
+	~FImguiLevelViewportCommandData() override
+	{
+	};
 
 	ELevelViewportCommandType CommandType;
-	std::shared_ptr<AActor> NewPendingAddActor;
-	std::shared_ptr<AActor> NewSelectedActorFromWorldOutliner;
-	FViewMatrices* ViewMatrices;
+	std::shared_ptr<AActor>   NewPendingAddActor;
+	std::shared_ptr<AActor>   NewSelectedActorFromWorldOutliner;
+	FViewMatrices*            ViewMatrices;
 
 	// 언리얼엔진의 Struct 비교 방식에서 차용
 	// 각 ImguiPanelCommandData 클래스의 ID (고유해야함)
@@ -48,11 +51,17 @@ struct FImguiLevelViewportCommandData: public FImguiPanelCommandData
 		static CommandIDGenerator Generator;
 		return Generator.ID;
 	}
-	virtual UINT GetTypeID() const {return GetClassID();}
-	virtual bool IsOfType(UINT InTypeID) const {return GetClassID() == InTypeID|| FImguiPanelCommandData::IsOfType(InTypeID); }
 
+	UINT GetTypeID() const override
+	{
+		return GetClassID();
+	}
+
+	bool IsOfType(UINT InTypeID) const override
+	{
+		return GetClassID() == InTypeID || FImguiPanelCommandData::IsOfType(InTypeID);
+	}
 };
-
 
 class FImguiLevelViewport : public FImguiPanel
 {
@@ -64,13 +73,10 @@ public:
 
 	// 월드 아웃라이너 패널에서 액터를 선택했을 시 호출
 	void SelectActorFromWorldOutliner(const std::shared_ptr<AActor>& NewSelectedActor);
-protected:
+
 private:
 	// 레벨 변경 시 현재의 레벨 데이터를 초기화 하는 함수
 	void InitLevelData();
-
-	
-
 
 	// CurrentSelectedActor의 Imguizmo 기즈모 렌더링 + 이동 조작 Imguizmo 커맨드 큐 추가
 	void DrawImguizmoSelectedActor(float AspectRatio);
@@ -79,20 +85,23 @@ private:
 	// 에디터 카메라 이동을 적용하는 함수
 	void EditorCameraMove(XMFLOAT3 MoveDelta, XMFLOAT2 MouseDelta);
 
-	FImguiWorldOutliner* GetWorldOutlinerPanel() const {return WorldOutlinerPanel.get(); }
-	FImguiActorDetail* GetActorDetailPanel() const {return ActorDetailPanel.get(); }
-public:
-protected:
+	FImguiWorldOutliner* GetWorldOutlinerPanel() const
+	{
+		return WorldOutlinerPanel.get();
+	}
+
+	FImguiActorDetail* GetActorDetailPanel() const
+	{
+		return ActorDetailPanel.get();
+	}
+
 private:
 	std::unique_ptr<FImguiWorldOutliner> WorldOutlinerPanel;
-	std::unique_ptr<FImguiActorDetail> ActorDetailPanel;
-
+	std::unique_ptr<FImguiActorDetail>   ActorDetailPanel;
 
 	// Level Viewport 변수
-	bool bResizeEditorRenderTargetAtEndFrame=false;
-	ImVec2 ResizeEditorRenderTargetSize = {};
-
+	bool   bResizeEditorRenderTargetAtEndFrame = false;
+	ImVec2 ResizeEditorRenderTargetSize        = {};
 
 	FViewMatrices EditorViewMatrices;
-
 };

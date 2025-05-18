@@ -14,29 +14,23 @@
 class UAimOffsetBlendSpace : public UBlendSpace
 {
 	MY_GENERATED_BODY(UAimOffsetBlendSpace);
-public:
 	UAimOffsetBlendSpace();
 
 	static const std::shared_ptr<UAimOffsetBlendSpace>& GetAnimationAsset(const std::string& AnimationName)
 	{
-		if(std::shared_ptr<UAnimationAsset> FindAsset = UAnimationAsset::GetAnimationAsset(AnimationName))
+		if (std::shared_ptr<UAnimationAsset> FindAsset = UAnimationAsset::GetAnimationAsset(AnimationName))
 		{
-			return std::dynamic_pointer_cast<UAimOffsetBlendSpace>(FindAsset);	
+			return std::dynamic_pointer_cast<UAimOffsetBlendSpace>(FindAsset);
 		}
 		return nullptr;
 	}
 
 	// UBlendSpace와 다르게 AimOffset의 정중앙의 애니메이션과의 "Offset" 에 대한 본 매트릭스만 반환
-	void GetAnimationBoneMatrices(const XMFLOAT2& AnimValue, float CurrentAnimTime, std::vector<XMMATRIX>& OutMatrices, std::vector<FAnimNotifyEvent>& OutActiveNotifies) override;
-
-
+	void GetAnimationBoneMatrices(const XMFLOAT2& AnimValue, float CurrentAnimTime, std::vector<XMMATRIX>& OutMatrices,
+								std::vector<FAnimNotifyEvent>& OutActiveNotifies) override;
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
-protected:
-private:
-public:
-protected:
 private:
 	std::vector<XMMATRIX> DefaultAnimMatrices;
 };

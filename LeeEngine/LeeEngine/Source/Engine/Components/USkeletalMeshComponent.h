@@ -8,19 +8,21 @@
 #include "Engine/Animation/UAnimInstance.h"
 #include "Engine/Mesh/USkeletalMesh.h"
 
-
 class USkeletalMesh;
 
 class USkeletalMeshComponent : public USkinnedMeshComponent
 {
 	MY_GENERATED_BODY(USkeletalMeshComponent)
-public:
 	USkeletalMeshComponent();
-	void BeginPlay() override;
-	virtual void Register() override;
-	virtual std::vector<std::shared_ptr<FPrimitiveSceneProxy>> CreateSceneProxy() override;
-	virtual bool SetSkeletalMesh(const std::shared_ptr<USkeletalMesh>& NewMesh);
-	const std::shared_ptr<USkeletalMesh>& GetSkeletalMesh() const { return SkeletalMesh; }
+	void                                               BeginPlay() override;
+	void                                               Register() override;
+	std::vector<std::shared_ptr<FPrimitiveSceneProxy>> CreateSceneProxy() override;
+	virtual bool                                       SetSkeletalMesh(const std::shared_ptr<USkeletalMesh>& NewMesh);
+
+	const std::shared_ptr<USkeletalMesh>& GetSkeletalMesh() const
+	{
+		return SkeletalMesh;
+	}
 
 #ifdef WITH_EDITOR
 	void DrawDetailPanel(UINT ComponentDepth) override;
@@ -29,10 +31,7 @@ public:
 	void SetAnimInstanceClass(const std::string& InAnimInstanceClass);
 
 	void TickComponent(float DeltaSeconds) override;
-protected:
-private:
-public:
-protected:
+
 private:
 	std::shared_ptr<USkeletalMesh> SkeletalMesh;
 	std::shared_ptr<UAnimInstance> AnimInstance;

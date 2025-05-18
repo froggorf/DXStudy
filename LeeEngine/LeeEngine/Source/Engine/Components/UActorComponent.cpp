@@ -6,10 +6,10 @@
 #include "UActorComponent.h"
 
 static UINT ComponentIDCount = 0;
+
 UActorComponent::UActorComponent()
 {
 	ComponentID = ComponentIDCount++;
-
 }
 
 void UActorComponent::TickComponent(float DeltaSeconds)
@@ -19,6 +19,5 @@ void UActorComponent::TickComponent(float DeltaSeconds)
 #ifdef WITH_EDITOR
 void UActorComponent::DrawDetailPanel(UINT ComponentDepth)
 {
-	
 }
 #endif

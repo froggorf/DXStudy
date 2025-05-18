@@ -9,19 +9,18 @@
 #include "Engine/Mesh/USkeletalMesh.h"
 #include "Engine/RenderCore/EditorScene.h"
 
-
-FSkeletalMeshSceneProxy::FSkeletalMeshSceneProxy(UINT PrimitiveID, UINT InMeshIndex,
-	const std::shared_ptr<USkeletalMesh>& InSkeletalMesh)
+FSkeletalMeshSceneProxy::FSkeletalMeshSceneProxy(UINT                                 PrimitiveID, UINT InMeshIndex,
+												const std::shared_ptr<USkeletalMesh>& InSkeletalMesh)
 	: FPrimitiveSceneProxy(PrimitiveID)
 {
-	MeshIndex = InMeshIndex;
-	RenderData = InSkeletalMesh->GetSkeletalMeshRenderData();
+	MeshIndex         = InMeshIndex;
+	RenderData        = InSkeletalMesh->GetSkeletalMeshRenderData();
 	MaterialInterface = RenderData->MaterialInterfaces[MeshIndex];
 
 	BoneFinalMatrices.resize(MAX_BONES);
-	for(int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
+	for (int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
 	{
-		BoneFinalMatrices[BoneIndex] = XMMatrixIdentity(); 
+		BoneFinalMatrices[BoneIndex] = XMMatrixIdentity();
 	}
 
 	std::string Text = "FSkeletalMeshSceneProxy Create SkeletalMeshSceneProxy - " + std::to_string(PrimitiveID);
@@ -34,7 +33,7 @@ FSkeletalMeshSceneProxy::~FSkeletalMeshSceneProxy()
 
 void FSkeletalMeshSceneProxy::Draw()
 {
-	if(!RenderData)
+	if (!RenderData)
 	{
 		return;
 	}
@@ -43,7 +42,7 @@ void FSkeletalMeshSceneProxy::Draw()
 
 	{
 		SkeletalMeshBoneTransformConstantBuffer cb;
-		for(int i = 0; i < MAX_BONES; ++i)
+		for (int i = 0; i < MAX_BONES; ++i)
 		{
 			cb.BoneFinalTransforms[i] = XMMatrixTranspose(BoneFinalMatrices[i]);
 		}
@@ -52,7 +51,7 @@ void FSkeletalMeshSceneProxy::Draw()
 	}
 
 	unsigned int MeshCount = RenderData->MeshCount;
-	
+
 	ID3D11DeviceContext* DeviceContext = GDirectXDevice->GetDeviceContext().Get();
 
 	UINT stride = sizeof(MyVertexData);
@@ -64,7 +63,4 @@ void FSkeletalMeshSceneProxy::Draw()
 	RenderData->IndexBuffer[MeshIndex]->GetDesc(&indexBufferDesc);
 	UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
 	DeviceContext->DrawIndexed(indexSize, 0, 0);
-	
-	
 }
-

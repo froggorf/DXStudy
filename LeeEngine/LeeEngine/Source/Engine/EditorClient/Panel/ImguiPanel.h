@@ -3,7 +3,6 @@
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
 
-
 #pragma once
 
 //#include "EditorClient.h"
@@ -17,14 +16,18 @@ struct CommandIDGenerator
 	{
 		ID = IDCount++;
 	}
+
 	static UINT IDCount;
-	UINT ID;
+	UINT        ID;
 };
 
 struct FImguiPanelCommandData
 {
 	FImguiPanelCommandData() = default;
-	virtual ~FImguiPanelCommandData(){};
+
+	virtual ~FImguiPanelCommandData()
+	{
+	};
 
 	enum class EImguiPanelType PanelType;
 
@@ -35,22 +38,30 @@ struct FImguiPanelCommandData
 		static CommandIDGenerator Generator;
 		return Generator.ID;
 	}
-	virtual UINT GetTypeID() const {return FImguiPanelCommandData::GetClassID();}
-	virtual bool IsOfType(UINT InTypeID) const {return FImguiPanelCommandData::GetClassID() == InTypeID; }
+
+	virtual UINT GetTypeID() const
+	{
+		return GetClassID();
+	}
+
+	virtual bool IsOfType(UINT InTypeID) const
+	{
+		return GetClassID() == InTypeID;
+	}
 };
 
 class FImguiPanel
 {
 public:
 	FImguiPanel(FScene* SceneData);
-	virtual ~FImguiPanel(){}
+
+	virtual ~FImguiPanel()
+	{
+	}
 
 	virtual void Draw() = 0;
 	virtual void ExecuteCommand(const std::shared_ptr<FImguiPanelCommandData>& CommandData) = 0;
-protected:
-private:
-public:
+
 protected:
 	FScene* SceneData;
-private:
 };

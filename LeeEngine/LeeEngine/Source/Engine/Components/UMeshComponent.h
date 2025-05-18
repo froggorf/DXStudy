@@ -8,7 +8,6 @@
 class UMeshComponent : public UPrimitiveComponent
 {
 	MY_GENERATED_BODY(UMeshComponent)
-public:
 	UMeshComponent();
 	~UMeshComponent() override;
 };

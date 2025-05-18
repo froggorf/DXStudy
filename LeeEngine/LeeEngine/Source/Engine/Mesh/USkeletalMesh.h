@@ -14,10 +14,6 @@ class FSkeletalMeshRenderData
 public:
 	FSkeletalMeshRenderData(const nlohmann::json& SkeletalMeshFilePathData);
 
-
-
-protected:
-private:
 public:
 	unsigned int MeshCount;
 
@@ -31,29 +27,35 @@ public:
 	std::map<std::string, BoneInfo> ModelBoneInfoMap;
 };
 
-
 class USkeletalMesh : public UObject, public std::enable_shared_from_this<USkeletalMesh>
 {
 	MY_GENERATED_BODY(USkeletalMesh)
-public:
 	USkeletalMesh();
-	~USkeletalMesh();
+	~USkeletalMesh() override;
 
-	unsigned int GetSkeletalMeshMeshCount() const {return RenderData.get()->MeshCount; }
+	unsigned int GetSkeletalMeshMeshCount() const
+	{
+		return RenderData.get()->MeshCount;
+	}
 
 	// 로우 포인터로 반환
-	FSkeletalMeshRenderData* GetSkeletalMeshRenderData() const {return RenderData.get();}
+	FSkeletalMeshRenderData* GetSkeletalMeshRenderData() const
+	{
+		return RenderData.get();
+	}
 
+	static const std::map<std::string, std::shared_ptr<USkeletalMesh>>& GetStaticMeshCache()
+	{
+		return GetSkeletalMeshCacheMap();
+	}
 
-	static const std::map<std::string, std::shared_ptr<USkeletalMesh>>& GetStaticMeshCache() {return GetSkeletalMeshCacheMap();}
-	static const std::shared_ptr<USkeletalMesh>& GetSkeletalMesh(const std::string& SkeletalMeshName) { return GetSkeletalMeshCacheMap()[SkeletalMeshName]; }
+	static const std::shared_ptr<USkeletalMesh>& GetSkeletalMesh(const std::string& SkeletalMeshName)
+	{
+		return GetSkeletalMeshCacheMap()[SkeletalMeshName];
+	}
 
-	virtual void LoadDataFromFileData(const nlohmann::json& AssetData) override;
-protected:
-private:
+	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
-public:
-protected:
 private:
 	static std::map<std::string, std::shared_ptr<USkeletalMesh>>& GetSkeletalMeshCacheMap()
 	{
@@ -61,9 +63,7 @@ private:
 		return SkeletalMeshCache;
 	}
 
-
 	// TODO: LOD 데이터가 필요한 경우 std::map<UINT, std::unique_ptr<FStaticMeshRenderData> LODRenderData; 로 변경 예정
 	// StaticMesh의 버텍스, 인덱스 버퍼 등 렌더링에 필요한 데이터를 관리
 	std::shared_ptr<FSkeletalMeshRenderData> RenderData;
-
 };

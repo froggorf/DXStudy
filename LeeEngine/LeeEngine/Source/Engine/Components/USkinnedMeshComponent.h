@@ -9,10 +9,4 @@
 class USkinnedMeshComponent : public UMeshComponent
 {
 	MY_GENERATED_BODY(USkinnedMeshComponent)
-public:
-protected:
-private:
-public:
-protected:
-private:
 };

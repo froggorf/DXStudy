@@ -4,40 +4,40 @@
 
 #include "Engine/Class/UTexture.h"
 
-
 FSkeletalMeshRenderData::FSkeletalMeshRenderData(const nlohmann::json& SkeletalMeshFilePathData)
 {
-	for(auto& p : VertexBuffer)
+	for (auto& p : VertexBuffer)
 	{
 		p->Release();
 	}
-	for(auto& p : IndexBuffer)
+	for (auto& p : IndexBuffer)
 	{
 		p->Release();
 	}
 	MaterialInterfaces.clear();
 
-	AssetManager::LoadSkeletalModelData(SkeletalMeshFilePathData["ModelData"], GDirectXDevice->GetDevice(), VertexBuffer,IndexBuffer, ModelBoneInfoMap);
+	AssetManager::LoadSkeletalModelData(SkeletalMeshFilePathData["ModelData"], GDirectXDevice->GetDevice(),
+										VertexBuffer, IndexBuffer, ModelBoneInfoMap);
 	MeshCount = VertexBuffer.size();
 
 	// 머테리얼
 	{
-		auto MaterialData = SkeletalMeshFilePathData["Material"];
-		int MaterialArraySize = MaterialData.size();
-		for(int count = 0; count < MeshCount; ++count)
+		auto MaterialData      = SkeletalMeshFilePathData["Material"];
+		int  MaterialArraySize = MaterialData.size();
+		for (int count = 0; count < MeshCount; ++count)
 		{
-			if(MaterialArraySize <= count)
+			if (MaterialArraySize <= count)
 			{
 				break;
 			}
 
-			std::string MaterialName = MaterialData[count];
+			std::string                         MaterialName = MaterialData[count];
 			std::shared_ptr<UMaterialInterface> MeshMaterial = UMaterialInterface::GetMaterialCache(MaterialName);
 
 			MaterialInterfaces.emplace_back(MeshMaterial);
 		}
 
-		if(MaterialInterfaces.size() == 0)
+		if (MaterialInterfaces.size() == 0)
 		{
 			std::string Name = SkeletalMeshFilePathData["Name"];
 			MY_LOG(Name, EDebugLogLevel::DLL_Error, "In static mesh .myasset file, Material data no valid");
@@ -45,17 +45,15 @@ FSkeletalMeshRenderData::FSkeletalMeshRenderData(const nlohmann::json& SkeletalM
 		}
 
 		int currentTextureCount = MaterialInterfaces.size();
-		for(; currentTextureCount < MeshCount; ++currentTextureCount)
+		for (; currentTextureCount < MeshCount; ++currentTextureCount)
 		{
 			MaterialInterfaces.push_back(MaterialInterfaces[0]);
-		}	
+		}
 	}
-	
 }
 
 USkeletalMesh::USkeletalMesh()
 {
-
 }
 
 USkeletalMesh::~USkeletalMesh()
@@ -69,12 +67,11 @@ enum class EStaticMeshAssetData
 
 void USkeletalMesh::LoadDataFromFileData(const nlohmann::json& SkeletalMeshAssetData)
 {
-	if(GetSkeletalMeshCacheMap().contains(GetName()))
+	if (GetSkeletalMeshCacheMap().contains(GetName()))
 	{
 		MY_LOG("LoadData", EDebugLogLevel::DLL_Warning, "already load this SkeltalMesh -> " + GetName());
 		return;
 	}
-
 
 	UObject::LoadDataFromFileData(SkeletalMeshAssetData);
 

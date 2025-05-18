@@ -15,48 +15,48 @@ class AActor : public UObject, public std::enable_shared_from_this<AActor>
 {
 	MY_GENERATED_BODY(AActor)
 
-public:
 	AActor();
 
-	virtual void Init() override;
-	virtual void Register() override;
+	void Init() override;
+	void Register() override;
 	void BeginPlay() override;
 
-	const std::shared_ptr<USceneComponent>& GetRootComponent() const { return RootComponent; }
+	const std::shared_ptr<USceneComponent>& GetRootComponent() const
+	{
+		return RootComponent;
+	}
 
 	XMFLOAT3 GetActorLocation() const;
 	XMFLOAT4 GetActorRotation() const;
 	XMFLOAT3 GetActorScale3D() const;
-	void SetActorLocation(const XMFLOAT3& NewLocation) const;
-	void SetActorRotation(const XMFLOAT4& NewRotation) const;
-	void SetActorScale3D(const XMFLOAT3& NewScale3D) const;
+	void     SetActorLocation(const XMFLOAT3& NewLocation) const;
+	void     SetActorRotation(const XMFLOAT4& NewRotation) const;
+	void     SetActorScale3D(const XMFLOAT3& NewScale3D) const;
 
 	virtual void Tick(float DeltaSeconds);
 
 	void SaveDataFromAssetToFile(nlohmann::json& Json) override;
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
-	UActorComponent* CreateDefaultSubobject(const std::string& SubobjectName, const std::string& ClassToCreateByDefault);
+	UActorComponent* CreateDefaultSubobject(const std::string& SubobjectName,
+											const std::string& ClassToCreateByDefault);
 
 	const std::shared_ptr<UActorComponent>& FindComponentByClass(const std::string& Class) const;
-	const std::unordered_set<std::shared_ptr<UActorComponent>>& GetComponents() const { return OwnedComponents; }
-protected:
 
-private:
-
-public:
+	const std::unordered_set<std::shared_ptr<UActorComponent>>& GetComponents() const
+	{
+		return OwnedComponents;
+	}
 
 protected:
 	// 월드 내에서 Transform (Loc, Rot, Scale) 의 정보를 다루는 컴퍼넌트
 	// 모든 다른 컴퍼넌트는 해당 컴퍼넌트에 부착해야함
-	std::shared_ptr<USceneComponent>		RootComponent;
+	std::shared_ptr<USceneComponent> RootComponent;
 
-protected:
 	unsigned int ActorID = 0;
 
 private:
 	// 액터가 소유중인 모든 액터 컴퍼넌트를 관리하는 컨테이너
 	// 언리얼엔진의 경우 많은 수의 컴퍼넌트를 가질 수 있으므로 TSet을 사용
 	std::unordered_set<std::shared_ptr<UActorComponent>> OwnedComponents;
-	
 };

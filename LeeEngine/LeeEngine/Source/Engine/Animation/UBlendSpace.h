@@ -16,28 +16,29 @@ enum class EPointAndTriangleState
 
 struct FAnimClipPoint
 {
-	XMFLOAT2 Position;
+	XMFLOAT2                       Position;
 	std::shared_ptr<UAnimSequence> AnimSequence;
 
 	FAnimClipPoint(const XMFLOAT2& InPosition, const std::shared_ptr<UAnimSequence>& InAnimSequence)
 	{
-		Position = InPosition;
+		Position     = InPosition;
 		AnimSequence = InAnimSequence;
 	}
 
 	bool IsPointOnSegment(const XMFLOAT2& P1, const XMFLOAT2& P2) const;
-
 };
+
 struct FAnimClipEdge
 {
 	std::shared_ptr<FAnimClipPoint> StartPoint;
 	std::shared_ptr<FAnimClipPoint> EndPoint;
-	float LengthSq = 0.0f;
+	float                           LengthSq = 0.0f;
 
-	FAnimClipEdge(const std::shared_ptr<FAnimClipPoint>& InStartPoint, const std::shared_ptr<FAnimClipPoint>& InEndPoint)
+	FAnimClipEdge(const std::shared_ptr<FAnimClipPoint>& InStartPoint,
+				const std::shared_ptr<FAnimClipPoint>&   InEndPoint)
 	{
 		StartPoint = InStartPoint;
-		EndPoint = InEndPoint;
+		EndPoint   = InEndPoint;
 	}
 
 	bool IsPointOnSegment(const XMFLOAT2& TargetPoint);
@@ -46,33 +47,32 @@ struct FAnimClipEdge
 struct FAnimClipTriangle
 {
 	std::vector<std::shared_ptr<FAnimClipPoint>> Points;
-	std::vector<std::shared_ptr<FAnimClipEdge>> Edges;
+	std::vector<std::shared_ptr<FAnimClipEdge>>  Edges;
 
 	EPointAndTriangleState FindPointAndTriangleState(const XMFLOAT2& TargetPoint);
 };
-
 
 // ==============================================================
 
 class UBlendSpace : public UAnimationAsset
 {
 	MY_GENERATED_BODY(UBlendSpace)
-public:
 
 	static std::shared_ptr<UBlendSpace> GetAnimationAsset(const std::string& AnimationName)
 	{
-		if(std::shared_ptr<UAnimationAsset> FindAsset = UAnimationAsset::GetAnimationAsset(AnimationName))
+		if (std::shared_ptr<UAnimationAsset> FindAsset = UAnimationAsset::GetAnimationAsset(AnimationName))
 		{
-			return std::dynamic_pointer_cast<UBlendSpace>(FindAsset);	
+			return std::dynamic_pointer_cast<UBlendSpace>(FindAsset);
 		}
-		return nullptr;	
+		return nullptr;
 	}
 
-	virtual void GetAnimationBoneMatrices(const XMFLOAT2& AnimValue, float CurrentAnimTime, std::vector<XMMATRIX>& OutMatrices,
-		std::vector<FAnimNotifyEvent>& OutActiveNotifies);
+	virtual void GetAnimationBoneMatrices(const XMFLOAT2&              AnimValue, float CurrentAnimTime,
+										std::vector<XMMATRIX>&         OutMatrices,
+										std::vector<FAnimNotifyEvent>& OutActiveNotifies);
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
-protected:
+
 private:
 	// 연산량이 많으므로, 가급적 초기화 시 한번만 호출
 	// 추가된 Points에 맞게 Edge와 Triangle을 만드는 함수
@@ -80,21 +80,23 @@ private:
 	void CreateEdge();
 	void CreateTriangle();
 
-	
-	static void TriangleInterpolation(const XMFLOAT2& AnimValue, const std::shared_ptr<FAnimClipTriangle>& Triangle, float AnimTime, std::vector<XMMATRIX>& OutMatrices,
-		std::vector<FAnimNotifyEvent>& OutActiveNotifies);
-	static void LinearInterpolation(const XMFLOAT2& CurrentValue,const std::shared_ptr<FAnimClipEdge>& Edge, float AnimTime, std::vector<XMMATRIX>& OutMatrices,
-		std::vector<FAnimNotifyEvent>& OutActiveNotifies);
-	static void CalculateOneAnimation(const std::shared_ptr<FAnimClipPoint>& Point, float AnimTime, std::vector<XMMATRIX>& OutMatrices,
-		std::vector<FAnimNotifyEvent>& OutActiveNotifies);
-public:
+	static void TriangleInterpolation(const XMFLOAT2& AnimValue, const std::shared_ptr<FAnimClipTriangle>& Triangle,
+									float AnimTime, std::vector<XMMATRIX>& OutMatrices,
+									std::vector<FAnimNotifyEvent>& OutActiveNotifies);
+	static void LinearInterpolation(const XMFLOAT2& CurrentValue, const std::shared_ptr<FAnimClipEdge>& Edge,
+									float AnimTime, std::vector<XMMATRIX>& OutMatrices,
+									std::vector<FAnimNotifyEvent>& OutActiveNotifies);
+	static void CalculateOneAnimation(const std::shared_ptr<FAnimClipPoint>& Point, float AnimTime,
+									std::vector<XMMATRIX>&                   OutMatrices,
+									std::vector<FAnimNotifyEvent>&           OutActiveNotifies);
+
 protected:
 	XMFLOAT2 HorizontalValue = {};
-	XMFLOAT2 VerticalValue = {};
+	XMFLOAT2 VerticalValue   = {};
 
-	std::vector< std::shared_ptr<FAnimClipPoint>> CurrentPoints;
-	std::vector<std::shared_ptr<FAnimClipEdge>> CurrentEdge;
-	std::vector <std::shared_ptr<FAnimClipTriangle>> CurrentTriangles;
+	std::vector<std::shared_ptr<FAnimClipPoint>>    CurrentPoints;
+	std::vector<std::shared_ptr<FAnimClipEdge>>     CurrentEdge;
+	std::vector<std::shared_ptr<FAnimClipTriangle>> CurrentTriangles;
 
 private:
 	static XMFLOAT2 Gap;

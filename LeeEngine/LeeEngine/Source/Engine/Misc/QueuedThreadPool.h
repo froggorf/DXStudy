@@ -12,18 +12,19 @@
 struct FTask
 {
 	FTask(int InPriority, std::function<void()> InWork, std::atomic<bool>* InIsWorkComplete)
-		: Priority(InPriority), Work(InWork), IsWorkComplete(InIsWorkComplete) {}
+		: Priority(InPriority), Work(InWork), IsWorkComplete(InIsWorkComplete)
+	{
+	}
 
-	int Priority;
+	int                   Priority;
 	std::function<void()> Work;
-	std::atomic<bool>* IsWorkComplete;
+	std::atomic<bool>*    IsWorkComplete;
 
 	bool operator<(const FTask& Other) const
 	{
 		return Priority < Other.Priority;
 	}
 };
-
 
 // 언리얼엔진에서는 인터페이스로서 사용되지만
 // LeeEngine에서는 자체적으로 쓰레드풀을 제공하는 역할로 진행
@@ -36,18 +37,18 @@ public:
 	~FQueuedThreadPool();
 
 	void AddTask(const FTask& NewTask);
-	
 
-	UINT GetThreadCount() const {return Threads.size();}
+	UINT GetThreadCount() const
+	{
+		return Threads.size();
+	}
 
 private:
 	concurrency::concurrent_priority_queue<FTask> TaskQueue;
-	std::vector<std::thread> Threads;
-	std::atomic<bool> bStop = false;
-	std::mutex QueueMutex;
-	std::condition_variable Condition;
-
-
+	std::vector<std::thread>                      Threads;
+	std::atomic<bool>                             bStop = false;
+	std::mutex                                    QueueMutex;
+	std::condition_variable                       Condition;
 };
 
 extern std::unique_ptr<FQueuedThreadPool> GThreadPool;

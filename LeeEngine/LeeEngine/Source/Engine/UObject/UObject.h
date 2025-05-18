@@ -17,33 +17,46 @@ public:\
 		UObject::AddClassDefaultObject(#CLASS,std::make_unique<CLASS>());\
 	}\
 };\
-inline static MakeCDO _initializer;\
-
+inline static MakeCDO _initializer;
 
 #define MY_GENERATED_BODY(CLASS)\
 GENERATE_UOBJECT_DERIVED_CLASS(CLASS)\
 public:\
 	const virtual std::unique_ptr<UObject>& CreateUniqueInstance() const {return std::make_unique<CLASS>();}\
 	virtual std::shared_ptr<UObject> CreateInstance() const override { return std::make_shared<CLASS>();}\
-	std::string GetClass() const override { return #CLASS; } \
-
+	std::string GetClass() const override { return #CLASS; }
 
 class UWorld;
 
 class UObject
 {
 	GENERATE_UOBJECT_DERIVED_CLASS(UObject)
-public:
-	virtual const std::unique_ptr<UObject>& CreateUniqueInstance() const {return std::make_unique<UObject>();}
-	virtual std::shared_ptr<UObject> CreateInstance() const { return std::make_shared<UObject>(); }
-	virtual std::string GetClass() const {return "UObject";}
-	virtual void BeginPlay() {}
 
-	
-	
 public:
+	virtual const std::unique_ptr<UObject>& CreateUniqueInstance() const
+	{
+		return std::make_unique<UObject>();
+	}
+
+	virtual std::shared_ptr<UObject> CreateInstance() const
+	{
+		return std::make_shared<UObject>();
+	}
+
+	virtual std::string GetClass() const
+	{
+		return "UObject";
+	}
+
+	virtual void BeginPlay()
+	{
+	}
+
 	UObject();
-	UObject(const UObject& other) {};
+
+	UObject(const UObject& other)
+	{
+	};
 	virtual ~UObject();
 
 	virtual void Init();
@@ -53,15 +66,20 @@ public:
 
 	// 게임 시작 전 / Spawn 후 게임에 넣기 이전에 호출
 	// 렌더쓰레드에 씬프록시를 추가하는 등의 작업 진행
-	virtual void Register(){bIsRegister = true;}
-	bool IsRegister() const {return bIsRegister;}
-	
+	virtual void Register()
+	{
+		bIsRegister = true;
+	}
+
+	bool IsRegister() const
+	{
+		return bIsRegister;
+	}
+
 	std::string GetName() const
 	{
 		return NamePrivate;
 	}
-
-	
 
 	void Rename(const std::string& NewName);
 
@@ -69,20 +87,14 @@ public:
 	virtual void LoadDataFromFileData(const nlohmann::json& AssetData);
 	virtual void SaveDataFromAssetToFile(nlohmann::json& Json);
 
-protected:
-private:
-public:
-protected:
 private:
 	std::string NamePrivate;
 
-
-private:
 	bool bIsRegister = false;
-private:
 	//MY_GENERATED_BODY(UObject)
 	// Class Default Object 보관
-	static std::unordered_map<std::string, std::unique_ptr<UObject>>& GetCDOMap(){
+	static std::unordered_map<std::string, std::unique_ptr<UObject>>& GetCDOMap()
+	{
 		static std::unordered_map<std::string, std::unique_ptr<UObject>> ClassDefaultObjectMap;
 		return ClassDefaultObjectMap;
 	}
@@ -92,9 +104,11 @@ public:
 	{
 		GetCDOMap()[ClassName] = std::move(DefaultObject);
 	}
-	static const UObject* GetDefaultObject(const std::string& ClassName) {return GetCDOMap()[ClassName].get();}
 
+	static const UObject* GetDefaultObject(const std::string& ClassName)
+	{
+		return GetCDOMap()[ClassName].get();
+	}
 };
-
 
 //std::unordered_map<std::string, std::unique_ptr<UObject>> UObject::ClassDefaultObject;

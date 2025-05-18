@@ -6,29 +6,36 @@
 #pragma once
 #include "Engine/UObject/UObject.h"
 
-
 class AActor;
 
 class UActorComponent : public UObject
 {
 	MY_GENERATED_BODY(UActorComponent)
-public:
 	UActorComponent();
-	virtual void UpdateComponentToWorld() {}
+
+	virtual void UpdateComponentToWorld()
+	{
+	}
 
 	virtual void TickComponent(float DeltaSeconds);
 
-	AActor* GetOwner() const { return OwnerPrivate; }
-	void SetOwner(AActor* InOwner) { OwnerPrivate = InOwner; }
+	AActor* GetOwner() const
+	{
+		return OwnerPrivate;
+	}
+
+	void SetOwner(AActor* InOwner)
+	{
+		OwnerPrivate = InOwner;
+	}
 
 #ifdef WITH_EDITOR
 	virtual void DrawDetailPanel(UINT ComponentDepth);
 #endif
-protected:
-private:
+
 public:
 	UINT ComponentID;
-protected:
+
 private:
 	AActor* OwnerPrivate;
 };

@@ -7,26 +7,24 @@
 
 #include "Engine/GameFramework/AActor.h"
 
-
 #include "Engine/UEditorEngine.h"
 #include "Engine/RenderCore/EditorScene.h"
-
 
 static int LevelCount = 0;
 
 ULevel::ULevel()
 {
-	Rename("Level"+ LevelCount++);
+	Rename("Level" + LevelCount++);
 }
 
 ULevel::ULevel(const ULevel* LevelInstance)
 {
 	OwningWorld = GEngine->GetWorld();
 	Rename(LevelInstance->GetName());
-	int ActorCount = LevelInstance->GetLevelActors().size();
+	int         ActorCount  = LevelInstance->GetLevelActors().size();
 	const auto& LevelActors = LevelInstance->GetLevelActors();
 	Actors.reserve(ActorCount);
-	for(const auto& Actor : LevelActors)
+	for (const auto& Actor : LevelActors)
 	{
 		std::shared_ptr<AActor> NewActor = std::dynamic_pointer_cast<AActor>(Actor->CreateInstance());
 		NewActor->Rename(Actor->GetName());
@@ -34,7 +32,6 @@ ULevel::ULevel(const ULevel* LevelInstance)
 		NewActor->SetActorRotation(Actor->GetActorRotation());
 		NewActor->SetActorScale3D(Actor->GetActorScale3D());
 		Actors.push_back(NewActor);
-		
 	}
 }
 
@@ -61,7 +58,7 @@ void ULevel::Register()
 	UObject::Register();
 
 	FScene::InitSceneData_GameThread();
-	for(const auto& Actor : Actors)
+	for (const auto& Actor : Actors)
 	{
 		Actor->Register();
 	}
@@ -71,43 +68,41 @@ void ULevel::BeginPlay()
 {
 	UObject::BeginPlay();
 
-	for(const auto& Actor : Actors)
+	for (const auto& Actor : Actors)
 	{
 		Actor->BeginPlay();
 	}
-
 }
 
 void ULevel::TickLevel(float DeltaSeconds)
 {
-
-	for(const auto& Actor : Actors)
+	for (const auto& Actor : Actors)
 	{
 		Actor->Tick(DeltaSeconds);
 	}
 }
 
-
 void ULevel::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
 	std::string LevelName = AssetData["Name"];
-	if(GetLevelInstanceMap().contains(LevelName))
+	if (GetLevelInstanceMap().contains(LevelName))
 	{
-		MY_LOG("LoadLevel",EDebugLogLevel::DLL_Warning, "Already exist level");
+		MY_LOG("LoadLevel", EDebugLogLevel::DLL_Warning, "Already exist level");
 		return;
 	}
 
 	UObject::LoadDataFromFileData(AssetData);
 
 	auto ActorsData = AssetData["Actor"];
-	int ActorCount = ActorsData.size();
+	int  ActorCount = ActorsData.size();
 	Actors.reserve(ActorCount);
-	for(int i = 0; i < ActorCount; ++i)
+	for (int i = 0; i < ActorCount; ++i)
 	{
-		auto ActorData = ActorsData[i];
-		std::string ClassName = ActorData["Class"];
-		std::shared_ptr<AActor> NewActor = std::dynamic_pointer_cast<AActor>(GetDefaultObject(ClassName)->CreateInstance());
-		if(NewActor)
+		auto                    ActorData = ActorsData[i];
+		std::string             ClassName = ActorData["Class"];
+		std::shared_ptr<AActor> NewActor  = std::dynamic_pointer_cast<AActor>(
+			GetDefaultObject(ClassName)->CreateInstance());
+		if (NewActor)
 		{
 			NewActor->LoadDataFromFileData(ActorData);
 			Actors.push_back(NewActor);
@@ -122,13 +117,11 @@ void ULevel::SaveDataFromAssetToFile(nlohmann::json& Json)
 {
 	UObject::SaveDataFromAssetToFile(Json);
 
-	for(const auto& Actor : Actors)
+	for (const auto& Actor : Actors)
 	{
 		nlohmann::json ActorJson;
 		Actor->SaveDataFromAssetToFile(ActorJson);
 
 		Json["Actor"].push_back(ActorJson);
 	}
-
 }
-

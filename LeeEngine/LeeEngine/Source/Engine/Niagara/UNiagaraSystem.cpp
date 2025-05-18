@@ -10,13 +10,14 @@ void UNiagaraSystem::LoadDataFromFileData(const nlohmann::json& AssetData)
 	{
 		int PropertyType = EmitterData["Property"];
 		// 리본렌더러의 경우에는 FNiagaraRibbonEmitter를 사용
-		std::shared_ptr<FNiagaraEmitter> NewEmitter = PropertyType == 3 ? std::make_shared<FNiagaraRibbonEmitter>() : std::make_shared<FNiagaraEmitter>();
+		std::shared_ptr<FNiagaraEmitter> NewEmitter = PropertyType == 3 ?
+														std::make_shared<FNiagaraRibbonEmitter>() :
+														std::make_shared<FNiagaraEmitter>();
 		NewEmitter->LoadDataFromFile(EmitterData);
 		this->Emitters.push_back(NewEmitter);
 	}
 
-	GetNiagaraAssetCacheMap()[GetName()] =  shared_from_this();
-
+	GetNiagaraAssetCacheMap()[GetName()] = shared_from_this();
 }
 
 std::vector<std::shared_ptr<FNiagaraEmitter>> UNiagaraSystem::CreateDynamicRenderData() const

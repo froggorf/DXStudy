@@ -5,18 +5,17 @@
 #include "CoreMinimal.h"
 #include "FPrimitiveSceneProxy.h"
 
-
 void FPrimitiveSceneProxy::Draw()
 {
 	{
 		ObjConstantBuffer ocb;
-		XMMATRIX world = ComponentToWorld.ToMatrixWithScale();
+		XMMATRIX          world = ComponentToWorld.ToMatrixWithScale();
 		// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
 		ocb.InvTransposeMatrix = (XMMatrixInverse(nullptr, world));
-		ocb.World = XMMatrixTranspose(world);
-		
-		ocb.ObjectMaterial.Ambient  = XMFLOAT4(1.0f,1.0f,1.0f, 1.0f);
-		ocb.ObjectMaterial.Diffuse  = XMFLOAT4(1.0f,1.0f,1.0f, 1.0f);
+		ocb.World              = XMMatrixTranspose(world);
+
+		ocb.ObjectMaterial.Ambient  = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+		ocb.ObjectMaterial.Diffuse  = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 		ocb.ObjectMaterial.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 32.0f);
 
 		GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_PerObject, &ocb, sizeof(ocb));
@@ -26,6 +25,4 @@ void FPrimitiveSceneProxy::Draw()
 
 	// Rasterizer State
 	GDirectXDevice->SetRSState(MaterialInterface->GetRSType());
-	
-
 }

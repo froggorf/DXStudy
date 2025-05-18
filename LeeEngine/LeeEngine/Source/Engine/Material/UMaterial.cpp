@@ -5,7 +5,7 @@
 #include "Engine/RenderCore/EditorScene.h"
 #include "Engine/SceneProxy/FNiagaraSceneProxy.h"
 
-std::unordered_map<std::string, std::shared_ptr<FShader>> FShader::ShaderCache;
+std::unordered_map<std::string, std::shared_ptr<FShader>>            FShader::ShaderCache;
 std::unordered_map<std::string, std::shared_ptr<UMaterialInterface>> UMaterialInterface::MaterialCache;
 
 void FShader::SetShaderID(UINT NewID)
@@ -15,50 +15,49 @@ void FShader::SetShaderID(UINT NewID)
 
 void FVertexShader::CompileVertexShader(const std::string& FilePath, const std::string& FuncName)
 {
-	
-	std::string TempDirectoryPath =  GEngine->GetDirectoryPath();
-	std::wstring TempShaderPath = std::wstring(TempDirectoryPath.begin(), TempDirectoryPath.end());
-	std::wstring ShaderFilePath = TempShaderPath + std::wstring{FilePath.begin(),FilePath.end()};
+	std::string  TempDirectoryPath = GEngine->GetDirectoryPath();
+	auto         TempShaderPath    = std::wstring(TempDirectoryPath.begin(), TempDirectoryPath.end());
+	std::wstring ShaderFilePath    = TempShaderPath + std::wstring{FilePath.begin(), FilePath.end()};
 	HR(CompileShaderFromFile(ShaderFilePath.c_str(), FuncName.c_str(), "vs_4_0", VSBlob.GetAddressOf()));
-	HR(GDirectXDevice->GetDevice()->CreateVertexShader(VSBlob->GetBufferPointer(), VSBlob->GetBufferSize(), nullptr, VertexShader.GetAddressOf()));
+	HR(GDirectXDevice->GetDevice()->CreateVertexShader(VSBlob->GetBufferPointer(), VSBlob->GetBufferSize(), nullptr,
+		VertexShader.GetAddressOf()));
 
 	// Input Layout
 
-	D3D11_INPUT_ELEMENT_DESC inputLayout[] =
-	{
-		{"POSITION",     0, DXGI_FORMAT_R32G32B32_FLOAT,     0,  0,  D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"NORMAL",       0, DXGI_FORMAT_R32G32B32_FLOAT,     0, 12,  D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"TEXCOORD",     0, DXGI_FORMAT_R32G32_FLOAT,        0, 24,  D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"BONEIDS",      0, DXGI_FORMAT_R32G32B32A32_SINT,   0, 32,  D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"BONEWEIGHTS",  0, DXGI_FORMAT_R32G32B32A32_FLOAT,  0, 48,  D3D11_INPUT_PER_VERTEX_DATA, 0},
+	D3D11_INPUT_ELEMENT_DESC inputLayout[] = {
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"BONEIDS", 0, DXGI_FORMAT_R32G32B32A32_SINT, 0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"BONEWEIGHTS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 48, D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
 	UINT numElements = ARRAYSIZE(inputLayout);
-	HR(GDirectXDevice->GetDevice()->CreateInputLayout(inputLayout, numElements, VSBlob->GetBufferPointer(), VSBlob->GetBufferSize(), InputLayout.GetAddressOf()));
-
+	HR(GDirectXDevice->GetDevice()->CreateInputLayout(inputLayout, numElements, VSBlob->GetBufferPointer(), VSBlob->
+		GetBufferSize(), InputLayout.GetAddressOf()));
 }
 
 void FPixelShader::CompilePixelShader(const std::string& FilePath, const std::string& FuncName)
 {
-	std::string TempDirectoryPath =  GEngine->GetDirectoryPath();
-	std::wstring TempShaderPath = std::wstring(TempDirectoryPath.begin(), TempDirectoryPath.end());
-	std::wstring ShaderFilePath = TempShaderPath + std::wstring{FilePath.begin(),FilePath.end()};
+	std::string  TempDirectoryPath = GEngine->GetDirectoryPath();
+	auto         TempShaderPath    = std::wstring(TempDirectoryPath.begin(), TempDirectoryPath.end());
+	std::wstring ShaderFilePath    = TempShaderPath + std::wstring{FilePath.begin(), FilePath.end()};
 
 	HR(CompileShaderFromFile(ShaderFilePath.c_str(), FuncName.c_str(), "ps_4_0", PSBlob.GetAddressOf()));
 
-	HR(GDirectXDevice->GetDevice()->CreatePixelShader(PSBlob->GetBufferPointer(), PSBlob->GetBufferSize(), nullptr, PixelShader.GetAddressOf()));
+	HR(GDirectXDevice->GetDevice()->CreatePixelShader(PSBlob->GetBufferPointer(), PSBlob->GetBufferSize(), nullptr,
+		PixelShader.GetAddressOf()));
 }
 
 void UMaterialInterface::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
 	UObject::LoadDataFromFileData(AssetData);
-
 }
 
 void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
 	UMaterialInterface::LoadDataFromFileData(AssetData);
 
-	if(UMaterialInterface::MaterialCache.contains(GetName()))
+	if (MaterialCache.contains(GetName()))
 	{
 		// 이미 캐시를 진행한 머테리얼
 		return;
@@ -66,16 +65,18 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 
 	// 버텍스 셰이더 로드
 	{
-		auto VertexShaderData = AssetData["VertexShader"];
-		std::string VSName = VertexShaderData["FilePath"];
-		std::string FuncName = VertexShaderData["Func"];
-		auto VSTarget = FShader::ShaderCache.find(VSName+FuncName);
-		if(VSTarget == FShader::ShaderCache.end())
+		auto        VertexShaderData = AssetData["VertexShader"];
+		std::string VSName           = VertexShaderData["FilePath"];
+		std::string FuncName         = VertexShaderData["Func"];
+		auto        VSTarget         = FShader::ShaderCache.find(VSName + FuncName);
+		if (VSTarget == FShader::ShaderCache.end())
 		{
-			std::shared_ptr<FVertexShader> NewVS = std::make_shared<FVertexShader>();
-			NewVS->CompileVertexShader(VSName,FuncName);
+			auto NewVS = std::make_shared<FVertexShader>();
+			NewVS->CompileVertexShader(VSName, FuncName);
 
-			VSTarget = FShader::ShaderCache.insert(std::pair<std::string, std::shared_ptr<FShader>>{ VSName+FuncName, NewVS}).first;
+			VSTarget = FShader::ShaderCache.insert(std::pair<std::string, std::shared_ptr<FShader>>{
+				VSName + FuncName, NewVS
+			}).first;
 			VSTarget->second->SetShaderID(FShader::ShaderCache.size());
 		}
 		VertexShader = std::dynamic_pointer_cast<FVertexShader>(VSTarget->second);
@@ -83,15 +84,17 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 
 	// 픽셀셰이더 로드
 	{
-		auto PixelShaderData = AssetData["PixelShader"];
-		std::string PSName = PixelShaderData["FilePath"];
-		std::string FuncName = PixelShaderData["Func"];
-		auto PSTarget = FShader::ShaderCache.find(PSName+FuncName);
-		if(PSTarget == FShader::ShaderCache.end())
+		auto        PixelShaderData = AssetData["PixelShader"];
+		std::string PSName          = PixelShaderData["FilePath"];
+		std::string FuncName        = PixelShaderData["Func"];
+		auto        PSTarget        = FShader::ShaderCache.find(PSName + FuncName);
+		if (PSTarget == FShader::ShaderCache.end())
 		{
-			std::shared_ptr<FPixelShader> NewPS = std::make_shared<FPixelShader>();
-			NewPS->CompilePixelShader(PSName,FuncName);
-			PSTarget = FShader::ShaderCache.insert(std::pair<std::string, std::shared_ptr<FShader>>{ PSName+FuncName, NewPS}).first;
+			auto NewPS = std::make_shared<FPixelShader>();
+			NewPS->CompilePixelShader(PSName, FuncName);
+			PSTarget = FShader::ShaderCache.insert(std::pair<std::string, std::shared_ptr<FShader>>{
+				PSName + FuncName, NewPS
+			}).first;
 			PSTarget->second->SetShaderID(FShader::ShaderCache.size());
 		}
 		PixelShader = std::dynamic_pointer_cast<FPixelShader>(PSTarget->second);
@@ -99,17 +102,19 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 
 	// GeometryShader 로드
 	{
-		if(AssetData.contains("GeometryShader"))
+		if (AssetData.contains("GeometryShader"))
 		{
-			auto GeometryShaderData = AssetData["GeometryShader"];
-			std::string GSName = GeometryShaderData["FilePath"];
-			std::string FuncName = GeometryShaderData["Func"];
-			auto GSTarget = FShader::ShaderCache.find(GSName + FuncName);
+			auto        GeometryShaderData = AssetData["GeometryShader"];
+			std::string GSName             = GeometryShaderData["FilePath"];
+			std::string FuncName           = GeometryShaderData["Func"];
+			auto        GSTarget           = FShader::ShaderCache.find(GSName + FuncName);
 			if (GSTarget == FShader::ShaderCache.end())
 			{
-				std::shared_ptr<FGeometryShader> NewGS = std::make_shared<FGeometryShader>();
+				auto NewGS = std::make_shared<FGeometryShader>();
 				NewGS->CompileGeometryShader(GSName, FuncName);
-				GSTarget = FShader::ShaderCache.insert(std::pair<std::string, std::shared_ptr<FShader>>{ GSName + FuncName, NewGS}).first;
+				GSTarget = FShader::ShaderCache.insert(std::pair<std::string, std::shared_ptr<FShader>>{
+					GSName + FuncName, NewGS
+				}).first;
 				GSTarget->second->SetShaderID(FShader::ShaderCache.size());
 			}
 			GeometryShader = std::dynamic_pointer_cast<FGeometryShader>(GSTarget->second);
@@ -118,33 +123,34 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 
 	// 텍스쳐 정보가 있다면 텍스쳐 로드
 	{
-		if(AssetData.contains("Textures") && AssetData["Textures"].size() != 0)
+		if (AssetData.contains("Textures") && AssetData["Textures"].size() != 0)
 		{
-			auto TextureData = AssetData["Textures"];
+			auto   TextureData = AssetData["Textures"];
 			size_t TextureSize = TextureData.size();
-			for(int i = 0 ; i< TextureSize; ++i)
+			for (int i = 0; i < TextureSize; ++i)
 			{
 				std::string TextureName = TextureData[i];
-				Textures.emplace_back(UTexture::GetTextureCache(TextureName));	
+				Textures.emplace_back(UTexture::GetTextureCache(TextureName));
 			}
-			
 		}
 	}
 
 	// 블렌드 모드
 	{
 		std::string BlendModeStr = AssetData["BlendMode"];
-		if(BlendModeStr == "Opaque")
+		if (BlendModeStr == "Opaque")
 		{
 			BlendMode = EBlendMode::BM_Opaque;
 		}
-		else if(BlendModeStr == "Masked")
+		else if (BlendModeStr == "Masked")
 		{
 			BlendMode = EBlendMode::BM_Masked;
-		}else if(BlendModeStr == "Translucent")
+		}
+		else if (BlendModeStr == "Translucent")
 		{
 			BlendMode = EBlendMode::BM_Translucent;
-		}else
+		}
+		else
 		{
 			// 잘못된 BlendMode
 			assert(0);
@@ -154,9 +160,9 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 	// Rasterizer State
 	{
 		int bIsTwoSided = AssetData["TwoSided"];
-		if(bIsTwoSided)
+		if (bIsTwoSided)
 		{
-			RasterizerType = ERasterizerType::RT_TwoSided;	
+			RasterizerType = ERasterizerType::RT_TwoSided;
 		}
 		else
 		{
@@ -165,29 +171,29 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 	}
 
 	// Params
-	if(AssetData.contains("Params"))
+	if (AssetData.contains("Params"))
 	{
 		auto ParamData = AssetData["Params"];
 
-		for(const auto& Data : ParamData)
+		for (const auto& Data : ParamData)
 		{
 			std::string Type = Data["Type"];
-			if("float" == Type)
+			if ("float" == Type)
 			{
 				FMaterialParameterDesc<float> FloatParam;
-				FloatParam.Name = Data["Name"];
+				FloatParam.Name   = Data["Name"];
 				FloatParam.Offset = Data["Offset"];
-				FloatParam.Size = 4;
-				FloatParam.Value = Data["DefaultValue"];
+				FloatParam.Size   = 4;
+				FloatParam.Value  = Data["DefaultValue"];
 				DefaultParams.FloatParams.emplace_back(FloatParam);
 			}
-			else if("int" == Type)
+			else if ("int" == Type)
 			{
 				FMaterialParameterDesc<int> IntParam;
-				IntParam.Name = Data["Name"];
+				IntParam.Name   = Data["Name"];
 				IntParam.Offset = Data["Offset"];
-				IntParam.Size = 4;
-				IntParam.Value = Data["DefaultValue"];
+				IntParam.Size   = 4;
+				IntParam.Value  = Data["DefaultValue"];
 				DefaultParams.IntParams.emplace_back(IntParam);
 			}
 			else
@@ -198,33 +204,31 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 		}
 		DefaultParams.TotalSize = AssetData["TotalSize"];
 
-		if(DefaultParams.TotalSize > 0)
+		if (DefaultParams.TotalSize > 0)
 		{
 			// Constant Buffer 생성
 			D3D11_BUFFER_DESC bufferDesc = {};
-			bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-			bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-			bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-			bufferDesc.ByteWidth = DefaultParams.TotalSize;
-			HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ParamConstantBuffer.GetAddressOf()));	
+			bufferDesc.Usage             = D3D11_USAGE_DYNAMIC;
+			bufferDesc.BindFlags         = D3D11_BIND_CONSTANT_BUFFER;
+			bufferDesc.CPUAccessFlags    = D3D11_CPU_ACCESS_WRITE;
+			bufferDesc.ByteWidth         = DefaultParams.TotalSize;
+			HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ParamConstantBuffer.GetAddressOf()));
 		}
-		
 	}
 
-	if(AssetData.contains("TextureParams") && AssetData["TextureParams"].size() != 0)
+	if (AssetData.contains("TextureParams") && AssetData["TextureParams"].size() != 0)
 	{
-		auto TextureParamData = AssetData["TextureParams"];
+		auto   TextureParamData = AssetData["TextureParams"];
 		size_t TextureParamSize = TextureParamData.size();
-		for(int i = 0 ; i< TextureParamSize; ++i)
+		for (int i = 0; i < TextureParamSize; ++i)
 		{
 			std::string TextureName = TextureParamData[i];
-			TextureParams.emplace_back(UTexture::GetTextureCache(TextureName));	
+			TextureParams.emplace_back(UTexture::GetTextureCache(TextureName));
 		}
-
 	}
 
-	UMaterialInterface::MaterialCache[GetName()] = shared_from_this();
-	MaterialID = MaterialCache.size();
+	MaterialCache[GetName()] = shared_from_this();
+	MaterialID               = MaterialCache.size();
 }
 
 void UMaterial::Binding()
@@ -236,43 +240,43 @@ void UMaterial::Binding()
 	GDirectXDevice->SetGeometryShader(GeometryShader.get());
 
 	ComPtr<ID3D11DeviceContext> DeviceContext = GDirectXDevice->GetDeviceContext();
-	for(int i = 0; i < Textures.size(); ++i)
+	for (int i = 0; i < Textures.size(); ++i)
 	{
-		DeviceContext->PSSetShaderResources(i,1, Textures[i]->GetSRV().GetAddressOf());	
+		DeviceContext->PSSetShaderResources(i, 1, Textures[i]->GetSRV().GetAddressOf());
 	}
-	for(int i = 0; i < TextureParams.size(); ++i)
+	for (int i = 0; i < TextureParams.size(); ++i)
 	{
-		DeviceContext->PSSetShaderResources(Textures.size() + i , 1 , TextureParams[i]->GetSRV().GetAddressOf());
+		DeviceContext->PSSetShaderResources(Textures.size() + i, 1, TextureParams[i]->GetSRV().GetAddressOf());
 	}
 
 	MapAndBindParameterConstantBuffer();
-
 }
 
 void UMaterial::MapAndBindParameterConstantBuffer() const
 {
 	// 파라미터가 없음
-	if(DefaultParams.TotalSize == 0)
+	if (DefaultParams.TotalSize == 0)
 	{
 		return;
 	}
 
 	D3D11_MAPPED_SUBRESOURCE cbMapSub{};
-	HR(GDirectXDevice->GetDeviceContext()->Map(ParamConstantBuffer.Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &cbMapSub));
+	HR(GDirectXDevice->GetDeviceContext()->Map(ParamConstantBuffer.Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &
+		cbMapSub));
 
-	for(const auto& FloatParam : DefaultParams.FloatParams)
+	for (const auto& FloatParam : DefaultParams.FloatParams)
 	{
-		memcpy(static_cast<char*>(cbMapSub.pData) + FloatParam.Offset, (&FloatParam.Value), FloatParam.Size);	
+		memcpy(static_cast<char*>(cbMapSub.pData) + FloatParam.Offset, (&FloatParam.Value), FloatParam.Size);
 	}
-	for(const auto& IntParam : DefaultParams.IntParams)
+	for (const auto& IntParam : DefaultParams.IntParams)
 	{
-		memcpy(static_cast<char*>(cbMapSub.pData)+ IntParam.Offset, &IntParam.Value, IntParam.Size);	
+		memcpy(static_cast<char*>(cbMapSub.pData) + IntParam.Offset, &IntParam.Value, IntParam.Size);
 	}
 
-	GDirectXDevice->GetDeviceContext()->Unmap(ParamConstantBuffer.Get(),0);
+	GDirectXDevice->GetDeviceContext()->Unmap(ParamConstantBuffer.Get(), 0);
 
-	GDirectXDevice->GetDeviceContext()->PSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_UserParam),1,ParamConstantBuffer.GetAddressOf());
-	
+	GDirectXDevice->GetDeviceContext()->PSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_UserParam), 1,
+															ParamConstantBuffer.GetAddressOf());
 }
 
 void UMaterialInstance::LoadDataFromFileData(const nlohmann::json& AssetData)
@@ -280,29 +284,29 @@ void UMaterialInstance::LoadDataFromFileData(const nlohmann::json& AssetData)
 	UMaterialInterface::LoadDataFromFileData(AssetData);
 
 	std::string ParentMaterialName = AssetData["ParentMaterial"];
-	ParentMaterial = std::dynamic_pointer_cast<UMaterial>(UMaterial::GetMaterialCache(ParentMaterialName));
-	if(!ParentMaterial)
+	ParentMaterial                 = std::dynamic_pointer_cast<UMaterial>(GetMaterialCache(ParentMaterialName));
+	if (!ParentMaterial)
 	{
 		assert(0&&"잘못된 부모 머테리얼");
 	}
 
-	if(AssetData.contains("OverrideParams"))
+	if (AssetData.contains("OverrideParams"))
 	{
 		auto OverrideParamData = AssetData["OverrideParams"];
-		for(const auto& Data : OverrideParamData)
+		for (const auto& Data : OverrideParamData)
 		{
 			std::string Type = Data["Type"];
-			if("float" == Type)
+			if ("float" == Type)
 			{
 				FMaterialParameterDesc<float> FloatParam;
-				FloatParam.Name = Data["Name"];
+				FloatParam.Name  = Data["Name"];
 				FloatParam.Value = Data["Value"];
 				OverrideParams.FloatParams.emplace_back(FloatParam);
 			}
-			else if("int" == Type)
+			else if ("int" == Type)
 			{
 				FMaterialParameterDesc<int> IntParam;
-				IntParam.Name = Data["Name"];
+				IntParam.Name  = Data["Name"];
 				IntParam.Value = Data["Value"];
 				OverrideParams.IntParams.emplace_back(IntParam);
 			}
@@ -314,9 +318,7 @@ void UMaterialInstance::LoadDataFromFileData(const nlohmann::json& AssetData)
 		}
 	}
 
-
-
-	UMaterialInterface::MaterialCache[GetName()] = shared_from_this();
+	MaterialCache[GetName()] = shared_from_this();
 }
 
 void UMaterialInstance::Binding()
@@ -324,121 +326,130 @@ void UMaterialInstance::Binding()
 	UMaterialInterface::Binding();
 
 	// 머테리얼 인스턴스로만 SceneProxy가 이루어져 있을 수 있으므로 바인딩을 진행 (Pipeline State가 중복적으로 값을 설정하지는 않음)
-	if(ParentMaterial)
+	if (ParentMaterial)
 	{
 		ParentMaterial->Binding();
 	}
-
-	
 }
 
 void UMaterialInstance::SetScalarParam(const std::string& Name, float NewValue)
 {
 	// 부모에 유효한 파라미터인지 확인
-	auto ParentTargetParamIter = std::ranges::find_if(ParentMaterial->DefaultParams.FloatParams, [Name](const FMaterialParameterDesc<float>& A)
-	{
-		return A.Name == Name;
-	});
-	if(ParentTargetParamIter == ParentMaterial->DefaultParams.FloatParams.end())
+	auto ParentTargetParamIter = std::ranges::find_if(ParentMaterial->DefaultParams.FloatParams,
+													[Name](const FMaterialParameterDesc<float>& A)
+													{
+														return A.Name == Name;
+													});
+	if (ParentTargetParamIter == ParentMaterial->DefaultParams.FloatParams.end())
 	{
 		MY_LOG("Warning", EDebugLogLevel::DLL_Warning, "SetScalarParam no valid ParamName");
 		return;
 	}
 
 	// 현재 머테리얼 인스턴스에서 파라미터로 되어있는지
-	auto OverrideParamIter = std::ranges::find_if(OverrideParams.FloatParams, [Name](const FMaterialParameterDesc<float>& A)
-		{
-			return A.Name == Name;
-		});
-	if(OverrideParamIter != OverrideParams.FloatParams.end())
+	auto OverrideParamIter = std::ranges::find_if(OverrideParams.FloatParams,
+												[Name](const FMaterialParameterDesc<float>& A)
+												{
+													return A.Name == Name;
+												});
+	if (OverrideParamIter != OverrideParams.FloatParams.end())
 	{
 		OverrideParamIter->Value = NewValue;
 	}
 	else
 	{
-		OverrideParams.FloatParams.emplace_back(Name,4,0,NewValue);
+		OverrideParams.FloatParams.emplace_back(Name, 4, 0, NewValue);
 	}
 }
 
 void UMaterialInstance::SetTextureParam(UINT TextureSlot, std::shared_ptr<UTexture> NewTexture)
 {
-	if(OverrideTextures.size() == 0)
+	if (OverrideTextures.size() == 0)
 	{
-		OverrideTextures.resize(ParentMaterial->TextureParams.size());	
+		OverrideTextures.resize(ParentMaterial->TextureParams.size());
 	}
 	OverrideTextures[TextureSlot] = NewTexture;
 }
 
 void UMaterialInstance::BindingMaterialInstanceUserParam() const
 {
-	
 	// Constant Buffer
 	D3D11_MAPPED_SUBRESOURCE cbMapSub{};
-	if(ParentMaterial->ParamConstantBuffer)
+	if (ParentMaterial->ParamConstantBuffer)
 	{
-		HR(GDirectXDevice->GetDeviceContext()->Map(ParentMaterial->ParamConstantBuffer.Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &cbMapSub));
+		HR(GDirectXDevice->GetDeviceContext()->Map(ParentMaterial->ParamConstantBuffer.Get(), 0, D3D11_MAP::
+			D3D11_MAP_WRITE_DISCARD, 0, &cbMapSub));
 
-		for(const auto& FloatParam : ParentMaterial->DefaultParams.FloatParams)
+		for (const auto& FloatParam : ParentMaterial->DefaultParams.FloatParams)
 		{
-			auto OverrideParam = std::ranges::find_if(OverrideParams.FloatParams, [&](const FMaterialParameterDesc<float>& A ){return A.Name == FloatParam.Name;});
+			auto OverrideParam = std::ranges::find_if(OverrideParams.FloatParams,
+													[&](const FMaterialParameterDesc<float>& A)
+													{
+														return A.Name == FloatParam.Name;
+													});
 			// Override 되었음
-			if(OverrideParam != OverrideParams.FloatParams.end())
+			if (OverrideParam != OverrideParams.FloatParams.end())
 			{
-				memcpy(static_cast<char*>(cbMapSub.pData) + FloatParam.Offset, (&OverrideParam->Value), FloatParam.Size);		
+				memcpy(static_cast<char*>(cbMapSub.pData) + FloatParam.Offset, (&OverrideParam->Value),
+						FloatParam.Size);
 			}
 			// Override 안됨
 			else
 			{
-				memcpy(static_cast<char*>(cbMapSub.pData) + FloatParam.Offset, (&FloatParam.Value), FloatParam.Size);		
+				memcpy(static_cast<char*>(cbMapSub.pData) + FloatParam.Offset, (&FloatParam.Value), FloatParam.Size);
 			}
-
 		}
-		for(const auto& IntParam : ParentMaterial->DefaultParams.IntParams)
+		for (const auto& IntParam : ParentMaterial->DefaultParams.IntParams)
 		{
-			auto OverrideParam = std::ranges::find_if(OverrideParams.IntParams, [&](const FMaterialParameterDesc<int>& A ){return A.Name == IntParam.Name;});
+			auto OverrideParam = std::ranges::find_if(OverrideParams.IntParams,
+													[&](const FMaterialParameterDesc<int>& A)
+													{
+														return A.Name == IntParam.Name;
+													});
 			// Override 되었음
-			if(OverrideParam != OverrideParams.IntParams.end())
+			if (OverrideParam != OverrideParams.IntParams.end())
 			{
-				memcpy(static_cast<char*>(cbMapSub.pData) + IntParam.Offset, (&OverrideParam->Value), IntParam.Size);		
+				memcpy(static_cast<char*>(cbMapSub.pData) + IntParam.Offset, (&OverrideParam->Value), IntParam.Size);
 			}
 			// Override 안됨
 			else
 			{
-				memcpy(static_cast<char*>(cbMapSub.pData) + IntParam.Offset, (&IntParam.Value), IntParam.Size);		
+				memcpy(static_cast<char*>(cbMapSub.pData) + IntParam.Offset, (&IntParam.Value), IntParam.Size);
 			}
 		}
 
-		GDirectXDevice->GetDeviceContext()->Unmap(ParentMaterial->ParamConstantBuffer.Get(),0);	
+		GDirectXDevice->GetDeviceContext()->Unmap(ParentMaterial->ParamConstantBuffer.Get(), 0);
 	}
-	
+
 	// 텍스쳐
 	ComPtr<ID3D11DeviceContext> DeviceContext = GDirectXDevice->GetDeviceContext();
-	for(int i = 0; i < ParentMaterial->TextureParams.size(); ++i)
+	for (int i = 0; i < ParentMaterial->TextureParams.size(); ++i)
 	{
-		if(OverrideTextures.size() > i && OverrideTextures[i])
+		if (OverrideTextures.size() > i && OverrideTextures[i])
 		{
-			DeviceContext->PSSetShaderResources(ParentMaterial->Textures.size() + i,1,OverrideTextures[i]->GetSRV().GetAddressOf());
+			DeviceContext->PSSetShaderResources(ParentMaterial->Textures.size() + i, 1,
+												OverrideTextures[i]->GetSRV().GetAddressOf());
 		}
 		else
 		{
-			DeviceContext->PSSetShaderResources(ParentMaterial->Textures.size() +i,1,ParentMaterial->TextureParams[i]->GetSRV().GetAddressOf());
+			DeviceContext->PSSetShaderResources(ParentMaterial->Textures.size() + i, 1,
+												ParentMaterial->TextureParams[i]->GetSRV().GetAddressOf());
 		}
 	}
 }
 
-FComputeShader::FComputeShader( const std::string& FilePath, const std::string& FuncName, UINT ThreadPerGroupX,
-	UINT ThreadPerGroupY, UINT ThreadPerGroupZ)
-		: ThreadPerGroupX(ThreadPerGroupX), ThreadPerGroupY(ThreadPerGroupY), ThreadPerGroupZ(ThreadPerGroupZ)
+FComputeShader::FComputeShader(const std::string& FilePath, const std::string& FuncName, UINT ThreadPerGroupX,
+								UINT              ThreadPerGroupY, UINT        ThreadPerGroupZ)
+	: ThreadPerGroupX(ThreadPerGroupX), ThreadPerGroupY(ThreadPerGroupY), ThreadPerGroupZ(ThreadPerGroupZ)
 {
-	CreateComputeShader(FilePath,FuncName);
+	CreateComputeShader(FilePath, FuncName);
 }
 
 void FComputeShader::Execute_Enqueue()
 {
 	auto Lambda = [this](std::shared_ptr<FScene>& SceneData)
 	{
-
-		if(!Binding())
+		if (!Binding())
 		{
 			return;
 		}
@@ -446,9 +457,9 @@ void FComputeShader::Execute_Enqueue()
 		CalculateGroupCount();
 
 		//GDirectXDevice->SetComputeShader(this);
-		GDirectXDevice->GetDeviceContext()->CSSetShader(ComputeShader.Get(),nullptr,0);
-		
-		GDirectXDevice->GetDeviceContext()->Dispatch(GroupX,GroupY,GroupZ);
+		GDirectXDevice->GetDeviceContext()->CSSetShader(ComputeShader.Get(), nullptr, 0);
+
+		GDirectXDevice->GetDeviceContext()->Dispatch(GroupX, GroupY, GroupZ);
 
 		ClearBinding();
 	};
@@ -457,7 +468,7 @@ void FComputeShader::Execute_Enqueue()
 
 void FComputeShader::Execute_Immediately()
 {
-	if(!Binding())
+	if (!Binding())
 	{
 		return;
 	}
@@ -465,17 +476,17 @@ void FComputeShader::Execute_Immediately()
 	// Dispath시 GroupXYZ의 크기를 계산
 	CalculateGroupCount();
 
-	GDirectXDevice->GetDeviceContext()->CSSetShader(ComputeShader.Get(),nullptr,0);
+	GDirectXDevice->GetDeviceContext()->CSSetShader(ComputeShader.Get(), nullptr, 0);
 
-	GDirectXDevice->GetDeviceContext()->Dispatch(GroupX,GroupY,GroupZ);
+	GDirectXDevice->GetDeviceContext()->Dispatch(GroupX, GroupY, GroupZ);
 
 	ClearBinding();
 }
 
-void FComputeShader::CreateComputeShader( const std::string& FilePath, const std::string& FuncName)
+void FComputeShader::CreateComputeShader(const std::string& FilePath, const std::string& FuncName)
 {
-	std::string Path = GEngine->GetDirectoryPath() + FilePath;
-	std::wstring ShaderFilePath = std::wstring{Path.begin(),Path.end()};
+	std::string Path           = GEngine->GetDirectoryPath() + FilePath;
+	auto        ShaderFilePath = std::wstring{Path.begin(), Path.end()};
 
 	int Flag = 0;
 #ifdef _DEBUG
@@ -484,8 +495,7 @@ void FComputeShader::CreateComputeShader( const std::string& FilePath, const std
 
 	ComPtr<ID3DBlob> ErrorBlob;
 	if (FAILED(D3DCompileFromFile(ShaderFilePath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE
-		, FuncName.c_str(), "cs_5_0", Flag, 0
-		, CSBlob.GetAddressOf(), ErrorBlob.GetAddressOf())))
+		, FuncName.c_str(), "cs_5_0", Flag, 0 , CSBlob.GetAddressOf(), ErrorBlob.GetAddressOf())))
 	{
 		if (3 == GetLastError())
 		{
@@ -493,29 +503,27 @@ void FComputeShader::CreateComputeShader( const std::string& FilePath, const std
 		}
 		else
 		{
-			MessageBoxA(nullptr, (char*)ErrorBlob->GetBufferPointer(), "쉐이더 컴파일 실패", MB_OK);
+			MessageBoxA(nullptr, static_cast<char*>(ErrorBlob->GetBufferPointer()), "쉐이더 컴파일 실패", MB_OK);
 		}
 
 		return;
 	}
 
 	// 컴파일한 코드로 쉐이더 객체 생성하기
-	GDirectXDevice->GetDevice()->CreateComputeShader(CSBlob->GetBufferPointer()
-		, CSBlob->GetBufferSize(), nullptr
-		, ComputeShader.GetAddressOf());
-
+	GDirectXDevice->GetDevice()->CreateComputeShader(CSBlob->GetBufferPointer(), CSBlob->GetBufferSize(), nullptr,
+													ComputeShader.GetAddressOf());
 }
 
 FSetColorCS::FSetColorCS()
-	: FComputeShader("/Shader/ComputeShader/SetColor.fx", "CS_SetColor", 32, 32,1), Color(0.0f,1.0f,1.0f,1.0f)
+	: FComputeShader("/Shader/ComputeShader/SetColor.fx", "CS_SetColor", 32, 32, 1), Color(0.0f, 1.0f, 1.0f, 1.0f)
 {
 	// Constant Buffer 생성
 	D3D11_BUFFER_DESC bufferDesc = {};
-	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	bufferDesc.ByteWidth = 32;
-	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ConstantBuffer.GetAddressOf()));	
+	bufferDesc.Usage             = D3D11_USAGE_DYNAMIC;
+	bufferDesc.BindFlags         = D3D11_BIND_CONSTANT_BUFFER;
+	bufferDesc.CPUAccessFlags    = D3D11_CPU_ACCESS_WRITE;
+	bufferDesc.ByteWidth         = 32;
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ConstantBuffer.GetAddressOf()));
 }
 
 bool FSetColorCS::Binding()
@@ -536,7 +544,7 @@ bool FSetColorCS::Binding()
 
 void FSetColorCS::CalculateGroupCount()
 {
-	UINT Width = TargetTexture->GetWidth();
+	UINT Width  = TargetTexture->GetWidth();
 	UINT Height = TargetTexture->GetHeight();
 
 	GroupX = Width / ThreadPerGroupX;
@@ -551,31 +559,33 @@ void FSetColorCS::CalculateGroupCount()
 
 void FSetColorCS::ClearBinding()
 {
-	UINT i = -1;
+	UINT                       i       = -1;
 	ID3D11UnorderedAccessView* nullUAV = nullptr;
-	GDirectXDevice->GetDeviceContext()->CSSetUnorderedAccessViews(0, 1, &nullUAV,&i);
+	GDirectXDevice->GetDeviceContext()->CSSetUnorderedAccessViews(0, 1, &nullUAV, &i);
 	TargetTexture = nullptr;
 }
 
 void FSetColorCS::MapAndBindConstantBuffer()
 {
 	D3D11_MAPPED_SUBRESOURCE cbMapSub{};
-	HR(GDirectXDevice->GetDeviceContext()->Map(ConstantBuffer.Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &cbMapSub));
+	HR(GDirectXDevice->GetDeviceContext()->Map(ConstantBuffer.Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &cbMapSub
+	));
 
-	int Width = TargetTexture->GetWidth();
+	int Width  = TargetTexture->GetWidth();
 	int Height = TargetTexture->GetHeight();
 
 	memcpy(cbMapSub.pData, &Color, 16);
-	memcpy(static_cast<char*>(cbMapSub.pData)+16, &Width, 4);
-	memcpy(static_cast<char*>(cbMapSub.pData)+20, &Height, 4);
-	
-	GDirectXDevice->GetDeviceContext()->Unmap(ConstantBuffer.Get(),0);
+	memcpy(static_cast<char*>(cbMapSub.pData) + 16, &Width, 4);
+	memcpy(static_cast<char*>(cbMapSub.pData) + 20, &Height, 4);
 
-	GDirectXDevice->GetDeviceContext()->CSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_ComputeShader),1,ConstantBuffer.GetAddressOf());
+	GDirectXDevice->GetDeviceContext()->Unmap(ConstantBuffer.Get(), 0);
+
+	GDirectXDevice->GetDeviceContext()->CSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_ComputeShader),
+															1, ConstantBuffer.GetAddressOf());
 }
 
 FTickParticleCS::FTickParticleCS()
-	:FComputeShader("/Shader/TickParticleCS.fx", "CS_TickParticle",256,1,1)
+	: FComputeShader("/Shader/TickParticleCS.fx", "CS_TickParticle", 256, 1, 1)
 {
 }
 
@@ -625,11 +635,8 @@ void FTickParticleCS::MapAndBindConstantBuffer()
 	// 상수버퍼로 건네주지 않음
 }
 
-
 FStructuredBuffer::FStructuredBuffer()
-	: Desc{}
-	, ElementSize(0)
-	, ElementCount(0)
+	: Desc{}, ElementSize(0), ElementCount(0)
 {
 }
 
@@ -639,24 +646,25 @@ FStructuredBuffer::~FStructuredBuffer()
 
 void FGeometryShader::CompileGeometryShader(const std::string& FilePath, const std::string& FuncName)
 {
-	std::string TempDirectoryPath =  GEngine->GetDirectoryPath();
-	std::wstring TempShaderPath = std::wstring(TempDirectoryPath.begin(), TempDirectoryPath.end());
-	std::wstring ShaderFilePath = TempShaderPath + std::wstring{FilePath.begin(),FilePath.end()};
+	std::string  TempDirectoryPath = GEngine->GetDirectoryPath();
+	auto         TempShaderPath    = std::wstring(TempDirectoryPath.begin(), TempDirectoryPath.end());
+	std::wstring ShaderFilePath    = TempShaderPath + std::wstring{FilePath.begin(), FilePath.end()};
 
 	HR(CompileShaderFromFile(ShaderFilePath.c_str(), FuncName.c_str(), "gs_4_0", GSBlob.GetAddressOf()));
 
-	HR(GDirectXDevice->GetDevice()->CreateGeometryShader(GSBlob->GetBufferPointer(), GSBlob->GetBufferSize(), nullptr, GeometryShader.GetAddressOf()));
+	HR(GDirectXDevice->GetDevice()->CreateGeometryShader(GSBlob->GetBufferPointer(), GSBlob->GetBufferSize(), nullptr,
+		GeometryShader.GetAddressOf()));
 }
 
 int FStructuredBuffer::Create(UINT _ElementSize, UINT _ElementCount, SB_TYPE _Type, bool _SysMemMove, void* _SysMem)
 {
 	MainBuffer = nullptr;
-	SRV = nullptr;
-	UAV = nullptr;
+	SRV        = nullptr;
+	UAV        = nullptr;
 
-	ElementSize = _ElementSize;
+	ElementSize  = _ElementSize;
 	ElementCount = _ElementCount;
-	Type = _Type;
+	Type         = _Type;
 	// Desc 작성
 	Desc.ByteWidth = ElementSize * ElementCount;
 
@@ -665,8 +673,8 @@ int FStructuredBuffer::Create(UINT _ElementSize, UINT _ElementCount, SB_TYPE _Ty
 	else
 		Desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 
-	Desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;	
-	Desc.Usage = D3D11_USAGE_DEFAULT;
+	Desc.MiscFlags      = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	Desc.Usage          = D3D11_USAGE_DEFAULT;
 	Desc.CPUAccessFlags = 0;
 
 	// 구조화버퍼 생성시 추가 설정
@@ -683,7 +691,7 @@ int FStructuredBuffer::Create(UINT _ElementSize, UINT _ElementCount, SB_TYPE _Ty
 	else
 	{
 		D3D11_SUBRESOURCE_DATA tSub = {};
-		tSub.pSysMem = _SysMem;
+		tSub.pSysMem                = _SysMem;
 
 		if (FAILED(GDirectXDevice->GetDevice()->CreateBuffer(&Desc, &tSub, MainBuffer.GetAddressOf())))
 		{
@@ -692,15 +700,14 @@ int FStructuredBuffer::Create(UINT _ElementSize, UINT _ElementCount, SB_TYPE _Ty
 		}
 	}
 
-
 	// 구조화 버퍼가 SystemMemory 랑 통신이 가능해야 한다.
 	if (_SysMemMove)
 	{
 		D3D11_BUFFER_DESC BufferDesc = Desc;
 
 		// Write Bufer
-		BufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-		BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+		BufferDesc.BindFlags      = D3D11_BIND_SHADER_RESOURCE;
+		BufferDesc.Usage          = D3D11_USAGE_DYNAMIC;
 		BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
 		if (FAILED(GDirectXDevice->GetDevice()->CreateBuffer(&BufferDesc, nullptr, WriteBuffer.GetAddressOf())))
@@ -709,20 +716,20 @@ int FStructuredBuffer::Create(UINT _ElementSize, UINT _ElementCount, SB_TYPE _Ty
 		}
 
 		// ReadBuffer
-		BufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-		BufferDesc.Usage	 = D3D11_USAGE_DEFAULT;
+		BufferDesc.BindFlags      = D3D11_BIND_SHADER_RESOURCE;
+		BufferDesc.Usage          = D3D11_USAGE_DEFAULT;
 		BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
 
 		if (FAILED(GDirectXDevice->GetDevice()->CreateBuffer(&BufferDesc, nullptr, ReadBuffer.GetAddressOf())))
 		{
 			return E_FAIL;
-		}	
+		}
 	}
 
 	// ShaderResourceView 생성
 	D3D11_SHADER_RESOURCE_VIEW_DESC tSRVDesc = {};
-	tSRVDesc.ViewDimension = D3D_SRV_DIMENSION_BUFFER;
-	tSRVDesc.BufferEx.NumElements = _ElementCount;
+	tSRVDesc.ViewDimension                   = D3D_SRV_DIMENSION_BUFFER;
+	tSRVDesc.BufferEx.NumElements            = _ElementCount;
 
 	if (FAILED(GDirectXDevice->GetDevice()->CreateShaderResourceView(MainBuffer.Get(), &tSRVDesc, SRV.GetAddressOf())))
 	{
@@ -733,10 +740,11 @@ int FStructuredBuffer::Create(UINT _ElementSize, UINT _ElementCount, SB_TYPE _Ty
 	if (SB_TYPE::SRV_UAV == Type)
 	{
 		D3D11_UNORDERED_ACCESS_VIEW_DESC tUAVDesc = {};
-		tUAVDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
-		tUAVDesc.Buffer.NumElements = _ElementCount;
+		tUAVDesc.ViewDimension                    = D3D11_UAV_DIMENSION_BUFFER;
+		tUAVDesc.Buffer.NumElements               = _ElementCount;
 
-		if (FAILED(GDirectXDevice->GetDevice()->CreateUnorderedAccessView(MainBuffer.Get(), &tUAVDesc, UAV.GetAddressOf())))
+		if (FAILED(
+			GDirectXDevice->GetDevice()->CreateUnorderedAccessView(MainBuffer.Get(), &tUAVDesc, UAV.GetAddressOf())))
 		{
 			assert(nullptr);
 			return E_FAIL;
@@ -754,7 +762,7 @@ void FStructuredBuffer::SetData(void* _SysMem, UINT _ElementCount)
 	{
 		_ElementCount = ElementCount;
 	}
-	
+
 	// SysMem -> WirteBuffer
 	D3D11_MAPPED_SUBRESOURCE tSub = {};
 	GDirectXDevice->GetDeviceContext()->Map(WriteBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &tSub);
@@ -790,7 +798,7 @@ void FStructuredBuffer::Binding(UINT _TexRegisterNum)
 	GDirectXDevice->GetDeviceContext()->HSSetShaderResources(_TexRegisterNum, 1, SRV.GetAddressOf());
 	GDirectXDevice->GetDeviceContext()->DSSetShaderResources(_TexRegisterNum, 1, SRV.GetAddressOf());
 	GDirectXDevice->GetDeviceContext()->GSSetShaderResources(_TexRegisterNum, 1, SRV.GetAddressOf());
-	GDirectXDevice->GetDeviceContext()->PSSetShaderResources(_TexRegisterNum, 1, SRV.GetAddressOf());	
+	GDirectXDevice->GetDeviceContext()->PSSetShaderResources(_TexRegisterNum, 1, SRV.GetAddressOf());
 }
 
 void FStructuredBuffer::Clear(UINT _TexRegisterNum)
@@ -812,7 +820,7 @@ void FStructuredBuffer::Binding_CS_UAV(UINT RegisterNum)
 
 void FStructuredBuffer::Clear_CS_UAV(UINT RegisterNum)
 {
-	UINT i = -1;
+	UINT                       i       = -1;
 	ID3D11UnorderedAccessView* NullUAV = nullptr;
 	GDirectXDevice->GetDeviceContext()->CSSetUnorderedAccessViews(RegisterNum, 1, &NullUAV, &i);
 }
@@ -820,7 +828,7 @@ void FStructuredBuffer::Clear_CS_UAV(UINT RegisterNum)
 void FStructuredBuffer::Binding_CS_SRV(UINT RegisterNum)
 {
 	assert(SRV.Get() != nullptr && "SRV is nullptr");
-	GDirectXDevice->GetDeviceContext()->CSSetShaderResources(RegisterNum,1,SRV.GetAddressOf());
+	GDirectXDevice->GetDeviceContext()->CSSetShaderResources(RegisterNum, 1, SRV.GetAddressOf());
 }
 
 void FStructuredBuffer::Clear_CS_SRV(UINT RegisterNum)
@@ -828,4 +836,3 @@ void FStructuredBuffer::Clear_CS_SRV(UINT RegisterNum)
 	ID3D11ShaderResourceView* NullSRV = nullptr;
 	GDirectXDevice->GetDeviceContext()->CSSetShaderResources(RegisterNum, 1, &NullSRV);
 }
-

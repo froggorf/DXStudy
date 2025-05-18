@@ -3,7 +3,6 @@
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
 
-
 #pragma once
 
 #include "ImguiPanel.h"
@@ -14,15 +13,19 @@ enum class EDebugConsoleCommandType
 {
 	DCCT_Null,
 	DCCT_AddConsoleText,
-	
 };
 
-struct FImguiDebugConsoleCommandData : public FImguiPanelCommandData
+struct FImguiDebugConsoleCommandData : FImguiPanelCommandData
 {
-	FImguiDebugConsoleCommandData() {};
-	~FImguiDebugConsoleCommandData() override {};
+	FImguiDebugConsoleCommandData()
+	{
+	};
 
-	DebugText DebugText;
+	~FImguiDebugConsoleCommandData() override
+	{
+	};
+
+	DebugText                DebugText;
 	EDebugConsoleCommandType CommandType;
 
 	// 언리얼엔진의 Struct 비교 방식에서 차용
@@ -32,25 +35,29 @@ struct FImguiDebugConsoleCommandData : public FImguiPanelCommandData
 		static CommandIDGenerator Generator;
 		return Generator.ID;
 	}
-	virtual UINT GetTypeID() const {return GetClassID();}
-	virtual bool IsOfType(UINT InTypeID) const {return GetClassID() == InTypeID|| FImguiPanelCommandData::IsOfType(InTypeID); }
-	
-};
 
+	UINT GetTypeID() const override
+	{
+		return GetClassID();
+	}
+
+	bool IsOfType(UINT InTypeID) const override
+	{
+		return GetClassID() == InTypeID || FImguiPanelCommandData::IsOfType(InTypeID);
+	}
+};
 
 class FImguiDebugConsole : public FImguiPanel
 {
 public:
 	FImguiDebugConsole(FScene* SceneData);
 
-
 	void Draw() override;
 	void ExecuteCommand(const std::shared_ptr<FImguiPanelCommandData>& CommandData) override;
-protected:
+
 private:
 	void SearchDebugConsole();
-public:
-protected:
+
 private:
 	// 검색에 사용되는 string
 	std::string DebugConsoleSearchText;

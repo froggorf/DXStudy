@@ -8,25 +8,23 @@
 #include "StaticMeshResources.h"
 #include "Engine/RenderCore/EditorScene.h"
 
-
 //std::map<std::string, std::shared_ptr<UStaticMesh>> UStaticMesh::StaticMeshCache;
 
 UStaticMesh::UStaticMesh()
 {
-	
 }
 
 UStaticMesh::~UStaticMesh()
 {
 }
+
 void UStaticMesh::LoadDataFromFileData(const nlohmann::json& StaticMeshAssetData)
 {
-	if(GetStaticMeshCacheMap().contains(GetName()))
+	if (GetStaticMeshCacheMap().contains(GetName()))
 	{
 		MY_LOG("LoadData", EDebugLogLevel::DLL_Warning, "already load this StaticMesh -> " + GetName());
 		return;
 	}
-
 
 	UObject::LoadDataFromFileData(StaticMeshAssetData);
 

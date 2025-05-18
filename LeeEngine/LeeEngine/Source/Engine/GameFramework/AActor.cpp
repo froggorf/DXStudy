@@ -48,7 +48,7 @@ void AActor::BeginPlay()
 {
 	UObject::BeginPlay();
 
-	if(GetRootComponent())
+	if (GetRootComponent())
 	{
 		GetRootComponent()->BeginPlay();
 	}
@@ -61,8 +61,8 @@ void AActor::BeginPlay()
 
 XMFLOAT3 AActor::GetActorLocation() const
 {
-	XMFLOAT3 RetLoc = XMFLOAT3{0.0f,0.0f,0.0f};
-	if(RootComponent)
+	auto RetLoc = XMFLOAT3{0.0f, 0.0f, 0.0f};
+	if (RootComponent)
 	{
 		RetLoc = RootComponent->GetRelativeLocation();
 	}
@@ -71,8 +71,8 @@ XMFLOAT3 AActor::GetActorLocation() const
 
 XMFLOAT4 AActor::GetActorRotation() const
 {
-	XMFLOAT4 RetRotQuat = XMFLOAT4(0.0f,0.0f,0.0f,1.0f);
-	if(RootComponent)
+	auto RetRotQuat = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	if (RootComponent)
 	{
 		RetRotQuat = RootComponent->GetRelativeRotation();
 	}
@@ -81,8 +81,8 @@ XMFLOAT4 AActor::GetActorRotation() const
 
 XMFLOAT3 AActor::GetActorScale3D() const
 {
-	XMFLOAT3 RetScale = XMFLOAT3(1.0f,1.0f,1.0f);
-	if(RootComponent)
+	auto RetScale = XMFLOAT3(1.0f, 1.0f, 1.0f);
+	if (RootComponent)
 	{
 		RetScale = RootComponent->GetRelativeScale3D();
 	}
@@ -91,7 +91,7 @@ XMFLOAT3 AActor::GetActorScale3D() const
 
 void AActor::SetActorLocation(const XMFLOAT3& NewLocation) const
 {
-	if(RootComponent)
+	if (RootComponent)
 	{
 		// TODO: 언리얼엔진에서는 MoveComponent를 통한 이동을 진행
 		RootComponent->SetRelativeLocation(NewLocation);
@@ -100,7 +100,7 @@ void AActor::SetActorLocation(const XMFLOAT3& NewLocation) const
 
 void AActor::SetActorRotation(const XMFLOAT4& NewRotation) const
 {
-	if(RootComponent)
+	if (RootComponent)
 	{
 		// TODO: 언리얼엔진에서는 MoveComponent를 통한 이동을 진행
 		RootComponent->SetRelativeRotation(NewRotation);
@@ -109,7 +109,7 @@ void AActor::SetActorRotation(const XMFLOAT4& NewRotation) const
 
 void AActor::SetActorScale3D(const XMFLOAT3& NewScale3D) const
 {
-	if(RootComponent)
+	if (RootComponent)
 	{
 		// TODO: 언리얼엔진에서는 MoveComponent를 통한 이동을 진행
 		RootComponent->SetRelativeScale3D(NewScale3D);
@@ -118,7 +118,7 @@ void AActor::SetActorScale3D(const XMFLOAT3& NewScale3D) const
 
 void AActor::Tick(float DeltaSeconds)
 {
-	if(GetRootComponent())
+	if (GetRootComponent())
 	{
 		GetRootComponent()->TickComponent(DeltaSeconds);
 	}
@@ -128,39 +128,40 @@ void AActor::SaveDataFromAssetToFile(nlohmann::json& Json)
 {
 	UObject::SaveDataFromAssetToFile(Json);
 
-	Json["Class"] = GetClass();
-	Json["Name"] = GetName();
+	Json["Class"]          = GetClass();
+	Json["Name"]           = GetName();
 	XMFLOAT3 ActorLocation = GetActorLocation();
-	Json["Location"] = { ActorLocation.x,ActorLocation.y,ActorLocation.z};
+	Json["Location"]       = {ActorLocation.x, ActorLocation.y, ActorLocation.z};
 	XMFLOAT4 ActorRotation = GetActorRotation();
-	Json["Rotation"] = { ActorRotation.x,ActorRotation.y,ActorRotation.z,ActorRotation.w};
-	XMFLOAT3 ActorScale3D = GetActorScale3D();
-	Json["Scale"] = { ActorScale3D.x,ActorScale3D.y,ActorScale3D.z};
+	Json["Rotation"]       = {ActorRotation.x, ActorRotation.y, ActorRotation.z, ActorRotation.w};
+	XMFLOAT3 ActorScale3D  = GetActorScale3D();
+	Json["Scale"]          = {ActorScale3D.x, ActorScale3D.y, ActorScale3D.z};
 }
 
 void AActor::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
 	UObject::LoadDataFromFileData(AssetData);
 
-	
 	Rename(AssetData["Name"]);
-	int X = 0, Y = 1, Z = 2, W =3;
+	int  X            = 0, Y = 1, Z = 2, W = 3;
 	auto LocationData = AssetData["Location"];
-	SetActorLocation(XMFLOAT3(LocationData[X],LocationData[Y],LocationData[Z]));
+	SetActorLocation(XMFLOAT3(LocationData[X], LocationData[Y], LocationData[Z]));
 	auto RotationData = AssetData["Rotation"];
-	SetActorRotation(XMFLOAT4(RotationData[X],RotationData[Y],RotationData[Z],RotationData[W]));
+	SetActorRotation(XMFLOAT4(RotationData[X], RotationData[Y], RotationData[Z], RotationData[W]));
 	auto ScaleData = AssetData["Scale"];
-	SetActorScale3D(XMFLOAT3(ScaleData[X],ScaleData[Y],ScaleData[Z]));
+	SetActorScale3D(XMFLOAT3(ScaleData[X], ScaleData[Y], ScaleData[Z]));
 }
 
-UActorComponent* AActor::CreateDefaultSubobject(const std::string& SubobjectName, const std::string& ClassToCreateByDefault)
+UActorComponent* AActor::CreateDefaultSubobject(const std::string& SubobjectName,
+												const std::string& ClassToCreateByDefault)
 {
 	// nullptr를 반환하기 위하여 Raw Pointer 전달
-	const UObject* DefaultObject = UObject::GetDefaultObject(ClassToCreateByDefault);
-	if(DefaultObject)
+	const UObject* DefaultObject = GetDefaultObject(ClassToCreateByDefault);
+	if (DefaultObject)
 	{
-		std::shared_ptr<UActorComponent> NewComponent = std::dynamic_pointer_cast<UActorComponent>(DefaultObject->CreateInstance());
-		if(NewComponent)
+		std::shared_ptr<UActorComponent> NewComponent = std::dynamic_pointer_cast<UActorComponent>(
+			DefaultObject->CreateInstance());
+		if (NewComponent)
 		{
 			NewComponent->Rename(SubobjectName);
 			NewComponent->SetOwner(this);
@@ -184,4 +185,3 @@ const std::shared_ptr<UActorComponent>& AActor::FindComponentByClass(const std::
 
 	return nullptr;
 }
-

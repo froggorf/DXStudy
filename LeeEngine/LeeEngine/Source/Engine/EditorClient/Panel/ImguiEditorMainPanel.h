@@ -3,7 +3,6 @@
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
 
-
 #pragma once
 
 #include "ImguiPanel.h"
@@ -18,12 +17,12 @@ public:
 	~FImguiEditorMainPanel() override = default;
 
 	void Draw() override;
-	void ExecuteCommand(const std::shared_ptr<FImguiPanelCommandData>& CommandData) override{};
-protected:
-private:
-public:
+
+	void ExecuteCommand(const std::shared_ptr<FImguiPanelCommandData>& CommandData) override
+	{
+	};
+
 protected:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> PlayIcon;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> StopIcon;
-private:
 };

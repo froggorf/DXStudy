@@ -12,39 +12,57 @@ class UTexture : public UObject, public std::enable_shared_from_this<UTexture>
 	MY_GENERATED_BODY(UTexture)
 
 	friend class AssetManager;
-public:
 	UTexture() = default;
 	void Release();
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
-	UINT GetWidth() const {return Desc.Width;}
-	UINT GetHeight() const {return Desc.Height;}
+	UINT GetWidth() const
+	{
+		return Desc.Width;
+	}
 
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetSRV() const {return SRView;}
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> GetRTV() const {return RTView;}
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> GetDSV() const {return DSView;}
-	Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> GetUAV() const {return UAView;}
+	UINT GetHeight() const
+	{
+		return Desc.Height;
+	}
+
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetSRV() const
+	{
+		return SRView;
+	}
+
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> GetRTV() const
+	{
+		return RTView;
+	}
+
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> GetDSV() const
+	{
+		return DSView;
+	}
+
+	Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> GetUAV() const
+	{
+		return UAView;
+	}
 
 	static std::shared_ptr<UTexture> GetTextureCache(const std::string& TextureName)
 	{
 		auto Target = TextureCacheMap.find(TextureName);
-		if(Target != TextureCacheMap.end())
+		if (Target != TextureCacheMap.end())
 		{
 			return Target->second;
 		}
 		return nullptr;
 	}
-protected:
-private:
-public:
-protected:
+
 private:
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> Texture2D;
 	// SRV / RTV / DSV / UAV
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>	SRView;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>		RTView;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>		DSView;
-	Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView>	UAView;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>  SRView;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>    RTView;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>    DSView;
+	Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> UAView;
 	//...
 	D3D11_TEXTURE2D_DESC Desc{};
 

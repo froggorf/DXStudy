@@ -12,40 +12,62 @@ struct aiAnimation;
 
 struct AssimpNodeData
 {
-	DirectX::XMMATRIX transformation;
-	std::string name;
-	int childrenCount;
+	XMMATRIX                    transformation;
+	std::string                 name;
+	int                         childrenCount;
 	std::vector<AssimpNodeData> children;
 };
 
 struct FPrecomputedBoneData
 {
 	std::string BoneName;
-	Bone* Bone;
-	int ParentIndex;
-	BoneInfo BoneInfo;
+	Bone*       Bone;
+	int         ParentIndex;
+	BoneInfo    BoneInfo;
 };
 
 class UAnimSequence : public UAnimCompositeBase
 {
 	MY_GENERATED_BODY(UAnimSequence)
-public:
-	UAnimSequence( ) = default;
+	UAnimSequence() = default;
 	UAnimSequence(const UAnimSequence& Other);
-	~UAnimSequence() override {};
+
+	~UAnimSequence() override
+	{
+	};
 
 	Bone* FindBone(const std::string& name);
-	float GetLength() const {return Duration;}
 
-	inline float GetTicksPerSecond() const { return TicksPerSecond; }
-	inline float GetDuration() const { return Duration; }
-	inline const AssimpNodeData& GetRootNode() const { return RootNode; }
-	inline const std::map<std::string, BoneInfo>& GetBoneIDMap() const { return BoneInfoMap; }
-	inline static std::shared_ptr<UAnimSequence> GetAnimationAsset(const std::string& AnimationName)
+	float GetLength() const
 	{
-		if(std::shared_ptr<UAnimationAsset> Asset = UAnimationAsset::GetAnimationAsset(AnimationName))
+		return Duration;
+	}
+
+	float GetTicksPerSecond() const
+	{
+		return TicksPerSecond;
+	}
+
+	float GetDuration() const
+	{
+		return Duration;
+	}
+
+	const AssimpNodeData& GetRootNode() const
+	{
+		return RootNode;
+	}
+
+	const std::map<std::string, BoneInfo>& GetBoneIDMap() const
+	{
+		return BoneInfoMap;
+	}
+
+	static std::shared_ptr<UAnimSequence> GetAnimationAsset(const std::string& AnimationName)
+	{
+		if (std::shared_ptr<UAnimationAsset> Asset = UAnimationAsset::GetAnimationAsset(AnimationName))
 		{
-			return std::dynamic_pointer_cast<UAnimSequence>(Asset);	
+			return std::dynamic_pointer_cast<UAnimSequence>(Asset);
 		}
 		return nullptr;
 	}
@@ -53,9 +75,8 @@ public:
 	// 특정 애니메이션 시간의 본 Matrices를 반환받는 함수
 	void GetBoneTransform(float CurrentAnimTime, std::vector<XMMATRIX>& FinalBoneMatrices);
 
-
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
-protected:
+
 private:
 	// 누락된 본 데이터 추가 및 모델의 boneInfoMap 업데이트
 	void ReadMissingBones(const aiAnimation* animation, std::map<std::string, BoneInfo>& modelBoneInfoMap);
@@ -65,8 +86,6 @@ private:
 	void TraverseTreeHierarchy(const AssimpNodeData* NodeData, int ParentIndex);
 	void PrecomputeAnimationData();
 
-	
-
 public:
 	static std::map<std::string, std::vector<FPrecomputedBoneData>>& GetSkeletonBoneHierarchyMap()
 	{
@@ -74,18 +93,15 @@ public:
 		return SkeletonBoneHierarchyMap;
 	}
 
-protected:
 private:
-	float Duration;
-	float TicksPerSecond;
-	std::vector<Bone> Bones;
-	AssimpNodeData RootNode;
+	float                           Duration;
+	float                           TicksPerSecond;
+	std::vector<Bone>               Bones;
+	AssimpNodeData                  RootNode;
 	std::map<std::string, BoneInfo> BoneInfoMap;
 
 	std::vector<FPrecomputedBoneData> BoneHierarchy;
 
 	std::vector<XMMATRIX> CachedFirstFrameBoneMatrices;
-	bool bIsCachedFirstFrameBoneMatrices;
-
-	
+	bool                  bIsCachedFirstFrameBoneMatrices;
 };

@@ -29,6 +29,6 @@ protected:
 	// Niagara Emitter
 	std::shared_ptr<FNiagaraEmitter> Emitter;
 
-	bool bIsActivate = true;
+	bool bIsActivate        = true;
 	bool bMustTickThisFrame = false;
 };

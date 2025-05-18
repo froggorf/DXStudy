@@ -10,25 +10,22 @@
 class UMyAnimInstance : public UAnimInstance
 {
 	MY_GENERATED_BODY(UMyAnimInstance)
-public:
 	static UMyAnimInstance* MyAnimInstance;
 
-
 	UMyAnimInstance();
-	~UMyAnimInstance() override {};
+
+	~UMyAnimInstance() override
+	{
+	};
 
 	void BeginPlay() override;
 	void NativeInitializeAnimation() override;
 	void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	void UpdateAnimation(float dt) override;
-protected:
-private:
 
-public:
-protected:
 private:
-	std::shared_ptr<UBlendSpace> BS_MyUEFN_Locomotion;
+	std::shared_ptr<UBlendSpace>    BS_MyUEFN_Locomotion;
 	std::shared_ptr<UTestComponent> TestComp;
 
 	std::shared_ptr<UAimOffsetBlendSpace> AO_MyUEFN_Stand;
@@ -40,5 +37,4 @@ private:
 	std::shared_ptr<UAnimMontage> AM_Test;
 
 	float CurrentSpeed = 0.0f;
-
 };

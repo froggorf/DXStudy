@@ -11,20 +11,20 @@ FImguiDebugConsole::FImguiDebugConsole(FScene* SceneData)
 void FImguiDebugConsole::Draw()
 {
 	// Pending Add
-	for(const auto& Text : PendingAddDebugConsoleText)
+	for (const auto& Text : PendingAddDebugConsoleText)
 	{
 		DebugConsoleText.push_back(Text);
 	}
 	PendingAddDebugConsoleText.clear();
 
 	// Render 시작
-	if(ImGui::Begin("Debug Console"))
+	if (ImGui::Begin("Debug Console"))
 	{
 		// EditBox
 		char* CurrentText = DebugConsoleSearchText.data();
 		ImGui::Text("Search: ");
 		ImGui::SameLine();
-		if(ImGui::InputText(" ",CurrentText,100))
+		if (ImGui::InputText(" ", CurrentText, 100))
 		{
 			DebugConsoleSearchText = CurrentText;
 			SearchDebugConsole();
@@ -32,60 +32,54 @@ void FImguiDebugConsole::Draw()
 
 		ImGui::SameLine();
 		ImVec2 MousePos = ImGui::GetMousePos();
-		ImGui::Text("x = %.2f , y = %.2f", MousePos.x,MousePos.y);
+		ImGui::Text("x = %.2f , y = %.2f", MousePos.x, MousePos.y);
 		ImGui::SameLine();
 		ImGui::Text("FPS = %.2f", GEngine->GetApplication()->CurrentFrame);
 		ImGui::SameLine();
 		ImGui::Text("RenderFPS = %.2f", RenderFPS);
-		if(ImGui::BeginListBox(" ", ImVec2(-FLT_MIN, -FLT_MIN)))
+		if (ImGui::BeginListBox(" ", ImVec2(-FLT_MIN, -FLT_MIN)))
 		{
 			// 디버그 리스트 박스의 맨 아래를 볼 시 맨 아래로 고정
 			bool bIsFixListBox = ImGui::GetScrollMaxY() == ImGui::GetScrollY();
 
-
 			// 검색 중 체크
 			bool bWhileSearching = !DebugConsoleSearchText.empty();
-			if(bWhileSearching)
+			if (bWhileSearching)
 			{
-				for(const DebugText& Text : SearchingDebugConsoleText)
+				for (const DebugText& Text : SearchingDebugConsoleText)
 				{
 					ImGui::TextColored(DebugText::Color[Text.Level], Text.Text.data());
-				}	
+				}
 			}
 			// 검색 아닐 시
 			else
 			{
-				for(const DebugText& Text : DebugConsoleText)
+				for (const DebugText& Text : DebugConsoleText)
 				{
 					ImGui::TextColored(DebugText::Color[Text.Level], Text.Text.data());
-
-				}	
+				}
 			}
 
 			// 리스트 맨 아래였을 시 고정
-			if(bIsFixListBox)
+			if (bIsFixListBox)
 			{
 				ImGui::SetScrollHereY(1.0f);
 			}
 
 			ImGui::EndListBox();
-
 		}
-
 
 		ImGui::End();
 	}
-
-	
 }
 
 void FImguiDebugConsole::ExecuteCommand(const std::shared_ptr<FImguiPanelCommandData>& CommandData)
 {
 	// 타입 캐스팅 가능한지 여부를 체크
-	if(CommandData->IsOfType(FImguiDebugConsoleCommandData::GetClassID()))
+	if (CommandData->IsOfType(FImguiDebugConsoleCommandData::GetClassID()))
 	{
-		FImguiPanelCommandData* Data = CommandData.get();
-		FImguiDebugConsoleCommandData* DebugConsoleData = static_cast<FImguiDebugConsoleCommandData*>(Data);
+		FImguiPanelCommandData* Data             = CommandData.get();
+		auto                    DebugConsoleData = static_cast<FImguiDebugConsoleCommandData*>(Data);
 		PendingAddDebugConsoleText.push_back(DebugConsoleData->DebugText);
 	}
 }
@@ -94,15 +88,15 @@ void FImguiDebugConsole::SearchDebugConsole()
 {
 	SearchingDebugConsoleText.clear();
 
-	if(DebugConsoleSearchText.size() == 0)
+	if (DebugConsoleSearchText.size() == 0)
 	{
 		return;
 	}
 
-	for(const auto& Text : DebugConsoleText)
+	for (const auto& Text : DebugConsoleText)
 	{
 		const std::string& LogText = Text.Text;
-		if(LogText.contains(DebugConsoleSearchText))
+		if (LogText.contains(DebugConsoleSearchText))
 		{
 			SearchingDebugConsoleText.push_back(Text);
 		}

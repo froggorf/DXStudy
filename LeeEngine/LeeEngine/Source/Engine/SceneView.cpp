@@ -8,16 +8,15 @@
 
 #include "RenderCore/EditorScene.h"
 
-
 void FViewMatrices::UpdateViewMatrix(const XMFLOAT3 ViewLocation, const XMVECTOR& ViewRotation)
 {
-	XMVECTOR DefaultLook = XMVectorSet(0.0f,0.0f,1.0f,0.0f);;
-	XMVECTOR LookDirection = XMVector3Rotate(DefaultLook,ViewRotation);
-	
-	ViewOrigin = ViewLocation;
-	CameraRotQuat  = ViewRotation;
+	XMVECTOR DefaultLook   = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+	XMVECTOR LookDirection = XMVector3Rotate(DefaultLook, ViewRotation);
 
-	XMVECTOR UpVector = XMVectorSet(0.0f,1.0f,0.0f,0.0f);
+	ViewOrigin    = ViewLocation;
+	CameraRotQuat = ViewRotation;
+
+	XMVECTOR UpVector = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 	ViewMatrix = XMMatrixLookToLH(XMLoadFloat3(&ViewOrigin), LookDirection, UpVector);
 }
@@ -25,5 +24,4 @@ void FViewMatrices::UpdateViewMatrix(const XMFLOAT3 ViewLocation, const XMVECTOR
 void FViewMatrices::UpdateProjectionMatrix(const XMMATRIX& NewProjectionMatrix)
 {
 	ProjectionMatrix = NewProjectionMatrix;
-
 }

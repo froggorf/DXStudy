@@ -12,7 +12,6 @@
 // Animation 목록도 Mesh에 넣기
 // Skeletal Mesh도 그림자 반영되도록 하기
 
-
 #include <format>
 #include <map>
 #include <vector>
@@ -21,8 +20,6 @@
 //#include "../../Core/d3dApp.h"
 #include "Engine/AssetManager/AssetManager.h"
 //#include "../../Core/AssetManager.h"
-
-
 
 #include "ThirdParty/ImGui/imgui.h"
 
@@ -33,13 +30,11 @@
 
 using namespace DirectX;
 
-
 class AnimationApp : public D3DApp
 {
 public:
 	AnimationApp(HINSTANCE hInstance);
-	~AnimationApp();
-
+	~AnimationApp() override;
 
 	// Init
 	bool Init() override;
@@ -60,90 +55,83 @@ public:
 	void OnMouseUp(WPARAM btnState, int x, int y) override;
 	void OnMouseMove(WPARAM btnState, int x, int y) override;
 
-
 	// TODO: DELETE_LATER
-	virtual XMMATRIX Test_DeleteLater_GetViewMatrix() const override
+	XMMATRIX Test_DeleteLater_GetViewMatrix() const override
 	{
 		return m_View;
 	}
-	virtual XMMATRIX Test_DeleteLater_GetProjectionMatrix() const override
+
+	XMMATRIX Test_DeleteLater_GetProjectionMatrix() const override
 	{
 		return m_Proj;
 	}
-	virtual XMFLOAT3 Test_DELETELATER_GetCameraPosition() const override
+
+	XMFLOAT3 Test_DELETELATER_GetCameraPosition() const override
 	{
 		return m_CameraPosition;
 	}
 
 private:
-	
 	void BuildShader();
-
 
 	void BuildShaderForSkeletalMesh();
 	// DirectionalLight Matrix 반환하는 함수
 	//void BuildShadowTransform();
 
-private:
 	// 모델 정보
-	std::vector<ComPtr<ID3D11Buffer>>				m_ModelVertexBuffer;
-	std::vector<ComPtr<ID3D11Buffer>> 				m_ModelIndexBuffer;
-	std::vector<ComPtr<ID3D11ShaderResourceView>>	m_ModelShaderResourceView;
-	Material										m_ModelMaterial;
+	std::vector<ComPtr<ID3D11Buffer>>             m_ModelVertexBuffer;
+	std::vector<ComPtr<ID3D11Buffer>>             m_ModelIndexBuffer;
+	std::vector<ComPtr<ID3D11ShaderResourceView>> m_ModelShaderResourceView;
+	Material                                      m_ModelMaterial;
 
-	std::vector<ComPtr<ID3D11ShaderResourceView>>	m_BodyShaderResourceView;
-	std::vector<ComPtr<ID3D11ShaderResourceView>>	m_FaceShaderResourceView;
+	std::vector<ComPtr<ID3D11ShaderResourceView>> m_BodyShaderResourceView;
+	std::vector<ComPtr<ID3D11ShaderResourceView>> m_FaceShaderResourceView;
 
-	XMFLOAT3										m_ModelPosition;
+	XMFLOAT3 m_ModelPosition;
 	//XMFLOAT3										m_ModelRotation;
-	XMVECTOR										m_ModelQuat;
-	XMFLOAT3										m_ModelScale;
-	
+	XMVECTOR m_ModelQuat;
+	XMFLOAT3 m_ModelScale;
+
 	// 기사 오브젝트의 본 정보		// TODO: 모듈화 시 getter 제작
-	std::vector<ComPtr<ID3D11Buffer>>				m_PaladinVertexBuffer;
-	std::vector<ComPtr<ID3D11Buffer>> 				m_PaladinIndexBuffer;
-	std::map<std::string, BoneInfo>					m_BoneInfoMap;
-	int 											m_BoneCounter = 0;
+	std::vector<ComPtr<ID3D11Buffer>> m_PaladinVertexBuffer;
+	std::vector<ComPtr<ID3D11Buffer>> m_PaladinIndexBuffer;
+	std::map<std::string, BoneInfo>   m_BoneInfoMap;
+	int                               m_BoneCounter = 0;
 	//std::unique_ptr<Animator>						m_PaladinAnimator;
-	ComPtr<ID3D11VertexShader>						m_SkeletalMeshVertexShader;
-	ComPtr<ID3D11InputLayout>						m_SkeletalMeshInputLayout;
+	ComPtr<ID3D11VertexShader> m_SkeletalMeshVertexShader;
+	ComPtr<ID3D11InputLayout>  m_SkeletalMeshInputLayout;
 
 	// 큐브 출력용
-	ComPtr<ID3D11Buffer>							m_CubeVertexBuffer;
-	ComPtr<ID3D11Buffer>							m_CubeIndexBuffer;
-	ComPtr<ID3D11ShaderResourceView>				m_CubeWaterSRV;
-	ComPtr<ID3D11ShaderResourceView>				m_CubeWireSRV;
+	ComPtr<ID3D11Buffer>             m_CubeVertexBuffer;
+	ComPtr<ID3D11Buffer>             m_CubeIndexBuffer;
+	ComPtr<ID3D11ShaderResourceView> m_CubeWaterSRV;
+	ComPtr<ID3D11ShaderResourceView> m_CubeWireSRV;
 
 	// 라이트 출력 용
-	std::vector<ComPtr<ID3D11Buffer>>				m_SphereVertexBuffer;
-	std::vector<ComPtr<ID3D11Buffer>>				m_SphereIndexBuffer;
+	std::vector<ComPtr<ID3D11Buffer>> m_SphereVertexBuffer;
+	std::vector<ComPtr<ID3D11Buffer>> m_SphereIndexBuffer;
 
 	// 그림자 맵 관련
-	std::unique_ptr<ShadowMap>						m_ShadowMap;
-	XMMATRIX										m_LightView;
-	XMMATRIX										m_LightProj;
-	XMMATRIX										m_ShadowTransform;
-	ComPtr<ID3D11VertexShader>						m_ShadowMapVertexShader;
-	ComPtr<ID3D11PixelShader>						m_ShadowMapPixelShader;
-	ComPtr<ID3D11Buffer>							m_ShadowObjConstantBuffer;
-	ComPtr<ID3D11Buffer>							m_ShadowLightMatrixConstantBuffer;
-	ComPtr<ID3D11SamplerState>						m_ShadowSamplerState;
-	float											m_ShadowBias;
-	ComPtr<ID3D11VertexShader>						m_ShadowMapSkeletalMeshVertexShader;
-	
+	std::unique_ptr<ShadowMap> m_ShadowMap;
+	XMMATRIX                   m_LightView;
+	XMMATRIX                   m_LightProj;
+	XMMATRIX                   m_ShadowTransform;
+	ComPtr<ID3D11VertexShader> m_ShadowMapVertexShader;
+	ComPtr<ID3D11PixelShader>  m_ShadowMapPixelShader;
+	ComPtr<ID3D11Buffer>       m_ShadowObjConstantBuffer;
+	ComPtr<ID3D11Buffer>       m_ShadowLightMatrixConstantBuffer;
+	ComPtr<ID3D11SamplerState> m_ShadowSamplerState;
+	float                      m_ShadowBias;
+	ComPtr<ID3D11VertexShader> m_ShadowMapSkeletalMeshVertexShader;
 
 	// 카메라 정보
-	XMFLOAT3										m_CameraPosition;
-	XMFLOAT3										m_CameraViewVector;
+	XMFLOAT3 m_CameraPosition;
+	XMFLOAT3 m_CameraViewVector;
 
 	// 라이트
 	//DirectionalLight								m_DirectionalLight;
 	//PointLight										m_PointLight;
 	//SpotLight										m_SpotLight;
-
-
-
-	
 
 	// 변환 행렬
 	XMMATRIX m_World;
@@ -153,8 +141,7 @@ private:
 	POINT m_LastMousePos;
 };
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
-				   PSTR cmdLine, int showCmd)
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
 	// Enable run-time memory check for debug builds.
 #if defined(DEBUG) | defined(_DEBUG)
@@ -162,42 +149,42 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 #endif
 
 	AnimationApp theApp(hInstance);
-	
-	if( !theApp.Init() )
+
+	if (!theApp.Init())
 		return -1;
-	
+
 	return theApp.Run();
 }
 
 AnimationApp::AnimationApp(HINSTANCE hInstance)
-: D3DApp(hInstance) 
+	: D3DApp(hInstance)
 {
 	m_MainWndTitle = L"Character Animation";
 
-	m_LastMousePos.x = 0; m_LastMousePos.y = 1;
-	m_World = XMMatrixIdentity();
-	m_View = XMMatrixIdentity();
-	m_Proj = XMMatrixIdentity();
+	m_LastMousePos.x = 0;
+	m_LastMousePos.y = 1;
+	m_World          = XMMatrixIdentity();
+	m_View           = XMMatrixIdentity();
+	m_Proj           = XMMatrixIdentity();
 
-	m_ModelPosition = XMFLOAT3(0.0f,0.0f,0.0f);
+	m_ModelPosition = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	//m_ModelRotation = XMFLOAT3(0.0f,0.0f,0.0f);
-	m_ModelQuat = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(90.0f),0.0f,0.0f);
-	m_ModelScale = XMFLOAT3(0.0f,0.0f,0.0f);
+	m_ModelQuat  = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(90.0f), 0.0f, 0.0f);
+	m_ModelScale = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
-	m_CameraPosition = XMFLOAT3(0.0f,5.0f,-5.0f);
-	m_CameraViewVector = XMFLOAT3(0.0f,-1.0f,1.0f);
+	m_CameraPosition   = XMFLOAT3(0.0f, 5.0f, -5.0f);
+	m_CameraViewVector = XMFLOAT3(0.0f, -1.0f, 1.0f);
 	XMStoreFloat3(&m_CameraViewVector, XMVector3Normalize(XMLoadFloat3(&m_CameraViewVector)));
-	
+
 	// Directional light.
-	
+
 	//m_DirectionalLight.Direction =  ;
 
 	// Point Light
-	
 
 	// Material
-	m_ModelMaterial.Ambient  = XMFLOAT4(1.0f,1.0f,1.0f, 1.0f);
-	m_ModelMaterial.Diffuse  = XMFLOAT4(1.0f,1.0f,1.0f, 1.0f);
+	m_ModelMaterial.Ambient  = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	m_ModelMaterial.Diffuse  = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	m_ModelMaterial.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 32.0f);
 }
 
@@ -208,10 +195,8 @@ AnimationApp::~AnimationApp()
 
 bool AnimationApp::Init()
 {
-	if(!D3DApp::Init())
+	if (!D3DApp::Init())
 		return false;
-
-	
 
 	InitSamplerState();
 
@@ -224,58 +209,49 @@ bool AnimationApp::Init()
 	// 그림자 맵
 	//InitForShadowMap();
 
-	
 	return true;
 }
 
 void AnimationApp::LoadAnimations()
 {
 	// TODO: 추후 모델 관련 데이터 오브젝트로 모듈화
-
 }
-
 
 void AnimationApp::InitSamplerState()
 {
-	
-
 	D3D11_SAMPLER_DESC samplerDesc = {};
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
-	samplerDesc.BorderColor[0] = 0.0f; // Border 색상(흰색)
-	samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	samplerDesc.MinLOD = 0;
-	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	samplerDesc.Filter             = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU           = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.AddressV           = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.AddressW           = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.BorderColor[0]     = 0.0f; // Border 색상(흰색)
+	samplerDesc.ComparisonFunc     = D3D11_COMPARISON_NEVER;
+	samplerDesc.MinLOD             = 0;
+	samplerDesc.MaxLOD             = D3D11_FLOAT32_MAX;
 	HR(GDirectXDevice->GetDevice()->CreateSamplerState(&samplerDesc, m_ShadowSamplerState.GetAddressOf()));
 
-
-	D3D11_BLEND_DESC blendDesc = {};
-	blendDesc.AlphaToCoverageEnable = FALSE; // 알파 커버리지 비활성화
-	blendDesc.IndependentBlendEnable = FALSE; // 독립 블렌딩 비활성화
-	blendDesc.RenderTarget[0].BlendEnable = TRUE; // 블렌딩 활성화
-	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA; // 소스 알파값
-	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA; // 대상 알파값의 반대
-	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD; // 더하기 연산
-	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE; // 알파값 소스
-	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO; // 알파값 대상
-	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD; // 알파값 더하기 연산
+	D3D11_BLEND_DESC blendDesc                      = {};
+	blendDesc.AlphaToCoverageEnable                 = FALSE;                        // 알파 커버리지 비활성화
+	blendDesc.IndependentBlendEnable                = FALSE;                        // 독립 블렌딩 비활성화
+	blendDesc.RenderTarget[0].BlendEnable           = TRUE;                         // 블렌딩 활성화
+	blendDesc.RenderTarget[0].SrcBlend              = D3D11_BLEND_SRC_ALPHA;        // 소스 알파값
+	blendDesc.RenderTarget[0].DestBlend             = D3D11_BLEND_INV_SRC_ALPHA;    // 대상 알파값의 반대
+	blendDesc.RenderTarget[0].BlendOp               = D3D11_BLEND_OP_ADD;           // 더하기 연산
+	blendDesc.RenderTarget[0].SrcBlendAlpha         = D3D11_BLEND_ONE;              // 알파값 소스
+	blendDesc.RenderTarget[0].DestBlendAlpha        = D3D11_BLEND_ZERO;             // 알파값 대상
+	blendDesc.RenderTarget[0].BlendOpAlpha          = D3D11_BLEND_OP_ADD;           // 알파값 더하기 연산
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL; // RGBA 모두 활성화
-	
+
 	ID3D11BlendState* blendState = nullptr;
 	HR(GDirectXDevice->GetDevice()->CreateBlendState(&blendDesc, &blendState));
-	
-	
+
 	// 파이프라인에 블렌딩 상태 설정
-	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f }; // 블렌드 팩터 (기본값)
-	UINT sampleMask = 0xFFFFFFFF; // 샘플 마스크 (기본값)
+	float blendFactor[4] = {0.0f, 0.0f, 0.0f, 0.0f}; // 블렌드 팩터 (기본값)
+	UINT  sampleMask     = 0xFFFFFFFF;               // 샘플 마스크 (기본값)
 	GDirectXDevice->GetDeviceContext()->OMSetBlendState(blendState, blendFactor, sampleMask);
 
 	// DepthgStencilState
-
 }
-
 
 //void AnimationApp::InitForShadowMap()
 //{
@@ -325,18 +301,16 @@ void AnimationApp::OnResize()
 	D3DApp::OnResize();
 
 	// 프로젝션 매트릭스
-	m_Proj = XMMatrixPerspectiveFovLH(0.5*XM_PI, GetWindowAspectRatio(), 1.0f, 1000.0f);
+	m_Proj = XMMatrixPerspectiveFovLH(0.5 * XM_PI, GetWindowAspectRatio(), 1.0f, 1000.0f);
 }
 
 void AnimationApp::UpdateScene(float dt)
 {
 	GEngine->Tick(dt);
 
-	
-
 	//m_PaladinAnimator->UpdateAnimation(m_Timer.DeltaTime());
-	
 }
+
 //
 //
 //void AnimationApp::DrawShadowMap()
@@ -537,26 +511,22 @@ void AnimationApp::UpdateScene(float dt)
 void AnimationApp::DrawScene()
 {
 	{
-	//DrawShadowMap();
+		//DrawShadowMap();
 
-	//GDirectXDevice->GetDeviceContext()->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), m_DepthStencilView.Get());
-	
+		//GDirectXDevice->GetDeviceContext()->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), m_DepthStencilView.Get());
 
 		//GEngine->Draw();
-		
-//#if defined(DEBUG) || defined(_DEBUG)
-//		DebuggingSRV::DrawDebuggingTexture(
-//				m_d3dDeviceContext,
-//				m_ClientWidth - 500.0f, m_ClientHeight - 500.0f,
-//				450.0f, 450.0f,
-//				m_ShadowMap->GetShaderResourceViewComPtr()
-//				);
-//#endif
 
+		//#if defined(DEBUG) || defined(_DEBUG)
+		//		DebuggingSRV::DrawDebuggingTexture(
+		//				m_d3dDeviceContext,
+		//				m_ClientWidth - 500.0f, m_ClientHeight - 500.0f,
+		//				450.0f, 450.0f,
+		//				m_ShadowMap->GetShaderResourceViewComPtr()
+		//				);
+		//#endif
 	}
-
 }
-
 
 void AnimationApp::OnMouseDown(WPARAM btnState, int x, int y)
 {
@@ -580,28 +550,24 @@ void AnimationApp::OnMouseMove(WPARAM btnState, int x, int y)
 void AnimationApp::BuildShader()
 {
 	D3D11_BUFFER_DESC bufferDesc = {};
-	bufferDesc.ByteWidth = sizeof( FrameConstantBuffer );
-	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bufferDesc.CPUAccessFlags = 0;
+	bufferDesc.ByteWidth         = sizeof(FrameConstantBuffer);
+	bufferDesc.Usage             = D3D11_USAGE_DEFAULT;
+	bufferDesc.BindFlags         = D3D11_BIND_CONSTANT_BUFFER;
+	bufferDesc.CPUAccessFlags    = 0;
 
 	bufferDesc.ByteWidth = sizeof(ShadowLightMatrixConstantBuffer);
-	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_ShadowLightMatrixConstantBuffer.GetAddressOf()));
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_ShadowLightMatrixConstantBuffer.GetAddressOf()
+	));
 
-		bufferDesc.ByteWidth = sizeof(ShadowObjConstantBuffer);
+	bufferDesc.ByteWidth = sizeof(ShadowObjConstantBuffer);
 	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_ShadowObjConstantBuffer.GetAddressOf()));
-
-	
 }
-
 
 void AnimationApp::BuildShaderForSkeletalMesh()
 {
-	
 	//m_d3dDeviceContext->IASetInputLayout(m_InputLayout.Get());
-
-
 }
+
 //
 //void AnimationApp::BuildShadowTransform()
 //{

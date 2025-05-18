@@ -9,39 +9,34 @@
 #include "Engine/RenderCore/EditorScene.h"
 #include "Engine/SceneProxy/FStaticMeshSceneProxy.h"
 
-
 UStaticMeshComponent::UStaticMeshComponent()
 {
 	Rename("StaticMeshComponent_" + std::to_string(ComponentID));
-
 }
-
 
 std::vector<std::shared_ptr<FPrimitiveSceneProxy>> UStaticMeshComponent::CreateSceneProxy()
 {
-	std::vector<
-	std::shared_ptr<FPrimitiveSceneProxy>> SceneProxies;
+	std::vector<std::shared_ptr<FPrimitiveSceneProxy>> SceneProxies;
 
-	UINT MeshCount =  StaticMesh->GetStaticMeshRenderData()->MeshCount;
-	for(int i = 0 ; i < MeshCount; ++i)
+	UINT MeshCount = StaticMesh->GetStaticMeshRenderData()->MeshCount;
+	for (int i = 0; i < MeshCount; ++i)
 	{
-		std::shared_ptr<FStaticMeshSceneProxy> SceneProxy = std::make_shared<FStaticMeshSceneProxy>(PrimitiveID,i,StaticMesh);
+		auto SceneProxy = std::make_shared<FStaticMeshSceneProxy>(PrimitiveID, i, StaticMesh);
 		SceneProxies.emplace_back(SceneProxy);
 	}
 
 	return SceneProxies;
-
 }
 
 bool UStaticMeshComponent::SetStaticMesh(const std::shared_ptr<UStaticMesh>& NewMesh)
 {
-	if(nullptr == NewMesh)
+	if (nullptr == NewMesh)
 	{
 		MY_LOG("SetStaticMesh", EDebugLogLevel::DLL_Warning, "nullptr StaticMesh");
 		return false;
 	}
 
-	if(NewMesh.get() == GetStaticMesh().get())
+	if (NewMesh.get() == GetStaticMesh().get())
 	{
 		return false;
 	}

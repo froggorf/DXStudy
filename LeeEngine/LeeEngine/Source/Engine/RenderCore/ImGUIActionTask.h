@@ -12,20 +12,26 @@
 struct FImGUITask
 {
 	std::function<void()> CommandLambda;
-	FImGUITask(){}
-	FImGUITask(const FImGUITask& Other) : CommandLambda{ Other.CommandLambda }{}
+
+	FImGUITask()
+	{
+	}
+
+	FImGUITask(const FImGUITask& Other)
+		: CommandLambda{Other.CommandLambda}
+	{
+	}
 };
 
 // 단일쓰레드(렌더링 쓰레드) 생산 - 단일쓰레드(종합 게임쓰레드) 작업
 class FImGuizmoCommandPipe
 {
-private:
 	static Concurrency::concurrent_queue<std::shared_ptr<FImGUITask>>& GetImGuizmoCommandPipe()
 	{
 		static Concurrency::concurrent_queue<std::shared_ptr<FImGUITask>> ImGuizmoCommandPipe;
 		return ImGuizmoCommandPipe;
 	}
-	
+
 	//static std::unique_ptr<FRenderCommandPipe> RenderCommandPipe;
 	//std::atomic<Node*> Head;
 	//std::atomic<Node*> Tail;
@@ -34,7 +40,7 @@ public:
 	static void Enqueue(std::function<void()>& CommandLambda)
 	{
 		// 다중 생성 기반 Queue
-		std::shared_ptr<FImGUITask> NewNode = std::make_shared<FImGUITask>();
+		auto NewNode = std::make_shared<FImGUITask>();
 		//Node* NewNode = new Node();
 		NewNode->CommandLambda = CommandLambda;
 
@@ -42,23 +48,17 @@ public:
 		//Node* PrevHead = RenderCommandPipe->Head.exchange(NewNode);
 		//PrevHead->Next= NewNode;
 	}
+
 	static bool Dequeue(std::shared_ptr<FImGUITask>& Result)
 	{
-		if(GetImGuizmoCommandPipe().try_pop(Result))
+		if (GetImGuizmoCommandPipe().try_pop(Result))
 		{
 			return true;
 		}
 
 		return false;
-
-
-
 	}
 
-protected:
-private:
-public:
-protected:
 private:
 	FImGuizmoCommandPipe() = default;
 

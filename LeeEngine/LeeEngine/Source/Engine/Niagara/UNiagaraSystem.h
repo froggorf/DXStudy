@@ -13,7 +13,6 @@
 class UNiagaraSystem : public UObject, public std::enable_shared_from_this<UNiagaraSystem>
 {
 	MY_GENERATED_BODY(UNiagaraSystem)
-public:
 	// 데이터 로드 함수
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
@@ -30,10 +29,12 @@ public:
 		}
 		return nullptr;
 	}
+
 protected:
 	// Emitter 벡터
 	// 언리얼엔진의 NiagaraSystem 내에 있는 하나의 이펙트 이미터 단위를 표현
 	std::vector<std::shared_ptr<FNiagaraEmitter>> Emitters;
+
 private:
 	static std::map<std::string, std::shared_ptr<UNiagaraSystem>>& GetNiagaraAssetCacheMap()
 	{

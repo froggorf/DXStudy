@@ -29,59 +29,53 @@ FTransform FTransform::operator*(const FTransform& OtherTransform)
 
 	//return Result;
 
-
-
-
-
-
-
-	XMMATRIX ResultMatrix = XMMatrixMultiply(OtherTransform.ToMatrixWithScale(),ToMatrixWithScale());
+	XMMATRIX ResultMatrix = XMMatrixMultiply(OtherTransform.ToMatrixWithScale(), ToMatrixWithScale());
 	XMVECTOR ResultScale, ResultRotQuat, ResultTranslate;
-	XMMatrixDecompose(&ResultScale,&ResultRotQuat,&ResultTranslate,ResultMatrix);
+	XMMatrixDecompose(&ResultScale, &ResultRotQuat, &ResultTranslate, ResultMatrix);
 	XMFLOAT3 RetTranslation, RetScale;
 	XMStoreFloat3(&RetTranslation, ResultTranslate);
-	
-	XMStoreFloat3(&RetScale,ResultScale);
 
-	return FTransform{ResultRotQuat,RetTranslation, RetScale};
+	XMStoreFloat3(&RetScale, ResultScale);
+
+	return FTransform{ResultRotQuat, RetTranslation, RetScale};
 }
 
 XMFLOAT3 FTransform::CalculateEulerRotationFromQuaternion(const XMVECTOR& Quaternion)
 {
-    // TODO: 불안정한 코드이므로 사용하지 말것
+	// TODO: 불안정한 코드이므로 사용하지 말것
 	//02.19 임시 코드
 
 	// 쿼터니언 성분 추출
-    XMFLOAT4 q;
-    XMStoreFloat4(&q, Quaternion);
+	XMFLOAT4 q;
+	XMStoreFloat4(&q, Quaternion);
 
-    float x = q.x;
-    float y = q.y;
-    float z = q.z;
-    float w = q.w;
+	float x = q.x;
+	float y = q.y;
+	float z = q.z;
+	float w = q.w;
 
-    XMFLOAT3 Euler;
+	XMFLOAT3 Euler;
 
-    // Pitch (X축 회전)
-    float sinPitch = 2.0f * (w * x - y * z);
-    if (std::abs(sinPitch) >= 1.0f) {
-        // Gimbal lock: pitch가 ±90도에 가까울 때
-        Euler.x = std::copysign(DirectX::XM_PIDIV2, sinPitch); // ±π/2
-    } else {
-        Euler.x = std::asin(sinPitch);
-    }
+	// Pitch (X축 회전)
+	float sinPitch = 2.0f * (w * x - y * z);
+	if (std::abs(sinPitch) >= 1.0f)
+	{
+		// Gimbal lock: pitch가 ±90도에 가까울 때
+		Euler.x = std::copysign(XM_PIDIV2, sinPitch); // ±π/2
+	}
+	else
+	{
+		Euler.x = std::asin(sinPitch);
+	}
 
-    // Yaw (Y축 회전)
-    Euler.y= std::atan2(2.0f * (w * y + z * x), 1.0f - 2.0f * (x * x + y * y));
+	// Yaw (Y축 회전)
+	Euler.y = std::atan2(2.0f * (w * y + z * x), 1.0f - 2.0f * (x * x + y * y));
 
-    // Roll (Z축 회전)
-    Euler.z= std::atan2(2.0f * (w * z + x * y), 1.0f - 2.0f * (y * y + z * z));
+	// Roll (Z축 회전)
+	Euler.z = std::atan2(2.0f * (w * z + x * y), 1.0f - 2.0f * (y * y + z * z));
 
-    Euler.x = XMConvertToDegrees(Euler.x);
-    Euler.y = XMConvertToDegrees(Euler.y);
-    Euler.z = XMConvertToDegrees(Euler.z);
-    return Euler;
-
-
+	Euler.x = XMConvertToDegrees(Euler.x);
+	Euler.y = XMConvertToDegrees(Euler.y);
+	Euler.z = XMConvertToDegrees(Euler.z);
+	return Euler;
 }
-

@@ -3,7 +3,6 @@
 
 #pragma once
 
-
 #include <sstream>
 #include <string>
 
@@ -15,15 +14,16 @@
 #include "DebuggingSRV.h"
 
 using namespace Microsoft::WRL;
+
 class D3DApp
 {
 public:
 	D3DApp(HINSTANCE hInstance);
 	virtual ~D3DApp();
 
-	HINSTANCE	GetAppInstance() const;
-	HWND		GetMainWnd() const;
-	float		GetWindowAspectRatio() const;
+	HINSTANCE GetAppInstance() const;
+	HWND      GetMainWnd() const;
+	float     GetWindowAspectRatio() const;
 
 	int Run();
 
@@ -35,42 +35,61 @@ public:
 	//virtual void DrawImGui();
 	virtual void DrawScene() = 0;
 
-	void DrawTitleBar();
+	void            DrawTitleBar();
 	virtual LRESULT MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 	// 인풋 관련 함수
-	virtual void OnMouseDown(WPARAM btnState, int x, int y){ }
-	virtual void OnMouseUp(WPARAM btnState, int x, int y)  { }
-	virtual void OnMouseMove(WPARAM btnState, int x, int y){ }
+	virtual void OnMouseDown(WPARAM btnState, int x, int y)
+	{
+	}
 
-	virtual XMMATRIX Test_DeleteLater_GetViewMatrix() const {return XMMATRIX();}
-	virtual XMMATRIX Test_DeleteLater_GetProjectionMatrix() const {return XMMATRIX();}
-	virtual XMFLOAT3 Test_DELETELATER_GetCameraPosition() const {return XMFLOAT3{};	}
+	virtual void OnMouseUp(WPARAM btnState, int x, int y)
+	{
+	}
 
-	void TestSetWindowBarName(std::wostringstream& Test) const { SetWindowText(m_hMainWnd, Test.str().c_str());}
-public:
+	virtual void OnMouseMove(WPARAM btnState, int x, int y)
+	{
+	}
+
+	virtual XMMATRIX Test_DeleteLater_GetViewMatrix() const
+	{
+		return XMMATRIX();
+	}
+
+	virtual XMMATRIX Test_DeleteLater_GetProjectionMatrix() const
+	{
+		return XMMATRIX();
+	}
+
+	virtual XMFLOAT3 Test_DELETELATER_GetCameraPosition() const
+	{
+		return XMFLOAT3{};
+	}
+
+	void TestSetWindowBarName(std::wostringstream& Test) const
+	{
+		SetWindowText(m_hMainWnd, Test.str().c_str());
+	}
 
 	float CurrentFrame;
+
 protected:
 	bool InitMainWindow();
 
-	void CalculateFrameStats();				// TimeManager
+	void CalculateFrameStats(); // TimeManager
 
-protected:
 	// 윈도우 관련
-	HINSTANCE	m_hAppInstance;
-	HWND		m_hMainWnd;
-	bool		m_AppPaused;
-	bool		m_Minimized;
-	bool		m_Maximized;
-	bool		m_Resizing;
+	HINSTANCE m_hAppInstance;
+	HWND      m_hMainWnd;
+	bool      m_AppPaused;
+	bool      m_Minimized;
+	bool      m_Maximized;
+	bool      m_Resizing;
 
-	GameTimer	m_Timer;
+	GameTimer m_Timer;
 
 	// 시작 값을 위해 상속받은 클래스 시작 시 값 설정 필요
 	std::wstring m_MainWndTitle;
-	int m_ClientWidth;
-	int m_ClientHeight;
-	
+	int          m_ClientWidth;
+	int          m_ClientHeight;
 };
-

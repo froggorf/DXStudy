@@ -7,7 +7,6 @@
 #include "Engine/MyEngineUtils.h"
 #include "Engine/Material/UMaterial.h"
 
-
 // 언리얼엔진에서는 Func_GameThread(); Func_RenderThread(); 방식으로 쓰레드를 나누어 작업
 
 // LeeEngine 내에선 FPrimitiveComponent - FPrimitiveSceneProxy가 1:1로 연결되며
@@ -16,25 +15,43 @@
 // 렌더 쓰레드에서는 ID를 받아 SceneProxy를 직접적으로 조정하여
 // 상호배제를 진행
 
-
 class FPrimitiveSceneProxy
 {
 public:
-	FPrimitiveSceneProxy(UINT InPrimitiveID) : PrimitiveID(InPrimitiveID) {}
-	virtual ~FPrimitiveSceneProxy() = default;
+	FPrimitiveSceneProxy(UINT InPrimitiveID)
+		: PrimitiveID(InPrimitiveID)
+	{
+	}
+
+	virtual      ~FPrimitiveSceneProxy() = default;
 	virtual void Draw();
-	UINT GetPrimitiveID() const { return PrimitiveID; }
+
+	UINT GetPrimitiveID() const
+	{
+		return PrimitiveID;
+	}
 
 	// 복사되도록 설정
-	void SetSceneProxyWorldTransform(FTransform NewComponentToWorld){ComponentToWorld = NewComponentToWorld;}
+	void SetSceneProxyWorldTransform(FTransform NewComponentToWorld)
+	{
+		ComponentToWorld = NewComponentToWorld;
+	}
 
-	UINT GetMeshIndex() const {return MeshIndex;}
-	UINT GetMaterialID() const {return MaterialInterface->GetMaterialID();}
+	UINT GetMeshIndex() const
+	{
+		return MeshIndex;
+	}
 
-	std::shared_ptr<UMaterialInterface> GetMaterialInterface() const  {return MaterialInterface;}
-protected:
-private:
-public:
+	UINT GetMaterialID() const
+	{
+		return MaterialInterface->GetMaterialID();
+	}
+
+	std::shared_ptr<UMaterialInterface> GetMaterialInterface() const
+	{
+		return MaterialInterface;
+	}
+
 protected:
 	UINT PrimitiveID;
 	UINT MeshIndex;
@@ -42,6 +59,4 @@ protected:
 	std::shared_ptr<UMaterialInterface> MaterialInterface;
 
 	FTransform ComponentToWorld;
-private:
-
 };
