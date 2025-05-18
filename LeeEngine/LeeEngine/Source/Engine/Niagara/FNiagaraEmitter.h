@@ -337,7 +337,7 @@ protected:
 	// 만약 내 리본 점의 개수가 변경되지 않는 경우에는
 	// 버텍스버퍼의 데이터를 조정하지 않도록 만들 수 있기에
 	// 정적으로 관리하지 않고 멤버변수로 배치
-	ComPtr<ID3D11Buffer> VB_Ribbon;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> VB_Ribbon;
 
 	int CurVertexBufferPointCount = 0;
 	int CurVertexCount;

@@ -79,13 +79,13 @@ private:
 	//void BuildShadowTransform();
 
 	// 모델 정보
-	std::vector<ComPtr<ID3D11Buffer>>             m_ModelVertexBuffer;
-	std::vector<ComPtr<ID3D11Buffer>>             m_ModelIndexBuffer;
-	std::vector<ComPtr<ID3D11ShaderResourceView>> m_ModelShaderResourceView;
-	Material                                      m_ModelMaterial;
+	std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>>             m_ModelVertexBuffer;
+	std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>>             m_ModelIndexBuffer;
+	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> m_ModelShaderResourceView;
+	Material                                                      m_ModelMaterial;
 
-	std::vector<ComPtr<ID3D11ShaderResourceView>> m_BodyShaderResourceView;
-	std::vector<ComPtr<ID3D11ShaderResourceView>> m_FaceShaderResourceView;
+	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> m_BodyShaderResourceView;
+	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> m_FaceShaderResourceView;
 
 	XMFLOAT3 m_ModelPosition;
 	//XMFLOAT3										m_ModelRotation;
@@ -93,36 +93,36 @@ private:
 	XMFLOAT3 m_ModelScale;
 
 	// 기사 오브젝트의 본 정보		// TODO: 모듈화 시 getter 제작
-	std::vector<ComPtr<ID3D11Buffer>> m_PaladinVertexBuffer;
-	std::vector<ComPtr<ID3D11Buffer>> m_PaladinIndexBuffer;
-	std::map<std::string, BoneInfo>   m_BoneInfoMap;
-	int                               m_BoneCounter = 0;
+	std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>> m_PaladinVertexBuffer;
+	std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>> m_PaladinIndexBuffer;
+	std::map<std::string, BoneInfo>                   m_BoneInfoMap;
+	int                                               m_BoneCounter = 0;
 	//std::unique_ptr<Animator>						m_PaladinAnimator;
-	ComPtr<ID3D11VertexShader> m_SkeletalMeshVertexShader;
-	ComPtr<ID3D11InputLayout>  m_SkeletalMeshInputLayout;
+	Microsoft::WRL::ComPtr<ID3D11VertexShader> m_SkeletalMeshVertexShader;
+	Microsoft::WRL::ComPtr<ID3D11InputLayout>  m_SkeletalMeshInputLayout;
 
 	// 큐브 출력용
-	ComPtr<ID3D11Buffer>             m_CubeVertexBuffer;
-	ComPtr<ID3D11Buffer>             m_CubeIndexBuffer;
-	ComPtr<ID3D11ShaderResourceView> m_CubeWaterSRV;
-	ComPtr<ID3D11ShaderResourceView> m_CubeWireSRV;
+	Microsoft::WRL::ComPtr<ID3D11Buffer>             m_CubeVertexBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer>             m_CubeIndexBuffer;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_CubeWaterSRV;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_CubeWireSRV;
 
 	// 라이트 출력 용
-	std::vector<ComPtr<ID3D11Buffer>> m_SphereVertexBuffer;
-	std::vector<ComPtr<ID3D11Buffer>> m_SphereIndexBuffer;
+	std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>> m_SphereVertexBuffer;
+	std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>> m_SphereIndexBuffer;
 
 	// 그림자 맵 관련
-	std::unique_ptr<ShadowMap> m_ShadowMap;
-	XMMATRIX                   m_LightView;
-	XMMATRIX                   m_LightProj;
-	XMMATRIX                   m_ShadowTransform;
-	ComPtr<ID3D11VertexShader> m_ShadowMapVertexShader;
-	ComPtr<ID3D11PixelShader>  m_ShadowMapPixelShader;
-	ComPtr<ID3D11Buffer>       m_ShadowObjConstantBuffer;
-	ComPtr<ID3D11Buffer>       m_ShadowLightMatrixConstantBuffer;
-	ComPtr<ID3D11SamplerState> m_ShadowSamplerState;
-	float                      m_ShadowBias;
-	ComPtr<ID3D11VertexShader> m_ShadowMapSkeletalMeshVertexShader;
+	std::unique_ptr<ShadowMap>                 m_ShadowMap;
+	XMMATRIX                                   m_LightView;
+	XMMATRIX                                   m_LightProj;
+	XMMATRIX                                   m_ShadowTransform;
+	Microsoft::WRL::ComPtr<ID3D11VertexShader> m_ShadowMapVertexShader;
+	Microsoft::WRL::ComPtr<ID3D11PixelShader>  m_ShadowMapPixelShader;
+	Microsoft::WRL::ComPtr<ID3D11Buffer>       m_ShadowObjConstantBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer>       m_ShadowLightMatrixConstantBuffer;
+	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_ShadowSamplerState;
+	float                                      m_ShadowBias;
+	Microsoft::WRL::ComPtr<ID3D11VertexShader> m_ShadowMapSkeletalMeshVertexShader;
 
 	// 카메라 정보
 	XMFLOAT3 m_CameraPosition;

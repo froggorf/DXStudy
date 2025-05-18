@@ -68,8 +68,8 @@ public:
 	unsigned int MeshCount;
 
 	// Buffer[MeshCount]
-	std::vector<ComPtr<ID3D11Buffer>> VertexBuffer;
-	std::vector<ComPtr<ID3D11Buffer>> IndexBuffer;
+	std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>> VertexBuffer;
+	std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>> IndexBuffer;
 
 	// 머테리얼 정보
 	std::vector<std::shared_ptr<UMaterialInterface>> Materials;

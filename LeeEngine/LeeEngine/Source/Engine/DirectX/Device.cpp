@@ -5,10 +5,11 @@
 
 #include "CoreMinimal.h"
 #include "Device.h"
-
 #include "Engine/UEngine.h"
 #include "Engine/RenderCore/EditorScene.h"
 #include "Engine/RenderCore/RenderingThread.h"
+
+using namespace Microsoft::WRL;
 
 std::unique_ptr<FDirectXDevice> GDirectXDevice = nullptr;
 
@@ -44,7 +45,7 @@ bool FDirectXDevice::InitDirect3D()
 {
 	// 디바이스, 디바이스 컨텍스트 생성
 	UINT createDeviceFlags = 0;
-#if defined(DEBUG) || defined(_DEBUG)
+#ifdef MYENGINE_BUILD_DEBUG || MYENGINE_BUILD_DEVELOPMENT
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 

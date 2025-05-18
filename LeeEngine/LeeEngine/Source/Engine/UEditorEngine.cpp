@@ -50,7 +50,7 @@ void UEditorEngine::InitEngine()
 	std::wstring       FilePath = std::wstring{EngineDirectoryString.begin(), EngineDirectoryString.end()} +
 		L"/Content/Editor/Logo/LeeEngineLogo.bmp";
 	LogoImage.Load(FilePath.c_str());
-	if (!LogoImage.IsNull())
+	if (LogoImage.IsNull())
 	{
 		MY_LOG("Load -", EDebugLogLevel::DLL_Error, "Load Logo Error");
 	}

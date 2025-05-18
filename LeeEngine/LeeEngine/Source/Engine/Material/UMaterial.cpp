@@ -1,9 +1,10 @@
 #include "CoreMinimal.h"
 #include "UMaterial.h"
-
 #include "Engine/UEngine.h"
 #include "Engine/RenderCore/EditorScene.h"
 #include "Engine/SceneProxy/FNiagaraSceneProxy.h"
+
+using namespace Microsoft::WRL;
 
 std::unordered_map<std::string, std::shared_ptr<FShader>>            FShader::ShaderCache;
 std::unordered_map<std::string, std::shared_ptr<UMaterialInterface>> UMaterialInterface::MaterialCache;

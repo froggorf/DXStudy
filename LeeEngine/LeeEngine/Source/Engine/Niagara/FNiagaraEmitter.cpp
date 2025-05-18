@@ -1,8 +1,9 @@
 #include "CoreMinimal.h"
 #include "FNiagaraEmitter.h"
-
 #include "Engine/Mesh/UStaticMesh.h"
 #include "Engine/SceneProxy/FNiagaraSceneProxy.h"
+
+using namespace Microsoft::WRL;
 
 void FParticleModule::LoadDataFromFile(const nlohmann::basic_json<>& Data)
 {

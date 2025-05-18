@@ -13,8 +13,6 @@
 
 #include "DebuggingSRV.h"
 
-using namespace Microsoft::WRL;
-
 class D3DApp
 {
 public:
