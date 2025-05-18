@@ -14,6 +14,8 @@
 #include "RenderCore/EditorScene.h"
 
 
+
+
 std::shared_ptr<UEngine> GEngine = nullptr;
 
 UEngine::~UEngine()
@@ -227,8 +229,92 @@ void UEngine::CreateAudioThread()
 	AudioThread = std::thread(&FAudioThread::Execute);
 }
 
+void MyCreateWindow(ImGuiViewport* Viewport)
+{
+	std::mutex mtx;
+	std::condition_variable cv;
+	bool done = false;
+
+	ENQUEUE_IMGUI_COMMAND([&]()
+		{
+			 ImGui_ImplWin32_CreateWindow(Viewport);
+			{
+				std::lock_guard<std::mutex> lock(mtx);
+				done = true;
+			}
+			cv.notify_one();
+		});
+
+	// 메인쓰레드에서 완료될 때까지 대기
+	std::unique_lock<std::mutex> lock(mtx);
+	cv.wait(lock, [&](){ return done; });
+}
+
+void MyShowWindow(ImGuiViewport* Viewport)
+{
+	std::mutex mtx;
+	std::condition_variable cv;
+	bool done = false;
+
+	ENQUEUE_IMGUI_COMMAND([&]()
+		{
+			ImGui_ImplWin32_ShowWindow(Viewport);
+			{
+				std::lock_guard<std::mutex> lock(mtx);
+				done = true;
+			}
+			cv.notify_one();
+		});
+
+	// 메인쓰레드에서 완료될 때까지 대기
+	std::unique_lock<std::mutex> lock(mtx);
+	cv.wait(lock, [&](){ return done; });
+}
+
+LRESULT CALLBACK MyWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	// Application 인스턴스 접근 (싱글턴, 전역 포인터 등)
+	if(GEngine)
+	{
+		if(GEngine->GetApplication())
+		{
+			return GEngine->GetApplication()->MsgProc(hWnd,msg,wParam,lParam);
+		}
+	}
+	return DefWindowProc(hWnd, msg, wParam, lParam);
+}
+
+
 void UEngine::InitImGui()
 {
+	// Imgui 의 렌더링과 업데이트 처리를 렌더링 쓰레드에서 진행하는데
+	// 메인쓰레드가 아닌 곳에서 윈도우가 생성되면 메시지 프록이 정상적으로 적용되지 않는 현상이 발생하여
+	// Imgui의 메시지 처리가 진행되지 않아 프리징 난듯이 일어난다.
+	// 따라서
+	/*
+	ImGuiPlatformIO& PlatformIO = ImGui::GetPlatformIO();
+	PlatformIO.Platform_CreateWindow = MyCreateWindow;
+	PlatformIO.Platform_ShowWindow = MyShowWindow;
+	 */
+	//를 추가해줘서 렌더링쓰레드가 아니라 게임쓰레드에서 윈도우를 생성하게 하고,
+	// 또한 아래의 윈도우 정보를 미리 만들어놓고,
+	// lpszClassName 이 Imgui 내부에서 만드는것과 동일하면 미리 만든 윈도우를 사용한다고함
+	// 따라서 내 윈도우 메시지 프록이 그대로 전달돼서 진행되는것
+	WNDCLASSEXW wc = {};
+	wc.cbSize = sizeof(WNDCLASSEXW);
+	wc.style = CS_OWNDC;
+	wc.lpfnWndProc = MyWndProc; // <- 네 메시지 처리 함수
+	wc.cbClsExtra = 0;
+	wc.cbWndExtra = 0;
+	wc.hInstance = ::GetModuleHandle(nullptr);
+	wc.hIcon = nullptr;
+	wc.hCursor = nullptr;
+	wc.hbrBackground = nullptr;
+	wc.lpszMenuName = nullptr;
+	wc.lpszClassName = L"ImGui Platform"; // ImGui가 사용하는 클래스명과 같게!
+	wc.hIconSm = nullptr;
+	RegisterClassExW(&wc);
+
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -236,7 +322,7 @@ void UEngine::InitImGui()
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-	//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 	ImGuiStyle& style = ImGui::GetStyle();
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -266,6 +352,8 @@ void UEngine::InitImGui()
 	ImGui_ImplDX11_InvalidateDeviceObjects();
 	ImGui_ImplDX11_CreateDeviceObjects();
 
+	ImGuiPlatformIO& PlatformIO = ImGui::GetPlatformIO();
+	PlatformIO.Platform_CreateWindow = MyCreateWindow;
 }
 
 void UEngine::LoadAllObjectsFromFile()

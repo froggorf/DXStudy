@@ -74,7 +74,7 @@ void FParticleModule::LoadDataFromFile(const nlohmann::basic_json<>& Data)
 		//Render 모듈
 		if(ModuleData.contains("Render"))
 		{
-			Module[static_cast<int>(EParticleModule::PM_RENDER)] = 1;
+			Module[static_cast<int>(EParticleModule::PM_Render)] = 1;
 			auto RenderData = ModuleData["Render"];
 			if (RenderData.contains("StartColor"))
 			{
@@ -97,7 +97,7 @@ void FParticleModule::LoadDataFromFile(const nlohmann::basic_json<>& Data)
 		// Scale 모듈
 		if (ModuleData.contains("Scale"))
 		{
-			Module[static_cast<int>(EParticleModule::PM_SCALE)] = 1;
+			Module[static_cast<int>(EParticleModule::PM_Scale)] = 1;
 			auto ScaleData = ModuleData["Scale"];
 			StartScale = ScaleData["StartScale"];
 			EndScale = ScaleData["EndScale"];
@@ -115,7 +115,7 @@ void FParticleModule::LoadDataFromFile(const nlohmann::basic_json<>& Data)
 		// AddVelocity 모듈
 		if(ModuleData.contains("AddVelocity"))
 		{
-			Module[static_cast<int>(EParticleModule::PM_ADD_VELOCITY)]=1;
+			Module[static_cast<int>(EParticleModule::PM_AddVelocity)]=1;
 			const auto& UVData  = ModuleData["AddVelocity"];
 			const auto& MinVel = UVData["MinVel"];
 			const auto& MaxVel = UVData["MaxVel"];
@@ -334,7 +334,7 @@ void FNiagaraEmitter::CalcSpawnCount(float DeltaSeconds)
 		Count.SpawnCount = 1;
 	}
 
-	if(Module.Module[static_cast<int>(EParticleModule::PM_SPAWN_BURST)] && 0 < Module.SpawnBurstRepeat)
+	if(Module.Module[static_cast<int>(EParticleModule::PM_SpawnBurst)] && 0 < Module.SpawnBurstRepeat)
 	{
 		Module.AccSpawnBurstRepeatTime += DeltaSeconds;
 		if(Module.SpawnBurstRepeatTime < Module.AccSpawnBurstRepeatTime)

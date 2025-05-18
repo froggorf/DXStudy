@@ -111,7 +111,6 @@ RWStructuredBuffer<FParticleSpawn> gSpawnCount : register(u1);
 StructuredBuffer<FParticleModule> gModule : register(ParticleDataRegister);
 
 #define MaxParticleCount 500
-
 [numthreads(256, 1, 1)]
 void CS_TickParticle(int3 ThreadID : SV_DispatchThreadID)
 {
@@ -143,9 +142,6 @@ void CS_TickParticle(int3 ThreadID : SV_DispatchThreadID)
             int OriginalValue = 0;
 
             InterlockedCompareExchange(gSpawnCount[0].SpawnCount, DestValue, Value, OriginalValue);
-            //InterlockedExchange(g_SpawnCount[0].SpawnCount, Value, OriginalValue);
-
-            // 교환 성공
             if (OriginalValue == DestValue)
             {
                 Success = 1;
@@ -168,8 +164,6 @@ void CS_TickParticle(int3 ThreadID : SV_DispatchThreadID)
 
         // 이번 프레임의 누적된 힘을 초기화
         gBuffer[ThreadID.x].Force.xyz = float3(0.0f, 0.0f,0.0f);
-
-        //TODO: 속도관련 이동이 있을 시 이곳에 추가 구현하기
 
         // 속도에 따른 이동
         float Accel = gBuffer[ThreadID.x].Force / gBuffer[ThreadID.x].Mass;

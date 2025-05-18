@@ -14,10 +14,13 @@ class UNiagaraSystem : public UObject, public std::enable_shared_from_this<UNiag
 {
 	MY_GENERATED_BODY(UNiagaraSystem)
 public:
+	// 데이터 로드 함수
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
+	// 런타임에 NiagaraSystem의 인스턴스를 만들어 반환하는 함수
 	std::vector<std::shared_ptr<FNiagaraEmitter>> CreateDynamicRenderData() const;
 
+	// NiagaraSystem 에셋을 얻어오는 함수
 	static std::shared_ptr<UNiagaraSystem> GetNiagaraAsset(const std::string& NiagaraAssetName)
 	{
 		auto NiagaraAssetCacheMap = GetNiagaraAssetCacheMap();
@@ -28,10 +31,8 @@ public:
 		return nullptr;
 	}
 protected:
-	
-private:
-public:
-protected:
+	// Emitter 벡터
+	// 언리얼엔진의 NiagaraSystem 내에 있는 하나의 이펙트 이미터 단위를 표현
 	std::vector<std::shared_ptr<FNiagaraEmitter>> Emitters;
 private:
 	static std::map<std::string, std::shared_ptr<UNiagaraSystem>>& GetNiagaraAssetCacheMap()

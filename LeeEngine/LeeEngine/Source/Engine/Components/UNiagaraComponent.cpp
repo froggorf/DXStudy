@@ -35,11 +35,13 @@ void UNiagaraComponent::TickComponent(float DeltaSeconds)
 {
 	UPrimitiveComponent::TickComponent(DeltaSeconds);
 
-	for (const auto& SceneProxy : SceneProxies)
+	if(bIsActivate)
 	{
-		GEngine->GetWorld()->AddToBeTickedNiagaraSceneProxy(SceneProxy);
+		for (const auto& SceneProxy : SceneProxies)
+		{
+			GEngine->GetWorld()->AddToBeTickedNiagaraSceneProxy(SceneProxy);
+		}
 	}
-	
 }
 
 void UNiagaraComponent::Activate()

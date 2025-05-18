@@ -46,12 +46,12 @@ struct FParticleData
 // 파티클에 적용될 각각의 기능들
 enum class EParticleModule
 {
-	PM_SPAWN,
-	PM_SPAWN_BURST,
-	PM_ADD_VELOCITY,
-	PM_SCALE,
+	PM_Spawn,
+	PM_SpawnBurst,
+	PM_AddVelocity,
+	PM_Scale,
 	PM_AddTickVelocity,
-	PM_RENDER,
+	PM_Render,
 	PM_UVAnim,
 	PM_AddRotation,
 
@@ -257,7 +257,7 @@ protected:
 	std::shared_ptr<FStructuredBuffer> ModuleBuffer;
 
 	// 이펙트에 대한 버퍼를 바인딩할 레지스터 번호
-	constexpr int EffectBufferRegNum = 20;
+	static constexpr int EffectBufferRegNum = 20;
 };
 
 struct FRibbonPointData

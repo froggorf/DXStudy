@@ -1106,7 +1106,7 @@ static HWND ImGui_ImplWin32_GetHwndFromViewportID(ImGuiID viewport_id)
     return nullptr;
 }
 
-static void ImGui_ImplWin32_CreateWindow(ImGuiViewport* viewport)
+void ImGui_ImplWin32_CreateWindow(ImGuiViewport* viewport)
 {
     ImGui_ImplWin32_ViewportData* vd = IM_NEW(ImGui_ImplWin32_ViewportData)();
     viewport->PlatformUserData = vd;
@@ -1121,7 +1121,8 @@ static void ImGui_ImplWin32_CreateWindow(ImGuiViewport* viewport)
     vd->Hwnd = ::CreateWindowExW(
         vd->DwExStyle, L"ImGui Platform", L"Untitled", vd->DwStyle,       // Style, class name, window name
         rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top,    // Window area
-        vd->HwndParent, nullptr, ::GetModuleHandle(nullptr), nullptr);          // Owner window, Menu, Instance, Param
+        vd->HwndParent, nullptr, ::GetModuleHandle(nullptr), nullptr);          // Owner window, Menu, Instance,Param
+
     vd->HwndOwned = true;
     viewport->PlatformRequestResize = false;
     viewport->PlatformHandle = viewport->PlatformHandleRaw = vd->Hwnd;
@@ -1149,7 +1150,7 @@ static void ImGui_ImplWin32_DestroyWindow(ImGuiViewport* viewport)
     viewport->PlatformUserData = viewport->PlatformHandle = nullptr;
 }
 
-static void ImGui_ImplWin32_ShowWindow(ImGuiViewport* viewport)
+void ImGui_ImplWin32_ShowWindow(ImGuiViewport* viewport)
 {
     ImGui_ImplWin32_ViewportData* vd = (ImGui_ImplWin32_ViewportData*)viewport->PlatformUserData;
     IM_ASSERT(vd->Hwnd != 0);

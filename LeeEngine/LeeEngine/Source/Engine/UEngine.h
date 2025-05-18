@@ -68,7 +68,7 @@ public:
 	void JoinThreadsAtDestroy();
 	bool IsStartGameThread() { return GameThreadFrameCount > 0; }
 
-	const D3DApp* GetApplication() const {return Application;}
+	D3DApp* GetApplication() const {return Application;}
 	HWND GetWindow() const {return Application->GetMainWnd();}
 
 	const std::string& GetEngineDirectory()const {return EngineDirectory;}
