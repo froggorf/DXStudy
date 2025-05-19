@@ -166,6 +166,7 @@ void FRichCurve::DrawHermiteCurve(ImDrawList* DrawList, ImVec2 CanvasPos, ImVec2
 		DrawList->AddCircleFilled(SecondPoint, 6.0f, IM_COL32(255, 0, 0, 255));
 	}
 }
+#endif
 
 void UCurveBase::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
@@ -221,4 +222,3 @@ void UCurveFloat::LoadDataFromFileData(const nlohmann::json& AssetData)
 	FloatCurve.CurveMode = CurveMode;
 }
 
-#endif

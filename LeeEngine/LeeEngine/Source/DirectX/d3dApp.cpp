@@ -119,10 +119,10 @@ bool D3DApp::Init()
 
 #ifdef WITH_EDITOR
 	GEngine = std::make_shared<UEditorEngine>(this); //new UEngine(this);
+	GEditorEngine = std::dynamic_pointer_cast<UEditorEngine>(GEngine);
 #else
 	GEngine = std::make_shared<UEngine>(this);//new UEngine(this);
 #endif
-	GEditorEngine = std::dynamic_pointer_cast<UEditorEngine>(GEngine);
 
 	GEngine->InitEngine();
 
@@ -134,6 +134,7 @@ void D3DApp::OnResize()
 	GDirectXDevice->OnWindowResize();
 }
 
+#ifdef WITH_EDITOR
 void D3DApp::DrawTitleBar()
 {
 	if (GEditorEngine)
@@ -141,7 +142,7 @@ void D3DApp::DrawTitleBar()
 		GEditorEngine->DrawEngineTitleBar();
 	}
 }
-
+#endif
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -309,11 +310,12 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	//case WM_MOUSEMOVE:
 	//OnMouseMove(wParam, LOWORD(lParam), HIWORD(lParam));
 	case WM_KEYDOWN:
-
-		if (GEngine && !GEditorEngine)
+#ifndef WITH_EDITOR
+		if(GEngine)
 		{
-			GEngine->HandleInput(msg, wParam, lParam);
+			GEngine->HandleInput(msg,wParam,lParam);
 		}
+#endif
 		return 0;
 	}
 

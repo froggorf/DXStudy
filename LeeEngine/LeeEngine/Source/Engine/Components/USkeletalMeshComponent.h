@@ -24,9 +24,6 @@ class USkeletalMeshComponent : public USkinnedMeshComponent
 		return SkeletalMesh;
 	}
 
-#ifdef WITH_EDITOR
-	void DrawDetailPanel(UINT ComponentDepth) override;
-#endif
 
 	void SetAnimInstanceClass(const std::string& InAnimInstanceClass);
 

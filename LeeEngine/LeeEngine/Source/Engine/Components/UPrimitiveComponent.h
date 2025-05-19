@@ -28,6 +28,5 @@ class UPrimitiveComponent : public USceneComponent
 
 #ifdef WITH_EDITOR
 	void DrawDetailPanel(UINT ComponentDepth) override;
-
 #endif
 };

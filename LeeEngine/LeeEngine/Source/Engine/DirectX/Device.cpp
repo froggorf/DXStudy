@@ -190,6 +190,7 @@ void FDirectXDevice::SetGeometryShader(class FGeometryShader* InGeometryShader)
 	}
 }
 
+#ifdef WITH_EDITOR
 void FDirectXDevice::ResizeEditorRenderTarget(float NewX, float NewY)
 {
 	NewX = max(2.0f, NewX);
@@ -243,6 +244,7 @@ void FDirectXDevice::ResizeEditorRenderTarget(float NewX, float NewY)
 	hr = m_d3dDevice->CreateShaderResourceView(m_EditorRenderTargetTexture.Get(), nullptr,
 												m_SRVEditorRenderTarget.GetAddressOf());
 }
+#endif
 
 void FDirectXDevice::SetRSState(ERasterizerType InRSType)
 {

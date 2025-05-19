@@ -33,7 +33,10 @@ public:
 	//virtual void DrawImGui();
 	virtual void DrawScene() = 0;
 
+#ifdef WITH_EDITOR
 	void            DrawTitleBar();
+#endif;
+
 	virtual LRESULT MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 	// 인풋 관련 함수

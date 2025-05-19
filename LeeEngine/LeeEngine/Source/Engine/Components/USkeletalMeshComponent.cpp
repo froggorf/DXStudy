@@ -68,10 +68,6 @@ bool USkeletalMeshComponent::SetSkeletalMesh(const std::shared_ptr<USkeletalMesh
 	return true;
 }
 
-void USkeletalMeshComponent::DrawDetailPanel(UINT ComponentDepth)
-{
-	USkinnedMeshComponent::DrawDetailPanel(ComponentDepth);
-}
 
 void USkeletalMeshComponent::SetAnimInstanceClass(const std::string& InAnimInstanceClass)
 {

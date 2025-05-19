@@ -68,6 +68,7 @@ void UNiagaraComponent::Deactivate()
 	FScene::SetNiagaraEffectActivate_GameThread(SceneProxies, false);
 }
 
+#ifdef WITH_EDITOR
 void UNiagaraComponent::DrawDetailPanel(UINT ComponentDepth)
 {
 	if (ImGui::Button("Activate"))
@@ -80,3 +81,4 @@ void UNiagaraComponent::DrawDetailPanel(UINT ComponentDepth)
 		Deactivate();
 	}
 }
+#endif

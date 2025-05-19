@@ -77,7 +77,7 @@ public:
 	FEditorScene::AddConsoleText_GameThread(Category,DebugLogLevel,InDebugText);\
 }
 #else
-#define MY_LOG(Category, DebugLogLevel, DebugText) ""	
+#define MY_LOG(Category, DebugLogLevel, DebugText) ;
 #endif
 
 // std::format 자체가 컴파일타임에 판정을 하지 못하기때문에 constexpr 함수로 만들 수 없었음

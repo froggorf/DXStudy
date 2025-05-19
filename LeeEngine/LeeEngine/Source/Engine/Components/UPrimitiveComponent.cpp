@@ -40,7 +40,7 @@ void UPrimitiveComponent::SetTextureParam(UINT                           MeshInd
 {
 	FScene::SetTextureParam_GameThread(PrimitiveID, MeshIndex, TextureSlot, Texture);
 }
-
+#ifdef WITH_EDITOR
 void UPrimitiveComponent::DrawDetailPanel(UINT ComponentDepth)
 {
 	{
@@ -86,3 +86,4 @@ void UPrimitiveComponent::DrawDetailPanel(UINT ComponentDepth)
 		}
 	}
 }
+#endif

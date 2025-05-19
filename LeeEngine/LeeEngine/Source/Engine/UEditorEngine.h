@@ -4,6 +4,7 @@
 // 이윤석
 
 #pragma once
+#ifdef WITH_EDITOR
 #include "UEngine.h"
 #include "RenderCore/RenderingThread.h"
 
@@ -55,3 +56,5 @@ private:
 	bool EditorModificationTypes[static_cast<UINT>(EEditorModificationType::EMT_Count)] = {false,};
 	bool bEditorModified                                                                = false;
 };
+
+#endif

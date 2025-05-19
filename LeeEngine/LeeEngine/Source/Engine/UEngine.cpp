@@ -59,6 +59,12 @@ void UEngine::InitEngine()
 
 	//RenderThread = std::thread(&UEngine::Draw,this);
 	CreateRenderThread();
+
+
+#ifndef WITH_EDITOR
+	// 에디터가 아닐경우 바로 게임이 실행되도록 설정
+	GameStart();
+#endif
 }
 
 void UEngine::PostLoad()

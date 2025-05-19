@@ -1,4 +1,5 @@
 #include "CoreMinimal.h"
+#ifdef WITH_EDITOR
 #include "ImguiEditorMainPanel.h"
 
 #include "Engine/AssetManager/AssetManager.h"
@@ -50,3 +51,5 @@ void FImguiEditorMainPanel::Draw()
 		ImGui::End();
 	}
 }
+
+#endif

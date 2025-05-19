@@ -63,7 +63,7 @@ class FAudioDevice
 {
 public:
 	FAudioDevice();
-	~FAudioDevice();
+	virtual ~FAudioDevice();
 
 	FMOD::System* GetFMODSystem() const
 	{

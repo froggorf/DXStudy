@@ -63,6 +63,7 @@ XMFLOAT2 GetLocalPosFromDrawPanel(const XMFLOAT2& DrawPanelPos, const XMFLOAT2& 
 	return ReturnValue;
 }
 
+#ifdef WITH_EDITOR
 void UTestComponent::DrawDetailPanel(UINT ComponentDepth)
 {
 	UActorComponent::DrawDetailPanel(ComponentDepth);
@@ -213,6 +214,7 @@ void UTestComponent::DrawDetailPanel(UINT ComponentDepth)
 	//	d2->PopClipRect();
 	//	
 }
+#endif
 
 void UTestComponent::BeginPlay()
 {

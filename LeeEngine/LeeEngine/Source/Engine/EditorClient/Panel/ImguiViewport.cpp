@@ -1,4 +1,5 @@
 #include "CoreMinimal.h"
+#ifdef WITH_EDITOR
 #include "ImguiViewport.h"
 
 #include "ImguiActorDetail.h"
@@ -133,6 +134,7 @@ void FImguiLevelViewport::Draw()
 				{
 					MoveDelta.x += MoveSpeed;
 				}
+
 				if (ImGui::IsKeyDown(ImGuiKey_E))
 				{
 					MoveDelta.y += MoveSpeed;
@@ -335,3 +337,5 @@ void FImguiLevelViewport::EditorCameraMove(XMFLOAT3 MoveDelta, XMFLOAT2 MouseDel
 
 	EditorViewMatrices.UpdateViewMatrix(NewLocation, NewCameraRotQuat);
 }
+
+#endif
