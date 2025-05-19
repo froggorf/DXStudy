@@ -2,14 +2,7 @@
 // 모델, 텍스쳐 등의 오브젝트 (에셋)을 관리하는 매니저 클래스
 #pragma once
 #include "DirectX/d3dUtil.h"
-
-#include <type_traits>
-#include <fstream>
-
-#include "Engine/MyEngineUtils.h"
-#include "Engine/UEditorEngine.h"
 #include "Engine/RenderCore/EditorScene.h"
-#include "nlohmann/json.hpp"
 class UObject;
 struct aiScene;
 struct aiMesh;

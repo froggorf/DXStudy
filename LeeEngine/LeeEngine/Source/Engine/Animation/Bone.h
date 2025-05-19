@@ -2,8 +2,6 @@
 
 #pragma once
 #include <DirectXMath.h>
-#include <string>
-#include <vector>
 
 struct aiNodeAnim;
 

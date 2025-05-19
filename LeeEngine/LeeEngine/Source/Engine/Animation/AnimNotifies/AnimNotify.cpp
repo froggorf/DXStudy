@@ -1,8 +1,6 @@
 #include "CoreMinimal.h"
 #include "AnimNotify.h"
 
-#include "Engine/RenderCore/EditorScene.h"
-
 void UAnimNotify::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
 	UObject::LoadDataFromFileData(AssetData);

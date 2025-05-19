@@ -7,17 +7,7 @@
 #include <d3dcompiler.h>
 #include <wrl.h>				// ComPtr
 #include <DirectXMath.h>
-#include <Directxcolors.h>
-
-#include <iostream>
-#include <algorithm>
 #include <cmath>
-
-#include <map>
-#include <unordered_map>
-#include <string>
-#include <vector>
-
 #include "LightHelper.h"
 
 #pragma comment(lib, "d3d11.lib")

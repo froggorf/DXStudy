@@ -2,13 +2,8 @@
 // https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
 #include "UAnimInstance.h"
 
-#include <stack>
-
 #include "UAnimSequence.h"
-#include "Bone.h"
 #include "Engine/Components/USkeletalMeshComponent.h"
-#include "Engine/Misc/QueuedThreadPool.h"
-#include "Engine/RenderCore/EditorScene.h"
 #include "Engine/RenderCore/renderingthread.h"
 
 UAnimInstance::UAnimInstance()

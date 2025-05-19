@@ -3,14 +3,8 @@
 
 #pragma once
 
-#include <sstream>
-#include <string>
-
-#include "imgui.h"
-#include "ImGuizmo.h"
-#include "d3dUtil.h"
+#include "CoreMinimal.h"
 #include "GameTimer.h"
-
 #include "DebuggingSRV.h"
 
 class D3DApp

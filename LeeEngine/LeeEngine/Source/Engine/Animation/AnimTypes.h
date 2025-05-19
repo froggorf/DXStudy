@@ -5,7 +5,6 @@
 
 #pragma once
 #include "AnimNotifies/AnimNotify.h"
-#include "Engine/MyEngineUtils.h"
 
 struct FAnimNotifyEvent
 {
