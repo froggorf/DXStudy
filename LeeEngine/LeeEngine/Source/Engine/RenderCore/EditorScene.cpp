@@ -15,14 +15,19 @@ FEditorScene::FEditorScene()
 	EditorClient = std::make_unique<FEditorClient>(this);
 }
 
-void FEditorScene::InitLevelData()
+void FEditorScene::InitSceneData_GameThread()
 {
-	FScene::InitLevelData();
+	ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData) {
+		SceneData = std::make_shared<FEditorScene>();
+		std::shared_ptr<FRenderTask> DummyTask;
+		// 기존에 남아있는 렌더 명령어 모두 Dequeue
+		while(FRenderCommandPipe::Dequeue(DummyTask))
+		{
+			DummyTask->CommandLambda(SceneData);
+		}
 
-	auto CommandData         = std::make_shared<FImguiLevelViewportCommandData>();
-	CommandData->PanelType   = EImguiPanelType::IPT_LevelViewport;
-	CommandData->CommandType = ELevelViewportCommandType::LVCT_ClearCurrentLevelData;
-	EditorClient->AddPanelCommand(CommandData);
+		
+	})
 }
 
 void FEditorScene::BeginRenderFrame()

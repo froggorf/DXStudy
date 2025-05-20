@@ -209,7 +209,7 @@ void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 
 void UEngine::CreateRenderThread()
 {
-	RenderThread = std::thread(&FRenderCommandExecutor::Execute, std::make_shared<FScene>());
+	RenderThread = std::thread(&FRenderCommandExecutor::Execute);
 }
 
 void UEngine::CreateAudioThread()

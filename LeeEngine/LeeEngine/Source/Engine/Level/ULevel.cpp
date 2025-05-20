@@ -57,7 +57,14 @@ void ULevel::Register()
 {
 	UObject::Register();
 
+	// ImGUI 등을 포함한 EditorScene을 추가하기 위해
+	// WITH_EDITOR 을 분기점으로 적용
+#ifdef WITH_EDITOR
+	FEditorScene::InitSceneData_GameThread();
+#else
 	FScene::InitSceneData_GameThread();
+#endif
+
 	for (const auto& Actor : Actors)
 	{
 		Actor->Register();

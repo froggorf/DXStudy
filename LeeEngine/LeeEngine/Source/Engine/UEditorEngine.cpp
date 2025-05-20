@@ -30,22 +30,6 @@ void UEditorEngine::InitEngine()
 {
 	UEngine::InitEngine();
 
-	//AddImGuiRenderFunction(std::bind(&UEditorEngine::DrawDebugConsole, this));
-	/*FEditorScene::AddImGuiRenderFunction(
-		"DebugConsole",
-		[]()
-		{
-			FEditorScene::DrawDebugConsole_RenderThread();
-		}
-	);
-	FEditorScene::AddImGuiRenderFunction(
-		"DrawScene",
-		[]()
-		{
-			FEditorScene::DrawImGuiScene_RenderThread();
-		}
-	);*/
-
 	const std::string& EngineDirectoryString = GetEngineDirectory();
 	std::wstring       FilePath = std::wstring{EngineDirectoryString.begin(), EngineDirectoryString.end()} +
 		L"/Content/Editor/Logo/LeeEngineLogo.bmp";
@@ -199,6 +183,6 @@ void UEditorEngine::EditorModify(EEditorModificationType Type, std::function<voi
 
 void UEditorEngine::CreateRenderThread()
 {
-	RenderThread = std::thread(&FRenderCommandExecutor::Execute, std::make_shared<FEditorScene>());
+	RenderThread = std::thread(&FRenderCommandExecutor::Execute);
 }
 #endif

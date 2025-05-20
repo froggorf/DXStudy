@@ -143,7 +143,6 @@ public:
 	std::map<UINT, FTransform> PendingNewTransformProxies;
 	// ==================== FPrimitiveSceneProxy ====================
 
-	bool bMustResetLevelDataAtEndFrame = false;
 	bool bIsFrameStart;
 
 public:
@@ -161,20 +160,22 @@ public:
 		ImGui::DestroyContext();
 	}
 
-	// 게임쓰레드 _ 레벨마다 가진 씬 데이터를 Init하는 함수 
+	// 게임쓰레드 _ 씬 데이터를 레벨의 초기화에 맞춰 변경하는 함수
+#ifndef WITH_EDITOR
 	static void InitSceneData_GameThread()
 	{
 		ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData) {
-			//Scene::InitSceneData_RenderThread(SceneData);
-			SceneData->bMustResetLevelDataAtEndFrame = true; })
+			SceneData = std::make_shared<FScene>();
+			std::shared_ptr<FRenderTask> DummyTask;
+			// 기존에 남아있는 렌더 명령어 모두 Dequeue
+			while(FRenderCommandPipe::Dequeue(DummyTask))
+			{
+				DummyTask->CommandLambda(SceneData);
+			}
+		})
 	}
+#endif
 
-	// InitSceneData_GameThread()
-	static void InitSceneData_RenderThread(std::shared_ptr<FScene>& SceneData)
-	{
-	}
-
-	virtual void InitLevelData();
 
 	// 렌더쓰레드 프레임 시작 알림 함수
 	// 게임쓰레드 시작 시 호출
@@ -291,13 +292,8 @@ private:
 class FRenderCommandExecutor
 {
 public:
-	static void Execute(const std::shared_ptr<FScene>& InSceneData)
+	static void Execute()
 	{
-		if (!CurrentSceneData)
-		{
-			CurrentSceneData = std::move(InSceneData);
-		}
-
 		std::shared_ptr<FRenderTask> Task;
 		while (true)
 		{
@@ -313,7 +309,9 @@ public:
 			else
 			{
 				std::this_thread::yield();
-			}
+			}	
+			
+			
 		}
 	}
 

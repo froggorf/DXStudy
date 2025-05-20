@@ -11,18 +11,6 @@
 
 std::shared_ptr<FScene> FRenderCommandExecutor::CurrentSceneData = nullptr;
 
-void FScene::InitLevelData()
-{
-	OpaqueSceneProxyRenderData.clear();
-	MaskedSceneProxyRenderData.clear();
-	TranslucentSceneProxyRenderData.clear();
-
-	PendingAddSceneProxies.clear();
-	PendingDeleteSceneProxies.clear();
-
-	PendingNewTransformProxies.clear();
-	bMustResetLevelDataAtEndFrame = false;
-}
 
 void FScene::BeginRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData, UINT GameThreadFrameCount)
 {
@@ -32,9 +20,6 @@ void FScene::BeginRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData, U
 
 void FScene::BeginRenderFrame()
 {
-	if (bMustResetLevelDataAtEndFrame)
-		bMustResetLevelDataAtEndFrame = false;
-
 	if (bIsFrameStart)
 	{
 		//MY_LOG("RenderCommand", EDebugLogLevel::DLL_Error,"RenderThread is already start");
@@ -600,10 +585,5 @@ XMMATRIX FScene::GetProjectionMatrix()
 
 void FScene::EndRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData)
 {
-	if (SceneData->bMustResetLevelDataAtEndFrame)
-	{
-		SceneData->InitLevelData();
-	}
-
 	SceneData->bIsFrameStart = false;
 }

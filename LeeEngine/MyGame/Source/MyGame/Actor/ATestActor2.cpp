@@ -32,7 +32,6 @@ ATestActor2::ATestActor2()
 void ATestActor2::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
-	MY_LOG("TEST",EDebugLogLevel::DLL_Warning, XMFLOAT2_TO_TEXT(XMFLOAT2{0.f,1.f}));
 	//float RotationSpeed = 100;
 	//RootComponent->AddWorldRotation(XMFLOAT3(0.0f, DeltaSeconds*RotationSpeed, 0.0f));
 }

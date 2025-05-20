@@ -43,10 +43,12 @@ public:
 	{
 	}
 
+	static void InitSceneData_GameThread();
+
+
 	std::unique_ptr<FEditorClient> EditorClient;
 
 	// ==================== ImGui ====================
-	void InitLevelData() override;
 	void BeginRenderFrame() override;
 	void SetDrawScenePipeline(const float* ClearColor) override;
 	void AfterDrawSceneAction(std::shared_ptr<FScene> SceneData) override;
