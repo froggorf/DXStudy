@@ -23,13 +23,8 @@ UWorld::~UWorld()
 void UWorld::Init()
 {
 	UObject::Init();
-#ifdef WITH_EDITOR
-	/*FEditorScene::AddImGuiRenderFunction("World Outliner", []()
-	{
-		FEditorScene::DrawWorldOutliner_RenderThread();
-		FEditorScene::DrawSelectActorDetail_RenderThread();
-	});*/
-#endif
+
+	// 월드 초기화
 }
 
 void UWorld::PostLoad()
@@ -95,6 +90,7 @@ void UWorld::SetPersistentLevel(const std::shared_ptr<ULevel>& NewLevel)
 {
 	PersistentLevel = NewLevel;
 	PersistentLevel->Register();
+	MY_LOG("TEST",EDebugLogLevel::DLL_Warning,"SET Level");
 #ifdef WITH_EDITOR
 	// 타이틀 바 내 현재 레벨 이름 변경
 	SendMessage(GEditorEngine->GetWindow(), WM_NCPAINT, true, 0);

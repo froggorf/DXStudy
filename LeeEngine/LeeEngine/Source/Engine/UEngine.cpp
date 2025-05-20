@@ -53,12 +53,13 @@ void UEngine::InitEngine()
 
 	LoadDataFromDefaultEngineIni();
 
+	CreateRenderThread();
+
 	LoadDefaultMap();
 
 	CurrentWorld->Init();
 
 	//RenderThread = std::thread(&UEngine::Draw,this);
-	CreateRenderThread();
 
 
 #ifndef WITH_EDITOR
@@ -97,9 +98,9 @@ void UEngine::LoadDataFromDefaultEngineIni()
 
 void UEngine::LoadDefaultMap()
 {
-	const ULevel* DefaultLevelInstance = ULevel::GetLevelInstanceByName(GetDefaultMapName());
-	auto          LoadLevel            = std::make_shared<ULevel>(DefaultLevelInstance);
+	std::shared_ptr<ULevel> LoadLevel  = std::make_shared<ULevel>(ULevel::GetLevelInstanceByName(GetDefaultMapName()));
 	CurrentWorld->SetPersistentLevel(LoadLevel);
+
 }
 
 const std::string& UEngine::GetDefaultMapName()
@@ -172,6 +173,20 @@ void UEngine::Tick(float DeltaSeconds)
 	else
 	{
 		FScene::DrawScene_GameThread();
+	}
+
+	
+	if(ImGui::IsKeyReleased(ImGuiKey_I))
+	{
+		static bool bIsPressed = false;
+		if(!bIsPressed)
+		{
+			std::shared_ptr<FRenderTask> DummyTask;
+			while(FRenderCommandPipe::Dequeue(DummyTask)){}
+			std::shared_ptr<ULevel> TTT  = std::make_shared<ULevel>(ULevel::GetLevelInstanceByName("Test2Level"));
+			CurrentWorld->SetPersistentLevel(TTT);
+			bIsPressed = true;
+		}
 	}
 }
 
