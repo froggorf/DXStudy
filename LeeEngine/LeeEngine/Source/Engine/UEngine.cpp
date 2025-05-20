@@ -108,6 +108,13 @@ const std::string& UEngine::GetDefaultMapName()
 	return EngineData["GameDefaultMap"];
 }
 
+void UEngine::DELETELATER_TestChangeLevel(const std::string& str)
+{
+	FScene::ClearScene_GameThread();
+	std::shared_ptr<ULevel> TTT  = std::make_shared<ULevel>(ULevel::GetLevelInstanceByName(str));
+	CurrentWorld->SetPersistentLevel(TTT);
+}
+
 void UEngine::GameStart()
 {
 	// 게임 시작
@@ -146,7 +153,7 @@ void UEngine::Tick(float DeltaSeconds)
 	++GameThreadFrameCount;
 
 	FScene::BeginRenderFrame_GameThread(GameThreadFrameCount);
-
+	
 	if (bGameStart)
 	{
 		TimeSeconds += DeltaSeconds;
@@ -175,18 +182,17 @@ void UEngine::Tick(float DeltaSeconds)
 		FScene::DrawScene_GameThread();
 	}
 
-	
-	if(ImGui::IsKeyReleased(ImGuiKey_I))
+	// TODO: DeleteLater 임시레벨 변경 코드
+	static int i = 0;
+	++i;
+	if(i == 10000)
 	{
-		static bool bIsPressed = false;
-		if(!bIsPressed)
-		{
-			std::shared_ptr<FRenderTask> DummyTask;
-			while(FRenderCommandPipe::Dequeue(DummyTask)){}
-			std::shared_ptr<ULevel> TTT  = std::make_shared<ULevel>(ULevel::GetLevelInstanceByName("Test2Level"));
-			CurrentWorld->SetPersistentLevel(TTT);
-			bIsPressed = true;
-		}
+		GEngine->DELETELATER_TestChangeLevel("Test2Level");
+	}
+	if(i == 20000)
+	{
+		i = 0;
+		GEngine->DELETELATER_TestChangeLevel("TestLevel");
 	}
 }
 

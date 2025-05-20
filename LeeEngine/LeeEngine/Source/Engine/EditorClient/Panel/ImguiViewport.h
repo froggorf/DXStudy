@@ -25,8 +25,8 @@ enum class ELevelViewportCommandType
 	LVCT_AddActorToWorldOutliner,
 	LVCT_SetViewportSizeToEditorViewportSize,
 	LVCT_GetEditorViewMatrices,
-	LVCT_ClearCurrentLevelData,
 	LVCT_SelectActorFromWorldOutliner,
+	LVCT_ChangeLevelInitialize
 };
 
 struct FImguiLevelViewportCommandData : FImguiPanelCommandData
@@ -75,8 +75,6 @@ public:
 	void SelectActorFromWorldOutliner(const std::shared_ptr<AActor>& NewSelectedActor);
 
 private:
-	// 레벨 변경 시 현재의 레벨 데이터를 초기화 하는 함수
-	void InitLevelData();
 
 	// CurrentSelectedActor의 Imguizmo 기즈모 렌더링 + 이동 조작 Imguizmo 커맨드 큐 추가
 	void DrawImguizmoSelectedActor(float AspectRatio);
@@ -94,7 +92,8 @@ private:
 	{
 		return ActorDetailPanel.get();
 	}
-
+public:
+	static ImVec2 PreviousViewPortSize;
 private:
 	std::unique_ptr<FImguiWorldOutliner> WorldOutlinerPanel;
 	std::unique_ptr<FImguiActorDetail>   ActorDetailPanel;

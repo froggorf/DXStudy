@@ -25,6 +25,8 @@
 class USceneComponent;
 class AActor;
 
+inline std::atomic<bool> bIsChangeLevel = false;
+
 struct FRenderTask
 {
 	UINT                                                PrimitiveID;
@@ -158,6 +160,14 @@ public:
 		ImGui_ImplDX11_Shutdown();
 		ImGui_ImplWin32_Shutdown();
 		ImGui::DestroyContext();
+	}
+
+	static void ClearScene_GameThread()
+	{
+		ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData)
+		{
+			SceneData = nullptr;
+		})
 	}
 
 	// 게임쓰레드 _ 씬 데이터를 레벨의 초기화에 맞춰 변경하는 함수

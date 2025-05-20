@@ -6,6 +6,8 @@
 #include "ImguiWorldOutliner.h"
 #include "Engine/DirectX/Device.h"
 
+ImVec2 FImguiLevelViewport::PreviousViewPortSize = ImVec2(0.0f,0.0f);
+
 FImguiLevelViewport::FImguiLevelViewport(FScene* SceneData)
 	: FImguiPanel(SceneData)
 {
@@ -16,8 +18,6 @@ FImguiLevelViewport::FImguiLevelViewport(FScene* SceneData)
 void FImguiLevelViewport::Draw()
 {
 	// 렌더링 시작
-
-	static auto PreviousViewPortSize = ImVec2(0.0f, 0.0f);
 	ImVec2      CurrentViewPortSize{};
 	ImVec2      ScreenPos;
 
@@ -54,6 +54,7 @@ void FImguiLevelViewport::Draw()
 		}
 		if (PreviousViewPortSize != CurrentViewPortSize)
 		{
+			
 			PreviousViewPortSize                = CurrentViewPortSize;
 			ResizeEditorRenderTargetSize        = CurrentViewPortSize;
 			bResizeEditorRenderTargetAtEndFrame = true;
@@ -176,8 +177,8 @@ void FImguiLevelViewport::ExecuteCommand(const std::shared_ptr<FImguiPanelComman
 			*Data->ViewMatrices = EditorViewMatrices;
 			break;
 
-		case ELevelViewportCommandType::LVCT_ClearCurrentLevelData:
-			InitLevelData();
+		case ELevelViewportCommandType::LVCT_ChangeLevelInitialize:
+			PreviousViewPortSize = ImVec2(0.0f,0.0f);
 			break;
 
 		default: MY_LOG("LevelViewPort", EDebugLogLevel::DLL_Error, "Wrong Command Type");
@@ -186,13 +187,6 @@ void FImguiLevelViewport::ExecuteCommand(const std::shared_ptr<FImguiPanelComman
 	}
 }
 
-void FImguiLevelViewport::InitLevelData()
-{
-	WorldOutlinerPanel->InitLevelData();
-	ActorDetailPanel->InitLevelData();
-
-	EditorViewMatrices.UpdateViewMatrix(XMFLOAT3(0.0f, 0.0f, 0.0f), XMQuaternionRotationRollPitchYaw(0.0f, 0.0f, 0.0f));
-}
 
 void FImguiLevelViewport::SelectActorFromWorldOutliner(const std::shared_ptr<AActor>& NewSelectedActor)
 {

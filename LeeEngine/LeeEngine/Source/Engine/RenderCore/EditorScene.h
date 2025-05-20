@@ -45,9 +45,8 @@ public:
 
 	static void InitSceneData_GameThread();
 
-
 	std::unique_ptr<FEditorClient> EditorClient;
-
+	FEditorClient* GetEditorClient() const {return EditorClient.get();}
 	// ==================== ImGui ====================
 	void BeginRenderFrame() override;
 	void SetDrawScenePipeline(const float* ClearColor) override;

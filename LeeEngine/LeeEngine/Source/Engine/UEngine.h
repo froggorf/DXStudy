@@ -40,6 +40,9 @@ class UEngine : public UObject
 		return DeltaSeconds;
 	}
 
+	// TODO: DELETE_LATER
+	void DELETELATER_TestChangeLevel(const std::string& str);
+
 	float GetTimeSeconds() const
 	{
 		return TimeSeconds;
@@ -67,8 +70,8 @@ class UEngine : public UObject
 
 	XMMATRIX Test_DeleteLater_GetViewMatrix() const
 	{
-		auto Pos  = XMFLOAT3(0.0f, 5.0f, -5.0f);
-		auto View = XMFLOAT3(0.0f, -1.0f, 1.0f);
+		auto Pos  = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		auto View = XMFLOAT3(0.0f, 0.0f, 1.0f);
 		XMStoreFloat3(&View, XMVector3Normalize(XMLoadFloat3(&View)));
 		return XMMatrixLookToLH(XMLoadFloat3(&Pos), XMLoadFloat3(&View), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
 	}

@@ -85,9 +85,11 @@ int D3DApp::Run()
 
 			if (!m_AppPaused)
 			{
+				
 				CalculateFrameStats();
 				UpdateScene(m_Timer.DeltaTime());
 				DrawScene();
+				
 			}
 			else
 			{

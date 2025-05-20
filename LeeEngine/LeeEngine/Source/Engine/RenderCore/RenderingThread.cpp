@@ -438,7 +438,6 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 			prevUpdateTime = currentTime;
 		}
 	}
-
 	// 프레임 단위 세팅
 	{
 		//GDirectXDevice->ResetRenderTargets();
