@@ -49,11 +49,8 @@ void FNiagaraSceneProxy::TickCS(float DeltaSeconds)
 void FNiagaraSceneProxy::Activate()
 {
 	bIsActivate                   = true;
-	Emitter->Module.ActivateState = Emitter->Module.ActivateState == static_cast<int>(
-										EParticleActivateState::EPAS_Deactivate) ?
-										static_cast<int>(EParticleActivateState::EPAS_Reset) :
-										static_cast<int>(EParticleActivateState::EPAS_Activate);
-	bMustTickThisFrame = true;
+	Emitter->Module.ActivateState = Emitter->Module.ActivateState == static_cast<int>(EParticleActivateState::EPAS_Deactivate) ? static_cast<int>(EParticleActivateState::EPAS_Reset) : static_cast<int>(EParticleActivateState::EPAS_Activate);
+	bMustTickThisFrame            = true;
 	Emitter->Reset();
 }
 

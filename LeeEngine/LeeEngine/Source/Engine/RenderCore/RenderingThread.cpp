@@ -11,7 +11,6 @@
 
 std::shared_ptr<FScene> FRenderCommandExecutor::CurrentSceneData = nullptr;
 
-
 void FScene::BeginRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData, UINT GameThreadFrameCount)
 {
 	RenderingThreadFrameCount = GameThreadFrameCount;
@@ -46,8 +45,7 @@ void FScene::BeginRenderFrame()
 			// 만약 머테리얼 인스턴스를 쓸 경우 새로 인스턴싱 해줘야함
 			if (bUseMaterialInstance)
 			{
-				RenderData.MaterialInterface = std::dynamic_pointer_cast<UMaterialInstance>(
-					NewPrimitiveProxy.second[i]->GetMaterialInterface())->GetInstance();
+				RenderData.MaterialInterface = std::dynamic_pointer_cast<UMaterialInstance>(NewPrimitiveProxy.second[i]->GetMaterialInterface())->GetInstance();
 			}
 
 			// 머테리얼 ID 로 관리하는데, 머테리얼 -> 머테리얼인스턴스 순으로 배열에 배치되도록 설정
@@ -60,8 +58,7 @@ void FScene::BeginRenderFrame()
 				}
 				else
 				{
-					OpaqueSceneProxyRenderData[MaterialID].insert(OpaqueSceneProxyRenderData[MaterialID].begin(),
-																RenderData);
+					OpaqueSceneProxyRenderData[MaterialID].insert(OpaqueSceneProxyRenderData[MaterialID].begin(), RenderData);
 				}
 				break;
 			case EBlendMode::BM_Masked:
@@ -71,8 +68,7 @@ void FScene::BeginRenderFrame()
 				}
 				else
 				{
-					MaskedSceneProxyRenderData[MaterialID].insert(MaskedSceneProxyRenderData[MaterialID].begin(),
-																RenderData);
+					MaskedSceneProxyRenderData[MaterialID].insert(MaskedSceneProxyRenderData[MaterialID].begin(), RenderData);
 				}
 				break;
 			case EBlendMode::BM_Translucent:
@@ -82,8 +78,7 @@ void FScene::BeginRenderFrame()
 				}
 				else
 				{
-					TranslucentSceneProxyRenderData[MaterialID].insert(
-						TranslucentSceneProxyRenderData[MaterialID].begin(), RenderData);
+					TranslucentSceneProxyRenderData[MaterialID].insert(TranslucentSceneProxyRenderData[MaterialID].begin(), RenderData);
 				}
 				break;
 			default:
@@ -105,7 +100,8 @@ void FScene::BeginRenderFrame()
 		{
 			for (auto PrimitiveIter = Iter->second.begin(); PrimitiveIter != Iter->second.end();)
 			{
-				PrimitiveIter = std::find_if(PrimitiveIter, Iter->second.end(),
+				PrimitiveIter = std::find_if(PrimitiveIter,
+											Iter->second.end(),
 											[FindPrimitiveID](const PrimitiveRenderData& A)
 											{
 												return A.PrimitiveID == FindPrimitiveID;
@@ -123,7 +119,8 @@ void FScene::BeginRenderFrame()
 		{
 			for (auto PrimitiveIter = Iter->second.begin(); PrimitiveIter != Iter->second.end();)
 			{
-				PrimitiveIter = std::find_if(PrimitiveIter, Iter->second.end(),
+				PrimitiveIter = std::find_if(PrimitiveIter,
+											Iter->second.end(),
 											[FindPrimitiveID](const PrimitiveRenderData& A)
 											{
 												return A.PrimitiveID == FindPrimitiveID;
@@ -141,7 +138,8 @@ void FScene::BeginRenderFrame()
 		{
 			for (auto PrimitiveIter = Iter->second.begin(); PrimitiveIter != Iter->second.end();)
 			{
-				PrimitiveIter = std::find_if(PrimitiveIter, Iter->second.end(),
+				PrimitiveIter = std::find_if(PrimitiveIter,
+											Iter->second.end(),
 											[FindPrimitiveID](const PrimitiveRenderData& A)
 											{
 												return A.PrimitiveID == FindPrimitiveID;
@@ -171,15 +169,15 @@ void FScene::UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std:
 			{
 				for (auto PrimitiveIter = Iter->second.begin(); PrimitiveIter != Iter->second.end();)
 				{
-					PrimitiveIter = std::find_if(PrimitiveIter, Iter->second.end(),
+					PrimitiveIter = std::find_if(PrimitiveIter,
+												Iter->second.end(),
 												[PrimitiveID](const PrimitiveRenderData& A)
 												{
 													return A.PrimitiveID == PrimitiveID;
 												});
 					if (PrimitiveIter != Iter->second.end())
 					{
-						SkeletalMeshSceneProxy = dynamic_cast<FSkeletalMeshSceneProxy*>(PrimitiveIter->SceneProxy.
-																										get());
+						SkeletalMeshSceneProxy = dynamic_cast<FSkeletalMeshSceneProxy*>(PrimitiveIter->SceneProxy.get());
 						if (SkeletalMeshSceneProxy)
 						{
 							for (int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
@@ -198,15 +196,15 @@ void FScene::UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std:
 			{
 				for (auto PrimitiveIter = Iter->second.begin(); PrimitiveIter != Iter->second.end();)
 				{
-					PrimitiveIter = std::find_if(PrimitiveIter, Iter->second.end(),
+					PrimitiveIter = std::find_if(PrimitiveIter,
+												Iter->second.end(),
 												[PrimitiveID](const PrimitiveRenderData& A)
 												{
 													return A.PrimitiveID == PrimitiveID;
 												});
 					if (PrimitiveIter != Iter->second.end())
 					{
-						SkeletalMeshSceneProxy = dynamic_cast<FSkeletalMeshSceneProxy*>(PrimitiveIter->SceneProxy.
-																										get());
+						SkeletalMeshSceneProxy = dynamic_cast<FSkeletalMeshSceneProxy*>(PrimitiveIter->SceneProxy.get());
 						if (SkeletalMeshSceneProxy)
 						{
 							for (int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
@@ -225,15 +223,15 @@ void FScene::UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std:
 			{
 				for (auto PrimitiveIter = Iter->second.begin(); PrimitiveIter != Iter->second.end();)
 				{
-					PrimitiveIter = std::find_if(PrimitiveIter, Iter->second.end(),
+					PrimitiveIter = std::find_if(PrimitiveIter,
+												Iter->second.end(),
 												[PrimitiveID](const PrimitiveRenderData& A)
 												{
 													return A.PrimitiveID == PrimitiveID;
 												});
 					if (PrimitiveIter != Iter->second.end())
 					{
-						SkeletalMeshSceneProxy = dynamic_cast<FSkeletalMeshSceneProxy*>(PrimitiveIter->SceneProxy.
-																										get());
+						SkeletalMeshSceneProxy = dynamic_cast<FSkeletalMeshSceneProxy*>(PrimitiveIter->SceneProxy.get());
 						if (SkeletalMeshSceneProxy)
 						{
 							for (int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
@@ -267,8 +265,7 @@ void FScene::UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std:
 	}
 }
 
-void FScene::SetMaterialScalarParam_RenderThread(UINT PrimitiveID, UINT MeshIndex, const std::string& ParamName,
-												float Value)
+void FScene::SetMaterialScalarParam_RenderThread(UINT PrimitiveID, UINT MeshIndex, const std::string& ParamName, float Value)
 {
 	// Opaque
 	for (const auto& RenderData : OpaqueSceneProxyRenderData)
@@ -281,8 +278,7 @@ void FScene::SetMaterialScalarParam_RenderThread(UINT PrimitiveID, UINT MeshInde
 
 		if (TargetRenderData != RenderData.second.end())
 		{
-			std::shared_ptr<UMaterialInstance> MaterialInstance = std::dynamic_pointer_cast<UMaterialInstance>(
-				TargetRenderData->MaterialInterface);
+			std::shared_ptr<UMaterialInstance> MaterialInstance = std::dynamic_pointer_cast<UMaterialInstance>(TargetRenderData->MaterialInterface);
 			if (MaterialInstance)
 			{
 				MaterialInstance->SetScalarParam(ParamName, Value);
@@ -301,8 +297,7 @@ void FScene::SetMaterialScalarParam_RenderThread(UINT PrimitiveID, UINT MeshInde
 
 		if (TargetRenderData != RenderData.second.end())
 		{
-			std::shared_ptr<UMaterialInstance> MaterialInstance = std::dynamic_pointer_cast<UMaterialInstance>(
-				TargetRenderData->MaterialInterface);
+			std::shared_ptr<UMaterialInstance> MaterialInstance = std::dynamic_pointer_cast<UMaterialInstance>(TargetRenderData->MaterialInterface);
 			if (MaterialInstance)
 			{
 				MaterialInstance->SetScalarParam(ParamName, Value);
@@ -321,8 +316,7 @@ void FScene::SetMaterialScalarParam_RenderThread(UINT PrimitiveID, UINT MeshInde
 
 		if (TargetRenderData != RenderData.second.end())
 		{
-			std::shared_ptr<UMaterialInstance> MaterialInstance = std::dynamic_pointer_cast<UMaterialInstance>(
-				TargetRenderData->MaterialInterface);
+			std::shared_ptr<UMaterialInstance> MaterialInstance = std::dynamic_pointer_cast<UMaterialInstance>(TargetRenderData->MaterialInterface);
 			if (MaterialInstance)
 			{
 				MaterialInstance->SetScalarParam(ParamName, Value);
@@ -332,8 +326,7 @@ void FScene::SetMaterialScalarParam_RenderThread(UINT PrimitiveID, UINT MeshInde
 	}
 }
 
-void FScene::SetTextureParam_RenderThread(UINT                    PrimitiveID, UINT MeshIndex, UINT TextureSlot,
-										std::shared_ptr<UTexture> Texture)
+void FScene::SetTextureParam_RenderThread(UINT PrimitiveID, UINT MeshIndex, UINT TextureSlot, std::shared_ptr<UTexture> Texture)
 {
 	// Opaque
 	for (const auto& RenderData : OpaqueSceneProxyRenderData)
@@ -346,8 +339,7 @@ void FScene::SetTextureParam_RenderThread(UINT                    PrimitiveID, U
 
 		if (TargetRenderData != RenderData.second.end())
 		{
-			std::shared_ptr<UMaterialInstance> MaterialInstance = std::dynamic_pointer_cast<UMaterialInstance>(
-				TargetRenderData->MaterialInterface);
+			std::shared_ptr<UMaterialInstance> MaterialInstance = std::dynamic_pointer_cast<UMaterialInstance>(TargetRenderData->MaterialInterface);
 			if (MaterialInstance)
 			{
 				MaterialInstance->SetTextureParam(TextureSlot, Texture);
@@ -366,8 +358,7 @@ void FScene::SetTextureParam_RenderThread(UINT                    PrimitiveID, U
 
 		if (TargetRenderData != RenderData.second.end())
 		{
-			std::shared_ptr<UMaterialInstance> MaterialInstance = std::dynamic_pointer_cast<UMaterialInstance>(
-				TargetRenderData->MaterialInterface);
+			std::shared_ptr<UMaterialInstance> MaterialInstance = std::dynamic_pointer_cast<UMaterialInstance>(TargetRenderData->MaterialInterface);
 			if (MaterialInstance)
 			{
 				MaterialInstance->SetTextureParam(TextureSlot, Texture);
@@ -386,8 +377,7 @@ void FScene::SetTextureParam_RenderThread(UINT                    PrimitiveID, U
 
 		if (TargetRenderData != RenderData.second.end())
 		{
-			std::shared_ptr<UMaterialInstance> MaterialInstance = std::dynamic_pointer_cast<UMaterialInstance>(
-				TargetRenderData->MaterialInterface);
+			std::shared_ptr<UMaterialInstance> MaterialInstance = std::dynamic_pointer_cast<UMaterialInstance>(TargetRenderData->MaterialInterface);
 			if (MaterialInstance)
 			{
 				MaterialInstance->SetTextureParam(TextureSlot, Texture);
@@ -397,8 +387,7 @@ void FScene::SetTextureParam_RenderThread(UINT                    PrimitiveID, U
 	}
 }
 
-void FScene::SetNiagaraEffectActivate_GameThread(std::vector<std::shared_ptr<FNiagaraSceneProxy>>& TargetSceneProxies,
-												bool                                               bNewActivate)
+void FScene::SetNiagaraEffectActivate_GameThread(std::vector<std::shared_ptr<FNiagaraSceneProxy>>& TargetSceneProxies, bool bNewActivate)
 {
 	// 벡터의 크기가 클 경우를 대비하여 참조 캡쳐를 전달
 	auto Lambda = [&TargetSceneProxies, bNewActivate](std::shared_ptr<FScene>& SceneData)
@@ -445,10 +434,8 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 		constexpr float ClearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
 		SceneData->SetDrawScenePipeline(ClearColor);
 
-		GDirectXDevice->GetDeviceContext()->ClearRenderTargetView(GDirectXDevice->GetRenderTargetView().Get(),
-																ClearColor);
-		GDirectXDevice->GetDeviceContext()->ClearDepthStencilView(GDirectXDevice->GetDepthStencilView().Get(),
-																D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		GDirectXDevice->GetDeviceContext()->ClearRenderTargetView(GDirectXDevice->GetRenderTargetView().Get(), ClearColor);
+		GDirectXDevice->GetDeviceContext()->ClearDepthStencilView(GDirectXDevice->GetDepthStencilView().Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 		{
 			// Frame 상수 버퍼 설정
@@ -477,8 +464,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 					TempDirectionalLight.Ambient  = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
 					TempDirectionalLight.Diffuse  = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
 					TempDirectionalLight.Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-					XMStoreFloat3(&TempDirectionalLight.Direction,
-								XMVector3Normalize(XMVectorSet(0.57735f, -0.57735f, 0.57735f, 0.0f)));
+					XMStoreFloat3(&TempDirectionalLight.Direction, XMVector3Normalize(XMVectorSet(0.57735f, -0.57735f, 0.57735f, 0.0f)));
 					lfcb.gDirLight = TempDirectionalLight;
 
 					PointLight TempPointLight;
@@ -567,8 +553,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 
 void FScene::SetDrawScenePipeline(const float* ClearColor)
 {
-	GDirectXDevice->GetDeviceContext()->OMSetRenderTargets(1, GDirectXDevice->GetRenderTargetView().GetAddressOf(),
-															GDirectXDevice->GetDepthStencilView().Get());
+	GDirectXDevice->GetDeviceContext()->OMSetRenderTargets(1, GDirectXDevice->GetRenderTargetView().GetAddressOf(), GDirectXDevice->GetDepthStencilView().Get());
 	GDirectXDevice->GetDeviceContext()->RSSetViewports(1, GDirectXDevice->GetScreenViewport());
 }
 

@@ -68,7 +68,7 @@ void USceneComponent::SetupAttachment(const std::shared_ptr<USceneComponent>& In
 	SetAttachParent(InParent);
 	SetAttachSocketName(InSocketName);
 	const std::vector<std::shared_ptr<USceneComponent>>& ParentAttachChildren = InParent->AttachChildren;
-	std::shared_ptr<USceneComponent> thisPtr = shared_from_this(); // std::enable_shared_from_this<USceneComponent>
+	std::shared_ptr<USceneComponent>                     thisPtr              = shared_from_this(); // std::enable_shared_from_this<USceneComponent>
 	if (std::find(AttachChildren.begin(), AttachChildren.end(), thisPtr) == AttachChildren.end())
 	{
 		thisPtr->SetOwner(InParent->GetOwner());
@@ -86,9 +86,7 @@ void USceneComponent::SetRelativeLocation(const XMFLOAT3& NewRelLocation)
 
 void USceneComponent::SetRelativeRotation(const XMFLOAT3& NewRelRotationPitchYawRoll)
 {
-	XMVECTOR NewQuat = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(NewRelRotationPitchYawRoll.x),
-														XMConvertToRadians(NewRelRotationPitchYawRoll.y),
-														XMConvertToRadians(NewRelRotationPitchYawRoll.z));
+	XMVECTOR NewQuat = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(NewRelRotationPitchYawRoll.x), XMConvertToRadians(NewRelRotationPitchYawRoll.y), XMConvertToRadians(NewRelRotationPitchYawRoll.z));
 	SetRelativeRotation(NewQuat);
 }
 
@@ -116,8 +114,7 @@ void USceneComponent::SetRelativeScale3D(const XMFLOAT3& NewRelScale3D)
 void USceneComponent::AddWorldOffset(const XMFLOAT3& DeltaLocation)
 {
 	XMFLOAT3 CurrentComponentTranslation = GetComponentTransform().GetTranslation();
-	XMVECTOR NewWorldLocationVec         =
-		XMVectorAdd(XMLoadFloat3(&DeltaLocation), XMLoadFloat3(&CurrentComponentTranslation));
+	XMVECTOR NewWorldLocationVec         = XMVectorAdd(XMLoadFloat3(&DeltaLocation), XMLoadFloat3(&CurrentComponentTranslation));
 	XMFLOAT3 NewWorldLocation;
 
 	XMStoreFloat3(&NewWorldLocation, NewWorldLocationVec);
@@ -126,9 +123,7 @@ void USceneComponent::AddWorldOffset(const XMFLOAT3& DeltaLocation)
 
 void USceneComponent::AddWorldRotation(const XMFLOAT3& DeltaRotation)
 {
-	XMVECTOR DeltaRotationQuat = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(DeltaRotation.x),
-																XMConvertToRadians(DeltaRotation.y),
-																XMConvertToRadians(DeltaRotation.z));
+	XMVECTOR DeltaRotationQuat = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(DeltaRotation.x), XMConvertToRadians(DeltaRotation.y), XMConvertToRadians(DeltaRotation.z));
 
 	XMVECTOR ComponentRotationQuat = XMQuaternionIdentity();
 	//if(GetAttachParent())
@@ -141,8 +136,7 @@ void USceneComponent::AddWorldRotation(const XMFLOAT3& DeltaRotation)
 	//}
 
 	XMVECTOR NewDeltaWorldRotationQuat = XMQuaternionMultiply(ComponentRotationQuat, DeltaRotationQuat);
-	XMVECTOR NewWorldRotationQuat      = XMQuaternionMultiply(GetComponentTransform().GetRotationQuat(),
-															NewDeltaWorldRotationQuat);
+	XMVECTOR NewWorldRotationQuat      = XMQuaternionMultiply(GetComponentTransform().GetRotationQuat(), NewDeltaWorldRotationQuat);
 	SetWorldRotation(NewWorldRotationQuat);
 }
 
@@ -219,8 +213,7 @@ void USceneComponent::SetAttachSocketName(std::string_view NewSocketName)
 	// 언리얼 엔진에서는 MARK_PROPERTY_DIRTY_FROM_NAME 를 통해 리플렉션 시스템을 적용
 }
 
-void USceneComponent::UpdateComponentToWorldWithParent(const std::shared_ptr<USceneComponent>& Parent,
-														std::string_view                       SocketName)
+void USceneComponent::UpdateComponentToWorldWithParent(const std::shared_ptr<USceneComponent>& Parent, std::string_view SocketName)
 {
 	// 언리얼엔진의 내부에선
 	// 행렬을 통한 위치 계산이 아닌

@@ -10,7 +10,6 @@ struct FAnimNotifyEvent
 {
 	FAnimNotifyEvent();
 
-public:
 	float                        TriggerTimeOffset;
 	float                        EndTriggerTimeOffset;
 	std::shared_ptr<UAnimNotify> Notify;

@@ -22,7 +22,6 @@ inline static MakeCDO _initializer;
 #define MY_GENERATE_BODY(CLASS)\
 GENERATE_UOBJECT_DERIVED_CLASS(CLASS)\
 public:\
-	const virtual std::unique_ptr<UObject>& CreateUniqueInstance() const {return std::make_unique<CLASS>();}\
 	virtual std::shared_ptr<UObject> CreateInstance() const override { return std::make_shared<CLASS>();}\
 	std::string GetClass() const override { return #CLASS; }
 
@@ -35,11 +34,6 @@ class UObject
 	GENERATE_UOBJECT_DERIVED_CLASS(UObject)
 
 public:
-	virtual const std::unique_ptr<UObject>& CreateUniqueInstance() const
-	{
-		return std::make_unique<UObject>();
-	}
-
 	virtual std::shared_ptr<UObject> CreateInstance() const
 	{
 		return std::make_shared<UObject>();

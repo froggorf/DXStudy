@@ -1,4 +1,4 @@
-// https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
+﻿// https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
 #include "CoreMinimal.h"
 #include "UAnimSequence.h"
 
@@ -16,10 +16,12 @@ UAnimSequence::UAnimSequence(const UAnimSequence& Other)
 
 Bone* UAnimSequence::FindBone(const std::string& name)
 {
-	const auto iter = std::find_if(Bones.begin(), Bones.end(), [&](const Bone& bone)
-	{
-		return bone.GetBoneName() == name;
-	});
+	const auto iter = std::find_if(Bones.begin(),
+									Bones.end(),
+									[&](const Bone& bone)
+									{
+										return bone.GetBoneName() == name;
+									});
 
 	if (iter == Bones.end())
 	{
@@ -64,8 +66,7 @@ void UAnimSequence::GetBoneTransform(float CurrentAnimTime, std::vector<XMMATRIX
 
 		if (BoneData.BoneInfo.id >= 0 && BoneData.BoneInfo.id < MAX_BONES)
 		{
-			FinalBoneMatrices[BoneData.BoneInfo.id] = XMMatrixMultiply(BoneData.BoneInfo.offset,
-																		GlobalTransform[HierarchyIndex]);
+			FinalBoneMatrices[BoneData.BoneInfo.id] = XMMatrixMultiply(BoneData.BoneInfo.offset, GlobalTransform[HierarchyIndex]);
 		}
 	}
 }
@@ -89,8 +90,8 @@ void UAnimSequence::LoadDataFromFileData(const nlohmann::json& AssetData)
 	}
 	aiAnimation* animation = scene->mAnimations[0];
 
-	Duration       = animation->mDuration;
-	TicksPerSecond = animation->mTicksPerSecond;
+	Duration       = static_cast<float>(animation->mDuration);
+	TicksPerSecond = static_cast<float>(animation->mTicksPerSecond);
 	ReadHierarchyData(RootNode, scene->mRootNode);
 	ReadMissingBones(animation, GetAnimationSkeleton()->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
 
@@ -99,10 +100,10 @@ void UAnimSequence::LoadDataFromFileData(const nlohmann::json& AssetData)
 
 void UAnimSequence::ReadMissingBones(const aiAnimation* animation, std::map<std::string, BoneInfo>& modelBoneInfoMap)
 {
-	int channelSize = animation->mNumChannels;
-	int boneCount   = modelBoneInfoMap.size();
+	UINT channelSize = animation->mNumChannels;
+	int  boneCount   = static_cast<int>(modelBoneInfoMap.size());
 
-	for (int index = 0; index < channelSize; ++index)
+	for (UINT index = 0; index < channelSize; ++index)
 	{
 		auto        channel  = animation->mChannels[index];
 		std::string boneName = channel->mNodeName.C_Str();
@@ -135,10 +136,25 @@ void UAnimSequence::ReadHierarchyData(AssimpNodeData& dest, const aiNode* src)
 		dest.name.replace(dest.name.begin(), dest.name.begin() + 10, "");
 	}
 	aiMatrix4x4 aiMat   = src->mTransformation;
-	dest.transformation = XMMATRIX(aiMat.a1, aiMat.b1, aiMat.c1, aiMat.d1,  // 1열
-									aiMat.a2, aiMat.b2, aiMat.c2, aiMat.d2, // 2열
-									aiMat.a3, aiMat.b3, aiMat.c3, aiMat.d3, // 3열
-									aiMat.a4, aiMat.b4, aiMat.c4, aiMat.d4  // 4열
+	dest.transformation = XMMATRIX(aiMat.a1,
+									aiMat.b1,
+									aiMat.c1,
+									aiMat.d1,
+									// 1열
+									aiMat.a2,
+									aiMat.b2,
+									aiMat.c2,
+									aiMat.d2,
+									// 2열
+									aiMat.a3,
+									aiMat.b3,
+									aiMat.c3,
+									aiMat.d3,
+									// 3열
+									aiMat.a4,
+									aiMat.b4,
+									aiMat.c4,
+									aiMat.d4 // 4열
 	);
 	dest.childrenCount = src->mNumChildren;
 
@@ -172,10 +188,10 @@ void UAnimSequence::TraverseTreeHierarchy(const AssimpNodeData* NodeData, int Pa
 		BoneData.BoneInfo.offset = XMMatrixIdentity();
 	}
 
-	int CurrentIndex = BoneHierarchy.size();
+	int CurrentIndex = static_cast<int>(BoneHierarchy.size());
 	BoneHierarchy.emplace_back(BoneData);
 
-	int ChildCount = NodeData->children.size();
+	size_t ChildCount = NodeData->children.size();
 	for (int ChildIndex = 0; ChildIndex < ChildCount; ++ChildIndex)
 	{
 		TraverseTreeHierarchy(&NodeData->children[ChildIndex], CurrentIndex);

@@ -85,11 +85,9 @@ int D3DApp::Run()
 
 			if (!m_AppPaused)
 			{
-				
 				CalculateFrameStats();
 				UpdateScene(m_Timer.DeltaTime());
 				DrawScene();
-				
 			}
 			else
 			{
@@ -116,7 +114,7 @@ bool D3DApp::Init()
 	OnResize();
 
 #ifdef WITH_EDITOR
-	GEngine = std::make_shared<UEditorEngine>(this); //new UEngine(this);
+	GEngine       = std::make_shared<UEditorEngine>(this); //new UEngine(this);
 	GEditorEngine = std::dynamic_pointer_cast<UEditorEngine>(GEngine);
 #else
 	GEngine = std::make_shared<UEngine>(this);//new UEngine(this);
@@ -348,8 +346,7 @@ bool D3DApp::InitMainWindow()
 
 	auto Style = WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
 	//WS_OVERLAPPED | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX
-	m_hMainWnd = CreateWindow(L"D3DWndClassName", m_MainWndTitle.c_str(), Style, CW_USEDEFAULT, CW_USEDEFAULT, width,
-							height, 0, 0, m_hAppInstance, 0);
+	m_hMainWnd = CreateWindow(L"D3DWndClassName", m_MainWndTitle.c_str(), Style, CW_USEDEFAULT, CW_USEDEFAULT, width, height, 0, 0, m_hAppInstance, 0);
 	if (!m_hMainWnd)
 	{
 		MessageBox(nullptr, L"CreateWindow Failed.", nullptr, 0);

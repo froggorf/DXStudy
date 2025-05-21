@@ -147,7 +147,6 @@ public:
 
 	bool bIsFrameStart;
 
-public:
 	// 엔진 종료 시 렌더링 쓰레드를 죽이는 함수
 	static void KillRenderingThread()
 	{
@@ -164,10 +163,7 @@ public:
 
 	static void ClearScene_GameThread()
 	{
-		ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData)
-		{
-			SceneData = nullptr;
-		})
+		ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData) { SceneData = nullptr; })
 	}
 
 	// 게임쓰레드 _ 씬 데이터를 레벨의 초기화에 맞춰 변경하는 함수
@@ -186,14 +182,11 @@ public:
 	}
 #endif
 
-
 	// 렌더쓰레드 프레임 시작 알림 함수
 	// 게임쓰레드 시작 시 호출
 	static void BeginRenderFrame_GameThread(UINT GameThreadFrameCount)
 	{
-		ENQUEUE_RENDER_COMMAND(
-			[GameThreadFrameCount](std::shared_ptr<FScene>& SceneData) { BeginRenderFrame_RenderThread(SceneData,
-				GameThreadFrameCount); })
+		ENQUEUE_RENDER_COMMAND([GameThreadFrameCount](std::shared_ptr<FScene>& SceneData) { BeginRenderFrame_RenderThread(SceneData, GameThreadFrameCount); })
 	}
 
 	static void  BeginRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData, UINT GameThreadFrameCount);
@@ -206,8 +199,7 @@ public:
 	}
 
 	// 새로운 UPrimitiveComponent 생성 후 register 시 렌더링 쓰레드에게 알리는 함수
-	static void AddPrimitive_GameThread(UINT       PrimitiveID, std::shared_ptr<FPrimitiveSceneProxy>& SceneProxy,
-										FTransform InitTransform)
+	static void AddPrimitive_GameThread(UINT PrimitiveID, std::shared_ptr<FPrimitiveSceneProxy>& SceneProxy, FTransform InitTransform)
 	{
 		if (nullptr == SceneProxy)
 		{
@@ -220,8 +212,7 @@ public:
 		ENQUEUE_RENDER_COMMAND(Lambda)
 	}
 
-	static void AddPrimitive_RenderThread(const std::shared_ptr<FScene>&             SceneData, UINT PrimitiveID,
-										const std::shared_ptr<FPrimitiveSceneProxy>& NewProxy)
+	static void AddPrimitive_RenderThread(const std::shared_ptr<FScene>& SceneData, UINT PrimitiveID, const std::shared_ptr<FPrimitiveSceneProxy>& NewProxy)
 	{
 		if (!SceneData)
 		{
@@ -252,8 +243,7 @@ public:
 	}
 
 	// 특정 ID의 머테리얼의 파라미터를 바꾸는 함수
-	static void SetMaterialScalarParam_GameThread(UINT PrimitiveID, UINT MeshIndex, const std::string& ParamName,
-												float  Value)
+	static void SetMaterialScalarParam_GameThread(UINT PrimitiveID, UINT MeshIndex, const std::string& ParamName, float Value)
 	{
 		auto Lambda = [PrimitiveID,MeshIndex,ParamName,Value](std::shared_ptr<FScene>& SceneData)
 		{
@@ -262,12 +252,10 @@ public:
 		ENQUEUE_RENDER_COMMAND(Lambda);
 	}
 
-	void SetMaterialScalarParam_RenderThread(UINT PrimitiveID, UINT MeshIndex, const std::string& ParamName,
-											float Value);
+	void SetMaterialScalarParam_RenderThread(UINT PrimitiveID, UINT MeshIndex, const std::string& ParamName, float Value);
 
 	// 특정 ID의 머테리얼의 텍스쳐 파라미터를 바꾸는 함수
-	static void SetTextureParam_GameThread(UINT                       PrimitiveID, UINT MeshIndex, UINT TextureSlot,
-											std::shared_ptr<UTexture> Texture)
+	static void SetTextureParam_GameThread(UINT PrimitiveID, UINT MeshIndex, UINT TextureSlot, std::shared_ptr<UTexture> Texture)
 	{
 		auto Lambda = [PrimitiveID,MeshIndex,TextureSlot,Texture](std::shared_ptr<FScene>& SceneData)
 		{
@@ -276,12 +264,10 @@ public:
 		ENQUEUE_RENDER_COMMAND(Lambda);
 	}
 
-	void SetTextureParam_RenderThread(UINT                    PrimitiveID, UINT MeshIndex, UINT TextureSlot,
-									std::shared_ptr<UTexture> Texture);
+	void SetTextureParam_RenderThread(UINT PrimitiveID, UINT MeshIndex, UINT TextureSlot, std::shared_ptr<UTexture> Texture);
 
 	// 특정 씬 프록시의 이펙트를 Activate 시키는 함수
-	static void SetNiagaraEffectActivate_GameThread(
-		std::vector<std::shared_ptr<class FNiagaraSceneProxy>>& TargetSceneProxies, bool bNewActivate);
+	static void SetNiagaraEffectActivate_GameThread(std::vector<std::shared_ptr<class FNiagaraSceneProxy>>& TargetSceneProxies, bool bNewActivate);
 
 	static void  DrawScene_RenderThread(std::shared_ptr<FScene> SceneData);
 	virtual void SetDrawScenePipeline(const float* ClearColor);
@@ -319,12 +305,9 @@ public:
 			else
 			{
 				std::this_thread::yield();
-			}	
-			
-			
+			}
 		}
 	}
 
-public:
 	static std::shared_ptr<FScene> CurrentSceneData;
 };

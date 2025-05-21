@@ -31,10 +31,7 @@ class UAnimSequence : public UAnimCompositeBase
 	MY_GENERATE_BODY(UAnimSequence)
 	UAnimSequence() = default;
 	UAnimSequence(const UAnimSequence& Other);
-
-	~UAnimSequence() override
-	{
-	};
+	~UAnimSequence() override = default;
 
 	Bone* FindBone(const std::string& name);
 

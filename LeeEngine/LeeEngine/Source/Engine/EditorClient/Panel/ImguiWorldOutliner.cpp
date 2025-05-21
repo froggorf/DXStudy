@@ -29,13 +29,13 @@ void FImguiWorldOutliner::Draw()
 	{
 		if (ImGui::BeginListBox(" ", ImVec2(-FLT_MIN, -FLT_MIN)))
 		{
-			int ActorCount = WorldOutlinerActors.size();
-			for (int i = 0; i < ActorCount; i++)
+			size_t ActorCount = WorldOutlinerActors.size();
+			for (size_t i = 0; i < ActorCount; i++)
 			{
 				const bool is_selected = (CurrentItem == i);
 				if (ImGui::Selectable(WorldOutlinerActors[i]->GetName().c_str(), is_selected))
 				{
-					CurrentItem = i;
+					CurrentItem = static_cast<int>(i);
 
 					LevelViewportOwnerPanel->SelectActorFromWorldOutliner(WorldOutlinerActors[i]);
 				}

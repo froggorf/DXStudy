@@ -18,14 +18,13 @@ UStaticMesh::~UStaticMesh()
 {
 }
 
-const std::shared_ptr<UStaticMesh>& UStaticMesh::GetStaticMesh(const std::string& StaticMeshName)
+std::shared_ptr<UStaticMesh> UStaticMesh::GetStaticMesh(const std::string& StaticMeshName)
 {
 	return std::dynamic_pointer_cast<UStaticMesh>(AssetManager::GetAssetCacheByName(StaticMeshName));
 }
 
 void UStaticMesh::LoadDataFromFileData(const nlohmann::json& StaticMeshAssetData)
 {
-
 	UObject::LoadDataFromFileData(StaticMeshAssetData);
 
 	RenderData = std::make_unique<FStaticMeshRenderData>(StaticMeshAssetData);

@@ -25,7 +25,6 @@ class FEditorClient
 public:
 	FEditorClient(class FScene* SceneData);
 
-public:
 	void AddPanelCommand(const std::shared_ptr<FImguiPanelCommandData>& CommandData);
 
 	void Draw();

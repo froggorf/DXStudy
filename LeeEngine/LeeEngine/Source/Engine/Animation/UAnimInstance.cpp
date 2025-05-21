@@ -90,15 +90,12 @@ void UAnimInstance::Montage_Play(std::shared_ptr<UAnimMontage> MontageToPlay, fl
 	MontageInstances.emplace_back(NewInstance);
 }
 
-void UAnimInstance::LayeredBlendPerBone(const std::vector<XMMATRIX>& BasePose, const std::vector<XMMATRIX>& BlendPose,
-										const std::string&           TargetBoneName, float BlendWeights,
-										std::vector<XMMATRIX>&       OutMatrices)
+void UAnimInstance::LayeredBlendPerBone(const std::vector<XMMATRIX>& BasePose, const std::vector<XMMATRIX>& BlendPose, const std::string& TargetBoneName, float BlendWeights, std::vector<XMMATRIX>& OutMatrices)
 {
 	auto BoneHierarchyMap = UAnimSequence::GetSkeletonBoneHierarchyMap();
 	if (BoneHierarchyMap.contains(GetSkeletalMeshComponent()->GetSkeletalMesh()->GetName()))
 	{
-		std::vector<FPrecomputedBoneData> BoneHierarchy = BoneHierarchyMap[GetSkeletalMeshComponent()->GetSkeletalMesh()
-																									->GetName()];
+		std::vector<FPrecomputedBoneData> BoneHierarchy = BoneHierarchyMap[GetSkeletalMeshComponent()->GetSkeletalMesh()->GetName()];
 
 		// BlendPose의 TargetBone을 BasePose의 TargetBone 좌표계로 바꾸기 위한 행렬 계산
 		XMMATRIX ToBaseAnimTargetBoneMatrix = XMMatrixIdentity();
@@ -106,8 +103,7 @@ void UAnimInstance::LayeredBlendPerBone(const std::vector<XMMATRIX>& BasePose, c
 		{
 			if (BoneHierarchy[i].BoneName == TargetBoneName)
 			{
-				ToBaseAnimTargetBoneMatrix = XMMatrixInverse(nullptr, BlendPose[BoneHierarchy[i].BoneInfo.id]) *
-					BasePose[BoneHierarchy[i].BoneInfo.id];
+				ToBaseAnimTargetBoneMatrix = XMMatrixInverse(nullptr, BlendPose[BoneHierarchy[i].BoneInfo.id]) * BasePose[BoneHierarchy[i].BoneInfo.id];
 				break;
 			}
 		}
@@ -138,8 +134,7 @@ void UAnimInstance::LayeredBlendPerBone(const std::vector<XMMATRIX>& BasePose, c
 			{
 				if (bHasTargetParentBone)
 				{
-					XMMatrixLerp(BasePose[CurrentBoneIndex], BlendPose[CurrentBoneIndex] * ToBaseAnimTargetBoneMatrix,
-								BlendWeights, OutMatrices[CurrentBoneIndex]);
+					XMMatrixLerp(BasePose[CurrentBoneIndex], BlendPose[CurrentBoneIndex] * ToBaseAnimTargetBoneMatrix, BlendWeights, OutMatrices[CurrentBoneIndex]);
 				}
 				else
 				{
@@ -150,8 +145,7 @@ void UAnimInstance::LayeredBlendPerBone(const std::vector<XMMATRIX>& BasePose, c
 	}
 }
 
-void UAnimInstance::PlayMontage(const std::string&             SlotName, std::vector<XMMATRIX>& OriginMatrices,
-								std::vector<FAnimNotifyEvent>& OriginNotifies)
+void UAnimInstance::PlayMontage(const std::string& SlotName, std::vector<XMMATRIX>& OriginMatrices, std::vector<FAnimNotifyEvent>& OriginNotifies)
 {
 	std::vector<XMMATRIX> MontageMatrices(MAX_BONES, XMMatrixIdentity());
 	for (const auto& MontageInstance : MontageInstances)
@@ -165,8 +159,7 @@ void UAnimInstance::PlayMontage(const std::string&             SlotName, std::ve
 			float BlendOutBlendTime = MontageInstance->Montage->BlendOut.GetBlendTime();
 
 			float StartTimeFrame, EndTimeFrame;
-			MontageInstance->Montage->GetSectionStartAndEndTime(MontageInstance->GetPosition(), StartTimeFrame,
-																EndTimeFrame);
+			MontageInstance->Montage->GetSectionStartAndEndTime(static_cast<UINT>(MontageInstance->GetPosition()), StartTimeFrame, EndTimeFrame);
 			float StartTime = StartTimeFrame / 30; // 30FPS
 			float EndTime   = EndTimeFrame / 30;
 
@@ -180,12 +173,11 @@ void UAnimInstance::PlayMontage(const std::string&             SlotName, std::ve
 					XMMatrixLerp(OriginMatrices[i], MontageMatrices[i], CurveValue, OriginMatrices[i]);
 				}
 			}
-			else if (EndTime - BlendOutBlendTime <= MontageInstance->CurrentPlayTime && MontageInstance->CurrentPlayTime
-				< EndTime)
+			else if (EndTime - BlendOutBlendTime <= MontageInstance->CurrentPlayTime && MontageInstance->CurrentPlayTime < EndTime)
 			{
-				const FRichCurve& BlendOutCurve = MontageInstance->Montage->BlendOut.GetCurve()->GetRichCurve();
-				float NormalizedTime = (EndTime - MontageInstance->CurrentPlayTime) / BlendOutBlendTime; // 1~0의 값
-				float CurveValue = BlendOutCurve.Eval(NormalizedTime);
+				const FRichCurve& BlendOutCurve  = MontageInstance->Montage->BlendOut.GetCurve()->GetRichCurve();
+				float             NormalizedTime = (EndTime - MontageInstance->CurrentPlayTime) / BlendOutBlendTime; // 1~0의 값
+				float             CurveValue     = BlendOutCurve.Eval(NormalizedTime);
 				for (int i = 0; i < MAX_BONES; ++i)
 				{
 					XMMatrixLerp(OriginMatrices[i], MontageMatrices[i], CurveValue, OriginMatrices[i]);

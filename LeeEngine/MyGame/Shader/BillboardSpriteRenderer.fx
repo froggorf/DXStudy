@@ -66,10 +66,7 @@ struct GS_OUT
 
 	// 오프셋(로컬)
 	float2 halfScale  = particle.WorldScale.xy * 0.5f;
-	float2 offsets[4] = {
-		float2(-halfScale.x, halfScale.y), float2(halfScale.x, halfScale.y), float2(halfScale.x, -halfScale.y),
-		float2(-halfScale.x, -halfScale.y)
-	};
+	float2 offsets[4] = {float2(-halfScale.x, halfScale.y), float2(halfScale.x, halfScale.y), float2(halfScale.x, -halfScale.y), float2(-halfScale.x, -halfScale.y)};
 
 	// 회전 매트릭스 (예: Z축 회전만)
 	float    angle  = particle.WorldRotation.z * (PI / 180.0f);

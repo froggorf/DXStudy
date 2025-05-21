@@ -47,8 +47,7 @@ void UAnimSequenceBase::LoadDataFromFileData(const nlohmann::json& AssetData)
 			if (NotifyData.contains("NotifyClass"))
 			{
 				std::string NotifyClassName = NotifyData["NotifyClass"];
-				NotifyEvent.Notify          = std::dynamic_pointer_cast<UAnimNotify>(
-					GetDefaultObject(NotifyClassName)->CreateInstance());
+				NotifyEvent.Notify          = std::dynamic_pointer_cast<UAnimNotify>(GetDefaultObject(NotifyClassName)->CreateInstance());
 				NotifyEvent.Notify->LoadDataFromFileData(NotifyData);
 			}
 			NotifyEvent.TriggerTimeOffset = NotifyData["TriggerTime"];

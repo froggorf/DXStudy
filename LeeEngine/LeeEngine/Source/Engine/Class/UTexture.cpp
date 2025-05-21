@@ -3,7 +3,6 @@
 
 #include "Engine/AssetManager/AssetManager.h"
 
-
 void UTexture::Release()
 {
 	if (Texture2D)

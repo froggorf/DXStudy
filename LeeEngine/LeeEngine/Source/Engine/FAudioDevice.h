@@ -28,8 +28,6 @@ class USoundBase : public UObject
 	}
 
 	static std::shared_ptr<USoundBase> GetSoundAsset(const std::string& SoundAssetName);
-
-private:
 };
 
 class FActiveSound

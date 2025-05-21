@@ -9,8 +9,7 @@
 #include "Engine/Mesh/USkeletalMesh.h"
 #include "Engine/RenderCore/EditorScene.h"
 
-FSkeletalMeshSceneProxy::FSkeletalMeshSceneProxy(UINT                                 PrimitiveID, UINT InMeshIndex,
-												const std::shared_ptr<USkeletalMesh>& InSkeletalMesh)
+FSkeletalMeshSceneProxy::FSkeletalMeshSceneProxy(UINT PrimitiveID, UINT InMeshIndex, const std::shared_ptr<USkeletalMesh>& InSkeletalMesh)
 	: FPrimitiveSceneProxy(PrimitiveID)
 {
 	MeshIndex         = InMeshIndex;

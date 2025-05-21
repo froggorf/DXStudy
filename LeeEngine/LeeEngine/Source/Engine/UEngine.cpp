@@ -1,4 +1,4 @@
-// 02.14
+﻿// 02.14
 // 언리얼 엔진 5 코드를 분석하며 자체엔진으로 작성중인 코드입니다.
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
@@ -23,8 +23,13 @@ void UEngine::InitEngine()
 {
 	TCHAR test[100];
 	GetCurrentDirectory(100, test);
+
+	// wstring -> string
 	std::wstring temp = test;
-	CurrentDirectory  = std::string(temp.begin(), temp.end());
+	int size_needed = WideCharToMultiByte(CP_UTF8, 0, temp.c_str(), (int)temp.size(), NULL, 0, NULL, NULL);
+	std::string CurrentDirectory(size_needed, 0);
+	WideCharToMultiByte(CP_UTF8, 0, temp.c_str(), (int)temp.size(), &CurrentDirectory[0], size_needed, NULL, NULL);
+
 	while (true)
 	{
 		auto p = CurrentDirectory.find("\\");
@@ -60,7 +65,6 @@ void UEngine::InitEngine()
 	CurrentWorld->Init();
 
 	//RenderThread = std::thread(&UEngine::Draw,this);
-
 
 #ifndef WITH_EDITOR
 	// 에디터가 아닐경우 바로 게임이 실행되도록 설정
@@ -98,9 +102,8 @@ void UEngine::LoadDataFromDefaultEngineIni()
 
 void UEngine::LoadDefaultMap()
 {
-	std::shared_ptr<ULevel> LoadLevel  = std::make_shared<ULevel>(ULevel::GetLevelInstanceByName(GetDefaultMapName()));
+	auto LoadLevel = std::make_shared<ULevel>(ULevel::GetLevelInstanceByName(GetDefaultMapName()));
 	CurrentWorld->SetPersistentLevel(LoadLevel);
-
 }
 
 const std::string& UEngine::GetDefaultMapName()
@@ -111,7 +114,7 @@ const std::string& UEngine::GetDefaultMapName()
 void UEngine::DELETELATER_TestChangeLevel(const std::string& str)
 {
 	FScene::ClearScene_GameThread();
-	std::shared_ptr<ULevel> TTT  = std::make_shared<ULevel>(ULevel::GetLevelInstanceByName(str));
+	auto TTT = std::make_shared<ULevel>(ULevel::GetLevelInstanceByName(str));
 	CurrentWorld->SetPersistentLevel(TTT);
 }
 
@@ -153,7 +156,7 @@ void UEngine::Tick(float DeltaSeconds)
 	++GameThreadFrameCount;
 
 	FScene::BeginRenderFrame_GameThread(GameThreadFrameCount);
-	
+
 	if (bGameStart)
 	{
 		TimeSeconds += DeltaSeconds;
@@ -245,16 +248,15 @@ void MyCreateWindow(ImGuiViewport* Viewport)
 	std::condition_variable cv;
 	bool                    done = false;
 
-	ENQUEUE_IMGUI_COMMAND(
-		[&]() { ImGui_ImplWin32_CreateWindow(Viewport); { std::lock_guard<std::mutex> lock(mtx); done = true; } cv.
-		notify_one(); });
+	ENQUEUE_IMGUI_COMMAND([&]() { ImGui_ImplWin32_CreateWindow(Viewport); { std::lock_guard<std::mutex> lock(mtx); done = true; } cv. notify_one(); });
 
 	// 메인쓰레드에서 완료될 때까지 대기
 	std::unique_lock<std::mutex> lock(mtx);
-	cv.wait(lock, [&]()
-	{
-		return done;
-	});
+	cv.wait(lock,
+			[&]()
+			{
+				return done;
+			});
 }
 
 void MyShowWindow(ImGuiViewport* Viewport)
@@ -263,16 +265,15 @@ void MyShowWindow(ImGuiViewport* Viewport)
 	std::condition_variable cv;
 	bool                    done = false;
 
-	ENQUEUE_IMGUI_COMMAND(
-		[&]() { ImGui_ImplWin32_ShowWindow(Viewport); { std::lock_guard<std::mutex> lock(mtx); done = true; } cv.
-		notify_one(); });
+	ENQUEUE_IMGUI_COMMAND([&]() { ImGui_ImplWin32_ShowWindow(Viewport); { std::lock_guard<std::mutex> lock(mtx); done = true; } cv. notify_one(); });
 
 	// 메인쓰레드에서 완료될 때까지 대기
 	std::unique_lock<std::mutex> lock(mtx);
-	cv.wait(lock, [&]()
-	{
-		return done;
-	});
+	cv.wait(lock,
+			[&]()
+			{
+				return done;
+			});
 }
 
 LRESULT CALLBACK MyWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)

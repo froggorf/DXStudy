@@ -17,15 +17,7 @@ FEditorScene::FEditorScene()
 
 void FEditorScene::InitSceneData_GameThread()
 {
-	ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData) {
-		SceneData = nullptr;
-		SceneData = std::make_shared<FEditorScene>();
-		FViewMatrices EditorViewMatrices;
-		std::shared_ptr<FImguiLevelViewportCommandData> CommandData = std::make_shared<FImguiLevelViewportCommandData>();
-		CommandData->PanelType    = EImguiPanelType::IPT_LevelViewport;
-		CommandData->CommandType  = ELevelViewportCommandType::LVCT_ChangeLevelInitialize;
-		std::dynamic_pointer_cast<FEditorScene>(SceneData)->GetEditorClient()->AddPanelCommand(CommandData);
-	})
+	ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData) { SceneData = nullptr; SceneData = std::make_shared<FEditorScene>(); FViewMatrices EditorViewMatrices; auto CommandData = std::make_shared<FImguiLevelViewportCommandData>(); CommandData->PanelType = EImguiPanelType::IPT_LevelViewport; CommandData->CommandType = ELevelViewportCommandType::LVCT_ChangeLevelInitialize; std::dynamic_pointer_cast<FEditorScene>(SceneData)->GetEditorClient()->AddPanelCommand(CommandData); })
 }
 
 void FEditorScene::BeginRenderFrame()

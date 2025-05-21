@@ -1,4 +1,4 @@
-// https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
+﻿// https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
 
 #pragma once
 #include <DirectXMath.h>
@@ -59,7 +59,6 @@ private:
 	// 선형 보간 후 Scale Matrix 반환
 	XMMATRIX InterpolateScale(float animationTime) const;
 
-private:
 	std::vector<KeyPosition> m_KeyPositions;
 	std::vector<KeyRotation> m_KeyRotations;
 	std::vector<KeyScale>    m_KeyScales;

@@ -35,8 +35,7 @@ void UPrimitiveComponent::SetScalarParam(UINT MeshIndex, const std::string& Para
 	FScene::SetMaterialScalarParam_GameThread(PrimitiveID, MeshIndex, ParamName, Value);
 }
 
-void UPrimitiveComponent::SetTextureParam(UINT                           MeshIndex, UINT TextureSlot,
-										const std::shared_ptr<UTexture>& Texture) const
+void UPrimitiveComponent::SetTextureParam(UINT MeshIndex, UINT TextureSlot, const std::shared_ptr<UTexture>& Texture) const
 {
 	FScene::SetTextureParam_GameThread(PrimitiveID, MeshIndex, TextureSlot, Texture);
 }
@@ -76,9 +75,8 @@ void UPrimitiveComponent::DrawDetailPanel(UINT ComponentDepth)
 			ImGui::SliderFloat3("CS_SetColor", colors, 0.0f, 1.0f);
 			if (ImGui::Button("ComputeShader_SetColor"))
 			{
-				std::shared_ptr<FSetColorCS> SetColorCS = std::reinterpret_pointer_cast<FSetColorCS>(
-					FShader::GetShader("FSetColorCS"));
-				std::shared_ptr<UTexture> Texture = UTexture::GetTextureCache("TestTexture");
+				std::shared_ptr<FSetColorCS> SetColorCS = std::reinterpret_pointer_cast<FSetColorCS>(FShader::GetShader("FSetColorCS"));
+				std::shared_ptr<UTexture>    Texture    = UTexture::GetTextureCache("TestTexture");
 				SetColorCS->SetTargetTexture(Texture);
 				SetColorCS->SetClearColor(XMFLOAT4{colors[0], colors[1], colors[2], 1.0f});
 				SetColorCS->Execute_Enqueue();

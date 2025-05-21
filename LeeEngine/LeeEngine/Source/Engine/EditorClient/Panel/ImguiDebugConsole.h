@@ -58,7 +58,6 @@ public:
 private:
 	void SearchDebugConsole();
 
-private:
 	// 검색에 사용되는 string
 	static std::string DebugConsoleSearchText;
 

@@ -45,14 +45,12 @@ bool FDirectXDevice::InitDirect3D()
 {
 	// 디바이스, 디바이스 컨텍스트 생성
 	UINT createDeviceFlags = 0;
-#ifdef MYENGINE_BUILD_DEBUG || MYENGINE_BUILD_DEVELOPMENT
+#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
 	D3D_FEATURE_LEVEL featureLevel{};
-	HRESULT hr = D3D11CreateDevice(nullptr /*default*/, m_d3dDriverType, nullptr, createDeviceFlags, nullptr, 0,
-									D3D11_SDK_VERSION, m_d3dDevice.GetAddressOf(), &featureLevel,
-									m_d3dDeviceContext.GetAddressOf());
+	HRESULT           hr = D3D11CreateDevice(nullptr /*default*/, m_d3dDriverType, nullptr, createDeviceFlags, nullptr, 0, D3D11_SDK_VERSION, m_d3dDevice.GetAddressOf(), &featureLevel, m_d3dDeviceContext.GetAddressOf());
 	if (FAILED(hr))
 	{
 		MessageBox(nullptr, L"D3D11CreateDevice Failed.", nullptr, 0);
@@ -211,8 +209,7 @@ void FDirectXDevice::ResizeEditorRenderTarget(float NewX, float NewY)
 	hr = m_d3dDevice->CreateTexture2D(&textureDesc, nullptr, m_EditorRenderTargetTexture.GetAddressOf());
 
 	// 렌더 타겟 뷰 생성
-	hr = m_d3dDevice->CreateRenderTargetView(m_EditorRenderTargetTexture.Get(), nullptr,
-											m_EditorRenderTargetView.GetAddressOf());
+	hr = m_d3dDevice->CreateRenderTargetView(m_EditorRenderTargetTexture.Get(), nullptr, m_EditorRenderTargetView.GetAddressOf());
 
 	// DSV 생성
 	// 뎁스 스텐실 버퍼/뷰 생성
@@ -237,12 +234,10 @@ void FDirectXDevice::ResizeEditorRenderTarget(float NewX, float NewY)
 	hr = m_d3dDevice->CreateTexture2D(&depthStencilDesc, nullptr, m_EditorDepthStencilBuffer.GetAddressOf());
 
 	// 뷰 생성
-	hr = m_d3dDevice->CreateDepthStencilView(m_EditorDepthStencilBuffer.Get(), nullptr,
-											m_EditorDepthStencilView.GetAddressOf());
+	hr = m_d3dDevice->CreateDepthStencilView(m_EditorDepthStencilBuffer.Get(), nullptr, m_EditorDepthStencilView.GetAddressOf());
 
 	// 셰이더 리소스 뷰 생성
-	hr = m_d3dDevice->CreateShaderResourceView(m_EditorRenderTargetTexture.Get(), nullptr,
-												m_SRVEditorRenderTarget.GetAddressOf());
+	hr = m_d3dDevice->CreateShaderResourceView(m_EditorRenderTargetTexture.Get(), nullptr, m_SRVEditorRenderTarget.GetAddressOf());
 }
 #endif
 
@@ -282,14 +277,12 @@ void FDirectXDevice::CreateRasterizerState()
 	// Two Sided
 	RasterizerDesc.CullMode = D3D11_CULL_NONE;
 	RasterizerDesc.FillMode = D3D11_FILL_SOLID;
-	m_d3dDevice->CreateRasterizerState(&RasterizerDesc,
-										m_RSState[static_cast<UINT>(ERasterizerType::RT_TwoSided)].GetAddressOf());
+	m_d3dDevice->CreateRasterizerState(&RasterizerDesc, m_RSState[static_cast<UINT>(ERasterizerType::RT_TwoSided)].GetAddressOf());
 
 	// Wire Frame
 	RasterizerDesc.CullMode = D3D11_CULL_NONE;
 	RasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
-	m_d3dDevice->CreateRasterizerState(&RasterizerDesc,
-										m_RSState[static_cast<UINT>(ERasterizerType::RT_WireFrame)].GetAddressOf());
+	m_d3dDevice->CreateRasterizerState(&RasterizerDesc, m_RSState[static_cast<UINT>(ERasterizerType::RT_WireFrame)].GetAddressOf());
 }
 
 void FDirectXDevice::CreateBlendState()
@@ -309,13 +302,11 @@ void FDirectXDevice::CreateBlendState()
 	BlendDesc.RenderTarget[0].BlendOpAlpha          = D3D11_BLEND_OP_ADD;
 	BlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
-	m_d3dDevice->CreateBlendState(
-		&BlendDesc, m_BSState[static_cast<UINT>(EBlendStateType::BST_AlphaBlend)].GetAddressOf());
+	m_d3dDevice->CreateBlendState(&BlendDesc, m_BSState[static_cast<UINT>(EBlendStateType::BST_AlphaBlend)].GetAddressOf());
 
 	// Alphablend_Coverave
 	BlendDesc.AlphaToCoverageEnable = true;
-	m_d3dDevice->CreateBlendState(
-		&BlendDesc, m_BSState[static_cast<UINT>(EBlendStateType::BST_AlphaBlend_Coverage)].GetAddressOf());
+	m_d3dDevice->CreateBlendState(&BlendDesc, m_BSState[static_cast<UINT>(EBlendStateType::BST_AlphaBlend_Coverage)].GetAddressOf());
 
 	// One One
 	BlendDesc.AlphaToCoverageEnable = true;
@@ -325,8 +316,7 @@ void FDirectXDevice::CreateBlendState()
 	BlendDesc.RenderTarget[0].SrcBlend    = D3D11_BLEND_ONE;
 	BlendDesc.RenderTarget[0].DestBlend   = D3D11_BLEND_ONE;
 
-	m_d3dDevice->
-		CreateBlendState(&BlendDesc, m_BSState[static_cast<UINT>(EBlendStateType::BST_One_One)].GetAddressOf());
+	m_d3dDevice->CreateBlendState(&BlendDesc, m_BSState[static_cast<UINT>(EBlendStateType::BST_One_One)].GetAddressOf());
 
 	SetBSState(EBlendStateType::BST_AlphaBlend);
 }
@@ -343,29 +333,25 @@ void FDirectXDevice::CreateDepthStencilState()
 	Desc.DepthFunc      = D3D11_COMPARISON_LESS_EQUAL;
 	Desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	Desc.StencilEnable  = false;
-	HR(m_d3dDevice->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(EDepthStencilStateType::DST_LESS_EQUAL)].
-		GetAddressOf()));
+	HR(m_d3dDevice->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(EDepthStencilStateType::DST_LESS_EQUAL)]. GetAddressOf()));
 
 	// Greater
 	Desc.DepthEnable    = true;
 	Desc.DepthFunc      = D3D11_COMPARISON_GREATER;
 	Desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	Desc.StencilEnable  = false;
-	HR(m_d3dDevice->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(EDepthStencilStateType::DST_GREATER)].
-		GetAddressOf()));
+	HR(m_d3dDevice->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(EDepthStencilStateType::DST_GREATER)]. GetAddressOf()));
 
 	// NO_WRITE
 	Desc.DepthEnable    = true;
 	Desc.DepthFunc      = D3D11_COMPARISON_LESS;
 	Desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 	Desc.StencilEnable  = false;
-	HR(m_d3dDevice->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(EDepthStencilStateType::DST_NO_WRITE)].
-		GetAddressOf()));
+	HR(m_d3dDevice->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(EDepthStencilStateType::DST_NO_WRITE)]. GetAddressOf()));
 
 	// NO_TEST_NO_WRITE
 	Desc.DepthEnable = false;
-	HR(m_d3dDevice->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(EDepthStencilStateType::
-		DST_NO_TEST_NO_WRITE)].GetAddressOf()));
+	HR(m_d3dDevice->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(EDepthStencilStateType:: DST_NO_TEST_NO_WRITE)].GetAddressOf()));
 }
 
 void FDirectXDevice::InitSamplerState()
@@ -537,47 +523,27 @@ void FDirectXDevice::CreateConstantBuffers()
 
 	// FrameConstantBuffer
 	bufferDesc.ByteWidth = sizeof(FrameConstantBuffer);
-	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ConstantBuffers[static_cast<UINT>(
-		EConstantBufferType::CBT_PerFrame)].GetAddressOf()));
-	m_d3dDeviceContext->VSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_PerFrame), 1,
-											ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_PerFrame)].
-											GetAddressOf());
-	m_d3dDeviceContext->PSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_PerFrame), 1,
-											ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_PerFrame)].
-											GetAddressOf());
-	m_d3dDeviceContext->GSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_PerFrame), 1,
-											ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_PerFrame)].
-											GetAddressOf());
-	m_d3dDeviceContext->CSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_PerFrame), 1,
-											ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_PerFrame)].
-											GetAddressOf());
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ConstantBuffers[static_cast<UINT>( EConstantBufferType::CBT_PerFrame)].GetAddressOf()));
+	m_d3dDeviceContext->VSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_PerFrame), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_PerFrame)].GetAddressOf());
+	m_d3dDeviceContext->PSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_PerFrame), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_PerFrame)].GetAddressOf());
+	m_d3dDeviceContext->GSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_PerFrame), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_PerFrame)].GetAddressOf());
+	m_d3dDeviceContext->CSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_PerFrame), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_PerFrame)].GetAddressOf());
 
 	// ObjectConstantBuffer
 	bufferDesc.ByteWidth = sizeof(ObjConstantBuffer);
-	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ConstantBuffers[static_cast<UINT>(
-		EConstantBufferType::CBT_PerObject)].GetAddressOf()));
-	m_d3dDeviceContext->VSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_PerObject), 1,
-											ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_PerObject)].
-											GetAddressOf());
-	m_d3dDeviceContext->PSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_PerObject), 1,
-											ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_PerObject)].
-											GetAddressOf());
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ConstantBuffers[static_cast<UINT>( EConstantBufferType::CBT_PerObject)].GetAddressOf()));
+	m_d3dDeviceContext->VSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_PerObject), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_PerObject)].GetAddressOf());
+	m_d3dDeviceContext->PSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_PerObject), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_PerObject)].GetAddressOf());
 
 	// LightFrameConstantBuffer
 	bufferDesc.ByteWidth = sizeof(LightFrameConstantBuffer);
-	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ConstantBuffers[static_cast<UINT>(
-		EConstantBufferType::CBT_Light)].GetAddressOf()));
-	m_d3dDeviceContext->PSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_Light), 1,
-											ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_Light)].
-											GetAddressOf());
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ConstantBuffers[static_cast<UINT>( EConstantBufferType::CBT_Light)].GetAddressOf()));
+	m_d3dDeviceContext->PSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_Light), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_Light)].GetAddressOf());
 
 	// SkeletalMeshBoneTransformConstantBuffer
 	bufferDesc.ByteWidth = sizeof(SkeletalMeshBoneTransformConstantBuffer);
-	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ConstantBuffers[static_cast<UINT>(
-		EConstantBufferType::CBT_SkeletalData)].GetAddressOf()));
-	m_d3dDeviceContext->VSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_SkeletalData), 1,
-											ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_SkeletalData)].
-											GetAddressOf());
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ConstantBuffers[static_cast<UINT>( EConstantBufferType::CBT_SkeletalData)].GetAddressOf()));
+	m_d3dDeviceContext->VSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_SkeletalData), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_SkeletalData)].GetAddressOf());
 }
 
 void FDirectXDevice::MapConstantBuffer(EConstantBufferType Type, void* Data, size_t Size) const
@@ -588,8 +554,7 @@ void FDirectXDevice::MapConstantBuffer(EConstantBufferType Type, void* Data, siz
 	}
 
 	D3D11_MAPPED_SUBRESOURCE cbMapSub{};
-	HR(m_d3dDeviceContext->Map(ConstantBuffers[static_cast<UINT>(Type)].Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0,
-		&cbMapSub));
+	HR(m_d3dDeviceContext->Map(ConstantBuffers[static_cast<UINT>(Type)].Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &cbMapSub));
 	memcpy(cbMapSub.pData, Data, Size);
 	m_d3dDeviceContext->Unmap(ConstantBuffers[static_cast<UINT>(Type)].Get(), 0);
 }

@@ -28,7 +28,7 @@ public:
 	virtual void DrawScene() = 0;
 
 #ifdef WITH_EDITOR
-	void            DrawTitleBar();
+	void DrawTitleBar();
 #endif;
 
 	virtual LRESULT MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);

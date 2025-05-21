@@ -22,13 +22,13 @@ void FImguiActorDetail::Draw()
 			{
 				if (ImGui::BeginListBox(" ", ImVec2(-FLT_MIN, 100.0f)))
 				{
-					int ComponentCount = SelectActorSceneComponentNames.size();
-					for (int i = 0; i < ComponentCount; ++i)
+					size_t ComponentCount = SelectActorSceneComponentNames.size();
+					for (size_t i = 0; i < ComponentCount; ++i)
 					{
 						const bool is_selected = (CurrentSelectedComponentIndex == i);
 						if (ImGui::Selectable(SelectActorSceneComponentNames[i].data(), is_selected))
 						{
-							CurrentSelectedComponentIndex = i;
+							CurrentSelectedComponentIndex = static_cast<int>(i);
 						}
 
 						if (is_selected)
@@ -37,13 +37,13 @@ void FImguiActorDetail::Draw()
 						}
 					}
 
-					int ActorComponentCount = SelectActorActorComponentNames.size();
-					for (int index = 0; index < ActorComponentCount; ++index)
+					size_t ActorComponentCount = SelectActorActorComponentNames.size();
+					for (size_t index = 0; index < ActorComponentCount; ++index)
 					{
 						const bool is_selected = (CurrentSelectedComponentIndex == index + ComponentCount);
 						if (ImGui::Selectable(SelectActorActorComponentNames[index].data(), is_selected))
 						{
-							CurrentSelectedComponentIndex = index + ComponentCount;
+							CurrentSelectedComponentIndex = static_cast<int>(index + ComponentCount);
 						}
 						if (is_selected)
 						{
@@ -94,8 +94,7 @@ void FImguiActorDetail::SelectActorFromWorldOutliner(const std::shared_ptr<AActo
 	FindComponentsAndNamesFromActor(CurrentSelectedActor->GetRootComponent(), 0);
 }
 
-void FImguiActorDetail::FindComponentsAndNamesFromActor(const std::shared_ptr<USceneComponent>& TargetComponent,
-														int                                     CurrentHierarchyDepth)
+void FImguiActorDetail::FindComponentsAndNamesFromActor(const std::shared_ptr<USceneComponent>& TargetComponent, int CurrentHierarchyDepth)
 {
 	if (!CurrentSelectedActor)
 	{

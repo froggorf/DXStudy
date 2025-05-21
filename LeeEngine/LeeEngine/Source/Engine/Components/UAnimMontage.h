@@ -56,7 +56,6 @@ class UAnimMontage : public UAnimCompositeBase
 	int  GetSectionIndexFromPosition(float InPosition);
 	int  GetSectionIndex(const std::string& InSectionName) const;
 
-public:
 	// 언리얼엔진은 FSlotAnimationTrack으로 여러 슬롯으로 관리할 수 있도록 하지만,
 	// LeeEngine에서는 하나의 몽타쥬당 하나의 섹션만 관리하도록 진행할 예정
 	std::string SlotName;

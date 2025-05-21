@@ -49,8 +49,7 @@ float FRichCurve::Eval(float InTime) const
 					return std::lerp(Keys[i].Value, Keys[i + 1].Value, t);
 					break;
 				case ECurveMode::ECM_Hermite:
-					return HermiteCurve(t, Keys[i].Value, Keys[i + 1].Value, Keys[i].LeaveTangent,
-										Keys[i].ArriveTangent);
+					return HermiteCurve(t, Keys[i].Value, Keys[i + 1].Value, Keys[i].LeaveTangent, Keys[i].ArriveTangent);
 					break;
 				default: assert(0);
 					break;
@@ -66,8 +65,8 @@ float FRichCurve::Eval(float InTime) const
 #ifdef WITH_EDITOR
 void FRichCurve::DrawLinearCurve(ImDrawList* DrawList, ImVec2 CanvasPos, ImVec2 CanvasSize) const
 {
-	UINT KeySize = Keys.size();
-	if (Keys.size() == 0)
+	UINT KeySize = static_cast<UINT>(Keys.size());
+	if (KeySize == 0)
 	{
 		//early return
 		return;
@@ -114,7 +113,7 @@ void FRichCurve::DrawCurve(ImDrawList* DrawList, ImVec2 CanvasPos, ImVec2 Canvas
 
 void FRichCurve::DrawHermiteCurve(ImDrawList* DrawList, ImVec2 CanvasPos, ImVec2 CanvasSize) const
 {
-	UINT KeySize = Keys.size();
+	UINT KeySize = static_cast<UINT>(Keys.size());
 	//const auto& Keys = Keys;
 	if (Keys.size() == 0)
 	{
@@ -140,19 +139,13 @@ void FRichCurve::DrawHermiteCurve(ImDrawList* DrawList, ImVec2 CanvasPos, ImVec2
 		{
 			float NewTimeNormalized = static_cast<float>(SegmentIndex) / SegmentCount;
 
-			float NewValue = HermiteCurve(NewTimeNormalized, Keys[KeyIndex].Value, Keys[KeyIndex + 1].Value,
-										Keys[KeyIndex].LeaveTangent, Keys[KeyIndex + 1].ArriveTangent);
-			ImVec2 CurrentKey = {
-				NewTimeNormalized * (Keys[KeyIndex + 1].Time - Keys[KeyIndex].Time) + Keys[KeyIndex].Time, NewValue
-			};
+			float  NewValue   = HermiteCurve(NewTimeNormalized, Keys[KeyIndex].Value, Keys[KeyIndex + 1].Value, Keys[KeyIndex].LeaveTangent, Keys[KeyIndex + 1].ArriveTangent);
+			ImVec2 CurrentKey = {NewTimeNormalized * (Keys[KeyIndex + 1].Time - Keys[KeyIndex].Time) + Keys[KeyIndex].Time, NewValue};
 			// 윈도우 좌표계는 좌상단이 기준점이므로 1 - 
 			CurrentKey.y = 1 - CurrentKey.y;
 
-			ImVec2 CanvasKeyPos = {
-				CanvasPos.x + CurrentKey.x * CanvasSize.x, CanvasPos.y + CurrentKey.y * CanvasSize.y
-			};
-			DrawList->AddLine(PreviousPoint, ImVec2{CanvasKeyPos.x, CanvasKeyPos.y},
-							IM_COL32(100*KeyIndex, 250, 0, 255), 2.0f);
+			ImVec2 CanvasKeyPos = {CanvasPos.x + CurrentKey.x * CanvasSize.x, CanvasPos.y + CurrentKey.y * CanvasSize.y};
+			DrawList->AddLine(PreviousPoint, ImVec2{CanvasKeyPos.x, CanvasKeyPos.y}, IM_COL32(100*KeyIndex, 250, 0, 255), 2.0f);
 			PreviousPoint = CanvasKeyPos;
 		}
 
@@ -214,4 +207,3 @@ void UCurveFloat::LoadDataFromFileData(const nlohmann::json& AssetData)
 	}
 	FloatCurve.CurveMode = CurveMode;
 }
-

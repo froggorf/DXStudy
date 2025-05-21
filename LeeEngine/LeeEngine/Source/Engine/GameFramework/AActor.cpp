@@ -152,15 +152,13 @@ void AActor::LoadDataFromFileData(const nlohmann::json& AssetData)
 	SetActorScale3D(XMFLOAT3(ScaleData[X], ScaleData[Y], ScaleData[Z]));
 }
 
-UActorComponent* AActor::CreateDefaultSubobject(const std::string& SubobjectName,
-												const std::string& ClassToCreateByDefault)
+UActorComponent* AActor::CreateDefaultSubobject(const std::string& SubobjectName, const std::string& ClassToCreateByDefault)
 {
 	// nullptr를 반환하기 위하여 Raw Pointer 전달
 	const UObject* DefaultObject = GetDefaultObject(ClassToCreateByDefault);
 	if (DefaultObject)
 	{
-		std::shared_ptr<UActorComponent> NewComponent = std::dynamic_pointer_cast<UActorComponent>(
-			DefaultObject->CreateInstance());
+		std::shared_ptr<UActorComponent> NewComponent = std::dynamic_pointer_cast<UActorComponent>(DefaultObject->CreateInstance());
 		if (NewComponent)
 		{
 			NewComponent->Rename(SubobjectName);
@@ -173,7 +171,7 @@ UActorComponent* AActor::CreateDefaultSubobject(const std::string& SubobjectName
 	return nullptr;
 }
 
-const std::shared_ptr<UActorComponent>& AActor::FindComponentByClass(const std::string& Class) const
+std::shared_ptr<UActorComponent> AActor::FindComponentByClass(const std::string& Class) const
 {
 	for (const auto& Component : OwnedComponents)
 	{
@@ -182,6 +180,5 @@ const std::shared_ptr<UActorComponent>& AActor::FindComponentByClass(const std::
 			return Component;
 		}
 	}
-
 	return nullptr;
 }

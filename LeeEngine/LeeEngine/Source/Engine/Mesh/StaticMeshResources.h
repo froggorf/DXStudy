@@ -24,15 +24,14 @@ public:
 		}
 		Materials.clear();
 
-		AssetManager::LoadModelData(StaticMeshFilePathData["ModelData"], GDirectXDevice->GetDevice(), VertexBuffer,
-									IndexBuffer);
-		MeshCount = VertexBuffer.size();
+		AssetManager::LoadModelData(StaticMeshFilePathData["ModelData"], GDirectXDevice->GetDevice(), VertexBuffer, IndexBuffer);
+		MeshCount = static_cast<UINT>(VertexBuffer.size());
 
 		// 머테리얼
 		{
 			auto MaterialData      = StaticMeshFilePathData["Material"];
-			int  MaterialArraySize = MaterialData.size();
-			for (int count = 0; count < MeshCount; ++count)
+			UINT MaterialArraySize = static_cast<UINT>(MaterialData.size());
+			for (UINT count = 0; count < MeshCount; ++count)
 			{
 				if (MaterialArraySize <= count)
 				{
@@ -56,7 +55,7 @@ public:
 				return;
 			}
 
-			int currentTextureCount = Materials.size();
+			UINT currentTextureCount = static_cast<UINT>(Materials.size());
 			for (; currentTextureCount < MeshCount; ++currentTextureCount)
 			{
 				Materials.push_back(Materials[0]);
@@ -64,7 +63,6 @@ public:
 		}
 	}
 
-public:
 	unsigned int MeshCount;
 
 	// Buffer[MeshCount]

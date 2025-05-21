@@ -124,8 +124,7 @@ class UMaterialInterface : public UObject
 	MY_GENERATE_BODY(UMaterialInterface)
 
 	UMaterialInterface()
-		: BlendMode(EBlendMode::BM_Opaque), RasterizerType(ERasterizerType::RT_CullBack),
-		BlendStateType(EBlendStateType::BST_Default)
+		: BlendMode(EBlendMode::BM_Opaque), RasterizerType(ERasterizerType::RT_CullBack), BlendStateType(EBlendStateType::BST_Default)
 	{
 	};
 	~UMaterialInterface() override = default;
@@ -181,8 +180,6 @@ class UMaterialInterface : public UObject
 	{
 	};
 
-
-public:
 	EBlendMode      BlendMode;
 	ERasterizerType RasterizerType;
 	EBlendStateType BlendStateType;
@@ -229,7 +226,7 @@ protected:
 
 	UINT MaterialID = -1;
 
-	static UINT MaterialIDCount; 
+	static UINT MaterialIDCount;
 };
 
 class UMaterialInstance : public UMaterialInterface
@@ -346,8 +343,7 @@ public:
 class FComputeShader : public FShader, public std::enable_shared_from_this<FComputeShader>
 {
 public:
-	FComputeShader(const std::string& FilePath, const std::string& FuncName, UINT ThreadPerGroupX, UINT ThreadPerGroupY,
-					UINT              ThreadPerGroupZ);
+	FComputeShader(const std::string& FilePath, const std::string& FuncName, UINT ThreadPerGroupX, UINT ThreadPerGroupY, UINT ThreadPerGroupZ);
 	~FComputeShader() override = default;
 
 	Microsoft::WRL::ComPtr<ID3D11ComputeShader> GetComputeShader() const
@@ -457,7 +453,7 @@ public:
 	~FGeometryShader() override
 	{
 	};
-	Microsoft::WRL::ComPtr<ID3DBlob> GSBlob;
+	Microsoft::WRL::ComPtr<ID3DBlob>             GSBlob;
 	Microsoft::WRL::ComPtr<ID3D11GeometryShader> GeometryShader;
-	void CompileGeometryShader(const std::string& FilePath, const std::string& FuncName);
+	void                                         CompileGeometryShader(const std::string& FilePath, const std::string& FuncName);
 };

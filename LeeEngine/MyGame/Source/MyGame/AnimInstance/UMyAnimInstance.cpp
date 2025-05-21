@@ -14,8 +14,7 @@ UMyAnimInstance::UMyAnimInstance()
 	{
 		BS_MyUEFN_Locomotion = BlendSpace;
 	}
-	if (const std::shared_ptr<UAimOffsetBlendSpace> AimOffset = UAimOffsetBlendSpace::GetAnimationAsset(
-		"AO_MyUEFN_Stand"))
+	if (const std::shared_ptr<UAimOffsetBlendSpace> AimOffset = UAimOffsetBlendSpace::GetAnimationAsset("AO_MyUEFN_Stand"))
 	{
 		AO_MyUEFN_Stand = AimOffset;
 	}
@@ -47,8 +46,7 @@ void UMyAnimInstance::NativeInitializeAnimation()
 	{
 		if (auto TestActor = dynamic_cast<ATestActor2*>(OwnerActor))
 		{
-			if (const std::shared_ptr<UTestComponent>& OwnerTestComp = std::dynamic_pointer_cast<UTestComponent>(
-				TestActor->FindComponentByClass("UTestComponent")))
+			if (const std::shared_ptr<UTestComponent>& OwnerTestComp = std::dynamic_pointer_cast<UTestComponent>(TestActor->FindComponentByClass("UTestComponent")))
 			{
 				TestComp = OwnerTestComp;
 			}
@@ -78,8 +76,7 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 		// BlendSpace_Locomotion
 		std::vector<XMMATRIX> BS_IdleWalkRunMatrices(MAX_BONES, XMMatrixIdentity());
 
-		BS_MyUEFN_Locomotion->GetAnimationBoneMatrices(XMFLOAT2{0.0f, TestComp->TestSpeed}, CurrentTime,
-														BS_IdleWalkRunMatrices, FinalNotifies);
+		BS_MyUEFN_Locomotion->GetAnimationBoneMatrices(XMFLOAT2{0.0f, TestComp->TestSpeed}, CurrentTime, BS_IdleWalkRunMatrices, FinalNotifies);
 
 		// 애니메이션 시퀀스 계산
 		std::vector<XMMATRIX> AS_Matrices(MAX_BONES, XMMatrixIdentity());

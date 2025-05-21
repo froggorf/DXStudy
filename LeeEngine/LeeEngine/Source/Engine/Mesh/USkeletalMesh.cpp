@@ -16,15 +16,14 @@ FSkeletalMeshRenderData::FSkeletalMeshRenderData(const nlohmann::json& SkeletalM
 	}
 	MaterialInterfaces.clear();
 
-	AssetManager::LoadSkeletalModelData(SkeletalMeshFilePathData["ModelData"], GDirectXDevice->GetDevice(),
-										VertexBuffer, IndexBuffer, ModelBoneInfoMap);
-	MeshCount = VertexBuffer.size();
+	AssetManager::LoadSkeletalModelData(SkeletalMeshFilePathData["ModelData"], GDirectXDevice->GetDevice(), VertexBuffer, IndexBuffer, ModelBoneInfoMap);
+	MeshCount = static_cast<UINT>(VertexBuffer.size());
 
 	// 머테리얼
 	{
-		auto MaterialData      = SkeletalMeshFilePathData["Material"];
-		int  MaterialArraySize = MaterialData.size();
-		for (int count = 0; count < MeshCount; ++count)
+		auto   MaterialData      = SkeletalMeshFilePathData["Material"];
+		size_t MaterialArraySize = MaterialData.size();
+		for (UINT count = 0; count < MeshCount; ++count)
 		{
 			if (MaterialArraySize <= count)
 			{
@@ -44,7 +43,7 @@ FSkeletalMeshRenderData::FSkeletalMeshRenderData(const nlohmann::json& SkeletalM
 			return;
 		}
 
-		int currentTextureCount = MaterialInterfaces.size();
+		UINT currentTextureCount = static_cast<UINT>(MaterialInterfaces.size());
 		for (; currentTextureCount < MeshCount; ++currentTextureCount)
 		{
 			MaterialInterfaces.push_back(MaterialInterfaces[0]);
@@ -65,7 +64,7 @@ enum class EStaticMeshAssetData
 	ESMAD_Name = 0, ESMAD_ModelDataFilePath, ESMAD_TextureDataFilePath
 };
 
-const std::shared_ptr<USkeletalMesh>& USkeletalMesh::GetSkeletalMesh(const std::string& SkeletalMeshName)
+std::shared_ptr<USkeletalMesh> USkeletalMesh::GetSkeletalMesh(const std::string& SkeletalMeshName)
 {
 	return std::dynamic_pointer_cast<USkeletalMesh>(AssetManager::GetAssetCacheByName(SkeletalMeshName));
 }
@@ -75,7 +74,6 @@ void USkeletalMesh::LoadDataFromFileData(const nlohmann::json& SkeletalMeshAsset
 	UObject::LoadDataFromFileData(SkeletalMeshAssetData);
 
 	RenderData = std::make_shared<FSkeletalMeshRenderData>(SkeletalMeshAssetData);
-
 
 	MY_LOG("Load", EDebugLogLevel::DLL_Warning, "Load USkeletalMesh - "+GetName() + " Complete!");
 }

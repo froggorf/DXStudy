@@ -253,7 +253,6 @@ public:
 
 	virtual void LoadDataFromFile(const nlohmann::basic_json<>& Data);
 
-public:
 	// 파티클을 렌더링 하기 위한 데이터가 들은 변수
 	// 머테리얼, 메쉬 등
 	std::shared_ptr<FNiagaraRendererProperty> RenderProperty;
@@ -302,7 +301,7 @@ public:
 	void Tick(float DeltaSeconds, const FTransform& SceneTransform) override;
 	void Render() const override;
 
-	void SetRibbonWidth(int InRibbonWidth)
+	void SetRibbonWidth(float InRibbonWidth)
 	{
 		RibbonWidth = InRibbonWidth;
 	}
@@ -321,7 +320,7 @@ public:
 
 protected:
 	void     MapPointDataToVertexBuffer();
-	int      RibbonWidth  = 5.0f;
+	float    RibbonWidth  = 5.0f;
 	bool     bIsBillboard = false;
 	XMFLOAT4 RibbonColor{1, 1, 1, 1};
 

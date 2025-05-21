@@ -53,8 +53,7 @@
 //--------------------------------------------------------------------------------------
 // 셰이더 로드 함수
 //--------------------------------------------------------------------------------------
-inline HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel,
-									ID3DBlob**    ppBlobOut)
+inline HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut)
 {
 	HRESULT hr = S_OK;
 
@@ -72,8 +71,7 @@ inline HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoin
 #endif
 
 	ID3DBlob* pErrorBlob = nullptr;
-	hr = D3DCompileFromFile(szFileName, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, szEntryPoint, szShaderModel,
-							dwShaderFlags, 0, ppBlobOut, &pErrorBlob);
+	hr                   = D3DCompileFromFile(szFileName, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, szEntryPoint, szShaderModel, dwShaderFlags, 0, ppBlobOut, &pErrorBlob);
 	if (FAILED(hr))
 	{
 		if (pErrorBlob)
@@ -93,7 +91,7 @@ inline HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoin
 
 // ======================== Mesh Data ========================
 constexpr int MAX_BONE_INFLUENCE = 4;
-constexpr int MAX_BONES = 100;
+constexpr int MAX_BONES          = 100;
 
 __declspec(align(16)) struct MyVertexData
 {

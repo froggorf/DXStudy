@@ -556,8 +556,7 @@ void AnimationApp::BuildShader()
 	bufferDesc.CPUAccessFlags    = 0;
 
 	bufferDesc.ByteWidth = sizeof(ShadowLightMatrixConstantBuffer);
-	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_ShadowLightMatrixConstantBuffer.GetAddressOf()
-	));
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_ShadowLightMatrixConstantBuffer.GetAddressOf() ));
 
 	bufferDesc.ByteWidth = sizeof(ShadowObjConstantBuffer);
 	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_ShadowObjConstantBuffer.GetAddressOf()));

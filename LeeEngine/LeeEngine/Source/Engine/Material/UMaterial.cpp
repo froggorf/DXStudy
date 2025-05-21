@@ -5,8 +5,8 @@
 #include "Engine/SceneProxy/FNiagaraSceneProxy.h"
 
 using namespace Microsoft::WRL;
-UINT UMaterial::MaterialIDCount = 0;
-std::unordered_map<std::string, std::shared_ptr<FShader>>            FShader::ShaderCache;
+UINT                                                      UMaterial::MaterialIDCount = 0;
+std::unordered_map<std::string, std::shared_ptr<FShader>> FShader::ShaderCache;
 
 void FShader::SetShaderID(UINT NewID)
 {
@@ -19,21 +19,13 @@ void FVertexShader::CompileVertexShader(const std::string& FilePath, const std::
 	auto         TempShaderPath    = std::wstring(TempDirectoryPath.begin(), TempDirectoryPath.end());
 	std::wstring ShaderFilePath    = TempShaderPath + std::wstring{FilePath.begin(), FilePath.end()};
 	HR(CompileShaderFromFile(ShaderFilePath.c_str(), FuncName.c_str(), "vs_4_0", VSBlob.GetAddressOf()));
-	HR(GDirectXDevice->GetDevice()->CreateVertexShader(VSBlob->GetBufferPointer(), VSBlob->GetBufferSize(), nullptr,
-		VertexShader.GetAddressOf()));
+	HR(GDirectXDevice->GetDevice()->CreateVertexShader(VSBlob->GetBufferPointer(), VSBlob->GetBufferSize(), nullptr, VertexShader.GetAddressOf()));
 
 	// Input Layout
 
-	D3D11_INPUT_ELEMENT_DESC inputLayout[] = {
-		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"BONEIDS", 0, DXGI_FORMAT_R32G32B32A32_SINT, 0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"BONEWEIGHTS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 48, D3D11_INPUT_PER_VERTEX_DATA, 0},
-	};
-	UINT numElements = ARRAYSIZE(inputLayout);
-	HR(GDirectXDevice->GetDevice()->CreateInputLayout(inputLayout, numElements, VSBlob->GetBufferPointer(), VSBlob->
-		GetBufferSize(), InputLayout.GetAddressOf()));
+	D3D11_INPUT_ELEMENT_DESC inputLayout[] = {{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}, {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}, {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0}, {"BONEIDS", 0, DXGI_FORMAT_R32G32B32A32_SINT, 0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0}, {"BONEWEIGHTS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 48, D3D11_INPUT_PER_VERTEX_DATA, 0},};
+	UINT                     numElements   = ARRAYSIZE(inputLayout);
+	HR(GDirectXDevice->GetDevice()->CreateInputLayout(inputLayout, numElements, VSBlob->GetBufferPointer(), VSBlob-> GetBufferSize(), InputLayout.GetAddressOf()));
 }
 
 void FPixelShader::CompilePixelShader(const std::string& FilePath, const std::string& FuncName)
@@ -44,8 +36,7 @@ void FPixelShader::CompilePixelShader(const std::string& FilePath, const std::st
 
 	HR(CompileShaderFromFile(ShaderFilePath.c_str(), FuncName.c_str(), "ps_4_0", PSBlob.GetAddressOf()));
 
-	HR(GDirectXDevice->GetDevice()->CreatePixelShader(PSBlob->GetBufferPointer(), PSBlob->GetBufferSize(), nullptr,
-		PixelShader.GetAddressOf()));
+	HR(GDirectXDevice->GetDevice()->CreatePixelShader(PSBlob->GetBufferPointer(), PSBlob->GetBufferSize(), nullptr, PixelShader.GetAddressOf()));
 }
 
 std::shared_ptr<UMaterialInterface> UMaterialInterface::GetMaterialCache(const std::string& MaterialName)
@@ -73,10 +64,8 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 			auto NewVS = std::make_shared<FVertexShader>();
 			NewVS->CompileVertexShader(VSName, FuncName);
 
-			VSTarget = FShader::ShaderCache.insert(std::pair<std::string, std::shared_ptr<FShader>>{
-				VSName + FuncName, NewVS
-			}).first;
-			VSTarget->second->SetShaderID(FShader::ShaderCache.size());
+			VSTarget = FShader::ShaderCache.insert(std::pair<std::string, std::shared_ptr<FShader>>{VSName + FuncName, NewVS}).first;
+			VSTarget->second->SetShaderID(static_cast<UINT>(FShader::ShaderCache.size()));
 		}
 		VertexShader = std::dynamic_pointer_cast<FVertexShader>(VSTarget->second);
 	}
@@ -91,10 +80,8 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 		{
 			auto NewPS = std::make_shared<FPixelShader>();
 			NewPS->CompilePixelShader(PSName, FuncName);
-			PSTarget = FShader::ShaderCache.insert(std::pair<std::string, std::shared_ptr<FShader>>{
-				PSName + FuncName, NewPS
-			}).first;
-			PSTarget->second->SetShaderID(FShader::ShaderCache.size());
+			PSTarget = FShader::ShaderCache.insert(std::pair<std::string, std::shared_ptr<FShader>>{PSName + FuncName, NewPS}).first;
+			PSTarget->second->SetShaderID(static_cast<UINT>(FShader::ShaderCache.size()));
 		}
 		PixelShader = std::dynamic_pointer_cast<FPixelShader>(PSTarget->second);
 	}
@@ -111,10 +98,8 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 			{
 				auto NewGS = std::make_shared<FGeometryShader>();
 				NewGS->CompileGeometryShader(GSName, FuncName);
-				GSTarget = FShader::ShaderCache.insert(std::pair<std::string, std::shared_ptr<FShader>>{
-					GSName + FuncName, NewGS
-				}).first;
-				GSTarget->second->SetShaderID(FShader::ShaderCache.size());
+				GSTarget = FShader::ShaderCache.insert(std::pair<std::string, std::shared_ptr<FShader>>{GSName + FuncName, NewGS}).first;
+				GSTarget->second->SetShaderID(static_cast<UINT>(FShader::ShaderCache.size()));
 			}
 			GeometryShader = std::dynamic_pointer_cast<FGeometryShader>(GSTarget->second);
 		}
@@ -225,7 +210,7 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 			TextureParams.emplace_back(UTexture::GetTextureCache(TextureName));
 		}
 	}
-	MaterialID               = MaterialIDCount++;
+	MaterialID = MaterialIDCount++;
 }
 
 void UMaterial::Binding()
@@ -243,7 +228,7 @@ void UMaterial::Binding()
 	}
 	for (int i = 0; i < TextureParams.size(); ++i)
 	{
-		DeviceContext->PSSetShaderResources(Textures.size() + i, 1, TextureParams[i]->GetSRV().GetAddressOf());
+		DeviceContext->PSSetShaderResources(static_cast<UINT>(Textures.size() + i), 1, TextureParams[i]->GetSRV().GetAddressOf());
 	}
 
 	MapAndBindParameterConstantBuffer();
@@ -258,8 +243,7 @@ void UMaterial::MapAndBindParameterConstantBuffer() const
 	}
 
 	D3D11_MAPPED_SUBRESOURCE cbMapSub{};
-	HR(GDirectXDevice->GetDeviceContext()->Map(ParamConstantBuffer.Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &
-		cbMapSub));
+	HR(GDirectXDevice->GetDeviceContext()->Map(ParamConstantBuffer.Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, & cbMapSub));
 
 	for (const auto& FloatParam : DefaultParams.FloatParams)
 	{
@@ -272,8 +256,7 @@ void UMaterial::MapAndBindParameterConstantBuffer() const
 
 	GDirectXDevice->GetDeviceContext()->Unmap(ParamConstantBuffer.Get(), 0);
 
-	GDirectXDevice->GetDeviceContext()->PSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_UserParam), 1,
-															ParamConstantBuffer.GetAddressOf());
+	GDirectXDevice->GetDeviceContext()->PSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_UserParam), 1, ParamConstantBuffer.GetAddressOf());
 }
 
 void UMaterialInstance::LoadDataFromFileData(const nlohmann::json& AssetData)
@@ -314,7 +297,6 @@ void UMaterialInstance::LoadDataFromFileData(const nlohmann::json& AssetData)
 			}
 		}
 	}
-
 }
 
 void UMaterialInstance::Binding()
@@ -373,8 +355,7 @@ void UMaterialInstance::BindingMaterialInstanceUserParam() const
 	D3D11_MAPPED_SUBRESOURCE cbMapSub{};
 	if (ParentMaterial->ParamConstantBuffer)
 	{
-		HR(GDirectXDevice->GetDeviceContext()->Map(ParentMaterial->ParamConstantBuffer.Get(), 0, D3D11_MAP::
-			D3D11_MAP_WRITE_DISCARD, 0, &cbMapSub));
+		HR(GDirectXDevice->GetDeviceContext()->Map(ParentMaterial->ParamConstantBuffer.Get(), 0, D3D11_MAP:: D3D11_MAP_WRITE_DISCARD, 0, &cbMapSub));
 
 		for (const auto& FloatParam : ParentMaterial->DefaultParams.FloatParams)
 		{
@@ -386,8 +367,7 @@ void UMaterialInstance::BindingMaterialInstanceUserParam() const
 			// Override 되었음
 			if (OverrideParam != OverrideParams.FloatParams.end())
 			{
-				memcpy(static_cast<char*>(cbMapSub.pData) + FloatParam.Offset, (&OverrideParam->Value),
-						FloatParam.Size);
+				memcpy(static_cast<char*>(cbMapSub.pData) + FloatParam.Offset, (&OverrideParam->Value), FloatParam.Size);
 			}
 			// Override 안됨
 			else
@@ -423,19 +403,16 @@ void UMaterialInstance::BindingMaterialInstanceUserParam() const
 	{
 		if (OverrideTextures.size() > i && OverrideTextures[i])
 		{
-			DeviceContext->PSSetShaderResources(ParentMaterial->Textures.size() + i, 1,
-												OverrideTextures[i]->GetSRV().GetAddressOf());
+			DeviceContext->PSSetShaderResources(static_cast<UINT>(ParentMaterial->Textures.size() + i), 1, OverrideTextures[i]->GetSRV().GetAddressOf());
 		}
 		else
 		{
-			DeviceContext->PSSetShaderResources(ParentMaterial->Textures.size() + i, 1,
-												ParentMaterial->TextureParams[i]->GetSRV().GetAddressOf());
+			DeviceContext->PSSetShaderResources(static_cast<UINT>(ParentMaterial->Textures.size() + i), 1, ParentMaterial->TextureParams[i]->GetSRV().GetAddressOf());
 		}
 	}
 }
 
-FComputeShader::FComputeShader(const std::string& FilePath, const std::string& FuncName, UINT ThreadPerGroupX,
-								UINT              ThreadPerGroupY, UINT        ThreadPerGroupZ)
+FComputeShader::FComputeShader(const std::string& FilePath, const std::string& FuncName, UINT ThreadPerGroupX, UINT ThreadPerGroupY, UINT ThreadPerGroupZ)
 	: ThreadPerGroupX(ThreadPerGroupX), ThreadPerGroupY(ThreadPerGroupY), ThreadPerGroupZ(ThreadPerGroupZ)
 {
 	CreateComputeShader(FilePath, FuncName);
@@ -490,8 +467,7 @@ void FComputeShader::CreateComputeShader(const std::string& FilePath, const std:
 #endif
 
 	ComPtr<ID3DBlob> ErrorBlob;
-	if (FAILED(D3DCompileFromFile(ShaderFilePath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE
-		, FuncName.c_str(), "cs_5_0", Flag, 0 , CSBlob.GetAddressOf(), ErrorBlob.GetAddressOf())))
+	if (FAILED(D3DCompileFromFile(ShaderFilePath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE , FuncName.c_str(), "cs_5_0", Flag, 0 , CSBlob.GetAddressOf(), ErrorBlob.GetAddressOf())))
 	{
 		if (3 == GetLastError())
 		{
@@ -506,8 +482,7 @@ void FComputeShader::CreateComputeShader(const std::string& FilePath, const std:
 	}
 
 	// 컴파일한 코드로 쉐이더 객체 생성하기
-	GDirectXDevice->GetDevice()->CreateComputeShader(CSBlob->GetBufferPointer(), CSBlob->GetBufferSize(), nullptr,
-													ComputeShader.GetAddressOf());
+	GDirectXDevice->GetDevice()->CreateComputeShader(CSBlob->GetBufferPointer(), CSBlob->GetBufferSize(), nullptr, ComputeShader.GetAddressOf());
 }
 
 FSetColorCS::FSetColorCS()
@@ -564,8 +539,7 @@ void FSetColorCS::ClearBinding()
 void FSetColorCS::MapAndBindConstantBuffer()
 {
 	D3D11_MAPPED_SUBRESOURCE cbMapSub{};
-	HR(GDirectXDevice->GetDeviceContext()->Map(ConstantBuffer.Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &cbMapSub
-	));
+	HR(GDirectXDevice->GetDeviceContext()->Map(ConstantBuffer.Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &cbMapSub ));
 
 	int Width  = TargetTexture->GetWidth();
 	int Height = TargetTexture->GetHeight();
@@ -576,8 +550,7 @@ void FSetColorCS::MapAndBindConstantBuffer()
 
 	GDirectXDevice->GetDeviceContext()->Unmap(ConstantBuffer.Get(), 0);
 
-	GDirectXDevice->GetDeviceContext()->CSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_ComputeShader),
-															1, ConstantBuffer.GetAddressOf());
+	GDirectXDevice->GetDeviceContext()->CSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_ComputeShader), 1, ConstantBuffer.GetAddressOf());
 }
 
 FTickParticleCS::FTickParticleCS()
@@ -648,8 +621,7 @@ void FGeometryShader::CompileGeometryShader(const std::string& FilePath, const s
 
 	HR(CompileShaderFromFile(ShaderFilePath.c_str(), FuncName.c_str(), "gs_4_0", GSBlob.GetAddressOf()));
 
-	HR(GDirectXDevice->GetDevice()->CreateGeometryShader(GSBlob->GetBufferPointer(), GSBlob->GetBufferSize(), nullptr,
-		GeometryShader.GetAddressOf()));
+	HR(GDirectXDevice->GetDevice()->CreateGeometryShader(GSBlob->GetBufferPointer(), GSBlob->GetBufferSize(), nullptr, GeometryShader.GetAddressOf()));
 }
 
 int FStructuredBuffer::Create(UINT _ElementSize, UINT _ElementCount, SB_TYPE _Type, bool _SysMemMove, void* _SysMem)
@@ -739,8 +711,7 @@ int FStructuredBuffer::Create(UINT _ElementSize, UINT _ElementCount, SB_TYPE _Ty
 		tUAVDesc.ViewDimension                    = D3D11_UAV_DIMENSION_BUFFER;
 		tUAVDesc.Buffer.NumElements               = _ElementCount;
 
-		if (FAILED(
-			GDirectXDevice->GetDevice()->CreateUnorderedAccessView(MainBuffer.Get(), &tUAVDesc, UAV.GetAddressOf())))
+		if (FAILED(GDirectXDevice->GetDevice()->CreateUnorderedAccessView(MainBuffer.Get(), &tUAVDesc, UAV.GetAddressOf())))
 		{
 			assert(nullptr);
 			return E_FAIL;

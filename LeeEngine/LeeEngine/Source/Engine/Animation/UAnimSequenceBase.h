@@ -18,7 +18,6 @@ class UAnimSequenceBase : public UAnimationAsset
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
-public:
 	std::vector<FAnimNotifyEvent> Notifies;
 
 	float LastUpdateTime        = 1000.0f;

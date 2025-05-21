@@ -1,11 +1,11 @@
-#include "CoreMinimal.h"
+﻿#include "CoreMinimal.h"
 #include "QueuedThreadPool.h"
 
 std::unique_ptr<FQueuedThreadPool> GThreadPool = nullptr;
 
 FQueuedThreadPool::FQueuedThreadPool(UINT InNumQueuedThreads)
 {
-	for (int i = 0; i < InNumQueuedThreads; ++i)
+	for (UINT i = 0; i < InNumQueuedThreads; ++i)
 	{
 		Threads.emplace_back([this]()
 		{
@@ -23,14 +23,15 @@ FQueuedThreadPool::FQueuedThreadPool(UINT InNumQueuedThreads)
 						continue;
 					}
 					// 종료되거나 작업이 생기는 시점까지 대기
-					Condition.wait(Lock, [this]()
-					{
-						return bStop || !TaskQueue.empty();
-					});
+					Condition.wait(Lock,
+									[this]()
+									{
+										return bStop || !TaskQueue.empty();
+									});
 
 					if (bStop && TaskQueue.empty())
 						return;
-						
+
 					//if(!TaskQueue.try_pop(CurrentTask)) continue;
 				}
 			}
@@ -76,7 +77,7 @@ void ParallelFor(UINT TaskCount, UINT Priority, const std::function<void(int)>& 
 	const UINT TasksPerThread = (TaskCount + ThreadCount - 1) / ThreadCount;
 
 	std::vector<std::shared_ptr<std::atomic<bool>>> IsWorkComplete(ThreadCount);
-	for (int i = 0; i < ThreadCount; ++i)
+	for (UINT i = 0; i < ThreadCount; ++i)
 	{
 		IsWorkComplete[i] = std::make_shared<std::atomic<bool>>(false);
 	}

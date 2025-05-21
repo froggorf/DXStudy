@@ -24,7 +24,6 @@ class USkeletalMeshComponent : public USkinnedMeshComponent
 		return SkeletalMesh;
 	}
 
-
 	void SetAnimInstanceClass(const std::string& InAnimInstanceClass);
 
 	void TickComponent(float DeltaSeconds) override;

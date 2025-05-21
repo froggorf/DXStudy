@@ -1,4 +1,4 @@
-#include "UTestComponent.h"
+﻿#include "UTestComponent.h"
 #include <Engine/RenderCore/EditorScene.h>
 
 #include "Engine/Mesh/USkeletalMesh.h"
@@ -14,8 +14,7 @@ UTestComponent::UTestComponent()
 	}
 }
 
-XMFLOAT2 GetDrawPanelPosFromLocal(const XMFLOAT2& LocalPos, const XMFLOAT2&          LocalHorizontalSize,
-								const XMFLOAT2    LocalVerticalSize, const XMFLOAT2& DrawPanelSize, bool bFlipY = true)
+XMFLOAT2 GetDrawPanelPosFromLocal(const XMFLOAT2& LocalPos, const XMFLOAT2& LocalHorizontalSize, const XMFLOAT2 LocalVerticalSize, const XMFLOAT2& DrawPanelSize, bool bFlipY = true)
 {
 	// LocalPos를 DrawPanelSize로 정규화
 	// ex) [-100,100], [0,600] 같은 Local Size를
@@ -27,8 +26,7 @@ XMFLOAT2 GetDrawPanelPosFromLocal(const XMFLOAT2& LocalPos, const XMFLOAT2&     
 	ReturnValue.x = ReturnValue.x - std::min(LocalHorizontalSize.x, LocalHorizontalSize.y);
 	ReturnValue.y = ReturnValue.y - std::min(LocalVerticalSize.x, LocalVerticalSize.y);
 
-	float Width = max(LocalHorizontalSize.x, LocalHorizontalSize.y) - std::min(
-		LocalHorizontalSize.x, LocalHorizontalSize.y);
+	float Width  = max(LocalHorizontalSize.x, LocalHorizontalSize.y) - std::min(LocalHorizontalSize.x, LocalHorizontalSize.y);
 	float Height = max(LocalVerticalSize.x, LocalVerticalSize.y) - std::min(LocalVerticalSize.x, LocalVerticalSize.y);
 
 	ReturnValue.x = ReturnValue.x * (DrawPanelSize.x / Width);
@@ -41,13 +39,11 @@ XMFLOAT2 GetDrawPanelPosFromLocal(const XMFLOAT2& LocalPos, const XMFLOAT2&     
 	return ReturnValue;
 }
 
-XMFLOAT2 GetLocalPosFromDrawPanel(const XMFLOAT2& DrawPanelPos, const XMFLOAT2&      LocalHorizontalSize,
-								const XMFLOAT2    LocalVerticalSize, const XMFLOAT2& DrawPanelSize)
+XMFLOAT2 GetLocalPosFromDrawPanel(const XMFLOAT2& DrawPanelPos, const XMFLOAT2& LocalHorizontalSize, const XMFLOAT2 LocalVerticalSize, const XMFLOAT2& DrawPanelSize)
 {
 	XMFLOAT2 ReturnValue{DrawPanelPos};
 
-	float Width = max(LocalHorizontalSize.x, LocalHorizontalSize.y) - std::min(
-		LocalHorizontalSize.x, LocalHorizontalSize.y);
+	float Width  = max(LocalHorizontalSize.x, LocalHorizontalSize.y) - std::min(LocalHorizontalSize.x, LocalHorizontalSize.y);
 	float Height = max(LocalVerticalSize.x, LocalVerticalSize.y) - std::min(LocalVerticalSize.x, LocalVerticalSize.y);
 
 	ReturnValue.x = ReturnValue.x * (Width / DrawPanelSize.x);
@@ -58,8 +54,8 @@ XMFLOAT2 GetLocalPosFromDrawPanel(const XMFLOAT2& DrawPanelPos, const XMFLOAT2& 
 
 	ReturnValue.y = LocalVerticalSize.y - ReturnValue.y - 5.0f; // Gap;
 
-	ReturnValue.x = static_cast<int>(ReturnValue.x * 100) / 100;
-	ReturnValue.y = static_cast<int>(ReturnValue.y * 100) / 100;
+	ReturnValue.x = static_cast<float>(static_cast<int>(ReturnValue.x * 100) / 100);
+	ReturnValue.y = static_cast<float>(static_cast<int>(ReturnValue.y * 100) / 100);
 	return ReturnValue;
 }
 

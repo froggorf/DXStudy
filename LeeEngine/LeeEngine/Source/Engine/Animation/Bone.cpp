@@ -1,4 +1,4 @@
-// https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
+﻿// https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
 
 #include "CoreMinimal.h"
 #include "Bone.h"
@@ -7,10 +7,10 @@ Bone::Bone(const std::string& name, int ID, const aiNodeAnim* channel)
 	: m_LocalTransform(XMMatrixIdentity()), m_Name(name), m_ID(ID)
 {
 	UINT numPosition = channel->mNumPositionKeys;
-	for (int positionIndex = 0; positionIndex < numPosition; ++positionIndex)
+	for (UINT positionIndex = 0; positionIndex < numPosition; ++positionIndex)
 	{
 		aiVector3D  aiPosition = channel->mPositionKeys[positionIndex].mValue;
-		float       timeStamp  = channel->mPositionKeys[positionIndex].mTime;
+		float       timeStamp  = static_cast<float>(channel->mPositionKeys[positionIndex].mTime);
 		KeyPosition positionData;
 		positionData.position  = XMFLOAT3{aiPosition.x, aiPosition.y, aiPosition.z};
 		positionData.timeStamp = timeStamp;
@@ -18,10 +18,10 @@ Bone::Bone(const std::string& name, int ID, const aiNodeAnim* channel)
 	}
 
 	UINT numRotation = channel->mNumRotationKeys;
-	for (int rotationIndex = 0; rotationIndex < numRotation; ++rotationIndex)
+	for (UINT rotationIndex = 0; rotationIndex < numRotation; ++rotationIndex)
 	{
 		aiQuaternion aiQuat    = channel->mRotationKeys[rotationIndex].mValue;
-		float        timeStamp = channel->mRotationKeys[rotationIndex].mTime;
+		float        timeStamp = static_cast<float>(channel->mRotationKeys[rotationIndex].mTime);
 		KeyRotation  rotationData;
 		XMFLOAT4     quat            = {aiQuat.x, aiQuat.y, aiQuat.z, aiQuat.w};
 		rotationData.orientationQuat = XMVector4Normalize(XMLoadFloat4(&quat));
@@ -30,10 +30,10 @@ Bone::Bone(const std::string& name, int ID, const aiNodeAnim* channel)
 	}
 
 	UINT numScale = channel->mNumScalingKeys;
-	for (int scaleIndex = 0; scaleIndex < numScale; ++scaleIndex)
+	for (UINT scaleIndex = 0; scaleIndex < numScale; ++scaleIndex)
 	{
 		aiVector3D aiScale   = channel->mScalingKeys[scaleIndex].mValue;
-		float      timeStamp = channel->mScalingKeys[scaleIndex].mTime;
+		float      timeStamp = static_cast<float>(channel->mScalingKeys[scaleIndex].mTime);
 		KeyScale   scaleData;
 		scaleData.scale     = XMFLOAT3{aiScale.x, aiScale.y, aiScale.z};
 		scaleData.timeStamp = timeStamp;
@@ -96,17 +96,14 @@ XMMATRIX Bone::InterpolatePosition(float animationTime) const
 {
 	if (1 == m_KeyPositions.size())
 	{
-		return XMMatrixTranslation(m_KeyPositions[0].position.x, m_KeyPositions[0].position.y,
-									m_KeyPositions[0].position.z);
+		return XMMatrixTranslation(m_KeyPositions[0].position.x, m_KeyPositions[0].position.y, m_KeyPositions[0].position.z);
 	}
 
-	int   p0Index     = GetPositionIndex(animationTime);
-	int   p1Index     = (p0Index + 1) % m_KeyPositions.size();
-	float scaleFactor = GetScaleFactor(m_KeyPositions[p0Index].timeStamp, m_KeyPositions[p1Index].timeStamp,
-										animationTime);
+	int      p0Index     = GetPositionIndex(animationTime);
+	int      p1Index     = (p0Index + 1) % m_KeyPositions.size();
+	float    scaleFactor = GetScaleFactor(m_KeyPositions[p0Index].timeStamp, m_KeyPositions[p1Index].timeStamp, animationTime);
 	XMFLOAT3 finalPosition{};
-	XMVECTOR vecPosition = XMVectorLerp(XMLoadFloat3(&m_KeyPositions[p0Index].position),
-										XMLoadFloat3(&m_KeyPositions[p1Index].position), scaleFactor);
+	XMVECTOR vecPosition = XMVectorLerp(XMLoadFloat3(&m_KeyPositions[p0Index].position), XMLoadFloat3(&m_KeyPositions[p1Index].position), scaleFactor);
 	XMStoreFloat3(&finalPosition, vecPosition);
 	return XMMatrixTranslation(finalPosition.x, finalPosition.y, finalPosition.z);
 }
@@ -118,12 +115,10 @@ XMMATRIX Bone::InterpolateRotation(float animationTime) const
 		XMVECTOR quat = m_KeyRotations[0].orientationQuat;
 		return XMMatrixRotationQuaternion(quat);
 	}
-	int   p0Index     = GetRotationIndex(animationTime);
-	int   p1Index     = (p0Index + 1) % m_KeyRotations.size();
-	float scaleFactor = GetScaleFactor(m_KeyRotations[p0Index].timeStamp, m_KeyRotations[p1Index].timeStamp,
-										animationTime);
-	XMVECTOR finalQuat = XMQuaternionSlerp(m_KeyRotations[p0Index].orientationQuat,
-											m_KeyRotations[p1Index].orientationQuat, scaleFactor);
+	int      p0Index     = GetRotationIndex(animationTime);
+	int      p1Index     = (p0Index + 1) % m_KeyRotations.size();
+	float    scaleFactor = GetScaleFactor(m_KeyRotations[p0Index].timeStamp, m_KeyRotations[p1Index].timeStamp, animationTime);
+	XMVECTOR finalQuat   = XMQuaternionSlerp(m_KeyRotations[p0Index].orientationQuat, m_KeyRotations[p1Index].orientationQuat, scaleFactor);
 	return XMMatrixRotationQuaternion(finalQuat);
 }
 
@@ -133,12 +128,11 @@ XMMATRIX Bone::InterpolateScale(float animationTime) const
 	{
 		return XMMatrixScaling(m_KeyScales[0].scale.x, m_KeyScales[0].scale.y, m_KeyScales[0].scale.z);
 	}
-	int p0Index = GetScaleIndex(animationTime);
-	int p1Index = (p0Index + 1) % m_KeyScales.size();
-	float scaleFactor = GetScaleFactor(m_KeyScales[p0Index].timeStamp, m_KeyScales[p1Index].timeStamp, animationTime);
+	int      p0Index     = GetScaleIndex(animationTime);
+	int      p1Index     = (p0Index + 1) % m_KeyScales.size();
+	float    scaleFactor = GetScaleFactor(m_KeyScales[p0Index].timeStamp, m_KeyScales[p1Index].timeStamp, animationTime);
 	XMFLOAT3 finalScale{};
-	XMVECTOR vecScale = XMVectorLerp(XMLoadFloat3(&m_KeyScales[p0Index].scale),
-									XMLoadFloat3(&m_KeyScales[p1Index].scale), scaleFactor);
+	XMVECTOR vecScale = XMVectorLerp(XMLoadFloat3(&m_KeyScales[p0Index].scale), XMLoadFloat3(&m_KeyScales[p1Index].scale), scaleFactor);
 	XMStoreFloat3(&finalScale, vecScale);
 	return XMMatrixScaling(finalScale.x, finalScale.y, finalScale.z);
 }

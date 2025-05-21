@@ -5,19 +5,14 @@
 
 using namespace Microsoft::WRL;
 
-std::unordered_map<std::string, std::string>              AssetManager::AssetNameAndAssetPathCacheMap;
+std::unordered_map<std::string, std::string> AssetManager::AssetNameAndAssetPathCacheMap;
 
-void AssetManager::LoadModelData(const std::string&                path, const ComPtr<ID3D11Device> pDevice,
-								std::vector<ComPtr<ID3D11Buffer>>& pVertexBuffer,
-								std::vector<ComPtr<ID3D11Buffer>>& pIndexBuffer)
+void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Device> pDevice, std::vector<ComPtr<ID3D11Buffer>>& pVertexBuffer, std::vector<ComPtr<ID3D11Buffer>>& pIndexBuffer)
 {
 	std::string filePath = GEngine->GetDirectoryPath() + path;
 
 	Assimp::Importer importer;
-	const aiScene*   scene = importer.ReadFile(filePath,
-												aiProcess_Triangulate | aiProcess_JoinIdenticalVertices |
-												aiProcess_CalcTangentSpace | aiProcess_GenNormals |
-												aiProcess_ConvertToLeftHanded | aiProcess_FlipWindingOrder);
+	const aiScene*   scene = importer.ReadFile(filePath, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_CalcTangentSpace | aiProcess_GenNormals | aiProcess_ConvertToLeftHanded | aiProcess_FlipWindingOrder);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -41,7 +36,7 @@ void AssetManager::LoadModelData(const std::string&                path, const C
 
 	// 모델 로드 성공
 	MY_LOG("AssetLoad", EDebugLogLevel::DLL_Display, "Model - " + filePath+" Load Success");
-	for (int i = 0; i < scene->mNumMeshes; ++i)
+	for (UINT i = 0; i < scene->mNumMeshes; ++i)
 	{
 		// 버텍스 버퍼
 		ComPtr<ID3D11Buffer> vertexBuffer;
@@ -49,7 +44,7 @@ void AssetManager::LoadModelData(const std::string&                path, const C
 		vertexBufferDesc.BindFlags            = D3D11_BIND_VERTEX_BUFFER;
 		vertexBufferDesc.CPUAccessFlags       = 0;
 		vertexBufferDesc.Usage                = D3D11_USAGE_IMMUTABLE;
-		vertexBufferDesc.ByteWidth            = sizeof(MyVertexData) * allVertices[i].size();
+		vertexBufferDesc.ByteWidth            = sizeof(MyVertexData) * static_cast<UINT>(allVertices[i].size());
 		D3D11_SUBRESOURCE_DATA initVertexData = {};
 		initVertexData.pSysMem                = allVertices[i].data();
 		HR(pDevice->CreateBuffer(&vertexBufferDesc,&initVertexData, vertexBuffer.GetAddressOf()));
@@ -59,7 +54,7 @@ void AssetManager::LoadModelData(const std::string&                path, const C
 		ComPtr<ID3D11Buffer> indexBuffer;
 		D3D11_BUFFER_DESC    indexBufferDesc = {};
 		indexBufferDesc.BindFlags            = D3D11_BIND_INDEX_BUFFER;
-		indexBufferDesc.ByteWidth            = sizeof(UINT) * allIndices[i].size();
+		indexBufferDesc.ByteWidth            = sizeof(UINT) * static_cast<UINT>(allIndices[i].size());
 		indexBufferDesc.CPUAccessFlags       = 0;
 		indexBufferDesc.Usage                = D3D11_USAGE_IMMUTABLE;
 		D3D11_SUBRESOURCE_DATA initIndexData = {};
@@ -69,16 +64,12 @@ void AssetManager::LoadModelData(const std::string&                path, const C
 	}
 }
 
-void AssetManager::LoadModelData(const std::string&   path, const ComPtr<ID3D11Device>     pDevice,
-								ComPtr<ID3D11Buffer>& pVertexBuffer, ComPtr<ID3D11Buffer>& pIndexBuffer)
+void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11Buffer>& pVertexBuffer, ComPtr<ID3D11Buffer>& pIndexBuffer)
 {
 	std::string filePath = GEngine->GetDirectoryPath() + path;
 
 	Assimp::Importer importer;
-	const aiScene*   scene = importer.ReadFile(filePath,
-												aiProcess_Triangulate | aiProcess_JoinIdenticalVertices |
-												aiProcess_CalcTangentSpace | aiProcess_GenNormals |
-												aiProcess_ConvertToLeftHanded | aiProcess_FlipWindingOrder);
+	const aiScene*   scene = importer.ReadFile(filePath, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_CalcTangentSpace | aiProcess_GenNormals | aiProcess_ConvertToLeftHanded | aiProcess_FlipWindingOrder);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -109,7 +100,7 @@ void AssetManager::LoadModelData(const std::string&   path, const ComPtr<ID3D11D
 	vertexBufferDesc.BindFlags            = D3D11_BIND_VERTEX_BUFFER;
 	vertexBufferDesc.CPUAccessFlags       = 0;
 	vertexBufferDesc.Usage                = D3D11_USAGE_IMMUTABLE;
-	vertexBufferDesc.ByteWidth            = sizeof(MyVertexData) * allVertices[0].size();
+	vertexBufferDesc.ByteWidth            = sizeof(MyVertexData) * static_cast<UINT>(allVertices[0].size());
 	D3D11_SUBRESOURCE_DATA initVertexData = {};
 	initVertexData.pSysMem                = allVertices[0].data();
 	HR(pDevice->CreateBuffer(&vertexBufferDesc,&initVertexData, vertexBuffer.GetAddressOf()));
@@ -120,7 +111,7 @@ void AssetManager::LoadModelData(const std::string&   path, const ComPtr<ID3D11D
 	ComPtr<ID3D11Buffer> indexBuffer;
 	D3D11_BUFFER_DESC    indexBufferDesc = {};
 	indexBufferDesc.BindFlags            = D3D11_BIND_INDEX_BUFFER;
-	indexBufferDesc.ByteWidth            = sizeof(UINT) * allIndices[0].size();
+	indexBufferDesc.ByteWidth            = sizeof(UINT) * static_cast<UINT>(allIndices[0].size());
 	indexBufferDesc.CPUAccessFlags       = 0;
 	indexBufferDesc.Usage                = D3D11_USAGE_IMMUTABLE;
 	D3D11_SUBRESOURCE_DATA initIndexData = {};
@@ -130,19 +121,13 @@ void AssetManager::LoadModelData(const std::string&   path, const ComPtr<ID3D11D
 	pIndexBuffer = (indexBuffer.Get());
 }
 
-void AssetManager::LoadSkeletalModelData(const std::string&                path, const ComPtr<ID3D11Device> pDevice,
-										std::vector<ComPtr<ID3D11Buffer>>& pVertexBuffer,
-										std::vector<ComPtr<ID3D11Buffer>>& pIndexBuffer,
-										std::map<std::string, BoneInfo>&   modelBoneInfoMap)
+void AssetManager::LoadSkeletalModelData(const std::string& path, const ComPtr<ID3D11Device> pDevice, std::vector<ComPtr<ID3D11Buffer>>& pVertexBuffer, std::vector<ComPtr<ID3D11Buffer>>& pIndexBuffer, std::map<std::string, BoneInfo>& modelBoneInfoMap)
 {
 	// https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
 	std::string filePath = GEngine->GetDirectoryPath() + path;
 
 	Assimp::Importer importer;
-	const aiScene*   scene = importer.ReadFile(filePath,
-												aiProcess_Triangulate | aiProcess_JoinIdenticalVertices |
-												aiProcess_CalcTangentSpace | aiProcess_GenNormals |
-												aiProcess_ConvertToLeftHanded | aiProcess_FlipWindingOrder);
+	const aiScene*   scene = importer.ReadFile(filePath, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_CalcTangentSpace | aiProcess_GenNormals | aiProcess_ConvertToLeftHanded | aiProcess_FlipWindingOrder);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -183,7 +168,7 @@ void AssetManager::LoadSkeletalModelData(const std::string&                path,
 		}
 	}
 
-	for (int meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex)
+	for (UINT meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex)
 	{
 		ExtractBoneWeightForVertices(allSkeletalVertices[meshIndex], scene->mMeshes[meshIndex], modelBoneInfoMap);
 	}
@@ -191,7 +176,7 @@ void AssetManager::LoadSkeletalModelData(const std::string&                path,
 	// 모델 로드 성공
 	MY_LOG("AssetLoad", EDebugLogLevel::DLL_Display, "SkeletalModel - " + filePath+" Load Success");
 
-	for (int i = 0; i < scene->mNumMeshes; ++i)
+	for (UINT i = 0; i < scene->mNumMeshes; ++i)
 	{
 		// 버텍스 버퍼
 		ComPtr<ID3D11Buffer> vertexBuffer;
@@ -199,7 +184,7 @@ void AssetManager::LoadSkeletalModelData(const std::string&                path,
 		vertexBufferDesc.BindFlags            = D3D11_BIND_VERTEX_BUFFER;
 		vertexBufferDesc.CPUAccessFlags       = 0;
 		vertexBufferDesc.Usage                = D3D11_USAGE_IMMUTABLE;
-		vertexBufferDesc.ByteWidth            = sizeof(MyVertexData) * allSkeletalVertices[i].size();
+		vertexBufferDesc.ByteWidth            = sizeof(MyVertexData) * static_cast<UINT>(allSkeletalVertices[i].size());
 		D3D11_SUBRESOURCE_DATA initVertexData = {};
 		initVertexData.pSysMem                = allSkeletalVertices[i].data();
 		HR(pDevice->CreateBuffer(&vertexBufferDesc,&initVertexData, vertexBuffer.GetAddressOf()));
@@ -209,7 +194,7 @@ void AssetManager::LoadSkeletalModelData(const std::string&                path,
 		ComPtr<ID3D11Buffer> indexBuffer;
 		D3D11_BUFFER_DESC    indexBufferDesc = {};
 		indexBufferDesc.BindFlags            = D3D11_BIND_INDEX_BUFFER;
-		indexBufferDesc.ByteWidth            = sizeof(UINT) * allIndices[i].size();
+		indexBufferDesc.ByteWidth            = sizeof(UINT) * static_cast<UINT>(allIndices[i].size());
 		indexBufferDesc.CPUAccessFlags       = 0;
 		indexBufferDesc.Usage                = D3D11_USAGE_IMMUTABLE;
 		D3D11_SUBRESOURCE_DATA initIndexData = {};
@@ -219,8 +204,7 @@ void AssetManager::LoadSkeletalModelData(const std::string&                path,
 	}
 }
 
-void AssetManager::LoadTextureFromFile(const std::wstring& szFile, const ComPtr<ID3D11Device> pDevice,
-										std::vector<ComPtr<ID3D11ShaderResourceView>>& vTextureShaderResourceView)
+void AssetManager::LoadTextureFromFile(const std::wstring& szFile, const ComPtr<ID3D11Device> pDevice, std::vector<ComPtr<ID3D11ShaderResourceView>>& vTextureShaderResourceView)
 {
 	ScratchImage image;
 
@@ -235,8 +219,7 @@ void AssetManager::LoadTextureFromFile(const std::wstring& szFile, const ComPtr<
 		LoadFromWICFile(szFile.c_str(), WIC_FLAGS_NONE, nullptr, image);
 
 	ID3D11Texture2D* pTexture = nullptr;
-	HR(DirectX::CreateTexture(pDevice.Get(), image.GetImages(), image.GetImageCount(), image.GetMetadata(), (
-		ID3D11Resource**)&pTexture));
+	HR(DirectX::CreateTexture(pDevice.Get(), image.GetImages(), image.GetImageCount(), image.GetMetadata(), ( ID3D11Resource**)&pTexture));
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.ViewDimension                   = D3D11_SRV_DIMENSION_TEXTURE2D;
@@ -255,8 +238,7 @@ void AssetManager::LoadTextureFromFile(const std::wstring& szFile, const ComPtr<
 	MY_LOG("TextureLoad", EDebugLogLevel::DLL_Display, "Texture Load Success");
 }
 
-void AssetManager::LoadTextureFromFile(const std::wstring&                szFile, const ComPtr<ID3D11Device> pDevice,
-										ComPtr<ID3D11ShaderResourceView>& pTextureShaderResourceView)
+void AssetManager::LoadTextureFromFile(const std::wstring& szFile, const ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11ShaderResourceView>& pTextureShaderResourceView)
 {
 	ScratchImage image;
 
@@ -271,8 +253,7 @@ void AssetManager::LoadTextureFromFile(const std::wstring&                szFile
 		LoadFromWICFile(szFile.c_str(), WIC_FLAGS_NONE, nullptr, image);
 
 	ID3D11Texture2D* pTexture = nullptr;
-	HR(DirectX::CreateTexture(pDevice.Get(), image.GetImages(), image.GetImageCount(), image.GetMetadata(), (
-		ID3D11Resource**)&pTexture));
+	HR(DirectX::CreateTexture(pDevice.Get(), image.GetImages(), image.GetImageCount(), image.GetMetadata(), ( ID3D11Resource**)&pTexture));
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.ViewDimension                   = D3D11_SRV_DIMENSION_TEXTURE2D;
@@ -308,8 +289,7 @@ void AssetManager::LoadTexture(class UTexture* Texture, const nlohmann::json& As
 	else // png, jpg, jpeg, bmp
 		LoadFromWICFile(WFilePath.c_str(), WIC_FLAGS_NONE, nullptr, image);
 
-	CreateShaderResourceView(GDirectXDevice->GetDevice().Get(), image.GetImages(), image.GetImageCount(),
-							image.GetMetadata(), Texture->SRView.GetAddressOf());
+	CreateShaderResourceView(GDirectXDevice->GetDevice().Get(), image.GetImages(), image.GetImageCount(), image.GetMetadata(), Texture->SRView.GetAddressOf());
 	Texture->SRView->GetResource((ID3D11Resource**)Texture->Texture2D.GetAddressOf());
 	Texture->Texture2D->GetDesc(&Texture->Desc);
 
@@ -318,8 +298,7 @@ void AssetManager::LoadTexture(class UTexture* Texture, const nlohmann::json& As
 	MY_LOG("TextureLoad", EDebugLogLevel::DLL_Display, "Texture Load Success");
 }
 
-std::shared_ptr<UTexture> AssetManager::CreateTexture(const std::string& Name, UINT        Width, UINT           Height,
-													DXGI_FORMAT          PixelFormat, UINT BindFlag, D3D11_USAGE Usage)
+std::shared_ptr<UTexture> AssetManager::CreateTexture(const std::string& Name, UINT Width, UINT Height, DXGI_FORMAT PixelFormat, UINT BindFlag, D3D11_USAGE Usage)
 {
 	auto Texture = std::make_shared<UTexture>();
 
@@ -335,8 +314,7 @@ std::shared_ptr<UTexture> AssetManager::CreateTexture(const std::string& Name, U
 	Texture->Desc.SampleDesc.Quality = 0;
 	Texture->Desc.MiscFlags          = 0;
 
-	HRESULT hr = GDirectXDevice->GetDevice()->CreateTexture2D(&Texture->Desc, nullptr,
-															Texture->Texture2D.GetAddressOf());
+	HRESULT hr = GDirectXDevice->GetDevice()->CreateTexture2D(&Texture->Desc, nullptr, Texture->Texture2D.GetAddressOf());
 	if (FAILED(hr))
 	{
 		assert(0 && "Texture 생성 실패");
@@ -346,33 +324,25 @@ std::shared_ptr<UTexture> AssetManager::CreateTexture(const std::string& Name, U
 	// View 제작
 	if (Texture->Desc.BindFlags & D3D11_BIND_RENDER_TARGET)
 	{
-		if (FAILED(
-			GDirectXDevice->GetDevice()->CreateRenderTargetView(Texture->Texture2D.Get(), nullptr, Texture->RTView.
-				GetAddressOf())))
+		if (FAILED(GDirectXDevice->GetDevice()->CreateRenderTargetView(Texture->Texture2D.Get(), nullptr, Texture->RTView. GetAddressOf())))
 			assert(0 && "RTV 생성 실패");
 	}
 
 	if (Texture->Desc.BindFlags & D3D11_BIND_DEPTH_STENCIL)
 	{
-		if (FAILED(
-			GDirectXDevice->GetDevice()->CreateDepthStencilView(Texture->Texture2D.Get(), nullptr, Texture->DSView.
-				GetAddressOf())))
+		if (FAILED(GDirectXDevice->GetDevice()->CreateDepthStencilView(Texture->Texture2D.Get(), nullptr, Texture->DSView. GetAddressOf())))
 			assert(0 && "DSV 생성 실패");
 	}
 
 	if (Texture->Desc.BindFlags & D3D11_BIND_SHADER_RESOURCE)
 	{
-		if (FAILED(
-			GDirectXDevice->GetDevice()->CreateShaderResourceView(Texture->Texture2D.Get(), nullptr, Texture->SRView.
-				GetAddressOf())))
+		if (FAILED(GDirectXDevice->GetDevice()->CreateShaderResourceView(Texture->Texture2D.Get(), nullptr, Texture->SRView. GetAddressOf())))
 			assert(0 && "SRV 생성 실패");
 	}
 
 	if (Texture->Desc.BindFlags & D3D11_BIND_UNORDERED_ACCESS)
 	{
-		if (FAILED(
-			GDirectXDevice->GetDevice()->CreateUnorderedAccessView(Texture->Texture2D.Get(), nullptr, Texture->UAView.
-				GetAddressOf())))
+		if (FAILED(GDirectXDevice->GetDevice()->CreateUnorderedAccessView(Texture->Texture2D.Get(), nullptr, Texture->UAView. GetAddressOf())))
 			assert(0 && "UAV 생성 실패");
 	}
 
@@ -409,8 +379,7 @@ UObject* AssetManager::ReadMyAsset(const std::string& FilePath)
 	return Object.get();
 }
 
-void AssetManager::ProcessScene(const aiScene* scene, std::vector<std::vector<MyVertexData>>& allVertices,
-								std::vector<std::vector<UINT>>& allIndices)
+void AssetManager::ProcessScene(const aiScene* scene, std::vector<std::vector<MyVertexData>>& allVertices, std::vector<std::vector<UINT>>& allIndices)
 {
 	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
 	{
@@ -489,10 +458,9 @@ void AssetManager::SetVertexBoneData(MyVertexData& vertexData, int boneID, float
 	}
 }
 
-void AssetManager::ExtractBoneWeightForVertices(std::vector<MyVertexData>&       vVertexData, aiMesh* mesh,
-												std::map<std::string, BoneInfo>& modelBoneInfoMap)
+void AssetManager::ExtractBoneWeightForVertices(std::vector<MyVertexData>& vVertexData, aiMesh* mesh, std::map<std::string, BoneInfo>& modelBoneInfoMap)
 {
-	for (int boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex)
+	for (UINT boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex)
 	{
 		std::string boneName = mesh->mBones[boneIndex]->mName.C_Str();
 		int         boneID   = -1;
@@ -501,10 +469,25 @@ void AssetManager::ExtractBoneWeightForVertices(std::vector<MyVertexData>&      
 			BoneInfo newBoneInfo;
 			newBoneInfo.id     = boneIndex;
 			aiMatrix4x4 aiMat  = mesh->mBones[boneIndex]->mOffsetMatrix;
-			newBoneInfo.offset = XMMATRIX(aiMat.a1, aiMat.b1, aiMat.c1, aiMat.d1, // 1열
-										aiMat.a2, aiMat.b2, aiMat.c2, aiMat.d2,   // 2열
-										aiMat.a3, aiMat.b3, aiMat.c3, aiMat.d3,   // 3열
-										aiMat.a4, aiMat.b4, aiMat.c4, aiMat.d4    // 4열
+			newBoneInfo.offset = XMMATRIX(aiMat.a1,
+										aiMat.b1,
+										aiMat.c1,
+										aiMat.d1,
+										// 1열
+										aiMat.a2,
+										aiMat.b2,
+										aiMat.c2,
+										aiMat.d2,
+										// 2열
+										aiMat.a3,
+										aiMat.b3,
+										aiMat.c3,
+										aiMat.d3,
+										// 3열
+										aiMat.a4,
+										aiMat.b4,
+										aiMat.c4,
+										aiMat.d4 // 4열
 			);
 			//ConvertAiMatrixToXMMATRIX(mesh->mBones[boneIndex]->mOffsetMatrix);
 			if (boneName.contains("mixamorig:"))

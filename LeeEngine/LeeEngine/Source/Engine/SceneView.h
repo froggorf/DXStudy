@@ -10,8 +10,7 @@ struct FViewMatrices
 {
 	FViewMatrices()
 	{
-		ViewMatrix = XMMatrixLookToLH(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f),
-									XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
+		ViewMatrix       = XMMatrixLookToLH(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
 		ProjectionMatrix = XMMatrixIdentity();
 		ViewOrigin       = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		CameraRotQuat    = XMQuaternionRotationRollPitchYaw(0.0f, 0.0f, 0.0f);

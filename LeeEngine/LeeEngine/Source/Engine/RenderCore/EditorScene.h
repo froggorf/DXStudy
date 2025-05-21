@@ -46,7 +46,12 @@ public:
 	static void InitSceneData_GameThread();
 
 	std::unique_ptr<FEditorClient> EditorClient;
-	FEditorClient* GetEditorClient() const {return EditorClient.get();}
+
+	FEditorClient* GetEditorClient() const
+	{
+		return EditorClient.get();
+	}
+
 	// ==================== ImGui ====================
 	void BeginRenderFrame() override;
 	void SetDrawScenePipeline(const float* ClearColor) override;
@@ -59,8 +64,7 @@ public:
 	// ==================== IMGUI / IMGUIZMO ===================
 
 	// 디버깅 콘솔 텍스트 추가 함수
-	static void AddConsoleText_GameThread(const std::string& Category, EDebugLogLevel DebugLevel,
-										const std::string&   InDebugText);
+	static void AddConsoleText_GameThread(const std::string& Category, EDebugLogLevel DebugLevel, const std::string& InDebugText);
 
 	// 게임쓰레드 호출_월드 아웃라이너 내 액터 추가 함수 (register 시 호출)
 	static void AddWorldOutlinerActor_GameThread(std::shared_ptr<AActor> NewActor);
@@ -86,22 +90,22 @@ public:
 // MY_LOG는 에디터가 아닐 경우엔 ""로 공백처리 되므로 실행되지 않는다.
 inline std::string XMFLOAT2_TO_TEXT(const XMFLOAT2& Data)
 {
-	return std::format("x = {:.3f}, y = {:.3f}", Data.x,Data.y);
+	return std::format("x = {:.3f}, y = {:.3f}", Data.x, Data.y);
 }
 
 inline std::string XMFLOAT3_TO_TEXT(const XMFLOAT3& Data)
 {
-	return std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}", Data.x,Data.y,Data.z);
+	return std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}", Data.x, Data.y, Data.z);
 }
 
 inline std::string XMFLOAT4_TO_TEXT(const XMFLOAT4& Data)
 {
-	return std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}, w = {:.3f}", Data.x,Data.y,Data.z, Data.w);
+	return std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}, w = {:.3f}", Data.x, Data.y, Data.z, Data.w);
 }
 
 inline std::string XMVECTOR_TO_TEXT(const XMVECTOR& Data)
 {
-	return std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}, w = {:.3f}", DirectX::XMVectorGetX(Data),DirectX::XMVectorGetY(Data),DirectX::XMVectorGetZ(Data),DirectX::XMVectorGetW(Data));
+	return std::format("x = {:.3f}, y = {:.3f}, z = {:.3f}, w = {:.3f}", XMVectorGetX(Data), XMVectorGetY(Data), XMVectorGetZ(Data), XMVectorGetW(Data));
 }
 
 // typeid와 __func__ 를 쓰기위해 매크로로 설정

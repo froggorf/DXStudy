@@ -6,7 +6,7 @@
 #include "ImguiWorldOutliner.h"
 #include "Engine/DirectX/Device.h"
 
-ImVec2 FImguiLevelViewport::PreviousViewPortSize = ImVec2(0.0f,0.0f);
+ImVec2 FImguiLevelViewport::PreviousViewPortSize = ImVec2(0.0f, 0.0f);
 
 FImguiLevelViewport::FImguiLevelViewport(FScene* SceneData)
 	: FImguiPanel(SceneData)
@@ -18,8 +18,8 @@ FImguiLevelViewport::FImguiLevelViewport(FScene* SceneData)
 void FImguiLevelViewport::Draw()
 {
 	// 렌더링 시작
-	ImVec2      CurrentViewPortSize{};
-	ImVec2      ScreenPos;
+	ImVec2 CurrentViewPortSize{};
+	ImVec2 ScreenPos;
 
 	// Actor
 	if (ImGui::Begin("Place Actors", nullptr))
@@ -32,9 +32,7 @@ void FImguiLevelViewport::Draw()
 	// Actor Detail
 	ActorDetailPanel->Draw();
 
-	if (ImGui::Begin("Viewport", nullptr,
-					ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar |
-					ImGuiWindowFlags_NoScrollWithMouse))
+	if (ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 	{
 		ImVec2 WindowSize = ImGui::GetWindowSize();
 		float  XMargin    = 5.0f;
@@ -54,7 +52,6 @@ void FImguiLevelViewport::Draw()
 		}
 		if (PreviousViewPortSize != CurrentViewPortSize)
 		{
-			
 			PreviousViewPortSize                = CurrentViewPortSize;
 			ResizeEditorRenderTargetSize        = CurrentViewPortSize;
 			bResizeEditorRenderTargetAtEndFrame = true;
@@ -146,8 +143,7 @@ void FImguiLevelViewport::Draw()
 				}
 
 				XMFLOAT2 XMMouseDelta{MouseDelta.x, MouseDelta.y};
-				if (XMVectorGetX(XMVector3LengthEst(XMLoadFloat3(&MoveDelta))) > FLT_EPSILON || XMVectorGetX(
-					XMVector2LengthEst(XMLoadFloat2(&XMMouseDelta))) > FLT_EPSILON)
+				if (XMVectorGetX(XMVector3LengthEst(XMLoadFloat3(&MoveDelta))) > FLT_EPSILON || XMVectorGetX(XMVector2LengthEst(XMLoadFloat2(&XMMouseDelta))) > FLT_EPSILON)
 				{
 					EditorCameraMove(MoveDelta, XMMouseDelta);
 				}
@@ -178,7 +174,7 @@ void FImguiLevelViewport::ExecuteCommand(const std::shared_ptr<FImguiPanelComman
 			break;
 
 		case ELevelViewportCommandType::LVCT_ChangeLevelInitialize:
-			PreviousViewPortSize = ImVec2(0.0f,0.0f);
+			PreviousViewPortSize = ImVec2(0.0f, 0.0f);
 			break;
 
 		default: MY_LOG("LevelViewPort", EDebugLogLevel::DLL_Error, "Wrong Command Type");
@@ -186,7 +182,6 @@ void FImguiLevelViewport::ExecuteCommand(const std::shared_ptr<FImguiPanelComman
 		}
 	}
 }
-
 
 void FImguiLevelViewport::SelectActorFromWorldOutliner(const std::shared_ptr<AActor>& NewSelectedActor)
 {
@@ -243,18 +238,15 @@ void FImguiLevelViewport::DrawImguizmoSelectedActor(float AspectRatio)
 
 	//ProjMat = XMMatrixPerspectiveFovRH(0.5*XM_PI, 1600.0f/1200.0f, 1.0f, 1000.0f);;
 	//ImGuizmo::AllowAxisFlip(true);
-	Manipulate(reinterpret_cast<float*>(&ViewMat), reinterpret_cast<float*>(&ProjMat), CurrentGizmoOperation,
-				CurrentGizmoMode, reinterpret_cast<float*>(&ComponentMatrix), DeltaMatrix);
+	Manipulate(reinterpret_cast<float*>(&ViewMat), reinterpret_cast<float*>(&ProjMat), CurrentGizmoOperation, CurrentGizmoMode, reinterpret_cast<float*>(&ComponentMatrix), DeltaMatrix);
 
 	XMFLOAT3 DeltaTranslation;
 	XMFLOAT3 DeltaRot;
 	XMFLOAT3 DeltaScale;
-	ImGuizmo::DecomposeMatrixToComponents(DeltaMatrix, reinterpret_cast<float*>(&DeltaTranslation),
-										reinterpret_cast<float*>(&DeltaRot), reinterpret_cast<float*>(&DeltaScale));
+	ImGuizmo::DecomposeMatrixToComponents(DeltaMatrix, reinterpret_cast<float*>(&DeltaTranslation), reinterpret_cast<float*>(&DeltaRot), reinterpret_cast<float*>(&DeltaScale));
 
 	bool bHasChange = false;
-	if (CurrentGizmoOperation == ImGuizmo::TRANSLATE && XMVectorGetX(
-		XMVector3LengthEst(XMLoadFloat3(&DeltaTranslation))) > FLT_EPSILON)
+	if (CurrentGizmoOperation == ImGuizmo::TRANSLATE && XMVectorGetX(XMVector3LengthEst(XMLoadFloat3(&DeltaTranslation))) > FLT_EPSILON)
 	{
 		const auto Lambda = [CurrentSelectedComponent, DeltaTranslation]()
 		{
@@ -264,8 +256,7 @@ void FImguiLevelViewport::DrawImguizmoSelectedActor(float AspectRatio)
 		bHasChange = true;
 	}
 
-	if ((CurrentGizmoOperation == ImGuizmo::ROTATE) && XMVectorGetX(XMVector3LengthEst(XMLoadFloat3(&DeltaRot))) >
-		FLT_EPSILON)
+	if ((CurrentGizmoOperation == ImGuizmo::ROTATE) && XMVectorGetX(XMVector3LengthEst(XMLoadFloat3(&DeltaRot))) > FLT_EPSILON)
 	{
 		if (XMVectorGetX(XMVector3Length(XMLoadFloat3(&DeltaRot))) > FLT_EPSILON)
 		{
@@ -281,10 +272,11 @@ void FImguiLevelViewport::DrawImguizmoSelectedActor(float AspectRatio)
 
 	if (bHasChange)
 	{
-		GEditorEngine->EditorModify(EEditorModificationType::EMT_Level, [](bool bIsFirstChange)
-		{
-			GEditorEngine->DrawEngineTitleBar();
-		});
+		GEditorEngine->EditorModify(EEditorModificationType::EMT_Level,
+									[](bool bIsFirstChange)
+									{
+										GEditorEngine->DrawEngineTitleBar();
+									});
 	}
 }
 
@@ -295,8 +287,7 @@ void FImguiLevelViewport::EditorCameraMove(XMFLOAT3 MoveDelta, XMFLOAT2 MouseDel
 	float    DeltaSpeed           = 30.0f / 50.0f; // 윈도우 좌표 50 이동 시 60도 회전하도록
 	// MouseDelta.x -> y축(yaw) 회전 // MouseDelta.y -> x축(pitch) 회전
 
-	XMVECTOR ForwardVector = XMVector3Normalize(
-		XMVector3Rotate(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), CurrentCameraRotQuat));
+	XMVECTOR ForwardVector = XMVector3Normalize(XMVector3Rotate(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), CurrentCameraRotQuat));
 	//XMVECTOR UpVector = XMVector3Normalize(XMVector3Rotate(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), CurrentCameraRotQuat));
 	XMVECTOR UpVector    = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	XMVECTOR RightVector = XMVector3Normalize(XMVector3Cross(UpVector, ForwardVector));

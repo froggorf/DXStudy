@@ -75,7 +75,6 @@ public:
 	void SelectActorFromWorldOutliner(const std::shared_ptr<AActor>& NewSelectedActor);
 
 private:
-
 	// CurrentSelectedActor의 Imguizmo 기즈모 렌더링 + 이동 조작 Imguizmo 커맨드 큐 추가
 	void DrawImguizmoSelectedActor(float AspectRatio);
 
@@ -92,8 +91,10 @@ private:
 	{
 		return ActorDetailPanel.get();
 	}
+
 public:
 	static ImVec2 PreviousViewPortSize;
+
 private:
 	std::unique_ptr<FImguiWorldOutliner> WorldOutlinerPanel;
 	std::unique_ptr<FImguiActorDetail>   ActorDetailPanel;

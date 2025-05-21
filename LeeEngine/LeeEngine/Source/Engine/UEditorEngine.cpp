@@ -11,12 +11,7 @@
 
 std::shared_ptr<UEditorEngine> GEditorEngine = nullptr;
 
-std::map<EDebugLogLevel, ImVec4> DebugText::Color = std::map<EDebugLogLevel, ImVec4>{
-	{EDebugLogLevel::DLL_Error, ImVec4(0.77f, 0.26f, 0.26f, 1.0f)},
-	{EDebugLogLevel::DLL_Fatal, ImVec4(0.77f, 0.26f, 0.26f, 1.0f)},
-	{EDebugLogLevel::DLL_Display, ImVec4(0.8f, 0.8f, 0.8f, 1.0f)},
-	{EDebugLogLevel::DLL_Warning, ImVec4(0.95f, 0.73f, 0.125f, 1.0f)},
-};
+std::map<EDebugLogLevel, ImVec4> DebugText::Color = std::map<EDebugLogLevel, ImVec4>{{EDebugLogLevel::DLL_Error, ImVec4(0.77f, 0.26f, 0.26f, 1.0f)}, {EDebugLogLevel::DLL_Fatal, ImVec4(0.77f, 0.26f, 0.26f, 1.0f)}, {EDebugLogLevel::DLL_Display, ImVec4(0.8f, 0.8f, 0.8f, 1.0f)}, {EDebugLogLevel::DLL_Warning, ImVec4(0.95f, 0.73f, 0.125f, 1.0f)},};
 
 UEditorEngine::~UEditorEngine()
 {
@@ -31,8 +26,7 @@ void UEditorEngine::InitEngine()
 	UEngine::InitEngine();
 
 	const std::string& EngineDirectoryString = GetEngineDirectory();
-	std::wstring       FilePath = std::wstring{EngineDirectoryString.begin(), EngineDirectoryString.end()} +
-		L"/Content/Editor/Logo/LeeEngineLogo.bmp";
+	std::wstring       FilePath              = std::wstring{EngineDirectoryString.begin(), EngineDirectoryString.end()} + L"/Content/Editor/Logo/LeeEngineLogo.bmp";
 	LogoImage.Load(FilePath.c_str());
 	if (LogoImage.IsNull())
 	{
@@ -87,8 +81,7 @@ void UEditorEngine::DrawEngineTitleBar()
 	if (!LogoImage.IsNull())
 	{
 		//
-		LogoImage.StretchBlt(memDC, ImageRect.left, ImageRect.top, ImageRect.right - ImageRect.left,
-							ImageRect.bottom - ImageRect.top);
+		LogoImage.StretchBlt(memDC, ImageRect.left, ImageRect.top, ImageRect.right - ImageRect.left, ImageRect.bottom - ImageRect.top);
 	}
 
 	RECT CurrentLevelRect   = ImageRect;
@@ -96,14 +89,11 @@ void UEditorEngine::DrawEngineTitleBar()
 	CurrentLevelRect.right  = CurrentLevelRect.left + 200;
 	CurrentLevelRect.top    = CurrentLevelRect.bottom / 2;
 	CurrentLevelRect.bottom = CurrentLevelRect.top + 30;
-	RoundRect(memDC, CurrentLevelRect.left, CurrentLevelRect.top, CurrentLevelRect.right, CurrentLevelRect.bottom * 2,
-			15, 15);
+	RoundRect(memDC, CurrentLevelRect.left, CurrentLevelRect.top, CurrentLevelRect.right, CurrentLevelRect.bottom * 2, 15, 15);
 	if (GetWorld() && GetWorld()->GetPersistentLevel())
 	{
 		std::string PersistentLevelName = GetWorld()->GetPersistentLevel()->GetName();
-		PersistentLevelName             = GEditorEngine->IsEditorModify(EEditorModificationType::EMT_Level) ?
-											"* " + PersistentLevelName :
-											PersistentLevelName;
+		PersistentLevelName             = GEditorEngine->IsEditorModify(EEditorModificationType::EMT_Level) ? "* " + PersistentLevelName : PersistentLevelName;
 		DrawTextA(memDC, PersistentLevelName.c_str(), -1, &CurrentLevelRect,DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 	}
 	// 텍스트 그리기

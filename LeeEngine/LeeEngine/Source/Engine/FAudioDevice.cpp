@@ -20,9 +20,8 @@ void USoundBase::LoadDataFromFileData(const nlohmann::json& AssetData)
 	UObject::LoadDataFromFileData(AssetData);
 
 	std::string FilePath = AssetData["SoundFilePath"];
-	GAudioDevice->GetFMODSystem()->createSound((GEngine->GetDirectoryPath() + FilePath).c_str(),FMOD_DEFAULT, nullptr,
-												&Sound);
-	SoundName                          = GetName();
+	GAudioDevice->GetFMODSystem()->createSound((GEngine->GetDirectoryPath() + FilePath).c_str(),FMOD_DEFAULT, nullptr, &Sound);
+	SoundName = GetName();
 }
 
 std::shared_ptr<USoundBase> USoundBase::GetSoundAsset(const std::string& SoundAssetName)

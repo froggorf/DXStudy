@@ -11,7 +11,7 @@ std::shared_ptr<UAnimationAsset> UAnimationAsset::GetAnimationAsset(const std::s
 
 void UAnimationAsset::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
-	std::string Test     = AssetData["Name"];
+	std::string Test = AssetData["Name"];
 	UObject::LoadDataFromFileData(AssetData);
 
 	std::shared_ptr<USkeletalMesh> Skeleton = USkeletalMesh::GetSkeletalMesh(AssetData["Skeleton"]);
@@ -20,5 +20,5 @@ void UAnimationAsset::LoadDataFromFileData(const nlohmann::json& AssetData)
 		assert(nullptr);
 		return;
 	}
-	AnimationSkeleton           = Skeleton;
+	AnimationSkeleton = Skeleton;
 }

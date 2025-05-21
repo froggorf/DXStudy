@@ -6,9 +6,7 @@ UAimOffsetBlendSpace::UAimOffsetBlendSpace()
 {
 }
 
-void UAimOffsetBlendSpace::GetAnimationBoneMatrices(const XMFLOAT2&                AnimValue, float CurrentAnimTime,
-													std::vector<XMMATRIX>&         OutMatrices,
-													std::vector<FAnimNotifyEvent>& OutActiveNotifies)
+void UAimOffsetBlendSpace::GetAnimationBoneMatrices(const XMFLOAT2& AnimValue, float CurrentAnimTime, std::vector<XMMATRIX>& OutMatrices, std::vector<FAnimNotifyEvent>& OutActiveNotifies)
 {
 	std::vector<XMMATRIX> AO_Matrices(MAX_BONES, XMMatrixIdentity());
 	UBlendSpace::GetAnimationBoneMatrices(AnimValue, CurrentAnimTime, OutMatrices, OutActiveNotifies);
@@ -26,8 +24,5 @@ void UAimOffsetBlendSpace::LoadDataFromFileData(const nlohmann::json& AssetData)
 
 	DefaultAnimMatrices = std::vector<XMMATRIX>(MAX_BONES, XMMatrixIdentity());
 	std::vector<FAnimNotifyEvent> Dummy;
-	UBlendSpace::GetAnimationBoneMatrices(XMFLOAT2{
-											(HorizontalValue.x + HorizontalValue.y) / 2,
-											(VerticalValue.x + VerticalValue.y) / 2
-										}, 0.0f, DefaultAnimMatrices, Dummy);
+	UBlendSpace::GetAnimationBoneMatrices(XMFLOAT2{(HorizontalValue.x + HorizontalValue.y) / 2, (VerticalValue.x + VerticalValue.y) / 2}, 0.0f, DefaultAnimMatrices, Dummy);
 }

@@ -1,4 +1,4 @@
-// 02.16
+﻿// 02.16
 // ULevel 내 배치를 위한 테스트용 큐브 액터
 
 #pragma once
@@ -11,6 +11,7 @@ class UStaticMeshComponent;
 class ATestCube : public AActor
 {
 	MY_GENERATE_BODY(ATestCube)
+
 	ATestCube();
 
 	void Tick(float DeltaSeconds) override;

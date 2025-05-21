@@ -21,7 +21,7 @@ ULevel::ULevel(const ULevel* LevelInstance)
 {
 	OwningWorld = GEngine->GetWorld();
 	Rename(LevelInstance->GetName());
-	int         ActorCount  = LevelInstance->GetLevelActors().size();
+	size_t      ActorCount  = LevelInstance->GetLevelActors().size();
 	const auto& LevelActors = LevelInstance->GetLevelActors();
 	Actors.reserve(ActorCount);
 	for (const auto& Actor : LevelActors)
@@ -100,15 +100,14 @@ void ULevel::LoadDataFromFileData(const nlohmann::json& AssetData)
 
 	UObject::LoadDataFromFileData(AssetData);
 
-	auto ActorsData = AssetData["Actor"];
-	int  ActorCount = ActorsData.size();
+	auto   ActorsData = AssetData["Actor"];
+	size_t ActorCount = ActorsData.size();
 	Actors.reserve(ActorCount);
-	for (int i = 0; i < ActorCount; ++i)
+	for (size_t i = 0; i < ActorCount; ++i)
 	{
 		auto                    ActorData = ActorsData[i];
 		std::string             ClassName = ActorData["Class"];
-		std::shared_ptr<AActor> NewActor  = std::dynamic_pointer_cast<AActor>(
-			GetDefaultObject(ClassName)->CreateInstance());
+		std::shared_ptr<AActor> NewActor  = std::dynamic_pointer_cast<AActor>(GetDefaultObject(ClassName)->CreateInstance());
 		if (NewActor)
 		{
 			NewActor->LoadDataFromFileData(ActorData);

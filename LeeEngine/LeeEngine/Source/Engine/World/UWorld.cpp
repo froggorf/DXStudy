@@ -43,10 +43,7 @@ void UWorld::BeginPlay()
 
 	// 테스트용 컴퓨트 셰이더 생성
 	{
-		std::shared_ptr<UTexture> Texture = AssetManager::CreateTexture("TestTexture", 1023, 1023,
-																		DXGI_FORMAT_R8G8B8A8_UNORM,
-																		D3D11_BIND_SHADER_RESOURCE |
-																		D3D11_BIND_UNORDERED_ACCESS);
+		std::shared_ptr<UTexture> Texture = AssetManager::CreateTexture("TestTexture", 1023, 1023, DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS);
 
 		//std::shared_ptr<FSetColorCS> SetColorCS = std::reinterpret_pointer_cast<FSetColorCS>(FShader::GetShader("FSetColorCS"));
 		//SetColorCS->SetTargetTexture(Texture);
@@ -90,7 +87,7 @@ void UWorld::SetPersistentLevel(const std::shared_ptr<ULevel>& NewLevel)
 {
 	PersistentLevel = NewLevel;
 	PersistentLevel->Register();
-	MY_LOG("TEST",EDebugLogLevel::DLL_Warning,"SET Level");
+	MY_LOG("TEST", EDebugLogLevel::DLL_Warning, "SET Level");
 #ifdef WITH_EDITOR
 	// 타이틀 바 내 현재 레벨 이름 변경
 	SendMessage(GEditorEngine->GetWindow(), WM_NCPAINT, true, 0);

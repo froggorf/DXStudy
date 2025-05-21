@@ -41,8 +41,6 @@ class UCurveBase : public UObject
 	MY_GENERATE_BODY(UCurveBase)
 
 	static std::shared_ptr<UCurveBase> GetCurveAssetCache(const std::string& CurveName);
-
-private:
 };
 
 class UCurveFloat : public UCurveBase
@@ -57,7 +55,6 @@ class UCurveFloat : public UCurveBase
 		return FloatCurve;
 	}
 
-public:
 	FRichCurve FloatCurve;
 };
 

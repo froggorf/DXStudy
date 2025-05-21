@@ -57,8 +57,7 @@ void ParticleInit(inout FParticleData _Particle, in FParticleModule _Module, flo
 		_Particle.LocalPos.xyz = vSpawnPos;
 	}
 
-	_Particle.WorldRotation.xyz = GetRandom(_NomalizedThreadID).xyz * (_Module.MaxRotation - _Module.MinRotation) +
-		_Module.MinRotation;
+	_Particle.WorldRotation.xyz = GetRandom(_NomalizedThreadID).xyz * (_Module.MaxRotation - _Module.MinRotation) + _Module.MinRotation;
 
 	// 파티클 Life 랜덤 설정
 	_Particle.Age  = 0.f;
@@ -69,8 +68,7 @@ void ParticleInit(inout FParticleData _Particle, in FParticleModule _Module, flo
 	_Particle.Color = _Module.StartColor;
 
 	// 파티클 초기 크기 설정
-	_Particle.WorldInitScale.xyz = _Particle.WorldScale.xyz = (_Module.MaxScale - _Module.MinScale) * vRandom.g +
-		_Module.MinScale;
+	_Particle.WorldInitScale.xyz = _Particle.WorldScale.xyz = (_Module.MaxScale - _Module.MinScale) * vRandom.g + _Module.MinScale;
 
 	// 파티클 질량 설정
 	_Particle.Mass = 1.f;
@@ -185,8 +183,7 @@ StructuredBuffer<FParticleModule> gModule : register(ParticleDataRegister);
 		// Scale 모듈에 따라 현재 크기 업데이트
 		if (gModule[0].Module[3])
 		{
-			float CurScale = (gModule[0].EndScale - gModule[0].StartScale) * gBuffer[ThreadID.x].NormalizedAge + gModule
-				[0].StartScale;
+			float CurScale                 = (gModule[0].EndScale - gModule[0].StartScale) * gBuffer[ThreadID.x].NormalizedAge + gModule[0].StartScale;
 			gBuffer[ThreadID.x].WorldScale = gBuffer[ThreadID.x].WorldInitScale * CurScale;
 		}
 
@@ -199,12 +196,10 @@ StructuredBuffer<FParticleModule> gModule : register(ParticleDataRegister);
 		// 렌더링 관련 옵션들
 		if (gModule[0].Module[5])
 		{
-			gBuffer[ThreadID.x].Color = (gModule[0].EndColor - gModule[0].StartColor) * gBuffer[ThreadID.x].
-				NormalizedAge + gModule[0].StartColor;
+			gBuffer[ThreadID.x].Color = (gModule[0].EndColor - gModule[0].StartColor) * gBuffer[ThreadID.x].NormalizedAge + gModule[0].StartColor;
 			if (gModule[0].FadeOut && gBuffer[ThreadID.x].NormalizedAge >= gModule[0].StartRatio)
 			{
-				float fRatio = saturate(
-					1.f - (gBuffer[ThreadID.x].NormalizedAge - gModule[0].StartRatio) / (1.f - gModule[0].StartRatio));
+				float fRatio = saturate(1.f - (gBuffer[ThreadID.x].NormalizedAge - gModule[0].StartRatio) / (1.f - gModule[0].StartRatio));
 
 				gBuffer[ThreadID.x].Color.a = gModule[0].EndColor.a * fRatio;
 			}

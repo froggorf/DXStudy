@@ -10,8 +10,7 @@
 #include "Engine/Mesh/UStaticMesh.h"
 #include "Engine/RenderCore/EditorScene.h"
 
-FStaticMeshSceneProxy::FStaticMeshSceneProxy(UINT                               InPrimitiveID, UINT InMeshIndex,
-											const std::shared_ptr<UStaticMesh>& StaticMesh)
+FStaticMeshSceneProxy::FStaticMeshSceneProxy(UINT InPrimitiveID, UINT InMeshIndex, const std::shared_ptr<UStaticMesh>& StaticMesh)
 	: FPrimitiveSceneProxy(InPrimitiveID)
 {
 	MeshIndex         = InMeshIndex;

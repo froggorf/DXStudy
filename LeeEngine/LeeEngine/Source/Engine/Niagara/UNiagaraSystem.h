@@ -7,7 +7,6 @@
 #include "CoreMinimal.h"
 
 #include "FNiagaraEmitter.h"
-#include "Engine/MyEngineUtils.h"
 #include "Engine/UObject/UObject.h"
 
 class UNiagaraSystem : public UObject
@@ -26,6 +25,4 @@ protected:
 	// Emitter 벡터
 	// 언리얼엔진의 NiagaraSystem 내에 있는 하나의 이펙트 이미터 단위를 표현
 	std::vector<std::shared_ptr<FNiagaraEmitter>> Emitters;
-
-private:
 };

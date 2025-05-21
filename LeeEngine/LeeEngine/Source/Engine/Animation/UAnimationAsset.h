@@ -22,6 +22,4 @@ class UAnimationAsset : public UObject
 
 protected:
 	std::shared_ptr<USkeletalMesh> AnimationSkeleton;
-
-private:
 };

@@ -47,8 +47,7 @@ void UNiagaraComponent::Activate()
 {
 	if (bIsActivate)
 	{
-		MY_LOG("Activate", EDebugLogLevel::DLL_Warning,
-				"effect is already activate, if you want to reset, call activate after Deactivate");
+		MY_LOG("Activate", EDebugLogLevel::DLL_Warning, "effect is already activate, if you want to reset, call activate after Deactivate");
 		return;
 	}
 	bIsActivate = true;

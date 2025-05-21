@@ -1,4 +1,4 @@
-#include "CoreMinimal.h"
+﻿#include "CoreMinimal.h"
 #include "UBlendSpace.h"
 
 #include "Engine/AssetManager/AssetManager.h"
@@ -37,10 +37,8 @@ bool IsSegmentsIntersect(const XMFLOAT2& AStart, const XMFLOAT2& AEnd, const XMF
 	if (bIsIntersecting)
 	{
 		// 직선이 겹칠 경우 선분도 겹치는지 확인
-		bool bIsXNotInterSect = (max(AStart.x, AEnd.x) <= std::min(BStart.x, BEnd.x) || max(BStart.x, BEnd.x) <=
-			std::min(AStart.x, AEnd.x));
-		bool bIsYNotInterSect = (max(AStart.y, AEnd.y) <= std::min(BStart.y, BEnd.y) || max(BStart.y, BEnd.y) <=
-			std::min(AStart.y, AEnd.y));
+		bool bIsXNotInterSect = (max(AStart.x, AEnd.x) <= std::min(BStart.x, BEnd.x) || max(BStart.x, BEnd.x) <= std::min(AStart.x, AEnd.x));
+		bool bIsYNotInterSect = (max(AStart.y, AEnd.y) <= std::min(BStart.y, BEnd.y) || max(BStart.y, BEnd.y) <= std::min(AStart.y, AEnd.y));
 		if (bIsXNotInterSect || bIsYNotInterSect)
 		{
 			return false;
@@ -52,8 +50,7 @@ bool IsSegmentsIntersect(const XMFLOAT2& AStart, const XMFLOAT2& AEnd, const XMF
 bool FAnimClipPoint::IsPointOnSegment(const XMFLOAT2& P1, const XMFLOAT2& P2) const
 {
 	XMVECTOR P   = XMVectorSubtract(XMVectorSet(P1.x, P1.y, 0.0f, 0.0f), XMVectorSet(P2.x, P2.y, 0.0f, 0.0f));
-	XMVECTOR AP1 = XMVectorSubtract(XMVectorSet(Position.x, Position.y, 0.0f, 0.0f),
-									XMVectorSet(P1.x, P1.y, 0.0f, 0.0f));
+	XMVECTOR AP1 = XMVectorSubtract(XMVectorSet(Position.x, Position.y, 0.0f, 0.0f), XMVectorSet(P1.x, P1.y, 0.0f, 0.0f));
 
 	// 선위에 없음
 	if (std::abs(XMVectorGetZ(XMVector3Cross(P, AP1))) > FLT_EPSILON)
@@ -62,8 +59,7 @@ bool FAnimClipPoint::IsPointOnSegment(const XMFLOAT2& P1, const XMFLOAT2& P2) co
 	}
 
 	// 2. 점 A가 선분 BC의 범위 내에 있는지 확인
-	if ((Position.x <= std::min(P1.x, P2.x) || Position.x >= max(P1.x, P2.x)) && (Position.y <= std::min(P1.y, P2.y) ||
-		Position.y >= max(P1.y, P2.y)))
+	if ((Position.x <= std::min(P1.x, P2.x) || Position.x >= max(P1.x, P2.x)) && (Position.y <= std::min(P1.y, P2.y) || Position.y >= max(P1.y, P2.y)))
 		return false;
 
 	return true;
@@ -71,10 +67,8 @@ bool FAnimClipPoint::IsPointOnSegment(const XMFLOAT2& P1, const XMFLOAT2& P2) co
 
 bool FAnimClipEdge::IsPointOnSegment(const XMFLOAT2& TargetPoint)
 {
-	XMVECTOR P = XMVectorSubtract(XMVectorSet(StartPoint->Position.x, StartPoint->Position.y, 0.0f, 0.0f),
-								XMVectorSet(EndPoint->Position.x, EndPoint->Position.y, 0.0f, 0.0f));
-	XMVECTOR AP1 = XMVectorSubtract(XMVectorSet(TargetPoint.x, TargetPoint.y, 0.0f, 0.0f),
-									XMVectorSet(StartPoint->Position.x, StartPoint->Position.y, 0.0f, 0.0f));
+	XMVECTOR P   = XMVectorSubtract(XMVectorSet(StartPoint->Position.x, StartPoint->Position.y, 0.0f, 0.0f), XMVectorSet(EndPoint->Position.x, EndPoint->Position.y, 0.0f, 0.0f));
+	XMVECTOR AP1 = XMVectorSubtract(XMVectorSet(TargetPoint.x, TargetPoint.y, 0.0f, 0.0f), XMVectorSet(StartPoint->Position.x, StartPoint->Position.y, 0.0f, 0.0f));
 
 	// 선위에 없음
 	if (std::abs(XMVectorGetZ(XMVector3Cross(P, AP1))) > FLT_EPSILON)
@@ -83,10 +77,7 @@ bool FAnimClipEdge::IsPointOnSegment(const XMFLOAT2& TargetPoint)
 	}
 
 	// 2. 점 A가 선분 BC의 범위 내에 있는지 확인
-	if ((TargetPoint.x <= std::min(StartPoint->Position.x, EndPoint->Position.x) || TargetPoint.x >=
-		max(StartPoint->Position.x, EndPoint->Position.x)) && (TargetPoint.y <=
-		std::min(StartPoint->Position.y, EndPoint->Position.y) || TargetPoint.y >= max(
-			StartPoint->Position.y, EndPoint->Position.y)))
+	if ((TargetPoint.x <= std::min(StartPoint->Position.x, EndPoint->Position.x) || TargetPoint.x >= max(StartPoint->Position.x, EndPoint->Position.x)) && (TargetPoint.y <= std::min(StartPoint->Position.y, EndPoint->Position.y) || TargetPoint.y >= max(StartPoint->Position.y, EndPoint->Position.y)))
 		return false;
 
 	return true;
@@ -95,22 +86,15 @@ bool FAnimClipEdge::IsPointOnSegment(const XMFLOAT2& TargetPoint)
 EPointAndTriangleState FAnimClipTriangle::FindPointAndTriangleState(const XMFLOAT2& TargetPoint)
 {
 	// 삼각형의 세 변에 대한 외적 계산
-	float cross1 = CrossProduct2D(XMVectorSet(Points[0]->Position.x, Points[0]->Position.y, 0.0f, 0.0f),
-								XMVectorSet(Points[1]->Position.x, Points[1]->Position.y, 0.0f, 0.0f),
-								XMVectorSet(TargetPoint.x, TargetPoint.y, 0.0f, 0.0f));
-	float cross2 = CrossProduct2D(XMVectorSet(Points[1]->Position.x, Points[1]->Position.y, 0.0f, 0.0f),
-								XMVectorSet(Points[2]->Position.x, Points[2]->Position.y, 0.0f, 0.0f),
-								XMVectorSet(TargetPoint.x, TargetPoint.y, 0.0f, 0.0f));
-	float cross3 = CrossProduct2D(XMVectorSet(Points[2]->Position.x, Points[2]->Position.y, 0.0f, 0.0f),
-								XMVectorSet(Points[0]->Position.x, Points[0]->Position.y, 0.0f, 0.0f),
-								XMVectorSet(TargetPoint.x, TargetPoint.y, 0.0f, 0.0f));
+	float cross1 = CrossProduct2D(XMVectorSet(Points[0]->Position.x, Points[0]->Position.y, 0.0f, 0.0f), XMVectorSet(Points[1]->Position.x, Points[1]->Position.y, 0.0f, 0.0f), XMVectorSet(TargetPoint.x, TargetPoint.y, 0.0f, 0.0f));
+	float cross2 = CrossProduct2D(XMVectorSet(Points[1]->Position.x, Points[1]->Position.y, 0.0f, 0.0f), XMVectorSet(Points[2]->Position.x, Points[2]->Position.y, 0.0f, 0.0f), XMVectorSet(TargetPoint.x, TargetPoint.y, 0.0f, 0.0f));
+	float cross3 = CrossProduct2D(XMVectorSet(Points[2]->Position.x, Points[2]->Position.y, 0.0f, 0.0f), XMVectorSet(Points[0]->Position.x, Points[0]->Position.y, 0.0f, 0.0f), XMVectorSet(TargetPoint.x, TargetPoint.y, 0.0f, 0.0f));
 
 	// 1. 점이 삼각형 내부에 있는지 확인 (모든 외적의 부호가 같아야 함)
 	bool isInside = (cross1 > 0 && cross2 > 0 && cross3 > 0) || (cross1 < 0 && cross2 < 0 && cross3 < 0);
 
 	// 2. 점이 삼각형의 변 위에 있는지 확인 (외적이 0이고 범위 내에 있어야 함)
-	bool isOnEdge = (std::abs(cross1) < FLT_EPSILON) || (std::abs(cross2) < FLT_EPSILON) || (std::abs(cross3) <
-		FLT_EPSILON);
+	bool isOnEdge = (std::abs(cross1) < FLT_EPSILON) || (std::abs(cross2) < FLT_EPSILON) || (std::abs(cross3) < FLT_EPSILON);
 	// 결과 반환
 	if (isOnEdge)
 	{
@@ -134,9 +118,7 @@ std::shared_ptr<UBlendSpace> UBlendSpace::GetAnimationAsset(const std::string& A
 	return nullptr;
 }
 
-void UBlendSpace::GetAnimationBoneMatrices(const XMFLOAT2&                 AnimValue, float CurrentAnimTime,
-											std::vector<XMMATRIX>&         OutMatrices,
-											std::vector<FAnimNotifyEvent>& OutActiveNotifies)
+void UBlendSpace::GetAnimationBoneMatrices(const XMFLOAT2& AnimValue, float CurrentAnimTime, std::vector<XMMATRIX>& OutMatrices, std::vector<FAnimNotifyEvent>& OutActiveNotifies)
 {
 	for (int TriangleIndex = 0; TriangleIndex < CurrentTriangles.size(); ++TriangleIndex)
 	{
@@ -144,8 +126,7 @@ void UBlendSpace::GetAnimationBoneMatrices(const XMFLOAT2&                 AnimV
 
 		if (State == EPointAndTriangleState::PATS_Inside)
 		{
-			TriangleInterpolation(AnimValue, CurrentTriangles[TriangleIndex], CurrentAnimTime, OutMatrices,
-								OutActiveNotifies);
+			TriangleInterpolation(AnimValue, CurrentTriangles[TriangleIndex], CurrentAnimTime, OutMatrices, OutActiveNotifies);
 			return;
 		}
 		if (State == EPointAndTriangleState::PATS_InEdge)
@@ -187,9 +168,7 @@ void UBlendSpace::GetAnimationBoneMatrices(const XMFLOAT2&                 AnimV
 	for (int PointIndex = 0; PointIndex < CurrentPoints.size(); ++PointIndex)
 	{
 		const std::shared_ptr<FAnimClipPoint>& TargetPoint     = CurrentPoints[PointIndex];
-		float                                  DistanceToPoint = XMVectorGetX(XMVector2LengthSq(
-			XMVectorSubtract(CurrentValueVec,
-							XMVectorSet(TargetPoint->Position.x, TargetPoint->Position.y, 0.0f, 0.0f))));
+		float                                  DistanceToPoint = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(CurrentValueVec, XMVectorSet(TargetPoint->Position.x, TargetPoint->Position.y, 0.0f, 0.0f))));
 		if (DistanceToPoint < DistanceSq)
 		{
 			DistanceSq   = DistanceToPoint;
@@ -218,13 +197,12 @@ void UBlendSpace::LoadDataFromFileData(const nlohmann::json& AssetData)
 		std::string        AnimClipName = Point["AnimClipName"];
 		if (std::shared_ptr<UAnimSequence> AnimSequence = UAnimSequence::GetAnimationAsset(AnimClipName))
 		{
-			CurrentPoints.emplace_back(std::make_shared<FAnimClipPoint>(
-				XMFLOAT2{Position[0], Position[1]}, AnimSequence));
+			CurrentPoints.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{Position[0], Position[1]}, AnimSequence));
 		}
 		else
 		{
 			// Non valid AnimClipName
-			assert(nullptr, "NULL AnimClip's name");
+			assert(nullptr && "NULL AnimClip's name");
 		}
 	}
 	CreateEdgeAndTriangle();
@@ -262,8 +240,7 @@ void UBlendSpace::CreateEdge()
 				continue;
 			}
 
-			NewEdge->LengthSq = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(
-				XMLoadFloat2(&NewEdge->StartPoint->Position), XMLoadFloat2(&NewEdge->EndPoint->Position))));
+			NewEdge->LengthSq = XMVectorGetX(XMVector2LengthSq(XMVectorSubtract(XMLoadFloat2(&NewEdge->StartPoint->Position), XMLoadFloat2(&NewEdge->EndPoint->Position))));
 
 			// 3. 만약 그 간선이 다른 간선들과 교차할 경우, 길이가 긴 간선이 이긴다 (nlogn)
 
@@ -274,9 +251,7 @@ void UBlendSpace::CreateEdge()
 			int  RemoveEdgeIndexForAddNewEdge = -1;
 			for (int EdgeIndex = 0; EdgeIndex < CurrentEdge.size(); ++EdgeIndex)
 			{
-				if (IsSegmentsIntersect(NewEdge->StartPoint->Position, NewEdge->EndPoint->Position,
-										CurrentEdge[EdgeIndex]->StartPoint->Position,
-										CurrentEdge[EdgeIndex]->EndPoint->Position))
+				if (IsSegmentsIntersect(NewEdge->StartPoint->Position, NewEdge->EndPoint->Position, CurrentEdge[EdgeIndex]->StartPoint->Position, CurrentEdge[EdgeIndex]->EndPoint->Position))
 				{
 					bIsIntersecting = true;
 					if (NewEdge->LengthSq < CurrentEdge[EdgeIndex]->LengthSq)
@@ -310,14 +285,10 @@ void UBlendSpace::CreateTriangle()
 		for (int NextEdgeIndex = TargetEdgeIndex + 1; NextEdgeIndex < ToBeTriangleEdge.size(); ++NextEdgeIndex)
 		{
 			// 시작점 or 끝점이 같은 것이 있는지 확인
-			bool bIsSameStart = ToBeTriangleEdge[TargetEdgeIndex]->StartPoint->Position == ToBeTriangleEdge[
-				NextEdgeIndex]->StartPoint->Position;
-			bool bIsSameEnd = ToBeTriangleEdge[TargetEdgeIndex]->EndPoint->Position == ToBeTriangleEdge[NextEdgeIndex]->
-																						EndPoint->Position;
-			bool bIsSameAStartAndBEnd = (ToBeTriangleEdge[TargetEdgeIndex]->StartPoint->Position == ToBeTriangleEdge[
-				NextEdgeIndex]->EndPoint->Position);
-			bool bIsSameAEndAndBStart = (ToBeTriangleEdge[TargetEdgeIndex]->EndPoint->Position == ToBeTriangleEdge[
-				NextEdgeIndex]->StartPoint->Position);
+			bool bIsSameStart         = ToBeTriangleEdge[TargetEdgeIndex]->StartPoint->Position == ToBeTriangleEdge[NextEdgeIndex]->StartPoint->Position;
+			bool bIsSameEnd           = ToBeTriangleEdge[TargetEdgeIndex]->EndPoint->Position == ToBeTriangleEdge[NextEdgeIndex]->EndPoint->Position;
+			bool bIsSameAStartAndBEnd = (ToBeTriangleEdge[TargetEdgeIndex]->StartPoint->Position == ToBeTriangleEdge[NextEdgeIndex]->EndPoint->Position);
+			bool bIsSameAEndAndBStart = (ToBeTriangleEdge[TargetEdgeIndex]->EndPoint->Position == ToBeTriangleEdge[NextEdgeIndex]->StartPoint->Position);
 
 			// 같은 것이 있다면 (이어지는 엣지가 있다면)
 			if (bIsSameStart || bIsSameEnd || bIsSameAStartAndBEnd || bIsSameAEndAndBStart)
@@ -348,11 +319,7 @@ void UBlendSpace::CreateTriangle()
 				for (int FoundEdgeIndex = NextEdgeIndex + 1; FoundEdgeIndex < ToBeTriangleEdge.size(); ++FoundEdgeIndex)
 				{
 					// 해당하는 간선을 찾음
-					if (ToBeTriangleEdge[FoundEdgeIndex]->StartPoint->Position == FindEdgeFirstPos && ToBeTriangleEdge[
-							FoundEdgeIndex]->EndPoint->Position == FindEdgeSecondPos ||
-						ToBeTriangleEdge[FoundEdgeIndex]->
-						EndPoint->Position ==
-						FindEdgeFirstPos && ToBeTriangleEdge[FoundEdgeIndex]->StartPoint->Position == FindEdgeSecondPos)
+					if (ToBeTriangleEdge[FoundEdgeIndex]->StartPoint->Position == FindEdgeFirstPos && ToBeTriangleEdge[FoundEdgeIndex]->EndPoint->Position == FindEdgeSecondPos || ToBeTriangleEdge[FoundEdgeIndex]->EndPoint->Position == FindEdgeFirstPos && ToBeTriangleEdge[FoundEdgeIndex]->StartPoint->Position == FindEdgeSecondPos)
 					{
 						auto NewTriangle = std::make_shared<FAnimClipTriangle>();
 
@@ -364,17 +331,11 @@ void UBlendSpace::CreateTriangle()
 						NewTriangle->Points.push_back(ToBeTriangleEdge[FoundEdgeIndex]->EndPoint);
 
 						std::shared_ptr<FAnimClipPoint> OtherPoint;
-						if (ToBeTriangleEdge[TargetEdgeIndex]->StartPoint->Position == ToBeTriangleEdge[FoundEdgeIndex]
-																						->StartPoint->Position ||
-							ToBeTriangleEdge[TargetEdgeIndex]->StartPoint->Position == ToBeTriangleEdge[FoundEdgeIndex]
-																						->EndPoint->Position)
+						if (ToBeTriangleEdge[TargetEdgeIndex]->StartPoint->Position == ToBeTriangleEdge[FoundEdgeIndex]->StartPoint->Position || ToBeTriangleEdge[TargetEdgeIndex]->StartPoint->Position == ToBeTriangleEdge[FoundEdgeIndex]->EndPoint->Position)
 						{
 							OtherPoint = ToBeTriangleEdge[TargetEdgeIndex]->EndPoint;
 						}
-						else if (ToBeTriangleEdge[TargetEdgeIndex]->EndPoint->Position == ToBeTriangleEdge[
-								FoundEdgeIndex]->StartPoint->Position || ToBeTriangleEdge[TargetEdgeIndex]->EndPoint->
-																											Position ==
-							ToBeTriangleEdge[FoundEdgeIndex]->EndPoint->Position)
+						else if (ToBeTriangleEdge[TargetEdgeIndex]->EndPoint->Position == ToBeTriangleEdge[FoundEdgeIndex]->StartPoint->Position || ToBeTriangleEdge[TargetEdgeIndex]->EndPoint->Position == ToBeTriangleEdge[FoundEdgeIndex]->EndPoint->Position)
 						{
 							OtherPoint = ToBeTriangleEdge[TargetEdgeIndex]->StartPoint;
 						}
@@ -391,9 +352,7 @@ void UBlendSpace::CreateTriangle()
 	}
 }
 
-void UBlendSpace::TriangleInterpolation(const XMFLOAT2& AnimValue, const std::shared_ptr<FAnimClipTriangle>& Triangle,
-										float AnimTime, std::vector<XMMATRIX>& OutMatrices,
-										std::vector<FAnimNotifyEvent>& OutActiveNotifies)
+void UBlendSpace::TriangleInterpolation(const XMFLOAT2& AnimValue, const std::shared_ptr<FAnimClipTriangle>& Triangle, float AnimTime, std::vector<XMMATRIX>& OutMatrices, std::vector<FAnimNotifyEvent>& OutActiveNotifies)
 {
 	{
 		const std::shared_ptr<FAnimClipPoint>& P1 = Triangle->Points[0];
@@ -461,13 +420,13 @@ void UBlendSpace::TriangleInterpolation(const XMFLOAT2& AnimValue, const std::sh
 		}
 		Triangle->Points[ClosestPointIndex]->AnimSequence->GetAnimNotifies(AnimNotifyTime, OutActiveNotifies);
 
-		float P1Weight = 1.0f / std::powf((P1LengthSq), 4.0f);
-		float P2Weight = 1.0f / std::powf((P2LengthSq), 4.0f); // P2LengthEst/(P1LengthEst+P2LengthEst+P3LengthEst);
-		float P3Weight = 1.0f / std::powf((P3LengthSq), 4.0f); //P1Weight-P2Weight;
+		float P1Weight                 = 1.0f / std::powf((P1LengthSq), 4.0f);
+		float P2Weight                 = 1.0f / std::powf((P2LengthSq), 4.0f); // P2LengthEst/(P1LengthEst+P2LengthEst+P3LengthEst);
+		float P3Weight                 = 1.0f / std::powf((P3LengthSq), 4.0f); //P1Weight-P2Weight;
 		float WeightSumBeforeNormalize = P1Weight + P2Weight + P3Weight;
-		P1Weight = P1Weight / WeightSumBeforeNormalize;
-		P2Weight = P2Weight / WeightSumBeforeNormalize;
-		P3Weight = 1 - P1Weight - P2Weight;
+		P1Weight                       = P1Weight / WeightSumBeforeNormalize;
+		P2Weight                       = P2Weight / WeightSumBeforeNormalize;
+		P3Weight                       = 1 - P1Weight - P2Weight;
 
 		while (!bAnim1Updated || !bAnim2Updated || !bAnim3Updated)
 		{
@@ -478,18 +437,16 @@ void UBlendSpace::TriangleInterpolation(const XMFLOAT2& AnimValue, const std::sh
 		{
 			for (int VectorIndex = 0; VectorIndex < 4; ++VectorIndex)
 			{
-				XMVECTOR WeightedP1 = XMVectorScale(P1AnimMatrices[BoneIndex].r[VectorIndex], P1Weight);
-				XMVECTOR WeightedP2 = XMVectorScale(P2AnimMatrices[BoneIndex].r[VectorIndex], P2Weight);
-				XMVECTOR WeightedP3 = XMVectorScale(P3AnimMatrices[BoneIndex].r[VectorIndex], P3Weight);
+				XMVECTOR WeightedP1                   = XMVectorScale(P1AnimMatrices[BoneIndex].r[VectorIndex], P1Weight);
+				XMVECTOR WeightedP2                   = XMVectorScale(P2AnimMatrices[BoneIndex].r[VectorIndex], P2Weight);
+				XMVECTOR WeightedP3                   = XMVectorScale(P3AnimMatrices[BoneIndex].r[VectorIndex], P3Weight);
 				OutMatrices[BoneIndex].r[VectorIndex] = XMVectorAdd(XMVectorAdd(WeightedP1, WeightedP2), WeightedP3);
 			}
 		}
 	}
 }
 
-void UBlendSpace::LinearInterpolation(const XMFLOAT2& CurrentValue, const std::shared_ptr<FAnimClipEdge>& Edge,
-									float AnimTime, std::vector<XMMATRIX>& OutMatrices,
-									std::vector<FAnimNotifyEvent>& OutActiveNotifies)
+void UBlendSpace::LinearInterpolation(const XMFLOAT2& CurrentValue, const std::shared_ptr<FAnimClipEdge>& Edge, float AnimTime, std::vector<XMMATRIX>& OutMatrices, std::vector<FAnimNotifyEvent>& OutActiveNotifies)
 {
 	const std::shared_ptr<FAnimClipPoint>& P1                 = Edge->StartPoint;
 	const std::shared_ptr<FAnimClipPoint>& P2                 = Edge->EndPoint;
@@ -549,9 +506,7 @@ void UBlendSpace::LinearInterpolation(const XMFLOAT2& CurrentValue, const std::s
 	}
 }
 
-void UBlendSpace::CalculateOneAnimation(const std::shared_ptr<FAnimClipPoint>& Point, float AnimTime,
-										std::vector<XMMATRIX>&                 OutMatrices,
-										std::vector<FAnimNotifyEvent>&         OutActiveNotifies)
+void UBlendSpace::CalculateOneAnimation(const std::shared_ptr<FAnimClipPoint>& Point, float AnimTime, std::vector<XMMATRIX>& OutMatrices, std::vector<FAnimNotifyEvent>& OutActiveNotifies)
 {
 	Point->AnimSequence->GetBoneTransform(fmod(AnimTime, Point->AnimSequence->GetDuration()), OutMatrices);
 	float DeltaSeconds = GEngine->GetDeltaSeconds();

@@ -103,8 +103,7 @@ float3x3 QuaternionToMatrix(float4 q)
 	float xy = x * y, xz = x * z, yz = y * z;
 	float wx = w * x, wy = w * y, wz = w * z;
 
-	return float3x3(1.0 - 2.0 * (yy + zz), 2.0 * (xy - wz), 2.0 * (xz + wy), 2.0 * (xy + wz), 1.0 - 2.0 * (xx + zz),
-					2.0 * (yz - wx), 2.0 * (xz - wy), 2.0 * (yz + wx), 1.0 - 2.0 * (xx + yy));
+	return float3x3(1.0 - 2.0 * (yy + zz), 2.0 * (xy - wz), 2.0 * (xz + wy), 2.0 * (xy + wz), 1.0 - 2.0 * (xx + zz), 2.0 * (yz - wx), 2.0 * (xz - wy), 2.0 * (yz + wx), 1.0 - 2.0 * (xx + yy));
 }
 
 // Roll-Pitch-Yaw (Z-X-Y) 순서로 쿼터니언 생성 (도 단위 입력)

@@ -41,7 +41,7 @@ std::vector<std::shared_ptr<FPrimitiveSceneProxy>> USkeletalMeshComponent::Creat
 	std::vector<std::shared_ptr<FPrimitiveSceneProxy>> SceneProxies;
 
 	UINT MeshCount = SkeletalMesh->GetSkeletalMeshRenderData()->MeshCount;
-	for (int i = 0; i < MeshCount; ++i)
+	for (UINT i = 0; i < MeshCount; ++i)
 	{
 		auto SceneProxy = std::make_shared<FSkeletalMeshSceneProxy>(PrimitiveID, i, SkeletalMesh);
 		SceneProxies.emplace_back(SceneProxy);
@@ -68,13 +68,11 @@ bool USkeletalMeshComponent::SetSkeletalMesh(const std::shared_ptr<USkeletalMesh
 	return true;
 }
 
-
 void USkeletalMeshComponent::SetAnimInstanceClass(const std::string& InAnimInstanceClass)
 {
 	if (const UObject* AnimDefaultObject = GetDefaultObject(InAnimInstanceClass))
 	{
-		std::shared_ptr<UAnimInstance> NewAnimInstance = std::dynamic_pointer_cast<UAnimInstance>(
-			AnimDefaultObject->CreateInstance());
+		std::shared_ptr<UAnimInstance> NewAnimInstance = std::dynamic_pointer_cast<UAnimInstance>(AnimDefaultObject->CreateInstance());
 		if (NewAnimInstance)
 		{
 			AnimInstance = NewAnimInstance;

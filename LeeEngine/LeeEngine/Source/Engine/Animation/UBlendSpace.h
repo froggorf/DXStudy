@@ -34,8 +34,7 @@ struct FAnimClipEdge
 	std::shared_ptr<FAnimClipPoint> EndPoint;
 	float                           LengthSq = 0.0f;
 
-	FAnimClipEdge(const std::shared_ptr<FAnimClipPoint>& InStartPoint,
-				const std::shared_ptr<FAnimClipPoint>&   InEndPoint)
+	FAnimClipEdge(const std::shared_ptr<FAnimClipPoint>& InStartPoint, const std::shared_ptr<FAnimClipPoint>& InEndPoint)
 	{
 		StartPoint = InStartPoint;
 		EndPoint   = InEndPoint;
@@ -60,9 +59,7 @@ class UBlendSpace : public UAnimationAsset
 
 	static std::shared_ptr<UBlendSpace> GetAnimationAsset(const std::string& AnimationName);
 
-	virtual void GetAnimationBoneMatrices(const XMFLOAT2&              AnimValue, float CurrentAnimTime,
-										std::vector<XMMATRIX>&         OutMatrices,
-										std::vector<FAnimNotifyEvent>& OutActiveNotifies);
+	virtual void GetAnimationBoneMatrices(const XMFLOAT2& AnimValue, float CurrentAnimTime, std::vector<XMMATRIX>& OutMatrices, std::vector<FAnimNotifyEvent>& OutActiveNotifies);
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
@@ -73,15 +70,9 @@ private:
 	void CreateEdge();
 	void CreateTriangle();
 
-	static void TriangleInterpolation(const XMFLOAT2& AnimValue, const std::shared_ptr<FAnimClipTriangle>& Triangle,
-									float AnimTime, std::vector<XMMATRIX>& OutMatrices,
-									std::vector<FAnimNotifyEvent>& OutActiveNotifies);
-	static void LinearInterpolation(const XMFLOAT2& CurrentValue, const std::shared_ptr<FAnimClipEdge>& Edge,
-									float AnimTime, std::vector<XMMATRIX>& OutMatrices,
-									std::vector<FAnimNotifyEvent>& OutActiveNotifies);
-	static void CalculateOneAnimation(const std::shared_ptr<FAnimClipPoint>& Point, float AnimTime,
-									std::vector<XMMATRIX>&                   OutMatrices,
-									std::vector<FAnimNotifyEvent>&           OutActiveNotifies);
+	static void TriangleInterpolation(const XMFLOAT2& AnimValue, const std::shared_ptr<FAnimClipTriangle>& Triangle, float AnimTime, std::vector<XMMATRIX>& OutMatrices, std::vector<FAnimNotifyEvent>& OutActiveNotifies);
+	static void LinearInterpolation(const XMFLOAT2& CurrentValue, const std::shared_ptr<FAnimClipEdge>& Edge, float AnimTime, std::vector<XMMATRIX>& OutMatrices, std::vector<FAnimNotifyEvent>& OutActiveNotifies);
+	static void CalculateOneAnimation(const std::shared_ptr<FAnimClipPoint>& Point, float AnimTime, std::vector<XMMATRIX>& OutMatrices, std::vector<FAnimNotifyEvent>& OutActiveNotifies);
 
 protected:
 	XMFLOAT2 HorizontalValue = {};

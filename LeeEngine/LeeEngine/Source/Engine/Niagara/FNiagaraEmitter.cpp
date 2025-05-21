@@ -128,16 +128,16 @@ void FParticleModule::LoadDataFromFile(const nlohmann::basic_json<>& Data)
 		if (ModuleData.contains("AddRot"))
 		{
 			Module[static_cast<int>(EParticleModule::PM_AddRotation)] = 1;
-			const auto& AddRotData = ModuleData["AddRot"];
-			AddRotation = XMFLOAT3{AddRotData[0], AddRotData[1], AddRotData[2]};
+			const auto& AddRotData                                    = ModuleData["AddRot"];
+			AddRotation                                               = XMFLOAT3{AddRotData[0], AddRotData[1], AddRotData[2]};
 		}
 
 		// AddTickVelocity 모듈
 		if (ModuleData.contains("TickVel"))
 		{
 			Module[static_cast<int>(EParticleModule::PM_AddTickVelocity)] = 1;
-			const auto& AddTickVelData = ModuleData["TickVel"];
-			AddTickVelocity = XMFLOAT3{AddTickVelData[0], AddTickVelData[1], AddTickVelData[2]};
+			const auto& AddTickVelData                                    = ModuleData["TickVel"];
+			AddTickVelocity                                               = XMFLOAT3{AddTickVelData[0], AddTickVelData[1], AddTickVelData[2]};
 		}
 	}
 }
@@ -220,7 +220,7 @@ void FNiagaraRendererMeshes::Render()
 	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	auto RenderData = BaseStaticMesh->GetStaticMeshRenderData();
-	for (int MeshIndex = 0; MeshIndex < RenderData->MeshCount; ++MeshIndex)
+	for (UINT MeshIndex = 0; MeshIndex < RenderData->MeshCount; ++MeshIndex)
 	{
 		// 셰이더 설정
 		UINT stride = sizeof(MyVertexData);
@@ -535,7 +535,7 @@ void FNiagaraRibbonEmitter::LoadDataFromFile(const nlohmann::basic_json<>& Data)
 {
 	FNiagaraEmitter::LoadDataFromFile(Data);
 
-	int RibbonWidth = 5.0f;
+	float RibbonWidth = 5.0f;
 	if (Data.contains("RibbonWidth"))
 	{
 		RibbonWidth = Data["RibbonWidth"];
@@ -575,7 +575,7 @@ void FNiagaraRibbonEmitter::MapPointDataToVertexBuffer()
 		const FRibbonPointData& P0 = RibbonPointData[idx0];
 		const FRibbonPointData& P1 = RibbonPointData[idx1];
 
-		const int UV_X = static_cast<float>(1) / CurPointCount * i;
+		const int UV_X = static_cast<int>(1.0f / CurPointCount * i);
 
 		// 네 점
 		MyVertexData vA;

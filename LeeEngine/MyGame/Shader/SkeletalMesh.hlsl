@@ -47,8 +47,7 @@ VS_OUTPUT VS(VS_INPUT input)
 		float4 skinnedPosition;
 		float3 skinnedNormal;
 
-		CalculateSkinnedPosition(input.Pos, input.Normal, input.boneIDs, input.boneWeights, gBoneFinalTransforms,
-								skinnedPosition, skinnedNormal);
+		CalculateSkinnedPosition(input.Pos, input.Normal, input.boneIDs, input.boneWeights, gBoneFinalTransforms, skinnedPosition, skinnedNormal);
 
 		input.Pos    = skinnedPosition;
 		input.Normal = skinnedNormal;

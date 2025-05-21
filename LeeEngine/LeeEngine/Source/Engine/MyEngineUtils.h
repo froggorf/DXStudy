@@ -37,9 +37,9 @@
 #endif
 #endif
 
-extern std::shared_ptr<class UEngine>        GEngine;
+extern std::shared_ptr<class UEngine> GEngine;
 #ifdef WITH_EDITOR
-extern std::shared_ptr<class UEditorEngine>  GEditorEngine;
+extern std::shared_ptr<class UEditorEngine> GEditorEngine;
 #endif
 extern std::unique_ptr<class FDirectXDevice> GDirectXDevice;
 
@@ -111,8 +111,7 @@ struct FTransform
 	{
 		XMMATRIX OutMatrix = XMMatrixIdentity();
 
-		OutMatrix = XMMatrixRotationQuaternion(XMLoadFloat4(&Rotation)) * XMMatrixTranslation(
-			Translation.x, Translation.y, Translation.z);
+		OutMatrix = XMMatrixRotationQuaternion(XMLoadFloat4(&Rotation)) * XMMatrixTranslation(Translation.x, Translation.y, Translation.z);
 
 		return OutMatrix;
 	}

@@ -82,7 +82,6 @@ public:
 
 	// InputLayout
 
-public:
 	const Microsoft::WRL::ComPtr<ID3D11Device>& GetDevice() const
 	{
 		return m_d3dDevice;
@@ -193,12 +192,10 @@ private:
 
 	// =================================================
 
-private:
 	void InitSamplerState();
 
 	void BuildAllComputeShader();
 
-private:
 	Microsoft::WRL::ComPtr<ID3D11Device>           m_d3dDevice;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>    m_d3dDeviceContext;
 	Microsoft::WRL::ComPtr<IDXGISwapChain>         m_SwapChain;
