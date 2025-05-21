@@ -1,4 +1,4 @@
-// 루나책의 D3DX11 버전을 D3D11
+﻿// 루나책의 D3DX11 버전을 D3D11
 #pragma once
 
 // warning C4819: 현재 코드 페이지(949)에서 표시할 수 없는 문자가 파 일에 들어 있습니다. 데이터가 손실되지 않게 하려면 해당 파일을 유니코드 형식으로 저장하십시오.
@@ -24,6 +24,7 @@
 #endif
 
 #pragma comment(lib, "DirectXTex.lib")
+
 
 // DEBUG, HRESULT 에러 출력
 #if defined(DEBUG) | defined(_DEBUG)
