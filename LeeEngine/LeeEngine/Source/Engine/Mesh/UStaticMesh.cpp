@@ -18,19 +18,17 @@ UStaticMesh::~UStaticMesh()
 {
 }
 
+const std::shared_ptr<UStaticMesh>& UStaticMesh::GetStaticMesh(const std::string& StaticMeshName)
+{
+	return std::dynamic_pointer_cast<UStaticMesh>(AssetManager::GetAssetCacheByName(StaticMeshName));
+}
+
 void UStaticMesh::LoadDataFromFileData(const nlohmann::json& StaticMeshAssetData)
 {
-	if (GetStaticMeshCacheMap().contains(GetName()))
-	{
-		MY_LOG("LoadData", EDebugLogLevel::DLL_Warning, "already load this StaticMesh -> " + GetName());
-		return;
-	}
 
 	UObject::LoadDataFromFileData(StaticMeshAssetData);
 
 	RenderData = std::make_unique<FStaticMeshRenderData>(StaticMeshAssetData);
-
-	GetStaticMeshCacheMap()[GetName()] = shared_from_this();
 
 	MY_LOG("Load", EDebugLogLevel::DLL_Display, "Load UStaticMesh - "+GetName() + " Complete!");
 }

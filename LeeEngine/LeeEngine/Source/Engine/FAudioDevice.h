@@ -11,7 +11,7 @@
 #include "Engine/MyEngineUtils.h"
 #include "UObject/UObject.h"
 
-class USoundBase : public UObject, public std::enable_shared_from_this<USoundBase>
+class USoundBase : public UObject
 {
 	MY_GENERATE_BODY(USoundBase)
 
@@ -27,22 +27,9 @@ class USoundBase : public UObject, public std::enable_shared_from_this<USoundBas
 		return SoundName == Other.SoundName;
 	}
 
-	static std::shared_ptr<USoundBase> GetSoundAsset(const std::string& SoundAssetName)
-	{
-		auto SoundAssetCacheMap = GetSoundAssetCacheMap();
-		if (SoundAssetCacheMap.contains(SoundAssetName))
-		{
-			return SoundAssetCacheMap[SoundAssetName];
-		}
-		return nullptr;
-	}
+	static std::shared_ptr<USoundBase> GetSoundAsset(const std::string& SoundAssetName);
 
 private:
-	static std::unordered_map<std::string, std::shared_ptr<USoundBase>>& GetSoundAssetCacheMap()
-	{
-		static std::unordered_map<std::string, std::shared_ptr<USoundBase>> SoundAssetCacheMap;
-		return SoundAssetCacheMap;
-	}
 };
 
 class FActiveSound

@@ -3,7 +3,6 @@
 
 #include "Engine/AssetManager/AssetManager.h"
 
-std::unordered_map<std::string, std::shared_ptr<UTexture>> UTexture::TextureCacheMap;
 
 void UTexture::Release()
 {
@@ -21,14 +20,10 @@ void UTexture::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
 	UObject::LoadDataFromFileData(AssetData);
 
-	if (TextureCacheMap.contains(GetName()))
-	{
-		// 이미 존재하는 텍스쳐
-		assert(0);
-		return;
-	}
-
 	AssetManager::LoadTexture(this, AssetData);
+}
 
-	TextureCacheMap[GetName()] = shared_from_this();
+std::shared_ptr<UTexture> UTexture::GetTextureCache(const std::string& TextureName)
+{
+	return std::dynamic_pointer_cast<UTexture>(AssetManager::GetAssetCacheByName(TextureName));
 }

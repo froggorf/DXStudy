@@ -69,8 +69,23 @@ public:
 	{
 		return AssetNameAndAssetPathCacheMap;
 	}
+	static std::shared_ptr<UObject> GetAssetCacheByName(const std::string& AssetName)
+	{
+		const std::unordered_map<std::string, std::shared_ptr<UObject>>& Map = GetAssetCacheMap();
+		auto Target = Map.find(AssetName);
+		if(Target != Map.end())
+		{
+			return Target->second;
+		}
+		return nullptr;
+	}
 
 private:
-	static std::unordered_map<std::string, std::shared_ptr<UObject>> AssetCache;
+	static std::unordered_map<std::string, std::shared_ptr<UObject>>& GetAssetCacheMap()
+	{
+		static std::unordered_map<std::string, std::shared_ptr<UObject>> AssetCache;
+		return AssetCache;
+	}
+	
 	static std::unordered_map<std::string, std::string>              AssetNameAndAssetPathCacheMap;
 };

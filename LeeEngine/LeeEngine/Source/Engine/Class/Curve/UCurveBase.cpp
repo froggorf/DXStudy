@@ -1,6 +1,7 @@
 #include "CoreMinimal.h"
 #include "UCurveBase.h"
 
+#include "Engine/AssetManager/AssetManager.h"
 #include "Engine/RenderCore/EditorScene.h"
 
 float HermiteCurve(float t, float P0, float P1, float T0, float T1)
@@ -168,17 +169,9 @@ void FRichCurve::DrawHermiteCurve(ImDrawList* DrawList, ImVec2 CanvasPos, ImVec2
 }
 #endif
 
-void UCurveBase::LoadDataFromFileData(const nlohmann::json& AssetData)
+std::shared_ptr<UCurveBase> UCurveBase::GetCurveAssetCache(const std::string& CurveName)
 {
-	UObject::LoadDataFromFileData(AssetData);
-
-	if (GetCurveMap().contains(GetName()))
-	{
-		return;
-	}
-
-	std::string CurveName    = GetName();
-	GetCurveMap()[CurveName] = shared_from_this();
+	return std::dynamic_pointer_cast<UCurveBase>(AssetManager::GetAssetCacheByName(CurveName));
 }
 
 float UCurveFloat::GetFloatValue(float InTime) const

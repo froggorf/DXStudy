@@ -12,7 +12,7 @@
 #include "Engine/UEngine.h"
 #include "Engine/UObject/UObject.h"
 
-class UStaticMesh : public UObject, public std::enable_shared_from_this<UStaticMesh>
+class UStaticMesh : public UObject
 {
 	MY_GENERATE_BODY(UStaticMesh)
 	UStaticMesh();
@@ -30,24 +30,12 @@ class UStaticMesh : public UObject, public std::enable_shared_from_this<UStaticM
 		return RenderData.get();
 	}
 
-	static const std::map<std::string, std::shared_ptr<UStaticMesh>>& GetStaticMeshCache()
-	{
-		return GetStaticMeshCacheMap();
-	}
 
-	static const std::shared_ptr<UStaticMesh>& GetStaticMesh(const std::string& StaticMeshName)
-	{
-		return GetStaticMeshCacheMap()[StaticMeshName];
-	}
+	static const std::shared_ptr<UStaticMesh>& GetStaticMesh(const std::string& StaticMeshName);
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
 private:
-	static std::map<std::string, std::shared_ptr<UStaticMesh>>& GetStaticMeshCacheMap()
-	{
-		static std::map<std::string, std::shared_ptr<UStaticMesh>> StaticMeshCache;
-		return StaticMeshCache;
-	}
 
 	// TODO: LOD 데이터가 필요한 경우 std::map<UINT, std::unique_ptr<FStaticMeshRenderData> LODRenderData; 로 변경 예정
 	// StaticMesh의 버텍스, 인덱스 버퍼 등 렌더링에 필요한 데이터를 관리

@@ -7,7 +7,7 @@
 #include "Engine/UObject/UObject.h"
 #include "Engine/Mesh/USkeletalMesh.h"
 
-class UAnimationAsset : public UObject, public std::enable_shared_from_this<UAnimationAsset>
+class UAnimationAsset : public UObject
 {
 	MY_GENERATE_BODY(UAnimationAsset)
 
@@ -16,17 +16,7 @@ class UAnimationAsset : public UObject, public std::enable_shared_from_this<UAni
 		return AnimationSkeleton;
 	}
 
-	static std::shared_ptr<UAnimationAsset> GetAnimationAsset(const std::string& AnimationAssetName)
-	{
-		const auto& Map = GetAnimationAssetCacheMap();
-		if (Map.size() == 0)
-			return nullptr;
-		if (Map.contains(AnimationAssetName))
-		{
-			return GetAnimationAssetCacheMap()[AnimationAssetName];
-		}
-		return nullptr;
-	}
+	static std::shared_ptr<UAnimationAsset> GetAnimationAsset(const std::string& AnimationAssetName);
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
@@ -34,9 +24,4 @@ protected:
 	std::shared_ptr<USkeletalMesh> AnimationSkeleton;
 
 private:
-	static std::map<std::string, std::shared_ptr<UAnimationAsset>>& GetAnimationAssetCacheMap()
-	{
-		static std::map<std::string, std::shared_ptr<UAnimationAsset>> AnimationAssetCache{};
-		return AnimationAssetCache;
-	}
 };

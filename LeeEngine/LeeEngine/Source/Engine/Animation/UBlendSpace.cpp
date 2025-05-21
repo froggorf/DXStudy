@@ -1,6 +1,7 @@
 #include "CoreMinimal.h"
 #include "UBlendSpace.h"
 
+#include "Engine/AssetManager/AssetManager.h"
 #include "Engine/Misc/QueuedThreadPool.h"
 #include "Engine/RenderCore/EditorScene.h"
 XMFLOAT2 UBlendSpace::Gap = {5.0f, 5.0f};
@@ -123,6 +124,15 @@ EPointAndTriangleState FAnimClipTriangle::FindPointAndTriangleState(const XMFLOA
 }
 
 // ========================================================================
+
+std::shared_ptr<UBlendSpace> UBlendSpace::GetAnimationAsset(const std::string& AnimationName)
+{
+	if (std::shared_ptr<UObject> FindAsset = AssetManager::GetAssetCacheByName(AnimationName))
+	{
+		return std::dynamic_pointer_cast<UBlendSpace>(FindAsset);
+	}
+	return nullptr;
+}
 
 void UBlendSpace::GetAnimationBoneMatrices(const XMFLOAT2&                 AnimValue, float CurrentAnimTime,
 											std::vector<XMMATRIX>&         OutMatrices,

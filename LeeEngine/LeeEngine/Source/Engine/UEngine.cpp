@@ -183,17 +183,17 @@ void UEngine::Tick(float DeltaSeconds)
 	}
 
 	// TODO: DeleteLater 임시레벨 변경 코드
-	static int i = 0;
-	++i;
-	if(i == 10000)
-	{
-		GEngine->DELETELATER_TestChangeLevel("Test2Level");
-	}
-	if(i == 20000)
-	{
-		i = 0;
-		GEngine->DELETELATER_TestChangeLevel("TestLevel");
-	}
+	//static int i = 0;
+	//++i;
+	//if(i == 10000)
+	//{
+	//	GEngine->DELETELATER_TestChangeLevel("Test2Level");
+	//}
+	//if(i == 20000)
+	//{
+	//	i = 0;
+	//	GEngine->DELETELATER_TestChangeLevel("TestLevel");
+	//}
 }
 
 void UEngine::MakeComponentTransformDirty(std::shared_ptr<USceneComponent>& SceneComponent)

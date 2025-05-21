@@ -16,8 +16,6 @@ void UNiagaraSystem::LoadDataFromFileData(const nlohmann::json& AssetData)
 		NewEmitter->LoadDataFromFile(EmitterData);
 		this->Emitters.push_back(NewEmitter);
 	}
-
-	GetNiagaraAssetCacheMap()[GetName()] = shared_from_this();
 }
 
 std::vector<std::shared_ptr<FNiagaraEmitter>> UNiagaraSystem::CreateDynamicRenderData() const
@@ -36,4 +34,9 @@ std::vector<std::shared_ptr<FNiagaraEmitter>> UNiagaraSystem::CreateDynamicRende
 		EmitterRenderData.push_back(NewEmitter);
 	}
 	return EmitterRenderData;
+}
+
+std::shared_ptr<UNiagaraSystem> UNiagaraSystem::GetNiagaraAsset(const std::string& NiagaraAssetName)
+{
+	return std::dynamic_pointer_cast<UNiagaraSystem>(AssetManager::GetAssetCacheByName(NiagaraAssetName));
 }

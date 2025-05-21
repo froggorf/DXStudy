@@ -36,27 +36,13 @@ struct FRichCurve
 #endif
 };
 
-class UCurveBase : public UObject, public std::enable_shared_from_this<UCurveBase>
+class UCurveBase : public UObject
 {
 	MY_GENERATE_BODY(UCurveBase)
-	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
-	static std::shared_ptr<UCurveBase> GetCurveAssetCache(const std::string& CurveName)
-	{
-		auto TargetAssetIter = GetCurveMap().find(CurveName);
-		if (TargetAssetIter != GetCurveMap().end())
-		{
-			return (TargetAssetIter->second);
-		}
-		return nullptr;
-	}
+	static std::shared_ptr<UCurveBase> GetCurveAssetCache(const std::string& CurveName);
 
 private:
-	static std::unordered_map<std::string, std::shared_ptr<UCurveBase>>& GetCurveMap()
-	{
-		static std::unordered_map<std::string, std::shared_ptr<UCurveBase>> CurveCacheMap;
-		return CurveCacheMap;
-	}
 };
 
 class UCurveFloat : public UCurveBase

@@ -5,7 +5,6 @@
 
 using namespace Microsoft::WRL;
 
-std::unordered_map<std::string, std::shared_ptr<UObject>> AssetManager::AssetCache;
 std::unordered_map<std::string, std::string>              AssetManager::AssetNameAndAssetPathCacheMap;
 
 void AssetManager::LoadModelData(const std::string&                path, const ComPtr<ID3D11Device> pDevice,
@@ -377,13 +376,14 @@ std::shared_ptr<UTexture> AssetManager::CreateTexture(const std::string& Name, U
 			assert(0 && "UAV 생성 실패");
 	}
 
-	UTexture::TextureCacheMap[Name] = Texture;
+	GetAssetCacheMap()[Name] = Texture;
 
 	return Texture;
 }
 
 UObject* AssetManager::ReadMyAsset(const std::string& FilePath)
 {
+	std::unordered_map<std::string, std::shared_ptr<UObject>>& AssetCache = GetAssetCacheMap();
 	if (AssetCache.contains(FilePath.data()))
 	{
 		return AssetCache[FilePath.data()].get();
@@ -404,7 +404,7 @@ UObject* AssetManager::ReadMyAsset(const std::string& FilePath)
 	Object->LoadDataFromFileData(AssetData);
 	AssetNameAndAssetPathCacheMap[Object->GetName()] = FilePath;
 
-	AssetCache[FilePath.data()] = Object;
+	AssetCache[Object->GetName()] = Object;
 	MY_LOG("AssetLoad", EDebugLogLevel::DLL_Display, FilePath+" Load Success");
 	return Object.get();
 }

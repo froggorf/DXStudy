@@ -5,9 +5,8 @@
 #include "Engine/SceneProxy/FNiagaraSceneProxy.h"
 
 using namespace Microsoft::WRL;
-
+UINT UMaterial::MaterialIDCount = 0;
 std::unordered_map<std::string, std::shared_ptr<FShader>>            FShader::ShaderCache;
-std::unordered_map<std::string, std::shared_ptr<UMaterialInterface>> UMaterialInterface::MaterialCache;
 
 void FShader::SetShaderID(UINT NewID)
 {
@@ -49,6 +48,11 @@ void FPixelShader::CompilePixelShader(const std::string& FilePath, const std::st
 		PixelShader.GetAddressOf()));
 }
 
+std::shared_ptr<UMaterialInterface> UMaterialInterface::GetMaterialCache(const std::string& MaterialName)
+{
+	return std::dynamic_pointer_cast<UMaterialInterface>(AssetManager::GetAssetCacheByName(MaterialName));
+}
+
 void UMaterialInterface::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
 	UObject::LoadDataFromFileData(AssetData);
@@ -57,12 +61,6 @@ void UMaterialInterface::LoadDataFromFileData(const nlohmann::json& AssetData)
 void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
 	UMaterialInterface::LoadDataFromFileData(AssetData);
-
-	if (MaterialCache.contains(GetName()))
-	{
-		// 이미 캐시를 진행한 머테리얼
-		return;
-	}
 
 	// 버텍스 셰이더 로드
 	{
@@ -227,9 +225,7 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 			TextureParams.emplace_back(UTexture::GetTextureCache(TextureName));
 		}
 	}
-
-	MaterialCache[GetName()] = shared_from_this();
-	MaterialID               = MaterialCache.size();
+	MaterialID               = MaterialIDCount++;
 }
 
 void UMaterial::Binding()
@@ -319,7 +315,6 @@ void UMaterialInstance::LoadDataFromFileData(const nlohmann::json& AssetData)
 		}
 	}
 
-	MaterialCache[GetName()] = shared_from_this();
 }
 
 void UMaterialInstance::Binding()

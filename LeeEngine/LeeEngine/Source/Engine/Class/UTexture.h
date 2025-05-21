@@ -6,7 +6,7 @@
 #pragma once
 #include "Engine/UObject/UObject.h"
 
-class UTexture : public UObject, public std::enable_shared_from_this<UTexture>
+class UTexture : public UObject
 {
 	MY_GENERATE_BODY(UTexture)
 
@@ -45,15 +45,7 @@ class UTexture : public UObject, public std::enable_shared_from_this<UTexture>
 		return UAView;
 	}
 
-	static std::shared_ptr<UTexture> GetTextureCache(const std::string& TextureName)
-	{
-		auto Target = TextureCacheMap.find(TextureName);
-		if (Target != TextureCacheMap.end())
-		{
-			return Target->second;
-		}
-		return nullptr;
-	}
+	static std::shared_ptr<UTexture> GetTextureCache(const std::string& TextureName);
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> Texture2D;
@@ -64,6 +56,4 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> UAView;
 	//...
 	D3D11_TEXTURE2D_DESC Desc{};
-
-	static std::unordered_map<std::string, std::shared_ptr<UTexture>> TextureCacheMap;
 };

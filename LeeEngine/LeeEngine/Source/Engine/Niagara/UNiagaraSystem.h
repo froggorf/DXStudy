@@ -10,7 +10,7 @@
 #include "Engine/MyEngineUtils.h"
 #include "Engine/UObject/UObject.h"
 
-class UNiagaraSystem : public UObject, public std::enable_shared_from_this<UNiagaraSystem>
+class UNiagaraSystem : public UObject
 {
 	MY_GENERATE_BODY(UNiagaraSystem)
 	// 데이터 로드 함수
@@ -20,15 +20,7 @@ class UNiagaraSystem : public UObject, public std::enable_shared_from_this<UNiag
 	std::vector<std::shared_ptr<FNiagaraEmitter>> CreateDynamicRenderData() const;
 
 	// NiagaraSystem 에셋을 얻어오는 함수
-	static std::shared_ptr<UNiagaraSystem> GetNiagaraAsset(const std::string& NiagaraAssetName)
-	{
-		auto NiagaraAssetCacheMap = GetNiagaraAssetCacheMap();
-		if (NiagaraAssetCacheMap.contains(NiagaraAssetName))
-		{
-			return NiagaraAssetCacheMap[NiagaraAssetName];
-		}
-		return nullptr;
-	}
+	static std::shared_ptr<UNiagaraSystem> GetNiagaraAsset(const std::string& NiagaraAssetName);
 
 protected:
 	// Emitter 벡터
@@ -36,9 +28,4 @@ protected:
 	std::vector<std::shared_ptr<FNiagaraEmitter>> Emitters;
 
 private:
-	static std::map<std::string, std::shared_ptr<UNiagaraSystem>>& GetNiagaraAssetCacheMap()
-	{
-		static std::map<std::string, std::shared_ptr<UNiagaraSystem>> NiagaraAssetCacheMap;
-		return NiagaraAssetCacheMap;
-	}
 };

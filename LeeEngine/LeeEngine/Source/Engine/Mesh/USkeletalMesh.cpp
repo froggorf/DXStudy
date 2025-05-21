@@ -65,19 +65,17 @@ enum class EStaticMeshAssetData
 	ESMAD_Name = 0, ESMAD_ModelDataFilePath, ESMAD_TextureDataFilePath
 };
 
+const std::shared_ptr<USkeletalMesh>& USkeletalMesh::GetSkeletalMesh(const std::string& SkeletalMeshName)
+{
+	return std::dynamic_pointer_cast<USkeletalMesh>(AssetManager::GetAssetCacheByName(SkeletalMeshName));
+}
+
 void USkeletalMesh::LoadDataFromFileData(const nlohmann::json& SkeletalMeshAssetData)
 {
-	if (GetSkeletalMeshCacheMap().contains(GetName()))
-	{
-		MY_LOG("LoadData", EDebugLogLevel::DLL_Warning, "already load this SkeltalMesh -> " + GetName());
-		return;
-	}
-
 	UObject::LoadDataFromFileData(SkeletalMeshAssetData);
 
 	RenderData = std::make_shared<FSkeletalMeshRenderData>(SkeletalMeshAssetData);
 
-	GetSkeletalMeshCacheMap()[GetName()] = shared_from_this();
 
 	MY_LOG("Load", EDebugLogLevel::DLL_Warning, "Load USkeletalMesh - "+GetName() + " Complete!");
 }

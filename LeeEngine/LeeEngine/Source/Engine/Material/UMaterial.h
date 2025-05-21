@@ -145,15 +145,7 @@ class UMaterialInterface : public UObject
 		return BlendMode;
 	}
 
-	static std::shared_ptr<UMaterialInterface> GetMaterialCache(const std::string& MaterialName)
-	{
-		auto Target = MaterialCache.find(MaterialName);
-		if (Target != MaterialCache.end())
-		{
-			return Target->second;
-		}
-		return nullptr;
-	}
+	static std::shared_ptr<UMaterialInterface> GetMaterialCache(const std::string& MaterialName);
 
 	virtual bool IsMaterialInstance() const
 	{
@@ -189,8 +181,6 @@ class UMaterialInterface : public UObject
 	{
 	};
 
-protected:
-	static std::unordered_map<std::string, std::shared_ptr<UMaterialInterface>> MaterialCache;
 
 public:
 	EBlendMode      BlendMode;
@@ -198,7 +188,7 @@ public:
 	EBlendStateType BlendStateType;
 };
 
-class UMaterial : public UMaterialInterface, public std::enable_shared_from_this<UMaterial>
+class UMaterial : public UMaterialInterface
 {
 	MY_GENERATE_BODY(UMaterial)
 	friend class UMaterialInstance;
@@ -238,9 +228,11 @@ protected:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> ParamConstantBuffer;
 
 	UINT MaterialID = -1;
+
+	static UINT MaterialIDCount; 
 };
 
-class UMaterialInstance : public UMaterialInterface, public std::enable_shared_from_this<UMaterialInstance>
+class UMaterialInstance : public UMaterialInterface
 {
 	MY_GENERATE_BODY(UMaterialInstance)
 	UMaterialInstance()           = default;

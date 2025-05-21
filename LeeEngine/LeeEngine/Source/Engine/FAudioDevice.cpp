@@ -2,6 +2,7 @@
 #include "FAudioDevice.h"
 
 #include "UEngine.h"
+#include "AssetManager/AssetManager.h"
 #include "RenderCore/EditorScene.h"
 
 std::shared_ptr<FAudioDevice> GAudioDevice = nullptr;
@@ -22,7 +23,11 @@ void USoundBase::LoadDataFromFileData(const nlohmann::json& AssetData)
 	GAudioDevice->GetFMODSystem()->createSound((GEngine->GetDirectoryPath() + FilePath).c_str(),FMOD_DEFAULT, nullptr,
 												&Sound);
 	SoundName                          = GetName();
-	GetSoundAssetCacheMap()[GetName()] = shared_from_this();
+}
+
+std::shared_ptr<USoundBase> USoundBase::GetSoundAsset(const std::string& SoundAssetName)
+{
+	return std::dynamic_pointer_cast<USoundBase>(AssetManager::GetAssetCacheByName(SoundAssetName));
 }
 
 // ================

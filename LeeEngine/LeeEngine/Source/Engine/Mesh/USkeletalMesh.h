@@ -27,7 +27,7 @@ public:
 	std::map<std::string, BoneInfo> ModelBoneInfoMap;
 };
 
-class USkeletalMesh : public UObject, public std::enable_shared_from_this<USkeletalMesh>
+class USkeletalMesh : public UObject
 {
 	MY_GENERATE_BODY(USkeletalMesh)
 	USkeletalMesh();
@@ -44,24 +44,12 @@ class USkeletalMesh : public UObject, public std::enable_shared_from_this<USkele
 		return RenderData.get();
 	}
 
-	static const std::map<std::string, std::shared_ptr<USkeletalMesh>>& GetStaticMeshCache()
-	{
-		return GetSkeletalMeshCacheMap();
-	}
 
-	static const std::shared_ptr<USkeletalMesh>& GetSkeletalMesh(const std::string& SkeletalMeshName)
-	{
-		return GetSkeletalMeshCacheMap()[SkeletalMeshName];
-	}
+	static const std::shared_ptr<USkeletalMesh>& GetSkeletalMesh(const std::string& SkeletalMeshName);
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
 private:
-	static std::map<std::string, std::shared_ptr<USkeletalMesh>>& GetSkeletalMeshCacheMap()
-	{
-		static std::map<std::string, std::shared_ptr<USkeletalMesh>> SkeletalMeshCache;
-		return SkeletalMeshCache;
-	}
 
 	// TODO: LOD 데이터가 필요한 경우 std::map<UINT, std::unique_ptr<FStaticMeshRenderData> LODRenderData; 로 변경 예정
 	// StaticMesh의 버텍스, 인덱스 버퍼 등 렌더링에 필요한 데이터를 관리
