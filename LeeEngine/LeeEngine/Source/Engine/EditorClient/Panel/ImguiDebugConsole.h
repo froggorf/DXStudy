@@ -60,12 +60,12 @@ private:
 
 private:
 	// 검색에 사용되는 string
-	std::string DebugConsoleSearchText;
+	static std::string DebugConsoleSearchText;
 
 	// 디버그 텍스트 벡터
-	std::vector<DebugText> DebugConsoleText;
+	static std::vector<DebugText> DebugConsoleText;
 	// Pending Add
-	std::vector<DebugText> PendingAddDebugConsoleText;
+	static std::vector<DebugText> PendingAddDebugConsoleText;
 	// 검색 시 string에 맞는 디버그 문구만 모은 벡터
-	std::vector<DebugText> SearchingDebugConsoleText;
+	static std::vector<DebugText> SearchingDebugConsoleText;
 };

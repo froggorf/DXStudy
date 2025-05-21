@@ -30,7 +30,7 @@ FQueuedThreadPool::FQueuedThreadPool(UINT InNumQueuedThreads)
 
 					if (bStop && TaskQueue.empty())
 						return;
-
+						
 					//if(!TaskQueue.try_pop(CurrentTask)) continue;
 				}
 			}
