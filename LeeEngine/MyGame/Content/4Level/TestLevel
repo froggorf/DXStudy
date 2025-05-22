@@ -1,10 +1,30 @@
 {
     "Actor": [
         {
-            "Class": "ATestCube",
+            "Class": "ATestActor2",
             "Location": [
                 0.0,
                 0.0,
+                0.0
+            ],
+            "Name": "ATestActor1",
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0,
+	  1.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+    {
+            "Class": "ATestCube",
+            "Location": [
+                0.0,
+                29.0,
                 0.0
             ],
             "Name": "ATestCube1",
@@ -20,6 +40,7 @@
                 1.0
             ]
         }
+	
     ],
     "Class": "ULevel",
     "Name": "TestLevel"

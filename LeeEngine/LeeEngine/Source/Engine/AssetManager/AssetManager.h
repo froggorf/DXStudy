@@ -1,6 +1,7 @@
-// assimp 라이브러리와 텍스쳐 로드 라이브러리를 활용하여
+﻿// assimp 라이브러리와 텍스쳐 로드 라이브러리를 활용하여
 // 모델, 텍스쳐 등의 오브젝트 (에셋)을 관리하는 매니저 클래스
 #pragma once
+#include <concurrent_unordered_map.h>
 #include "DirectX/d3dUtil.h"
 #include "Engine/RenderCore/EditorScene.h"
 class UObject;
@@ -71,6 +72,31 @@ public:
 		return nullptr;
 	}
 
+	static std::shared_ptr<UObject> GetAsyncAssetCache(const std::string& AssetName)
+	{
+		auto Iter = AsyncAssetCache.find(AssetName);
+		if(Iter != AsyncAssetCache.end())
+		{
+			// 에셋이 현재 소멸한 상태라면
+			if(Iter->second.expired())
+			{
+				AsyncAssetCache.unsafe_erase(Iter); 
+			}
+			else
+			{
+				// std::weak_ptr<UObject> -> std::shared_ptr<UObject>
+				std::shared_ptr<UObject> SharedObj = Iter->second.lock();
+				return SharedObj;
+			}
+		}
+
+		return nullptr;
+	}
+	static void LoadAssetAsync(const std::string& Path)
+	{
+		
+	}
+
 private:
 	static std::unordered_map<std::string, std::shared_ptr<UObject>>& GetAssetCacheMap()
 	{
@@ -79,4 +105,8 @@ private:
 	}
 
 	static std::unordered_map<std::string, std::string> AssetNameAndAssetPathCacheMap;
+
+	// 게임쓰레드와 잡쓰레드(비동기 에셋 로드 쓰레드)들끼리 접근할 수 있으므로
+	// 마이크로 소프트의 concurrent 라이브러리를 사용하여 concurrent_unordered_map 자료구조 사용
+	static concurrency::concurrent_unordered_map<std::string, std::weak_ptr<UObject>> AsyncAssetCache;
 };

@@ -3,6 +3,7 @@
 
 // warning C4819: 현재 코드 페이지(949)에서 표시할 수 없는 문자가 파 일에 들어 있습니다. 데이터가 손실되지 않게 하려면 해당 파일을 유니코드 형식으로 저장하십시오.
 #pragma warning(disable:4819)
+
 #include <d3d11_1.h>
 #include <d3dcompiler.h>
 #include <wrl.h>				// ComPtr

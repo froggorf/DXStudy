@@ -46,7 +46,6 @@ void FScene::BeginRenderFrame()
 {
 	if (bIsFrameStart)
 	{
-		//MY_LOG("RenderCommand", EDebugLogLevel::DLL_Error,"RenderThread is already start");
 		return;
 	}
 
