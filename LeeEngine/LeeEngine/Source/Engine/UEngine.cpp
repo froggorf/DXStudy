@@ -27,7 +27,7 @@ void UEngine::InitEngine()
 	// wstring -> string
 	std::wstring temp = test;
 	int size_needed = WideCharToMultiByte(CP_UTF8, 0, temp.c_str(), (int)temp.size(), NULL, 0, NULL, NULL);
-	std::string CurrentDirectory(size_needed, 0);
+	CurrentDirectory.resize(size_needed);
 	WideCharToMultiByte(CP_UTF8, 0, temp.c_str(), (int)temp.size(), &CurrentDirectory[0], size_needed, NULL, NULL);
 
 	while (true)
@@ -45,8 +45,8 @@ void UEngine::InitEngine()
 		EngineDirectory.replace(p, p + 5, "LeeEngine");
 	}
 
+	// GameThread, RenderThread 제외한 코어 수
 	GThreadPool = std::make_unique<FQueuedThreadPool>(std::thread::hardware_concurrency() - 2);
-	// GameThread, RenderThread
 
 	CreateAudioThread();
 

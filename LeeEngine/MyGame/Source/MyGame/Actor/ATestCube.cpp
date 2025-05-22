@@ -1,4 +1,6 @@
-#include "ATestCube.h"
+﻿#include "ATestCube.h"
+
+#include <commctrl.h>
 
 #include "Engine/UEditorEngine.h"
 #include "Engine/Components/UNiagaraComponent.h"
@@ -100,4 +102,17 @@ void ATestCube::Tick(float DeltaSeconds)
 	XMFLOAT3 Loc;
 	XMStoreFloat3(&Loc, Target);
 	DummyComp->SetWorldLocation(Loc);
+
+
+	static bool bCheck = false;
+	if(ImGui::IsKeyReleased(ImGuiKey_P))
+	{
+		if(!bCheck)
+		{
+			TestCube2->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Sphere"));
+			MY_LOG("PRESSED", EDebugLogLevel::DLL_Warning, "P");
+			bCheck = true;
+		}
+		
+	}
 }
