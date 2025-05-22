@@ -1,4 +1,4 @@
-// 03.09
+﻿// 03.09
 // 언리얼 엔진 5 코드를 분석하며 자체엔진으로 작성중인 코드입니다.
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
@@ -22,6 +22,8 @@
 // 다수의 게임 쓰레드에서 단일의 렌더쓰레드가 수행할 명령을 관리하는 파이프라인
 // Multi-Producer(GameThread) Single-Consumer(RenderThread) Queue
 
+class UStaticMesh;
+class FStaticMeshSceneProxy;
 class USceneComponent;
 class AActor;
 
@@ -233,6 +235,10 @@ public:
 			ENQUEUE_RENDER_COMMAND(Lambda)
 		}
 	}
+
+	// 스태틱 메시에 1:1 대응하는 FStaticMeshSceneProxy의 스태틱 메시를 변경하는 함수
+	// 컴퍼넌트별로 메쉬 개수만큼 여러 씬프록시를 가질 수 있으므로 해당 방식으로 구현
+	void SetStaticMesh_RenderThread(const std::vector<std::shared_ptr<FStaticMeshSceneProxy>>& SceneProxies, const std::shared_ptr<UStaticMesh>& NewStaticMesh);
 
 	static void UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std::vector<XMMATRIX>& FinalMatrices);
 

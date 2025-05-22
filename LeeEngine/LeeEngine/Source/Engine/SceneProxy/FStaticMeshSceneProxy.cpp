@@ -1,4 +1,4 @@
-// 03.10
+﻿// 03.10
 // 언리얼 엔진 5 코드를 분석하며 자체엔진으로 작성중인 코드입니다.
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
@@ -25,9 +25,21 @@ FStaticMeshSceneProxy::~FStaticMeshSceneProxy()
 {
 }
 
+void FStaticMeshSceneProxy::SetNewRenderData(const std::shared_ptr<UStaticMesh>& NewStaticMesh)
+{
+	RenderData = NewStaticMesh->GetStaticMeshRenderData();
+}
+
 void FStaticMeshSceneProxy::Draw()
 {
 	if (!RenderData)
+	{
+		return;
+	}
+
+	// 현재 렌더 데이터인 스태틱메시가
+	// 내 FStaticMeshSceneProxy의 메쉬 인덱스보다 클 경우 그리면 안됨
+	if(MeshIndex >= RenderData->MeshCount)
 	{
 		return;
 	}

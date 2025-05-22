@@ -1,4 +1,4 @@
-// 03.09
+﻿// 03.09
 // 언리얼 엔진 5 코드를 분석하며 자체엔진으로 작성중인 코드입니다.
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
@@ -8,6 +8,7 @@
 #include "renderingthread.h"
 #include "Engine/SceneProxy/FNiagaraSceneProxy.h"
 #include "Engine/SceneProxy/FSkeletalMeshSceneProxy.h"
+#include "Engine/SceneProxy/FStaticMeshSceneProxy.h"
 
 std::shared_ptr<FScene> FRenderCommandExecutor::CurrentSceneData = nullptr;
 
@@ -153,6 +154,14 @@ void FScene::BeginRenderFrame()
 		}
 	}
 	PendingNewTransformProxies.clear();
+}
+
+void FScene::SetStaticMesh_RenderThread(const std::vector<std::shared_ptr<FStaticMeshSceneProxy>>& SceneProxies, const std::shared_ptr<UStaticMesh>& NewStaticMesh)
+{
+	for(const std::shared_ptr<FStaticMeshSceneProxy> SceneProxy : SceneProxies)
+	{
+		SceneProxy->SetNewRenderData(NewStaticMesh);	
+	}
 }
 
 void FScene::UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std::vector<XMMATRIX>& FinalMatrices)

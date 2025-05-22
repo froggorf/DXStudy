@@ -19,10 +19,13 @@ std::vector<std::shared_ptr<FPrimitiveSceneProxy>> UStaticMeshComponent::CreateS
 	std::vector<std::shared_ptr<FPrimitiveSceneProxy>> SceneProxies;
 
 	UINT MeshCount = StaticMesh->GetStaticMeshRenderData()->MeshCount;
+	SceneProxies.reserve(MeshCount);
+	StaticMeshSceneProxies.reserve(MeshCount);
 	for (UINT i = 0; i < MeshCount; ++i)
 	{
 		auto SceneProxy = std::make_shared<FStaticMeshSceneProxy>(PrimitiveID, i, StaticMesh);
 		SceneProxies.emplace_back(SceneProxy);
+		StaticMeshSceneProxies.emplace_back(SceneProxy);
 	}
 
 	return SceneProxies;
@@ -42,6 +45,15 @@ bool UStaticMeshComponent::SetStaticMesh(const std::shared_ptr<UStaticMesh>& New
 	}
 
 	StaticMesh = NewMesh;
+	if(!StaticMeshSceneProxies.empty())
+	{
+		std::vector<std::shared_ptr<FStaticMeshSceneProxy>> SMProxies = StaticMeshSceneProxies;
+		ENQUEUE_RENDER_COMMAND(([SMProxies, NewMesh](std::shared_ptr<FScene>& SceneData)
+			{
+				SceneData->SetStaticMesh_RenderThread(SMProxies, NewMesh);
+			}));
+		
+	}
 
 	return true;
 }
