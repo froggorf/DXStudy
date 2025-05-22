@@ -18,6 +18,30 @@ void FScene::BeginRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData, U
 	SceneData->BeginRenderFrame();
 }
 
+static void KillProxies(std::unordered_map<UINT, std::vector<FPrimitiveRenderData>>& SceneProxyRenderData, const std::vector<UINT>& PendingKillPrimitiveIDs)
+{
+	// Opaque {머테리얼 ID, 씬프록시 벡터}
+	for (auto MaterialIter = SceneProxyRenderData.begin(); MaterialIter != SceneProxyRenderData.end(); ++MaterialIter)
+	{
+		// 씬 프록시 벡터
+		std::vector<FPrimitiveRenderData>& Proxies = MaterialIter->second;
+
+		for(auto ProxyIter = Proxies.begin(); ProxyIter != Proxies.end(); )
+		{
+			// 해당 프리미티브 ID이므로 제거해줘야함
+			if(std::ranges::find(PendingKillPrimitiveIDs, ProxyIter->PrimitiveID) != PendingKillPrimitiveIDs.end())
+			{
+				// erase 하면서 다음 Iter로 넘어감
+				ProxyIter = Proxies.erase(ProxyIter);
+			}
+			else
+			{
+				++ProxyIter;
+			}
+		}
+	}	
+}
+
 void FScene::BeginRenderFrame()
 {
 	if (bIsFrameStart)
@@ -28,13 +52,25 @@ void FScene::BeginRenderFrame()
 
 	bIsFrameStart = true;
 
+	// Pending Kill
+	if(!PendingKillPrimitiveIDs.empty())
+	{	
+		KillProxies(OpaqueSceneProxyRenderData, PendingKillPrimitiveIDs);
+		KillProxies(MaskedSceneProxyRenderData, PendingKillPrimitiveIDs);
+		KillProxies(TranslucentSceneProxyRenderData, PendingKillPrimitiveIDs);
+		PendingKillPrimitiveIDs.clear();
+	}
+	
+	
+
+	// Pending Add
 	for (const auto& NewPrimitiveProxies : PendingAddSceneProxies)
 	{
 		for (int i = 0; i < NewPrimitiveProxies.second.size(); ++i)
 		{
 			const auto& NewPrimitiveProxy = NewPrimitiveProxies;
 
-			PrimitiveRenderData RenderData;
+			FPrimitiveRenderData RenderData;
 			RenderData.MeshIndex         = NewPrimitiveProxy.second[i]->GetMeshIndex();
 			RenderData.PrimitiveID       = NewPrimitiveProxy.first;
 			RenderData.SceneProxy        = NewPrimitiveProxy.second[i];
@@ -103,7 +139,7 @@ void FScene::BeginRenderFrame()
 			{
 				PrimitiveIter = std::find_if(PrimitiveIter,
 											Iter->second.end(),
-											[FindPrimitiveID](const PrimitiveRenderData& A)
+											[FindPrimitiveID](const FPrimitiveRenderData& A)
 											{
 												return A.PrimitiveID == FindPrimitiveID;
 											});
@@ -122,7 +158,7 @@ void FScene::BeginRenderFrame()
 			{
 				PrimitiveIter = std::find_if(PrimitiveIter,
 											Iter->second.end(),
-											[FindPrimitiveID](const PrimitiveRenderData& A)
+											[FindPrimitiveID](const FPrimitiveRenderData& A)
 											{
 												return A.PrimitiveID == FindPrimitiveID;
 											});
@@ -141,7 +177,7 @@ void FScene::BeginRenderFrame()
 			{
 				PrimitiveIter = std::find_if(PrimitiveIter,
 											Iter->second.end(),
-											[FindPrimitiveID](const PrimitiveRenderData& A)
+											[FindPrimitiveID](const FPrimitiveRenderData& A)
 											{
 												return A.PrimitiveID == FindPrimitiveID;
 											});
@@ -156,13 +192,6 @@ void FScene::BeginRenderFrame()
 	PendingNewTransformProxies.clear();
 }
 
-void FScene::SetStaticMesh_RenderThread(const std::vector<std::shared_ptr<FStaticMeshSceneProxy>>& SceneProxies, const std::shared_ptr<UStaticMesh>& NewStaticMesh)
-{
-	for(const std::shared_ptr<FStaticMeshSceneProxy> SceneProxy : SceneProxies)
-	{
-		SceneProxy->SetNewRenderData(NewStaticMesh);	
-	}
-}
 
 void FScene::UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std::vector<XMMATRIX>& FinalMatrices)
 {
@@ -180,7 +209,7 @@ void FScene::UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std:
 				{
 					PrimitiveIter = std::find_if(PrimitiveIter,
 												Iter->second.end(),
-												[PrimitiveID](const PrimitiveRenderData& A)
+												[PrimitiveID](const FPrimitiveRenderData& A)
 												{
 													return A.PrimitiveID == PrimitiveID;
 												});
@@ -207,7 +236,7 @@ void FScene::UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std:
 				{
 					PrimitiveIter = std::find_if(PrimitiveIter,
 												Iter->second.end(),
-												[PrimitiveID](const PrimitiveRenderData& A)
+												[PrimitiveID](const FPrimitiveRenderData& A)
 												{
 													return A.PrimitiveID == PrimitiveID;
 												});
@@ -234,7 +263,7 @@ void FScene::UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std:
 				{
 					PrimitiveIter = std::find_if(PrimitiveIter,
 												Iter->second.end(),
-												[PrimitiveID](const PrimitiveRenderData& A)
+												[PrimitiveID](const FPrimitiveRenderData& A)
 												{
 													return A.PrimitiveID == PrimitiveID;
 												});
@@ -280,7 +309,7 @@ void FScene::SetMaterialScalarParam_RenderThread(UINT PrimitiveID, UINT MeshInde
 	for (const auto& RenderData : OpaqueSceneProxyRenderData)
 	{
 		auto TargetRenderData = std::ranges::find_if(RenderData.second,
-													[PrimitiveID, MeshIndex](const PrimitiveRenderData& A)
+													[PrimitiveID, MeshIndex](const FPrimitiveRenderData& A)
 													{
 														return A.PrimitiveID == PrimitiveID && A.MeshIndex == MeshIndex;
 													});
@@ -299,7 +328,7 @@ void FScene::SetMaterialScalarParam_RenderThread(UINT PrimitiveID, UINT MeshInde
 	for (const auto& RenderData : MaskedSceneProxyRenderData)
 	{
 		auto TargetRenderData = std::ranges::find_if(RenderData.second,
-													[PrimitiveID, MeshIndex](const PrimitiveRenderData& A)
+													[PrimitiveID, MeshIndex](const FPrimitiveRenderData& A)
 													{
 														return A.PrimitiveID == PrimitiveID && A.MeshIndex == MeshIndex;
 													});
@@ -318,7 +347,7 @@ void FScene::SetMaterialScalarParam_RenderThread(UINT PrimitiveID, UINT MeshInde
 	for (const auto& RenderData : TranslucentSceneProxyRenderData)
 	{
 		auto TargetRenderData = std::ranges::find_if(RenderData.second,
-													[PrimitiveID, MeshIndex](const PrimitiveRenderData& A)
+													[PrimitiveID, MeshIndex](const FPrimitiveRenderData& A)
 													{
 														return A.PrimitiveID == PrimitiveID && A.MeshIndex == MeshIndex;
 													});
@@ -341,7 +370,7 @@ void FScene::SetTextureParam_RenderThread(UINT PrimitiveID, UINT MeshIndex, UINT
 	for (const auto& RenderData : OpaqueSceneProxyRenderData)
 	{
 		auto TargetRenderData = std::ranges::find_if(RenderData.second,
-													[PrimitiveID, MeshIndex](const PrimitiveRenderData& A)
+													[PrimitiveID, MeshIndex](const FPrimitiveRenderData& A)
 													{
 														return A.PrimitiveID == PrimitiveID && A.MeshIndex == MeshIndex;
 													});
@@ -360,7 +389,7 @@ void FScene::SetTextureParam_RenderThread(UINT PrimitiveID, UINT MeshIndex, UINT
 	for (const auto& RenderData : MaskedSceneProxyRenderData)
 	{
 		auto TargetRenderData = std::ranges::find_if(RenderData.second,
-													[PrimitiveID, MeshIndex](const PrimitiveRenderData& A)
+													[PrimitiveID, MeshIndex](const FPrimitiveRenderData& A)
 													{
 														return A.PrimitiveID == PrimitiveID && A.MeshIndex == MeshIndex;
 													});
@@ -379,7 +408,7 @@ void FScene::SetTextureParam_RenderThread(UINT PrimitiveID, UINT MeshIndex, UINT
 	for (const auto& RenderData : TranslucentSceneProxyRenderData)
 	{
 		auto TargetRenderData = std::ranges::find_if(RenderData.second,
-													[PrimitiveID, MeshIndex](const PrimitiveRenderData& A)
+													[PrimitiveID, MeshIndex](const FPrimitiveRenderData& A)
 													{
 														return A.PrimitiveID == PrimitiveID && A.MeshIndex == MeshIndex;
 													});

@@ -14,20 +14,56 @@ FStaticMeshSceneProxy::FStaticMeshSceneProxy(UINT InPrimitiveID, UINT InMeshInde
 	: FPrimitiveSceneProxy(InPrimitiveID)
 {
 	MeshIndex         = InMeshIndex;
-	RenderData        = StaticMesh->GetStaticMeshRenderData();
-	MaterialInterface = RenderData->Materials[MeshIndex];
+	if(StaticMesh)
+	{
+		
+		RenderData        = StaticMesh->GetStaticMeshRenderData();
+		MaterialInterface = RenderData->Materials[MeshIndex];	
+	}
+	else
+	{
+#ifdef WITH_EDITOR
+		std::string Temp = std::to_string(InPrimitiveID) + " - " + std::to_string(InMeshIndex) + "StaticMesh is not bind";
+		MY_LOG("FStaticMeshSceneProxy - " , EDebugLogLevel::DLL_Warning, Temp);
+#endif
+	}
+	
 
-	std::string Text = "FStaticMeshSceneProxy Create StaticMeshSceneProxy - " + std::to_string(InPrimitiveID);
-	MY_LOG(Text, EDebugLogLevel::DLL_Display, "");
+	
 }
 
 FStaticMeshSceneProxy::~FStaticMeshSceneProxy()
 {
+	MY_LOG("FStaticMeshSceneProxy", EDebugLogLevel::DLL_Warning, "Kill");
 }
 
 void FStaticMeshSceneProxy::SetNewRenderData(const std::shared_ptr<UStaticMesh>& NewStaticMesh)
 {
+	if(nullptr == NewStaticMesh)
+	{
+		MY_LOG("FStaticMeshSceneProxy - SetNewRenderData" , EDebugLogLevel::DLL_Warning, "No valid StaticMesh");
+		return;
+	}
+	
 	RenderData = NewStaticMesh->GetStaticMeshRenderData();
+
+	// 머테리얼의 정보가 없다면 해당 정보도 채워주기
+	if(!MaterialInterface)
+	{
+		// 머테리얼 정보가 없으면 생략
+		if(RenderData->Materials.empty())
+		{
+			return;
+		}
+
+		UINT MaterialIndex = MeshIndex;
+		// 만약 초과된 메쉬일경우 0번 머테리얼을 참조하도록
+		if(MeshIndex >= static_cast<UINT>(RenderData->Materials.size()))
+		{
+			MaterialIndex = 0;
+		}
+		MaterialInterface = RenderData->Materials[MaterialIndex];
+	}
 }
 
 void FStaticMeshSceneProxy::Draw()

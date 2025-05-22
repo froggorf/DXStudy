@@ -16,8 +16,14 @@ UStaticMeshComponent::UStaticMeshComponent()
 
 std::vector<std::shared_ptr<FPrimitiveSceneProxy>> UStaticMeshComponent::CreateSceneProxy()
 {
+	if(nullptr == StaticMesh)
+	{
+		return {};
+	}
+
 	std::vector<std::shared_ptr<FPrimitiveSceneProxy>> SceneProxies;
 
+	
 	UINT MeshCount = StaticMesh->GetStaticMeshRenderData()->MeshCount;
 	SceneProxies.reserve(MeshCount);
 	StaticMeshSceneProxies.reserve(MeshCount);
@@ -45,15 +51,22 @@ bool UStaticMeshComponent::SetStaticMesh(const std::shared_ptr<UStaticMesh>& New
 	}
 
 	StaticMesh = NewMesh;
+	// 이전에 씬 프록시가 있었다면 제거해달라고 요청
 	if(!StaticMeshSceneProxies.empty())
 	{
-		std::vector<std::shared_ptr<FStaticMeshSceneProxy>> SMProxies = StaticMeshSceneProxies;
-		ENQUEUE_RENDER_COMMAND(([SMProxies, NewMesh](std::shared_ptr<FScene>& SceneData)
-			{
-				SceneData->SetStaticMesh_RenderThread(SMProxies, NewMesh);
-			}));
-		
+		// 이전에 존재하던 SceneProxies들을 제거
+		FScene::KillPrimitive_GameThread(PrimitiveID);
+		StaticMeshSceneProxies.clear();
+
 	}
 
+	// 새로운 씬 프록시를 생성
+	std::vector<std::shared_ptr<FPrimitiveSceneProxy>> PrimitiveSceneProxies = CreateSceneProxy();
+	for (int i = 0; i < PrimitiveSceneProxies.size(); ++i)
+	{
+		FScene::AddPrimitive_GameThread(PrimitiveID, PrimitiveSceneProxies[i], GetComponentTransform());
+	}
+
+	// 새로운 씬 프록시들을 생성 및 등록
 	return true;
 }

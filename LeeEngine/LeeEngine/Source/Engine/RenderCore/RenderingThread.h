@@ -109,7 +109,7 @@ private:
 inline std::atomic<bool> bIsGameKill               = false;
 inline std::atomic<UINT> RenderingThreadFrameCount = 0;
 
-struct PrimitiveRenderData
+struct FPrimitiveRenderData
 {
 	UINT                                  PrimitiveID;
 	UINT                                  MeshIndex;
@@ -133,16 +133,16 @@ public:
 
 	// ==================== FPrimitiveSceneProxy ====================
 	// { UINT(MaterialID) , RenderData }
-	std::unordered_map<UINT, std::vector<PrimitiveRenderData>> OpaqueSceneProxyRenderData;
-	std::unordered_map<UINT, std::vector<PrimitiveRenderData>> MaskedSceneProxyRenderData;
-	std::unordered_map<UINT, std::vector<PrimitiveRenderData>> TranslucentSceneProxyRenderData;
+	std::unordered_map<UINT, std::vector<FPrimitiveRenderData>> OpaqueSceneProxyRenderData;
+	std::unordered_map<UINT, std::vector<FPrimitiveRenderData>> MaskedSceneProxyRenderData;
+	std::unordered_map<UINT, std::vector<FPrimitiveRenderData>> TranslucentSceneProxyRenderData;
 	/*std::vector<PrimitiveRenderData> OpaqueSceneProxyRenderData;
 	std::vector<PrimitiveRenderData> MaskedSceneProxyRenderData;
 	std::vector<PrimitiveRenderData> TranslucentSceneProxyRenderData;*/
 
 	// PrimitiveID, 
 	std::map<UINT, std::vector<std::shared_ptr<FPrimitiveSceneProxy>>> PendingAddSceneProxies;
-	std::map<UINT, std::shared_ptr<FPrimitiveSceneProxy>>              PendingDeleteSceneProxies;
+	std::vector<UINT>              PendingKillPrimitiveIDs;
 
 	std::map<UINT, FTransform> PendingNewTransformProxies;
 	// ==================== FPrimitiveSceneProxy ====================
@@ -209,6 +209,7 @@ public:
 		}
 		auto Lambda = [PrimitiveID, SceneProxy, InitTransform](std::shared_ptr<FScene>& SceneData)
 		{
+			SceneProxy->SetSceneProxyWorldTransform(InitTransform);
 			AddPrimitive_RenderThread(SceneData, PrimitiveID, SceneProxy);
 		};
 		ENQUEUE_RENDER_COMMAND(Lambda)
@@ -224,6 +225,16 @@ public:
 		SceneData->PendingAddSceneProxies[PrimitiveID].emplace_back(NewProxy);
 	}
 
+	// 특정 프리미티브 ID의 씬 프록시를 제거해달라고 요청
+	static void KillPrimitive_GameThread(UINT PrimitiveID)
+	{
+		ENQUEUE_RENDER_COMMAND([PrimitiveID](std::shared_ptr<FScene>& SceneData)
+			{
+				SceneData->PendingKillPrimitiveIDs.emplace_back(PrimitiveID);
+			});
+	}
+	
+
 	static void NewTransformToPrimitive_GameThread(UINT PrimitiveID, const FTransform& NewTransform)
 	{
 		if (PrimitiveID > 0)
@@ -235,10 +246,6 @@ public:
 			ENQUEUE_RENDER_COMMAND(Lambda)
 		}
 	}
-
-	// 스태틱 메시에 1:1 대응하는 FStaticMeshSceneProxy의 스태틱 메시를 변경하는 함수
-	// 컴퍼넌트별로 메쉬 개수만큼 여러 씬프록시를 가질 수 있으므로 해당 방식으로 구현
-	void SetStaticMesh_RenderThread(const std::vector<std::shared_ptr<FStaticMeshSceneProxy>>& SceneProxies, const std::shared_ptr<UStaticMesh>& NewStaticMesh);
 
 	static void UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std::vector<XMMATRIX>& FinalMatrices);
 

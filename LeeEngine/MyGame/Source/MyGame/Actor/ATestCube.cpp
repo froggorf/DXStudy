@@ -23,7 +23,7 @@ ATestCube::ATestCube()
 	//
 	TestCube2 = std::make_shared<UStaticMeshComponent>();
 	TestCube2->SetupAttachment(GetRootComponent());
-	TestCube2->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Cube"));
+	//TestCube2->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Cube"));
 	TestCube2->SetRelativeScale3D(XMFLOAT3(200.0f, 1.0f, 200.0f));
 	TestCube2->SetRelativeScale3D(XMFLOAT3(200.0f, 1.0f, 200.0f));
 	TestCube2->SetRelativeLocation(XMFLOAT3(0.0f, -25.0f, 0.0f));
@@ -114,5 +114,18 @@ void ATestCube::Tick(float DeltaSeconds)
 			bCheck = true;
 		}
 		
+	}
+	{
+		static bool bCheck2 = false;
+		if(ImGui::IsKeyReleased(ImGuiKey_O))
+		{
+			if(!bCheck2)
+			{
+				TestCube2->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Cube"));
+				MY_LOG("PRESSED", EDebugLogLevel::DLL_Warning, "O");
+				bCheck2 = true;
+			}
+
+		}
 	}
 }
