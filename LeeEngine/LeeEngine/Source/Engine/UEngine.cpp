@@ -371,25 +371,21 @@ void UEngine::LoadAllObjectsFromFile()
 	{
 		if (Entry.is_regular_file() && Entry.path().extension() == ".myasset")
 		{
+			std::string FileName = Entry.path().stem().string();
+			std::string FullPath = Entry.path().generic_string();
+			// {에셋이름 - 에셋경로} 맵 추가
+			AssetManager::GetAssetNameAndAssetPathMap()[FileName] = FullPath;
+			
 			MyAssetFiles.push_back(Entry.path());
 		}
 	}
 
 	for (const auto& File : MyAssetFiles)
 	{
-		std::string FilePath = File.string();
-		while (true)
-		{
-			auto p = FilePath.find("\\");
-			if (p == std::string::npos)
-			{
-				break;
-			}
-			FilePath.replace(p, 1, "/");
-		}
+		std::string FilePath = File.generic_string();
 
 		AssetManager::ReadMyAsset(FilePath);
 	}
 
-	MY_LOG("Load", EDebugLogLevel::DLL_Warning, "Load All Objects From File Success");
+	//MY_LOG("Load", EDebugLogLevel::DLL_Warning, "Load All Objects From File Success");
 }

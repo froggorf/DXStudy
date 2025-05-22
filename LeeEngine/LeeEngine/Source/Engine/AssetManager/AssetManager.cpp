@@ -1,11 +1,14 @@
-#include "CoreMinimal.h"
+﻿#include "CoreMinimal.h"
 #include "AssetManager.h"
 
 #include "Engine/Class/UTexture.h"
+#include "Engine/Misc/QueuedThreadPool.h"
 
 using namespace Microsoft::WRL;
-
-std::unordered_map<std::string, std::string> AssetManager::AssetNameAndAssetPathCacheMap;
+using namespace concurrency;
+std::unordered_map<std::string, std::string> AssetManager::AssetNameAndAssetPathMap;
+concurrent_unordered_map<std::string, std::weak_ptr<UObject>> AssetManager::AsyncAssetCache;
+concurrent_unordered_map<std::string, concurrent_vector<AssetLoadedCallback>> AssetManager::LoadingCallbackMap;
 
 void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Device> pDevice, std::vector<ComPtr<ID3D11Buffer>>& pVertexBuffer, std::vector<ComPtr<ID3D11Buffer>>& pIndexBuffer)
 {
@@ -26,13 +29,6 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
 	ProcessScene(scene, allVertices, allIndices);
 
 	// 결과 출력
-	std::cout << "Path : " << path << std::endl;
-	for (size_t i = 0; i < allVertices.size(); i++)
-	{
-		std::cout << "Mesh " << i << ":\n";
-		std::cout << "  Vertices: " << allVertices[i].size() << "\n";
-		std::cout << "  Indices: " << allIndices[i].size() << "\n";
-	}
 
 	// 모델 로드 성공
 	MY_LOG("AssetLoad", EDebugLogLevel::DLL_Display, "Model - " + filePath+" Load Success");
@@ -83,13 +79,6 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
 	ProcessScene(scene, allVertices, allIndices);
 
 	// 결과 출력
-	std::cout << "Path : " << path << std::endl;
-	for (size_t i = 0; i < allVertices.size(); i++)
-	{
-		std::cout << "Mesh " << i << ":\n";
-		std::cout << "  Vertices: " << allVertices[i].size() << "\n";
-		std::cout << "  Indices: " << allIndices[i].size() << "\n";
-	}
 
 	// 모델 로드 성공
 	MY_LOG("AssetLoad", EDebugLogLevel::DLL_Display, "Model - " + filePath+" Load Success");
@@ -141,14 +130,6 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const ComPtr<I
 	ProcessScene(scene, allVertices, allIndices);
 
 	// 결과 출력
-	std::cout << "Path : " << path << std::endl;
-	for (size_t i = 0; i < allVertices.size(); i++)
-	{
-		std::cout << "Mesh " << i << ":\n";
-		std::cout << "  Vertices: " << allVertices[i].size() << "\n";
-		std::cout << "  Indices: " << allIndices[i].size() << "\n";
-	}
-
 	// VertexData를 SkeletalVertexData로 변환
 	std::vector<std::vector<MyVertexData>> allSkeletalVertices(scene->mNumMeshes);
 	for (int meshIndex = 0; meshIndex < allVertices.size(); ++meshIndex)
@@ -372,7 +353,7 @@ UObject* AssetManager::ReadMyAsset(const std::string& FilePath)
 
 	std::shared_ptr<UObject> Object = UObject::GetDefaultObject(AssetData["Class"])->CreateInstance();
 	Object->LoadDataFromFileData(AssetData);
-	AssetNameAndAssetPathCacheMap[Object->GetName()] = FilePath;
+	//AssetNameAndAssetPathMap[Object->GetName()] = FilePath;
 
 	AssetCache[Object->GetName()] = Object;
 	MY_LOG("AssetLoad", EDebugLogLevel::DLL_Display, FilePath+" Load Success");
@@ -512,4 +493,73 @@ void AssetManager::ExtractBoneWeightForVertices(std::vector<MyVertexData>& vVert
 			SetVertexBoneData(vVertexData[vertexID], boneID, weight);
 		}
 	}
+}
+
+void AssetManager::GetAsyncAssetCache(const std::string& AssetName, const AssetLoadedCallback& LoadedCallback)
+{
+	// 엔진이 초기화 되기 전에는 비동기 에셋 로드를 진행하지 않음
+	// 엔진 생성 이전 CDO를 만드는 과정에서 발생할 수 있기 때문에 방지
+	if(!GEngine)
+	{
+		return;
+	}
+
+	// 이미 로드한 적이 있어 캐시에 있다면 바로 콜백함수 적용
+	const auto Iter = AsyncAssetCache.find(AssetName);
+	if(Iter != AsyncAssetCache.end())
+	{
+		if(Iter->second.expired())
+		{
+			MY_LOG("Destroy AsyncAssetCache", EDebugLogLevel::DLL_Display, Iter->first);
+			AsyncAssetCache.unsafe_erase(Iter); 
+		}
+		else
+		{
+			std::shared_ptr<UObject> SharedObj = Iter->second.lock();
+			LoadedCallback(SharedObj);
+			return;
+		}
+	}
+
+	// 여기까지 넘어오면 현재 로드가 안된 상태이므로 로드를 진행해줘야함
+
+	// 만약 해당 에셋이 로드중이라면 콜백만 추가하고 종료
+	{
+		auto FindLoading = LoadingCallbackMap.find(AssetName);
+		if(FindLoading != LoadingCallbackMap.end())
+		{
+			FindLoading->second.push_back(LoadedCallback);
+			return;
+		}
+	}
+
+	// 로드 진행
+	LoadingCallbackMap[AssetName] = concurrency::concurrent_vector<AssetLoadedCallback>{};
+	LoadingCallbackMap[AssetName].push_back(LoadedCallback);
+
+	FTask Task{0, [AssetName]()
+	{
+		std::string FilePath = AssetManager::GetAssetNameAndAssetPathMap()[AssetName];
+		std::ifstream AssetFile(FilePath.data());
+		if (!AssetFile.is_open())
+		{
+			assert(nullptr && "잘못된 에셋 경로");
+		}
+		nlohmann::json AssetData = nlohmann::json::parse(AssetFile);
+
+		std::shared_ptr<UObject> Object = UObject::GetDefaultObject(AssetData["Class"])->CreateInstance();
+		Object->LoadDataFromFileData(AssetData);
+
+		AsyncAssetCache[AssetName] = Object;
+
+		for(const AssetLoadedCallback& Callback : LoadingCallbackMap[AssetName])
+		{
+			Callback(Object);
+		}
+		LoadingCallbackMap.unsafe_erase(AssetName);
+
+		MY_LOG("AsyncAssetLoad", EDebugLogLevel::DLL_Display, FilePath+" Load Success");
+	}, nullptr};
+
+	GThreadPool->AddTask(Task);
 }

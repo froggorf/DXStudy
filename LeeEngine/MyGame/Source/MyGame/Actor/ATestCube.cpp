@@ -23,6 +23,12 @@ ATestCube::ATestCube()
 	//
 	TestCube2 = std::make_shared<UStaticMeshComponent>();
 	TestCube2->SetupAttachment(GetRootComponent());
+	// 비동기 에셋 로드 테스트
+	AssetManager::GetAsyncAssetCache("SM_Cube",[this](std::shared_ptr<UObject> Object)
+	{
+		TestCube2->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
+	});
+
 	//TestCube2->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Cube"));
 	TestCube2->SetRelativeScale3D(XMFLOAT3(200.0f, 1.0f, 200.0f));
 	TestCube2->SetRelativeScale3D(XMFLOAT3(200.0f, 1.0f, 200.0f));

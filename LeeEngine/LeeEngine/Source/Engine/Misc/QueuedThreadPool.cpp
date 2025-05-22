@@ -19,7 +19,17 @@ FQueuedThreadPool::FQueuedThreadPool(UINT InNumQueuedThreads)
 					if (TaskQueue.try_pop(CurrentTask))
 					{
 						CurrentTask.Work();
-						CurrentTask.IsWorkComplete->store(true);
+
+						if(CurrentTask.IsWorkComplete)
+						{
+							CurrentTask.IsWorkComplete->store(true);	
+						}
+						
+						if(CurrentTask.WorkCompleteCallback)
+						{
+							CurrentTask.WorkCompleteCallback();	
+						}
+						
 						continue;
 					}
 					// 종료되거나 작업이 생기는 시점까지 대기

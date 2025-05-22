@@ -2,11 +2,14 @@
 // 모델, 텍스쳐 등의 오브젝트 (에셋)을 관리하는 매니저 클래스
 #pragma once
 #include <concurrent_unordered_map.h>
+#include <concurrent_vector.h>
 #include "DirectX/d3dUtil.h"
 #include "Engine/RenderCore/EditorScene.h"
 class UObject;
 struct aiScene;
 struct aiMesh;
+
+using AssetLoadedCallback = std::function<void(std::shared_ptr<UObject>)>;
 
 enum class EAssetDataType
 {
@@ -56,11 +59,6 @@ private:
 	static void ExtractBoneWeightForVertices(std::vector<MyVertexData>& vVertexData, aiMesh* mesh, std::map<std::string, BoneInfo>& modelBoneInfoMap);
 
 public:
-	static std::unordered_map<std::string, std::string>& GetAssetNameAndAssetPathCacheMap()
-	{
-		return AssetNameAndAssetPathCacheMap;
-	}
-
 	static std::shared_ptr<UObject> GetAssetCacheByName(const std::string& AssetName)
 	{
 		const std::unordered_map<std::string, std::shared_ptr<UObject>>& Map    = GetAssetCacheMap();
@@ -72,31 +70,22 @@ public:
 		return nullptr;
 	}
 
-	static std::shared_ptr<UObject> GetAsyncAssetCache(const std::string& AssetName)
-	{
-		const auto Iter = AsyncAssetCache.find(AssetName);
-		if(Iter != AsyncAssetCache.end())
+
+	// 에셋을 비동기로 로드하는 함수
+	/* 사용 방법 ex) 액터 내 StaticMeshComponent의 SetStaticMesh를 하는 과정
+	 AssetManager::GetAsyncAssetCache("SM_Cube", [&StaticMeshComp](std::shared_ptr<UObject> Object)
 		{
-			// 에셋이 현재 소멸한 상태라면
-			if(Iter->second.expired())
-			{
-				AsyncAssetCache.unsafe_erase(Iter); 
-			}
-			else
-			{
-				// std::weak_ptr<UObject> -> std::shared_ptr<UObject>
-				std::shared_ptr<UObject> SharedObj = Iter->second.lock();
-				return SharedObj;
-			}
-		}
+			StaticMeshComp->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));	
+		});
+	 */
+	static void GetAsyncAssetCache(const std::string& AssetName, const AssetLoadedCallback& LoadedCallback);
 
-		return nullptr;
-	}
-	static void LoadAssetAsync(const std::string& Path)
+
+
+	static std::unordered_map<std::string, std::string>& GetAssetNameAndAssetPathMap()
 	{
-		
+		return AssetNameAndAssetPathMap;
 	}
-
 private:
 	static std::unordered_map<std::string, std::shared_ptr<UObject>>& GetAssetCacheMap()
 	{
@@ -104,15 +93,17 @@ private:
 		return AssetCache;
 	}
 
-	static std::unordered_map<std::string, std::string> AssetNameAndAssetPathCacheMap;
+	// 에셋이름 - 실제 경로 를 저장하는 컨테이너
+	// 처음 엔진이 Init될 때 모두 저장됨
+	static std::unordered_map<std::string, std::string> AssetNameAndAssetPathMap;
 
 	// 게임쓰레드와 잡쓰레드(비동기 에셋 로드 쓰레드)들끼리 접근할 수 있으므로
 	// 마이크로 소프트의 concurrent 라이브러리를 사용하여 concurrent_unordered_map 자료구조 사용
 	static concurrency::concurrent_unordered_map<std::string, std::weak_ptr<UObject>> AsyncAssetCache;
 
+public:
 	// 에셋의 로딩이 요청될 경우 추가되며,
 	// {에셋 이름} , 로딩 완료할 경우 실행될 콜백함수를 저장하는 컨테이너
 	// A에셋에서 "1" 을 로드 중 B에셋에서 "1"을 동시에 로드 요청할 경우 콜백함수를 계속해서 추가할 수 있게 적용
-	static concurrency::concurrent_unordered_map<std::string, std::vector<std::function<void(std::shared_ptr<UObject>)>>> LoadingCallbackMap;
-
+	static concurrency::concurrent_unordered_map<std::string, concurrency::concurrent_vector<AssetLoadedCallback>> LoadingCallbackMap;
 };

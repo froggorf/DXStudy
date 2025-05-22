@@ -17,6 +17,7 @@ struct FTask
 	int                   Priority;
 	std::function<void()> Work;
 	std::atomic<bool>*    IsWorkComplete;
+	std::function<void()> WorkCompleteCallback;
 
 	bool operator<(const FTask& Other) const
 	{
