@@ -1,6 +1,0 @@
-{
-    "Class": "UAnimSequence",
-    "Name": "AS_Aim",
-    "Skeleton": "SK_MyUEFN",
-    "AnimationDataPath": "/Content/Resource/Animation/MyUEFN/TestAsset/Aim_Space_Hip.FBX"
-}

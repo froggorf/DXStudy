@@ -74,7 +74,7 @@ public:
 
 	static std::shared_ptr<UObject> GetAsyncAssetCache(const std::string& AssetName)
 	{
-		auto Iter = AsyncAssetCache.find(AssetName);
+		const auto Iter = AsyncAssetCache.find(AssetName);
 		if(Iter != AsyncAssetCache.end())
 		{
 			// 에셋이 현재 소멸한 상태라면
@@ -109,4 +109,10 @@ private:
 	// 게임쓰레드와 잡쓰레드(비동기 에셋 로드 쓰레드)들끼리 접근할 수 있으므로
 	// 마이크로 소프트의 concurrent 라이브러리를 사용하여 concurrent_unordered_map 자료구조 사용
 	static concurrency::concurrent_unordered_map<std::string, std::weak_ptr<UObject>> AsyncAssetCache;
+
+	// 에셋의 로딩이 요청될 경우 추가되며,
+	// {에셋 이름} , 로딩 완료할 경우 실행될 콜백함수를 저장하는 컨테이너
+	// A에셋에서 "1" 을 로드 중 B에셋에서 "1"을 동시에 로드 요청할 경우 콜백함수를 계속해서 추가할 수 있게 적용
+	static concurrency::concurrent_unordered_map<std::string, std::vector<std::function<void(std::shared_ptr<UObject>)>>> LoadingCallbackMap;
+
 };

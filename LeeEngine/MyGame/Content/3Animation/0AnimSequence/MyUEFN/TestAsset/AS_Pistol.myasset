@@ -1,6 +1,0 @@
-{
-    "Class": "UAnimSequence",
-    "Name": "AS_Pistol",
-    "Skeleton": "SK_MyUEFN",
-    "AnimationDataPath": "/Content/Resource/Animation/MyUEFN/TestAsset/Equip_Pistol_Standing.FBX"
-}
