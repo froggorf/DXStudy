@@ -68,14 +68,14 @@ void FStaticMeshSceneProxy::SetNewRenderData(const std::shared_ptr<UStaticMesh>&
 
 void FStaticMeshSceneProxy::Draw()
 {
-	if (!RenderData)
+	if (!RenderData || !RenderData->bLoadSuccess)
 	{
 		return;
-	}
+	}	
 
 	// 현재 렌더 데이터인 스태틱메시가
 	// 내 FStaticMeshSceneProxy의 메쉬 인덱스보다 클 경우 그리면 안됨
-	if(MeshIndex >= RenderData->MeshCount)
+	if(MeshIndex >= RenderData->VertexBuffer.size())
 	{
 		return;
 	}
@@ -84,7 +84,6 @@ void FStaticMeshSceneProxy::Draw()
 
 	ID3D11DeviceContext* DeviceContext = GDirectXDevice->GetDeviceContext().Get();
 
-	// 셰이더 설정
 	UINT stride = sizeof(MyVertexData);
 	UINT offset = 0;
 	DeviceContext->IASetVertexBuffers(0, 1, RenderData->VertexBuffer[MeshIndex].GetAddressOf(), &stride, &offset);
@@ -94,4 +93,5 @@ void FStaticMeshSceneProxy::Draw()
 	RenderData->IndexBuffer[MeshIndex]->GetDesc(&indexBufferDesc);
 	UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
 	DeviceContext->DrawIndexed(indexSize, 0, 0);
+	
 }

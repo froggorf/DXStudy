@@ -111,10 +111,10 @@ inline std::atomic<UINT> RenderingThreadFrameCount = 0;
 
 struct FPrimitiveRenderData
 {
-	UINT                                  PrimitiveID;
-	UINT                                  MeshIndex;
-	std::shared_ptr<FPrimitiveSceneProxy> SceneProxy;
-	std::shared_ptr<UMaterialInterface>   MaterialInterface;
+	UINT                                  PrimitiveID = 0;
+	UINT                                  MeshIndex = 0;
+	std::shared_ptr<FPrimitiveSceneProxy> SceneProxy = nullptr;
+	std::shared_ptr<UMaterialInterface>   MaterialInterface = nullptr;
 };
 
 // 렌더링에 대한 정보를 가지고 있는 클래스 (씬 단위)
@@ -173,13 +173,15 @@ public:
 	static void InitSceneData_GameThread()
 	{
 		ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData) {
+			// 기존에 남아있는 렌더 명령어 모두 Dequeue
 			SceneData = std::make_shared<FScene>();
 			std::shared_ptr<FRenderTask> DummyTask;
-			// 기존에 남아있는 렌더 명령어 모두 Dequeue
 			while(FRenderCommandPipe::Dequeue(DummyTask))
 			{
 				DummyTask->CommandLambda(SceneData);
 			}
+			
+			
 		})
 	}
 #endif

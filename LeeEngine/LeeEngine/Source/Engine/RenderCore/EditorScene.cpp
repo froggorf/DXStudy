@@ -1,4 +1,4 @@
-// 03.19
+﻿// 03.19
 // 언리얼 엔진 5 코드를 분석하며 자체엔진으로 작성중인 코드입니다.
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
@@ -17,7 +17,21 @@ FEditorScene::FEditorScene()
 
 void FEditorScene::InitSceneData_GameThread()
 {
-	ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData) { SceneData = nullptr; SceneData = std::make_shared<FEditorScene>(); FViewMatrices EditorViewMatrices; auto CommandData = std::make_shared<FImguiLevelViewportCommandData>(); CommandData->PanelType = EImguiPanelType::IPT_LevelViewport; CommandData->CommandType = ELevelViewportCommandType::LVCT_ChangeLevelInitialize; std::dynamic_pointer_cast<FEditorScene>(SceneData)->GetEditorClient()->AddPanelCommand(CommandData); })
+	ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData) 
+	{
+		SceneData = std::make_shared<FEditorScene>();
+		std::shared_ptr<FRenderTask> DummyTask;
+		// 기존에 남아있는 렌더 명령어 모두 Dequeue
+		while(FRenderCommandPipe::Dequeue(DummyTask))
+		{
+			DummyTask->CommandLambda(SceneData);
+		}
+		FViewMatrices EditorViewMatrices;
+		auto CommandData = std::make_shared<FImguiLevelViewportCommandData>();
+		CommandData->PanelType = EImguiPanelType::IPT_LevelViewport;
+		CommandData->CommandType = ELevelViewportCommandType::LVCT_ChangeLevelInitialize;
+		std::dynamic_pointer_cast<FEditorScene>(SceneData)->GetEditorClient()->AddPanelCommand(CommandData);
+	})
 }
 
 void FEditorScene::BeginRenderFrame()

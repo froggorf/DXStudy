@@ -113,9 +113,20 @@ const std::string& UEngine::GetDefaultMapName()
 
 void UEngine::DELETELATER_TestChangeLevel(const std::string& str)
 {
-	FScene::ClearScene_GameThread();
-	auto TTT = std::make_shared<ULevel>(ULevel::GetLevelInstanceByName(str));
-	CurrentWorld->SetPersistentLevel(TTT);
+	// 비동기 로드 진행
+	AssetManager::GetAsyncAssetCache(str, [this](std::shared_ptr<UObject> LevelObject)
+	{
+		//ULevel::GetLevelInstanceByName(str)
+		if(LevelObject)
+		{
+			// 레벨 정보를 생성자를 통해서 인스턴스를 만드는 방식
+			auto TTT = std::make_shared<ULevel>(std::dynamic_pointer_cast<ULevel>(LevelObject).get());
+
+			CurrentWorld->SetPersistentLevel(TTT);		
+		}
+		
+	});
+	
 }
 
 void UEngine::GameStart()
@@ -197,6 +208,17 @@ void UEngine::Tick(float DeltaSeconds)
 	//	i = 0;
 	//	GEngine->DELETELATER_TestChangeLevel("TestLevel");
 	//}
+	static bool b = false;
+	if(ImGui::IsKeyReleased(ImGuiKey_0))
+	{
+		if(!b)
+		{
+			b = true;
+			GEngine->DELETELATER_TestChangeLevel("AsyncTestLevel");
+		}
+		
+	}
+
 }
 
 void UEngine::MakeComponentTransformDirty(std::shared_ptr<USceneComponent>& SceneComponent)
@@ -375,7 +397,12 @@ void UEngine::LoadAllObjectsFromFile()
 			std::string FullPath = Entry.path().generic_string();
 			// {에셋이름 - 에셋경로} 맵 추가
 			AssetManager::GetAssetNameAndAssetPathMap()[FileName] = FullPath;
-			
+
+			// TODO: DELETE_LATER 비동기 에셋 로드 테스트용 레벨은 로드에서 제거
+			if(FileName == "AsyncTestLevel")
+			{
+				continue;
+			}
 			MyAssetFiles.push_back(Entry.path());
 		}
 	}

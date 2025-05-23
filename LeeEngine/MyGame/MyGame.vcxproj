@@ -22,12 +22,14 @@
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\MyGame\Actor\ATestActor2.cpp" />
     <ClCompile Include="Source\MyGame\Actor\ATestCube.cpp" />
+    <ClCompile Include="Source\MyGame\Actor\ATestCube2.cpp" />
     <ClCompile Include="Source\MyGame\AnimInstance\UMyAnimInstance.cpp" />
     <ClCompile Include="Source\MyGame\Component\UTestComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h" />
     <ClInclude Include="Source\MyGame\Actor\ATestCube.h" />
+    <ClInclude Include="Source\MyGame\Actor\ATestCube2.h" />
     <ClInclude Include="Source\MyGame\AnimInstance\UMyAnimInstance.h" />
     <ClInclude Include="Source\MyGame\Component\UTestComponent.h" />
   </ItemGroup>

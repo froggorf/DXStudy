@@ -1,0 +1,54 @@
+﻿#include "CoreMinimal.h"
+#include "ATestCube2.h"
+
+#include "Engine/Components/UStaticMeshComponent.h"
+#include "Engine/Mesh/UStaticMesh.h"
+
+ATestCube2::ATestCube2()
+{
+	std::vector<std::shared_ptr<UStaticMeshComponent>> Comps = {
+		SM0,
+		SM1,
+		SM2,
+		SM3,
+		SM4,
+		SM5,
+		SM6,
+		SM7,
+		SM8,
+		SM9,
+		SM10,
+		SM11,
+		SM12,
+		SM13,
+		SM14,
+		SM15
+	};
+	
+
+	for(size_t i = 0; i < Comps.size(); ++i)
+	{
+		Comps[i] = std::make_shared<UStaticMeshComponent>();
+		Comps[i]->SetupAttachment(GetRootComponent());
+		// 프리로드 데이터를 활용하는 방법
+		//Comps[i]->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Cube"));
+		// 비동기 로드
+		std::shared_ptr<UStaticMeshComponent> Target = Comps[i];
+		std::string Name = "SM_AsyncTest" + std::to_string(i);
+		AssetManager::GetAsyncAssetCache(Name, [Target,i](std::shared_ptr<UObject> Object)
+		{
+			Target->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
+
+			Target->SetRelativeScale3D(XMFLOAT3(1.0f,1.0f,1.0f));
+			Target->SetRelativeLocation(XMFLOAT3(50.0f*(i/5), 0.0f, 50*(i%5)));
+		});
+	
+	}
+
+	
+}
+
+void ATestCube2::Tick(float DeltaSeconds)
+{
+	AActor::Tick(DeltaSeconds);
+}

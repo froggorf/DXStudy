@@ -1,0 +1,6 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_AsyncTest5",
+    "ModelData": "/Content/Resource/Model/SKM_MyUEFN.FBX",
+    "Material" : [ "M_Cube" ]
+}

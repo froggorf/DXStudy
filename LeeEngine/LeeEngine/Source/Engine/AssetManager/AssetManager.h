@@ -80,12 +80,11 @@ public:
 	 */
 	static void GetAsyncAssetCache(const std::string& AssetName, const AssetLoadedCallback& LoadedCallback);
 
-
-
 	static std::unordered_map<std::string, std::string>& GetAssetNameAndAssetPathMap()
 	{
 		return AssetNameAndAssetPathMap;
 	}
+
 private:
 	static std::unordered_map<std::string, std::shared_ptr<UObject>>& GetAssetCacheMap()
 	{

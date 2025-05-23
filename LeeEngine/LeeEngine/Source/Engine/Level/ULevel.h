@@ -1,4 +1,4 @@
-// 02.14
+﻿// 02.14
 // 언리얼 엔진 5 코드를 분석하며 자체엔진으로 작성중인 코드입니다.
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
@@ -15,7 +15,8 @@ class ULevel : public UObject
 	MY_GENERATE_BODY(ULevel)
 
 	ULevel();
-	//ULevel(const std::shared_ptr<UWorld>& World);
+
+	// 레벨 정보를 생성자를 통해서 인스턴스를 만드는 방식
 	ULevel(const ULevel* LevelInstance);
 	~ULevel() override;
 
