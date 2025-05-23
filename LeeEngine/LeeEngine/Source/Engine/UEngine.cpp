@@ -102,8 +102,11 @@ void UEngine::LoadDataFromDefaultEngineIni()
 
 void UEngine::LoadDefaultMap()
 {
-	auto LoadLevel = std::make_shared<ULevel>(ULevel::GetLevelInstanceByName(GetDefaultMapName()));
-	CurrentWorld->SetPersistentLevel(LoadLevel);
+	AssetManager::GetAsyncAssetCache(GetDefaultMapName(), [this](std::shared_ptr<UObject> DefaultLevel)
+	{
+		std::shared_ptr<ULevel> DefaultLevelInstance = std::dynamic_pointer_cast<ULevel>(DefaultLevel);
+		CurrentWorld->SetPersistentLevel(DefaultLevelInstance);
+	});
 }
 
 const std::string& UEngine::GetDefaultMapName()
@@ -398,12 +401,12 @@ void UEngine::LoadAllObjectsFromFile()
 			// {에셋이름 - 에셋경로} 맵 추가
 			AssetManager::GetAssetNameAndAssetPathMap()[FileName] = FullPath;
 
-			// TODO: DELETE_LATER 비동기 에셋 로드 테스트용 레벨은 로드에서 제거
-			if(FileName == "AsyncTestLevel")
+			// 머테리얼과 텍스쳐는 프리로드 되도록 변경
+			std::string AssetTypeFromName = FileName.substr(0,2);
+			if(AssetTypeFromName == "M_" || AssetTypeFromName == "T_")
 			{
-				continue;
+				MyAssetFiles.push_back(Entry.path());	
 			}
-			MyAssetFiles.push_back(Entry.path());
 		}
 	}
 
