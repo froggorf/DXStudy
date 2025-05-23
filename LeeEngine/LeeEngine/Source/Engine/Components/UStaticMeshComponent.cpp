@@ -25,6 +25,10 @@ std::vector<std::shared_ptr<FPrimitiveSceneProxy>> UStaticMeshComponent::CreateS
 
 	
 	UINT MeshCount = StaticMesh->GetStaticMeshRenderData()->MeshCount;
+	if(MeshCount == 0)
+	{
+		int a = 0;
+	}
 	SceneProxies.reserve(MeshCount);
 	StaticMeshSceneProxies.reserve(MeshCount);
 	for (UINT i = 0; i < MeshCount; ++i)
@@ -49,6 +53,8 @@ bool UStaticMeshComponent::SetStaticMesh(const std::shared_ptr<UStaticMesh>& New
 	{
 		return false;
 	}
+
+
 	StaticMesh = NewMesh;
 
 	// 새로운 씬 프록시가 등록될 수 있도록 진행
