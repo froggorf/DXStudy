@@ -1,4 +1,4 @@
-// 03.07
+﻿// 03.07
 // 언리얼 엔진 5 코드를 분석하며 자체엔진으로 작성중인 코드입니다.
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
@@ -23,11 +23,23 @@ void UPrimitiveComponent::Register()
 {
 	USceneComponent::Register();
 
+	RegisterSceneProxies();
+}
+
+void UPrimitiveComponent::RegisterSceneProxies()
+{
+	// 이전에 레지스터된 씬 프록시가 있다면 해당 PrimitiveID의 씬 프록시를 모두 제거하도록 요청
+	if(RegisteredSceneProxyCount > 0)
+	{
+		FScene::KillPrimitive_GameThread(PrimitiveID);
+	}
+
 	std::vector<std::shared_ptr<FPrimitiveSceneProxy>> PrimitiveSceneProxies = CreateSceneProxy();
 	for (int i = 0; i < PrimitiveSceneProxies.size(); ++i)
 	{
 		FScene::AddPrimitive_GameThread(PrimitiveID, PrimitiveSceneProxies[i], GetComponentTransform());
 	}
+	RegisteredSceneProxyCount = PrimitiveSceneProxies.size();
 }
 
 void UPrimitiveComponent::SetScalarParam(UINT MeshIndex, const std::string& ParamName, float Value) const
