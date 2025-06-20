@@ -26,18 +26,12 @@ static void KillProxies(std::unordered_map<UINT, std::vector<FPrimitiveRenderDat
 		// 씬 프록시 벡터
 		std::vector<FPrimitiveRenderData>& Proxies = MaterialIter->second;
 
-		for(auto ProxyIter = Proxies.begin(); ProxyIter != Proxies.end(); )
+		for (UINT KillPrimitiveID : PendingKillPrimitiveIDs)
 		{
-			// 해당 프리미티브 ID이므로 제거해줘야함
-			if(std::ranges::find(PendingKillPrimitiveIDs, ProxyIter->PrimitiveID) != PendingKillPrimitiveIDs.end())
+			Proxies.erase(std::remove_if(Proxies.begin(),Proxies.end(), [KillPrimitiveID](const FPrimitiveRenderData& RenderData)
 			{
-				// erase 하면서 다음 Iter로 넘어감
-				ProxyIter = Proxies.erase(ProxyIter);
-			}
-			else
-			{
-				++ProxyIter;
-			}
+				return RenderData.PrimitiveID == KillPrimitiveID;
+			}), Proxies.end());
 		}
 	}	
 }
