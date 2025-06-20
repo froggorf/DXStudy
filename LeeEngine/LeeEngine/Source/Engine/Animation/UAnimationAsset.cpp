@@ -1,4 +1,4 @@
-#include "CoreMinimal.h"
+﻿#include "CoreMinimal.h"
 #include "UAnimationAsset.h"
 
 #include "Engine/AssetManager/AssetManager.h"
@@ -11,9 +11,8 @@ std::shared_ptr<UAnimationAsset> UAnimationAsset::GetAnimationAsset(const std::s
 
 void UAnimationAsset::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
-	std::string Test = AssetData["Name"];
 	UObject::LoadDataFromFileData(AssetData);
-
+	
 	std::shared_ptr<USkeletalMesh> Skeleton = USkeletalMesh::GetSkeletalMesh(AssetData["Skeleton"]);
 	if (!Skeleton)
 	{

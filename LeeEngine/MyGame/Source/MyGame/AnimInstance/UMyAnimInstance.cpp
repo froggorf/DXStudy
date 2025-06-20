@@ -1,36 +1,51 @@
-#include "CoreMinimal.h"
+﻿#include "CoreMinimal.h"
 #include "UMyAnimInstance.h"
 
 #include <Engine/RenderCore/EditorScene.h>
 
 #include "../Actor/ATestActor2.h"
+#include "../Actor/ATestCube2.h"
 #include "Engine/Components/USkeletalMeshComponent.h"
 
 UMyAnimInstance* UMyAnimInstance::MyAnimInstance;
 
 UMyAnimInstance::UMyAnimInstance()
 {
-	if (const std::shared_ptr<UBlendSpace> BlendSpace = UBlendSpace::GetAnimationAsset("BS_MyUEFN_LocomotionRPG"))
-	{
-		BS_MyUEFN_Locomotion = BlendSpace;
-	}
-	if (const std::shared_ptr<UAimOffsetBlendSpace> AimOffset = UAimOffsetBlendSpace::GetAnimationAsset("AO_MyUEFN_Stand"))
-	{
-		AO_MyUEFN_Stand = AimOffset;
-	}
+	// 비동기 로드 방식으로 변경
+	//if (const std::shared_ptr<UBlendSpace> BlendSpace = UBlendSpace::GetAnimationAsset("BS_MyUEFN_LocomotionRPG"))
+	//{
+	//	BS_MyUEFN_Locomotion = BlendSpace;
+	//}
+	AssetManager::GetAsyncAssetCache("BS_MyUEFN_LocomotionRPG", [this](std::shared_ptr<UObject> Object)
+		{
+			BS_MyUEFN_Locomotion = std::dynamic_pointer_cast<UBlendSpace>(Object);
+		});
 
-	if (const std::shared_ptr<UAnimSequence> AnimSequence = UAnimSequence::GetAnimationAsset("AS_MyUEFN_Idle"))
-	{
-		AS_Test0 = AnimSequence;
-	}
-	if (const std::shared_ptr<UAnimSequence> AnimSequence = UAnimSequence::GetAnimationAsset("AS_Aim"))
-	{
-		AS_Test1 = AnimSequence;
-	}
-	if (const std::shared_ptr<UAnimSequence> AnimSequence = UAnimSequence::GetAnimationAsset("AS_Pistol"))
-	{
-		AS_Test2 = AnimSequence;
-	}
+	//if (const std::shared_ptr<UAnimSequence> AnimSequence = UAnimSequence::GetAnimationAsset("AS_MyUEFN_Idle"))
+	//{
+	//	AS_Test0 = AnimSequence;
+	//}
+	//if (const std::shared_ptr<UAnimSequence> AnimSequence = UAnimSequence::GetAnimationAsset("AS_Aim"))
+	//{
+	//	AS_Test1 = AnimSequence;
+	//}
+	//if (const std::shared_ptr<UAnimSequence> AnimSequence = UAnimSequence::GetAnimationAsset("AS_Pistol"))
+	//{
+	//  AS_Test2 = AnimSequence;
+	//}
+	AssetManager::GetAsyncAssetCache("AS_MyUEFN_Idle", [this](std::shared_ptr<UObject> Object)
+		{
+			AS_Test0 = std::dynamic_pointer_cast<UAnimSequence>(Object);
+		});
+	AssetManager::GetAsyncAssetCache("AS_Aim", [this](std::shared_ptr<UObject> Object)
+		{
+			AS_Test1 = std::dynamic_pointer_cast<UAnimSequence>(Object);
+		});
+	AssetManager::GetAsyncAssetCache("AS_Pistol", [this](std::shared_ptr<UObject> Object)
+		{
+			AS_Test2 = std::dynamic_pointer_cast<UAnimSequence>(Object);
+		});
+
 }
 
 void UMyAnimInstance::BeginPlay()
@@ -44,7 +59,7 @@ void UMyAnimInstance::NativeInitializeAnimation()
 
 	if (AActor* OwnerActor = GetSkeletalMeshComponent()->GetOwner())
 	{
-		if (auto TestActor = dynamic_cast<ATestActor2*>(OwnerActor))
+		if (auto TestActor = dynamic_cast<ATestCube2*>(OwnerActor))
 		{
 			if (const std::shared_ptr<UTestComponent>& OwnerTestComp = std::dynamic_pointer_cast<UTestComponent>(TestActor->FindComponentByClass("UTestComponent")))
 			{

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 // 테스트용 AnimInstance
 
 #include "Engine/Animation/UBlendSpace.h"
@@ -28,7 +28,6 @@ private:
 	std::shared_ptr<UBlendSpace>    BS_MyUEFN_Locomotion;
 	std::shared_ptr<UTestComponent> TestComp;
 
-	std::shared_ptr<UAimOffsetBlendSpace> AO_MyUEFN_Stand;
 
 	std::shared_ptr<UAnimSequence> AS_Test0;
 	std::shared_ptr<UAnimSequence> AS_Test1;

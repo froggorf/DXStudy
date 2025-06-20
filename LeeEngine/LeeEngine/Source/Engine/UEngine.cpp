@@ -187,7 +187,11 @@ void UEngine::Tick(float DeltaSeconds)
 			FScene::NewTransformToPrimitive_GameThread(PrimitiveID, IDAndComponent.second->GetComponentTransform());
 		}
 	}
-	ComponentsTransformDirty.clear();
+	if (!ComponentsTransformDirty.empty())
+	{
+		ComponentsTransformDirty.clear();	
+	}
+	
 
 	if (GameThreadFrameCount > RenderingThreadFrameCount + 3)
 	{
@@ -400,8 +404,9 @@ void UEngine::LoadAllObjectsFromFile()
 			// {에셋이름 - 에셋경로} 맵 추가
 			AssetManager::GetAssetNameAndAssetPathMap()[FileName] = FullPath;
 			// 머테리얼과 텍스쳐는 프리로드 되도록 변경
+			// 06.20 애니메이션 에셋을 위해 스켈레탈 메시 정보도 미리 로드되도록 변경
 			std::string AssetTypeFromName = FileName.substr(0,2);
-			if(AssetTypeFromName == "M_" || AssetTypeFromName == "T_")
+			if(AssetTypeFromName == "M_" || AssetTypeFromName == "T_" || AssetTypeFromName == "SK" || AssetTypeFromName == "AS")
 			{
 				MyAssetFiles.push_back(Entry.path());	
 			}

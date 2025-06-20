@@ -23,6 +23,4 @@ class UStaticMeshComponent : public UMeshComponent
 
 private:
 	std::shared_ptr<UStaticMesh> StaticMesh;
-
-	std::vector<std::shared_ptr<FStaticMeshSceneProxy>> StaticMeshSceneProxies;
 };

@@ -16,7 +16,7 @@ ATestActor2::ATestActor2()
 	TestSKComp->SetRelativeLocation(XMFLOAT3(0.0f, 5.0f, 0.0f));
 	TestSKComp->SetRelativeScale3D(XMFLOAT3(0.2f, 0.2f, 0.2f));
 
-	auto NewTestComp = dynamic_cast<UTestComponent*>(CreateDefaultSubobject("TestActorComp", "UTestComponent"));
+	UTestComponent* NewTestComp = dynamic_cast<UTestComponent*>(CreateDefaultSubobject("TestActorComp", "UTestComponent"));
 	if (NewTestComp)
 	{
 		TestComponent = std::make_shared<UTestComponent>(*NewTestComp);
