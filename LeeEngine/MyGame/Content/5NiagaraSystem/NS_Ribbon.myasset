@@ -1,0 +1,72 @@
+{
+    "Class": "UNiagaraSystem",
+    "Name": "NS_Ribbon",
+    "Emitters" : [
+	{ 
+		"Property" : 3, 
+		"FaceCamera": 1,
+		"OverrideMat" : "M_NiagaraRibbonMaskTrail",
+		"OverrideTex" : [ "T_RibbonTrail", "T_RibbonTrailMask" ],
+		"Life" : [ 0, 0.15 ],
+		"RibbonWidth" : 10.0,
+		"RibbonColor": [0.0 , 0.7 , 0.8 , 1.0]
+	},
+	{ 
+		"Property" : 0, 
+		"OverrideMat": "M_NiagaraBillboardSprite_UV",
+		"OverrideTex": ["T_Lightning"],
+		"SpawnRate" : 10.0,
+		"Life" : [ 1.5,2 ],
+		"Scale" : [ [3,3,3], [5,5,5] ],
+		"Rot" : [ [0,0,-180] , [0, 0, 180]],
+		"SpaceType": 0,
+		"SpawnShape" : 0,
+		"SpawnScale" : [0.1,0.1,0.1],
+		"Modules" : 
+		{
+			"Render" : {
+  			    "StartColor" : [0.0 , 0.9562931 , 1.0 , 1.0],
+			    "EndColor" : [0.0 , 0.9562931 , 1.0 , 0.8],
+			    "FadeOut" : [1, 0.8]
+			},
+			"UVAnim" : {
+			    "UCount": 4,
+			    "VCount": 7
+			}
+		}
+	},
+	{ 
+		"Property" : 0, 
+		"OverrideMat": "M_NiagaraBillboardSprite_UV",
+		"OverrideTex": ["T_Flame"],
+		"SpawnRate" : 10.0,
+		"Life" : [ 0.25,0.5 ],
+		"Scale" : [ [2,2,2], [3,3,3] ],
+		"Rot" : [ [0,0,-180] , [0, 0, 180]],
+		"SpaceType": 1,
+		"SpawnShape" : 0,
+		"SpawnScale" : [1,1,1],
+		"Modules" : 
+		{
+			"Render" : {
+  			    "StartColor" : [0.0 , 0.9562931 , 1.0 , 1.0],
+			    "EndColor" : [0.0 , 0.9562931 , 1.0 , 0.8],
+			    "FadeOut" : [1, 0.8]
+			},
+			"Scale" :{
+			    "StartScale" : 1.0,
+			    "EndScale" : 0.25
+			},
+			"UVAnim" : {
+			    "UCount": 2,
+			    "VCount": 2
+			},
+			"AddVelocity":{
+			    "MinVel" : [-3,-3,-3],
+			    "MaxVel" : [3,3,3]
+			}
+		}
+	}		
+    ]
+
+}

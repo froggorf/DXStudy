@@ -1,0 +1,29 @@
+{
+	"Class": "UAnimMontage",
+	"Name": "AM_Blend1s_Linear",
+	"Skeleton": "SK_MyUEFN",
+	
+	"BlendIn" : {
+		"CurveName" : "LinearCurve",
+		"BlendTime" : 0.5
+	},
+	"BlendOut" : {
+		"CurveName" : "LinearCurve",
+		"BlendTime" : 0.5
+	},
+
+	"SlotName": "DefaultSlot",
+	"AnimTrack" : [
+		{"AnimName" : "AS_RifleReload"},
+		{"AnimName" : "AS_RifleFire"}
+	],
+	"Sections" : [
+		{ "SectionName" : "Reload1", "StartTime" : 0.0, "NextSectionName" : "Reload2" },
+		{ "SectionName" : "Reload2", "StartTime" : 30.0, "NextSectionName" : "Fire" },
+		{ "SectionName" : "Fire", "StartTime" : 65.0 }
+	],
+    	"Notifies" : [
+  	      { "NotifyClass" : "UAnimNotify_PlaySound", "TriggerTime" : 66.5 , "SoundName": "Fire"}
+  	  ]
+
+}

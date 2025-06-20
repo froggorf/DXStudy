@@ -2,6 +2,7 @@
 #pragma once
 
 // 기본 Windows 헤더
+#include <crtdbg.h>
 #include <windows.h>
 #include <tchar.h>
 

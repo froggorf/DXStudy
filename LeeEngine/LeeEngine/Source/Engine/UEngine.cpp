@@ -123,13 +123,12 @@ void UEngine::DELETELATER_TestChangeLevel(const std::string& str)
 		if(LevelObject)
 		{
 			// 레벨 정보를 생성자를 통해서 인스턴스를 만드는 방식
-			auto TTT = std::make_shared<ULevel>(std::dynamic_pointer_cast<ULevel>(LevelObject).get());
+			std::shared_ptr<ULevel> TTT = std::make_shared<ULevel>(std::dynamic_pointer_cast<ULevel>(LevelObject).get());
 
 			CurrentWorld->SetPersistentLevel(TTT);		
 		}
 		
 	});
-	
 }
 
 void UEngine::GameStart()
@@ -400,7 +399,6 @@ void UEngine::LoadAllObjectsFromFile()
 			std::string FullPath = Entry.path().generic_string();
 			// {에셋이름 - 에셋경로} 맵 추가
 			AssetManager::GetAssetNameAndAssetPathMap()[FileName] = FullPath;
-
 			// 머테리얼과 텍스쳐는 프리로드 되도록 변경
 			std::string AssetTypeFromName = FileName.substr(0,2);
 			if(AssetTypeFromName == "M_" || AssetTypeFromName == "T_")

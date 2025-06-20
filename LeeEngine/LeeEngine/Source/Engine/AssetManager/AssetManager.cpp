@@ -540,6 +540,13 @@ void AssetManager::GetAsyncAssetCache(const std::string& AssetName, const AssetL
 	FTask Task{0, [AssetName]()
 	{
 		std::string FilePath = AssetManager::GetAssetNameAndAssetPathMap()[AssetName];
+
+		if (FilePath.empty())
+		{
+			MY_LOG("AsyncLoadError", EDebugLogLevel::DLL_Error, AssetName + "Not Found");
+			return;
+		}
+
 		std::ifstream AssetFile(FilePath.data());
 		if (!AssetFile.is_open())
 		{

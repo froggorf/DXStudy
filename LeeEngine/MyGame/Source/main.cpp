@@ -1,4 +1,4 @@
-//***************************************************************************************
+﻿//***************************************************************************************
 // Init Direct3D.cpp by Frank Luna (C) 2011 All Rights Reserved.
 //
 // Demonstrates the sample framework by initializing Direct3D, clearing 
@@ -7,22 +7,10 @@
 //***************************************************************************************
 #define _CRT_SECURE_NO_WARNINGS
 
-// TODO: (02.05) 다음 번
-// Mesh 모듈화
-// Animation 목록도 Mesh에 넣기
-// Skeletal Mesh도 그림자 반영되도록 하기
-
-#include <format>
-#include <map>
-#include <vector>
+#include "CoreMinimal.h"
 
 #include "DirectX/d3dApp.h"
-//#include "../../Core/d3dApp.h"
 #include "Engine/AssetManager/AssetManager.h"
-//#include "../../Core/AssetManager.h"
-
-#include "ThirdParty/ImGui/imgui.h"
-
 #include "ThirdParty/ImGui/imgui_internal.h"
 #include "DirectX/ShadowMap.h"
 #include "Engine/UEngine.h"
@@ -30,11 +18,11 @@
 
 using namespace DirectX;
 
-class AnimationApp : public D3DApp
+class MyGame : public D3DApp
 {
 public:
-	AnimationApp(HINSTANCE hInstance);
-	~AnimationApp() override;
+	MyGame(HINSTANCE hInstance);
+	~MyGame() override;
 
 	// Init
 	bool Init() override;
@@ -148,7 +136,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console" )
 #endif
 
-	AnimationApp theApp(hInstance);
+	MyGame theApp(hInstance);
 
 	if (!theApp.Init())
 		return -1;
@@ -156,7 +144,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	return theApp.Run();
 }
 
-AnimationApp::AnimationApp(HINSTANCE hInstance)
+MyGame::MyGame(HINSTANCE hInstance)
 	: D3DApp(hInstance)
 {
 	m_MainWndTitle = L"Character Animation";
@@ -188,12 +176,12 @@ AnimationApp::AnimationApp(HINSTANCE hInstance)
 	m_ModelMaterial.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 32.0f);
 }
 
-AnimationApp::~AnimationApp()
+MyGame::~MyGame()
 {
 	// ComPtr
 }
 
-bool AnimationApp::Init()
+bool MyGame::Init()
 {
 	if (!D3DApp::Init())
 		return false;
@@ -212,12 +200,12 @@ bool AnimationApp::Init()
 	return true;
 }
 
-void AnimationApp::LoadAnimations()
+void MyGame::LoadAnimations()
 {
 	// TODO: 추후 모델 관련 데이터 오브젝트로 모듈화
 }
 
-void AnimationApp::InitSamplerState()
+void MyGame::InitSamplerState()
 {
 	D3D11_SAMPLER_DESC samplerDesc = {};
 	samplerDesc.Filter             = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -296,7 +284,7 @@ void AnimationApp::InitSamplerState()
 //	
 //}
 
-void AnimationApp::OnResize()
+void MyGame::OnResize()
 {
 	D3DApp::OnResize();
 
@@ -304,7 +292,7 @@ void AnimationApp::OnResize()
 	m_Proj = XMMatrixPerspectiveFovLH(0.5 * XM_PI, GetWindowAspectRatio(), 1.0f, 1000.0f);
 }
 
-void AnimationApp::UpdateScene(float dt)
+void MyGame::UpdateScene(float dt)
 {
 	GEngine->Tick(dt);
 
@@ -508,7 +496,7 @@ void AnimationApp::UpdateScene(float dt)
 //
 //}
 
-void AnimationApp::DrawScene()
+void MyGame::DrawScene()
 {
 	{
 		//DrawShadowMap();
@@ -528,7 +516,7 @@ void AnimationApp::DrawScene()
 	}
 }
 
-void AnimationApp::OnMouseDown(WPARAM btnState, int x, int y)
+void MyGame::OnMouseDown(WPARAM btnState, int x, int y)
 {
 	m_LastMousePos.x = x;
 	m_LastMousePos.y = y;
@@ -536,18 +524,18 @@ void AnimationApp::OnMouseDown(WPARAM btnState, int x, int y)
 	SetCapture(m_hMainWnd);
 }
 
-void AnimationApp::OnMouseUp(WPARAM btnState, int x, int y)
+void MyGame::OnMouseUp(WPARAM btnState, int x, int y)
 {
 	ReleaseCapture();
 }
 
-void AnimationApp::OnMouseMove(WPARAM btnState, int x, int y)
+void MyGame::OnMouseMove(WPARAM btnState, int x, int y)
 {
 	m_LastMousePos.x = x;
 	m_LastMousePos.y = y;
 }
 
-void AnimationApp::BuildShader()
+void MyGame::BuildShader()
 {
 	D3D11_BUFFER_DESC bufferDesc = {};
 	bufferDesc.ByteWidth         = sizeof(FrameConstantBuffer);
@@ -562,7 +550,7 @@ void AnimationApp::BuildShader()
 	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_ShadowObjConstantBuffer.GetAddressOf()));
 }
 
-void AnimationApp::BuildShaderForSkeletalMesh()
+void MyGame::BuildShaderForSkeletalMesh()
 {
 	//m_d3dDeviceContext->IASetInputLayout(m_InputLayout.Get());
 }

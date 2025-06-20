@@ -1,0 +1,5 @@
+{
+    "Class": "USoundBase",
+    "Name": "Walk_Left",
+    "SoundFilePath": "/Content/Resource/Sound/Walk_Left.WAV"
+}
