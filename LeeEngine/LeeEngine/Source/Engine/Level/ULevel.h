@@ -43,19 +43,13 @@ class ULevel : public UObject
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 	void SaveDataFromAssetToFile(nlohmann::json& Json) override;
 
-	static const ULevel* GetLevelInstanceByName(const std::string& LevelName)
-	{
-		return GetLevelInstanceMap()[LevelName].get();
-	}
 
 private:
-	static std::map<std::string, std::unique_ptr<ULevel>>& GetLevelInstanceMap()
-	{
-		static std::map<std::string, std::unique_ptr<ULevel>> LevelInstanceMap;
-		return LevelInstanceMap;
-	}
 
 	std::shared_ptr<UWorld> OwningWorld;
 
 	std::vector<std::shared_ptr<AActor>> Actors;
+
+private:
+	nlohmann::basic_json<> LevelData;
 };

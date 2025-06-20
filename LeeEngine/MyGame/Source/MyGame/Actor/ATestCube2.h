@@ -13,7 +13,6 @@ class ATestCube2 : public AActor
 	MY_GENERATE_BODY(ATestCube2)
 
 	ATestCube2();
-
 	void Tick(float DeltaSeconds) override;
 
 protected:

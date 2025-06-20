@@ -17,7 +17,6 @@ void FScene::BeginRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData, U
 	RenderingThreadFrameCount = GameThreadFrameCount;
 	SceneData->BeginRenderFrame();
 }
-
 static void KillProxies(std::unordered_map<UINT, std::vector<FPrimitiveRenderData>>& SceneProxyRenderData, const std::vector<UINT>& PendingKillPrimitiveIDs)
 {
 	// Opaque {머테리얼 ID, 씬프록시 벡터}
@@ -26,18 +25,12 @@ static void KillProxies(std::unordered_map<UINT, std::vector<FPrimitiveRenderDat
 		// 씬 프록시 벡터
 		std::vector<FPrimitiveRenderData>& Proxies = MaterialIter->second;
 
-		for(auto ProxyIter = Proxies.begin(); ProxyIter != Proxies.end(); )
+		for (UINT KillPrimitiveID : PendingKillPrimitiveIDs)
 		{
-			// 해당 프리미티브 ID이므로 제거해줘야함
-			if(std::ranges::find(PendingKillPrimitiveIDs, ProxyIter->PrimitiveID) != PendingKillPrimitiveIDs.end())
-			{
-				// erase 하면서 다음 Iter로 넘어감
-				ProxyIter = Proxies.erase(ProxyIter);
-			}
-			else
-			{
-				++ProxyIter;
-			}
+			Proxies.erase(std::remove_if(Proxies.begin(),Proxies.end(), [KillPrimitiveID](const FPrimitiveRenderData& RenderData)
+				{
+					return RenderData.PrimitiveID == KillPrimitiveID;
+				}), Proxies.end());
 		}
 	}	
 }

@@ -104,7 +104,8 @@ void UEngine::LoadDefaultMap()
 {
 	AssetManager::GetAsyncAssetCache(GetDefaultMapName(), [this](std::shared_ptr<UObject> DefaultLevel)
 	{
-		std::shared_ptr<ULevel> DefaultLevelInstance = std::dynamic_pointer_cast<ULevel>(DefaultLevel);
+		// 레벨 정보를 생성자를 통해서 인스턴스를 만드는 방식
+		std::shared_ptr<ULevel> DefaultLevelInstance = std::make_shared<ULevel>(std::dynamic_pointer_cast<ULevel>(DefaultLevel).get());
 		CurrentWorld->SetPersistentLevel(DefaultLevelInstance);
 	});
 }
@@ -119,7 +120,6 @@ void UEngine::DELETELATER_TestChangeLevel(const std::string& str)
 	// 비동기 로드 진행
 	AssetManager::GetAsyncAssetCache(str, [this](std::shared_ptr<UObject> LevelObject)
 	{
-		//ULevel::GetLevelInstanceByName(str)
 		if(LevelObject)
 		{
 			// 레벨 정보를 생성자를 통해서 인스턴스를 만드는 방식
@@ -223,6 +223,10 @@ void UEngine::Tick(float DeltaSeconds)
 			GEngine->DELETELATER_TestChangeLevel("AsyncTestLevel");
 		}
 		
+	}
+	if (ImGui::IsKeyReleased(ImGuiKey_9))
+	{
+		b=false;
 	}
 
 }

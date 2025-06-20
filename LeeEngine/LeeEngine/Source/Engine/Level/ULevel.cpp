@@ -1,4 +1,4 @@
-// 02.14
+﻿// 02.14
 // 언리얼 엔진 5 코드를 분석하며 자체엔진으로 작성중인 코드입니다.
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
@@ -21,7 +21,22 @@ ULevel::ULevel(const ULevel* LevelInstance)
 {
 	OwningWorld = GEngine->GetWorld();
 	Rename(LevelInstance->GetName());
-	size_t      ActorCount  = LevelInstance->GetLevelActors().size();
+
+	nlohmann::basic_json<> ActorsData = LevelInstance->LevelData["Actor"];
+	size_t ActorCount = ActorsData.size();
+	Actors.reserve(ActorCount);
+	for (size_t i = 0; i < ActorCount; ++i)
+	{
+		nlohmann::basic_json<>  ActorData = ActorsData[i];
+		std::string             ClassName = ActorData["Class"];
+		std::shared_ptr<AActor> NewActor  = std::dynamic_pointer_cast<AActor>(GetDefaultObject(ClassName)->CreateInstance());
+		if (NewActor)
+		{
+			NewActor->LoadDataFromFileData(ActorData);
+			Actors.push_back(NewActor);
+		}
+	}
+	/*size_t      ActorCount  = LevelInstance->GetLevelActors().size();
 	const auto& LevelActors = LevelInstance->GetLevelActors();
 	Actors.reserve(ActorCount);
 	for (const auto& Actor : LevelActors)
@@ -32,7 +47,7 @@ ULevel::ULevel(const ULevel* LevelInstance)
 		NewActor->SetActorRotation(Actor->GetActorRotation());
 		NewActor->SetActorScale3D(Actor->GetActorScale3D());
 		Actors.push_back(NewActor);
-	}
+	}*/
 }
 
 //ULevel::ULevel(const std::shared_ptr<UWorld>& World)
@@ -92,31 +107,10 @@ void ULevel::TickLevel(float DeltaSeconds)
 void ULevel::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
 	std::string LevelName = AssetData["Name"];
-	if (GetLevelInstanceMap().contains(LevelName))
-	{
-		MY_LOG("LoadLevel", EDebugLogLevel::DLL_Warning, "Already exist level");
-		return;
-	}
 
 	UObject::LoadDataFromFileData(AssetData);
 
-	auto   ActorsData = AssetData["Actor"];
-	size_t ActorCount = ActorsData.size();
-	Actors.reserve(ActorCount);
-	for (size_t i = 0; i < ActorCount; ++i)
-	{
-		auto                    ActorData = ActorsData[i];
-		std::string             ClassName = ActorData["Class"];
-		std::shared_ptr<AActor> NewActor  = std::dynamic_pointer_cast<AActor>(GetDefaultObject(ClassName)->CreateInstance());
-		if (NewActor)
-		{
-			NewActor->LoadDataFromFileData(ActorData);
-			Actors.push_back(NewActor);
-		}
-	}
-
-	GetLevelInstanceMap()[LevelName] = std::make_unique<ULevel>(*this);
-	GetLevelInstanceMap()[LevelName]->Rename(AssetData["Name"]);
+	LevelData = AssetData;
 }
 
 void ULevel::SaveDataFromAssetToFile(nlohmann::json& Json)
