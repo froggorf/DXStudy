@@ -11,28 +11,11 @@ UMyAnimInstance* UMyAnimInstance::MyAnimInstance;
 
 UMyAnimInstance::UMyAnimInstance()
 {
-	// 비동기 로드 방식으로 변경
-	//if (const std::shared_ptr<UBlendSpace> BlendSpace = UBlendSpace::GetAnimationAsset("BS_MyUEFN_LocomotionRPG"))
-	//{
-	//	BS_MyUEFN_Locomotion = BlendSpace;
-	//}
 	AssetManager::GetAsyncAssetCache("BS_MyUEFN_LocomotionRPG", [this](std::shared_ptr<UObject> Object)
 		{
 			BS_MyUEFN_Locomotion = std::dynamic_pointer_cast<UBlendSpace>(Object);
 		});
 
-	//if (const std::shared_ptr<UAnimSequence> AnimSequence = UAnimSequence::GetAnimationAsset("AS_MyUEFN_Idle"))
-	//{
-	//	AS_Test0 = AnimSequence;
-	//}
-	//if (const std::shared_ptr<UAnimSequence> AnimSequence = UAnimSequence::GetAnimationAsset("AS_Aim"))
-	//{
-	//	AS_Test1 = AnimSequence;
-	//}
-	//if (const std::shared_ptr<UAnimSequence> AnimSequence = UAnimSequence::GetAnimationAsset("AS_Pistol"))
-	//{
-	//  AS_Test2 = AnimSequence;
-	//}
 	AssetManager::GetAsyncAssetCache("AS_MyUEFN_Idle", [this](std::shared_ptr<UObject> Object)
 		{
 			AS_Test0 = std::dynamic_pointer_cast<UAnimSequence>(Object);
@@ -83,7 +66,7 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 {
 	UAnimInstance::UpdateAnimation(dt);
 
-	if (GetSkeletalMeshComponent() && BS_MyUEFN_Locomotion && TestComp && AS_Test1 && AS_Test2)
+	if (GetSkeletalMeshComponent() && BS_MyUEFN_Locomotion && TestComp && AS_Test0 && AS_Test1 && AS_Test2)
 	{
 		std::vector<XMMATRIX>         FinalBoneMatrices(MAX_BONES, XMMatrixIdentity());
 		std::vector<FAnimNotifyEvent> FinalNotifies;

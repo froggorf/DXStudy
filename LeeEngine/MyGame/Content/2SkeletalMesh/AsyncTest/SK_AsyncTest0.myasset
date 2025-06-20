@@ -1,6 +1,6 @@
 {
     "Class": "USkeletalMesh",
-    "Name": "SK_AsyncTest0",
+    "Name": "SK_MyUEFN",
     "ModelData": "/Content/Resource/Model/SKM_MyUEFN.FBX",
     "Material" : [ "M_MyUEFN" ]
 }
