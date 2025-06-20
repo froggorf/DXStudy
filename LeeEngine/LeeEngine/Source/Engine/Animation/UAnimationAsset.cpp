@@ -12,12 +12,19 @@ std::shared_ptr<UAnimationAsset> UAnimationAsset::GetAnimationAsset(const std::s
 void UAnimationAsset::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
 	UObject::LoadDataFromFileData(AssetData);
-	
-	std::shared_ptr<USkeletalMesh> Skeleton = USkeletalMesh::GetSkeletalMesh(AssetData["Skeleton"]);
-	if (!Skeleton)
+
+	AssetManager::GetAsyncAssetCache(AssetData["Skeleton"], [this](std::shared_ptr<UObject> Object)
+		{
+			if (!Object)
+			{
+				assert(nullptr, "잘못된 스켈레톤 로드");
+			}
+			AnimationSkeleton = std::dynamic_pointer_cast<USkeletalMesh>(Object);
+		});
+
+	// 스켈레톤 정보를 얻을때까지 스핀락
+	while (!AnimationSkeleton)
 	{
-		assert(nullptr);
-		return;
 	}
-	AnimationSkeleton = Skeleton;
+	
 }
