@@ -15,7 +15,6 @@ FQueuedThreadPool::FQueuedThreadPool(UINT InNumQueuedThreads)
 
 				// try_pop
 				{
-					std::unique_lock<std::mutex> Lock(QueueMutex);
 					if (TaskQueue.try_pop(CurrentTask))
 					{
 						CurrentTask.Work();
@@ -33,6 +32,7 @@ FQueuedThreadPool::FQueuedThreadPool(UINT InNumQueuedThreads)
 						continue;
 					}
 					// 종료되거나 작업이 생기는 시점까지 대기
+					std::unique_lock<std::mutex> Lock(QueueMutex);
 					Condition.wait(Lock,
 									[this]()
 									{

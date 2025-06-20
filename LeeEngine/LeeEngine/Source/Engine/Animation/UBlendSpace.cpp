@@ -191,20 +191,30 @@ void UBlendSpace::LoadDataFromFileData(const nlohmann::json& AssetData)
 	VerticalValue                 = {Vertical[0] - Gap.y, Vertical[1] + Gap.y};
 
 	std::vector<nlohmann::json> Points = AssetData["Points"];
+	std::atomic<int> CurrentLoadedAnimCount = 0;
 	for (const auto& Point : Points)
 	{
 		std::vector<float> Position     = Point["Position"];
 		std::string        AnimClipName = Point["AnimClipName"];
-		if (std::shared_ptr<UAnimSequence> AnimSequence = UAnimSequence::GetAnimationAsset(AnimClipName))
-		{
-			CurrentPoints.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{Position[0], Position[1]}, AnimSequence));
-		}
-		else
-		{
-			// Non valid AnimClipName
-			assert(nullptr && "NULL AnimClip's name");
-		}
+
+		AssetManager::GetAsyncAssetCache(AnimClipName, [this, Position, &CurrentLoadedAnimCount](std::shared_ptr<UObject> AnimClip)
+			{
+				std::shared_ptr<UAnimSequence> Anim =  std::dynamic_pointer_cast<UAnimSequence>(AnimClip);
+				if (!Anim)
+				{
+					assert(nullptr && "NULL AnimClip's name");
+				}
+				CurrentPoints.emplace_back(std::make_shared<FAnimClipPoint>(XMFLOAT2{Position[0], Position[1]},Anim));
+				++CurrentLoadedAnimCount;
+			});
 	}
+
+	// 모든 AnimSequence가 로드될 때 까지 스핀락
+	while (CurrentLoadedAnimCount != Points.size())
+	{
+		std::this_thread::yield();
+	}
+
 	CreateEdgeAndTriangle();
 }
 

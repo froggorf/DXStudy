@@ -46,7 +46,7 @@ void UEngine::InitEngine()
 	}
 
 	// GameThread, RenderThread 제외한 코어 수
-	GThreadPool = std::make_unique<FQueuedThreadPool>(std::thread::hardware_concurrency() - 2);
+	GThreadPool = std::make_unique<FQueuedThreadPool>(50);
 
 	CreateAudioThread();
 
@@ -410,7 +410,7 @@ void UEngine::LoadAllObjectsFromFile()
 			// 머테리얼과 텍스쳐는 프리로드 되도록 변경
 			// 06.20 애니메이션 에셋을 위해 스켈레탈 메시 정보도 미리 로드되도록 변경
 			std::string AssetTypeFromName = FileName.substr(0,2);
-			if(AssetTypeFromName == "M_" || AssetTypeFromName == "T_" || AssetTypeFromName == "AS")
+			if(AssetTypeFromName == "M_" || AssetTypeFromName == "T_")
 			{
 				MyAssetFiles.push_back(Entry.path());	
 			}
