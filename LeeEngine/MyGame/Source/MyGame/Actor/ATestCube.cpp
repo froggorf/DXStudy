@@ -92,7 +92,7 @@ void ATestCube::BeginPlay()
 	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, physx::PxTolerancesScale());
 
 	physx::PxSceneDesc SceneDesc(gPhysics->getTolerancesScale());
-	SceneDesc.gravity = physx::PxVec3(0.0f,-9.8f, 0.0f);
+	SceneDesc.gravity = physx::PxVec3(0.0f,-9.8f*10, 0.0f);
 	SceneDesc.cpuDispatcher = physx::PxDefaultCpuDispatcherCreate(2);
 	SceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
 	gScene = gPhysics->createScene(SceneDesc);

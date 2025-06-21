@@ -21,6 +21,7 @@ protected:
 	std::shared_ptr<UStaticMeshComponent> TestCubeStaticMeshComp;
 
 	std::shared_ptr<UStaticMeshComponent> TestRigidSM;
+	std::shared_ptr<UStaticMeshComponent> TestRigidSM2;
 
 private:
 	std::shared_ptr<UStaticMeshComponent> TestCube2;
