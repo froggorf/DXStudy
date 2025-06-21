@@ -14,10 +14,13 @@ class ATestCube : public AActor
 
 	ATestCube();
 
+	void BeginPlay() override;
 	void Tick(float DeltaSeconds) override;
 
 protected:
 	std::shared_ptr<UStaticMeshComponent> TestCubeStaticMeshComp;
+
+	std::shared_ptr<UStaticMeshComponent> TestRigidSM;
 
 private:
 	std::shared_ptr<UStaticMeshComponent> TestCube2;

@@ -20,10 +20,16 @@
 #pragma comment(lib, "assimp-vc143-mtd.lib")
 #pragma comment(lib, "fmodL_vc.lib")
 #pragma comment(lib, "PhysX_64_D.lib")
+#pragma comment(lib, "PhysXCommon_64_D.lib")
+#pragma comment(lib, "PhysXFoundation_64_D.lib")
+#pragma comment(lib, "PhysXExtensions_static_64_D")
 #else
 	#pragma comment(lib, "assimp-vc143-mt.lib")
 	#pragma comment(lib, "fmod_vc.lib")
 #pragma comment(lib, "PhysX_64.lib")
+#pragma comment(lib, "PhysXCommon_64.lib")
+#pragma comment(lib, "PhysXFoundation_64.lib")
+#pragma comment(lib, "PhysXExtensions_static_64")
 #endif
 
 #pragma comment(lib, "DirectXTex.lib")
