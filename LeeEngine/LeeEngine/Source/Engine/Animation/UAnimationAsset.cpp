@@ -22,7 +22,7 @@ void UAnimationAsset::LoadDataFromFileData(const nlohmann::json& AssetData)
 			AnimationSkeleton = std::dynamic_pointer_cast<USkeletalMesh>(Object);
 		});
 
-	// 스켈레톤 정보를 로드받을 떄 까지 스핀락
+	// 스켈레톤 정보를 로드받을 떄 까지 busy wait
 	while (!AnimationSkeleton)
 	{
 		std::this_thread::yield();

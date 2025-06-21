@@ -539,7 +539,7 @@ void AssetManager::GetAsyncAssetCache(const std::string& AssetName, const AssetL
 
 	FTask Task{0, [AssetName]()
 	{
-		std::string FilePath = AssetManager::GetAssetNameAndAssetPathMap()[AssetName];
+		const std::string FilePath = AssetManager::GetAssetNameAndAssetPathMap()[AssetName];
 
 		if (FilePath.empty())
 		{

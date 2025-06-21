@@ -39,6 +39,7 @@ void UPrimitiveComponent::RegisterSceneProxies()
 	{
 		FScene::AddPrimitive_GameThread(PrimitiveID, PrimitiveSceneProxies[i], GetComponentTransform());
 	}
+
 	RegisteredSceneProxyCount = PrimitiveSceneProxies.size();
 }
 

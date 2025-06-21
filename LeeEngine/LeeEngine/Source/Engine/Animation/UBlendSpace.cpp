@@ -209,7 +209,7 @@ void UBlendSpace::LoadDataFromFileData(const nlohmann::json& AssetData)
 			});
 	}
 
-	// 모든 AnimSequence가 로드될 때 까지 스핀락
+	// 모든 AnimSequence가 로드될 때 까지 busy wait
 	while (CurrentLoadedAnimCount != Points.size())
 	{
 		std::this_thread::yield();

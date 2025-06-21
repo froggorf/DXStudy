@@ -69,7 +69,6 @@ bool USkeletalMeshComponent::SetSkeletalMesh(const std::shared_ptr<USkeletalMesh
 	}
 
 	SkeletalMesh = NewMesh;
-
 	RegisterSceneProxies();
 
 	return true;
