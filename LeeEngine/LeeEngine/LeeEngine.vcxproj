@@ -262,13 +262,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(ProjectDir)Library\Lib\LeeEngine\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>$(ProjectDir)Source\ThirdParty\FMOD;$(ProjectDir)Source\ThirdParty\Assimp;$(ProjectDir)Source\ThirdParty\ImGui;$(ProjectDir)Source\ThirdParty\DirectXTex;$(ProjectDir)Source\ThirdParty\ImGuizmo;$(ProjectDir)Source\ThirdParty\nlohmannJson\;$(ProjectDir)Source\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)ThirdParty\FMOD\lib;$(ProjectDir)ThirdParty\Assimp\lib\Debug;$(ProjectDir)ThirdParty\DirectXTex\lib\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)Source\ThirdParty\PhysX;$(ProjectDir)Source\ThirdParty\FMOD;$(ProjectDir)Source\ThirdParty\Assimp;$(ProjectDir)Source\ThirdParty\ImGui;$(ProjectDir)Source\ThirdParty\DirectXTex;$(ProjectDir)Source\ThirdParty\ImGuizmo;$(ProjectDir)Source\ThirdParty\nlohmannJson\;$(ProjectDir)Source\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)ThirdParty\PhysX\Debug;$(ProjectDir)ThirdParty\FMOD\lib;$(ProjectDir)ThirdParty\Assimp\lib\Debug;$(ProjectDir)ThirdParty\DirectXTex\lib\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(ProjectDir)Library\Lib\LeeEngine\$(Configuration)\</OutDir>
-    <IncludePath>$(ProjectDir)Source\ThirdParty\FMOD;$(ProjectDir)Source\;$(ProjectDir)Source\ThirdParty\nlohmannJson\;$(ProjectDir)Source\ThirdParty\nlohmannJson\nlohmann;$(ProjectDir)Source\ThirdParty\ImGuizmo;$(ProjectDir)Source\ThirdParty\DirectXTex;$(ProjectDir)Source\ThirdParty\ImGui;$(ProjectDir)Source\ThirdParty\Assimp;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)ThirdParty\FMOD\lib;$(ProjectDir)ThirdParty\DirectXTex\lib\Release;$(ProjectDir)ThirdParty\Assimp\lib\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)Source\ThirdParty\PhysX;$(ProjectDir)Source\ThirdParty\FMOD;$(ProjectDir)Source\;$(ProjectDir)Source\ThirdParty\nlohmannJson\;$(ProjectDir)Source\ThirdParty\nlohmannJson\nlohmann;$(ProjectDir)Source\ThirdParty\ImGuizmo;$(ProjectDir)Source\ThirdParty\DirectXTex;$(ProjectDir)Source\ThirdParty\ImGui;$(ProjectDir)Source\ThirdParty\Assimp;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)ThirdParty\PhysX\Release;$(ProjectDir)ThirdParty\FMOD\lib;$(ProjectDir)ThirdParty\DirectXTex\lib\Release;$(ProjectDir)ThirdParty\Assimp\lib\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

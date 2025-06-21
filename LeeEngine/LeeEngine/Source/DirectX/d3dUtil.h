@@ -19,9 +19,11 @@
 #if defined(DEBUG) | defined(_DEBUG)
 #pragma comment(lib, "assimp-vc143-mtd.lib")
 #pragma comment(lib, "fmodL_vc.lib")
+#pragma comment(lib, "PhysX_64_D.lib")
 #else
 	#pragma comment(lib, "assimp-vc143-mt.lib")
 	#pragma comment(lib, "fmod_vc.lib")
+#pragma comment(lib, "PhysX_64.lib")
 #endif
 
 #pragma comment(lib, "DirectXTex.lib")

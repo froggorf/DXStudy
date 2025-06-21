@@ -129,15 +129,15 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)LeeEngine\Source\ThirdParty\FMOD\;$(SolutionDir)LeeEngine\Source\;$(SolutionDir)LeeEngine\Source\ThirdParty\DirectXTex\;$(SolutionDir)LeeEngine\Source\ThirdParty\Assimp\;$(SolutionDir)LeeEngine\Source\ThirdParty\nlohmannJson\;$(SolutionDir)LeeEngine\Source\ThirdParty\Imguizmo\;$(SolutionDir)LeeEngine\Source\ThirdParty\Imgui\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)LeeEngine\ThirdParty\FMOD\lib\;$(SolutionDir)LeeEngine\ThirdParty\DirectXTex\lib\$(Configuration)\;$(SolutionDir)LeeEngine\ThirdParty\Assimp\lib\$(Configuration)\;$(SolutionDir)LeeEngine\Library\Lib\LeeEngine\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)LeeEngine\Source\ThirdParty\PhysX\;$(SolutionDir)LeeEngine\Source\ThirdParty\FMOD\;$(SolutionDir)LeeEngine\Source\;$(SolutionDir)LeeEngine\Source\ThirdParty\DirectXTex\;$(SolutionDir)LeeEngine\Source\ThirdParty\Assimp\;$(SolutionDir)LeeEngine\Source\ThirdParty\nlohmannJson\;$(SolutionDir)LeeEngine\Source\ThirdParty\Imguizmo\;$(SolutionDir)LeeEngine\Source\ThirdParty\Imgui\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)LeeEngine\ThirdParty\PhysX\$(Configuration)\;$(SolutionDir)LeeEngine\ThirdParty\FMOD\lib\;$(SolutionDir)LeeEngine\ThirdParty\DirectXTex\lib\$(Configuration)\;$(SolutionDir)LeeEngine\ThirdParty\Assimp\lib\$(Configuration)\;$(SolutionDir)LeeEngine\Library\Lib\LeeEngine\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)MyGame\</OutDir>
     <TargetName>$(ProjectName)_D</TargetName>
     <IntDir>$(SolutionDir)Executable\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LibraryPath>$(SolutionDir)LeeEngine\ThirdParty\FMOD\lib\;$(SolutionDir)LeeEngine\ThirdParty\Assimp\lib\$(Configuration)\;$(SolutionDir)LeeEngine\ThirdParty\DirectXTex\lib\$(Configuration)\;$(SolutionDir)LeeEngine\Library\Lib\LeeEngine\$(Configuration)\;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)LeeEngine\Source\ThirdParty\FMOD\;$(SolutionDir)LeeEngine\Source\ThirdParty\Imgui\;$(SolutionDir)LeeEngine\Source\ThirdParty\Imguizmo\;$(SolutionDir)LeeEngine\Source\ThirdParty\nlohmannJson\;$(SolutionDir)LeeEngine\Source\ThirdParty\Assimp\;$(SolutionDir)LeeEngine\Source\ThirdParty\DirectXTex\;$(SolutionDir)LeeEngine\Source\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)LeeEngine\ThirdParty\FMOD\lib\;$(SolutionDir)LeeEngine\ThirdParty\PhysX\lib\$(Configuration)\;$(SolutionDir)LeeEngine\ThirdParty\Assimp\lib\$(Configuration)\;$(SolutionDir)LeeEngine\ThirdParty\DirectXTex\lib\$(Configuration)\;$(SolutionDir)LeeEngine\Library\Lib\LeeEngine\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)LeeEngine\Source\ThirdParty\PhysX\;$(SolutionDir)LeeEngine\Source\ThirdParty\FMOD\;$(SolutionDir)LeeEngine\Source\ThirdParty\Imgui\;$(SolutionDir)LeeEngine\Source\ThirdParty\Imguizmo\;$(SolutionDir)LeeEngine\Source\ThirdParty\nlohmannJson\;$(SolutionDir)LeeEngine\Source\ThirdParty\Assimp\;$(SolutionDir)LeeEngine\Source\ThirdParty\DirectXTex\;$(SolutionDir)LeeEngine\Source\;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)MyGame\</OutDir>
     <IntDir>$(SolutionDir)Executable\</IntDir>
     <TargetName>$(ProjectName)</TargetName>

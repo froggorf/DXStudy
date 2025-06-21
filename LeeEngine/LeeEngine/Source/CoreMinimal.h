@@ -70,3 +70,6 @@
 #include <FMOD/fmod_dsp_effects.h>
 #include <FMOD/fmod_errors.h>
 #include <FMOD/fmod_output.h>
+
+// PhysX
+#include <PhysX/PxPhysicsAPI.h>
