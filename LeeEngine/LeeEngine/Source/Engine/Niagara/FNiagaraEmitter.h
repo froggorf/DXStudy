@@ -168,6 +168,11 @@ public:
 	{
 		MaterialInterface = UMaterial::GetMaterialCache("MI_NiagaraBillboardSprite");
 		StaticMesh        = UStaticMesh::GetStaticMesh("SM_Point");
+		if (!StaticMesh)
+		{
+			AssetManager::ReadMyAsset(AssetManager::GetAssetNameAndAssetPathMap()["SM_Point"]);	
+			StaticMesh = UStaticMesh::GetStaticMesh("SM_Point");
+		}
 	}
 
 	~FNiagaraRendererBillboardSprites() override = default;
@@ -186,7 +191,6 @@ public:
 	FNiagaraRendererSprites()
 	{
 		MaterialInterface = UMaterial::GetMaterialCache("M_NiagaraSprite");
-		StaticMesh        = UStaticMesh::GetStaticMesh("SM_Point");
 	}
 
 	~FNiagaraRendererSprites() override = default;

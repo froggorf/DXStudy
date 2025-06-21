@@ -1,4 +1,4 @@
-#include "CoreMinimal.h"
+﻿#include "CoreMinimal.h"
 #include "FNiagaraEmitter.h"
 #include "Engine/Mesh/UStaticMesh.h"
 #include "Engine/SceneProxy/FNiagaraSceneProxy.h"
@@ -185,6 +185,11 @@ void FNiagaraRendererProperty::LoadDataFromFile(const nlohmann::basic_json<>& Da
 // ================= Niagara Renderer ================
 void FNiagaraRendererBillboardSprites::Render()
 {
+	if (!StaticMesh)
+	{
+		return;
+	}
+
 	FNiagaraRendererProperty::Render();
 
 	GDirectXDevice->SetDSState(EDepthStencilStateType::DST_NO_WRITE);
@@ -192,7 +197,7 @@ void FNiagaraRendererBillboardSprites::Render()
 	auto DeviceContext = GDirectXDevice->GetDeviceContext();
 
 	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-
+	
 	auto RenderData = StaticMesh->GetStaticMeshRenderData();
 	UINT MeshIndex  = 0;
 	// 셰이더 설정
@@ -212,6 +217,11 @@ void FNiagaraRendererBillboardSprites::Render()
 
 void FNiagaraRendererMeshes::Render()
 {
+	if (!BaseStaticMesh)
+	{
+		return;
+	}
+
 	FNiagaraRendererProperty::Render();
 	GDirectXDevice->SetDSState(EDepthStencilStateType::DST_NO_WRITE);
 	GDirectXDevice->SetBSState(EBlendStateType::BST_AlphaBlend);
