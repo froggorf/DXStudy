@@ -37,8 +37,7 @@ ATestCube::ATestCube()
 	});
 
 	//TestCube2->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Cube"));
-	TestCube2->SetRelativeScale3D(XMFLOAT3(200.0f, 1.0f, 200.0f));
-	TestCube2->SetRelativeScale3D(XMFLOAT3(200.0f, 1.0f, 200.0f));
+	TestCube2->SetRelativeScale3D(XMFLOAT3(200.0f, 0.01f, 200.0f));
 	TestCube2->SetRelativeLocation(XMFLOAT3(0.0f, -50, 0.0f));
 
 	TestRigidSM = std::make_shared<UStaticMeshComponent>();
@@ -115,11 +114,13 @@ void ATestCube::BeginPlay()
 	float                  radius      = 1.0f;
 	physx::PxVec3		   spherePos(0, -10, 0);
 	sphereActor = gPhysics->createRigidDynamic(physx::PxTransform(spherePos));
+	
 	// 2. 구의 시작 위치 (y=10에서 떨어뜨리기)
 	physx::PxShape* sphereShape = gPhysics->createShape(physx::PxSphereGeometry(radius), *material);
 	sphereActor->attachShape(*sphereShape);
+	sphereActor->setGlobalPose(physx::PxTransform{0.0f,-10.0f,-50.0f,{0.0f,0.0f,0.0f,1.0f}});
 
-	physx::PxRigidBodyExt::updateMassAndInertia(*sphereActor, 1.0f);
+	physx::PxRigidBodyExt::updateMassAndInertia(*sphereActor, 100.0f);
 	gScene->addActor(*sphereActor);
 }
 
@@ -131,7 +132,7 @@ void ATestCube::Tick(float DeltaSeconds)
 	gScene->fetchResults(true);
 
 	auto pos = sphereActor->getGlobalPose();
-	TestRigidSM->SetRelativeLocation(XMFLOAT3{pos.p.x,pos.p.y,pos.p.z}); 
+	TestRigidSM->SetRelativeLocation(XMFLOAT3{pos.p.x,pos.p.y,-pos.p.z}); 
 
 
 	//SetActorRotation(XMFLOAT4(0.0f,0.0f,0.0f,1.0f));

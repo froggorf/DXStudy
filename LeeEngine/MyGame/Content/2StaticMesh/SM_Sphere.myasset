@@ -2,5 +2,5 @@
     "Class": "UStaticMesh",
     "Name": "SM_Sphere",
     "ModelData": "/Content/Resource/Model/Sphere.obj",
-    "Material" : [ "M_Cube" ]
+    "Material" : [ "M_Sphere" ]
 }

@@ -1,0 +1,16 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_Sphere",
+    "VertexShader" : {
+	"FilePath" : "/Shader/LightColor.hlsl",
+	"Func" : "VS"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/LightColor.hlsl",
+	"Func": "PS"
+    },
+    "Textures" : [ "T_White" ],
+    "BlendMode": "Opaque",
+    "TwoSided" : 0
+	
+}
