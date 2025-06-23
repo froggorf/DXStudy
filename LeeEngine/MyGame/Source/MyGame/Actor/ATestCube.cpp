@@ -98,14 +98,14 @@ void ATestCube::BeginPlay()
 	gScene = gPhysics->createScene(SceneDesc);
 
 	// 바닥 (Static Plane)
-	physx::PxMaterial*    material = gPhysics->createMaterial(0.5f, 0.5f, 0.6f); // friction, restitution
-	physx::PxPlane        plane(physx::PxVec3(0, 1, 0), 50);
-	physx::PxTransform    planePose = PxTransformFromPlaneEquation(plane);
-	physx::PxRigidStatic* ground    = gPhysics->createRigidStatic(planePose);
-	// 3. Shape를 직접 생성해서 attach
-	physx::PxShape* groundShape = gPhysics->createShape(physx::PxPlaneGeometry(), *material);
-	ground->attachShape(*groundShape);
-	gScene->addActor(*ground);
+	//physx::PxMaterial*    material = gPhysics->createMaterial(0.5f, 0.5f, 0.6f); // friction, restitution
+	//physx::PxPlane        plane(physx::PxVec3(0, 1, 0), 50);
+	//physx::PxTransform    planePose = PxTransformFromPlaneEquation(plane);
+	//physx::PxRigidStatic* ground    = gPhysics->createRigidStatic(planePose);
+	//// 3. Shape를 직접 생성해서 attach
+	//physx::PxShape* groundShape = gPhysics->createShape(physx::PxPlaneGeometry(), *material);
+	//ground->attachShape(*groundShape);
+	//gScene->addActor(*ground);
 
 	/*
 	 *
@@ -133,7 +133,65 @@ PxShape* shape = physics->createShape(convexGeom, *material);
 PxRigidDynamic* actor = physics->createRigidDynamic(pose);
 actor->attachShape(*shape);
 	 */
-	//TestCube2->GetStaticMesh()->GetStaticMeshRenderData()->
+	physx::PxMaterial*    material = gPhysics->createMaterial(0.5f, 0.5f, 0.6f); // friction, restitution
+	// convex hull 만들기
+	{
+		std::vector<physx::PxVec3> Vertices;
+		const std::vector<std::vector<MyVertexData>>& VertexData = TestCube2->GetStaticMesh()->GetStaticMeshRenderData()->VertexData;
+		size_t RequiredSize = 0;
+		for (size_t i = 0; i < VertexData.size(); ++i)
+		{
+			RequiredSize += VertexData[i].size();
+		}
+		Vertices.reserve(RequiredSize);
+
+		// 버텍스 정보 만들기
+		for (const std::vector<MyVertexData>& VertexPerMesh : VertexData)
+		{
+			for (const MyVertexData& Vertex : VertexPerMesh)
+			{
+				Vertices.emplace_back(physx::PxVec3{Vertex.Pos.x,Vertex.Pos.y,Vertex.Pos.z});
+			}
+		}
+
+		// Desc
+		physx::PxConvexMeshDesc convexDesc;
+		convexDesc.points.count  = static_cast<physx::PxU32>(Vertices.size());
+		convexDesc.points.stride = sizeof(physx::PxVec3);
+		convexDesc.points.data   = Vertices.data();
+		convexDesc.flags         = physx::PxConvexFlag::eCOMPUTE_CONVEX;
+
+		// Cooking
+		physx::PxCookingParams params(gPhysics->getTolerancesScale());
+		params.planeTolerance = 0.001f;
+		params.areaTestEpsilon = 0.06f;
+		params.gaussMapLimit = 32;
+
+		physx::PxDefaultMemoryOutputStream buf;
+		bool status = PxCookConvexMesh(params, convexDesc, buf);
+
+		if (!status)
+		{
+			assert(nullptr && "잘못된 결과");
+		};
+
+		// 4. 생성된 convex mesh를 physics로 로드
+		physx::PxDefaultMemoryInputData input(buf.getData(), buf.getSize());
+		physx::PxConvexMesh* convexMesh = gPhysics->createConvexMesh(input);
+
+
+		// Shape
+		physx::PxConvexMeshGeometry convexGeom(convexMesh, physx::PxMeshScale{physx::PxVec3{200,0.01,200}});
+		physx::PxShape*      shape = gPhysics->createShape(convexGeom, *material);
+		
+
+		// RigidStatic
+		physx::PxRigidStatic* Actor = gPhysics->createRigidStatic(physx::PxTransform{0,-50,0,{0,0,0,1}});
+		Actor->attachShape(*shape);
+		gScene->addActor(*Actor);
+	}
+	
+	
 	
 
 

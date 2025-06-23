@@ -10,8 +10,10 @@ std::unordered_map<std::string, std::string> AssetManager::AssetNameAndAssetPath
 concurrent_unordered_map<std::string, std::weak_ptr<UObject>> AssetManager::AsyncAssetCache;
 concurrent_unordered_map<std::string, concurrent_vector<AssetLoadedCallback>> AssetManager::LoadingCallbackMap;
 
-void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Device> pDevice, std::vector<ComPtr<ID3D11Buffer>>& pVertexBuffer, std::vector<ComPtr<ID3D11Buffer>>& pIndexBuffer)
+void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Device> pDevice, std::vector<std::vector<MyVertexData>>& AllVertices,std::vector<std::vector<UINT>>& AllIndices,std::vector<ComPtr<ID3D11Buffer>>& pVertexBuffer, std::vector<ComPtr<ID3D11Buffer>>& pIndexBuffer)
 {
+	AllVertices.clear();
+	AllIndices.clear();
 	std::string filePath = GEngine->GetDirectoryPath() + path;
 
 	Assimp::Importer importer;
@@ -23,10 +25,7 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
 		return;
 	}
 
-	std::vector<std::vector<MyVertexData>> allVertices;
-	std::vector<std::vector<UINT>>         allIndices;
-
-	ProcessScene(scene, allVertices, allIndices);
+	ProcessScene(scene, AllVertices, AllIndices);
 
 	// 결과 출력
 
@@ -40,9 +39,9 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
 		vertexBufferDesc.BindFlags            = D3D11_BIND_VERTEX_BUFFER;
 		vertexBufferDesc.CPUAccessFlags       = 0;
 		vertexBufferDesc.Usage                = D3D11_USAGE_IMMUTABLE;
-		vertexBufferDesc.ByteWidth            = sizeof(MyVertexData) * static_cast<UINT>(allVertices[i].size());
+		vertexBufferDesc.ByteWidth            = sizeof(MyVertexData) * static_cast<UINT>(AllVertices[i].size());
 		D3D11_SUBRESOURCE_DATA initVertexData = {};
-		initVertexData.pSysMem                = allVertices[i].data();
+		initVertexData.pSysMem                = AllVertices[i].data();
 		HR(pDevice->CreateBuffer(&vertexBufferDesc,&initVertexData, vertexBuffer.GetAddressOf()));
 		pVertexBuffer.push_back(vertexBuffer);
 
@@ -50,11 +49,11 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
 		ComPtr<ID3D11Buffer> indexBuffer;
 		D3D11_BUFFER_DESC    indexBufferDesc = {};
 		indexBufferDesc.BindFlags            = D3D11_BIND_INDEX_BUFFER;
-		indexBufferDesc.ByteWidth            = sizeof(UINT) * static_cast<UINT>(allIndices[i].size());
+		indexBufferDesc.ByteWidth            = sizeof(UINT) * static_cast<UINT>(AllIndices[i].size());
 		indexBufferDesc.CPUAccessFlags       = 0;
 		indexBufferDesc.Usage                = D3D11_USAGE_IMMUTABLE;
 		D3D11_SUBRESOURCE_DATA initIndexData = {};
-		initIndexData.pSysMem                = allIndices[i].data();
+		initIndexData.pSysMem                = AllIndices[i].data();
 		HR(pDevice->CreateBuffer(&indexBufferDesc, &initIndexData, indexBuffer.GetAddressOf()));
 		pIndexBuffer.push_back(indexBuffer);
 	}

@@ -28,7 +28,7 @@ public:
 		}
 		Materials.clear();
 
-		AssetManager::LoadModelData(StaticMeshFilePathData["ModelData"], GDirectXDevice->GetDevice(), VertexBuffer, IndexBuffer);
+		AssetManager::LoadModelData(StaticMeshFilePathData["ModelData"], GDirectXDevice->GetDevice(), VertexData,IndexData, VertexBuffer, IndexBuffer);
 		MeshCount = static_cast<UINT>(VertexBuffer.size());
 
 		// 머테리얼
@@ -72,7 +72,8 @@ public:
 	unsigned int MeshCount = 0;
 
 	// Vertex Data [Meshcount] -> 버텍스들 벡터
-
+	std::vector<std::vector<MyVertexData>> VertexData;
+	std::vector<std::vector<UINT>> IndexData;
 
 	// Buffer[MeshCount]
 	std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>> VertexBuffer;

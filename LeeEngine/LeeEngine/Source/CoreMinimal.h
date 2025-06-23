@@ -73,3 +73,5 @@
 
 // PhysX
 #include <PhysX/PxPhysicsAPI.h>
+#include <PhysX/cooking/PxCooking.h>
+#include <PhysX/cooking/PxConvexMeshDesc.h>
