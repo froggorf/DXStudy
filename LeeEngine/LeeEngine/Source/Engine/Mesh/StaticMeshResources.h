@@ -71,6 +71,9 @@ public:
 
 	unsigned int MeshCount = 0;
 
+	// Vertex Data [Meshcount] -> 버텍스들 벡터
+
+
 	// Buffer[MeshCount]
 	std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>> VertexBuffer;
 	std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>> IndexBuffer;

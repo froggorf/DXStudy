@@ -92,7 +92,7 @@ void ATestCube::BeginPlay()
 	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, physx::PxTolerancesScale());
 
 	physx::PxSceneDesc SceneDesc(gPhysics->getTolerancesScale());
-	SceneDesc.gravity = physx::PxVec3(0.0f,-9.8f*10, 0.0f);
+	SceneDesc.gravity = physx::PxVec3(0.0f,-9.8f*7.5, 0.0f);
 	SceneDesc.cpuDispatcher = physx::PxDefaultCpuDispatcherCreate(2);
 	SceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
 	gScene = gPhysics->createScene(SceneDesc);
@@ -102,12 +102,39 @@ void ATestCube::BeginPlay()
 	physx::PxPlane        plane(physx::PxVec3(0, 1, 0), 50);
 	physx::PxTransform    planePose = PxTransformFromPlaneEquation(plane);
 	physx::PxRigidStatic* ground    = gPhysics->createRigidStatic(planePose);
-
 	// 3. Shape를 직접 생성해서 attach
 	physx::PxShape* groundShape = gPhysics->createShape(physx::PxPlaneGeometry(), *material);
 	ground->attachShape(*groundShape);
-
 	gScene->addActor(*ground);
+
+	/*
+	 *
+	 // 1. 버텍스 데이터 준비
+std::vector<PxVec3> vertices = { ... };
+
+// 2. ConvexMeshDesc 세팅
+PxConvexMeshDesc convexDesc;
+convexDesc.points.count     = (PxU32)vertices.size();
+convexDesc.points.stride    = sizeof(PxVec3);
+convexDesc.points.data      = vertices.data();
+convexDesc.flags            = PxConvexFlag::eCOMPUTE_CONVEX;
+
+// 3. Cooking으로 convex mesh 생성
+PxDefaultMemoryOutputStream buf;
+cooking->cookConvexMesh(convexDesc, buf);
+PxDefaultMemoryInputData input(buf.getData(), buf.getSize());
+PxConvexMesh* convexMesh = physics->createConvexMesh(input);
+
+// 4. Shape 생성
+PxConvexMeshGeometry convexGeom(convexMesh);
+PxShape* shape = physics->createShape(convexGeom, *material);
+
+// 5. Actor에 shape 부착
+PxRigidDynamic* actor = physics->createRigidDynamic(pose);
+actor->attachShape(*shape);
+	 */
+	//TestCube2->GetStaticMesh()->GetStaticMeshRenderData()->
+	
 
 
 	// 1. 구의 반지름
@@ -120,20 +147,39 @@ void ATestCube::BeginPlay()
 	sphereActor->attachShape(*sphereShape);
 	sphereActor->setGlobalPose(physx::PxTransform{0.0f,-10.0f,-50.0f,{0.0f,0.0f,0.0f,1.0f}});
 
-	physx::PxRigidBodyExt::updateMassAndInertia(*sphereActor, 100.0f);
+	physx::PxRigidBodyExt::updateMassAndInertia(*sphereActor, 1);
 	gScene->addActor(*sphereActor);
+	
+	
 }
 
 void ATestCube::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
 
+	const float power = 300;
+	if (ImGui::IsKeyDown(ImGuiKey_I))
+	{
+		sphereActor->addForce(physx::PxVec3{0,0,-1} * power);
+	}
+	if (ImGui::IsKeyDown(ImGuiKey_K))
+	{
+		sphereActor->addForce(physx::PxVec3{0,0,1} * power);
+	}
+	if (ImGui::IsKeyDown(ImGuiKey_J))
+	{
+		sphereActor->addForce(physx::PxVec3{-1,0,0} * power);
+	}
+	if (ImGui::IsKeyDown(ImGuiKey_L))
+	{
+		sphereActor->addForce(physx::PxVec3{1,0,0} * power);
+	}
+
 	gScene->simulate(DeltaSeconds); // 예: deltaTime = 1/60.0f
 	gScene->fetchResults(true);
 
-	auto pos = sphereActor->getGlobalPose();
+	physx::PxTransform pos = sphereActor->getGlobalPose();
 	TestRigidSM->SetRelativeLocation(XMFLOAT3{pos.p.x,pos.p.y,-pos.p.z}); 
-
 
 	//SetActorRotation(XMFLOAT4(0.0f,0.0f,0.0f,1.0f));
 
