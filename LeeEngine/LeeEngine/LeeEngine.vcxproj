@@ -70,6 +70,7 @@
     <ClCompile Include="Source\Engine\MyEngineUtils.cpp" />
     <ClCompile Include="Source\Engine\Niagara\FNiagaraEmitter.cpp" />
     <ClCompile Include="Source\Engine\Niagara\UNiagaraSystem.cpp" />
+    <ClCompile Include="Source\Engine\Physics\UPhysicsEngine.cpp" />
     <ClCompile Include="Source\Engine\RenderCore\EditorScene.cpp" />
     <ClCompile Include="Source\Engine\RenderCore\ImGUIActionTask.cpp" />
     <ClCompile Include="Source\Engine\RenderCore\RenderingThread.cpp" />
@@ -179,6 +180,7 @@
     <ClInclude Include="Source\Engine\MyEngineUtils.h" />
     <ClInclude Include="Source\Engine\Niagara\FNiagaraEmitter.h" />
     <ClInclude Include="Source\Engine\Niagara\UNiagaraSystem.h" />
+    <ClInclude Include="Source\Engine\Physics\UPhysicsEngine.h" />
     <ClInclude Include="Source\Engine\RenderCore\EditorScene.h" />
     <ClInclude Include="Source\Engine\RenderCore\ImGUIActionTask.h" />
     <ClInclude Include="Source\Engine\RenderCore\RenderingThread.h" />

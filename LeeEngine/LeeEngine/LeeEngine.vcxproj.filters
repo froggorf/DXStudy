@@ -85,6 +85,9 @@
     <Filter Include="Source\Engine\Niagara">
       <UniqueIdentifier>{43cf8b61-2a3a-4ce4-927f-d211270b4b11}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Engine\Physics">
+      <UniqueIdentifier>{3fcd1143-3614-4881-aa0e-81f20d1f0696}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\DirectX\ShadowMap.cpp">
@@ -299,6 +302,9 @@
     </ClCompile>
     <ClCompile Include="Source\ThirdParty\ImGui\imgui_demo.cpp">
       <Filter>Source\ThirdParty\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Physics\UPhysicsEngine.cpp">
+      <Filter>Source\Engine\Physics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -532,6 +538,9 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\Niagara\FNiagaraEmitter.h">
       <Filter>Source\Engine\Niagara</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\UPhysicsEngine.h">
+      <Filter>Source\Engine\Physics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

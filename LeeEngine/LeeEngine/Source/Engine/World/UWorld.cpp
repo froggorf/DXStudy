@@ -87,7 +87,10 @@ void UWorld::SetPersistentLevel(const std::shared_ptr<ULevel>& NewLevel)
 {
 	PersistentLevel = NewLevel;
 	PersistentLevel->Register();
-	PersistentLevel->BeginPlay();
+	if (GEngine->bGameStart)
+	{
+		PersistentLevel->BeginPlay();
+	}
 	MY_LOG("TEST", EDebugLogLevel::DLL_Warning, "SET Level");
 #ifdef WITH_EDITOR
 	// 타이틀 바 내 현재 레벨 이름 변경
