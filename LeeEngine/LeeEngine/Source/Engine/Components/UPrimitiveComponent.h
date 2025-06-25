@@ -7,6 +7,13 @@
 
 class FPrimitiveSceneProxy;
 
+enum class ECollisionType
+{
+	NoCollision,
+	Static,
+	Dynamic,
+};
+
 class UPrimitiveComponent : public USceneComponent
 {
 	MY_GENERATE_BODY(UPrimitiveComponent)
@@ -22,6 +29,10 @@ class UPrimitiveComponent : public USceneComponent
 	}
 
 	virtual void RegisterSceneProxies();
+
+	// 충돌체크 옵션 변경
+	ECollisionType CurCollisionType = ECollisionType::Static;
+	void SetCollisionEnabled(ECollisionType Type);
 
 	// 해당 프리미티브 머테리얼의 스칼라 파라미터를 변경하는 함수
 	void SetScalarParam(UINT MeshIndex, const std::string& ParamName, float Value) const;

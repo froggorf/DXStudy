@@ -83,7 +83,7 @@ bool UStaticMeshComponent::SetStaticMesh(const std::shared_ptr<UStaticMesh>& New
 
 
 	StaticMesh = NewMesh;
-	ConvexComponent->SetStaticMesh(StaticMesh);
+	ConvexComponent->SetStaticMesh(StaticMesh, CurCollisionType);
 	
 	// 새로운 씬 프록시가 등록될 수 있도록 진행
 	RegisterSceneProxies();

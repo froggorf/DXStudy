@@ -57,7 +57,6 @@ void UPhysicsEngine::TickPhysics(float DeltaSeconds) const
 	{
 		if (PxScene)
 		{
-			std::cout<<PxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC);
 			PxScene->simulate(UpdateTime);
 			PxScene->fetchResults(true);
 		}
@@ -79,7 +78,6 @@ void UPhysicsEngine::TickPhysics(float DeltaSeconds) const
 					const physx::PxTransform& PxTransform = RigidDynamic->getGlobalPose();
 					FTransform Transform{{PxTransform.p.x, PxTransform.p.y, -PxTransform.p.z},{PxTransform.q.x, PxTransform.q.y, PxTransform.q.z, PxTransform.q.w},{1, 1, 1}};
 					ShapeComp->SetWorldTransform(Transform);
-					MY_LOG("Test", EDebugLogLevel::DLL_Warning, XMFLOAT3_TO_TEXT(Transform.Translation));
 				}
 			}
 		}

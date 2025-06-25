@@ -4,7 +4,7 @@
 #include "UPhysicsEngine.h"
 
 
-void UConvexComponent::SetStaticMesh(const std::shared_ptr<UStaticMesh>& InStaticMesh)
+void UConvexComponent::SetStaticMesh(const std::shared_ptr<UStaticMesh>& InStaticMesh, ECollisionType Type)
 {
 	if (BaseStaticMesh.lock() && RigidActor)
 	{
@@ -12,8 +12,13 @@ void UConvexComponent::SetStaticMesh(const std::shared_ptr<UStaticMesh>& InStati
 		UnRegisterPhysics();
 	}
 
-	BaseStaticMesh = InStaticMesh;
-	RegisterPhysics();
+	if (Type!= ECollisionType::NoCollision)
+	{
+		BaseStaticMesh = InStaticMesh;
+		bIsDynamic = Type == ECollisionType::Dynamic;
+		RegisterPhysics();	
+	}
+	
 }
 
 

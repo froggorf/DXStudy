@@ -15,7 +15,7 @@ class UConvexComponent : public UShapeComponent
 {
 	MY_GENERATE_BODY(UConvexComponent)
 public:
-	void SetStaticMesh(const std::shared_ptr<UStaticMesh>& InStaticMesh);
+	void SetStaticMesh(const std::shared_ptr<UStaticMesh>& InStaticMesh, ECollisionType Type);
 
 	void RegisterSceneProxies() override;
 

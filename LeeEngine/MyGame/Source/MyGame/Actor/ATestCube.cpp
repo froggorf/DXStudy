@@ -36,14 +36,65 @@ ATestCube::ATestCube()
 	TestCube2->SetRelativeScale3D(XMFLOAT3(200.0f, 0.01f, 200.0f));
 	TestCube2->SetRelativeLocation(XMFLOAT3(0.0f, -50, 0.0f));
 
-	TestRigidSM = std::make_shared<UStaticMeshComponent>();
-	AssetManager::GetAsyncAssetCache("SM_Sphere",[this](std::shared_ptr<UObject> Object)
+	
+	
+	
+
+	std::vector<std::shared_ptr<UStaticMeshComponent>> SMVec = {
+		TestCubeSM1	,
+		TestCubeSM2	,
+		TestCubeSM3	,
+		TestCubeSM4	,
+		TestCubeSM5	,
+		TestCubeSM6	,
+		TestCubeSM9	,
+		TestCubeSM7	,
+		TestCubeSM8	,
+		TestCubeSM10,
+		TestCubeSM11,
+		TestCubeSM12,
+		TestCubeSM13,
+		TestCubeSM14,
+		TestCubeSM15,
+		TestCubeSM16,
+		TestCubeSM17,
+		TestCubeSM18,
+		TestCubeSM19,
+		TestCubeSM20,
+		TestCubeSM21,
+	};
+
+	// 피라미드의 맨 위(0,0)에서 시작
+	const float XOffset = 15.0f;
+	const float YOffset = 15.0f;
+
+	int index = 0;
+	int row = 1;
+
+	while (index < SMVec.size())
+	{
+		
+
+		// 각 줄의 시작 위치를 중앙 정렬하려면
+		float startX = -((row - 1) * XOffset) / 2.0f;
+		float y = (1-row) * YOffset;
+
+		for (int col = 0; col < row && index < SMVec.size(); ++col, ++index)
 		{
-			TestRigidSM->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
-		});
-	TestRigidSM->SetupAttachment(GetRootComponent());
-	TestRigidSM->SetRelativeLocation(XMFLOAT3{0.0f,-10.0f,50.0f});
-	TestRigidSM->SetRelativeScale3D(XMFLOAT3{1.0f,1.0f,1.0f});
+			float x = startX + col * XOffset;
+			SMVec[index]= std::make_shared<UStaticMeshComponent>();
+			SMVec[index]->SetCollisionEnabled(ECollisionType::Dynamic);
+			AssetManager::GetAsyncAssetCache("SM_Box",[SMVec,index](std::shared_ptr<UObject> Object)
+				{
+					SMVec[index]->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
+				});
+
+			SMVec[index]->SetupAttachment(GetRootComponent());
+			SMVec[index]->SetRelativeScale3D(XMFLOAT3{5.0f,5.0f,5.0f});
+			SMVec[index]->SetRelativeLocation(XMFLOAT3{x,y+50,0});
+		}
+		++row;
+	}
 
 	DummyComp = std::make_shared<USceneComponent>();
 	DummyComp->Rename("DummyComp");
@@ -83,29 +134,6 @@ ATestCube::ATestCube()
 void ATestCube::BeginPlay()
 {
 	AActor::BeginPlay();
-
-	
-	//// convex hull 만들기
-	//{
-	//	gPhysicsEngine->CreateAndRegisterConvexActor(TestCube2->GetComponentTransform(), TestCube2->GetStaticMesh(), 1, false);
-	//}
-	//
-	//
-	//
-
-
-	//// 1. 구의 반지름
-	//SphereShape	= gPhysicsEngine->CreateSphereShape(1.0f);
-	//SphereActor = gPhysicsEngine->CreateAndRegisterActor(TestRigidSM->GetComponentTransform(), SphereShape, 1)->is<physx::PxRigidDynamic>();
-	//
-
-	
-
-
-	
-	//sphereActor->setGlobalPose(physx::PxTransform{0.0f,-10.0f,-50.0f,{0.0f,0.0f,0.0f,1.0f}});
-	
-	
 }
 
 void ATestCube::Tick(float DeltaSeconds)

@@ -43,6 +43,11 @@ void UPrimitiveComponent::RegisterSceneProxies()
 	RegisteredSceneProxyCount = PrimitiveSceneProxies.size();
 }
 
+void UPrimitiveComponent::SetCollisionEnabled(ECollisionType Type)
+{
+	CurCollisionType = Type;
+}
+
 void UPrimitiveComponent::SetScalarParam(UINT MeshIndex, const std::string& ParamName, float Value) const
 {
 	FScene::SetMaterialScalarParam_GameThread(PrimitiveID, MeshIndex, ParamName, Value);
