@@ -11,6 +11,7 @@
 #include "World/UWorld.h"
 #include "Mesh/USkeletalMesh.h"
 #include "Misc/QueuedThreadPool.h"
+#include "Physics/UPhysicsEngine.h"
 #include "RenderCore/EditorScene.h"
 
 std::shared_ptr<UEngine> GEngine = nullptr;
@@ -177,6 +178,8 @@ void UEngine::Tick(float DeltaSeconds)
 		{
 			CurrentWorld->TickWorld(DeltaSeconds);
 		}
+
+		gPhysicsEngine->TickPhysics(DeltaSeconds);
 	}
 
 	for (const auto& IDAndComponent : ComponentsTransformDirty)

@@ -85,19 +85,19 @@ void ATestCube::BeginPlay()
 	AActor::BeginPlay();
 
 	
-	// convex hull 만들기
-	{
-		gPhysicsEngine->CreateAndRegisterConvexActor(TestCube2->GetComponentTransform(), TestCube2->GetStaticMesh(), 1, false);
-	}
-	
-	
-	
+	//// convex hull 만들기
+	//{
+	//	gPhysicsEngine->CreateAndRegisterConvexActor(TestCube2->GetComponentTransform(), TestCube2->GetStaticMesh(), 1, false);
+	//}
+	//
+	//
+	//
 
 
-	// 1. 구의 반지름
-	SphereShape	= gPhysicsEngine->CreateSphereShape(1.0f);
-	SphereActor = gPhysicsEngine->CreateAndRegisterActor(TestRigidSM->GetComponentTransform(), SphereShape, 1)->is<physx::PxRigidDynamic>();
-	
+	//// 1. 구의 반지름
+	//SphereShape	= gPhysicsEngine->CreateSphereShape(1.0f);
+	//SphereActor = gPhysicsEngine->CreateAndRegisterActor(TestRigidSM->GetComponentTransform(), SphereShape, 1)->is<physx::PxRigidDynamic>();
+	//
 
 	
 
@@ -112,28 +112,28 @@ void ATestCube::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
 
-	const float power = 3;
-	if (ImGui::IsKeyDown(ImGuiKey_I))
-	{
-		SphereActor->addForce(physx::PxVec3{0,0,-1} * power);
-	}
-	if (ImGui::IsKeyDown(ImGuiKey_K))
-	{
-		SphereActor->addForce(physx::PxVec3{0,0,1} * power);
-	}
-	if (ImGui::IsKeyDown(ImGuiKey_J))
-	{
-		SphereActor->addForce(physx::PxVec3{-1,0,0} * power);
-	}
-	if (ImGui::IsKeyDown(ImGuiKey_L))
-	{
-		SphereActor->addForce(physx::PxVec3{1,0,0} * power);
-	}
+	//const float power = 3;
+	//if (ImGui::IsKeyDown(ImGuiKey_I))
+	//{
+	//	SphereActor->addForce(physx::PxVec3{0,0,-1} * power);
+	//}
+	//if (ImGui::IsKeyDown(ImGuiKey_K))
+	//{
+	//	SphereActor->addForce(physx::PxVec3{0,0,1} * power);
+	//}
+	//if (ImGui::IsKeyDown(ImGuiKey_J))
+	//{
+	//	SphereActor->addForce(physx::PxVec3{-1,0,0} * power);
+	//}
+	//if (ImGui::IsKeyDown(ImGuiKey_L))
+	//{
+	//	SphereActor->addForce(physx::PxVec3{1,0,0} * power);
+	//}
+	//
+	//gPhysicsEngine->TickPhysics(DeltaSeconds);
 
-	gPhysicsEngine->TickPhysics(DeltaSeconds);
-
-	physx::PxTransform pos = SphereActor->getGlobalPose();
-	TestRigidSM->SetRelativeLocation(XMFLOAT3{pos.p.x,pos.p.y,-pos.p.z}); 
+	//physx::PxTransform pos = SphereActor->getGlobalPose();
+	//TestRigidSM->SetRelativeLocation(XMFLOAT3{pos.p.x,pos.p.y,-pos.p.z}); 
 
 	//SetActorRotation(XMFLOAT4(0.0f,0.0f,0.0f,1.0f));
 

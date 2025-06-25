@@ -1,6 +1,8 @@
 ﻿#include "CoreMinimal.h"
 #include "UPhysicsEngine.h"
 
+#include "UShapeComponent.h"
+
 std::unique_ptr<UPhysicsEngine> gPhysicsEngine = nullptr;
 
 UPhysicsEngine::UPhysicsEngine()
@@ -50,16 +52,39 @@ void UPhysicsEngine::TickPhysics(float DeltaSeconds) const
 	CurFrameTime += DeltaSeconds;
 
 	static float UpdatePerSecond = 60;
-	static float UpdateTime = 1.0 / UpdatePerSecond;
+	static float UpdateTime = 1.0f / UpdatePerSecond;
 	if (CurFrameTime >= UpdateTime)
 	{
 		if (PxScene)
 		{
+			std::cout<<PxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC);
 			PxScene->simulate(UpdateTime);
 			PxScene->fetchResults(true);
 		}
 		CurFrameTime -= UpdateTime;
+
+		// 위치 정보도 적용해주기
+		physx::PxU32 ActorNum = PxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC);
+		std::vector<physx::PxActor*> SceneActors(ActorNum);
+		PxScene->getActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC, SceneActors.data(), ActorNum);
+
+		for (physx::PxU32 i = 0; i < ActorNum; ++i)
+		{
+			physx::PxActor* Actor = SceneActors[i];
+
+			if (UShapeComponent* ShapeComp = static_cast<UShapeComponent*>(Actor->userData))
+			{
+				if (physx::PxRigidDynamic* RigidDynamic = Actor->is<physx::PxRigidDynamic>())
+				{
+					const physx::PxTransform& PxTransform = RigidDynamic->getGlobalPose();
+					FTransform Transform{{PxTransform.p.x, PxTransform.p.y, -PxTransform.p.z},{PxTransform.q.x, PxTransform.q.y, PxTransform.q.z, PxTransform.q.w},{1, 1, 1}};
+					ShapeComp->SetWorldTransform(Transform);
+					MY_LOG("Test", EDebugLogLevel::DLL_Warning, XMFLOAT3_TO_TEXT(Transform.Translation));
+				}
+			}
+		}
 	}
+
 	
 }
 
@@ -119,6 +144,22 @@ physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterConvexActor(const FTransfo
 	PxScene->addActor(*Actor);
 
 	return Actor;
+}
+
+void UPhysicsEngine::UnRegisterActor(physx::PxRigidActor* RemoveActor) const
+{
+	if (!RemoveActor)
+	{
+		return;
+	}
+
+	if (physx::PxScene* CurScene = RemoveActor->getScene())
+	{
+		CurScene->removeActor(*RemoveActor);
+	}
+
+	RemoveActor->release();
+	RemoveActor = nullptr;
 }
 
 physx::PxConvexMesh* UPhysicsEngine::CreateConvexMesh(const std::shared_ptr<UStaticMesh>& StaticMesh) const

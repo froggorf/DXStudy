@@ -6,12 +6,45 @@
 #include "UStaticMeshComponent.h"
 
 #include "Engine/Mesh/UStaticMesh.h"
+#include "Engine/Physics/UConvexComponent.h"
 #include "Engine/RenderCore/EditorScene.h"
 #include "Engine/SceneProxy/FStaticMeshSceneProxy.h"
 
 UStaticMeshComponent::UStaticMeshComponent()
 {
 	Rename("StaticMeshComponent_" + std::to_string(ComponentID));
+
+	
+	
+}
+
+void UStaticMeshComponent::Register()
+{
+	UMeshComponent::Register();
+
+	ConvexComponent = std::make_shared<UConvexComponent>();
+	ConvexComponent->SetupAttachment(shared_from_this(),"");	
+	//if (std::shared_ptr<USceneComponent> ThisComp = shared_from_this())
+	//{
+	//	
+	//}
+
+	if (ConvexComponent)
+	{
+		ConvexComponent->Register();	
+	}
+	
+}
+
+void UStaticMeshComponent::UnRegister()
+{
+	UMeshComponent::UnRegister();
+
+	if (ConvexComponent)
+	{
+		ConvexComponent->UnRegister();	
+	}
+	
 }
 
 std::vector<std::shared_ptr<FPrimitiveSceneProxy>> UStaticMeshComponent::CreateSceneProxy()
@@ -50,7 +83,8 @@ bool UStaticMeshComponent::SetStaticMesh(const std::shared_ptr<UStaticMesh>& New
 
 
 	StaticMesh = NewMesh;
-
+	ConvexComponent->SetStaticMesh(StaticMesh);
+	
 	// 새로운 씬 프록시가 등록될 수 있도록 진행
 	RegisterSceneProxies();
 

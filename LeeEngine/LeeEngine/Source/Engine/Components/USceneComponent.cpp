@@ -217,7 +217,7 @@ void USceneComponent::UpdateComponentToWorldWithParent(const std::shared_ptr<USc
 	// 언리얼엔진의 내부에선
 	// 행렬을 통한 위치 계산이 아닌
 	// FTransform * 연산자를 통해 부분적인 연산을 적용하므로 해당 방식을 채용
-	auto RelTransform = FTransform{XMLoadFloat4(&RelativeRotation), RelativeLocation, RelativeScale3D};
+	const FTransform& RelTransform = FTransform{XMLoadFloat4(&RelativeRotation), RelativeLocation, RelativeScale3D};
 
 	if (nullptr == Parent)
 	{

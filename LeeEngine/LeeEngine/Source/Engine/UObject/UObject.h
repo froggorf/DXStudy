@@ -65,6 +65,11 @@ public:
 		bIsRegister = true;
 	}
 
+	virtual void UnRegister()
+	{
+		bIsRegister = false;
+	}
+
 	bool IsRegister() const
 	{
 		return bIsRegister;

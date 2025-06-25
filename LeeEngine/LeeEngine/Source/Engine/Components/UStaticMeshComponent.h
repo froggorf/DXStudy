@@ -4,7 +4,7 @@
 // 이윤석
 #pragma once
 #include "UMeshComponent.h"
-#include "Engine/MyEngineUtils.h"
+#include "Engine/Physics/UConvexComponent.h"
 
 class FStaticMeshSceneProxy;
 class UStaticMesh;
@@ -13,6 +13,9 @@ class UStaticMeshComponent : public UMeshComponent
 {
 	MY_GENERATE_BODY(UStaticMeshComponent)
 	UStaticMeshComponent();
+
+	void Register() override;
+	void UnRegister() override;
 	std::vector<std::shared_ptr<FPrimitiveSceneProxy>> CreateSceneProxy() override;
 	virtual bool                                       SetStaticMesh(const std::shared_ptr<UStaticMesh>& NewMesh);
 
@@ -23,4 +26,6 @@ class UStaticMeshComponent : public UMeshComponent
 
 private:
 	std::shared_ptr<UStaticMesh> StaticMesh;
+
+	std::shared_ptr<UConvexComponent> ConvexComponent;
 };

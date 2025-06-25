@@ -306,6 +306,12 @@
     <ClCompile Include="Source\Engine\Physics\UPhysicsEngine.cpp">
       <Filter>Source\Engine\Physics</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Physics\UShapeComponent.cpp">
+      <Filter>Source\Engine\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Physics\UConvexComponent.cpp">
+      <Filter>Source\Engine\Physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DirectX\ShadowMap.h">
@@ -540,6 +546,12 @@
       <Filter>Source\Engine\Niagara</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Physics\UPhysicsEngine.h">
+      <Filter>Source\Engine\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\UShapeComponent.h">
+      <Filter>Source\Engine\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\UConvexComponent.h">
       <Filter>Source\Engine\Physics</Filter>
     </ClInclude>
   </ItemGroup>

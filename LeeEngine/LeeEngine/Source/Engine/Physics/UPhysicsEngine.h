@@ -13,7 +13,7 @@ class UPhysicsEngine : public UObject
 public:
 	UPhysicsEngine();
 	~UPhysicsEngine() final;
-
+	 
 	void TickPhysics(float DeltaSeconds) const;
 
 	/// Shape
@@ -25,6 +25,13 @@ public:
 	physx::PxRigidActor* CreateAndRegisterActor(const FTransform& Transform, physx::PxShape* InShape, const float Mass, bool bIsDynamic = true) const;
 	// 정적 convex hull 물리 오브젝트 생성
 	physx::PxRigidActor* CreateAndRegisterConvexActor(const FTransform& Transform, const std::shared_ptr<UStaticMesh>& StaticMesh, const float Mass, bool bIsDynamic = true) const;
+
+	// Scene
+	/*
+	 * Note
+	 * 해당 함수에서 RemoveActor 를 release 하고 nullptr로 만듦
+	 */
+	void UnRegisterActor(physx::PxRigidActor* RemoveActor) const;
 
 protected:
 	// StaticMesh정보를 통해 ConvexMesh를 만들어 반환해주는 함수
