@@ -24,6 +24,9 @@ class UStaticMeshComponent : public UMeshComponent
 		return StaticMesh;
 	}
 
+	// 보유하고있는 ConvexComponent에 힘을 가하는 함수
+	void AddForce(const XMFLOAT3& Force);
+
 private:
 	std::shared_ptr<UStaticMesh> StaticMesh;
 

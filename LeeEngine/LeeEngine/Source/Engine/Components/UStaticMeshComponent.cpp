@@ -91,3 +91,18 @@ bool UStaticMeshComponent::SetStaticMesh(const std::shared_ptr<UStaticMesh>& New
 	// 새로운 씬 프록시들을 생성 및 등록
 	return true;
 }
+
+void UStaticMeshComponent::AddForce(const XMFLOAT3& Force)
+{
+	if (CurCollisionType == ECollisionType::Dynamic)
+	{
+		if (ConvexComponent)
+		{
+			ConvexComponent->AddForce(Force);
+		}
+	}
+	else
+	{
+		MY_LOG("Warning", EDebugLogLevel::DLL_Warning, GetName() + " is not dynamic physics - AddForce");
+	}
+}

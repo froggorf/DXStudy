@@ -37,6 +37,14 @@ void UShapeComponent::UnRegisterPhysics()
 	}
 }
 
+void UShapeComponent::AddForce(const XMFLOAT3& Force) const
+{
+	if (bIsDynamic && RigidActor)
+	{
+		RigidActor->is<physx::PxRigidDynamic>()->addForce({Force.x,Force.y,-Force.z});
+	}
+}
+
 void UShapeComponent::SetWorldTransform(const FTransform& NewTransform)
 {
 	// StaticMesh와 같이 존재할 경우에는 부착된 클래스에 위치를 맞춰줘야하므로 해당 방식으로 위치 조정

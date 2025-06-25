@@ -35,6 +35,8 @@ public:
 	virtual void UnRegisterPhysics();
 	virtual physx::PxRigidActor* CreateRigidActor(){ return nullptr; }
 
+	
+	void AddForce(const XMFLOAT3& Force) const;
 
 	void SetWorldTransform(const FTransform& NewTransform);
 

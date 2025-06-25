@@ -37,7 +37,28 @@ ATestCube::ATestCube()
 	TestCube2->SetRelativeLocation(XMFLOAT3(0.0f, -50, 0.0f));
 
 	
-	
+
+	TestCubeSM1	 = std::make_shared<UStaticMeshComponent>();
+	TestCubeSM2	 = std::make_shared<UStaticMeshComponent>();
+	TestCubeSM3	 = std::make_shared<UStaticMeshComponent>();
+	TestCubeSM4	 = std::make_shared<UStaticMeshComponent>();
+	TestCubeSM5	 = std::make_shared<UStaticMeshComponent>();
+	TestCubeSM6	 = std::make_shared<UStaticMeshComponent>();
+	TestCubeSM9	 = std::make_shared<UStaticMeshComponent>();
+	TestCubeSM7	 = std::make_shared<UStaticMeshComponent>();
+	TestCubeSM8	 = std::make_shared<UStaticMeshComponent>();
+	TestCubeSM10 = std::make_shared<UStaticMeshComponent>();
+	TestCubeSM11 = std::make_shared<UStaticMeshComponent>();
+	TestCubeSM12 = std::make_shared<UStaticMeshComponent>();
+	TestCubeSM13 = std::make_shared<UStaticMeshComponent>();
+	TestCubeSM14 = std::make_shared<UStaticMeshComponent>();
+	TestCubeSM15 = std::make_shared<UStaticMeshComponent>();
+	TestCubeSM16 = std::make_shared<UStaticMeshComponent>();
+	TestCubeSM17 = std::make_shared<UStaticMeshComponent>();
+	TestCubeSM18 = std::make_shared<UStaticMeshComponent>();
+	TestCubeSM19 = std::make_shared<UStaticMeshComponent>();
+	TestCubeSM20 = std::make_shared<UStaticMeshComponent>();
+	TestCubeSM21 = std::make_shared<UStaticMeshComponent>();
 	
 
 	std::vector<std::shared_ptr<UStaticMeshComponent>> SMVec = {
@@ -64,6 +85,8 @@ ATestCube::ATestCube()
 		TestCubeSM21,
 	};
 
+
+
 	// 피라미드의 맨 위(0,0)에서 시작
 	const float XOffset = 15.0f;
 	const float YOffset = 15.0f;
@@ -82,7 +105,7 @@ ATestCube::ATestCube()
 		for (int col = 0; col < row && index < SMVec.size(); ++col, ++index)
 		{
 			float x = startX + col * XOffset;
-			SMVec[index]= std::make_shared<UStaticMeshComponent>();
+			
 			SMVec[index]->SetCollisionEnabled(ECollisionType::Dynamic);
 			AssetManager::GetAsyncAssetCache("SM_Box",[SMVec,index](std::shared_ptr<UObject> Object)
 				{
@@ -140,23 +163,25 @@ void ATestCube::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
 
-	//const float power = 3;
-	//if (ImGui::IsKeyDown(ImGuiKey_I))
-	//{
-	//	SphereActor->addForce(physx::PxVec3{0,0,-1} * power);
-	//}
-	//if (ImGui::IsKeyDown(ImGuiKey_K))
-	//{
-	//	SphereActor->addForce(physx::PxVec3{0,0,1} * power);
-	//}
-	//if (ImGui::IsKeyDown(ImGuiKey_J))
-	//{
-	//	SphereActor->addForce(physx::PxVec3{-1,0,0} * power);
-	//}
-	//if (ImGui::IsKeyDown(ImGuiKey_L))
-	//{
-	//	SphereActor->addForce(physx::PxVec3{1,0,0} * power);
-	//}
+	
+
+	const float power = 3;
+	if (ImGui::IsKeyDown(ImGuiKey_I))
+	{
+		TestCubeSM1->AddForce({0,0,power});
+	}
+	if (ImGui::IsKeyDown(ImGuiKey_K))
+	{
+		TestCubeSM1->AddForce({0,0,-power});
+	}
+	if (ImGui::IsKeyDown(ImGuiKey_J))
+	{
+		TestCubeSM1->AddForce({-power,0,0});
+	}
+	if (ImGui::IsKeyDown(ImGuiKey_L))
+	{
+		TestCubeSM1->AddForce({power,0,0});
+	}
 	//
 	//gPhysicsEngine->TickPhysics(DeltaSeconds);
 
