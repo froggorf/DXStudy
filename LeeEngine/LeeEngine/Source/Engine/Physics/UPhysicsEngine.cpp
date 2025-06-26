@@ -115,9 +115,19 @@ physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterActor(const FTransform& Tr
 }
 
 
-physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterConvexActor(const FTransform& Transform, const std::shared_ptr<UStaticMesh>& StaticMesh, const float Mass, bool bIsDynamic) const
+physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterConvexActor(const FTransform& Transform, const std::shared_ptr<UStaticMesh>& StaticMesh, const float Mass, Microsoft::WRL::ComPtr<ID3D11Buffer>& OutVertexBuffer, bool bIsDynamic) const
 {
 	physx::PxConvexMesh* ConvexMesh = CreateConvexMesh(StaticMesh);
+	if (!ConvexMesh)
+	{
+		assert(nullptr && "에러 - CreateConvexMesh");
+	}
+
+#ifdef MYENGINE_BUILD_DEBUG || MYENGINE_BUILD_DEVELOPMENT
+	OutVertexBuffer = CreateVertexBufferForConvexActor(ConvexMesh);
+#endif
+
+
 
 	// Shape
 	physx::PxMeshScale Scale = physx::PxVec3{Transform.Scale3D.x,Transform.Scale3D.y,Transform.Scale3D.z};
@@ -142,6 +152,60 @@ physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterConvexActor(const FTransfo
 	PxScene->addActor(*Actor);
 
 	return Actor;
+}
+
+Microsoft::WRL::ComPtr<ID3D11Buffer> UPhysicsEngine::CreateVertexBufferForConvexActor(const physx::PxConvexMesh* ConvexMesh)
+{
+	if (!ConvexMesh)
+	{
+		return nullptr;
+	}
+
+	// ConvexMesh 만들어진 것을
+	// 디버그 드로우 용도로 쓰기 위해
+	// VertexBuffer와 IndexBuffer 생성
+	
+	const physx::PxU32   VertexCount = ConvexMesh->getNbVertices();
+	const physx::PxVec3* Vertices    = ConvexMesh->getVertices();
+	const physx::PxU32   PolyCount   = ConvexMesh->getNbPolygons();
+	physx::PxHullPolygon Polygon;
+
+	std::vector<MyVertexData> VertexData(VertexCount*3);
+	for (physx::PxU32 i = 0; i < PolyCount; ++i)
+	{
+		ConvexMesh->getPolygonData(i, Polygon);
+
+		for (physx::PxU32 j = 2; j < Polygon.mNbVerts; ++j)
+		{
+			physx::PxU8 i0 = ConvexMesh->getIndexBuffer()[Polygon.mIndexBase + 0];
+			physx::PxU8 i1 = ConvexMesh->getIndexBuffer()[Polygon.mIndexBase + j - 1];
+			physx::PxU8 i2 = ConvexMesh->getIndexBuffer()[Polygon.mIndexBase + j];
+
+			MyVertexData V0, V1, V2;
+			V0.Pos = XMFLOAT3(Vertices[i0].x,Vertices[i0].y,-Vertices[i0].z);
+			V1.Pos = XMFLOAT3(Vertices[i1].x,Vertices[i1].y,-Vertices[i1].z);
+			V2.Pos = XMFLOAT3(Vertices[i2].x,Vertices[i2].y,-Vertices[i2].z);
+
+			VertexData.emplace_back(V0);
+			VertexData.emplace_back(V1);
+			VertexData.emplace_back(V2);
+		}
+	}
+	VertexData.shrink_to_fit();
+
+	// DirectX 11 버텍스 버퍼 생성
+	D3D11_BUFFER_DESC bd = {};
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(MyVertexData) * VertexData.size();
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bd.CPUAccessFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA InitData = {};
+	InitData.pSysMem = VertexData.data();
+
+	ID3D11Buffer* pVertexBuffer = nullptr;
+	GDirectXDevice->GetDevice()->CreateBuffer(&bd, &InitData, &pVertexBuffer);
+	return pVertexBuffer;
 }
 
 void UPhysicsEngine::UnRegisterActor(physx::PxRigidActor* RemoveActor) const

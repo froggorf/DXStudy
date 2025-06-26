@@ -6,6 +6,7 @@
 
 #include "EditorScene.h"
 #include "renderingthread.h"
+#include "Engine/Physics/UShapeComponent.h"
 #include "Engine/SceneProxy/FNiagaraSceneProxy.h"
 #include "Engine/SceneProxy/FSkeletalMeshSceneProxy.h"
 #include "Engine/SceneProxy/FStaticMeshSceneProxy.h"
@@ -444,11 +445,13 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 		// 현재 시간
 		auto currentTime = clock::now();
 		auto duration    = std::chrono::duration_cast<microseconds>(currentTime - prevTime);
+		SceneData->DeltaSeconds = static_cast<double>(duration.count()) / 1'000'000.0;
 		prevTime         = currentTime;
 
 		++frameCount;
 
 		auto elapsed = std::chrono::duration_cast<microseconds>(currentTime - prevUpdateTime).count();
+	
 		if (elapsed >= 1'000'000)
 		{
 			RenderFPS = static_cast<float>(frameCount) * 1'000'000.0f / elapsed;
@@ -565,11 +568,51 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 					SceneProxy.SceneProxy->Draw();
 				}
 			}
-			//if(CurrentWorld)
-			//{
-			//	CurrentWorld->TestDrawWorld();
-			//}
-			//DrawImGui();
+
+
+			
+#ifdef MYENGINE_BUILD_DEBUG || MYENGINE_BUILD_DEVELOPMENT
+			// 디버그 드로우
+			static std::shared_ptr<UMaterial> DebugMaterial = nullptr;
+			if (!DebugMaterial)
+			{
+				DebugMaterial = std::dynamic_pointer_cast<UMaterial>(UMaterial::GetMaterialCache("M_Debug"));
+			}
+
+			if (DebugMaterial)
+			{
+				DebugMaterial->Binding();
+				GDirectXDevice->SetRSState(ERasterizerType::RT_WireFrame);
+				for (FDebugRenderData& DebugData : SceneData->DebugRenderData)
+				{
+					ObjConstantBuffer ocb;
+					XMMATRIX          world = DebugData.Transform.ToMatrixWithScale();
+					// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
+					ocb.InvTransposeMatrix = (XMMatrixInverse(nullptr, world));
+					ocb.World              = XMMatrixTranspose(world);
+
+					ocb.ObjectMaterial.Ambient  = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+					ocb.ObjectMaterial.Diffuse  = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+					ocb.ObjectMaterial.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 32.0f);
+
+					GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_PerObject, &ocb, sizeof(ocb));
+
+					FDebugColor ColorBuffer;
+					ColorBuffer.DebugColor = DebugData.DebugColor;
+					GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_DebugDraw, &ColorBuffer, sizeof(ColorBuffer));
+
+
+					DebugData.ShapeComp->DebugDraw_RenderThread();
+					DebugData.RemainTime -= SceneData->DeltaSeconds;
+					
+				}
+				std::erase_if(SceneData->DebugRenderData, [](const FDebugRenderData& Data)
+				{
+					return Data.RemainTime <= 0;
+				}); 
+			}
+#endif
+
 		}
 	}
 

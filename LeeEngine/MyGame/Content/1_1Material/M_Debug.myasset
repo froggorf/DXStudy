@@ -1,0 +1,15 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_Debug",
+    "VertexShader" : {
+	"FilePath" : "/Shader/DebugDraw.hlsl",
+	"Func" : "VS"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/DebugDraw.hlsl",
+	"Func": "PS"
+    },
+    "BlendMode": "Opaque",
+    "TwoSided" : 0
+	
+}

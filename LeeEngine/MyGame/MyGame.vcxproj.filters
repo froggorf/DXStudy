@@ -80,9 +80,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shader\LightColor.hlsl">
-      <Filter>Shader</Filter>
-    </None>
     <None Include="Shader\SkeletalMesh.hlsl">
       <Filter>Shader</Filter>
     </None>
@@ -106,6 +103,12 @@
     </None>
     <None Include="Shader\RibbonRenderer.fx">
       <Filter>Shader\Niagara\Render\Ribbon</Filter>
+    </None>
+    <None Include="Shader\LightColor.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\DebugDraw.hlsl">
+      <Filter>Shader</Filter>
     </None>
   </ItemGroup>
 </Project>

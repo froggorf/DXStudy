@@ -33,8 +33,12 @@ public:
 	void UnRegister() override;
 	virtual void RegisterPhysics();
 	virtual void UnRegisterPhysics();
+
+	void TickComponent(float DeltaSeconds) override;
+
 	virtual physx::PxRigidActor* CreateRigidActor(){ return nullptr; }
 
+	virtual Microsoft::WRL::ComPtr<ID3D11Buffer> GetVertexBuffer() const {return nullptr; }
 	
 	void AddForce(const XMFLOAT3& Force) const;
 
@@ -45,5 +49,14 @@ public:
 	// UShapeComponent를 상속받는 클래스는 해당 함수를 재정의 해줘야함
 	void RegisterSceneProxies() override {}
 
-	virtual void DebugDraw(){}
+
+	virtual void DebugDraw_RenderThread() const {}
+
+	void SetDebugDraw(bool bNewDrawDebug)
+	{
+		bDrawDebug = true;
+	}
+protected:
+	UINT LastDrawDebugRenderThreadFrame = -1;
+	bool bDrawDebug = true;
 };

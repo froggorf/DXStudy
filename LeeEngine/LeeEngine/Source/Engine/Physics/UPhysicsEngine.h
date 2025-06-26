@@ -24,8 +24,8 @@ public:
 	// 정적 물리 오브젝트 생성
 	physx::PxRigidActor* CreateAndRegisterActor(const FTransform& Transform, physx::PxShape* InShape, const float Mass, bool bIsDynamic = true) const;
 	// 정적 convex hull 물리 오브젝트 생성
-	physx::PxRigidActor* CreateAndRegisterConvexActor(const FTransform& Transform, const std::shared_ptr<UStaticMesh>& StaticMesh, const float Mass, bool bIsDynamic = true) const;
-
+	physx::PxRigidActor* CreateAndRegisterConvexActor(const FTransform& Transform, const std::shared_ptr<UStaticMesh>& StaticMesh, const float Mass, Microsoft::WRL::ComPtr<ID3D11Buffer>& OutVertexBuffer, bool bIsDynamic = true) const;
+	static Microsoft::WRL::ComPtr<ID3D11Buffer> CreateVertexBufferForConvexActor(const physx::PxConvexMesh* ConvexMesh);
 	// Scene
 	/*
 	 * Note

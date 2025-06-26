@@ -22,6 +22,7 @@
 // 다수의 게임 쓰레드에서 단일의 렌더쓰레드가 수행할 명령을 관리하는 파이프라인
 // Multi-Producer(GameThread) Single-Consumer(RenderThread) Queue
 
+class UShapeComponent;
 class UStaticMesh;
 class FStaticMeshSceneProxy;
 class USceneComponent;
@@ -117,6 +118,16 @@ struct FPrimitiveRenderData
 	std::shared_ptr<UMaterialInterface>   MaterialInterface = nullptr;
 };
 
+#ifdef MYENGINE_BUILD_DEBUG || MYENGINE_BUILD_DEVELOPMENT
+struct FDebugRenderData
+{
+	float RemainTime;
+	std::shared_ptr<UShapeComponent> ShapeComp;
+	FTransform Transform;
+	XMFLOAT4 DebugColor;
+};
+#endif
+
 // 렌더링에 대한 정보를 가지고 있는 클래스 (씬 단위)
 // 03.10 렌더링 쓰레드의 경우 단일 소비로 진행할 예정이므로
 // 멀티쓰레드 동기화에 대한 처리 x
@@ -136,9 +147,10 @@ public:
 	std::unordered_map<UINT, std::vector<FPrimitiveRenderData>> OpaqueSceneProxyRenderData;
 	std::unordered_map<UINT, std::vector<FPrimitiveRenderData>> MaskedSceneProxyRenderData;
 	std::unordered_map<UINT, std::vector<FPrimitiveRenderData>> TranslucentSceneProxyRenderData;
-	/*std::vector<PrimitiveRenderData> OpaqueSceneProxyRenderData;
-	std::vector<PrimitiveRenderData> MaskedSceneProxyRenderData;
-	std::vector<PrimitiveRenderData> TranslucentSceneProxyRenderData;*/
+
+#ifdef MYENGINE_BUILD_DEBUG || MYENGINE_BUILD_DEVELOPMENT
+	std::vector<FDebugRenderData> DebugRenderData;
+#endif
 
 	// PrimitiveID, 
 	std::map<UINT, std::vector<std::shared_ptr<FPrimitiveSceneProxy>>> PendingAddSceneProxies;
@@ -148,6 +160,8 @@ public:
 	// ==================== FPrimitiveSceneProxy ====================
 
 	bool bIsFrameStart;
+	float LastUpdateTime=0;
+	float DeltaSeconds;
 
 	// 엔진 종료 시 렌더링 쓰레드를 죽이는 함수
 	static void KillRenderingThread()
@@ -293,6 +307,20 @@ public:
 
 	virtual XMMATRIX GetViewMatrix();
 	virtual XMMATRIX GetProjectionMatrix();
+
+#ifdef MYENGINE_BUILD_DEBUG || MYENGINE_BUILD_DEVELOPMENT
+	static void DrawDebugData_GameThread(const FDebugRenderData& RenderData, UINT LastUpdateRenderThreadFrameCount)
+	{
+		ENQUEUE_RENDER_COMMAND([RenderData](std::shared_ptr<FScene>& Scene)
+		{
+			Scene->DrawDebugData_RenderThread(RenderData);
+		})
+	}
+	void DrawDebugData_RenderThread(const FDebugRenderData& InDebugRenderData)
+	{
+		DebugRenderData.emplace_back(InDebugRenderData);
+	}
+#endif
 
 private:
 	static void EndRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData);

@@ -41,6 +41,7 @@
   <ItemGroup>
     <None Include="Shader\LightColor.hlsl">
       <FileType>Document</FileType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS</EntryPointName>
     </None>
     <None Include="Shader\SkeletalMesh.hlsl">
       <FileType>Document</FileType>
@@ -74,6 +75,12 @@
   <ItemGroup>
     <None Include="Shader\RibbonRenderer.fx">
       <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader\DebugDraw.hlsl">
+      <FileType>Document</FileType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Debug_VS</EntryPointName>
     </None>
   </ItemGroup>
   <PropertyGroup Label="Globals">

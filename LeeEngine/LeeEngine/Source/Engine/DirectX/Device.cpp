@@ -1,4 +1,4 @@
-// 03.09
+﻿// 03.09
 // 언리얼 엔진 5 코드를 분석하며 자체엔진으로 작성중인 코드입니다.
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
@@ -544,6 +544,11 @@ void FDirectXDevice::CreateConstantBuffers()
 	bufferDesc.ByteWidth = sizeof(SkeletalMeshBoneTransformConstantBuffer);
 	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ConstantBuffers[static_cast<UINT>( EConstantBufferType::CBT_SkeletalData)].GetAddressOf()));
 	m_d3dDeviceContext->VSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_SkeletalData), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_SkeletalData)].GetAddressOf());
+
+	// SkeletalMeshBoneTransformConstantBuffer
+	bufferDesc.ByteWidth = sizeof(FDebugColor);
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ConstantBuffers[static_cast<UINT>( EConstantBufferType::CBT_DebugDraw)].GetAddressOf()));
+	m_d3dDeviceContext->VSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_DebugDraw), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_DebugDraw)].GetAddressOf());
 }
 
 void FDirectXDevice::MapConstantBuffer(EConstantBufferType Type, void* Data, size_t Size) const

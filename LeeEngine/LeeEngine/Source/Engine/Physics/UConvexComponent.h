@@ -21,8 +21,10 @@ public:
 
 	physx::PxRigidActor* CreateRigidActor() override;
 
-	void DebugDraw() override;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> GetVertexBuffer() const override{return ConvexMeshVertexBuffer;}
 
+	void DebugDraw_RenderThread() const override;
 protected:
 	std::weak_ptr<UStaticMesh> BaseStaticMesh;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> ConvexMeshVertexBuffer;
 };

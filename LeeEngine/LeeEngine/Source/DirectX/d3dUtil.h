@@ -146,6 +146,11 @@ struct SkeletalMeshBoneTransformConstantBuffer
 	XMMATRIX BoneFinalTransforms[MAX_BONES];
 };
 
+struct FDebugColor
+{
+	XMFLOAT4 DebugColor;
+};
+
 struct LightFrameConstantBuffer
 {
 	DirectionalLight gDirLight;

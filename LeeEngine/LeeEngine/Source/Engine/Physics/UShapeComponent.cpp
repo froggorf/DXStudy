@@ -37,6 +37,29 @@ void UShapeComponent::UnRegisterPhysics()
 	}
 }
 
+void UShapeComponent::TickComponent(float DeltaSeconds)
+{
+	UPrimitiveComponent::TickComponent(DeltaSeconds);
+
+#ifdef MYENGINE_BUILD_DEBUG || MYENGINE_BUILD_DEVELOPMENT
+	if (bDrawDebug)
+	{
+		// 렌더링 쓰레드 프레임당 등록
+		if (LastDrawDebugRenderThreadFrame != RenderingThreadFrameCount)
+		{
+			FDebugRenderData RenderData;
+			RenderData.Transform = GetComponentTransform();
+			RenderData.DebugColor = XMFLOAT4{0.0f,1.0f,0.0f,1.0f};
+			RenderData.RemainTime = 0.007f;
+			RenderData.ShapeComp = std::dynamic_pointer_cast<UShapeComponent>(shared_from_this());
+			FScene::DrawDebugData_GameThread(RenderData, LastDrawDebugRenderThreadFrame);
+			LastDrawDebugRenderThreadFrame = RenderingThreadFrameCount;	
+		}
+		
+	}
+#endif
+}
+
 void UShapeComponent::AddForce(const XMFLOAT3& Force) const
 {
 	if (bIsDynamic && RigidActor)
