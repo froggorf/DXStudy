@@ -12,7 +12,7 @@ UPhysicsEngine::UPhysicsEngine()
 	
 
 	physx::PxSceneDesc SceneDesc(PxPhysics->getTolerancesScale());
-	SceneDesc.gravity = physx::PxVec3(0.0f,-9.8f*7.5, 0.0f);
+	SceneDesc.gravity = physx::PxVec3(0.0f,-9.8f*7.5f, 0.0f);
 	SceneDesc.cpuDispatcher = physx::PxDefaultCpuDispatcherCreate(2);
 	SceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
 	PxScene = PxPhysics->createScene(SceneDesc);
@@ -123,16 +123,20 @@ physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterConvexActor(const FTransfo
 		assert(nullptr && "에러 - CreateConvexMesh");
 	}
 
-#ifdef MYENGINE_BUILD_DEBUG || MYENGINE_BUILD_DEVELOPMENT
+#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
+
 	OutVertexBuffer = CreateVertexBufferForConvexActor(ConvexMesh);
 #endif
 
 
 
 	// Shape
-	physx::PxMeshScale Scale = physx::PxVec3{Transform.Scale3D.x,Transform.Scale3D.y,Transform.Scale3D.z};
+	float ScaleOffset = 1.f;
+	physx::PxMeshScale Scale = physx::PxVec3{Transform.Scale3D.x * ScaleOffset,Transform.Scale3D.y * ScaleOffset,Transform.Scale3D.z * ScaleOffset};
 	physx::PxConvexMeshGeometry convexGeom(ConvexMesh, Scale);
 	physx::PxShape*      shape = PxPhysics->createShape(convexGeom, *DefaultMaterial);
+	shape->setContactOffset(0.009f);
+	shape->setRestOffset(0.0f);
 
 	// RigidActor
 	physx::PxRigidActor* Actor = nullptr;
@@ -196,7 +200,7 @@ Microsoft::WRL::ComPtr<ID3D11Buffer> UPhysicsEngine::CreateVertexBufferForConvex
 	// DirectX 11 버텍스 버퍼 생성
 	D3D11_BUFFER_DESC bd = {};
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(MyVertexData) * VertexData.size();
+	bd.ByteWidth = static_cast<UINT>(sizeof(MyVertexData) * VertexData.size());
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bd.CPUAccessFlags = 0;
 

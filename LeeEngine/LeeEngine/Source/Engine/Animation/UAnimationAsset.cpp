@@ -17,7 +17,7 @@ void UAnimationAsset::LoadDataFromFileData(const nlohmann::json& AssetData)
 		{
 			if (!Object)
 			{
-				assert(nullptr, "잘못된 스켈레톤 로드");
+				assert(nullptr && "잘못된 스켈레톤 로드");
 			}
 			AnimationSkeleton = std::dynamic_pointer_cast<USkeletalMesh>(Object);
 		});

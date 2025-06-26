@@ -1,5 +1,7 @@
 ﻿#include "CoreMinimal.h"
+
 #ifdef WITH_EDITOR
+#include "Engine/RenderCore/ImGUIActionTask.h"
 #include "ImguiEditorMainPanel.h"
 
 #include "Engine/AssetManager/AssetManager.h"

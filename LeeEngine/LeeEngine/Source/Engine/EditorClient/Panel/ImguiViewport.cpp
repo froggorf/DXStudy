@@ -1,4 +1,6 @@
-#include "CoreMinimal.h"
+﻿#include "CoreMinimal.h"
+
+#include "Engine/RenderCore/ImGUIActionTask.h"
 #ifdef WITH_EDITOR
 #include "ImguiViewport.h"
 
@@ -252,7 +254,7 @@ void FImguiLevelViewport::DrawImguizmoSelectedActor(float AspectRatio)
 		{
 			CurrentSelectedComponent->AddWorldOffset(DeltaTranslation);
 		};
-		ENQUEUE_IMGUI_COMMAND(Lambda)
+		ENQUEUE_IMGUI_COMMAND(Lambda);
 		bHasChange = true;
 	}
 

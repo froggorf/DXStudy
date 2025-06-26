@@ -3,21 +3,10 @@
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
 #pragma once
-#include <functional>
-#include <concurrent_queue.h>
-#include <ppltasks.h>
-#include <thread>
-
-#include "ImGUIActionTask.h"
 #include "Engine/MyEngineUtils.h"
-#include "Engine/SceneView.h"
 #include "Engine/UEditorEngine.h"
 #include "Engine/Components/USceneComponent.h"
-#include "Engine/DirectX/Device.h"
-#include "Engine/GameFramework/AActor.h"
 #include "Engine/SceneProxy/FPrimitiveSceneProxy.h"
-#include "ThirdParty/ImGui/backends/imgui_impl_dx11.h"
-#include "ThirdParty/ImGui/backends/imgui_impl_win32.h"
 
 // 다수의 게임 쓰레드에서 단일의 렌더쓰레드가 수행할 명령을 관리하는 파이프라인
 // Multi-Producer(GameThread) Single-Consumer(RenderThread) Queue
@@ -118,7 +107,7 @@ struct FPrimitiveRenderData
 	std::shared_ptr<UMaterialInterface>   MaterialInterface = nullptr;
 };
 
-#ifdef MYENGINE_BUILD_DEBUG || MYENGINE_BUILD_DEVELOPMENT
+#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
 struct FDebugRenderData
 {
 	float RemainTime;
@@ -148,7 +137,7 @@ public:
 	std::unordered_map<UINT, std::vector<FPrimitiveRenderData>> MaskedSceneProxyRenderData;
 	std::unordered_map<UINT, std::vector<FPrimitiveRenderData>> TranslucentSceneProxyRenderData;
 
-#ifdef MYENGINE_BUILD_DEBUG || MYENGINE_BUILD_DEVELOPMENT
+#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
 	std::vector<FDebugRenderData> DebugRenderData;
 #endif
 
@@ -208,6 +197,7 @@ public:
 	}
 
 	static void  BeginRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData, UINT GameThreadFrameCount);
+
 	virtual void BeginRenderFrame();
 
 	// 렌더 쓰레드 프레임 종료 함수 (Draw에서 호출)
@@ -308,7 +298,7 @@ public:
 	virtual XMMATRIX GetViewMatrix();
 	virtual XMMATRIX GetProjectionMatrix();
 
-#ifdef MYENGINE_BUILD_DEBUG || MYENGINE_BUILD_DEVELOPMENT
+#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
 	static void DrawDebugData_GameThread(const FDebugRenderData& RenderData, UINT LastUpdateRenderThreadFrameCount)
 	{
 		ENQUEUE_RENDER_COMMAND([RenderData](std::shared_ptr<FScene>& Scene)

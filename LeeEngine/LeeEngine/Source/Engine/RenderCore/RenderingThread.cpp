@@ -9,7 +9,6 @@
 #include "Engine/Physics/UShapeComponent.h"
 #include "Engine/SceneProxy/FNiagaraSceneProxy.h"
 #include "Engine/SceneProxy/FSkeletalMeshSceneProxy.h"
-#include "Engine/SceneProxy/FStaticMeshSceneProxy.h"
 
 std::shared_ptr<FScene> FRenderCommandExecutor::CurrentSceneData = nullptr;
 
@@ -445,7 +444,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 		// 현재 시간
 		auto currentTime = clock::now();
 		auto duration    = std::chrono::duration_cast<microseconds>(currentTime - prevTime);
-		SceneData->DeltaSeconds = static_cast<double>(duration.count()) / 1'000'000.0;
+		SceneData->DeltaSeconds = static_cast<float>( static_cast<double>(duration.count()) / 1'000'000.0);
 		prevTime         = currentTime;
 
 		++frameCount;
@@ -571,7 +570,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 
 
 			
-#ifdef MYENGINE_BUILD_DEBUG || MYENGINE_BUILD_DEVELOPMENT
+#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
 			// 디버그 드로우
 			static std::shared_ptr<UMaterial> DebugMaterial = nullptr;
 			if (!DebugMaterial)
