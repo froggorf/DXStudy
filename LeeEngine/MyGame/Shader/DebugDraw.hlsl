@@ -25,5 +25,5 @@ cbuffer DebugColor : register(b6)
 
 float4 PS(VS_OUTPUT input) : SV_Target
 {
-	return float4(1,1,1,1);
+	return float4(DebugColor.r,DebugColor.g,DebugColor.b,1);
 }

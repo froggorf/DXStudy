@@ -548,7 +548,7 @@ void FDirectXDevice::CreateConstantBuffers()
 	// SkeletalMeshBoneTransformConstantBuffer
 	bufferDesc.ByteWidth = sizeof(FDebugColor);
 	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ConstantBuffers[static_cast<UINT>( EConstantBufferType::CBT_DebugDraw)].GetAddressOf()));
-	m_d3dDeviceContext->VSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_DebugDraw), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_DebugDraw)].GetAddressOf());
+	m_d3dDeviceContext->PSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_DebugDraw), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_DebugDraw)].GetAddressOf());
 }
 
 void FDirectXDevice::MapConstantBuffer(EConstantBufferType Type, void* Data, size_t Size) const
