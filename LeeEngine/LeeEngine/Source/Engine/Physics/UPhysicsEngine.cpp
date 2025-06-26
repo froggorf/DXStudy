@@ -5,16 +5,73 @@
 
 std::unique_ptr<UPhysicsEngine> gPhysicsEngine = nullptr;
 
+void FPhysicsEventCallback::onAdvance(const physx::PxRigidBody* const* bodyBuffer, const physx::PxTransform* poseBuffer, const physx::PxU32 count)
+{
+	for (physx::PxU32 i = 0; i < count; ++i)
+	{
+		const physx::PxRigidBody* RigidBody = bodyBuffer[i];
+		const physx::PxTransform& PxTransform = poseBuffer[i];
+
+		// userData를 통해 게임 오브젝트 포인터 얻기
+		if (UShapeComponent* ShapeComp = static_cast<UShapeComponent*>(RigidBody->userData))
+		{
+			// 좌표 변환(필요시)
+			FTransform Transform{
+				{PxTransform.p.x, PxTransform.p.y, -PxTransform.p.z},
+				{PxTransform.q.x, PxTransform.q.y, PxTransform.q.z, PxTransform.q.w},
+				{1, 1, 1}
+			};
+			ShapeComp->SetWorldTransform(Transform);
+		}
+	}
+}
+
+void FPhysicsEventCallback::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
+{
+	std::cout<<1;
+}
+
+void FPhysicsEventCallback::onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs)
+{
+	UShapeComponent* A = static_cast<UShapeComponent*>(pairHeader.actors[0]->userData);
+	UShapeComponent* B = static_cast<UShapeComponent*>(pairHeader.actors[1]->userData);
+
+	for (physx::PxU32 i = 0; i < nbPairs; ++i)
+	{
+		
+		const physx::PxContactPair& ContactPair = pairs[i];
+		if (ContactPair.events & physx::PxPairFlag::eNOTIFY_TOUCH_FOUND)
+		{
+			MY_LOG("OnContact", EDebugLogLevel::DLL_Warning, "Hit Start" + std::to_string(A->GetPrimitiveID()) + " - " + std::to_string(B->GetPrimitiveID()));
+		}
+		if (ContactPair.events & physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
+		{
+			MY_LOG("OnContact", EDebugLogLevel::DLL_Warning, "Hit End" + std::to_string(A->GetPrimitiveID()) + " - " + std::to_string(B->GetPrimitiveID()));
+		}
+
+		
+	}
+}
+
+physx::PxFilterFlags MyFilterShader(physx::PxFilterObjectAttributes, physx::PxFilterData, physx::PxFilterObjectAttributes, physx::PxFilterData, physx::PxPairFlags& pairFlags, const void*, physx::PxU32)
+{
+	pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT | physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_LOST | physx::PxPairFlag::eTRIGGER_DEFAULT;
+	return physx::PxFilterFlag::eDEFAULT;
+}
+
 UPhysicsEngine::UPhysicsEngine()
 {
+	// Foundation, Physics 생성
 	PxFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
 	PxPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *PxFoundation, physx::PxTolerancesScale());
-	
 
+	// Scene 생성
 	physx::PxSceneDesc SceneDesc(PxPhysics->getTolerancesScale());
 	SceneDesc.gravity = physx::PxVec3(0.0f,-9.8f*7.5f, 0.0f);
 	SceneDesc.cpuDispatcher = physx::PxDefaultCpuDispatcherCreate(2);
-	SceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
+	SceneDesc.filterShader = MyFilterShader;
+	CallbackInstance = std::make_unique<FPhysicsEventCallback>();
+	SceneDesc.simulationEventCallback = CallbackInstance.get();
 	PxScene = PxPhysics->createScene(SceneDesc);
 
 	DefaultMaterial = PxPhysics->createMaterial(0.5f, 0.5f, 0.6f); // friction, restitution
@@ -43,6 +100,7 @@ UPhysicsEngine::~UPhysicsEngine()
 	{
 		PxFoundation->release();	
 	}
+
 	
 }
 
@@ -66,11 +124,11 @@ void UPhysicsEngine::TickPhysics(float DeltaSeconds) const
 		physx::PxU32 ActorNum = PxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC);
 		std::vector<physx::PxActor*> SceneActors(ActorNum);
 		PxScene->getActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC, SceneActors.data(), ActorNum);
-
+		
 		for (physx::PxU32 i = 0; i < ActorNum; ++i)
 		{
 			physx::PxActor* Actor = SceneActors[i];
-
+		
 			if (UShapeComponent* ShapeComp = static_cast<UShapeComponent*>(Actor->userData))
 			{
 				if (physx::PxRigidDynamic* RigidDynamic = Actor->is<physx::PxRigidDynamic>())
@@ -124,7 +182,6 @@ physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterConvexActor(const FTransfo
 	}
 
 #if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
-
 	OutVertexBuffer = CreateVertexBufferForConvexActor(ConvexMesh);
 #endif
 
@@ -135,8 +192,14 @@ physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterConvexActor(const FTransfo
 	physx::PxMeshScale Scale = physx::PxVec3{Transform.Scale3D.x * ScaleOffset,Transform.Scale3D.y * ScaleOffset,Transform.Scale3D.z * ScaleOffset};
 	physx::PxConvexMeshGeometry convexGeom(ConvexMesh, Scale);
 	physx::PxShape*      shape = PxPhysics->createShape(convexGeom, *DefaultMaterial);
+	
 	shape->setContactOffset(0.009f);
 	shape->setRestOffset(0.0f);
+
+	physx::PxFilterData FilterData;
+	FilterData.word0 = 1;
+	FilterData.word1 = 1;
+	shape->setSimulationFilterData(FilterData);
 
 	// RigidActor
 	physx::PxRigidActor* Actor = nullptr;
@@ -153,8 +216,10 @@ physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterConvexActor(const FTransfo
 	}
 								
 	Actor->attachShape(*shape);
+	
+	shape->release();
 	PxScene->addActor(*Actor);
-
+	
 	return Actor;
 }
 

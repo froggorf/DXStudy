@@ -115,6 +115,7 @@ ATestCube::ATestCube()
 			SMVec[index]->SetupAttachment(GetRootComponent());
 			SMVec[index]->SetRelativeScale3D(XMFLOAT3{5.0f,5.0f,5.0f});
 			SMVec[index]->SetRelativeLocation(XMFLOAT3{x,y+50,0});
+			//SMVec[index]->SetRelativeLocation(XMFLOAT3{0,50,0});
 		}
 		++row;
 	}

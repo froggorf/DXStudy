@@ -7,6 +7,23 @@
 #include "Engine/Mesh/UStaticMesh.h"
 #include "Engine/UObject/UObject.h"
 
+// Overlap, Hit 콜백 이벤트
+/*
+ * physx::PxScene에 트리거 이벤트를 연결할 수 있음
+ */
+class FPhysicsEventCallback : public physx::PxSimulationEventCallback
+{
+public:
+	// RigidBody의 포즈가 업데이트 될때 호출
+	void onAdvance(const physx::PxRigidBody* const* bodyBuffer, const physx::PxTransform* poseBuffer, const physx::PxU32 count) override;
+	void onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count) override;
+	void onConstraintBreak(physx::PxConstraintInfo* constraints, physx::PxU32 count) override{}
+	void onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs) override;
+	void onSleep(physx::PxActor** actors, physx::PxU32 count) override{}
+	void onWake(physx::PxActor** actors, physx::PxU32 count) override{}
+};
+
+// Physics Engine
 class UPhysicsEngine : public UObject
 {
 	MY_GENERATE_BODY(UPhysicsEngine)
@@ -43,6 +60,7 @@ protected:
 private:
 	physx::PxDefaultAllocator			gAllocator;
 	physx::PxDefaultErrorCallback		gErrorCallback;
+	std::unique_ptr<FPhysicsEventCallback> CallbackInstance;
 
 	// 커스텀 Deleter를 통해 관리
 	physx::PxFoundation* PxFoundation     = nullptr;
