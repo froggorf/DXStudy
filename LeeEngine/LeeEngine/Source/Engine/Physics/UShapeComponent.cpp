@@ -146,4 +146,9 @@ void UShapeComponent::UpdatePhysicsFilterData()
 		Shape->setQueryFilterData(FilterData);
 	}
 
+	if (physx::PxRigidDynamic* RigidDynamic = RigidActor->is<physx::PxRigidDynamic>())
+	{
+		RigidDynamic->wakeUp();
+	}
+
 }
