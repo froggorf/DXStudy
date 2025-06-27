@@ -5,10 +5,6 @@
 
 UShapeComponent::UShapeComponent()
 {
-	for (size_t i = 0; i < CollisionResponse.size(); ++i)
-	{
-		CollisionResponse[i] = ECollisionResponse::Block;
-	}
 }
 
 void UShapeComponent::Register()
@@ -112,15 +108,15 @@ void UShapeComponent::UpdatePhysicsFilterData()
 		return;
 	}
 
+	
+
 	physx::PxU32 ShapeCount = RigidActor->getNbShapes();
 	std::vector<physx::PxShape*> Shapes(ShapeCount);
 	RigidActor->getShapes(Shapes.data(), ShapeCount);
 	
-	
 
 	for (physx::PxShape* Shape : Shapes)
 	{
-		//RigidActor->detachShape(*Shape);
 		physx::PxFilterData FilterData;
 		FilterData.word0 = static_cast<physx::PxU32>(1 << static_cast<UINT>(ObjectType));
 
@@ -145,9 +141,9 @@ void UShapeComponent::UpdatePhysicsFilterData()
 		FilterData.word1 = BlockMask;
 		FilterData.word2 = OverlapMask;
 
+
 		Shape->setSimulationFilterData(FilterData);
-		//RigidActor->attachShape(*Shape);
+		Shape->setQueryFilterData(FilterData);
 	}
 
-	
 }

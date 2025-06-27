@@ -7,23 +7,6 @@ std::unique_ptr<UPhysicsEngine> gPhysicsEngine = nullptr;
 
 void FPhysicsEventCallback::onAdvance(const physx::PxRigidBody* const* bodyBuffer, const physx::PxTransform* poseBuffer, const physx::PxU32 count)
 {
-	for (physx::PxU32 i = 0; i < count; ++i)
-	{
-		const physx::PxRigidBody* RigidBody = bodyBuffer[i];
-		const physx::PxTransform& PxTransform = poseBuffer[i];
-
-		// userData를 통해 게임 오브젝트 포인터 얻기
-		if (UShapeComponent* ShapeComp = static_cast<UShapeComponent*>(RigidBody->userData))
-		{
-			// 좌표 변환(필요시)
-			FTransform Transform{
-				{PxTransform.p.x, PxTransform.p.y, -PxTransform.p.z},
-				{PxTransform.q.x, PxTransform.q.y, PxTransform.q.z, PxTransform.q.w},
-				{1, 1, 1}
-			};
-			ShapeComp->SetWorldTransform(Transform);
-		}
-	}
 }
 
 void FPhysicsEventCallback::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
@@ -234,7 +217,7 @@ physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterConvexActor(const FTransfo
 	float ScaleOffset = 1.f;
 	physx::PxMeshScale Scale = physx::PxVec3{Transform.Scale3D.x * ScaleOffset,Transform.Scale3D.y * ScaleOffset,Transform.Scale3D.z * ScaleOffset};
 	physx::PxConvexMeshGeometry convexGeom(ConvexMesh, Scale);
-	physx::PxShape*      shape = PxPhysics->createShape(convexGeom, *DefaultMaterial);
+	physx::PxShape*      shape = PxPhysics->createShape(convexGeom, *DefaultMaterial,true);
 	shape->setContactOffset(0.009f);
 	shape->setRestOffset(0.0f);
 
@@ -317,6 +300,8 @@ void UPhysicsEngine::UnRegisterActor(physx::PxRigidActor* RemoveActor) const
 	RemoveActor->release();
 	RemoveActor = nullptr;
 }
+
+
 
 physx::PxConvexMesh* UPhysicsEngine::CreateConvexMesh(const std::shared_ptr<UStaticMesh>& StaticMesh) const
 {

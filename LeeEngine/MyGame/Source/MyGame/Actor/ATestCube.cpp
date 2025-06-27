@@ -49,28 +49,6 @@ ATestCube::ATestCube()
 	TestCubeSM20 = std::make_shared<UStaticMeshComponent>();
 	TestCubeSM21 = std::make_shared<UStaticMeshComponent>();
 
-	TestCubeSM1		->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
-	TestCubeSM2	->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
-	TestCubeSM3	->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
-	TestCubeSM4	->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
-	TestCubeSM5	->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
-	TestCubeSM6	->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
-	TestCubeSM9	->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
-	TestCubeSM7	->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
-	TestCubeSM8	->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
-	TestCubeSM10->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
-	TestCubeSM11->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
-	TestCubeSM12->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
-	TestCubeSM13->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
-	TestCubeSM14->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
-	TestCubeSM15->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
-	TestCubeSM16->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
-	TestCubeSM17->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
-	TestCubeSM18->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
-	TestCubeSM19->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
-	TestCubeSM20->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
-	TestCubeSM21->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
-
 
 	std::vector<std::shared_ptr<UStaticMeshComponent>> SMVec = {
 		TestCubeSM1	,
@@ -118,6 +96,8 @@ ATestCube::ATestCube()
 			float x = startX + col * XOffset;
 			
 			SMVec[index]->SetCollisionEnabled(ECollisionType::Dynamic);
+			SMVec[index]->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
+			SMVec[index]->SetCollisionResponseToChannel(ECollisionChannel::WorldStatic,ECollisionResponse::Block);
 			AssetManager::GetAsyncAssetCache("SM_Box",[SMVec,index](std::shared_ptr<UObject> Object)
 				{
 					SMVec[index]->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
@@ -199,9 +179,16 @@ void ATestCube::Tick(float DeltaSeconds)
 	{
 		for (UINT i = 0; i < static_cast<UINT>(ECollisionChannel::Count); ++i)
 		{
+			TestCubeSM1->SetCollisionResponseToChannel(static_cast<ECollisionChannel>(i), ECollisionResponse::Block);	
+		}
+	}
+
+	if (ImGui::IsKeyPressed(ImGuiKey_6))
+	{
+		for (UINT i = 0; i < static_cast<UINT>(ECollisionChannel::Count); ++i)
+		{
 			TestCubeSM1->SetCollisionResponseToChannel(static_cast<ECollisionChannel>(i), ECollisionResponse::Overlap);	
 		}
-		
 	}
 
 	//

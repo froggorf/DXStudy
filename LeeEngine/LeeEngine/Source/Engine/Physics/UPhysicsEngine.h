@@ -68,6 +68,8 @@ public:
 	 */
 	void UnRegisterActor(physx::PxRigidActor* RemoveActor) const;
 
+	physx::PxScene* GetScene() const {return PxScene; }
+
 protected:
 	// StaticMesh정보를 통해 ConvexMesh를 만들어 반환해주는 함수
 	physx::PxConvexMesh* CreateConvexMesh(const std::shared_ptr<UStaticMesh>& StaticMesh) const;

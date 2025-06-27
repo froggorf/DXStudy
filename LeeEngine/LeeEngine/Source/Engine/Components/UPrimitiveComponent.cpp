@@ -17,7 +17,7 @@ UPrimitiveComponent::UPrimitiveComponent()
 
 	for (size_t i = 0; i < TempCollisionResponse.size(); ++i)
 	{
-		TempCollisionResponse[i] = ECollisionResponse::Block;
+		TempCollisionResponse[i] = ECollisionResponse::Overlap;
 	}
 
 }
