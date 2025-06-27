@@ -14,6 +14,12 @@ UPrimitiveComponent::UPrimitiveComponent()
 {
 	PrimitiveID  = PrimitiveIDCount++;
 	bIsPrimitive = true;
+
+	for (size_t i = 0; i < TempCollisionResponse.size(); ++i)
+	{
+		TempCollisionResponse[i] = ECollisionResponse::Block;
+	}
+
 }
 
 
@@ -23,7 +29,14 @@ void UPrimitiveComponent::Register()
 
 	RegisterSceneProxies();
 
+	// 지연 변수 적용
 	BodyInstance = CreateBodyInstance();
+	BodyInstance->SetObjectType(TempCollisionChannel);
+	for (size_t i = 0; i < TempCollisionResponse.size(); ++i)
+	{
+		BodyInstance->SetResponseToChannel(static_cast<ECollisionChannel>(i), TempCollisionResponse[i]);
+	}
+
 	if (BodyInstance)
 	{
 		BodyInstance->SetupAttachment(shared_from_this(),"");	
@@ -81,6 +94,24 @@ void UPrimitiveComponent::SetTextureParam(UINT MeshIndex, UINT TextureSlot, cons
 std::shared_ptr<UShapeComponent> UPrimitiveComponent::CreateBodyInstance()
 {
 	return std::make_shared<UShapeComponent>();
+}
+
+void UPrimitiveComponent::SetCollisionObjectType(ECollisionChannel Channel)
+{
+	TempCollisionChannel = Channel;
+	if (BodyInstance)
+	{
+		BodyInstance->SetObjectType(Channel);
+	}
+}
+
+void UPrimitiveComponent::SetCollisionResponseToChannel(ECollisionChannel Channel, ECollisionResponse NewResponse)
+{
+	TempCollisionResponse[static_cast<UINT>(Channel)] = NewResponse;
+	if (BodyInstance)
+	{
+		BodyInstance->SetResponseToChannel(Channel,NewResponse);
+	}
 }
 
 #ifdef WITH_EDITOR

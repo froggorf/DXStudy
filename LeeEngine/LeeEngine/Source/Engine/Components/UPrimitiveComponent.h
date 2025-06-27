@@ -4,6 +4,7 @@
 // 이윤석
 #pragma once
 #include "USceneComponent.h"
+#include "Engine/Physics/UPhysicsEngine.h"
 
 class UShapeComponent;
 class FPrimitiveSceneProxy;
@@ -40,7 +41,14 @@ class UPrimitiveComponent : public USceneComponent
 	// 해당 프리미티브 머테리얼의 텍스쳐 파라미터를 변경하는 함수
 	void SetTextureParam(UINT MeshIndex, UINT TextureSlot, const std::shared_ptr<UTexture>& Texture) const;
 
+	// 하위클래스에서 적합한 BodyInstance를 생성하도록 재정의 해줘야함
+	// ex) UStaticMeshComponent에서는 UConvexComponent를 생성하도록 재정의함
 	virtual std::shared_ptr<UShapeComponent> CreateBodyInstance();
+
+	// 콜리젼 오브젝트 타입을 변경하는 함수
+	void SetCollisionObjectType(ECollisionChannel Channel);
+	// 특정 채널에 대해서 콜리젼 반응을 설정하는 함수
+	void SetCollisionResponseToChannel(ECollisionChannel Channel, ECollisionResponse NewResponse);
 
 #ifdef WITH_EDITOR
 	void DrawDetailPanel(UINT ComponentDepth) override;
@@ -50,4 +58,9 @@ protected:
 	size_t RegisteredSceneProxyCount = 0;
 
 	std::shared_ptr<UShapeComponent> BodyInstance;
+
+	// 생성자에서 ObjectChannel 이나 Response를 바꿀경우에 BodyInstance가 생성되기 이전이라서 적용이 안되기때문에
+	// 임시변수에 값을 저장해놓고 생성시 적용하는 방식으로 구현
+	ECollisionChannel TempCollisionChannel;
+	std::array<ECollisionResponse, static_cast<UINT>(ECollisionChannel::Count)> TempCollisionResponse = {};
 };

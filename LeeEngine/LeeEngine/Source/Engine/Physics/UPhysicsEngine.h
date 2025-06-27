@@ -8,13 +8,21 @@
 #include "Engine/UObject/UObject.h"
 
 // 콜리젼 채널 Object Type
-enum class ECollisionObjectType
+enum class ECollisionChannel
 {
 	Visibility,
 	Camera,
 	WorldStatic,
 	WorldDynamic,
 	Pawn,
+	Count
+};
+enum class ECollisionResponse
+{
+	Ignore,
+	Overlap,
+	Block,
+	Count
 };
 
 // Overlap, Hit 콜백 이벤트

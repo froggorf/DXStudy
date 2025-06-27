@@ -13,17 +13,6 @@ physx::PxRigidDynamic* SphereActor = nullptr;
 physx::PxShape* SphereShape;
 ATestCube::ATestCube()
 {
-	//GetRootComponent()->SetRelativeRotation(XMFLOAT3(0.0f,0.0f,0.0f));
-	//TestCubeStaticMeshComp = std::make_shared<UStaticMeshComponent>();
-	//TestCubeStaticMeshComp->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Point"));
-	//TestCubeStaticMeshComp->SetupAttachment(GetRootComponent());
-	//TestCubeStaticMeshComp->SetRelativeScale3D(XMFLOAT3{30.0f,30.0f,30.0f});
-	//
-	//TestCubeStaticMeshComp->SetRelativeLocation(XMFLOAT3(0.0f,0.0f,0.0f));
-	////TestCubeStaticMeshComp->SetRelativeRotation(XMFLOAT3(0.0f,0.0f,0.0f));
-	//TestCubeStaticMeshComp->SetRelativeRotation(XMFLOAT3(0.0f,0.0f,0.0f));
-	//TestCubeStaticMeshComp->SetRelativeScale3D(XMFLOAT3(0.2f,0.2f,0.2f));
-	//
 	TestCube2 = std::make_shared<UStaticMeshComponent>();
 	TestCube2->SetupAttachment(GetRootComponent());
 	// 비동기 에셋 로드 테스트
@@ -35,7 +24,7 @@ ATestCube::ATestCube()
 	//TestCube2->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Cube"));
 	TestCube2->SetRelativeScale3D(XMFLOAT3(200.0f, 0.01f, 200.0f));
 	TestCube2->SetRelativeLocation(XMFLOAT3(0.0f, -50, 0.0f));
-
+	TestCube2->SetCollisionObjectType(ECollisionChannel::WorldStatic);
 	
 
 	TestCubeSM1	 = std::make_shared<UStaticMeshComponent>();
@@ -59,7 +48,29 @@ ATestCube::ATestCube()
 	TestCubeSM19 = std::make_shared<UStaticMeshComponent>();
 	TestCubeSM20 = std::make_shared<UStaticMeshComponent>();
 	TestCubeSM21 = std::make_shared<UStaticMeshComponent>();
-	
+
+	TestCubeSM1		->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
+	TestCubeSM2	->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
+	TestCubeSM3	->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
+	TestCubeSM4	->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
+	TestCubeSM5	->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
+	TestCubeSM6	->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
+	TestCubeSM9	->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
+	TestCubeSM7	->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
+	TestCubeSM8	->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
+	TestCubeSM10->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
+	TestCubeSM11->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
+	TestCubeSM12->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
+	TestCubeSM13->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
+	TestCubeSM14->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
+	TestCubeSM15->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
+	TestCubeSM16->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
+	TestCubeSM17->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
+	TestCubeSM18->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
+	TestCubeSM19->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
+	TestCubeSM20->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
+	TestCubeSM21->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
+
 
 	std::vector<std::shared_ptr<UStaticMeshComponent>> SMVec = {
 		TestCubeSM1	,
@@ -183,6 +194,16 @@ void ATestCube::Tick(float DeltaSeconds)
 	{
 		TestCubeSM1->AddForce({power,0,0});
 	}
+
+	if (ImGui::IsKeyPressed(ImGuiKey_5))
+	{
+		for (UINT i = 0; i < static_cast<UINT>(ECollisionChannel::Count); ++i)
+		{
+			TestCubeSM1->SetCollisionResponseToChannel(static_cast<ECollisionChannel>(i), ECollisionResponse::Overlap);	
+		}
+		
+	}
+
 	//
 	//gPhysicsEngine->TickPhysics(DeltaSeconds);
 

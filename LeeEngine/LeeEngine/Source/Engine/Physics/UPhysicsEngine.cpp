@@ -53,10 +53,36 @@ void FPhysicsEventCallback::onContact(const physx::PxContactPairHeader& pairHead
 	}
 }
 
-physx::PxFilterFlags MyFilterShader(physx::PxFilterObjectAttributes, physx::PxFilterData, physx::PxFilterObjectAttributes, physx::PxFilterData, physx::PxPairFlags& pairFlags, const void*, physx::PxU32)
+physx::PxFilterFlags MyFilterShader(physx::PxFilterObjectAttributes Attributes0, physx::PxFilterData FilterData0, physx::PxFilterObjectAttributes        Attributes1, physx::PxFilterData        FilterData1, physx::PxPairFlags&                    PairFlags, const void* /*constantBlock*/, physx::PxU32 /*constantBlockSize*/)
 {
-	pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT | physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_LOST | physx::PxPairFlag::eTRIGGER_DEFAULT;
-	return physx::PxFilterFlag::eDEFAULT;
+	physx::PxU32 Channel0 = FilterData0.word0;
+	physx::PxU32 Channel1 = FilterData1.word0;
+
+	// Block 체크
+	bool Block0 = (FilterData0.word1 & Channel1) != 0;
+	bool Block1 = (FilterData1.word1 & Channel0) != 0;
+
+	// Overlap 체크
+	bool Overlap0 = (FilterData0.word2 & Channel1) != 0;
+	bool Overlap1 = (FilterData1.word2 & Channel0) != 0;
+
+	if (Block0 || Block1)
+	{
+		// Hit 처리
+		PairFlags = physx::PxPairFlag::eCONTACT_DEFAULT | physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_LOST;
+		return physx::PxFilterFlag::eDEFAULT;
+	}
+	else if (Overlap0 || Overlap1)
+	{
+		// Overlap 처리
+		PairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT;
+		return physx::PxFilterFlag::eDEFAULT;
+	}
+	else
+	{
+		// Ignore
+		return physx::PxFilterFlag::eSUPPRESS;
+	}
 }
 
 UPhysicsEngine::UPhysicsEngine()
@@ -187,19 +213,7 @@ physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterConvexActor(const FTransfo
 
 
 
-	// Shape
-	float ScaleOffset = 1.f;
-	physx::PxMeshScale Scale = physx::PxVec3{Transform.Scale3D.x * ScaleOffset,Transform.Scale3D.y * ScaleOffset,Transform.Scale3D.z * ScaleOffset};
-	physx::PxConvexMeshGeometry convexGeom(ConvexMesh, Scale);
-	physx::PxShape*      shape = PxPhysics->createShape(convexGeom, *DefaultMaterial);
 	
-	shape->setContactOffset(0.009f);
-	shape->setRestOffset(0.0f);
-
-	physx::PxFilterData FilterData;
-	FilterData.word0 = 1;
-	FilterData.word1 = 1;
-	shape->setSimulationFilterData(FilterData);
 	
 
 	// RigidActor
@@ -215,10 +229,20 @@ physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterConvexActor(const FTransfo
 	{
 		Actor = PxPhysics->createRigidStatic(physx::PxTransform{{Transform.Translation.x,Transform.Translation.y,-Transform.Translation.z},{0,0,0,1}});;
 	}
-								
+
+	// shape
+	float ScaleOffset = 1.f;
+	physx::PxMeshScale Scale = physx::PxVec3{Transform.Scale3D.x * ScaleOffset,Transform.Scale3D.y * ScaleOffset,Transform.Scale3D.z * ScaleOffset};
+	physx::PxConvexMeshGeometry convexGeom(ConvexMesh, Scale);
+	physx::PxShape*      shape = PxPhysics->createShape(convexGeom, *DefaultMaterial);
+	shape->setContactOffset(0.009f);
+	shape->setRestOffset(0.0f);
+
+
 	Actor->attachShape(*shape);
-	
 	shape->release();
+
+
 	PxScene->addActor(*Actor);
 	
 	return Actor;

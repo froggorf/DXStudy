@@ -17,21 +17,6 @@ class ATestCube2 : public AActor
 	void Tick(float DeltaSeconds) override;
 
 protected:
-	std::shared_ptr<USkeletalMeshComponent> SK0;
-	std::shared_ptr<USkeletalMeshComponent> SK1;
-	std::shared_ptr<USkeletalMeshComponent> SK2;
-	std::shared_ptr<USkeletalMeshComponent> SK3;
-	std::shared_ptr<USkeletalMeshComponent> SK4;
-	std::shared_ptr<USkeletalMeshComponent> SK5;
-	std::shared_ptr<USkeletalMeshComponent> SK6;
-	std::shared_ptr<USkeletalMeshComponent> SK7;
-	std::shared_ptr<USkeletalMeshComponent> SK8;
-	std::shared_ptr<USkeletalMeshComponent> SK9;
-	std::shared_ptr<USkeletalMeshComponent> SK10;
-	std::shared_ptr<USkeletalMeshComponent> SK11;
-	std::shared_ptr<USkeletalMeshComponent> SK12;
-	std::shared_ptr<USkeletalMeshComponent> SK13;
-	std::shared_ptr<USkeletalMeshComponent> SK14;
 
 private:
 	std::shared_ptr<UTestComponent> TestComp;

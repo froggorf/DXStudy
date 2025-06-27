@@ -3,6 +3,14 @@
 
 #include "UPhysicsEngine.h"
 
+UShapeComponent::UShapeComponent()
+{
+	for (size_t i = 0; i < CollisionResponse.size(); ++i)
+	{
+		CollisionResponse[i] = ECollisionResponse::Block;
+	}
+}
+
 void UShapeComponent::Register()
 {
 	UPrimitiveComponent::Register();
@@ -23,6 +31,7 @@ void UShapeComponent::RegisterPhysics()
 	if (RigidActor)
 	{
 		RigidActor->userData = this;
+		UpdatePhysicsFilterData();
 	}
 }
 
@@ -81,5 +90,64 @@ void UShapeComponent::SetWorldTransform(const FTransform& NewTransform)
 		SetWorldRotation(NewTransform.GetRotationQuat());
 		SetWorldLocation(NewTransform.GetTranslation());	
 	}
+	
+}
+
+void UShapeComponent::SetObjectType(ECollisionChannel Channel)
+{
+	ObjectType = Channel;
+	UpdatePhysicsFilterData();
+}
+
+void UShapeComponent::SetResponseToChannel(ECollisionChannel Channel, ECollisionResponse NewResponse)
+{
+	CollisionResponse[static_cast<UINT>(Channel)] = NewResponse;
+	UpdatePhysicsFilterData();
+}
+
+void UShapeComponent::UpdatePhysicsFilterData()
+{
+	if (!RigidActor)
+	{
+		return;
+	}
+
+	physx::PxU32 ShapeCount = RigidActor->getNbShapes();
+	std::vector<physx::PxShape*> Shapes(ShapeCount);
+	RigidActor->getShapes(Shapes.data(), ShapeCount);
+	
+	
+
+	for (physx::PxShape* Shape : Shapes)
+	{
+		//RigidActor->detachShape(*Shape);
+		physx::PxFilterData FilterData;
+		FilterData.word0 = static_cast<physx::PxU32>(1 << static_cast<UINT>(ObjectType));
+
+		physx::PxU32 BlockMask = 0;
+		physx::PxU32 OverlapMask = 0;
+
+		for (UINT ChannelIdx = 0; ChannelIdx < static_cast<UINT>(ECollisionChannel::Count); ++ChannelIdx)
+		{
+			ECollisionResponse Response = CollisionResponse[ChannelIdx];
+			physx::PxU32 Bit = 1 << ChannelIdx;
+
+			if (Response == ECollisionResponse::Block)
+			{
+				BlockMask |= Bit;
+			}
+			else if (Response == ECollisionResponse::Overlap)
+			{
+				OverlapMask |= Bit;
+			}
+		}
+
+		FilterData.word1 = BlockMask;
+		FilterData.word2 = OverlapMask;
+
+		Shape->setSimulationFilterData(FilterData);
+		//RigidActor->attachShape(*Shape);
+	}
+
 	
 }

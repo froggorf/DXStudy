@@ -19,12 +19,12 @@ class UShapeComponent : public UPrimitiveComponent
 {
 	MY_GENERATE_BODY(UShapeComponent)
 public:
+	UShapeComponent();
 	~UShapeComponent() override = default;
 
 protected:
 	// 충돌체에 대한 오브젝트
 	physx::PxRigidActor* RigidActor = nullptr;
-	physx::PxShape*	Shape = nullptr;
 
 	float Mass = 1.0f;
 	bool bIsDynamic = true;
@@ -51,6 +51,12 @@ public:
 	// UShapeComponent를 상속받는 클래스는 해당 함수를 재정의 해줘야함
 	void RegisterSceneProxies() override {}
 
+	// 콜리젼 타입을 변경하는 함수
+	void SetObjectType(ECollisionChannel Channel);
+	// 콜리젼 반응을 변경하는 함수
+	void SetResponseToChannel(ECollisionChannel Channel, ECollisionResponse NewResponse);
+	void UpdatePhysicsFilterData();
+
 
 	virtual void DebugDraw_RenderThread() const {}
 
@@ -61,4 +67,7 @@ public:
 protected:
 	UINT LastDrawDebugRenderThreadFrame = -1;
 	bool bDrawDebug = true;
+	ECollisionChannel ObjectType = ECollisionChannel::Visibility;
+	
+	std::array<ECollisionResponse, static_cast<UINT>(ECollisionChannel::Count)> CollisionResponse;
 };
