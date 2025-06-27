@@ -11,7 +11,31 @@ void FPhysicsEventCallback::onAdvance(const physx::PxRigidBody* const* bodyBuffe
 
 void FPhysicsEventCallback::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 {
-	std::cout<<1;
+	for (physx::PxU32 i = 0; i < count; ++i)
+	{
+		const physx::PxTriggerPair& Pair = pairs[i];
+		
+		physx::PxShape* TriggerShape = Pair.triggerShape;
+		physx::PxActor* TriggerActor = Pair.triggerActor;
+		physx::PxShape* OtherShape = Pair.otherShape;
+		physx::PxActor* OtherActor = Pair.otherActor;
+
+		UShapeComponent* A = static_cast<UShapeComponent*>(TriggerActor->userData);
+		UShapeComponent* B = static_cast<UShapeComponent*>(OtherActor->userData);
+
+		
+		if (Pair.status & physx::PxPairFlag::eNOTIFY_TOUCH_FOUND)
+		{
+			MY_LOG("OnTrigger", EDebugLogLevel::DLL_Warning, "Overlap Start" + std::to_string(A->GetPrimitiveID()) + " - " + std::to_string(B->GetPrimitiveID()));
+		}
+		if (Pair.status & physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
+		{
+			MY_LOG("OnTrigger", EDebugLogLevel::DLL_Warning, "Overlap End" + std::to_string(A->GetPrimitiveID()) + " - " + std::to_string(B->GetPrimitiveID()));
+		}
+
+		MY_LOG("OnTrigger", EDebugLogLevel::DLL_Warning, "Overlap ing" + std::to_string(A->GetPrimitiveID()) + " - " + std::to_string(B->GetPrimitiveID()));
+
+	}
 }
 
 void FPhysicsEventCallback::onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs)
