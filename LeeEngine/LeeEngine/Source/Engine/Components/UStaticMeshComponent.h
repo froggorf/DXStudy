@@ -14,8 +14,6 @@ class UStaticMeshComponent : public UMeshComponent
 	MY_GENERATE_BODY(UStaticMeshComponent)
 	UStaticMeshComponent();
 
-	void Register() override;
-	void UnRegister() override;
 	std::vector<std::shared_ptr<FPrimitiveSceneProxy>> CreateSceneProxy() override;
 	virtual bool                                       SetStaticMesh(const std::shared_ptr<UStaticMesh>& NewMesh);
 
@@ -27,8 +25,8 @@ class UStaticMeshComponent : public UMeshComponent
 	// 보유하고있는 ConvexComponent에 힘을 가하는 함수
 	void AddForce(const XMFLOAT3& Force);
 
+	std::shared_ptr<UShapeComponent> CreateBodyInstance() override;
 private:
 	std::shared_ptr<UStaticMesh> StaticMesh;
 
-	std::shared_ptr<UConvexComponent> ConvexComponent;
 };

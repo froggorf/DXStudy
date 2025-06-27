@@ -7,6 +7,16 @@
 #include "Engine/Mesh/UStaticMesh.h"
 #include "Engine/UObject/UObject.h"
 
+// 콜리젼 채널 Object Type
+enum class ECollisionObjectType
+{
+	Visibility,
+	Camera,
+	WorldStatic,
+	WorldDynamic,
+	Pawn,
+};
+
 // Overlap, Hit 콜백 이벤트
 /*
  * physx::PxScene에 트리거 이벤트를 연결할 수 있음

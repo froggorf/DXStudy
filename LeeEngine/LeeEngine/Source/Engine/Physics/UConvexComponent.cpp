@@ -8,7 +8,6 @@ void UConvexComponent::SetStaticMesh(const std::shared_ptr<UStaticMesh>& InStati
 {
 	if (BaseStaticMesh.lock() && RigidActor)
 	{
-		// TODO: Unregister 해줘야함
 		UnRegisterPhysics();
 	}
 

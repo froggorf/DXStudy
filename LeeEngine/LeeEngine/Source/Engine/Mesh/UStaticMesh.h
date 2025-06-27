@@ -8,7 +8,6 @@
 #define USTATICMESH_H
 
 #include "StaticMeshResources.h"
-#include "Engine/MyEngineUtils.h"
 #include "Engine/UEngine.h"
 #include "Engine/UObject/UObject.h"
 

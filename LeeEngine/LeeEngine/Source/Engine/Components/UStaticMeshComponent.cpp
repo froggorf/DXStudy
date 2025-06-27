@@ -18,35 +18,6 @@ UStaticMeshComponent::UStaticMeshComponent()
 	
 }
 
-void UStaticMeshComponent::Register()
-{
-	UMeshComponent::Register();
-
-	ConvexComponent = std::make_shared<UConvexComponent>();
-	ConvexComponent->SetupAttachment(shared_from_this(),"");	
-	//if (std::shared_ptr<USceneComponent> ThisComp = shared_from_this())
-	//{
-	//	
-	//}
-
-	if (ConvexComponent)
-	{
-		ConvexComponent->Register();	
-	}
-	
-}
-
-void UStaticMeshComponent::UnRegister()
-{
-	UMeshComponent::UnRegister();
-
-	if (ConvexComponent)
-	{
-		ConvexComponent->UnRegister();	
-	}
-	
-}
-
 std::vector<std::shared_ptr<FPrimitiveSceneProxy>> UStaticMeshComponent::CreateSceneProxy()
 {
 	if(nullptr == StaticMesh)
@@ -83,7 +54,11 @@ bool UStaticMeshComponent::SetStaticMesh(const std::shared_ptr<UStaticMesh>& New
 
 
 	StaticMesh = NewMesh;
-	ConvexComponent->SetStaticMesh(StaticMesh, CurCollisionType);
+	if (BodyInstance)
+	{
+		std::static_pointer_cast<UConvexComponent>(BodyInstance)->SetStaticMesh(StaticMesh,CurCollisionType);	
+	}
+	//ConvexComponent->SetStaticMesh(StaticMesh, CurCollisionType);
 	
 	// 새로운 씬 프록시가 등록될 수 있도록 진행
 	RegisterSceneProxies();
@@ -96,13 +71,18 @@ void UStaticMeshComponent::AddForce(const XMFLOAT3& Force)
 {
 	if (CurCollisionType == ECollisionType::Dynamic)
 	{
-		if (ConvexComponent)
+		if (BodyInstance)
 		{
-			ConvexComponent->AddForce(Force);
+			std::static_pointer_cast<UConvexComponent>(BodyInstance)->AddForce(Force);
 		}
 	}
 	else
 	{
 		MY_LOG("Warning", EDebugLogLevel::DLL_Warning, GetName() + " is not dynamic physics - AddForce");
 	}
+}
+
+std::shared_ptr<UShapeComponent> UStaticMeshComponent::CreateBodyInstance()
+{
+	return std::make_shared<UConvexComponent>();
 }

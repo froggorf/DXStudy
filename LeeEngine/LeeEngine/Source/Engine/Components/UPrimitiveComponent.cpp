@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UPrimitiveComponent.h"
 
+#include "Engine/Physics/UShapeComponent.h"
 #include "Engine/RenderCore/RenderingThread.h"
 
 UINT PrimitiveIDCount = 0;
@@ -15,15 +16,34 @@ UPrimitiveComponent::UPrimitiveComponent()
 	bIsPrimitive = true;
 }
 
-UPrimitiveComponent::~UPrimitiveComponent()
-{
-}
 
 void UPrimitiveComponent::Register()
 {
 	USceneComponent::Register();
 
 	RegisterSceneProxies();
+
+	BodyInstance = CreateBodyInstance();
+	if (BodyInstance)
+	{
+		BodyInstance->SetupAttachment(shared_from_this(),"");	
+	}
+	
+
+	if (BodyInstance)
+	{
+		BodyInstance->RegisterPhysics();	
+	}
+}
+
+void UPrimitiveComponent::UnRegister()
+{
+	USceneComponent::UnRegister();
+
+	if (BodyInstance)
+	{
+		BodyInstance->UnRegister();	
+	}
 }
 
 void UPrimitiveComponent::RegisterSceneProxies()
@@ -57,6 +77,12 @@ void UPrimitiveComponent::SetTextureParam(UINT MeshIndex, UINT TextureSlot, cons
 {
 	FScene::SetTextureParam_GameThread(PrimitiveID, MeshIndex, TextureSlot, Texture);
 }
+
+std::shared_ptr<UShapeComponent> UPrimitiveComponent::CreateBodyInstance()
+{
+	return std::make_shared<UShapeComponent>();
+}
+
 #ifdef WITH_EDITOR
 void UPrimitiveComponent::DrawDetailPanel(UINT ComponentDepth)
 {

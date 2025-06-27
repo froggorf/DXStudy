@@ -18,6 +18,8 @@
 class UShapeComponent : public UPrimitiveComponent
 {
 	MY_GENERATE_BODY(UShapeComponent)
+public:
+	~UShapeComponent() override = default;
 
 protected:
 	// 충돌체에 대한 오브젝트

@@ -200,6 +200,7 @@ physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterConvexActor(const FTransfo
 	FilterData.word0 = 1;
 	FilterData.word1 = 1;
 	shape->setSimulationFilterData(FilterData);
+	
 
 	// RigidActor
 	physx::PxRigidActor* Actor = nullptr;

@@ -5,6 +5,7 @@
 #pragma once
 #include "USceneComponent.h"
 
+class UShapeComponent;
 class FPrimitiveSceneProxy;
 
 enum class ECollisionType
@@ -19,10 +20,10 @@ class UPrimitiveComponent : public USceneComponent
 	MY_GENERATE_BODY(UPrimitiveComponent)
 
 	UPrimitiveComponent();
-	~UPrimitiveComponent() override;
+	~UPrimitiveComponent() override = default;
 
 	void Register() override;
-
+	void UnRegister() override;
 	virtual std::vector<std::shared_ptr<FPrimitiveSceneProxy>> CreateSceneProxy()
 	{
 		return std::vector<std::shared_ptr<FPrimitiveSceneProxy>>{};
@@ -39,10 +40,14 @@ class UPrimitiveComponent : public USceneComponent
 	// 해당 프리미티브 머테리얼의 텍스쳐 파라미터를 변경하는 함수
 	void SetTextureParam(UINT MeshIndex, UINT TextureSlot, const std::shared_ptr<UTexture>& Texture) const;
 
+	virtual std::shared_ptr<UShapeComponent> CreateBodyInstance();
+
 #ifdef WITH_EDITOR
 	void DrawDetailPanel(UINT ComponentDepth) override;
 #endif
 
 protected:
 	size_t RegisteredSceneProxyCount = 0;
+
+	std::shared_ptr<UShapeComponent> BodyInstance;
 };
