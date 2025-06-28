@@ -49,12 +49,28 @@ void FPhysicsEventCallback::onContact(const physx::PxContactPairHeader& pairHead
 		const physx::PxContactPair& ContactPair = pairs[i];
 		if (ContactPair.events & physx::PxPairFlag::eNOTIFY_TOUCH_FOUND)
 		{
-			MY_LOG("OnContact", EDebugLogLevel::DLL_Warning, "Hit Start" + std::to_string(A->GetPrimitiveID()) + " - " + std::to_string(B->GetPrimitiveID()));
+			FHitResult HitResult;
+			HitResult.HitActor = B->GetOwner();
+			HitResult.HitComponent = B;
+
+			physx::PxContactPairPoint ContactPoints[16];
+			physx::PxU32 contactCount = ContactPair.extractContacts(ContactPoints, 16);
+
+			if (contactCount > 0)
+			{
+				HitResult.Location = XMFLOAT3(ContactPoints[0].position.x, ContactPoints[0].position.y, -ContactPoints[0].position.z);
+				HitResult.Normal   = XMFLOAT3(ContactPoints[0].normal.x,   ContactPoints[0].normal.y,   -ContactPoints[0].normal.z);
+			}
+
+			A->OnComponentHit.Broadcast(A, B->GetOwner(), B, HitResult);
+
+			HitResult.HitActor = A->GetOwner();
+			HitResult.HitComponent = A;
+
+			B->OnComponentHit.Broadcast(B, A->GetOwner(), A, HitResult);
 		}
-		if (ContactPair.events & physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
-		{
-			MY_LOG("OnContact", EDebugLogLevel::DLL_Warning, "Hit End" + std::to_string(A->GetPrimitiveID()) + " - " + std::to_string(B->GetPrimitiveID()));
-		}
+		//if (ContactPair.events & physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
+		
 
 		
 	}

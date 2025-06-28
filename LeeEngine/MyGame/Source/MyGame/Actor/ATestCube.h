@@ -16,6 +16,8 @@ class ATestCube : public AActor
 
 	void BeginPlay() override;
 	void Tick(float DeltaSeconds) override;
+	
+	void OnComponentHitEvent(UShapeComponent* HitComponent, AActor* OtherActor, UShapeComponent* OtherComp, const FHitResult& HitResults);
 
 protected:
 	std::shared_ptr<UStaticMeshComponent> TestCubeStaticMeshComp;

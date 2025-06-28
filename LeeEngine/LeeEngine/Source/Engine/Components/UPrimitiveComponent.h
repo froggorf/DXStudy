@@ -5,6 +5,7 @@
 #pragma once
 #include "USceneComponent.h"
 #include "Engine/Physics/UPhysicsEngine.h"
+#include "Engine/Misc/Delegate.h"
 
 class UShapeComponent;
 class FPrimitiveSceneProxy;
@@ -15,6 +16,8 @@ enum class ECollisionType
 	Static,
 	Dynamic,
 };
+
+#define FComponentHitSignature Delegate<UShapeComponent*, AActor*, UShapeComponent*, const FHitResult& /*Normal Impulse는 생략*/>
 
 class UPrimitiveComponent : public USceneComponent
 {
@@ -54,6 +57,10 @@ class UPrimitiveComponent : public USceneComponent
 	void DrawDetailPanel(UINT ComponentDepth) override;
 #endif
 
+	std::shared_ptr<UShapeComponent> GetBodyInstance() const {return BodyInstance;}
+
+	// OnComponentHit 델리게이트
+	FComponentHitSignature OnComponentHit;
 protected:
 	size_t RegisteredSceneProxyCount = 0;
 
@@ -63,4 +70,5 @@ protected:
 	// 임시변수에 값을 저장해놓고 생성시 적용하는 방식으로 구현
 	ECollisionChannel TempCollisionChannel;
 	std::array<ECollisionResponse, static_cast<UINT>(ECollisionChannel::Count)> TempCollisionResponse = {};
+
 };

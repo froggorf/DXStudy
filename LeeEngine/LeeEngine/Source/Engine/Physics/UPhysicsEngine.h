@@ -7,6 +7,8 @@
 #include "Engine/Mesh/UStaticMesh.h"
 #include "Engine/UObject/UObject.h"
 
+class UPrimitiveComponent;
+
 // 콜리젼 채널 Object Type
 enum class ECollisionChannel
 {
@@ -23,6 +25,14 @@ enum class ECollisionResponse
 	Overlap,
 	Block,
 	Count
+};
+
+struct FHitResult
+{
+	XMFLOAT3 Location;
+	XMFLOAT3 Normal;
+	AActor* HitActor;
+	UPrimitiveComponent* HitComponent;
 };
 
 // Overlap, Hit 콜백 이벤트

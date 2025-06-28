@@ -11,9 +11,8 @@
  * 충돌체인 UShapeComponent를 가질 수 있음
  * UShapeComponent는
  * UBoxComponent / USphereComponent / UConvexComponent / ... 가 상속받음
- *
- * 
  */
+
 
 class UShapeComponent : public UPrimitiveComponent
 {
@@ -68,6 +67,6 @@ protected:
 	UINT LastDrawDebugRenderThreadFrame = -1;
 	bool bDrawDebug = true;
 	ECollisionChannel ObjectType = ECollisionChannel::Visibility;
-	
+
 	std::array<ECollisionResponse, static_cast<UINT>(ECollisionChannel::Count)> CollisionResponse;
 };

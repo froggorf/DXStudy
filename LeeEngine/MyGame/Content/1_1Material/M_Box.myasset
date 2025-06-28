@@ -9,7 +9,7 @@
 	"FilePath" : "/Shader/LightColor.hlsl",
 	"Func": "PS"
     },
-    "Textures" : [ "T_Box" ],
+    "TextureParams" : [ "T_Box" ],
     "BlendMode": "Opaque",
     "TwoSided" : 0
 	

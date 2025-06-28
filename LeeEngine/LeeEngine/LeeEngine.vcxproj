@@ -66,6 +66,7 @@
     <ClCompile Include="Source\Engine\Mesh\USkeletalMesh.cpp" />
     <ClCompile Include="Source\Engine\Mesh\USkinnedAsset.cpp" />
     <ClCompile Include="Source\Engine\Mesh\UStaticMesh.cpp" />
+    <ClCompile Include="Source\Engine\Misc\Delegate.cpp" />
     <ClCompile Include="Source\Engine\Misc\QueuedThreadPool.cpp" />
     <ClCompile Include="Source\Engine\MyEngineUtils.cpp" />
     <ClCompile Include="Source\Engine\Niagara\FNiagaraEmitter.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="Source\Engine\Mesh\USkeletalMesh.h" />
     <ClInclude Include="Source\Engine\Mesh\USkinnedAsset.h" />
     <ClInclude Include="Source\Engine\Mesh\UStaticMesh.h" />
+    <ClInclude Include="Source\Engine\Misc\Delegate.h" />
     <ClInclude Include="Source\Engine\Misc\QueuedThreadPool.h" />
     <ClInclude Include="Source\Engine\MyEngineUtils.h" />
     <ClInclude Include="Source\Engine\Niagara\FNiagaraEmitter.h" />
