@@ -5,6 +5,7 @@
 
 #include "Engine/Components/UNiagaraComponent.h"
 #include "Engine/GameFramework/AActor.h"
+#include "Engine/Physics/UBoxComponent.h"
 
 class UStaticMeshComponent;
 
@@ -18,6 +19,8 @@ class ATestCube : public AActor
 	void Tick(float DeltaSeconds) override;
 	
 	void OnComponentHitEvent(UShapeComponent* HitComponent, AActor* OtherActor, UShapeComponent* OtherComp, const FHitResult& HitResults);
+	void OnComponentBeginOverlapEvent(UShapeComponent* OverlappedComponent, AActor* OtherActor, UShapeComponent* OtherComp );
+
 
 protected:
 	std::shared_ptr<UStaticMeshComponent> TestCubeStaticMeshComp;
@@ -47,6 +50,8 @@ protected:
 	std::shared_ptr<UStaticMeshComponent> TestCubeSM23;
 	std::shared_ptr<UStaticMeshComponent> TestCubeSM24;
 	std::shared_ptr<UStaticMeshComponent> TestCubeSM25;
+
+	std::shared_ptr<UBoxComponent> TriggerBox1;
 
 private:
 	std::shared_ptr<UStaticMeshComponent> TestCube2;

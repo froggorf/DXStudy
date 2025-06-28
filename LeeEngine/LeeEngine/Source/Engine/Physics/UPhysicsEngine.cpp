@@ -15,9 +15,7 @@ void FPhysicsEventCallback::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 
 	{
 		const physx::PxTriggerPair& Pair = pairs[i];
 		
-		physx::PxShape* TriggerShape = Pair.triggerShape;
 		physx::PxActor* TriggerActor = Pair.triggerActor;
-		physx::PxShape* OtherShape = Pair.otherShape;
 		physx::PxActor* OtherActor = Pair.otherActor;
 
 		UShapeComponent* A = static_cast<UShapeComponent*>(TriggerActor->userData);
@@ -26,14 +24,18 @@ void FPhysicsEventCallback::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 
 		
 		if (Pair.status & physx::PxPairFlag::eNOTIFY_TOUCH_FOUND)
 		{
-			MY_LOG("OnTrigger", EDebugLogLevel::DLL_Warning, "Overlap Start" + std::to_string(A->GetPrimitiveID()) + " - " + std::to_string(B->GetPrimitiveID()));
+			//MY_LOG("OnTrigger", EDebugLogLevel::DLL_Warning, "Overlap Start" + std::to_string(A->GetPrimitiveID()) + " - " + std::to_string(B->GetPrimitiveID()));
+			A->OnComponentBeginOverlap.Broadcast(A,B->GetOwner(),B);
+			B->OnComponentBeginOverlap.Broadcast(B,A->GetOwner(),A);
 		}
 		if (Pair.status & physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
 		{
-			MY_LOG("OnTrigger", EDebugLogLevel::DLL_Warning, "Overlap End" + std::to_string(A->GetPrimitiveID()) + " - " + std::to_string(B->GetPrimitiveID()));
+			A->OnComponentEndOverlap.Broadcast(A,B->GetOwner(),B);
+			B->OnComponentEndOverlap.Broadcast(B,A->GetOwner(),A);
+			//MY_LOG("OnTrigger", EDebugLogLevel::DLL_Warning, "Overlap End" + std::to_string(A->GetPrimitiveID()) + " - " + std::to_string(B->GetPrimitiveID()));
 		}
 
-		MY_LOG("OnTrigger", EDebugLogLevel::DLL_Warning, "Overlap ing" + std::to_string(A->GetPrimitiveID()) + " - " + std::to_string(B->GetPrimitiveID()));
+		//MY_LOG("OnTrigger", EDebugLogLevel::DLL_Warning, "Overlap ing" + std::to_string(A->GetPrimitiveID()) + " - " + std::to_string(B->GetPrimitiveID()));
 
 	}
 }
@@ -198,6 +200,11 @@ physx::PxShape* UPhysicsEngine::CreateSphereShape(const float Radius) const
 	return PxPhysics->createShape(physx::PxSphereGeometry(Radius), *DefaultMaterial);
 }
 
+physx::PxShape* UPhysicsEngine::CreateBoxShape(const XMFLOAT3& BoxExtent) const
+{
+	return PxPhysics->createShape(physx::PxBoxGeometry(BoxExtent.x, BoxExtent.y,BoxExtent.z), *DefaultMaterial);
+}
+
 physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterActor(const FTransform& Transform, physx::PxShape* InShape, const float Mass, bool bIsDynamic) const
 {
 	physx::PxTransform ActorTransform {Transform.Translation.x,Transform.Translation.y,-Transform.Translation.z, {0.0f,0.0f,0.0f,1.0f}};
@@ -212,10 +219,13 @@ physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterActor(const FTransform& Tr
 	}
 	else
 	{
+		InShape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false); 
+		InShape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);      
 		Actor = PxPhysics->createRigidStatic(ActorTransform);
 	}
-
+	
 	Actor->attachShape(*InShape);
+	
 	PxScene->addActor(*Actor);
 
 	return Actor;
@@ -234,11 +244,6 @@ physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterConvexActor(const FTransfo
 	OutVertexBuffer = CreateVertexBufferForConvexActor(ConvexMesh);
 #endif
 
-
-
-	
-	
-
 	// RigidActor
 	physx::PxRigidActor* Actor = nullptr;
 	if (bIsDynamic)
@@ -250,6 +255,7 @@ physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterConvexActor(const FTransfo
 		
 	else
 	{
+		 
 		Actor = PxPhysics->createRigidStatic(physx::PxTransform{{Transform.Translation.x,Transform.Translation.y,-Transform.Translation.z},{0,0,0,1}});;
 	}
 

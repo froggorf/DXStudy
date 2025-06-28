@@ -144,33 +144,46 @@ ATestCube::ATestCube()
 	NC_Ribbon->SetRelativeRotation(XMFLOAT3{0.0f, 0.0f, 0.0f});
 
 	Rename("ATestCube" + std::to_string(ActorID));
+
+	TriggerBox1 = std::make_shared<UBoxComponent>();
+	TriggerBox1->SetExtent(XMFLOAT3{50,3,50});
+	TriggerBox1->SetupAttachment(GetRootComponent());
+	TriggerBox1->SetRelativeLocation(XMFLOAT3{0,-10,0});
 }
 
 void ATestCube::BeginPlay()
 {
 	AActor::BeginPlay();
 
-	TestCubeSM1->GetBodyInstance()->OnComponentHit.Add(this, &ATestCube::OnComponentHitEvent);
-	TestCubeSM2	->GetBodyInstance()->OnComponentHit.Add(this, &ATestCube::OnComponentHitEvent);
-	TestCubeSM3	->GetBodyInstance()->OnComponentHit.Add(this, &ATestCube::OnComponentHitEvent);
-	TestCubeSM4	->GetBodyInstance()->OnComponentHit.Add(this, &ATestCube::OnComponentHitEvent);
-	TestCubeSM5	->GetBodyInstance()->OnComponentHit.Add(this, &ATestCube::OnComponentHitEvent);
-	TestCubeSM6	->GetBodyInstance()->OnComponentHit.Add(this, &ATestCube::OnComponentHitEvent);
-	TestCubeSM9	->GetBodyInstance()->OnComponentHit.Add(this, &ATestCube::OnComponentHitEvent);
-	TestCubeSM7	->GetBodyInstance()->OnComponentHit.Add(this, &ATestCube::OnComponentHitEvent);
-	TestCubeSM8	->GetBodyInstance()->OnComponentHit.Add(this, &ATestCube::OnComponentHitEvent);
-	TestCubeSM10->GetBodyInstance()->OnComponentHit.Add(this, &ATestCube::OnComponentHitEvent);
-	TestCubeSM11->GetBodyInstance()->OnComponentHit.Add(this, &ATestCube::OnComponentHitEvent);
-	TestCubeSM12->GetBodyInstance()->OnComponentHit.Add(this, &ATestCube::OnComponentHitEvent);
-	TestCubeSM13->GetBodyInstance()->OnComponentHit.Add(this, &ATestCube::OnComponentHitEvent);
-	TestCubeSM14->GetBodyInstance()->OnComponentHit.Add(this, &ATestCube::OnComponentHitEvent);
-	TestCubeSM15->GetBodyInstance()->OnComponentHit.Add(this, &ATestCube::OnComponentHitEvent);
-	TestCubeSM16->GetBodyInstance()->OnComponentHit.Add(this, &ATestCube::OnComponentHitEvent);
-	TestCubeSM17->GetBodyInstance()->OnComponentHit.Add(this, &ATestCube::OnComponentHitEvent);
-	TestCubeSM18->GetBodyInstance()->OnComponentHit.Add(this, &ATestCube::OnComponentHitEvent);
-	TestCubeSM19->GetBodyInstance()->OnComponentHit.Add(this, &ATestCube::OnComponentHitEvent);
-	TestCubeSM20->GetBodyInstance()->OnComponentHit.Add(this, &ATestCube::OnComponentHitEvent);
-	TestCubeSM21->GetBodyInstance()->OnComponentHit.Add(this, &ATestCube::OnComponentHitEvent);
+	std::vector<std::shared_ptr<UStaticMeshComponent>> SMVec = {
+		TestCubeSM1	,
+		TestCubeSM2	,
+		TestCubeSM3	,
+		TestCubeSM4	,
+		TestCubeSM5	,
+		TestCubeSM6	,
+		TestCubeSM9	,
+		TestCubeSM7	,
+		TestCubeSM8	,
+		TestCubeSM10,
+		TestCubeSM11,
+		TestCubeSM12,
+		TestCubeSM13,
+		TestCubeSM14,
+		TestCubeSM15,
+		TestCubeSM16,
+		TestCubeSM17,
+		TestCubeSM18,
+		TestCubeSM19,
+		TestCubeSM20,
+		TestCubeSM21,
+	};
+
+	for (const std::shared_ptr<UStaticMeshComponent>& SMC : SMVec)
+	{
+		SMC->GetBodyInstance()->OnComponentHit.Add(this, &ATestCube::OnComponentHitEvent);
+		SMC->GetBodyInstance()->OnComponentBeginOverlap.Add(this, &ATestCube::OnComponentBeginOverlapEvent);
+	}
 }
 
 void ATestCube::Tick(float DeltaSeconds)
@@ -284,7 +297,12 @@ void ATestCube::Tick(float DeltaSeconds)
 
 void ATestCube::OnComponentHitEvent(UShapeComponent* HitComponent, AActor* OtherActor, UShapeComponent* OtherComp, const FHitResult& HitResults)
 {
-	//MY_LOG("OnContact", EDebugLogLevel::DLL_Warning, "Hit" + std::to_string(HitComponent->GetPrimitiveID()) + " - " + std::to_string(OtherComp->GetPrimitiveID()));
 	UStaticMeshComponent* StaticMeshComp =  static_cast<UStaticMeshComponent*>(HitComponent->GetAttachParent().get());
 	StaticMeshComp->SetTextureParam(0, 0, UTexture::GetTextureCache("T_White"));
+}
+
+void ATestCube::OnComponentBeginOverlapEvent(UShapeComponent* OverlappedComponent, AActor* OtherActor, UShapeComponent* OtherComp)
+{
+	UStaticMeshComponent* StaticMeshComp =  static_cast<UStaticMeshComponent*>(OverlappedComponent->GetAttachParent().get());
+	StaticMeshComp->SetTextureParam(0, 0, UTexture::GetTextureCache("T_Cube"));
 }

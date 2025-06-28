@@ -71,6 +71,7 @@
     <ClCompile Include="Source\Engine\MyEngineUtils.cpp" />
     <ClCompile Include="Source\Engine\Niagara\FNiagaraEmitter.cpp" />
     <ClCompile Include="Source\Engine\Niagara\UNiagaraSystem.cpp" />
+    <ClCompile Include="Source\Engine\Physics\UBoxComponent.cpp" />
     <ClCompile Include="Source\Engine\Physics\UConvexComponent.cpp" />
     <ClCompile Include="Source\Engine\Physics\UPhysicsEngine.cpp" />
     <ClCompile Include="Source\Engine\Physics\UShapeComponent.cpp" />
@@ -184,6 +185,7 @@
     <ClInclude Include="Source\Engine\MyEngineUtils.h" />
     <ClInclude Include="Source\Engine\Niagara\FNiagaraEmitter.h" />
     <ClInclude Include="Source\Engine\Niagara\UNiagaraSystem.h" />
+    <ClInclude Include="Source\Engine\Physics\UBoxComponent.h" />
     <ClInclude Include="Source\Engine\Physics\UConvexComponent.h" />
     <ClInclude Include="Source\Engine\Physics\UPhysicsEngine.h" />
     <ClInclude Include="Source\Engine\Physics\UShapeComponent.h" />

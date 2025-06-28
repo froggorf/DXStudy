@@ -18,6 +18,9 @@ enum class ECollisionType
 };
 
 #define FComponentHitSignature Delegate<UShapeComponent*, AActor*, UShapeComponent*, const FHitResult& /*Normal Impulse는 생략*/>
+#define FComponentBeginOverlapSignature Delegate<UShapeComponent*, AActor*, UShapeComponent*>
+#define FComponentEndOverlapSignature Delegate<UShapeComponent*, AActor*, UShapeComponent*>
+
 
 class UPrimitiveComponent : public USceneComponent
 {
@@ -61,6 +64,11 @@ class UPrimitiveComponent : public USceneComponent
 
 	// OnComponentHit 델리게이트
 	FComponentHitSignature OnComponentHit;
+	// OnBeginOverlap
+	FComponentBeginOverlapSignature OnComponentBeginOverlap;
+	// OnComponentEndOverlap
+	FComponentEndOverlapSignature OnComponentEndOverlap;
+
 protected:
 	size_t RegisteredSceneProxyCount = 0;
 
