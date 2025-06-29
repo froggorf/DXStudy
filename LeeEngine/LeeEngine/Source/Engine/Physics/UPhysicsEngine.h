@@ -72,6 +72,7 @@ public:
 	// 정적 convex hull 물리 오브젝트 생성
 	physx::PxRigidActor* CreateAndRegisterConvexActor(const FTransform& Transform, const std::shared_ptr<UStaticMesh>& StaticMesh, const float Mass, Microsoft::WRL::ComPtr<ID3D11Buffer>& OutVertexBuffer, bool bIsDynamic = true) const;
 	static Microsoft::WRL::ComPtr<ID3D11Buffer> CreateVertexBufferForConvexActor(const physx::PxConvexMesh* ConvexMesh);
+
 	// Scene
 	/*
 	 * Note
@@ -81,6 +82,8 @@ public:
 
 	physx::PxScene* GetScene() const {return PxScene; }
 
+	// LineTrace
+	bool LineTraceSingleByChannel(const XMFLOAT3& Start, const XMFLOAT3& End, const std::vector<ECollisionChannel>& TraceChannel, FHitResult& HitResult, float DebugDrawTime = 0.0f) const;
 protected:
 	// StaticMesh정보를 통해 ConvexMesh를 만들어 반환해주는 함수
 	physx::PxConvexMesh* CreateConvexMesh(const std::shared_ptr<UStaticMesh>& StaticMesh) const;

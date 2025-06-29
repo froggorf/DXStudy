@@ -318,6 +318,9 @@
     <ClCompile Include="Source\Engine\Physics\UBoxComponent.cpp">
       <Filter>Source\Engine\Physics</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Physics\ULineComponent.cpp">
+      <Filter>Source\Engine\Physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DirectX\ShadowMap.h">
@@ -564,6 +567,9 @@
       <Filter>Source\Engine\Misc</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Physics\UBoxComponent.h">
+      <Filter>Source\Engine\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Physics\ULineComponent.h">
       <Filter>Source\Engine\Physics</Filter>
     </ClInclude>
   </ItemGroup>

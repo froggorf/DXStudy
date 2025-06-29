@@ -73,6 +73,7 @@
     <ClCompile Include="Source\Engine\Niagara\UNiagaraSystem.cpp" />
     <ClCompile Include="Source\Engine\Physics\UBoxComponent.cpp" />
     <ClCompile Include="Source\Engine\Physics\UConvexComponent.cpp" />
+    <ClCompile Include="Source\Engine\Physics\ULineComponent.cpp" />
     <ClCompile Include="Source\Engine\Physics\UPhysicsEngine.cpp" />
     <ClCompile Include="Source\Engine\Physics\UShapeComponent.cpp" />
     <ClCompile Include="Source\Engine\RenderCore\EditorScene.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="Source\Engine\Niagara\UNiagaraSystem.h" />
     <ClInclude Include="Source\Engine\Physics\UBoxComponent.h" />
     <ClInclude Include="Source\Engine\Physics\UConvexComponent.h" />
+    <ClInclude Include="Source\Engine\Physics\ULineComponent.h" />
     <ClInclude Include="Source\Engine\Physics\UPhysicsEngine.h" />
     <ClInclude Include="Source\Engine\Physics\UShapeComponent.h" />
     <ClInclude Include="Source\Engine\RenderCore\EditorScene.h" />

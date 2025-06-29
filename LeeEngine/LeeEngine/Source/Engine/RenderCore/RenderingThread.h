@@ -299,7 +299,7 @@ public:
 	virtual XMMATRIX GetProjectionMatrix();
 
 #if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
-	static void DrawDebugData_GameThread(const FDebugRenderData& RenderData, UINT LastUpdateRenderThreadFrameCount)
+	static void DrawDebugData_GameThread(const FDebugRenderData& RenderData)
 	{
 		ENQUEUE_RENDER_COMMAND([RenderData](std::shared_ptr<FScene>& Scene)
 		{

@@ -190,7 +190,31 @@ void ATestCube::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
 
-	
+	static float LastLineTraceRenderThreadTime = -1;
+	if (ImGui::IsKeyReleased(ImGuiKey_3) && LastLineTraceRenderThreadTime != RenderingThreadFrameCount)
+	{
+		LastLineTraceRenderThreadTime = RenderingThreadFrameCount;
+		XMMATRIX InvMat = XMMatrixInverse(nullptr, GEngine->Test_DeleteLater_GetViewMatrix());
+		XMVECTOR ForwardVec = {0,0,1,0};
+		XMFLOAT3 ForwardVector;
+		XMStoreFloat3(&ForwardVector,XMVector3Rotate(ForwardVec, XMQuaternionRotationMatrix(InvMat)));
+		float Distance = 100;
+		ForwardVector.x*= Distance;
+		ForwardVector.y*= Distance;
+		ForwardVector.z*= Distance;
+		XMFLOAT3 Start = GEngine->Test_DeleteLater_GetCameraPosition();
+		XMFLOAT3 End;
+		End.x = Start.x + ForwardVector.x;
+		End.y = Start.y + ForwardVector.y;
+		End.z = Start.z + ForwardVector.z;
+		std::vector<ECollisionChannel> TraceChannel;
+		FHitResult HitResult;
+		if (gPhysicsEngine->LineTraceSingleByChannel(Start,End,TraceChannel, HitResult, 10.0f))
+		{
+			MY_LOG("Test",EDebugLogLevel::DLL_Warning, HitResult.HitActor->GetName());
+		}
+		
+	}
 
 	const float power = 3;
 	if (ImGui::IsKeyDown(ImGuiKey_I))

@@ -58,6 +58,10 @@ public:
 	{
 		return m_CameraPosition;
 	}
+	void Test_DELETELATER_SetCameraPosition(const XMFLOAT3& NewPos) override
+	{
+		m_CameraPosition = NewPos;
+	}
 
 private:
 	void BuildShader();

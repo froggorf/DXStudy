@@ -1,6 +1,7 @@
 ﻿#include "CoreMinimal.h"
 #include "UPhysicsEngine.h"
 
+#include "ULineComponent.h"
 #include "UShapeComponent.h"
 
 std::unique_ptr<UPhysicsEngine> gPhysicsEngine = nullptr;
@@ -348,6 +349,44 @@ void UPhysicsEngine::UnRegisterActor(physx::PxRigidActor* RemoveActor) const
 }
 
 
+bool UPhysicsEngine::LineTraceSingleByChannel(const XMFLOAT3& Start, const XMFLOAT3& End, const std::vector<ECollisionChannel>& TraceChannel,FHitResult& HitResult, float DebugDrawTime) const
+{
+	if (!PxScene)
+	{
+		return false;
+	}
+
+	physx::PxVec3 StartVec = {Start.x,Start.y,-Start.z};
+	physx::PxVec3 EndVec = {End.x,End.y,-End.z};
+	physx::PxVec3 Dir = EndVec - StartVec;
+	// Dir.normalize() -> Dir을 정규화하고 길이를 반환
+	float Dist = Dir.normalize();
+	physx::PxRaycastBuffer HitBuffer;
+
+	// TODO: Filter 넣기
+	bool bIsHit = PxScene->raycast(StartVec,Dir,Dist, HitBuffer);
+	if (bIsHit)
+	{
+		const physx::PxRaycastHit& HitInfo = HitBuffer.block;
+		HitResult.HitComponent = static_cast<UShapeComponent*>(HitInfo.actor->userData);
+		HitResult.HitActor = HitResult.HitComponent->GetOwner();
+		HitResult.Location = {HitInfo.position.x,HitInfo.position.y,-HitInfo.position.z};
+		HitResult.Normal = {HitInfo.normal.x,HitInfo.normal.y,-HitInfo.normal.z};
+	}
+
+	if (DebugDrawTime > 0.0f)
+	{
+		std::shared_ptr<ULineComponent> LineComp = std::make_shared<ULineComponent>(bIsHit,Start,End,HitResult.Location);
+		FDebugRenderData Data;
+		Data.Transform = LineComp->GetComponentTransform();
+		Data.RemainTime = DebugDrawTime;
+		Data.ShapeComp = LineComp;
+		FScene::DrawDebugData_GameThread(Data);
+	}
+
+	return bIsHit;
+	
+}
 
 physx::PxConvexMesh* UPhysicsEngine::CreateConvexMesh(const std::shared_ptr<UStaticMesh>& StaticMesh) const
 {

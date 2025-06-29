@@ -55,9 +55,9 @@ void UShapeComponent::TickComponent(float DeltaSeconds)
 			FDebugRenderData RenderData;
 			RenderData.Transform = GetComponentTransform();
 			RenderData.DebugColor = XMFLOAT4{0.0f,1.0f,0.0f,1.0f};
-			RenderData.RemainTime = 0.007f;
+			RenderData.RemainTime = 1.0f/60.0f;
 			RenderData.ShapeComp = std::dynamic_pointer_cast<UShapeComponent>(shared_from_this());
-			FScene::DrawDebugData_GameThread(RenderData, LastDrawDebugRenderThreadFrame);
+			FScene::DrawDebugData_GameThread(RenderData);
 			LastDrawDebugRenderThreadFrame = RenderingThreadFrameCount;	
 		}
 		

@@ -1,4 +1,4 @@
-// d3dApp.h by Frank Luna (C) 2011 All Rights Reserved.
+﻿// d3dApp.h by Frank Luna (C) 2011 All Rights Reserved.
 // 25.01.13 루나책 코드를 이해하며 D3DX11를 D3D11로 옮긴 코드
 
 #pragma once
@@ -60,6 +60,7 @@ public:
 	{
 		return XMFLOAT3{};
 	}
+	virtual void Test_DELETELATER_SetCameraPosition(const XMFLOAT3& NewPos){}
 
 	void TestSetWindowBarName(std::wostringstream& Test) const
 	{
