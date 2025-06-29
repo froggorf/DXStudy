@@ -77,8 +77,8 @@ class USceneComponent : public UActorComponent, public std::enable_shared_from_t
 		return ComponentToWorld;
 	}
 
-	// TODO: Socket 기능 추가 시 해당 기능 수정 필요
-	virtual FTransform& GetSocketTransform(const std::string& InSocketName);
+	// 특정 본 / 소켓의 Transform을 구하는 함수
+	virtual FTransform GetSocketTransform(const std::string& InSocketName);
 
 	const std::vector<std::shared_ptr<USceneComponent>>& GetAttachChildren() const
 	{

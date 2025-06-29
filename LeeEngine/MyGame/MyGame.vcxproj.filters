@@ -61,6 +61,9 @@
     <ClCompile Include="Source\MyGame\Actor\ATestCube2.cpp">
       <Filter>Source\MyGame\Actor</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Actor\ATestPawn.cpp">
+      <Filter>Source\MyGame\Actor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -76,6 +79,9 @@
       <Filter>Source\MyGame\Component</Filter>
     </ClInclude>
     <ClInclude Include="Source\MyGame\Actor\ATestCube2.h">
+      <Filter>Source\MyGame\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Actor\ATestPawn.h">
       <Filter>Source\MyGame\Actor</Filter>
     </ClInclude>
   </ItemGroup>

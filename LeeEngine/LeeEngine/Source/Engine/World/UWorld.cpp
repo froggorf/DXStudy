@@ -8,6 +8,7 @@
 #include "Engine/AssetManager/AssetManager.h"
 #include "Engine/UEditorEngine.h"
 #include "Engine/UEngine.h"
+#include "Engine/Physics/UBoxComponent.h"
 #include "Engine/Physics/UPhysicsEngine.h"
 #include "Engine/RenderCore/EditorScene.h"
 #include "Engine/RenderCore/RenderingThread.h"
@@ -108,4 +109,17 @@ void UWorld::AddLevel(const std::shared_ptr<ULevel>& NewLevel)
 {
 	// Set으로 설정하여 중복 추가 x
 	Levels.emplace(NewLevel);
+}
+
+void UWorld::DrawDebugBox(const XMFLOAT3& Center, const XMFLOAT3& Extent, const XMFLOAT3& LineColor, XMVECTOR Rotate, const float DebugDrawTime) const
+{
+	std::shared_ptr<UBoxComponent> BoxComp = std::make_shared<UBoxComponent>();
+	BoxComp->SetExtent(Extent);
+	BoxComp->CreateVertexBuffer();
+	FDebugRenderData Data;
+	Data.Transform = FTransform{Rotate, Center, {1,1,1}};
+	Data.DebugColor = {LineColor.x,LineColor.y,LineColor.z, 1.0f};
+	Data.RemainTime = DebugDrawTime;
+	Data.ShapeComp = BoxComp;
+	FScene::DrawDebugData_GameThread(Data);
 }

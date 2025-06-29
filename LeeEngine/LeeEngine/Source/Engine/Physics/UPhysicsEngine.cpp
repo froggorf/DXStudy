@@ -199,6 +199,12 @@ physx::PxShape* UPhysicsEngine::CreateBoxShape(const XMFLOAT3& BoxExtent) const
 	return PxPhysics->createShape(physx::PxBoxGeometry(BoxExtent.x, BoxExtent.y,BoxExtent.z), *DefaultMaterial);
 }
 
+physx::PxShape* UPhysicsEngine::CreateCapsuleShape(const float Radius, const float HalfHeight) const
+{
+	return PxPhysics->createShape(physx::PxCapsuleGeometry(Radius,HalfHeight), *DefaultMaterial);
+}
+
+
 physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterActor(const FTransform& Transform, physx::PxShape* InShape, const float Mass, bool bIsDynamic) const
 {
 	physx::PxTransform ActorTransform {Transform.Translation.x,Transform.Translation.y,-Transform.Translation.z, {0.0f,0.0f,0.0f,1.0f}};

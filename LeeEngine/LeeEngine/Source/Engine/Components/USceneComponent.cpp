@@ -160,7 +160,7 @@ void USceneComponent::SetWorldRotation(const XMVECTOR& NewRotation)
 	SetRelativeRotation(NewRelRotation);
 }
 
-FTransform& USceneComponent::GetSocketTransform(const std::string& InSocketName)
+FTransform USceneComponent::GetSocketTransform(const std::string& InSocketName)
 {
 	return ComponentToWorld;
 }

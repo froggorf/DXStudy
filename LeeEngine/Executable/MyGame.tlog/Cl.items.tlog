@@ -2,5 +2,6 @@ C:\Project\DXStudy\LeeEngine\MyGame\Source\main.cpp;C:\Project\DXStudy\LeeEngine
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\ATestActor2.cpp;C:\Project\DXStudy\LeeEngine\Executable\ATestActor2.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\ATestCube.cpp;C:\Project\DXStudy\LeeEngine\Executable\ATestCube.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\ATestCube2.cpp;C:\Project\DXStudy\LeeEngine\Executable\ATestCube2.obj
+C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\ATestPawn.cpp;C:\Project\DXStudy\LeeEngine\Executable\ATestPawn.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\AnimInstance\UMyAnimInstance.cpp;C:\Project\DXStudy\LeeEngine\Executable\UMyAnimInstance.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\UTestComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\UTestComponent.obj

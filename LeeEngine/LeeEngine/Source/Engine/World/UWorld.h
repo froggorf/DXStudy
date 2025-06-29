@@ -44,6 +44,10 @@ class UWorld : public UObject, public std::enable_shared_from_this<UWorld>
 		ToBeTickedNiagaraSceneProxies.emplace_back(NewNiagaraSceneProxy);
 	}
 
+#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
+	void DrawDebugBox(const XMFLOAT3& Center, const XMFLOAT3& Extent, const XMFLOAT3& LineColor = XMFLOAT3{1,0,0}, XMVECTOR Rotate = XMVectorSet(0,0,0,1), const float DebugDrawTime = 5.0f) const;
+#endif
+
 private:
 	// 콜렉션과 관련된 현재 레벨
 	std::shared_ptr<ULevel> PersistentLevel;

@@ -74,6 +74,41 @@ bool USkeletalMeshComponent::SetSkeletalMesh(const std::shared_ptr<USkeletalMesh
 	return true;
 }
 
+FTransform USkeletalMeshComponent::GetSocketTransform(const std::string& InSocketName)
+{
+	if (!AnimInstance)
+	{
+		return GetComponentTransform();
+	}
+
+	FTransform ReturnTransform = GetComponentTransform();
+
+	std::map<std::string,std::vector<FPrecomputedBoneData>>& BoneHierarchyMap = UAnimSequence::GetSkeletonBoneHierarchyMap();
+	std::string SkeletalMeshName = GetSkeletalMesh()->GetName();
+
+	if (BoneHierarchyMap.contains(SkeletalMeshName))
+	{
+		std::vector<FPrecomputedBoneData>& BoneHierarchy = BoneHierarchyMap[SkeletalMeshName];
+		auto TargetSocket = std::ranges::find_if(BoneHierarchy, [InSocketName](const FPrecomputedBoneData& Data)
+		{
+			return Data.BoneName == InSocketName;
+		});
+		const XMMATRIX LastFrameSocketMatrix = AnimInstance->GetLastFrameAnimMatrices()[TargetSocket->BoneInfo.id];
+		XMVECTOR OutLoc, OutRot, OutScale;
+		XMMatrixDecompose(&OutLoc, &OutRot, &OutScale, LastFrameSocketMatrix);
+
+		FTransform BoneTransform;
+
+		XMStoreFloat3(&BoneTransform.Translation, OutLoc);
+		XMStoreFloat4(&BoneTransform.Rotation, OutRot);
+		XMStoreFloat3(&BoneTransform.Scale3D, OutScale);
+
+		ReturnTransform = ReturnTransform * BoneTransform;
+	}
+
+	return ReturnTransform;
+}
+
 void USkeletalMeshComponent::SetAnimInstanceClass(const std::string& InAnimInstanceClass)
 {
 	if (const UObject* AnimDefaultObject = GetDefaultObject(InAnimInstanceClass))

@@ -1,4 +1,4 @@
-// 03.27
+﻿// 03.27
 // 언리얼 엔진 5 코드를 분석하며 자체엔진으로 작성중인 코드입니다.
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
@@ -42,7 +42,7 @@ class UAnimInstance : public UObject
 	class AActor* TryGetPawnOwner() const;
 
 	void Montage_Play(std::shared_ptr<UAnimMontage> MontageToPlay, float InTimeToStartMontageAt = 0.0f);
-
+	const std::array<XMMATRIX,MAX_BONES>& GetLastFrameAnimMatrices() const {return LastFrameAnimMatrices;}
 protected:
 	// 애니메이션 레이어 블렌딩
 	void LayeredBlendPerBone(const std::vector<XMMATRIX>& BasePose, const std::vector<XMMATRIX>& BlendPose, const std::string& TargetBoneName, float BlendWeights, std::vector<XMMATRIX>& OutMatrices);
@@ -59,7 +59,9 @@ protected:
 
 	// 현재 재생중인 AnimMontage Instances
 	std::vector<std::shared_ptr<FAnimMontageInstance>> MontageInstances;
-
+protected:
+	std::array<XMMATRIX, MAX_BONES> LastFrameAnimMatrices;
 private:
 	USkeletalMeshComponent* CurrentSkeletalMeshComponent;
+
 };

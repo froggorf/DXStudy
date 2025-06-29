@@ -76,6 +76,7 @@ public:
 	// Sphere Shape
 	physx::PxShape* CreateSphereShape(const float Radius) const;
 	physx::PxShape* CreateBoxShape(const XMFLOAT3& BoxExtent) const;
+	physx::PxShape* CreateCapsuleShape(const float Radius, const float HalfHeight) const;
 
 	/// Actor
 	// 정적 물리 오브젝트 생성

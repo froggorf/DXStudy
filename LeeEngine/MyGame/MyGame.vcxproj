@@ -23,6 +23,7 @@
     <ClCompile Include="Source\MyGame\Actor\ATestActor2.cpp" />
     <ClCompile Include="Source\MyGame\Actor\ATestCube.cpp" />
     <ClCompile Include="Source\MyGame\Actor\ATestCube2.cpp" />
+    <ClCompile Include="Source\MyGame\Actor\ATestPawn.cpp" />
     <ClCompile Include="Source\MyGame\AnimInstance\UMyAnimInstance.cpp" />
     <ClCompile Include="Source\MyGame\Component\UTestComponent.cpp" />
   </ItemGroup>
@@ -30,6 +31,7 @@
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h" />
     <ClInclude Include="Source\MyGame\Actor\ATestCube.h" />
     <ClInclude Include="Source\MyGame\Actor\ATestCube2.h" />
+    <ClInclude Include="Source\MyGame\Actor\ATestPawn.h" />
     <ClInclude Include="Source\MyGame\AnimInstance\UMyAnimInstance.h" />
     <ClInclude Include="Source\MyGame\Component\UTestComponent.h" />
   </ItemGroup>
