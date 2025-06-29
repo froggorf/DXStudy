@@ -30,7 +30,7 @@ void ULineComponent::DebugDraw_RenderThread() const
         GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_DebugDraw, &ColorBuffer, sizeof(ColorBuffer));
 
         DeviceContext->IASetVertexBuffers(0, 1, NonHitLineVertexBuffer.GetAddressOf(), &stride, &offset);
-        DeviceContext->Draw(3, 0);    
+        DeviceContext->Draw(2, 0);    
     }
 
     // HitLine
@@ -40,7 +40,7 @@ void ULineComponent::DebugDraw_RenderThread() const
         GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_DebugDraw, &ColorBuffer, sizeof(ColorBuffer));
 
         DeviceContext->IASetVertexBuffers(0, 1, HitLineVertexBuffer.GetAddressOf(), &stride, &offset);
-        DeviceContext->Draw(3, 0);    
+        DeviceContext->Draw(2, 0);    
     }
 
     // Topology를 바꿔주기 위해 bIsHit을 두번으로 나누어 렌더링

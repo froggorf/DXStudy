@@ -195,14 +195,16 @@ void ATestCube::Tick(float DeltaSeconds)
 	{
 		LastLineTraceRenderThreadTime = RenderingThreadFrameCount;
 		XMMATRIX InvMat = XMMatrixInverse(nullptr, GEngine->Test_DeleteLater_GetViewMatrix());
-		XMVECTOR ForwardVec = {0,0,1,0};
 		XMFLOAT3 ForwardVector;
-		XMStoreFloat3(&ForwardVector,XMVector3Rotate(ForwardVec, XMQuaternionRotationMatrix(InvMat)));
-		float Distance = 100;
-		ForwardVector.x*= Distance;
-		ForwardVector.y*= Distance;
-		ForwardVector.z*= Distance;
-		XMFLOAT3 Start = GEngine->Test_DeleteLater_GetCameraPosition();
+		float Distance = 100.0f;
+		ForwardVector.x = InvMat.r[2].m128_f32[0]*Distance;
+		ForwardVector.y = InvMat.r[2].m128_f32[1]*Distance;
+		ForwardVector.z = InvMat.r[2].m128_f32[2]*Distance;
+		XMFLOAT3 Start;
+		Start.x = InvMat.r[3].m128_f32[0];
+		Start.y = InvMat.r[3].m128_f32[1];
+		Start.z = InvMat.r[3].m128_f32[2];
+		MY_LOG("Test",EDebugLogLevel::DLL_Warning, XMFLOAT3_TO_TEXT(ForwardVector));
 		XMFLOAT3 End;
 		End.x = Start.x + ForwardVector.x;
 		End.y = Start.y + ForwardVector.y;
