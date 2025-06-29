@@ -159,4 +159,17 @@ void UPrimitiveComponent::DrawDetailPanel(UINT ComponentDepth)
 		}
 	}
 }
+
+void UPrimitiveComponent::SetCollisionEnabled(ECollisionEnabled NewType)
+{
+	if (GetBodyInstance() && GetBodyInstance()->GetCollisionEnabled() == NewType)
+	{
+		return;
+	}
+
+	if (GetBodyInstance())
+	{
+		GetBodyInstance()->SetCollisionEnabled(NewType);
+	}
+}
 #endif

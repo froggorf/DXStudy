@@ -63,6 +63,10 @@ public:
 	{
 		bDrawDebug = true;
 	}
+
+	ECollisionEnabled CollisionEnabled;
+	ECollisionEnabled GetCollisionEnabled() const {return CollisionEnabled;}
+	void SetCollisionEnabled(ECollisionEnabled NewType);
 protected:
 	UINT LastDrawDebugRenderThreadFrame = -1;
 	bool bDrawDebug = true;

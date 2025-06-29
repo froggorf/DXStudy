@@ -27,6 +27,17 @@ enum class ECollisionResponse
 	Count
 };
 
+// CollisionEnabled
+enum class ECollisionEnabled
+{
+	// 아무런 충돌도 없음 (RigidActor이 PxScene에 등록되지 않음
+	NoCollision,
+	// 오버랩, 레이트레이스 등에만 사용
+	QueryOnly,
+	// 물리가 적용
+	Physics
+};
+
 struct FHitResult
 {
 	XMFLOAT3 Location;
@@ -79,6 +90,11 @@ public:
 	 * 해당 함수에서 RemoveActor 를 release 하고 nullptr로 만듦
 	 */
 	void UnRegisterActor(physx::PxRigidActor* RemoveActor) const;
+	//Note : 해당 함수에서는 액터를 씬에서 remove 하기만 하므로
+	//		 release까지 원할 경우 UnRegisterActor()를 호출해야함
+	void RemoveActorFromScene(physx::PxRigidActor* RemoveActor) const;
+
+	void AddActor(physx::PxRigidActor* AddActor) const;
 
 	physx::PxScene* GetScene() const {return PxScene; }
 

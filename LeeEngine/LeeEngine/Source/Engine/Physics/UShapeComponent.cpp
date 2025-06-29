@@ -5,6 +5,7 @@
 
 UShapeComponent::UShapeComponent()
 {
+	SetCollisionEnabled(ECollisionEnabled::Physics);
 }
 
 void UShapeComponent::Register()
@@ -150,5 +151,61 @@ void UShapeComponent::UpdatePhysicsFilterData()
 	{
 		RigidDynamic->wakeUp();
 	}
+
+}
+
+void UShapeComponent::SetCollisionEnabled(ECollisionEnabled NewType)
+{
+	CollisionEnabled = NewType;
+
+	if (!RigidActor)
+	{
+		return;
+	}
+
+
+	physx::PxU32 ShapeCount = RigidActor->getNbShapes();
+	std::vector<physx::PxShape*> Shapes(ShapeCount);
+	RigidActor->getShapes(Shapes.data(), ShapeCount);
+
+	for (physx::PxShape* Shape : Shapes)
+	{
+		switch (NewType)
+		{
+		case ECollisionEnabled::NoCollision:
+			Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
+			Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false); 
+			if (bIsDynamic)
+			{
+				bIsDynamic = !bIsDynamic;
+				gPhysicsEngine->UnRegisterActor(RigidActor);
+				RegisterPhysics();
+			}
+		break;
+		case ECollisionEnabled::Physics:
+			Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false); 
+			Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
+			if (!bIsDynamic)
+			{
+				bIsDynamic = !bIsDynamic;
+				gPhysicsEngine->UnRegisterActor(RigidActor);
+				RegisterPhysics();
+			}
+		break;
+		case ECollisionEnabled::QueryOnly:
+			Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
+			Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
+			if (bIsDynamic)
+			{
+				bIsDynamic = !bIsDynamic;
+				gPhysicsEngine->UnRegisterActor(RigidActor);
+				RegisterPhysics();
+			}
+		break;
+		}
+	}
+
+	UpdatePhysicsFilterData();
+
 
 }

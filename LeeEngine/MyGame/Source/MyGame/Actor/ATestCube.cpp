@@ -271,6 +271,15 @@ void ATestCube::Tick(float DeltaSeconds)
 		}
 	}
 
+	if (ImGui::IsKeyPressed(ImGuiKey_7))
+	{
+		TestCubeSM1->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+	if (ImGui::IsKeyPressed(ImGuiKey_8))
+	{
+		TestCubeSM1->SetCollisionEnabled(ECollisionEnabled::Physics);
+	}
+
 	//
 	//gPhysicsEngine->TickPhysics(DeltaSeconds);
 

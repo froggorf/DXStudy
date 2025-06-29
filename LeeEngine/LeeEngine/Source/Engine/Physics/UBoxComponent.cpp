@@ -5,15 +5,15 @@ UBoxComponent::UBoxComponent()
 {
     Rename("BoxComponent"+PrimitiveID);
     bIsDynamic = false;
-}
-
-physx::PxRigidActor* UBoxComponent::CreateRigidActor()
-{
+    SetCollisionEnabled(ECollisionEnabled::QueryOnly);
     for (size_t i = 0; i < CollisionResponse.size(); ++i)
     {
         CollisionResponse[i] = ECollisionResponse::Overlap;
     }
+}
 
+physx::PxRigidActor* UBoxComponent::CreateRigidActor()
+{
 	CreateVertexBuffer();
 
 	return gPhysicsEngine->CreateAndRegisterActor(GetComponentTransform(), gPhysicsEngine->CreateBoxShape(BoxExtent), Mass, bIsDynamic);

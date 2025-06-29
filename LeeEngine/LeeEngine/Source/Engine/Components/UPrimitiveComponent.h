@@ -62,6 +62,9 @@ class UPrimitiveComponent : public USceneComponent
 
 	std::shared_ptr<UShapeComponent> GetBodyInstance() const {return BodyInstance;}
 
+	// CollisionEnabled
+	void SetCollisionEnabled(ECollisionEnabled NewType);
+
 	// OnComponentHit 델리게이트
 	FComponentHitSignature OnComponentHit;
 	// OnBeginOverlap

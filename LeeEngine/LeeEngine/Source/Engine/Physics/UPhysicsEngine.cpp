@@ -339,13 +339,26 @@ void UPhysicsEngine::UnRegisterActor(physx::PxRigidActor* RemoveActor) const
 		return;
 	}
 
+	RemoveActorFromScene(RemoveActor);
+
+	RemoveActor->release();
+	RemoveActor = nullptr;
+}
+
+void UPhysicsEngine::RemoveActorFromScene(physx::PxRigidActor* RemoveActor) const
+{
 	if (physx::PxScene* CurScene = RemoveActor->getScene())
 	{
 		CurScene->removeActor(*RemoveActor);
 	}
+}
 
-	RemoveActor->release();
-	RemoveActor = nullptr;
+void UPhysicsEngine::AddActor(physx::PxRigidActor* AddActor) const
+{
+	if (PxScene && AddActor && !AddActor->getScene())
+	{
+		PxScene->addActor(*AddActor);
+	}
 }
 
 
