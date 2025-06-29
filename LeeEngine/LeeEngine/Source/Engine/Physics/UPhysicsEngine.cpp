@@ -376,10 +376,11 @@ bool UPhysicsEngine::LineTraceSingleByChannel(const XMFLOAT3& Start, const XMFLO
 
 	if (DebugDrawTime > 0.0f)
 	{
-		std::shared_ptr<ULineComponent> LineComp = std::make_shared<ULineComponent>(bIsHit,Start,End,HitResult.Location);
+		//std::shared_ptr<ULineComponent> LineComp = std::make_shared<ULineComponent>(bIsHit,Start,End,HitResult.Location);
+		std::shared_ptr<ULineComponent> LineComp = std::make_shared<ULineComponent>(true,XMFLOAT3{0,0,-50},XMFLOAT3{0,0,50},XMFLOAT3{0,0,0});
 		FDebugRenderData Data;
 		Data.Transform = LineComp->GetComponentTransform();
-		Data.RemainTime = DebugDrawTime;
+		Data.RemainTime = 1.0f;
 		Data.ShapeComp = LineComp;
 		FScene::DrawDebugData_GameThread(Data);
 	}

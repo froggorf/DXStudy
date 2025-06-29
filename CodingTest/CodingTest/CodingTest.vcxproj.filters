@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="백준 10026 적록색약 골드5.cpp">
+    <ClCompile Include="백준 2583 영역구하기 실버1.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

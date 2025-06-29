@@ -22,7 +22,7 @@ void ULineComponent::DebugDraw_RenderThread() const
 	
 
     GDirectXDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
-
+    
 	// NotHitLine
     {
         FDebugColor ColorBuffer;
@@ -30,7 +30,7 @@ void ULineComponent::DebugDraw_RenderThread() const
         GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_DebugDraw, &ColorBuffer, sizeof(ColorBuffer));
 
         DeviceContext->IASetVertexBuffers(0, 1, NonHitLineVertexBuffer.GetAddressOf(), &stride, &offset);
-        DeviceContext->Draw(2, 0);    
+        DeviceContext->Draw(3, 0);    
     }
 
     // HitLine
@@ -40,11 +40,12 @@ void ULineComponent::DebugDraw_RenderThread() const
         GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_DebugDraw, &ColorBuffer, sizeof(ColorBuffer));
 
         DeviceContext->IASetVertexBuffers(0, 1, HitLineVertexBuffer.GetAddressOf(), &stride, &offset);
-        DeviceContext->Draw(2, 0);    
+        DeviceContext->Draw(3, 0);    
     }
 
     // Topology를 바꿔주기 위해 bIsHit을 두번으로 나누어 렌더링
     GDirectXDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    GDirectXDevice->SetRSState(ERasterizerType::RT_TwoSided);
     // HitBox
     if (bIsHit)
     {
@@ -52,8 +53,9 @@ void ULineComponent::DebugDraw_RenderThread() const
         ColorBuffer.DebugColor = XMFLOAT4{TraceColor.x,TraceColor.y,TraceColor.z, 1.0f};
         GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_DebugDraw, &ColorBuffer, sizeof(ColorBuffer));
         DeviceContext->IASetVertexBuffers(0, 1, HitLocationBoxVertexBuffer.GetAddressOf(), &stride, &offset);
-        DeviceContext->Draw(36, 0); 
+        DeviceContext->Draw(36, 0);
     }
+    GDirectXDevice->SetRSState(ERasterizerType::RT_WireFrame);
 }
 
 void ULineComponent::CreateVertexBuffer(const XMFLOAT3& Start, const XMFLOAT3& End, const XMFLOAT3& HitLocation)
@@ -64,9 +66,9 @@ void ULineComponent::CreateVertexBuffer(const XMFLOAT3& Start, const XMFLOAT3& E
         // 맞았으면 HitLocation까지만 빨간 트레이스, 아니면 끝까지 빨간트레이스
         XMFLOAT3 TraceEnd = bIsHit? HitLocation : End;
 
-        std::vector<MyVertexData> VertexData(2);
-        VertexData.push_back({TraceStart});
-        VertexData.push_back({TraceEnd});
+        std::vector<MyVertexData> VertexData;
+        VertexData.push_back({TraceStart,{0,0,1},{0,0}});
+        VertexData.push_back({TraceEnd,{0,0,1},{1,1}});
 
         D3D11_BUFFER_DESC bd = {};
         bd.Usage = D3D11_USAGE_DEFAULT;
@@ -90,7 +92,7 @@ void ULineComponent::CreateVertexBuffer(const XMFLOAT3& Start, const XMFLOAT3& E
             // 맞았으면 HitLocation까지만 빨간 트레이스, 아니면 끝까지 빨간트레이스
             XMFLOAT3 TraceEnd = End;
 
-            std::vector<MyVertexData> VertexData(2);
+            std::vector<MyVertexData> VertexData;
             VertexData.push_back({TraceStart});
             VertexData.push_back({TraceEnd});
 
@@ -109,7 +111,7 @@ void ULineComponent::CreateVertexBuffer(const XMFLOAT3& Start, const XMFLOAT3& E
         // Hit Box
         {
             std::vector<MyVertexData> VertexData;
-            float BoxSize = 2.5f;
+            float BoxSize = 0.5f;
             XMFLOAT3 BoxExtent = {BoxSize,BoxSize,BoxSize };
             XMFLOAT3 Point[8] =
             {
