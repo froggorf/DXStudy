@@ -116,7 +116,7 @@ const std::string& UEngine::GetDefaultMapName()
 	return EngineData["GameDefaultMap"];
 }
 
-void UEngine::DELETELATER_TestChangeLevel(const std::string& str)
+void UEngine::ChangeLevelByName(const std::string& str)
 {
 	// 비동기 로드 진행
 	AssetManager::GetAsyncAssetCache(str, [this](std::shared_ptr<UObject> LevelObject)
@@ -224,7 +224,7 @@ void UEngine::Tick(float DeltaSeconds)
 		if(!b)
 		{
 			b = true;
-			GEngine->DELETELATER_TestChangeLevel("AsyncTestLevel");
+			GEngine->ChangeLevelByName("AsyncTestLevel");
 		}
 		
 	}

@@ -97,6 +97,8 @@ public:
 	void AddActor(physx::PxRigidActor* AddActor) const;
 
 	physx::PxScene* GetScene() const {return PxScene; }
+	void ResetScene();
+	void CreateScene();
 
 	// LineTrace
 	bool LineTraceSingleByChannel(const XMFLOAT3& Start, const XMFLOAT3& End, const std::vector<ECollisionChannel>& TraceChannel, FHitResult& HitResult, float DebugDrawTime = 0.0f, const XMFLOAT3& TraceColor = XMFLOAT3(1.0f,0.0f,0.0f), const XMFLOAT3& TraceHitColor = XMFLOAT3(0.0f,1.0f,0.0f)) const;

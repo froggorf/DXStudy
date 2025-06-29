@@ -8,6 +8,7 @@
 #include "Engine/AssetManager/AssetManager.h"
 #include "Engine/UEditorEngine.h"
 #include "Engine/UEngine.h"
+#include "Engine/Physics/UPhysicsEngine.h"
 #include "Engine/RenderCore/EditorScene.h"
 #include "Engine/RenderCore/RenderingThread.h"
 #include "Engine/SceneProxy/FNiagaraSceneProxy.h"
@@ -85,13 +86,14 @@ void UWorld::Tick()
 
 void UWorld::SetPersistentLevel(const std::shared_ptr<ULevel>& NewLevel)
 {
+	gPhysicsEngine->ResetScene();
 	PersistentLevel = NewLevel;
 	PersistentLevel->Register();
 	if (GEngine->bGameStart)
 	{
 		PersistentLevel->BeginPlay();
 	}
-	MY_LOG("TEST", EDebugLogLevel::DLL_Warning, "SET Level");
+
 #ifdef WITH_EDITOR
 	// 타이틀 바 내 현재 레벨 이름 변경
 	SendMessage(GEditorEngine->GetWindow(), WM_NCPAINT, true, 0);

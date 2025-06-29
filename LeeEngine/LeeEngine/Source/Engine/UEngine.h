@@ -39,7 +39,7 @@ class UEngine : public UObject
 	}
 
 	// TODO: DELETE_LATER
-	void DELETELATER_TestChangeLevel(const std::string& str);
+	void ChangeLevelByName(const std::string& str);
 
 	float GetTimeSeconds() const
 	{

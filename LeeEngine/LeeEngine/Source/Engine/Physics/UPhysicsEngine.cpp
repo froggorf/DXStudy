@@ -117,14 +117,7 @@ UPhysicsEngine::UPhysicsEngine()
 	PxFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
 	PxPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *PxFoundation, physx::PxTolerancesScale());
 
-	// Scene 생성
-	physx::PxSceneDesc SceneDesc(PxPhysics->getTolerancesScale());
-	SceneDesc.gravity = physx::PxVec3(0.0f,-9.8f*7.5f, 0.0f);
-	SceneDesc.cpuDispatcher = physx::PxDefaultCpuDispatcherCreate(2);
-	SceneDesc.filterShader = MyFilterShader;
-	CallbackInstance = std::make_unique<FPhysicsEventCallback>();
-	SceneDesc.simulationEventCallback = CallbackInstance.get();
-	PxScene = PxPhysics->createScene(SceneDesc);
+	CreateScene();
 
 	DefaultMaterial = PxPhysics->createMaterial(0.5f, 0.5f, 0.6f); // friction, restitution
 
@@ -361,6 +354,31 @@ void UPhysicsEngine::AddActor(physx::PxRigidActor* AddActor) const
 	}
 }
 
+
+void UPhysicsEngine::ResetScene()
+{
+	if (PxScene)
+	{
+		PxScene->release();	
+	}
+
+	CreateScene();
+}
+
+void UPhysicsEngine::CreateScene()
+{
+	// Scene 생성
+	physx::PxSceneDesc SceneDesc(PxPhysics->getTolerancesScale());
+	SceneDesc.gravity = physx::PxVec3(0.0f,-9.8f*7.5f, 0.0f);
+	SceneDesc.cpuDispatcher = physx::PxDefaultCpuDispatcherCreate(2);
+	SceneDesc.filterShader = MyFilterShader;
+	if (!CallbackInstance)
+	{
+		CallbackInstance = std::make_unique<FPhysicsEventCallback>();
+	}
+	SceneDesc.simulationEventCallback = CallbackInstance.get();
+	PxScene = PxPhysics->createScene(SceneDesc);
+}
 
 bool UPhysicsEngine::LineTraceSingleByChannel(const XMFLOAT3& Start, const XMFLOAT3& End, const std::vector<ECollisionChannel>& TraceChannel,FHitResult& HitResult, float DebugDrawTime, const XMFLOAT3& TraceColor, const XMFLOAT3& TraceHitColor) const
 {
