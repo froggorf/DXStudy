@@ -349,7 +349,7 @@ void UPhysicsEngine::UnRegisterActor(physx::PxRigidActor* RemoveActor) const
 }
 
 
-bool UPhysicsEngine::LineTraceSingleByChannel(const XMFLOAT3& Start, const XMFLOAT3& End, const std::vector<ECollisionChannel>& TraceChannel,FHitResult& HitResult, float DebugDrawTime) const
+bool UPhysicsEngine::LineTraceSingleByChannel(const XMFLOAT3& Start, const XMFLOAT3& End, const std::vector<ECollisionChannel>& TraceChannel,FHitResult& HitResult, float DebugDrawTime, const XMFLOAT3& TraceColor, const XMFLOAT3& TraceHitColor) const
 {
 	if (!PxScene)
 	{
@@ -364,7 +364,13 @@ bool UPhysicsEngine::LineTraceSingleByChannel(const XMFLOAT3& Start, const XMFLO
 	physx::PxRaycastBuffer HitBuffer;
 
 	// TODO: Filter 넣기
-	bool bIsHit = PxScene->raycast(StartVec,Dir,Dist, HitBuffer);
+	physx::PxQueryFilterData FilterData;
+	for (size_t i = 0; i < TraceChannel.size(); ++i)
+	{
+		FilterData.data.word0 |= (1 << static_cast<UINT>(TraceChannel[i]));
+	}
+
+	bool bIsHit = PxScene->raycast(StartVec,Dir,Dist, HitBuffer, physx::PxHitFlag::eDEFAULT, FilterData);
 	if (bIsHit)
 	{
 		const physx::PxRaycastHit& HitInfo = HitBuffer.block;
@@ -376,7 +382,7 @@ bool UPhysicsEngine::LineTraceSingleByChannel(const XMFLOAT3& Start, const XMFLO
 
 	if (DebugDrawTime > 0.0f)
 	{
-		std::shared_ptr<ULineComponent> LineComp = std::make_shared<ULineComponent>(bIsHit,Start,End,HitResult.Location);	
+		std::shared_ptr<ULineComponent> LineComp = std::make_shared<ULineComponent>(bIsHit,Start,End,HitResult.Location, TraceColor,TraceHitColor);	
 		FDebugRenderData Data;
 		Data.Transform = LineComp->GetComponentTransform();
 		Data.RemainTime = DebugDrawTime;

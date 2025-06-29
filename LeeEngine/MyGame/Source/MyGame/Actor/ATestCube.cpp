@@ -189,33 +189,52 @@ void ATestCube::BeginPlay()
 void ATestCube::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
-
-	static float LastLineTraceRenderThreadTime = -1;
-	if (ImGui::IsKeyReleased(ImGuiKey_3) && LastLineTraceRenderThreadTime != RenderingThreadFrameCount)
+	auto CalculateForward = [](XMFLOAT3& Start, XMFLOAT3& End)
 	{
-		LastLineTraceRenderThreadTime = RenderingThreadFrameCount;
 		XMMATRIX InvMat = XMMatrixInverse(nullptr, GEngine->Test_DeleteLater_GetViewMatrix());
 		XMFLOAT3 ForwardVector;
 		float Distance = 100.0f;
 		ForwardVector.x = InvMat.r[2].m128_f32[0]*Distance;
 		ForwardVector.y = InvMat.r[2].m128_f32[1]*Distance;
 		ForwardVector.z = InvMat.r[2].m128_f32[2]*Distance;
-		XMFLOAT3 Start;
 		Start.x = InvMat.r[3].m128_f32[0];
 		Start.y = InvMat.r[3].m128_f32[1];
 		Start.z = InvMat.r[3].m128_f32[2];
-		MY_LOG("Test",EDebugLogLevel::DLL_Warning, XMFLOAT3_TO_TEXT(ForwardVector));
-		XMFLOAT3 End;
+
 		End.x = Start.x + ForwardVector.x;
 		End.y = Start.y + ForwardVector.y;
 		End.z = Start.z + ForwardVector.z;
-		std::vector<ECollisionChannel> TraceChannel;
+			
+	};
+
+	static float LastLineTraceRenderThreadTime = -1;
+	XMFLOAT3 Start,End;
+	CalculateForward(Start,End);
+
+	if (ImGui::IsKeyReleased(ImGuiKey_3) && LastLineTraceRenderThreadTime != RenderingThreadFrameCount)
+	{
+		LastLineTraceRenderThreadTime = RenderingThreadFrameCount;
+
 		FHitResult HitResult;
-		if (gPhysicsEngine->LineTraceSingleByChannel(Start,End,TraceChannel, HitResult, 10.0f))
+		if (gPhysicsEngine->LineTraceSingleByChannel(Start,End, {ECollisionChannel::WorldStatic},  HitResult, 10.0f))
 		{
-			MY_LOG("Test",EDebugLogLevel::DLL_Warning, HitResult.HitActor->GetName());
+			MY_LOG("LineTrace",EDebugLogLevel::DLL_Warning,"WorldStatic");
 		}
 		
+	}
+	if (ImGui::IsKeyReleased(ImGuiKey_4) && LastLineTraceRenderThreadTime != RenderingThreadFrameCount)
+	{
+		LastLineTraceRenderThreadTime = RenderingThreadFrameCount;
+
+		FHitResult HitResult;
+		if (gPhysicsEngine->LineTraceSingleByChannel(Start,End, {ECollisionChannel::WorldDynamic}, HitResult,
+			10.0f,{1.0f,1.0f,0.0f}, {0.0f,0.0f,1.0f}))
+		{
+			if (UStaticMeshComponent* SMComp = dynamic_cast<UStaticMeshComponent*>(HitResult.HitComponent->GetAttachParent().get()))
+			{
+				SMComp->SetTextureParam(0,0, UTexture::GetTextureCache("T_Box"));
+			}
+		}
 	}
 
 	const float power = 3;
