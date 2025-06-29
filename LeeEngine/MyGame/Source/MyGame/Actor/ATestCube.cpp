@@ -95,9 +95,10 @@ ATestCube::ATestCube()
 		{
 			float x = startX + col * XOffset;
 		
-			SMVec[index]->SetCollisionEnabled(ECollisionType::Dynamic);
+			SMVec[index]->SetCollisionEnabled(ECollisionEnabled::Physics);
 			SMVec[index]->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
 			SMVec[index]->SetCollisionResponseToChannel(ECollisionChannel::WorldStatic,ECollisionResponse::Block);
+			SMVec[index]->SetCollisionResponseToChannel(ECollisionChannel::WorldDynamic,ECollisionResponse::Block);
 			AssetManager::GetAsyncAssetCache("SM_Box",[SMVec,index](std::shared_ptr<UObject> Object)
 				{
 					SMVec[index]->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
@@ -179,8 +180,11 @@ void ATestCube::BeginPlay()
 		TestCubeSM21,
 	};
 
+	TestCube2->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+
 	for (const std::shared_ptr<UStaticMeshComponent>& SMC : SMVec)
 	{
+		SMC->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::Physics);
 		SMC->GetBodyInstance()->OnComponentHit.Add(this, &ATestCube::OnComponentHitEvent);
 		SMC->GetBodyInstance()->OnComponentBeginOverlap.Add(this, &ATestCube::OnComponentBeginOverlapEvent);
 	}

@@ -4,7 +4,7 @@
 UBoxComponent::UBoxComponent()
 {
     Rename("BoxComponent"+PrimitiveID);
-    bIsDynamic = false;
+
     SetCollisionEnabled(ECollisionEnabled::QueryOnly);
     for (size_t i = 0; i < CollisionResponse.size(); ++i)
     {
@@ -16,6 +16,7 @@ physx::PxRigidActor* UBoxComponent::CreateRigidActor()
 {
 	CreateVertexBuffer();
 
+    bool bIsDynamic = CollisionEnabled == ECollisionEnabled::Physics? true : false;
 	return gPhysicsEngine->CreateAndRegisterActor(GetComponentTransform(), gPhysicsEngine->CreateBoxShape(BoxExtent), Mass, bIsDynamic);
 }
 

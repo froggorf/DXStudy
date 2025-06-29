@@ -56,7 +56,7 @@ bool UStaticMeshComponent::SetStaticMesh(const std::shared_ptr<UStaticMesh>& New
 	StaticMesh = NewMesh;
 	if (BodyInstance)
 	{
-		std::static_pointer_cast<UConvexComponent>(BodyInstance)->SetStaticMesh(StaticMesh,CurCollisionType);	
+		std::static_pointer_cast<UConvexComponent>(BodyInstance)->SetStaticMesh(StaticMesh);	
 	}
 	//ConvexComponent->SetStaticMesh(StaticMesh, CurCollisionType);
 	
@@ -69,12 +69,9 @@ bool UStaticMeshComponent::SetStaticMesh(const std::shared_ptr<UStaticMesh>& New
 
 void UStaticMeshComponent::AddForce(const XMFLOAT3& Force)
 {
-	if (CurCollisionType == ECollisionType::Dynamic)
+	if (BodyInstance && BodyInstance->GetCollisionEnabled() == ECollisionEnabled::Physics)
 	{
-		if (BodyInstance)
-		{
-			std::static_pointer_cast<UConvexComponent>(BodyInstance)->AddForce(Force);
-		}
+		std::static_pointer_cast<UConvexComponent>(BodyInstance)->AddForce(Force);
 	}
 	else
 	{

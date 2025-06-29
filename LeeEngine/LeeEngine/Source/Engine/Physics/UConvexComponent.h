@@ -18,7 +18,7 @@ public:
 	~UConvexComponent() override = default;
 
 public:
-	void SetStaticMesh(const std::shared_ptr<UStaticMesh>& InStaticMesh, ECollisionType Type);
+	void SetStaticMesh(const std::shared_ptr<UStaticMesh>& InStaticMesh);
 
 	void RegisterSceneProxies() override;
 

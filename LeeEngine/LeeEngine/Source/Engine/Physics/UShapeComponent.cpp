@@ -68,7 +68,7 @@ void UShapeComponent::TickComponent(float DeltaSeconds)
 
 void UShapeComponent::AddForce(const XMFLOAT3& Force) const
 {
-	if (bIsDynamic && RigidActor)
+	if (RigidActor && CollisionEnabled == ECollisionEnabled::Physics)
 	{
 		RigidActor->is<physx::PxRigidDynamic>()->addForce({Force.x,Force.y,-Force.z});
 	}
@@ -175,35 +175,20 @@ void UShapeComponent::SetCollisionEnabled(ECollisionEnabled NewType)
 		case ECollisionEnabled::NoCollision:
 			Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
 			Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false); 
-			if (bIsDynamic)
-			{
-				bIsDynamic = !bIsDynamic;
-				gPhysicsEngine->UnRegisterActor(RigidActor);
-				RegisterPhysics();
-			}
 		break;
 		case ECollisionEnabled::Physics:
 			Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false); 
 			Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
-			if (!bIsDynamic)
-			{
-				bIsDynamic = !bIsDynamic;
-				gPhysicsEngine->UnRegisterActor(RigidActor);
-				RegisterPhysics();
-			}
 		break;
 		case ECollisionEnabled::QueryOnly:
 			Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
 			Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
-			if (bIsDynamic)
-			{
-				bIsDynamic = !bIsDynamic;
-				gPhysicsEngine->UnRegisterActor(RigidActor);
-				RegisterPhysics();
-			}
 		break;
 		}
 	}
+
+	gPhysicsEngine->UnRegisterActor(RigidActor);
+	RegisterPhysics();
 
 	UpdatePhysicsFilterData();
 

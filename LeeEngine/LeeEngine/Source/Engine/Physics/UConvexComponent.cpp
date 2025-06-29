@@ -4,20 +4,16 @@
 #include "UPhysicsEngine.h"
 
 
-void UConvexComponent::SetStaticMesh(const std::shared_ptr<UStaticMesh>& InStaticMesh, ECollisionType Type)
+void UConvexComponent::SetStaticMesh(const std::shared_ptr<UStaticMesh>& InStaticMesh)
 {
 	if (BaseStaticMesh.lock() && RigidActor)
 	{
 		UnRegisterPhysics();
 	}
 
-	if (Type!= ECollisionType::NoCollision)
-	{
-		BaseStaticMesh = InStaticMesh;
-		bIsDynamic = Type == ECollisionType::Dynamic;
-		RegisterPhysics();	
-	}
-	
+	BaseStaticMesh = InStaticMesh;
+	RegisterPhysics();	
+
 }
 
 
@@ -30,6 +26,7 @@ physx::PxRigidActor* UConvexComponent::CreateRigidActor()
 	physx::PxRigidActor* Actor = nullptr;
 	if (const std::shared_ptr<UStaticMesh>& StaticMesh = BaseStaticMesh.lock())
 	{
+		bool bIsDynamic = CollisionEnabled == ECollisionEnabled::Physics? true : false;
 		Actor = gPhysicsEngine->CreateAndRegisterConvexActor(GetComponentTransform(), StaticMesh, Mass, ConvexMeshVertexBuffer, bIsDynamic);	
 	}
 	return Actor;

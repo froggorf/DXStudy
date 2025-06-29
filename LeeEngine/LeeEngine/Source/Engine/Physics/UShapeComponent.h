@@ -26,7 +26,6 @@ protected:
 	physx::PxRigidActor* RigidActor = nullptr;
 
 	float Mass = 1.0f;
-	bool bIsDynamic = true;
 
 public:
 	// UShapeComponent는 Register시 Collision Scene에 추가해줘야함
