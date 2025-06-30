@@ -182,7 +182,7 @@ void UAnimSequence::TraverseTreeHierarchy(const AssimpNodeData* NodeData, int Pa
 	BoneData.BoneName    = NodeData->name;
 	BoneData.ParentIndex = ParentIndex;
 	BoneData.Bone        = FindBone(BoneData.BoneName);
-
+	BoneData.BoneTransform = NodeData->transformation;
 	if (BoneInfoMap.contains(BoneData.BoneName))
 	{
 		BoneData.BoneInfo = BoneInfoMap[BoneData.BoneName];
@@ -194,7 +194,7 @@ void UAnimSequence::TraverseTreeHierarchy(const AssimpNodeData* NodeData, int Pa
 	}
 
 	int CurrentIndex = static_cast<int>(BoneHierarchy.size());
-	BoneHierarchy.emplace_back(BoneData);
+	BoneHierarchy.push_back(BoneData);
 
 	size_t ChildCount = NodeData->children.size();
 	for (int ChildIndex = 0; ChildIndex < ChildCount; ++ChildIndex)
@@ -208,6 +208,7 @@ void UAnimSequence::PrecomputeAnimationData(const std::string& Name)
 	// 트리 구조의 계층을 벡터 구조로 변환
 	BoneHierarchy.clear();
 	TraverseTreeHierarchy(&RootNode, -1);
+
 	if (!GetSkeletonBoneHierarchyMap().contains(Name))
 	{
 		GetSkeletonBoneHierarchyMap()[Name] = BoneHierarchy;

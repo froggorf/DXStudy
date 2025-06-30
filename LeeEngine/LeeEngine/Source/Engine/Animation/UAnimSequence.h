@@ -24,6 +24,7 @@ struct FPrecomputedBoneData
 	Bone*       Bone;
 	int         ParentIndex;
 	BoneInfo    BoneInfo;
+	XMMATRIX	BoneTransform;
 };
 
 class UAnimSequence : public UAnimCompositeBase

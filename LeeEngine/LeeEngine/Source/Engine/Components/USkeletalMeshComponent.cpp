@@ -93,11 +93,21 @@ FTransform USkeletalMeshComponent::GetSocketTransform(const std::string& InSocke
 		{
 			return Data.BoneName == InSocketName;
 		});
-		//const XMMATRIX LastFrameSocketMatrix = AnimInstance->GetLastFrameAnimMatrices()[TargetSocket->BoneInfo.id];
 
-		XMMATRIX BoneOffset = BoneHierarchy[TargetSocket->BoneInfo.id].BoneInfo.offset;
+		if (TargetSocket == BoneHierarchy.end())
+		{
+			return GetComponentTransform();
+		}
 
-		//XMMATRIX BoneOffset = BoneHierarchy[TargetSocket->BoneInfo.id].BoneInfo.offset;
+		int BoneIdx = std::distance(BoneHierarchy.begin(), TargetSocket);
+		std::cout<<TargetSocket->BoneName<<"\n";
+
+		XMMATRIX BoneOffset = XMMatrixIdentity();
+		while (BoneIdx >= 0)
+		{
+			BoneOffset = XMMatrixMultiply(BoneOffset, BoneHierarchy[BoneIdx].BoneTransform);
+			BoneIdx = BoneHierarchy[BoneIdx].ParentIndex;
+		}
 		XMVECTOR OutLoc, OutRot, OutScale;
 		bool bDecompose = XMMatrixDecompose(&OutScale, &OutRot, &OutLoc, BoneOffset);
 		FTransform BoneTransform;
@@ -130,7 +140,7 @@ FTransform USkeletalMeshComponent::GetSocketTransform(const std::string& InSocke
 		}*/
 		
 
-		ReturnTransform = BoneTransform;// * AnimTransform;
+		ReturnTransform = ReturnTransform * BoneTransform;// * AnimTransform;
 	}
 
 	return ReturnTransform;

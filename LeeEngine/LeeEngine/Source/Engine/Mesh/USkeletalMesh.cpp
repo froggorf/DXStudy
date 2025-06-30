@@ -78,6 +78,7 @@ void USkeletalMesh::LoadDataFromFileData(const nlohmann::json& SkeletalMeshAsset
 	std::shared_ptr<UAnimSequence> DefaultAnimSequence = std::make_shared<UAnimSequence>();
 	DefaultAnimSequence->ReadMyAssetFile(SkeletalMeshAssetData["DefaultPoseAnimData"], this);
 	DefaultAnimSequence->PrecomputeAnimationData(GetName());
+	
 
 	MY_LOG("Load", EDebugLogLevel::DLL_Warning, "Load USkeletalMesh - "+GetName() + " Complete!");
 }
