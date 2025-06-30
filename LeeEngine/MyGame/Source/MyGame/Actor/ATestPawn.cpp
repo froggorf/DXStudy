@@ -66,7 +66,17 @@ void ATestPawn::Tick(float DeltaSeconds)
 	{
 		time -= 1.0f/60;
 		FTransform Transform = SKComp->GetSocketTransform("spine_01");
-		GEngine->GetWorld()->DrawDebugBox(Transform.Translation, {50,50,50},{1,0,0},XMVectorSet(0,0,0,1), 1.0f/60+0.01f);
+		GEngine->GetWorld()->DrawDebugBox(Transform.Translation, {5,5,5},{1,0,0},XMVectorSet(0,0,0,1), 1.0f/60+0.01f);
+
+		Transform = SKComp->GetSocketTransform("index_03_l");
+		GEngine->GetWorld()->DrawDebugBox(Transform.Translation, {5,5,5},{1,1,0},XMVectorSet(0,0,0,1), 1.0f/60+0.01f);
+
+		Transform = SKComp->GetSocketTransform("upperarm_l");
+		GEngine->GetWorld()->DrawDebugBox(Transform.Translation, {5,5,5},{1,0,1},XMVectorSet(0,0,0,1), 1.0f/60+0.01f);
+
+		Transform = SKComp->GetSocketTransform("foot_l");
+		GEngine->GetWorld()->DrawDebugBox(Transform.Translation, {5,5,5},{0,1,0},XMVectorSet(0,0,0,1), 1.0f/60+0.01f);
 	}
+
 	
 }

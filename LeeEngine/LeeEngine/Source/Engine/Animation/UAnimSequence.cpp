@@ -80,7 +80,14 @@ void UAnimSequence::LoadDataFromFileData(const nlohmann::json& AssetData)
 		return;
 	}
 
-	std::string      path = GEngine->GetDirectoryPath() + std::string(AssetData["AnimationDataPath"]);
+	ReadMyAssetFile(AssetData["AnimationDataPath"], GetAnimationSkeleton().get());
+
+	
+}
+
+void UAnimSequence::ReadMyAssetFile(const std::string& FilePath, USkeletalMesh* SkeletalMesh)
+{
+	std::string      path = GEngine->GetDirectoryPath() + std::string(FilePath);
 	Assimp::Importer importer;
 	const aiScene*   scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_ConvertToLeftHanded);
 	if (!scene || !scene->mRootNode)
@@ -93,9 +100,7 @@ void UAnimSequence::LoadDataFromFileData(const nlohmann::json& AssetData)
 	Duration       = static_cast<float>(animation->mDuration);
 	TicksPerSecond = static_cast<float>(animation->mTicksPerSecond);
 	ReadHierarchyData(RootNode, scene->mRootNode);
-	ReadMissingBones(animation, GetAnimationSkeleton()->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
-
-	PrecomputeAnimationData();
+	ReadMissingBones(animation, SkeletalMesh->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
 }
 
 void UAnimSequence::ReadMissingBones(const aiAnimation* animation, std::map<std::string, BoneInfo>& modelBoneInfoMap)
@@ -198,14 +203,14 @@ void UAnimSequence::TraverseTreeHierarchy(const AssimpNodeData* NodeData, int Pa
 	}
 }
 
-void UAnimSequence::PrecomputeAnimationData()
+void UAnimSequence::PrecomputeAnimationData(const std::string& Name)
 {
 	// 트리 구조의 계층을 벡터 구조로 변환
 	BoneHierarchy.clear();
 	TraverseTreeHierarchy(&RootNode, -1);
-	if (!GetSkeletonBoneHierarchyMap().contains(GetAnimationSkeleton()->GetName()))
+	if (!GetSkeletonBoneHierarchyMap().contains(Name))
 	{
-		GetSkeletonBoneHierarchyMap()[GetAnimationSkeleton()->GetName()] = BoneHierarchy;
+		GetSkeletonBoneHierarchyMap()[Name] = BoneHierarchy;
 	}
 
 	// 첫 프레임의 본 변환 행렬을 캐시

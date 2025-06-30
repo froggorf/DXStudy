@@ -344,7 +344,7 @@ UObject* AssetManager::ReadMyAsset(const std::string& FilePath)
 	{
 		/*
 			MY_LOG("(AssetManager::ReadMyAsset) Failed open file", EDebugLogLevel::DLL_Warning, std::string(FilePath.data()));*/
-		assert(1);
+		assert(nullptr && "NoFile");
 	}
 	nlohmann::json AssetData = nlohmann::json::parse(AssetFile);
 

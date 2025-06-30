@@ -93,17 +93,44 @@ FTransform USkeletalMeshComponent::GetSocketTransform(const std::string& InSocke
 		{
 			return Data.BoneName == InSocketName;
 		});
-		const XMMATRIX LastFrameSocketMatrix = AnimInstance->GetLastFrameAnimMatrices()[TargetSocket->BoneInfo.id];
+		//const XMMATRIX LastFrameSocketMatrix = AnimInstance->GetLastFrameAnimMatrices()[TargetSocket->BoneInfo.id];
+
+		XMMATRIX BoneOffset = BoneHierarchy[TargetSocket->BoneInfo.id].BoneInfo.offset;
+
+		//XMMATRIX BoneOffset = BoneHierarchy[TargetSocket->BoneInfo.id].BoneInfo.offset;
 		XMVECTOR OutLoc, OutRot, OutScale;
-		XMMatrixDecompose(&OutLoc, &OutRot, &OutScale, LastFrameSocketMatrix);
-
+		bool bDecompose = XMMatrixDecompose(&OutScale, &OutRot, &OutLoc, BoneOffset);
 		FTransform BoneTransform;
+		if (bDecompose)
+		{
+			XMStoreFloat3(&BoneTransform.Translation, OutLoc);
+			XMStoreFloat4(&BoneTransform.Rotation, OutRot);
+			XMStoreFloat3(&BoneTransform.Scale3D, OutScale);
+		}
 
-		XMStoreFloat3(&BoneTransform.Translation, OutLoc);
-		XMStoreFloat4(&BoneTransform.Rotation, OutRot);
-		XMStoreFloat3(&BoneTransform.Scale3D, OutScale);
 
-		ReturnTransform = ReturnTransform * BoneTransform;
+		// 누적 행렬 계산
+		/*XMMATRIX AccumulatedMatrix = XMMatrixIdentity();
+		int BoneIdx = TargetSocket->BoneInfo.id;
+		while (BoneIdx >= 0)
+		{
+			AccumulatedMatrix = AnimInstance->GetLastFrameAnimMatrices()[BoneIdx] * AccumulatedMatrix;
+			BoneIdx = BoneHierarchy[BoneIdx].ParentIndex;
+		}*/
+		/*FTransform AnimTransform;
+		if (XMMatrixDecompose(&OutScale, &OutRot, &OutLoc, AccumulatedMatrix))
+		{
+			XMStoreFloat3(&AnimTransform.Translation, OutLoc);
+			float temp = AnimTransform.Translation.x;
+			AnimTransform.Translation.x = AnimTransform.Translation.z * -1;
+			AnimTransform.Translation.z = AnimTransform.Translation.y * -1;
+			AnimTransform.Translation.y = temp*-1;
+			XMStoreFloat4(&AnimTransform.Rotation, OutRot);
+			XMStoreFloat3(&AnimTransform.Scale3D, OutScale);
+		}*/
+		
+
+		ReturnTransform = BoneTransform;// * AnimTransform;
 	}
 
 	return ReturnTransform;

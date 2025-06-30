@@ -1,4 +1,4 @@
-// 03.27
+﻿// 03.27
 // 언리얼 엔진 5 코드를 분석하며 자체엔진으로 작성중인 코드입니다.
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
@@ -73,7 +73,9 @@ class UAnimSequence : public UAnimCompositeBase
 	void GetBoneTransform(float CurrentAnimTime, std::vector<XMMATRIX>& FinalBoneMatrices);
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
+	void ReadMyAssetFile(const std::string& FilePath, USkeletalMesh* SkeletalMesh);
 
+	void PrecomputeAnimationData(const std::string& Name);
 private:
 	// 누락된 본 데이터 추가 및 모델의 boneInfoMap 업데이트
 	void ReadMissingBones(const aiAnimation* animation, std::map<std::string, BoneInfo>& modelBoneInfoMap);
@@ -81,7 +83,6 @@ private:
 
 	// 애니메이션의 본 계층 구조를 vector 데이터로 만드는 함수
 	void TraverseTreeHierarchy(const AssimpNodeData* NodeData, int ParentIndex);
-	void PrecomputeAnimationData();
 
 public:
 	static std::map<std::string, std::vector<FPrecomputedBoneData>>& GetSkeletonBoneHierarchyMap()
