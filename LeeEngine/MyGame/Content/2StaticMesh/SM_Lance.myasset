@@ -1,0 +1,6 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_Lance",
+    "ModelData": "/Content/Resource/Model/Lance.fbx",
+    "Material" : [ "M_Cube" ]
+}

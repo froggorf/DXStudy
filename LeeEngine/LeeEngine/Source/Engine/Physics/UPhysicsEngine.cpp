@@ -131,10 +131,10 @@ UPhysicsEngine::~UPhysicsEngine()
 		DefaultMaterial->release();	
 	}
 	
-	if (PxScene)
-	{
-		PxScene->release();	
-	}
+	//if (PxScene)
+	//{
+	//	PxScene->release();	
+	//}
 	
 	if (PxPhysics)
 	{

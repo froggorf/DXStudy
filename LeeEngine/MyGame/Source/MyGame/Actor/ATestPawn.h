@@ -18,11 +18,11 @@ class ATestPawn : public AActor
 	void Tick(float DeltaSeconds) override;
 
 protected:
-	std::shared_ptr<UCapsuleComponent> CapsuleComp;
+	//std::shared_ptr<UCapsuleComponent> CapsuleComp;
 
 	std::shared_ptr<USkeletalMeshComponent> SKComp;
 
-	std::shared_ptr<UStaticMeshComponent> SMComp;
+	std::shared_ptr<UStaticMeshComponent> SMMace;
 private:
 
 };

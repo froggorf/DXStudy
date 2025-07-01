@@ -34,6 +34,11 @@ physx::PxRigidActor* UConvexComponent::CreateRigidActor()
 
 void UConvexComponent::DebugDraw_RenderThread() const
 {
+	if (!ConvexMeshVertexBuffer)
+	{
+		return;
+	}
+
 	ID3D11DeviceContext* DeviceContext = GDirectXDevice->GetDeviceContext().Get();
 
 	UINT stride = sizeof(MyVertexData);

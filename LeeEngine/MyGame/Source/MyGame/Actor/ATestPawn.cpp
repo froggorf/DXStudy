@@ -19,9 +19,16 @@ ATestPawn::ATestPawn()
 		});
 	SKComp->SetAnimInstanceClass("UMyAnimInstance");
 
-	SMComp = std::make_shared<UStaticMeshComponent>();
-	//SMComp->SetupAttachment()
-	
+	SMMace = std::make_shared<UStaticMeshComponent>();
+	SMMace->SetupAttachment(GetRootComponent());
+	AssetManager::GetAsyncAssetCache("SM_Lance", [this](std::shared_ptr<UObject> Object)
+	{
+		if (!Object)
+		{
+			int a = 0;
+		}
+			SMMace->SetStaticMesh(std::static_pointer_cast<UStaticMesh>(Object));
+	});
 	
 }
 

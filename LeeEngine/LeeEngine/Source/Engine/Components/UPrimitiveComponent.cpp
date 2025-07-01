@@ -31,20 +31,16 @@ void UPrimitiveComponent::Register()
 
 	// 지연 변수 적용
 	BodyInstance = CreateBodyInstance();
-	BodyInstance->SetObjectType(TempCollisionChannel);
-	for (size_t i = 0; i < TempCollisionResponse.size(); ++i)
-	{
-		BodyInstance->SetResponseToChannel(static_cast<ECollisionChannel>(i), TempCollisionResponse[i]);
-	}
 
 	if (BodyInstance)
 	{
-		BodyInstance->SetupAttachment(shared_from_this(),"");	
-	}
-	
+		BodyInstance->SetObjectType(TempCollisionChannel);
+		for (size_t i = 0; i < TempCollisionResponse.size(); ++i)
+		{
+			BodyInstance->SetResponseToChannel(static_cast<ECollisionChannel>(i), TempCollisionResponse[i]);
+		}
+		BodyInstance->SetupAttachment(shared_from_this(),"");
 
-	if (BodyInstance)
-	{
 		BodyInstance->RegisterPhysics();	
 	}
 }
@@ -89,7 +85,7 @@ void UPrimitiveComponent::SetTextureParam(UINT MeshIndex, UINT TextureSlot, cons
 
 std::shared_ptr<UShapeComponent> UPrimitiveComponent::CreateBodyInstance()
 {
-	return std::make_shared<UShapeComponent>();
+	return nullptr;
 }
 
 void UPrimitiveComponent::SetCollisionObjectType(ECollisionChannel Channel)

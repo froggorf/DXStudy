@@ -114,7 +114,7 @@ void FImguiActorDetail::FindComponentsAndNamesFromActor(const std::shared_ptr<US
 	std::string TargetComponentName = HierarchyTabString + TargetComponent->GetName();
 
 	SelectActorSceneComponents.push_back(TargetComponent);
-	SelectActorSceneComponentNames.push_back(TargetComponentName);
+	SelectActorSceneComponentNames.push_back(TargetComponentName + "       <-" + TargetComponent->GetClass());
 
 	const std::vector<std::shared_ptr<USceneComponent>>& TargetComponentChildren = TargetComponent->GetAttachChildren();
 	for (const auto& ChildComponent : TargetComponentChildren)
