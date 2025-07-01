@@ -22,7 +22,7 @@ protected:
 
 	std::shared_ptr<USkeletalMeshComponent> SKComp;
 
-	std::shared_ptr<UStaticMeshComponent> SMMace;
+	std::shared_ptr<UStaticMeshComponent> SMSword;
 private:
 
 };

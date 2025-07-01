@@ -32,5 +32,6 @@ class USkeletalMeshComponent : public USkinnedMeshComponent
 
 private:
 	std::shared_ptr<USkeletalMesh> SkeletalMesh;
+	std::string SkeletalMeshName;
 	std::shared_ptr<UAnimInstance> AnimInstance;
 };

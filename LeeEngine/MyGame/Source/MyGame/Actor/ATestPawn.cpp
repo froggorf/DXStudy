@@ -19,23 +19,21 @@ ATestPawn::ATestPawn()
 		});
 	SKComp->SetAnimInstanceClass("UMyAnimInstance");
 
-	SMMace = std::make_shared<UStaticMeshComponent>();
-	SMMace->SetupAttachment(GetRootComponent());
-	AssetManager::GetAsyncAssetCache("SM_Lance", [this](std::shared_ptr<UObject> Object)
+	SMSword = std::make_shared<UStaticMeshComponent>();
+	SMSword->SetupAttachment(SKComp, "hand_l");
+	AssetManager::GetAsyncAssetCache("SM_Sword", [this](std::shared_ptr<UObject> Object)
 	{
-		if (!Object)
-		{
-			int a = 0;
-		}
-			SMMace->SetStaticMesh(std::static_pointer_cast<UStaticMesh>(Object));
+			SMSword->SetStaticMesh(std::static_pointer_cast<UStaticMesh>(Object));
 	});
+	SMSword->SetRelativeScale3D({0.2f,0.2f,0.2f});
+	
 	
 }
 
 void ATestPawn::BeginPlay()
 {
 	AActor::BeginPlay();
-
+	SMSword->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	//CapsuleComp->SetResponseToChannel(ECollisionChannel::WorldStatic, ECollisionResponse::Block);
 	//CapsuleComp->SetResponseToChannel(ECollisionChannel::WorldDynamic, ECollisionResponse::Ignore);
 	//CapsuleComp->SetCollisionEnabled(ECollisionEnabled::Physics);

@@ -203,7 +203,7 @@ void USceneComponent::SetAttachSocketName(std::string_view NewSocketName)
 	// 언리얼 엔진에서는 MARK_PROPERTY_DIRTY_FROM_NAME 를 통해 리플렉션 시스템을 적용
 }
 
-void USceneComponent::UpdateComponentToWorldWithParent(const std::shared_ptr<USceneComponent>& Parent, std::string_view SocketName)
+void USceneComponent::UpdateComponentToWorldWithParent(const std::shared_ptr<USceneComponent>& Parent, const std::string& SocketName)
 {
 	// 언리얼엔진의 내부에선
 	// 행렬을 통한 위치 계산이 아닌
@@ -216,7 +216,7 @@ void USceneComponent::UpdateComponentToWorldWithParent(const std::shared_ptr<USc
 	}
 	else
 	{
-		ComponentToWorld = Parent->ComponentToWorld * RelTransform;
+		ComponentToWorld = Parent->GetSocketTransform(SocketName) * RelTransform;
 	}
 
 	for (const auto& Child : AttachChildren)

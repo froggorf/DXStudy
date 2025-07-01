@@ -69,14 +69,16 @@ bool USkeletalMeshComponent::SetSkeletalMesh(const std::shared_ptr<USkeletalMesh
 	}
 
 	SkeletalMesh = NewMesh;
+	SkeletalMeshName = SkeletalMesh->GetName();
 	RegisterSceneProxies();
 
+	UpdateComponentToWorld();
 	return true;
 }
 
 FTransform USkeletalMeshComponent::GetSocketTransform(const std::string& InSocketName)
 {
-	if (!AnimInstance)
+	if (!AnimInstance && !GetSkeletalMesh())
 	{
 		return GetComponentTransform();
 	}
@@ -84,7 +86,6 @@ FTransform USkeletalMeshComponent::GetSocketTransform(const std::string& InSocke
 	FTransform ReturnTransform = GetComponentTransform();
 
 	std::map<std::string,std::vector<FPrecomputedBoneData>>& BoneHierarchyMap = UAnimSequence::GetSkeletonBoneHierarchyMap();
-	std::string SkeletalMeshName = GetSkeletalMesh()->GetName();
 
 	if (BoneHierarchyMap.contains(SkeletalMeshName))
 	{
@@ -154,4 +155,7 @@ void USkeletalMeshComponent::TickComponent(float DeltaSeconds)
 	{
 		AnimInstance->Tick(DeltaSeconds);
 	}
+
+
+	UpdateComponentToWorld();
 }

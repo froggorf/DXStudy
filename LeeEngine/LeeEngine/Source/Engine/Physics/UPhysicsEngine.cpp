@@ -136,10 +136,10 @@ UPhysicsEngine::~UPhysicsEngine()
 	//	PxScene->release();	
 	//}
 	
-	if (PxPhysics)
-	{
-		PxPhysics->release();	
-	}
+	//if (PxPhysics)
+	//{
+	//	PxPhysics->release();	
+	//}
 	
 	if (PxFoundation)
 	{
@@ -450,7 +450,7 @@ physx::PxConvexMesh* UPhysicsEngine::CreateConvexMesh(const std::shared_ptr<USta
 	{
 		for (const MyVertexData& Vertex : VertexPerMesh)
 		{
-			Vertices.emplace_back(physx::PxVec3{Vertex.Pos.x,Vertex.Pos.y,Vertex.Pos.z});
+			Vertices.emplace_back(physx::PxVec3{Vertex.Pos.x,Vertex.Pos.y,-Vertex.Pos.z});
 		}
 	}
 

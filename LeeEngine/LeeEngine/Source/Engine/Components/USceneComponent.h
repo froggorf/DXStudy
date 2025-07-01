@@ -104,7 +104,7 @@ private:
 	void SetAttachParent(const std::shared_ptr<USceneComponent>& NewAttachParent);
 	void SetAttachSocketName(std::string_view NewSocketName);
 
-	void UpdateComponentToWorldWithParent(const std::shared_ptr<USceneComponent>& Parent, std::string_view SocketName);
+	void UpdateComponentToWorldWithParent(const std::shared_ptr<USceneComponent>& Parent,  const std::string& SocketName);
 
 	// 월드 Rotation으로부터 Relative Rotation 계산
 	XMVECTOR GetRelativeRotationFromWorld(const XMVECTOR& NewWorldRotation);

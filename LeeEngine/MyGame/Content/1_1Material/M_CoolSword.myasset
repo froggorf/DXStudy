@@ -1,0 +1,16 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_CoolSword",
+    "VertexShader" : {
+	"FilePath" : "/Shader/LightColor.hlsl",
+	"Func" : "VS"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/LightColor.hlsl",
+	"Func": "PS"
+    },
+    "TextureParams" : [ "T_CoolSword" ],
+    "BlendMode": "Opaque",
+    "TwoSided" : 0
+	
+}
