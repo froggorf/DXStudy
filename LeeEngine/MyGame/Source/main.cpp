@@ -5,7 +5,13 @@
 // the screen, and displaying frame stats.
 //
 //***************************************************************************************
-#define _CRT_SECURE_NO_WARNINGS
+//#define _CRT_SECURE_NO_WARNINGS
+#ifdef _DEBUG
+#pragma message("_DEBUG defined")
+#endif
+#ifdef NDEBUG
+#pragma message("NDEBUG defined")
+#endif
 
 #include "CoreMinimal.h"
 

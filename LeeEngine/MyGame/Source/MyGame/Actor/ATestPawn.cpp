@@ -26,7 +26,15 @@ ATestPawn::ATestPawn()
 			SMSword->SetStaticMesh(std::static_pointer_cast<UStaticMesh>(Object));
 	});
 	SMSword->SetRelativeScale3D({0.2f,0.2f,0.2f});
+	SMSword->SetRelativeLocation({10.218,4.3,2.225});
+	SMSword->SetRelativeRotation(XMFLOAT4{-0.614,0.752,0.222,0.093});
 	
+
+	UTestComponent* NewTestComp = dynamic_cast<UTestComponent*>( CreateDefaultSubobject("TestActorComp", "UTestComponent"));
+	if(NewTestComp)
+	{
+		TestComp = std::make_shared<UTestComponent>(*NewTestComp);	
+	}
 	
 }
 

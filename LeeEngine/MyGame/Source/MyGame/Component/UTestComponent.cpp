@@ -97,7 +97,7 @@ void UTestComponent::DrawDetailPanel(UINT ComponentDepth)
 	ImDrawList* DrawList   = ImGui::GetWindowDrawList();
 	ImVec2      CanvasPos  = ImGui::GetCursorScreenPos();
 	auto        CanvasSize = ImVec2{200.0f, 150.0f};
-	AM_Blend1s_Linear->BlendIn.GetCurve()->FloatCurve.DrawCurve(DrawList, CanvasPos, CanvasSize);
+	//AM_Blend1s_Linear->BlendIn.GetCurve()->FloatCurve.DrawCurve(DrawList, CanvasPos, CanvasSize);
 
 	if (ImGui::Button("BlendIn 0.25s - Linear"))
 	{
@@ -108,7 +108,7 @@ void UTestComponent::DrawDetailPanel(UINT ComponentDepth)
 	}
 
 	CanvasPos = ImGui::GetCursorScreenPos();
-	AM_Test->BlendIn.GetCurve()->FloatCurve.DrawCurve(DrawList, CanvasPos, CanvasSize);
+	//AM_Test->BlendIn.GetCurve()->FloatCurve.DrawCurve(DrawList, CanvasPos, CanvasSize);
 	if (ImGui::Button("BlendIn 0.25s - Hermite"))
 	{
 		if (AM_Test)
@@ -118,7 +118,7 @@ void UTestComponent::DrawDetailPanel(UINT ComponentDepth)
 	}
 
 	CanvasPos = ImGui::GetCursorScreenPos();
-	AM_CustomCurve->BlendIn.GetCurve()->FloatCurve.DrawCurve(DrawList, CanvasPos, CanvasSize);
+	//AM_CustomCurve->BlendIn.GetCurve()->FloatCurve.DrawCurve(DrawList, CanvasPos, CanvasSize);
 	if (ImGui::Button("BlendIn 0.25s - CustomCurve"))
 	{
 		if (AM_CustomCurve)

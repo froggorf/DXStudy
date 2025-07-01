@@ -5,6 +5,7 @@
 
 #include "../Actor/ATestActor2.h"
 #include "../Actor/ATestCube2.h"
+#include "../Actor/ATestPawn.h"
 #include "Engine/Components/USkeletalMeshComponent.h"
 
 UMyAnimInstance* UMyAnimInstance::MyAnimInstance;
@@ -42,7 +43,7 @@ void UMyAnimInstance::NativeInitializeAnimation()
 
 	if (AActor* OwnerActor = GetSkeletalMeshComponent()->GetOwner())
 	{
-		if (auto TestActor = dynamic_cast<ATestCube2*>(OwnerActor))
+		if (auto TestActor = dynamic_cast<ATestPawn*>(OwnerActor))
 		{
 			if (const std::shared_ptr<UTestComponent>& OwnerTestComp = std::dynamic_pointer_cast<UTestComponent>(TestActor->FindComponentByClass("UTestComponent")))
 			{
@@ -66,7 +67,7 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 {
 	UAnimInstance::UpdateAnimation(dt);
 
-	if (GetSkeletalMeshComponent() && BS_MyUEFN_Locomotion  && AS_Test0 && AS_Test1 && AS_Test2)
+	if (GetSkeletalMeshComponent() && TestComp&& BS_MyUEFN_Locomotion  && AS_Test0 && AS_Test1 && AS_Test2)
 	{
 		std::vector<XMMATRIX>         FinalBoneMatrices(MAX_BONES, XMMatrixIdentity());
 		std::vector<FAnimNotifyEvent> FinalNotifies;
@@ -74,14 +75,14 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 		// BlendSpace_Locomotion
 		std::vector<XMMATRIX> BS_IdleWalkRunMatrices(MAX_BONES, XMMatrixIdentity());
 
-		BS_MyUEFN_Locomotion->GetAnimationBoneMatrices(XMFLOAT2{0.0f, 300}, CurrentTime, BS_IdleWalkRunMatrices, FinalNotifies);
+		BS_MyUEFN_Locomotion->GetAnimationBoneMatrices(XMFLOAT2{0.0f, TestComp->TestSpeed}, CurrentTime, BS_IdleWalkRunMatrices, FinalNotifies);
 
 		// 애니메이션 시퀀스 계산
 		std::vector<XMMATRIX> AS_Matrices(MAX_BONES, XMMatrixIdentity());
-		/*switch (TestComp->TargetAnim)
+		switch (TestComp->TargetAnim)
 		{
 		case 0:
-			
+			AS_Test0->GetBoneTransform(CurrentTime, AS_Matrices);	
 			break;
 		case 1:
 			AS_Test1->GetBoneTransform(CurrentTime, AS_Matrices);
@@ -91,8 +92,8 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 			break;
 		default:
 			break;
-		}*/
-		AS_Test0->GetBoneTransform(CurrentTime, AS_Matrices);
+		}
+		
 
 		// 레이어 블렌딩
 		std::vector<XMMATRIX> ResultMatrices(MAX_BONES, XMMatrixIdentity());

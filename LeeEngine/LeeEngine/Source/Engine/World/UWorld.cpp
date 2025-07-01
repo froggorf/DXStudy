@@ -111,6 +111,7 @@ void UWorld::AddLevel(const std::shared_ptr<ULevel>& NewLevel)
 	Levels.emplace(NewLevel);
 }
 
+#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
 void UWorld::DrawDebugBox(const XMFLOAT3& Center, const XMFLOAT3& Extent, const XMFLOAT3& LineColor, XMVECTOR Rotate, const float DebugDrawTime) const
 {
 	std::shared_ptr<UBoxComponent> BoxComp = std::make_shared<UBoxComponent>();
@@ -123,3 +124,4 @@ void UWorld::DrawDebugBox(const XMFLOAT3& Center, const XMFLOAT3& Extent, const 
 	Data.ShapeComp = BoxComp;
 	FScene::DrawDebugData_GameThread(Data);
 }
+#endif

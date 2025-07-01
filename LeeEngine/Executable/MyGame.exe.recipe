@@ -2,7 +2,7 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>A:\Study\LeeEngine\MyGame\MyGame.exe</FullPath>
+      <FullPath>C:\Project\DXStudy\LeeEngine\MyGame\MyGame.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />

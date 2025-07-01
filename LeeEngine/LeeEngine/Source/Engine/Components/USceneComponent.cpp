@@ -174,6 +174,15 @@ void USceneComponent::DrawDetailPanel(UINT ComponentDepth)
 			}
 
 			// Scale
+			ImGui::Text("Rotation");
+			ImGui::SameLine(100);
+			float Rot[4] = {RelativeRotation.x,RelativeRotation.y,RelativeRotation.z,RelativeRotation.w};
+			if (ImGui::InputFloat4("##Scale", Rot))
+			{
+				SetRelativeRotation(XMFLOAT4{Rot[0],Rot[1],Rot[2],Rot[3]});
+			}
+
+			// Scale
 			ImGui::Text("Scale");
 			ImGui::SameLine(100);
 			float Scale[3] = {RelativeScale3D.x, RelativeScale3D.y, RelativeScale3D.z};

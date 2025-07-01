@@ -2,6 +2,7 @@
 // 비동기 에셋 로드를 확인하기 위해 만든 테스트용 큐브액터 2
 
 #pragma once
+#include "../Component/UTestComponent.h"
 #include "Engine/Components/USkeletalMeshComponent.h"
 #include "Engine/Components/UStaticMeshComponent.h"
 #include "Engine/GameFramework/AActor.h"
@@ -19,6 +20,8 @@ class ATestPawn : public AActor
 
 protected:
 	//std::shared_ptr<UCapsuleComponent> CapsuleComp;
+
+	std::shared_ptr<UTestComponent> TestComp;
 
 	std::shared_ptr<USkeletalMeshComponent> SKComp;
 

@@ -420,6 +420,7 @@ bool UPhysicsEngine::LineTraceSingleByChannel(const XMFLOAT3& Start, const XMFLO
 		HitResult.Normal = {HitInfo.normal.x,HitInfo.normal.y,-HitInfo.normal.z};
 	}
 
+#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
 	if (DebugDrawTime > 0.0f)
 	{
 		std::shared_ptr<ULineComponent> LineComp = std::make_shared<ULineComponent>(bIsHit,Start,End,HitResult.Location, TraceColor,TraceHitColor);	
@@ -429,6 +430,7 @@ bool UPhysicsEngine::LineTraceSingleByChannel(const XMFLOAT3& Start, const XMFLO
 		Data.ShapeComp = LineComp;
 		FScene::DrawDebugData_GameThread(Data);
 	}
+#endif
 
 	return bIsHit;
 	

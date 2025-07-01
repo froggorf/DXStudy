@@ -1,4 +1,4 @@
-// Redistribution and use in source and binary forms, with or without
+﻿// Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
 //  * Redistributions of source code must retain the above copyright
@@ -436,6 +436,7 @@ _Pragma(" clang diagnostic pop")
 
 #define PX_OFFSETOF_BASE 0x100 // casting the null ptr takes a special-case code path, which we don't want
 #define PX_OFFSET_OF_RT(Class, Member)	(reinterpret_cast<size_t>(&reinterpret_cast<Class*>(PX_OFFSETOF_BASE)->Member) - size_t(PX_OFFSETOF_BASE))
+
 
 
 #if PX_WINDOWS_FAMILY
