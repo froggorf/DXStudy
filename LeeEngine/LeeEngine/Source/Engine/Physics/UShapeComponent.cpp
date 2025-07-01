@@ -48,7 +48,7 @@ void UShapeComponent::TickComponent(float DeltaSeconds)
 	UPrimitiveComponent::TickComponent(DeltaSeconds);
 
 #if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
-	if (bDrawDebug)
+	if (bDrawDebug || bShowCollision)
 	{
 		// 렌더링 쓰레드 프레임당 등록
 		if (LastDrawDebugRenderThreadFrame != RenderingThreadFrameCount)

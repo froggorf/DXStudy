@@ -34,7 +34,7 @@ FStaticMeshSceneProxy::FStaticMeshSceneProxy(UINT InPrimitiveID, UINT InMeshInde
 
 FStaticMeshSceneProxy::~FStaticMeshSceneProxy()
 {
-	MY_LOG("FStaticMeshSceneProxy", EDebugLogLevel::DLL_Warning, "Kill");
+	
 }
 
 void FStaticMeshSceneProxy::SetNewRenderData(const std::shared_ptr<UStaticMesh>& NewStaticMesh)

@@ -12,7 +12,7 @@
  * UShapeComponent는
  * UBoxComponent / USphereComponent / UConvexComponent / ... 가 상속받음
  */
-
+inline bool bShowCollision = false;
 
 class UShapeComponent : public UPrimitiveComponent
 {
@@ -68,7 +68,7 @@ public:
 	void SetCollisionEnabled(ECollisionEnabled NewType);
 protected:
 	UINT LastDrawDebugRenderThreadFrame = -1;
-	bool bDrawDebug = true;
+	bool bDrawDebug = false;
 	ECollisionChannel ObjectType = ECollisionChannel::Visibility;
 
 	std::array<ECollisionResponse, static_cast<UINT>(ECollisionChannel::Count)> CollisionResponse;

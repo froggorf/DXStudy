@@ -1,5 +1,8 @@
 ﻿#include "CoreMinimal.h"
 
+#include "Engine/Physics/UShapeComponent.h"
+#include "Engine/World/UWorld.h"
+
 #ifdef WITH_EDITOR
 #include "Engine/RenderCore/ImGUIActionTask.h"
 #include "ImguiEditorMainPanel.h"
@@ -33,7 +36,14 @@ void FImguiEditorMainPanel::Draw()
 			float PlayButtonSize = WindowSize.y - TitleBarHeight - 20 - 5;
 			if (GEditorEngine->bGameStart)
 			{
-				ImGui::ImageButton(" ", reinterpret_cast<ImTextureID>(StopIcon.Get()), ImVec2{PlayButtonSize, PlayButtonSize});
+				if (ImGui::ImageButton(" ", reinterpret_cast<ImTextureID>(StopIcon.Get()), ImVec2{PlayButtonSize, PlayButtonSize}))
+				{
+					ENQUEUE_IMGUI_COMMAND([]()
+					{
+						GEditorEngine->bGameStart = false;
+						GEngine->ChangeLevelByName(GEngine->GetWorld()->GetPersistentLevel()->GetName());
+					})
+				}
 			}
 			else
 			{
@@ -45,6 +55,18 @@ void FImguiEditorMainPanel::Draw()
 				}
 			}
 		}
+		ImGui::SameLine();
+		static int ShowCollision = 0;
+		if (ImGui::RadioButton("ShowCollision X", &ShowCollision, 0))
+		{
+			bShowCollision = false;
+		}
+		ImGui::SameLine();
+		if (ImGui::RadioButton("ShowCollision O", &ShowCollision, 1))
+		{
+			bShowCollision = true;
+		}
+
 
 		ImGui::End();
 	}
