@@ -69,7 +69,12 @@ void UEngine::InitEngine()
 
 #ifndef WITH_EDITOR
 	// 에디터가 아닐경우 바로 게임이 실행되도록 설정
-	GameStart();
+	//GameStart();
+	// GameStart호출이 안되는경우가 있어 해당방식으로 수정
+	bGameStart  = true;
+	TimeSeconds = 0;
+
+	GetWorld()->BeginPlay();
 #endif
 }
 

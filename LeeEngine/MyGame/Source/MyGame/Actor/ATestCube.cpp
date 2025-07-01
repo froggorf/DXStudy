@@ -2,6 +2,7 @@
 
 #include "ATestCube.h"
 
+#include "imgui_internal.h"
 #include "Engine/UEditorEngine.h"
 #include "Engine/Components/UNiagaraComponent.h"
 #include "Engine/Components/USceneComponent.h"

@@ -14,7 +14,7 @@
 // DEVELOPMENT(1) - 구현 관련 콘솔 문구 및 디버그 드로우
 // SHIP(2) - 게임 출시 빌드
 // 0 - DEBUG / 1 - DEVELOPMENT / 2 - SHIP
-#define DEBUG_LEVEL 0
+#define DEBUG_LEVEL 2
 
 #if (DEBUG_LEVEL == 0)
 #ifndef MYENGINE_BUILD_DEBUG
@@ -30,7 +30,7 @@
 #endif
 #endif
 
-#define IS_EDITOR TRUE
+#define IS_EDITOR FALSE
 #if (IS_EDITOR == TRUE)
 #ifndef WITH_EDITOR
 #define WITH_EDITOR

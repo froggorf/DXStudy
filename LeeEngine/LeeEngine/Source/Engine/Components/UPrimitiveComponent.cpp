@@ -112,6 +112,7 @@ void UPrimitiveComponent::DrawDetailPanel(UINT ComponentDepth)
 	USceneComponent::DrawDetailPanel(ComponentDepth);
 	
 }
+#endif
 
 void UPrimitiveComponent::SetCollisionEnabled(ECollisionEnabled NewType)
 {
@@ -125,4 +126,3 @@ void UPrimitiveComponent::SetCollisionEnabled(ECollisionEnabled NewType)
 		GetBodyInstance()->SetCollisionEnabled(NewType);
 	}
 }
-#endif
