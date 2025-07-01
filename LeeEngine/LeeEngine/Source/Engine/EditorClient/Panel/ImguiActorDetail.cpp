@@ -7,6 +7,7 @@
 #include "ImguiActorDetail.h"
 
 #include "Engine/GameFramework/AActor.h"
+#include "Engine/Physics/UConvexComponent.h"
 #ifdef WITH_EDITOR
 FImguiActorDetail::FImguiActorDetail(FScene* Scene, class FImguiLevelViewport* Owner)
 	: FImguiPanel(Scene)
@@ -114,7 +115,12 @@ void FImguiActorDetail::FindComponentsAndNamesFromActor(const std::shared_ptr<US
 	std::string TargetComponentName = HierarchyTabString + TargetComponent->GetName();
 
 	SelectActorSceneComponents.push_back(TargetComponent);
-	SelectActorSceneComponentNames.push_back(TargetComponentName + "       <-" + TargetComponent->GetClass());
+	SelectActorSceneComponentNames.push_back(TargetComponentName + "       <-" + TargetComponent->GetClass());	
+	//if (!std::dynamic_pointer_cast<UConvexComponent>(TargetComponent))
+	//{
+	//	
+	//}
+	
 
 	const std::vector<std::shared_ptr<USceneComponent>>& TargetComponentChildren = TargetComponent->GetAttachChildren();
 	for (const auto& ChildComponent : TargetComponentChildren)

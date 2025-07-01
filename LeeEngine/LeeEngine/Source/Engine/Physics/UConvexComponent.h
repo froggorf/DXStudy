@@ -15,6 +15,7 @@ class UConvexComponent : public UShapeComponent
 {
 	MY_GENERATE_BODY(UConvexComponent)
 public:
+	UConvexComponent();
 	~UConvexComponent() override = default;
 
 public:

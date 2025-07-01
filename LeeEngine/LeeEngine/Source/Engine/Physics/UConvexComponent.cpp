@@ -4,6 +4,11 @@
 #include "UPhysicsEngine.h"
 
 
+UConvexComponent::UConvexComponent()
+{
+	Rename("ConvexComponent" + PrimitiveID);
+}
+
 void UConvexComponent::SetStaticMesh(const std::shared_ptr<UStaticMesh>& InStaticMesh)
 {
 	if (BaseStaticMesh.lock() && RigidActor)

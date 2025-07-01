@@ -163,6 +163,8 @@ void UShapeComponent::SetCollisionEnabled(ECollisionEnabled NewType)
 		return;
 	}
 
+	gPhysicsEngine->UnRegisterActor(RigidActor);
+	RegisterPhysics();
 
 	physx::PxU32 ShapeCount = RigidActor->getNbShapes();
 	std::vector<physx::PxShape*> Shapes(ShapeCount);
@@ -187,8 +189,6 @@ void UShapeComponent::SetCollisionEnabled(ECollisionEnabled NewType)
 		}
 	}
 
-	gPhysicsEngine->UnRegisterActor(RigidActor);
-	RegisterPhysics();
 
 	UpdatePhysicsFilterData();
 

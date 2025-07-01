@@ -21,6 +21,7 @@ public:
 	UShapeComponent();
 	~UShapeComponent() override = default;
 
+	physx::PxRigidActor* GetRigidActor() const {return RigidActor;}
 protected:
 	// 충돌체에 대한 오브젝트
 	physx::PxRigidActor* RigidActor = nullptr;

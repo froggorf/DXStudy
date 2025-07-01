@@ -151,6 +151,7 @@ ATestCube::ATestCube()
 	TriggerBox1->SetExtent(XMFLOAT3{50,3,50});
 	TriggerBox1->SetupAttachment(GetRootComponent());
 	TriggerBox1->SetRelativeLocation(XMFLOAT3{0,-10,0});
+
 }
 
 void ATestCube::BeginPlay()
@@ -181,7 +182,7 @@ void ATestCube::BeginPlay()
 		TestCubeSM21,
 	};
 
-	TestCube2->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	//TestCube2->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
 	for (const std::shared_ptr<UStaticMeshComponent>& SMC : SMVec)
 	{

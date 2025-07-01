@@ -18,14 +18,19 @@ class ATestPawn : public AActor
 	void BeginPlay() override;
 	void Tick(float DeltaSeconds) override;
 
+	void AttackStart(UShapeComponent* OverlappedComponent, AActor* OtherActor, UShapeComponent* OtherComp);
+	void AttackEnd(UShapeComponent* OverlappedComponent, AActor* OtherActor, UShapeComponent* OtherComp);
+
 protected:
-	//std::shared_ptr<UCapsuleComponent> CapsuleComp;
+	
 
 	std::shared_ptr<UTestComponent> TestComp;
 
 	std::shared_ptr<USkeletalMeshComponent> SKComp;
 
 	std::shared_ptr<UStaticMeshComponent> SMSword;
-private:
+	std::shared_ptr<UCapsuleComponent> CapsuleComp;
 
+private:
+	
 };

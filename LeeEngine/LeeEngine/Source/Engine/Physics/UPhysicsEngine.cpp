@@ -248,7 +248,7 @@ physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterConvexActor(const FTransfo
 	physx::PxRigidActor* Actor = nullptr;
 	if (bIsDynamic)
 	{
-		physx::PxRigidDynamic* DynamicActor = PxPhysics->createRigidDynamic(physx::PxTransform{{Transform.Translation.x,Transform.Translation.y,-Transform.Translation.z},{0,0,0,1}});
+		physx::PxRigidDynamic* DynamicActor = PxPhysics->createRigidDynamic(physx::PxTransform{{Transform.Translation.x,Transform.Translation.y,-Transform.Translation.z},{Transform.Rotation.x,Transform.Rotation.y,Transform.Rotation.z,Transform.Rotation.w}});
 		physx::PxRigidBodyExt::updateMassAndInertia(*DynamicActor, Mass);
 		Actor = DynamicActor;
 	}
@@ -256,7 +256,7 @@ physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterConvexActor(const FTransfo
 	else
 	{
 		 
-		Actor = PxPhysics->createRigidStatic(physx::PxTransform{{Transform.Translation.x,Transform.Translation.y,-Transform.Translation.z},{0,0,0,1}});;
+		Actor = PxPhysics->createRigidStatic(physx::PxTransform{{Transform.Translation.x,Transform.Translation.y,-Transform.Translation.z},{Transform.Rotation.x,Transform.Rotation.y,Transform.Rotation.z,Transform.Rotation.w}});;
 	}
 
 	// shape

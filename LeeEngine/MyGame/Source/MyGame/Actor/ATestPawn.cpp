@@ -5,11 +5,6 @@
 
 ATestPawn::ATestPawn()
 {
-	//CapsuleComp = std::make_shared<UCapsuleComponent>();
-	//CapsuleComp->SetupAttachment(GetRootComponent());
-	//CapsuleComp->SetHalfHeight(10);
-	//CapsuleComp->SetRadius(3);
-	//CapsuleComp->SetRelativeLocation(XMFLOAT3{70.0f,00.0f,0.0f});
 
 	SKComp = std::make_shared<USkeletalMeshComponent>();
 	SKComp->SetupAttachment(GetRootComponent());
@@ -28,6 +23,13 @@ ATestPawn::ATestPawn()
 	SMSword->SetRelativeScale3D({0.2f,0.2f,0.2f});
 	SMSword->SetRelativeLocation({-9.895, -3.056, -6.95});
 	SMSword->SetRelativeRotation(XMFLOAT4{0.073,0.09,-0.638,0.761});
+
+	CapsuleComp = std::make_shared<UCapsuleComponent>();
+	CapsuleComp->SetupAttachment(SMSword);
+	CapsuleComp->SetHalfHeight(250);
+	CapsuleComp->SetRelativeRotation(XMFLOAT3{90,0,0});
+	CapsuleComp->SetRelativeLocation({0.0f,0.0f,-350.0f});
+	CapsuleComp->SetRadius(25);
 	
 
 	UTestComponent* NewTestComp = dynamic_cast<UTestComponent*>( CreateDefaultSubobject("TestActorComp", "UTestComponent"));
@@ -41,22 +43,39 @@ ATestPawn::ATestPawn()
 void ATestPawn::BeginPlay()
 {
 	AActor::BeginPlay();
-	SMSword->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	//CapsuleComp->SetResponseToChannel(ECollisionChannel::WorldStatic, ECollisionResponse::Block);
-	//CapsuleComp->SetResponseToChannel(ECollisionChannel::WorldDynamic, ECollisionResponse::Ignore);
-	//CapsuleComp->SetCollisionEnabled(ECollisionEnabled::Physics);
-	//CapsuleComp->SetCollisionObjectType(ECollisionChannel::Pawn);
+	SMSword->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	SMSword->GetBodyInstance()->OnComponentBeginOverlap.Add(this, &ATestPawn::AttackStart);
+	SMSword->GetBodyInstance()->SetResponseToChannel(ECollisionChannel::WorldStatic, ECollisionResponse::Block);
+	SMSword->GetBodyInstance()->SetDebugDraw(true);
+	//CapsuleComp->SetResponseToChannel(ECollisionChannel::WorldStatic, ECollisionResponse::Overlap);
+	//CapsuleComp->SetDebugDraw(true);
+	//CapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	//CapsuleComp->OnComponentBeginOverlap.Add(this, &ATestPawn::AttackStart);
+	//CapsuleComp->OnComponentEndOverlap.Add(this, &ATestPawn::AttackEnd);
 }
+
+void ATestPawn::AttackStart(UShapeComponent* OverlappedComponent, AActor* OtherActor, UShapeComponent* OtherComp)
+{
+	MY_LOG("Begin",EDebugLogLevel::DLL_Warning, OtherActor->GetName());
+}
+void ATestPawn::AttackEnd(UShapeComponent* OverlappedComponent, AActor* OtherActor, UShapeComponent* OtherComp)
+{
+
+	MY_LOG("End",EDebugLogLevel::DLL_Warning, OtherActor->GetName());
+}
+
+
 
 void ATestPawn::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
 
 	const float power = 3;
-	/*if (ImGui::IsKeyDown(ImGuiKey_I))
+	if (ImGui::IsKeyDown(ImGuiKey_I))
 	{
-		CapsuleComp->AddForce({0,0,power});
+		SMSword->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::Physics);
 	}
+	/*
 	if (ImGui::IsKeyDown(ImGuiKey_K))
 	{
 		CapsuleComp->AddForce({0,0,-power});
