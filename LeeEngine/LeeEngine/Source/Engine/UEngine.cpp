@@ -47,7 +47,7 @@ void UEngine::InitEngine()
 	}
 
 	// GameThread, RenderThread 제외한 코어 수
-	GThreadPool = std::make_unique<FQueuedThreadPool>(50);
+	GThreadPool = std::make_unique<FQueuedThreadPool>(150);
 
 	CreateAudioThread();
 

@@ -86,46 +86,55 @@ void UTestComponent::DrawDetailPanel(UINT ComponentDepth)
 		TargetAnim = 2;
 	}
 
-	if (ImGui::Button("BlendIn NoBlend"))
+
+	if (ImGui::Button("SwordAttack"))
 	{
-		if (AM_NoBlend)
+		if (AM_Sword)
 		{
-			UMyAnimInstance::MyAnimInstance->Montage_Play(AM_NoBlend, 0.0f);
+			UMyAnimInstance::MyAnimInstance->Montage_Play(AM_Sword, 0.0f);
 		}
 	}
+
+	//if (ImGui::Button("BlendIn NoBlend"))
+	//{
+	//	if (AM_NoBlend)
+	//	{
+	//		UMyAnimInstance::MyAnimInstance->Montage_Play(AM_NoBlend, 0.0f);
+	//	}
+	//}
 
 	ImDrawList* DrawList   = ImGui::GetWindowDrawList();
 	ImVec2      CanvasPos  = ImGui::GetCursorScreenPos();
 	auto        CanvasSize = ImVec2{200.0f, 150.0f};
 	//AM_Blend1s_Linear->BlendIn.GetCurve()->FloatCurve.DrawCurve(DrawList, CanvasPos, CanvasSize);
 
-	if (ImGui::Button("BlendIn 0.25s - Linear"))
+	/*if (ImGui::Button("BlendIn 0.25s - Linear"))
 	{
 		if (AM_Blend1s_Linear)
 		{
 			UMyAnimInstance::MyAnimInstance->Montage_Play(AM_Blend1s_Linear);
 		}
-	}
+	}*/
 
 	CanvasPos = ImGui::GetCursorScreenPos();
 	//AM_Test->BlendIn.GetCurve()->FloatCurve.DrawCurve(DrawList, CanvasPos, CanvasSize);
-	if (ImGui::Button("BlendIn 0.25s - Hermite"))
+	/*if (ImGui::Button("BlendIn 0.25s - Hermite"))
 	{
 		if (AM_Test)
 		{
 			UMyAnimInstance::MyAnimInstance->Montage_Play(AM_Test);
 		}
-	}
+	}*/
 
 	CanvasPos = ImGui::GetCursorScreenPos();
 	//AM_CustomCurve->BlendIn.GetCurve()->FloatCurve.DrawCurve(DrawList, CanvasPos, CanvasSize);
-	if (ImGui::Button("BlendIn 0.25s - CustomCurve"))
+	/*if (ImGui::Button("BlendIn 0.25s - CustomCurve"))
 	{
 		if (AM_CustomCurve)
 		{
 			UMyAnimInstance::MyAnimInstance->Montage_Play(AM_CustomCurve);
 		}
-	}
+	}*/
 
 	//auto d2 = ImGui::GetWindowDrawList();
 
@@ -215,9 +224,25 @@ void UTestComponent::DrawDetailPanel(UINT ComponentDepth)
 void UTestComponent::BeginPlay()
 {
 	UActorComponent::BeginPlay();
+	/*AssetManager::GetAsyncAssetCache("AM_Blend1s", [this](std::shared_ptr<UObject> Object)
+	{
+		AM_Test = std::static_pointer_cast<UAnimMontage>(Object);
+	});
+	AssetManager::GetAsyncAssetCache("AM_NoBlend", [this](std::shared_ptr<UObject> Object)
+		{
+			AM_NoBlend = std::static_pointer_cast<UAnimMontage>(Object);
+		});
+	AssetManager::GetAsyncAssetCache("AM_Blend1s_Linear", [this](std::shared_ptr<UObject> Object)
+		{
+			AM_Blend1s_Linear = std::static_pointer_cast<UAnimMontage>(Object);
+		});
+	AssetManager::GetAsyncAssetCache("AM_Blend1s_CustomCurve", [this](std::shared_ptr<UObject> Object)
+		{
+			AM_CustomCurve = std::static_pointer_cast<UAnimMontage>(Object);
+		});*/
+	AssetManager::GetAsyncAssetCache("AM_Sword", [this](std::shared_ptr<UObject> Object)
+		{
+			AM_Sword = std::static_pointer_cast<UAnimMontage>(Object);
+		});
 
-	AM_Test           = UAnimMontage::GetAnimationAsset("AM_Blend1s");
-	AM_NoBlend        = UAnimMontage::GetAnimationAsset("AM_NoBlend");
-	AM_Blend1s_Linear = UAnimMontage::GetAnimationAsset("AM_Blend1s_Linear");
-	AM_CustomCurve    = UAnimMontage::GetAnimationAsset("AM_Blend1s_CustomCurve");
 }

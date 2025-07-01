@@ -1,0 +1,25 @@
+{
+	"Class": "UAnimMontage",
+	"Name": "AM_Sword",
+	"Skeleton": "SK_MyUEFN",
+	
+	"BlendIn" : {
+		"CurveName" : "TestCurve",
+		"BlendTime" : 0.1
+	},
+	"BlendOut" : {
+		"CurveName" : "TestCurve",
+		"BlendTime" : 0.1
+	},
+
+	"SlotName": "DefaultSlot",
+	"AnimTrack" : [
+		{"AnimName" : "AS_Attack01"}
+	],
+	"Sections" : [
+		{ "SectionName" : "Fire", "StartTime" : 0.0 }
+	],
+    	"Notifies" : [
+  	  ]
+
+}

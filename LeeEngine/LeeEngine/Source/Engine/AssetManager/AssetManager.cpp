@@ -515,6 +515,7 @@ void AssetManager::GetAsyncAssetCache(const std::string& AssetName, const AssetL
 		if(FindLoading != LoadingCallbackMap.end())
 		{
 			FindLoading->second.push_back(LoadedCallback);
+			
 			return;
 		}
 	}
@@ -529,7 +530,9 @@ void AssetManager::GetAsyncAssetCache(const std::string& AssetName, const AssetL
 
 		if (FilePath.empty())
 		{
-			MY_LOG("AsyncLoadError", EDebugLogLevel::DLL_Error, AssetName + "Not Found");
+			//07.01 해당부분은 assert를 걸어야 테스트가 편하므로 assert로 수정
+			//MY_LOG("AsyncLoadError", EDebugLogLevel::DLL_Error, AssetName + "Not Found");
+			assert(nullptr && "잘못된 에셋 경로");
 			return;
 		}
 

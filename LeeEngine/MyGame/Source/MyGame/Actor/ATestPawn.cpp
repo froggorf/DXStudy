@@ -20,14 +20,14 @@ ATestPawn::ATestPawn()
 	SKComp->SetAnimInstanceClass("UMyAnimInstance");
 
 	SMSword = std::make_shared<UStaticMeshComponent>();
-	SMSword->SetupAttachment(SKComp, "hand_l");
+	SMSword->SetupAttachment(SKComp, "hand_r");
 	AssetManager::GetAsyncAssetCache("SM_Sword", [this](std::shared_ptr<UObject> Object)
 	{
 			SMSword->SetStaticMesh(std::static_pointer_cast<UStaticMesh>(Object));
 	});
 	SMSword->SetRelativeScale3D({0.2f,0.2f,0.2f});
-	SMSword->SetRelativeLocation({10.218,4.3,2.225});
-	SMSword->SetRelativeRotation(XMFLOAT4{-0.614,0.752,0.222,0.093});
+	SMSword->SetRelativeLocation({-9.895, -3.056, -6.95});
+	SMSword->SetRelativeRotation(XMFLOAT4{0.073,0.09,-0.638,0.761});
 	
 
 	UTestComponent* NewTestComp = dynamic_cast<UTestComponent*>( CreateDefaultSubobject("TestActorComp", "UTestComponent"));

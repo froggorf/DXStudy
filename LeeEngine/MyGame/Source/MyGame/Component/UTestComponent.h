@@ -33,4 +33,6 @@ class UTestComponent : public UActorComponent
 	std::shared_ptr<UAnimMontage> AM_NoBlend;
 	std::shared_ptr<UAnimMontage> AM_Blend1s_Linear;
 	std::shared_ptr<UAnimMontage> AM_CustomCurve;
+
+	std::shared_ptr<UAnimMontage> AM_Sword;
 };

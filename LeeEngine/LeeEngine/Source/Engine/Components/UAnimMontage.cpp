@@ -1,6 +1,7 @@
-#include "CoreMinimal.h"
+﻿#include "CoreMinimal.h"
 #include "UAnimMontage.h"
 
+#include "Engine/AssetManager/AssetManager.h"
 #include "Engine/RenderCore/EditorScene.h"
 
 float FAnimTrack::GetLength() const
@@ -21,9 +22,26 @@ void UAnimMontage::LoadDataFromFileData(const nlohmann::json& AssetData)
 	if (AssetData.contains("AnimTrack"))
 	{
 		auto AnimSequencesData = AssetData["AnimTrack"];
+		int AnimTrackSize = AnimSequencesData.size();
+		std::atomic<int> CurrentLoadedAnimCount = 0;
 		for (const auto& SequenceData : AnimSequencesData)
 		{
-			AnimTrack.AnimSegments.emplace_back(UAnimSequence::GetAnimationAsset(SequenceData["AnimName"]));
+			//Legacy Code
+			//AnimTrack.AnimSegments.emplace_back(UAnimSequence::GetAnimationAsset(SequenceData["AnimName"]));
+			AssetManager::GetAsyncAssetCache(SequenceData["AnimName"], [this, &CurrentLoadedAnimCount](std::shared_ptr<UObject> AnimSequence)
+				{
+					if (!AnimSequence)
+					{
+						assert(nullptr && "잘못된 로드");
+					}
+					AnimTrack.AnimSegments.emplace_back(std::static_pointer_cast<UAnimSequence>(AnimSequence));
+					++CurrentLoadedAnimCount;
+				});
+		}
+
+		while (CurrentLoadedAnimCount != AnimTrackSize)
+		{
+			std::this_thread::yield();
 		}
 	}
 
