@@ -6,6 +6,7 @@
 #include "USkeletalMeshComponent.h"
 
 #include "Engine/Mesh/USkeletalMesh.h"
+#include "Engine/Physics/UShapeComponent.h"
 #include "Engine/SceneProxy/FSkeletalMeshSceneProxy.h"
 #include "Engine/RenderCore/EditorScene.h"
 
@@ -158,4 +159,8 @@ void USkeletalMeshComponent::TickComponent(float DeltaSeconds)
 
 
 	UpdateComponentToWorld();
+	if (GetBodyInstance())
+	{
+		GetBodyInstance()->TickComponent(0.0f);
+	}
 }

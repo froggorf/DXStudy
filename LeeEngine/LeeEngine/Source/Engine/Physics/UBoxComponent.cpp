@@ -16,8 +16,7 @@ physx::PxRigidActor* UBoxComponent::CreateRigidActor()
 {
 	CreateVertexBuffer();
 
-    bool bIsDynamic = CollisionEnabled == ECollisionEnabled::Physics? true : false;
-	return gPhysicsEngine->CreateAndRegisterActor(GetComponentTransform(), gPhysicsEngine->CreateBoxShape(BoxExtent), Mass, bIsDynamic);
+	return gPhysicsEngine->CreateAndRegisterActor(GetComponentTransform(), gPhysicsEngine->CreateBoxShape(BoxExtent), Mass, bSimulatePhysics);
 }
 
 void UBoxComponent::DebugDraw_RenderThread() const

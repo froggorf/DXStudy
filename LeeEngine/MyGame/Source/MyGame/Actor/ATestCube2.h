@@ -5,6 +5,7 @@
 #include "../Component/UTestComponent.h"
 #include "Engine/Components/USkeletalMeshComponent.h"
 #include "Engine/GameFramework/AActor.h"
+#include "Engine/Physics/UCapsuleComponent.h"
 
 class UStaticMeshComponent;
 
@@ -16,10 +17,11 @@ class ATestCube2 : public AActor
 
 	void BeginPlay() override;
 	void Tick(float DeltaSeconds) override;
-
+	void TestCompFunc();
 protected:
 
 private:
+	std::shared_ptr<UCapsuleComponent> CapsuleComponent;
 	std::shared_ptr<UStaticMeshComponent> TestComp;
 
 };

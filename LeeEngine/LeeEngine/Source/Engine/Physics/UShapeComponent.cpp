@@ -43,6 +43,18 @@ void UShapeComponent::UnRegisterPhysics()
 	}
 }
 
+void UShapeComponent::ResetPhysics()
+{
+	if (!RigidActor)
+	{
+		return;
+	}
+
+	gPhysicsEngine->UnRegisterActor(RigidActor);
+	RegisterPhysics();
+	UpdatePhysicsFilterData();
+}
+
 void UShapeComponent::TickComponent(float DeltaSeconds)
 {
 	UPrimitiveComponent::TickComponent(DeltaSeconds);
@@ -64,11 +76,33 @@ void UShapeComponent::TickComponent(float DeltaSeconds)
 		
 	}
 #endif
+
+	// simulate 되지 않는 오브젝트는 직접 갱신해주기
+	// RigidActor가 있고, 시뮬레이션을 안하거나,
+	if ( RigidActor && (!bSimulatePhysics)  )
+	{
+		const FTransform& CurTransform = GetComponentTransform();
+		RigidActor->setGlobalPose(physx::PxTransform{CurTransform.Translation.x,CurTransform.Translation.y,-CurTransform.Translation.z, {CurTransform.Rotation.x,CurTransform.Rotation.y,CurTransform.Rotation.z,CurTransform.Rotation.w}});
+	}
+	// 피직스인데 kinematic인경우엔
+	else if (RigidActor && CollisionEnabled == ECollisionEnabled::Physics)
+	{
+		if (physx::PxRigidDynamic* Dynamic = RigidActor->is<physx::PxRigidDynamic>())
+		{
+			if (Dynamic->getRigidBodyFlags().isSet(physx::PxRigidBodyFlag::eKINEMATIC))
+			{
+				const FTransform& CurTransform = GetComponentTransform();
+				Dynamic->setKinematicTarget(physx::PxTransform{CurTransform.Translation.x,CurTransform.Translation.y,-CurTransform.Translation.z, {CurTransform.Rotation.x,CurTransform.Rotation.y,CurTransform.Rotation.z,CurTransform.Rotation.w}});
+			}
+		}
+		
+		
+	}
 }
 
 void UShapeComponent::AddForce(const XMFLOAT3& Force) const
 {
-	if (RigidActor && CollisionEnabled == ECollisionEnabled::Physics)
+	if (RigidActor && bSimulatePhysics)
 	{
 		RigidActor->is<physx::PxRigidDynamic>()->addForce({Force.x,Force.y,-Force.z});
 	}
@@ -89,6 +123,7 @@ void UShapeComponent::SetWorldTransform(const FTransform& NewTransform)
 	}
 	
 }
+
 
 void UShapeComponent::SetObjectType(ECollisionChannel Channel)
 {
@@ -154,6 +189,15 @@ void UShapeComponent::UpdatePhysicsFilterData()
 
 }
 
+void UShapeComponent::SetSimulatePhysics(bool bNewSimulatePhysics)
+{
+	if (bNewSimulatePhysics != bSimulatePhysics)
+	{
+		bSimulatePhysics = bNewSimulatePhysics;
+		ResetPhysics();
+	}
+}
+
 void UShapeComponent::SetCollisionEnabled(ECollisionEnabled NewType)
 {
 	CollisionEnabled = NewType;
@@ -163,8 +207,8 @@ void UShapeComponent::SetCollisionEnabled(ECollisionEnabled NewType)
 		return;
 	}
 
-	gPhysicsEngine->UnRegisterActor(RigidActor);
-	RegisterPhysics();
+	ResetPhysics();
+	
 
 	physx::PxU32 ShapeCount = RigidActor->getNbShapes();
 	std::vector<physx::PxShape*> Shapes(ShapeCount);
@@ -188,6 +232,7 @@ void UShapeComponent::SetCollisionEnabled(ECollisionEnabled NewType)
 		break;
 		}
 	}
+
 
 
 	UpdatePhysicsFilterData();

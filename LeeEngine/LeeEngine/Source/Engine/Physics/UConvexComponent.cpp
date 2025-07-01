@@ -31,8 +31,7 @@ physx::PxRigidActor* UConvexComponent::CreateRigidActor()
 	physx::PxRigidActor* Actor = nullptr;
 	if (const std::shared_ptr<UStaticMesh>& StaticMesh = BaseStaticMesh.lock())
 	{
-		bool bIsDynamic = CollisionEnabled == ECollisionEnabled::Physics? true : false;
-		Actor = gPhysicsEngine->CreateAndRegisterConvexActor(GetComponentTransform(), StaticMesh, Mass, ConvexMeshVertexBuffer, bIsDynamic);	
+		Actor = gPhysicsEngine->CreateAndRegisterConvexActor(GetComponentTransform(), StaticMesh, Mass, ConvexMeshVertexBuffer, bSimulatePhysics);	
 	}
 	return Actor;
 }

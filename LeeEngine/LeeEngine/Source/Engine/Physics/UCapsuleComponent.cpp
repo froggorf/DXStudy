@@ -16,8 +16,7 @@ physx::PxRigidActor* UCapsuleComponent::CreateRigidActor()
 {
 	CreateVertexBuffer();
 
-    bool bIsDynamic = CollisionEnabled == ECollisionEnabled::Physics? true : false;
-	return gPhysicsEngine->CreateAndRegisterActor(GetComponentTransform(), gPhysicsEngine->CreateCapsuleShape(Radius,HalfHeight), Mass, bIsDynamic);
+	return gPhysicsEngine->CreateAndRegisterActor(GetComponentTransform(), gPhysicsEngine->CreateCapsuleShape(Radius,HalfHeight), Mass, bSimulatePhysics);
 }
 
 void UCapsuleComponent::DebugDraw_RenderThread() const

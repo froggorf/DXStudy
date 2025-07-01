@@ -23,7 +23,7 @@ ATestCube::ATestCube()
 	});
 
 	//TestCube2->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Cube"));
-	TestCube2->SetRelativeScale3D(XMFLOAT3(200.0f, 0.01f, 200.0f));
+	TestCube2->SetRelativeScale3D(XMFLOAT3(400.0f, 0.01f, 400.0f));
 	TestCube2->SetRelativeLocation(XMFLOAT3(0.0f, -50, 0.0f));
 	TestCube2->SetCollisionObjectType(ECollisionChannel::WorldStatic);
 	
@@ -182,10 +182,11 @@ void ATestCube::BeginPlay()
 		TestCubeSM21,
 	};
 
-	//TestCube2->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	TestCube2->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::Physics);
 
 	for (const std::shared_ptr<UStaticMeshComponent>& SMC : SMVec)
 	{
+		SMC->GetBodyInstance()->SetSimulatePhysics(false);
 		SMC->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::Physics);
 		SMC->GetBodyInstance()->OnComponentHit.Add(this, &ATestCube::OnComponentHitEvent);
 		SMC->GetBodyInstance()->OnComponentBeginOverlap.Add(this, &ATestCube::OnComponentBeginOverlapEvent);

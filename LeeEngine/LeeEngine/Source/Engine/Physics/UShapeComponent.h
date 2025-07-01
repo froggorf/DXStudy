@@ -34,6 +34,7 @@ public:
 	void UnRegister() override;
 	virtual void RegisterPhysics();
 	virtual void UnRegisterPhysics();
+	void ResetPhysics();
 
 	void TickComponent(float DeltaSeconds) override;
 
@@ -50,14 +51,17 @@ public:
 	// UShapeComponent를 상속받는 클래스는 해당 함수를 재정의 해줘야함
 	void RegisterSceneProxies() override {}
 
+
 	// 콜리젼 타입을 변경하는 함수
 	void SetObjectType(ECollisionChannel Channel);
 	// 콜리젼 반응을 변경하는 함수
 	void SetResponseToChannel(ECollisionChannel Channel, ECollisionResponse NewResponse);
 	void UpdatePhysicsFilterData();
-
+	void SetSimulatePhysics(bool bNewSimulatePhysics);
 
 	virtual void DebugDraw_RenderThread() const {}
+
+
 
 	void SetDebugDraw(bool bNewDrawDebug)
 	{
@@ -71,6 +75,6 @@ protected:
 	UINT LastDrawDebugRenderThreadFrame = -1;
 	bool bDrawDebug = false;
 	ECollisionChannel ObjectType = ECollisionChannel::Visibility;
-
+	bool bSimulatePhysics = false;
 	std::array<ECollisionResponse, static_cast<UINT>(ECollisionChannel::Count)> CollisionResponse;
 };

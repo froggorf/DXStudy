@@ -1,6 +1,7 @@
 ﻿#include "CoreMinimal.h"
 #include "ATestPawn.h"
 
+#include "ATestCube2.h"
 #include "Engine/World/UWorld.h"
 
 ATestPawn::ATestPawn()
@@ -43,10 +44,31 @@ ATestPawn::ATestPawn()
 void ATestPawn::BeginPlay()
 {
 	AActor::BeginPlay();
-	SMSword->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	SMSword->GetBodyInstance()->OnComponentBeginOverlap.Add(this, &ATestPawn::AttackStart);
-	SMSword->GetBodyInstance()->SetResponseToChannel(ECollisionChannel::WorldStatic, ECollisionResponse::Block);
 	SMSword->GetBodyInstance()->SetDebugDraw(true);
+	SMSword->GetBodyInstance()->OnComponentBeginOverlap.Add(this, &ATestPawn::AttackStart);
+	SMSword->GetBodyInstance()->OnComponentHit.Add(this, &ATestPawn::OnComponentHitEvent);
+
+
+	SMSword->GetBodyInstance()->SetSimulatePhysics(true);
+	SMSword->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::Physics);
+	if (SMSword->GetBodyInstance())
+	{
+		if (SMSword->GetBodyInstance()->GetRigidActor())
+		{
+			if (physx::PxRigidDynamic* Dynamic = (SMSword->GetBodyInstance()->GetRigidActor())->is<physx::PxRigidDynamic>())
+			{
+				Dynamic->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC,true);
+			}		
+		}
+		
+	}
+	
+	for (UINT i = 0; i < static_cast<UINT>(ECollisionChannel::Count); ++i)
+	{
+		SMSword->GetBodyInstance()->SetCollisionResponseToChannel(static_cast<ECollisionChannel>(i), ECollisionResponse::Overlap);
+	}
+	SMSword->GetBodyInstance()->SetObjectType(ECollisionChannel::Pawn);
+
 	//CapsuleComp->SetResponseToChannel(ECollisionChannel::WorldStatic, ECollisionResponse::Overlap);
 	//CapsuleComp->SetDebugDraw(true);
 	//CapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -54,9 +76,19 @@ void ATestPawn::BeginPlay()
 	//CapsuleComp->OnComponentEndOverlap.Add(this, &ATestPawn::AttackEnd);
 }
 
+void ATestPawn::OnComponentHitEvent(UShapeComponent* HitComponent, AActor* OtherActor, UShapeComponent* OtherComp, const FHitResult& HitResults)
+{
+	MY_LOG("Hit",EDebugLogLevel::DLL_Warning, OtherActor->GetName() + " -> " + OtherComp->GetName());
+}
+
+
 void ATestPawn::AttackStart(UShapeComponent* OverlappedComponent, AActor* OtherActor, UShapeComponent* OtherComp)
 {
-	MY_LOG("Begin",EDebugLogLevel::DLL_Warning, OtherActor->GetName());
+	if (ATestCube2* TestCube = dynamic_cast<ATestCube2*>(OtherActor))
+	{
+		TestCube->TestCompFunc();
+		
+	}
 }
 void ATestPawn::AttackEnd(UShapeComponent* OverlappedComponent, AActor* OtherActor, UShapeComponent* OtherComp)
 {
@@ -73,7 +105,7 @@ void ATestPawn::Tick(float DeltaSeconds)
 	const float power = 3;
 	if (ImGui::IsKeyDown(ImGuiKey_I))
 	{
-		SMSword->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::Physics);
+		SMSword->GetBodyInstance()->SetSimulatePhysics(true);
 	}
 	/*
 	if (ImGui::IsKeyDown(ImGuiKey_K))
