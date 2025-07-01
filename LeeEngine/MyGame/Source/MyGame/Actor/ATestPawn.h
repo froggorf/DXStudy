@@ -3,6 +3,7 @@
 
 #pragma once
 #include "Engine/Components/USkeletalMeshComponent.h"
+#include "Engine/Components/UStaticMeshComponent.h"
 #include "Engine/GameFramework/AActor.h"
 #include "Engine/Physics/UCapsuleComponent.h"
 
@@ -20,6 +21,8 @@ protected:
 	std::shared_ptr<UCapsuleComponent> CapsuleComp;
 
 	std::shared_ptr<USkeletalMeshComponent> SKComp;
+
+	std::shared_ptr<UStaticMeshComponent> SMComp;
 private:
 
 };

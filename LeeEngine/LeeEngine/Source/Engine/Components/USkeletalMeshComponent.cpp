@@ -98,9 +98,16 @@ FTransform USkeletalMeshComponent::GetSocketTransform(const std::string& InSocke
 		{
 			return GetComponentTransform();
 		}
-
+		XMVECTOR OutLoc, OutRot, OutScale;
 		int BoneIdx = std::distance(BoneHierarchy.begin(), TargetSocket);
-		std::cout<<TargetSocket->BoneName<<"\n";
+		// 누적 행렬 계산
+		FTransform AnimTransform;
+		if (XMMatrixDecompose(&OutScale, &OutRot, &OutLoc, AnimInstance->GetLastFrameAnimMatrices()[BoneIdx]))
+		{
+			XMStoreFloat3(&AnimTransform.Translation, OutLoc);
+			XMStoreFloat4(&AnimTransform.Rotation, OutRot);
+			XMStoreFloat3(&AnimTransform.Scale3D, OutScale);
+		}
 
 		XMMATRIX BoneOffset = XMMatrixIdentity();
 		while (BoneIdx >= 0)
@@ -108,7 +115,7 @@ FTransform USkeletalMeshComponent::GetSocketTransform(const std::string& InSocke
 			BoneOffset = XMMatrixMultiply(BoneOffset, BoneHierarchy[BoneIdx].BoneTransform);
 			BoneIdx = BoneHierarchy[BoneIdx].ParentIndex;
 		}
-		XMVECTOR OutLoc, OutRot, OutScale;
+	
 		bool bDecompose = XMMatrixDecompose(&OutScale, &OutRot, &OutLoc, BoneOffset);
 		FTransform BoneTransform;
 		if (bDecompose)
@@ -119,28 +126,7 @@ FTransform USkeletalMeshComponent::GetSocketTransform(const std::string& InSocke
 		}
 
 
-		// 누적 행렬 계산
-		/*XMMATRIX AccumulatedMatrix = XMMatrixIdentity();
-		int BoneIdx = TargetSocket->BoneInfo.id;
-		while (BoneIdx >= 0)
-		{
-			AccumulatedMatrix = AnimInstance->GetLastFrameAnimMatrices()[BoneIdx] * AccumulatedMatrix;
-			BoneIdx = BoneHierarchy[BoneIdx].ParentIndex;
-		}*/
-		/*FTransform AnimTransform;
-		if (XMMatrixDecompose(&OutScale, &OutRot, &OutLoc, AccumulatedMatrix))
-		{
-			XMStoreFloat3(&AnimTransform.Translation, OutLoc);
-			float temp = AnimTransform.Translation.x;
-			AnimTransform.Translation.x = AnimTransform.Translation.z * -1;
-			AnimTransform.Translation.z = AnimTransform.Translation.y * -1;
-			AnimTransform.Translation.y = temp*-1;
-			XMStoreFloat4(&AnimTransform.Rotation, OutRot);
-			XMStoreFloat3(&AnimTransform.Scale3D, OutScale);
-		}*/
-		
-
-		ReturnTransform = ReturnTransform * BoneTransform;// * AnimTransform;
+		ReturnTransform = ReturnTransform * AnimTransform* BoneTransform;
 	}
 
 	return ReturnTransform;

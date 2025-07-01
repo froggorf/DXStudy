@@ -126,14 +126,6 @@ void USceneComponent::AddWorldRotation(const XMFLOAT3& DeltaRotation)
 	XMVECTOR DeltaRotationQuat = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(DeltaRotation.x), XMConvertToRadians(DeltaRotation.y), XMConvertToRadians(DeltaRotation.z));
 
 	XMVECTOR ComponentRotationQuat = XMQuaternionIdentity();
-	//if(GetAttachParent())
-	//{
-	//	ComponentRotationQuat = GetAttachParent()->GetSocketTransform(GetAttachSocketName()).GetRotationQuat//();
-	//}
-	//else
-	//{
-	//	ComponentRotationQuat = XMQuaternionIdentity();//XMLoadFloat4(&RelativeRotation);
-	//}
 
 	XMVECTOR NewDeltaWorldRotationQuat = XMQuaternionMultiply(ComponentRotationQuat, DeltaRotationQuat);
 	XMVECTOR NewWorldRotationQuat      = XMQuaternionMultiply(GetComponentTransform().GetRotationQuat(), NewDeltaWorldRotationQuat);
@@ -146,7 +138,6 @@ void USceneComponent::SetWorldLocation(const XMFLOAT3& NewLocation)
 
 	if (GetAttachParent())
 	{
-		// TODO: 
 		FTransform ParentToWorld = GetAttachParent()->GetSocketTransform(GetAttachSocketName());
 		NewRelLocation           = ParentToWorld.InverseTransformPosition(NewLocation);
 	}

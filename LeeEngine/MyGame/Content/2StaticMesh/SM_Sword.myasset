@@ -1,0 +1,6 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_Box",
+    "ModelData": "/Content/Resource/Model/cube.obj",
+    "Material" : [ "MI_Box" ]
+}

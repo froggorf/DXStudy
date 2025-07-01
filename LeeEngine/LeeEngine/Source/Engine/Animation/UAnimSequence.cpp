@@ -82,7 +82,7 @@ void UAnimSequence::LoadDataFromFileData(const nlohmann::json& AssetData)
 
 	ReadMyAssetFile(AssetData["AnimationDataPath"], GetAnimationSkeleton().get());
 
-	
+	PrecomputeAnimationData(GetAnimationSkeleton()->GetName());
 }
 
 void UAnimSequence::ReadMyAssetFile(const std::string& FilePath, USkeletalMesh* SkeletalMesh)

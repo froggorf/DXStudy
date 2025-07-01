@@ -18,6 +18,10 @@ ATestPawn::ATestPawn()
 			SKComp->SetSkeletalMesh(std::static_pointer_cast<USkeletalMesh>(Object));
 		});
 	SKComp->SetAnimInstanceClass("UMyAnimInstance");
+
+	SMComp = std::make_shared<UStaticMeshComponent>();
+	//SMComp->SetupAttachment()
+	
 	
 }
 
@@ -58,26 +62,4 @@ void ATestPawn::Tick(float DeltaSeconds)
 		CapsuleComp->AddForce({0,power,0});
 	}*/
 
-	
-	
-	static float time = 0;
-	time += DeltaSeconds;
-	if (time > 1.0f/60)
-	{
-		time -= 1.0f/60;
-		
-		FTransform Transform = SKComp->GetSocketTransform("pinky_03_l");
-		GEngine->GetWorld()->DrawDebugBox(Transform.Translation, {5,5,5},{1,0,0},XMVectorSet(0,0,0,1), 1.0f/60+0.01f);
-
-		Transform = SKComp->GetSocketTransform("upperarm_r");
-		GEngine->GetWorld()->DrawDebugBox(Transform.Translation, {5,5,5},{1,1,0},XMVectorSet(0,0,0,1), 1.0f/60+0.01f);
-
-		Transform = SKComp->GetSocketTransform("thigh_l");
-		GEngine->GetWorld()->DrawDebugBox(Transform.Translation, {5,5,5},{1,0,1},XMVectorSet(0,0,0,1), 1.0f/60+0.01f);
-
-		Transform = SKComp->GetSocketTransform("foot_l");
-		GEngine->GetWorld()->DrawDebugBox(Transform.Translation, {5,5,5},{0,1,0},XMVectorSet(0,0,0,1), 1.0f/60+0.01f);
-	}
-
-	
 }
