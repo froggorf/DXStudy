@@ -21,6 +21,8 @@ class ATestPawn : public AActor
 	void AttackStart(UShapeComponent* OverlappedComponent, AActor* OtherActor, UShapeComponent* OtherComp);
 	void AttackEnd(UShapeComponent* OverlappedComponent, AActor* OtherActor, UShapeComponent* OtherComp);
 
+	void SetAttackStart();
+	void SetAttackEnd();
 protected:
 	
 

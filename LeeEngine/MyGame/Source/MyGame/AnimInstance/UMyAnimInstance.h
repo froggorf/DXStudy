@@ -6,6 +6,7 @@
 #include "Engine/Animation/UAimOffsetBlendSpace.h"
 #include "Engine/Animation/UAnimInstance.h"
 #include "Engine/Components/UAnimMontage.h"
+#include "Engine/Misc/Delegate.h"
 
 class UMyAnimInstance : public UAnimInstance
 {
@@ -24,6 +25,8 @@ class UMyAnimInstance : public UAnimInstance
 
 	void UpdateAnimation(float dt) override;
 
+	void AnimNotify_AttackStart();
+	void AnimNotify_AttackEnd();
 private:
 	std::shared_ptr<UBlendSpace>    BS_MyUEFN_Locomotion;
 	std::shared_ptr<UTestComponent> TestComp;

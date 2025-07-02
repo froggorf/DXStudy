@@ -35,6 +35,12 @@ UMyAnimInstance::UMyAnimInstance()
 void UMyAnimInstance::BeginPlay()
 {
 	UAnimInstance::BeginPlay();
+
+	NotifyEvent["AttackStart"] = Delegate<>{};
+	NotifyEvent["AttackStart"].Add(this, &UMyAnimInstance::AnimNotify_AttackStart);
+
+	NotifyEvent["AttackEnd"] = Delegate<>{};
+	NotifyEvent["AttackEnd"].Add(this, &UMyAnimInstance::AnimNotify_AttackEnd);
 }
 
 void UMyAnimInstance::NativeInitializeAnimation()
@@ -58,9 +64,6 @@ void UMyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	UAnimInstance::NativeUpdateAnimation(DeltaSeconds);
 
-	if (TestComp)
-	{
-	}
 }
 
 void UMyAnimInstance::UpdateAnimation(float dt)
@@ -107,7 +110,14 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 
 		for (int i = 0; i < FinalNotifies.size(); ++i)
 		{
-			FinalNotifies[i].Notify->Notify();
+			const std::string NotifyName = FinalNotifies[i].Notify->Notify();
+
+			const auto& Notify = NotifyEvent.find(NotifyName);
+			if (Notify != NotifyEvent.end())
+			{
+				Notify->second.Broadcast();
+			}
+			
 		}
 
 
@@ -121,3 +131,33 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 		}
 	}
 }
+
+
+void UMyAnimInstance::AnimNotify_AttackStart()
+{
+	if (USkeletalMeshComponent* SkeletalMesh = GetSkeletalMeshComponent())
+	{
+		if (AActor* Actor = SkeletalMesh->GetOwner())
+		{
+			if (ATestPawn* MyPawn = dynamic_cast<ATestPawn*>(Actor))
+			{
+				MyPawn->SetAttackStart();
+			}
+		}
+	}
+}
+
+void UMyAnimInstance::AnimNotify_AttackEnd()
+{
+	if (USkeletalMeshComponent* SkeletalMesh = GetSkeletalMeshComponent())
+	{
+		if (AActor* Actor = SkeletalMesh->GetOwner())
+		{
+			if (ATestPawn* MyPawn = dynamic_cast<ATestPawn*>(Actor))
+			{
+				MyPawn->SetAttackEnd();
+			}
+		}
+	}
+}
+

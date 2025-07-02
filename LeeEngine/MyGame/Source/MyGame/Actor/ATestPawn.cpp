@@ -49,19 +49,8 @@ void ATestPawn::BeginPlay()
 	SMSword->GetBodyInstance()->OnComponentHit.Add(this, &ATestPawn::OnComponentHitEvent);
 
 
-	SMSword->GetBodyInstance()->SetSimulatePhysics(true);
-	SMSword->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::Physics);
-	if (SMSword->GetBodyInstance())
-	{
-		if (SMSword->GetBodyInstance()->GetRigidActor())
-		{
-			if (physx::PxRigidDynamic* Dynamic = (SMSword->GetBodyInstance()->GetRigidActor())->is<physx::PxRigidDynamic>())
-			{
-				Dynamic->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC,true);
-			}		
-		}
-		
-	}
+	SMSword->GetBodyInstance()->SetSimulatePhysics(false);
+	SMSword->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
 	for (UINT i = 0; i < static_cast<UINT>(ECollisionChannel::Count); ++i)
 	{
@@ -96,6 +85,27 @@ void ATestPawn::AttackEnd(UShapeComponent* OverlappedComponent, AActor* OtherAct
 	MY_LOG("End",EDebugLogLevel::DLL_Warning, OtherActor->GetName());
 }
 
+void ATestPawn::SetAttackStart()
+{
+	SMSword->GetBodyInstance()->SetSimulatePhysics(true);
+	SMSword->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::Physics);
+	if (SMSword->GetBodyInstance())
+	{
+		if (SMSword->GetBodyInstance()->GetRigidActor())
+		{
+			if (physx::PxRigidDynamic* Dynamic = (SMSword->GetBodyInstance()->GetRigidActor())->is<physx::PxRigidDynamic>())
+			{
+				Dynamic->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC,true);
+			}		
+		}
+	}
+}
+
+void ATestPawn::SetAttackEnd()
+{
+	SMSword->GetBodyInstance()->SetSimulatePhysics(false);
+	SMSword->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
 
 
 void ATestPawn::Tick(float DeltaSeconds)
@@ -103,10 +113,7 @@ void ATestPawn::Tick(float DeltaSeconds)
 	AActor::Tick(DeltaSeconds);
 
 	const float power = 3;
-	if (ImGui::IsKeyDown(ImGuiKey_I))
-	{
-		SMSword->GetBodyInstance()->SetSimulatePhysics(true);
-	}
+
 	/*
 	if (ImGui::IsKeyDown(ImGuiKey_K))
 	{

@@ -6,6 +6,7 @@
 #pragma once
 #include "UAnimSequence.h"
 #include "Engine/Components/UAnimMontage.h"
+#include "Engine/Misc/Delegate.h"
 #include "Engine/UObject/UObject.h"
 
 class USkeletalMeshComponent;
@@ -60,7 +61,13 @@ protected:
 	// 현재 재생중인 AnimMontage Instances
 	std::vector<std::shared_ptr<FAnimMontageInstance>> MontageInstances;
 protected:
+	// 이전프레임의 AnimMatrices
+	// 스켈레탈 메시의 SocketTransform 계산시 사용
 	std::array<XMMATRIX, MAX_BONES> LastFrameAnimMatrices;
+
+	// Notify Map
+	// {노티파이 이름, 델리게이트}
+	std::unordered_map<std::string, Delegate<>> NotifyEvent;
 private:
 	USkeletalMeshComponent* CurrentSkeletalMeshComponent;
 

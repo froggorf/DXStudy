@@ -20,6 +20,9 @@
 		{ "SectionName" : "Fire", "StartTime" : 0.0 }
 	],
     	"Notifies" : [
+		{ "NotifyClass" : "UAnimNotify_AttackStart", "TriggerTime" : 11 },
+		{ "NotifyClass" : "UAnimNotify_AttackEnd", "TriggerTime" : 16 }
+
   	  ]
 
 }
