@@ -239,7 +239,7 @@ void ATestCube::Tick(float DeltaSeconds)
 	}
 	XMFLOAT3 Loc;
 	XMStoreFloat3(&Loc, Target);
-	DummyComp->SetWorldLocation(Loc);
+	//DummyComp->SetWorldLocation(Loc);
 
 
 	static bool bCheck = false;

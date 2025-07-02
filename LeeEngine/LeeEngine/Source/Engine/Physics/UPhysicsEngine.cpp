@@ -178,9 +178,13 @@ void UPhysicsEngine::TickPhysics(float DeltaSeconds) const
 			{
 				if (physx::PxRigidDynamic* RigidDynamic = Actor->is<physx::PxRigidDynamic>())
 				{
-					const physx::PxTransform& PxTransform = RigidDynamic->getGlobalPose();
-					FTransform Transform{{PxTransform.p.x, PxTransform.p.y, -PxTransform.p.z},{PxTransform.q.x, PxTransform.q.y, PxTransform.q.z, PxTransform.q.w},{1, 1, 1}};
-					ShapeComp->SetWorldTransform(Transform);
+					// 키네마틱인 애들은 위치 정보를 갱신해주지 말아야함
+					if (!RigidDynamic->getRigidBodyFlags().isSet(physx::PxRigidBodyFlag::eKINEMATIC))
+					{
+						const physx::PxTransform& PxTransform = RigidDynamic->getGlobalPose();
+						FTransform Transform{{PxTransform.p.x, PxTransform.p.y, -PxTransform.p.z},{PxTransform.q.x, PxTransform.q.y, PxTransform.q.z, PxTransform.q.w},{1, 1, 1}};
+						ShapeComp->SetWorldTransform(Transform);
+					}
 				}
 			}
 		}

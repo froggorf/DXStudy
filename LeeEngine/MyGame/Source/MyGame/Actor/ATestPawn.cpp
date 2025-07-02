@@ -25,12 +25,6 @@ ATestPawn::ATestPawn()
 	SMSword->SetRelativeLocation({-9.895, -3.056, -6.95});
 	SMSword->SetRelativeRotation(XMFLOAT4{0.073,0.09,-0.638,0.761});
 
-	CapsuleComp = std::make_shared<UCapsuleComponent>();
-	CapsuleComp->SetupAttachment(SMSword);
-	CapsuleComp->SetHalfHeight(250);
-	CapsuleComp->SetRelativeRotation(XMFLOAT3{90,0,0});
-	CapsuleComp->SetRelativeLocation({0.0f,0.0f,-350.0f});
-	CapsuleComp->SetRadius(25);
 	
 
 	UTestComponent* NewTestComp = dynamic_cast<UTestComponent*>( CreateDefaultSubobject("TestActorComp", "UTestComponent"));
@@ -111,7 +105,6 @@ void ATestPawn::SetAttackEnd()
 void ATestPawn::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
-
 	const float power = 3;
 
 	/*

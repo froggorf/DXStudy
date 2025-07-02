@@ -31,7 +31,6 @@ protected:
 	std::shared_ptr<USkeletalMeshComponent> SKComp;
 
 	std::shared_ptr<UStaticMeshComponent> SMSword;
-	std::shared_ptr<UCapsuleComponent> CapsuleComp;
 
 private:
 	
