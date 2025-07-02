@@ -18,6 +18,13 @@ UStaticMeshComponent::UStaticMeshComponent()
 	
 }
 
+void UStaticMeshComponent::Register()
+{
+	UMeshComponent::Register();
+
+	SetStaticMesh(StaticMesh);
+}
+
 std::vector<std::shared_ptr<FPrimitiveSceneProxy>> UStaticMeshComponent::CreateSceneProxy()
 {
 	if(nullptr == StaticMesh)
@@ -47,10 +54,11 @@ bool UStaticMeshComponent::SetStaticMesh(const std::shared_ptr<UStaticMesh>& New
 		return false;
 	}
 
-	if (NewMesh.get() == GetStaticMesh().get())
-	{
-		return false;
-	}
+	// Note: 07.03 ) BodyInstance를 새로 설정하기 위해 해당 부분을 주석처리함
+	//if (NewMesh.get() == GetStaticMesh().get())
+	//{
+	//	return false;
+	//}
 
 
 	StaticMesh = NewMesh;

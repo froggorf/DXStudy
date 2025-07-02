@@ -33,6 +33,10 @@ physx::PxRigidActor* UConvexComponent::CreateRigidActor()
 	{
 		Actor = gPhysicsEngine->CreateAndRegisterConvexActor(GetComponentTransform(), StaticMesh, Mass, ConvexMeshVertexBuffer, bSimulatePhysics);	
 	}
+	else
+	{
+		MY_LOG("Warning", EDebugLogLevel::DLL_Warning, "No Valid StaticMesh");
+	}
 	return Actor;
 }
 

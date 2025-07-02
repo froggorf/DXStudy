@@ -186,7 +186,7 @@ void ATestCube::BeginPlay()
 
 	for (const std::shared_ptr<UStaticMeshComponent>& SMC : SMVec)
 	{
-		SMC->GetBodyInstance()->SetSimulatePhysics(false);
+		SMC->GetBodyInstance()->SetSimulatePhysics(true);
 		SMC->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::Physics);
 		SMC->GetBodyInstance()->OnComponentHit.Add(this, &ATestCube::OnComponentHitEvent);
 		SMC->GetBodyInstance()->OnComponentBeginOverlap.Add(this, &ATestCube::OnComponentBeginOverlapEvent);
