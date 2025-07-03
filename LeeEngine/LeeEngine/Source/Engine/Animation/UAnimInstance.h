@@ -68,6 +68,9 @@ protected:
 	// Notify Map
 	// {노티파이 이름, 델리게이트}
 	std::unordered_map<std::string, Delegate<>> NotifyEvent;
+
+	std::vector<XMMATRIX>         FinalBoneMatrices;
+	std::vector<FAnimNotifyEvent> FinalNotifies;
 private:
 	USkeletalMeshComponent* CurrentSkeletalMeshComponent;
 

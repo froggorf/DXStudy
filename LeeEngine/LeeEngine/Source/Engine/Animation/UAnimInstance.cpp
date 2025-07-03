@@ -9,6 +9,7 @@
 UAnimInstance::UAnimInstance()
 {
 	DeltaTime = 0.0f;
+	FinalBoneMatrices = std::vector<XMMATRIX>(MAX_BONES, XMMatrixIdentity());
 }
 
 void UAnimInstance::BeginPlay()
@@ -54,6 +55,27 @@ void UAnimInstance::Tick(float DeltaSeconds)
 
 		NativeUpdateAnimation(DeltaSeconds);
 		UpdateAnimation(DeltaSeconds);
+
+		// 노티파이 실행
+		for (int i = 0; i < FinalNotifies.size(); ++i)
+		{
+			const std::string NotifyName = FinalNotifies[i].Notify->Notify();
+
+			const auto& Notify = NotifyEvent.find(NotifyName);
+			if (Notify != NotifyEvent.end())
+			{
+				Notify->second.Broadcast();
+			}
+
+		}
+		// 애니메이션 데이터를 렌더링쓰레드에 전달
+		FScene::UpdateSkeletalMeshAnimation_GameThread(GetSkeletalMeshComponent()->GetPrimitiveID(), FinalBoneMatrices);
+
+		// GetSocketTransform에 사용하기 위한 목적으로 현재프레임의 애니메이션 본 행렬을 저장
+		for (UINT i = 0; i < MAX_BONES; ++i)
+		{
+			LastFrameAnimMatrices[i]= FinalBoneMatrices[i];
+		}
 	}
 }
 

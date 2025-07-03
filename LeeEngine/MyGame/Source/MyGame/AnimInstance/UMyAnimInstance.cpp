@@ -72,9 +72,6 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 
 	if (GetSkeletalMeshComponent() && TestComp&& BS_MyUEFN_Locomotion  && AS_Test0 && AS_Test1 && AS_Test2)
 	{
-		std::vector<XMMATRIX>         FinalBoneMatrices(MAX_BONES, XMMatrixIdentity());
-		std::vector<FAnimNotifyEvent> FinalNotifies;
-
 		// BlendSpace_Locomotion
 		std::vector<XMMATRIX> BS_IdleWalkRunMatrices(MAX_BONES, XMMatrixIdentity());
 
@@ -98,36 +95,12 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 		}
 		
 
-		// 레이어 블렌딩
-		std::vector<XMMATRIX> ResultMatrices(MAX_BONES, XMMatrixIdentity());
-		LayeredBlendPerBone(BS_IdleWalkRunMatrices, AS_Matrices, "spine_01", 1.0f, ResultMatrices);
+		LayeredBlendPerBone(BS_IdleWalkRunMatrices, AS_Matrices, "spine_01", 1.0f, FinalBoneMatrices);
 
 		// 몽타쥬 연결
 		{
 			std::string SlotName = "DefaultSlot";
-			PlayMontage(SlotName, ResultMatrices, FinalNotifies);
-		}
-
-		for (int i = 0; i < FinalNotifies.size(); ++i)
-		{
-			const std::string NotifyName = FinalNotifies[i].Notify->Notify();
-
-			const auto& Notify = NotifyEvent.find(NotifyName);
-			if (Notify != NotifyEvent.end())
-			{
-				Notify->second.Broadcast();
-			}
-			
-		}
-
-
-		FScene::UpdateSkeletalMeshAnimation_GameThread(GetSkeletalMeshComponent()->GetPrimitiveID(), ResultMatrices);
-
-		// 06.30 Note : 마지막에 해당 코드를 꼭 넣어줘야지만 GetSocketTransform 등을 사용할 수 있음
-		// 다만 해당부분은 작성하는데 놓칠 수 있으므로 추후 반환값을 ResultMatrices를 반환하게 하여 상위클래스에서 자동으로 받는다던가 하는식으로 수정이 가능할것으로 보임
-		for (UINT i = 0; i < MAX_BONES; ++i)
-		{
-			 LastFrameAnimMatrices[i]= ResultMatrices[i];
+			PlayMontage(SlotName, FinalBoneMatrices, FinalNotifies);
 		}
 	}
 }
