@@ -119,5 +119,17 @@ void ATestPawn::SetAttackEnd()
 void ATestPawn::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
-	const float power = 3;
+	const float MaxSpeed = 1000.0f;
+	if (ImGui::IsKeyDown(ImGuiKey_I))
+	{
+		physx::PxVec3 Movement = {1,0,0};
+		Movement *= MaxSpeed;
+		physx::PxControllerFilters Filters;
+		Controller->move(Movement*DeltaSeconds,0.01f, DeltaSeconds,Filters);
+		physx::PxExtendedVec3 NewPos = Controller->getPosition();
+		XMFLOAT3 NewP = {static_cast<float>(NewPos.x),static_cast<float>(NewPos.y),static_cast<float>(-NewPos.z)};
+		CapsuleComp->SetWorldLocation(NewP);
+	}
+	
+	
 }
