@@ -12,6 +12,7 @@ ATestPawn::ATestPawn()
 	CapsuleComp->SetRadius(Radius);
 	CapsuleComp->SetHalfHeight(HalfHeight);
 	SetRootComponent(CapsuleComp);
+	CapsuleComp->SetWorldLocation({0,HalfHeight,0});
 	
 
 
@@ -50,11 +51,17 @@ void ATestPawn::BeginPlay()
 {
 	AActor::BeginPlay();
 
-	CapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CapsuleComp->SetObjectType(ECollisionChannel::Pawn);
 	CapsuleComp->SetSimulatePhysics(true);
 	CapsuleComp->SetKinematicRigidBody(true);
+	for (UINT i = 0; i < static_cast<UINT>(ECollisionChannel::Count); ++i)
+	{
+		CapsuleComp->SetResponseToChannel(static_cast<ECollisionChannel>(i), ECollisionResponse::Overlap);	
+	}
+	
 	CapsuleComp->SetDebugDraw(true);
-	CapsuleComp->SetupAttachment(GetRootComponent());
+	
 
 	SMSword->GetBodyInstance()->OnComponentBeginOverlap.Add(this, &ATestPawn::AttackStart);
 	SMSword->GetBodyInstance()->OnComponentHit.Add(this, &ATestPawn::OnComponentHitEvent);
@@ -119,17 +126,40 @@ void ATestPawn::SetAttackEnd()
 void ATestPawn::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
-	const float MaxSpeed = 1000.0f;
-	if (ImGui::IsKeyDown(ImGuiKey_I))
+	constexpr float MaxSpeed = 100.0f;
+	static float VelocityY;
+	physx::PxVec3 InputDir = {0,0,0};
+	if (ImGui::IsKeyDown(ImGuiKey_I)) InputDir.z += 1;
+	if (ImGui::IsKeyDown(ImGuiKey_K)) InputDir.z -= 1;
+	if (ImGui::IsKeyDown(ImGuiKey_J)) InputDir.x -= 1;
+	if (ImGui::IsKeyDown(ImGuiKey_L)) InputDir.x += 1;
+	if (InputDir.magnitudeSquared() > 0)
 	{
-		physx::PxVec3 Movement = {1,0,0};
-		Movement *= MaxSpeed;
-		physx::PxControllerFilters Filters;
-		Controller->move(Movement*DeltaSeconds,0.01f, DeltaSeconds,Filters);
-		physx::PxExtendedVec3 NewPos = Controller->getPosition();
-		XMFLOAT3 NewP = {static_cast<float>(NewPos.x),static_cast<float>(NewPos.y),static_cast<float>(-NewPos.z)};
-		CapsuleComp->SetWorldLocation(NewP);
+		InputDir.normalize();
 	}
+
+	VelocityY -= 9.8f*7.5f*DeltaSeconds;
+
+	if (ImGui::IsKeyPressed(ImGuiKey_Space))
+	{
+		VelocityY = 12.f*7.5f; 
+	}
+
+	physx::PxVec3 Velocity = InputDir * MaxSpeed;
+	Velocity.y = VelocityY;
+	Velocity.z *= -1;
+	physx::PxControllerFilters Filters;
+	physx::PxControllerCollisionFlags MoveFlags = Controller->move(Velocity * DeltaSeconds, 0.01f, DeltaSeconds, Filters);
+
+	if (MoveFlags & physx::PxControllerCollisionFlag::eCOLLISION_DOWN)
+	{
+		VelocityY = 0;
+	}
+		
+
+	physx::PxExtendedVec3 NewPos = Controller->getPosition();
 	
-	
+	XMFLOAT3 NewP = {static_cast<float>(NewPos.x),static_cast<float>(NewPos.y),static_cast<float>(-NewPos.z)};
+	//MY_LOG("LOg",EDebugLogLevel::DLL_Warning, XMFLOAT3_TO_TEXT(NewP));
+	CapsuleComp->SetWorldLocation(NewP);
 }

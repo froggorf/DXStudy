@@ -28,90 +28,90 @@ ATestCube::ATestCube()
 	TestCube2->SetCollisionObjectType(ECollisionChannel::WorldStatic);
 	
 
-	TestCubeSM1	 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM2	 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM3	 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM4	 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM5	 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM6	 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM9	 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM7	 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM8	 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM10 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM11 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM12 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM13 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM14 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM15 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM16 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM17 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM18 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM19 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM20 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM21 = std::make_shared<UStaticMeshComponent>();
+	//TestCubeSM1	 = std::make_shared<UStaticMeshComponent>();
+	//TestCubeSM2	 = std::make_shared<UStaticMeshComponent>();
+	//TestCubeSM3	 = std::make_shared<UStaticMeshComponent>();
+	//TestCubeSM4	 = std::make_shared<UStaticMeshComponent>();
+	//TestCubeSM5	 = std::make_shared<UStaticMeshComponent>();
+	//TestCubeSM6	 = std::make_shared<UStaticMeshComponent>();
+	//TestCubeSM9	 = std::make_shared<UStaticMeshComponent>();
+	//TestCubeSM7	 = std::make_shared<UStaticMeshComponent>();
+	//TestCubeSM8	 = std::make_shared<UStaticMeshComponent>();
+	//TestCubeSM10 = std::make_shared<UStaticMeshComponent>();
+	//TestCubeSM11 = std::make_shared<UStaticMeshComponent>();
+	//TestCubeSM12 = std::make_shared<UStaticMeshComponent>();
+	//TestCubeSM13 = std::make_shared<UStaticMeshComponent>();
+	//TestCubeSM14 = std::make_shared<UStaticMeshComponent>();
+	//TestCubeSM15 = std::make_shared<UStaticMeshComponent>();
+	//TestCubeSM16 = std::make_shared<UStaticMeshComponent>();
+	//TestCubeSM17 = std::make_shared<UStaticMeshComponent>();
+	//TestCubeSM18 = std::make_shared<UStaticMeshComponent>();
+	//TestCubeSM19 = std::make_shared<UStaticMeshComponent>();
+	//TestCubeSM20 = std::make_shared<UStaticMeshComponent>();
+	//TestCubeSM21 = std::make_shared<UStaticMeshComponent>();
 
 
-	std::vector<std::shared_ptr<UStaticMeshComponent>> SMVec = {
-		TestCubeSM1	,
-		TestCubeSM2	,
-		TestCubeSM3	,
-		TestCubeSM4	,
-		TestCubeSM5	,
-		TestCubeSM6	,
-		TestCubeSM9	,
-		TestCubeSM7	,
-		TestCubeSM8	,
-		TestCubeSM10,
-		TestCubeSM11,
-		TestCubeSM12,
-		TestCubeSM13,
-		TestCubeSM14,
-		TestCubeSM15,
-		TestCubeSM16,
-		TestCubeSM17,
-		TestCubeSM18,
-		TestCubeSM19,
-		TestCubeSM20,
-		TestCubeSM21,
-	};
+	//std::vector<std::shared_ptr<UStaticMeshComponent>> SMVec = {
+	//	TestCubeSM1	,
+	//	TestCubeSM2	,
+	//	TestCubeSM3	,
+	//	TestCubeSM4	,
+	//	TestCubeSM5	,
+	//	TestCubeSM6	,
+	//	TestCubeSM9	,
+	//	TestCubeSM7	,
+	//	TestCubeSM8	,
+	//	TestCubeSM10,
+	//	TestCubeSM11,
+	//	TestCubeSM12,
+	//	TestCubeSM13,
+	//	TestCubeSM14,
+	//	TestCubeSM15,
+	//	TestCubeSM16,
+	//	TestCubeSM17,
+	//	TestCubeSM18,
+	//	TestCubeSM19,
+	//	TestCubeSM20,
+	//	TestCubeSM21,
+	//};
 
 
 
-	// 피라미드의 맨 위(0,0)에서 시작
-	const float XOffset = 15.0f;
-	const float YOffset = 15.0f;
+	//// 피라미드의 맨 위(0,0)에서 시작
+	//const float XOffset = 15.0f;
+	//const float YOffset = 15.0f;
 
-	int index = 0;
-	int row = 1;
+	//int index = 0;
+	//int row = 1;
 
-	while (index < SMVec.size())
-	{
-		
+	//while (index < SMVec.size())
+	//{
+	//	
 
-		// 각 줄의 시작 위치를 중앙 정렬하려면
-		float startX = -((row - 1) * XOffset) / 2.0f;
-		float y = (1-row) * YOffset;
+	//	// 각 줄의 시작 위치를 중앙 정렬하려면
+	//	float startX = -((row - 1) * XOffset) / 2.0f;
+	//	float y = (1-row) * YOffset;
 
-		for (int col = 0; col < row && index < SMVec.size(); ++col, ++index)
-		{
-			float x = startX + col * XOffset;
-		
-			SMVec[index]->SetCollisionEnabled(ECollisionEnabled::Physics);
-			SMVec[index]->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
-			SMVec[index]->SetCollisionResponseToChannel(ECollisionChannel::WorldStatic,ECollisionResponse::Block);
-			SMVec[index]->SetCollisionResponseToChannel(ECollisionChannel::WorldDynamic,ECollisionResponse::Block);
-			AssetManager::GetAsyncAssetCache("SM_Box",[SMVec,index](std::shared_ptr<UObject> Object)
-				{
-					SMVec[index]->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
-				});
+	//	for (int col = 0; col < row && index < SMVec.size(); ++col, ++index)
+	//	{
+	//		float x = startX + col * XOffset;
+	//	
+	//		SMVec[index]->SetCollisionEnabled(ECollisionEnabled::Physics);
+	//		SMVec[index]->SetCollisionObjectType(ECollisionChannel::WorldDynamic);
+	//		SMVec[index]->SetCollisionResponseToChannel(ECollisionChannel::WorldStatic,ECollisionResponse::Block);
+	//		SMVec[index]->SetCollisionResponseToChannel(ECollisionChannel::WorldDynamic,ECollisionResponse::Block);
+	//		AssetManager::GetAsyncAssetCache("SM_Box",[SMVec,index](std::shared_ptr<UObject> Object)
+	//			{
+	//				SMVec[index]->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
+	//			});
 
-			SMVec[index]->SetupAttachment(GetRootComponent());
-			SMVec[index]->SetRelativeScale3D(XMFLOAT3{5.0f,5.0f,5.0f});
-			SMVec[index]->SetRelativeLocation(XMFLOAT3{x,y+50,0});
-			//SMVec[index]->SetRelativeLocation(XMFLOAT3{0,50,0});
-		}
-		++row;
-	}
+	//		SMVec[index]->SetupAttachment(GetRootComponent());
+	//		SMVec[index]->SetRelativeScale3D(XMFLOAT3{5.0f,5.0f,5.0f});
+	//		SMVec[index]->SetRelativeLocation(XMFLOAT3{x,y+50,0});
+	//		//SMVec[index]->SetRelativeLocation(XMFLOAT3{0,50,0});
+	//	}
+	//	++row;
+	//}
 
 	DummyComp = std::make_shared<USceneComponent>();
 	DummyComp->Rename("DummyComp");
@@ -158,39 +158,39 @@ void ATestCube::BeginPlay()
 {
 	AActor::BeginPlay();
 
-	std::vector<std::shared_ptr<UStaticMeshComponent>> SMVec = {
-		TestCubeSM1	,
-		TestCubeSM2	,
-		TestCubeSM3	,
-		TestCubeSM4	,
-		TestCubeSM5	,
-		TestCubeSM6	,
-		TestCubeSM9	,
-		TestCubeSM7	,
-		TestCubeSM8	,
-		TestCubeSM10,
-		TestCubeSM11,
-		TestCubeSM12,
-		TestCubeSM13,
-		TestCubeSM14,
-		TestCubeSM15,
-		TestCubeSM16,
-		TestCubeSM17,
-		TestCubeSM18,
-		TestCubeSM19,
-		TestCubeSM20,
-		TestCubeSM21,
-	};
+	//std::vector<std::shared_ptr<UStaticMeshComponent>> SMVec = {
+	//	TestCubeSM1	,
+	//	TestCubeSM2	,
+	//	TestCubeSM3	,
+	//	TestCubeSM4	,
+	//	TestCubeSM5	,
+	//	TestCubeSM6	,
+	//	TestCubeSM9	,
+	//	TestCubeSM7	,
+	//	TestCubeSM8	,
+	//	TestCubeSM10,
+	//	TestCubeSM11,
+	//	TestCubeSM12,
+	//	TestCubeSM13,
+	//	TestCubeSM14,
+	//	TestCubeSM15,
+	//	TestCubeSM16,
+	//	TestCubeSM17,
+	//	TestCubeSM18,
+	//	TestCubeSM19,
+	//	TestCubeSM20,
+	//	TestCubeSM21,
+	//};
 
 	TestCube2->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::Physics);
 
-	for (const std::shared_ptr<UStaticMeshComponent>& SMC : SMVec)
+	/*for (const std::shared_ptr<UStaticMeshComponent>& SMC : SMVec)
 	{
 		SMC->GetBodyInstance()->SetSimulatePhysics(true);
 		SMC->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::Physics);
 		SMC->GetBodyInstance()->OnComponentHit.Add(this, &ATestCube::OnComponentHitEvent);
 		SMC->GetBodyInstance()->OnComponentBeginOverlap.Add(this, &ATestCube::OnComponentBeginOverlapEvent);
-	}
+	}*/
 }
 
 void ATestCube::Tick(float DeltaSeconds)
