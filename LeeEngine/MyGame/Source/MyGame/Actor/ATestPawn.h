@@ -9,6 +9,48 @@
 #include "Engine/Physics/UCapsuleComponent.h"
 
 
+class MyQueryFilterCallback : public physx::PxQueryFilterCallback
+{
+public:
+	// 무시할 actor 저장용 set
+	std::unordered_set<const physx::PxRigidActor*> IgnoreActors;
+
+	// 추가 함수: 무시할 actor 등록
+	void AddIgnoreActor(const physx::PxRigidActor* actor)
+	{
+		IgnoreActors.insert(actor);
+	}
+
+	// 추가 함수: 무시할 actor 해제
+	void RemoveIgnoreActor(const physx::PxRigidActor* actor)
+	{
+		IgnoreActors.erase(actor);
+	}
+
+	// 쿼리 프리필터 구현
+	virtual physx::PxQueryHitType::Enum preFilter(
+		const physx::PxFilterData& /*filterData*/,
+		const physx::PxShape* /*shape*/,
+		const physx::PxRigidActor* actor,
+		physx::PxHitFlags& /*queryFlags*/) override
+	{
+		// IgnoreActors에 있으면 무시
+		if (IgnoreActors.contains(actor))
+		{
+			return physx::PxQueryHitType::eNONE; // 충돌 무시
+		}
+
+
+		// 아니면 충돌 허용
+		return physx::PxQueryHitType::eBLOCK;
+	}
+
+	physx::PxQueryHitType::Enum postFilter(const physx::PxFilterData& filterData, const physx::PxQueryHit& hit, const physx::PxShape* shape, const physx::PxRigidActor* actor) override
+	{
+		return physx::PxQueryHitType::eBLOCK;
+	}
+};
+
 class ATestPawn : public AActor
 {
 	MY_GENERATE_BODY(ATestPawn)
@@ -39,6 +81,9 @@ protected:
 
 	float Radius;
 	float HalfHeight;
+
+	physx::PxControllerFilters Filters;
+	MyQueryFilterCallback CCTQueryCallBack;
 
 private:
 	

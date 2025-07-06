@@ -47,6 +47,8 @@ ATestPawn::ATestPawn()
 	
 }
 
+
+
 void ATestPawn::BeginPlay()
 {
 	AActor::BeginPlay();
@@ -85,6 +87,41 @@ void ATestPawn::BeginPlay()
 	desc.stepOffset = 10.0f;
 
 	Controller = Manager->createController(desc);
+
+	std::queue<std::shared_ptr<USceneComponent>> Q;
+	Q.emplace(GetRootComponent());
+	while (!Q.empty())
+	{
+		std::shared_ptr<USceneComponent> SceneComponent = Q.front(); Q.pop();
+		const std::vector<std::shared_ptr<USceneComponent>>& Children = SceneComponent->GetAttachChildren();
+		if (!Children.empty())
+		{
+			for (const std::shared_ptr<USceneComponent>& Child : Children)
+			{
+				Q.emplace(Child);
+			}
+		}
+
+		if (std::shared_ptr<UShapeComponent> ShapeComp = std::dynamic_pointer_cast<UShapeComponent>(SceneComponent))
+		{
+			if (ShapeComp->GetRigidActor())
+			{
+				CCTQueryCallBack.AddIgnoreActor(ShapeComp->GetRigidActor());		
+			}
+		}
+		else
+		{
+			if (std::shared_ptr<UPrimitiveComponent> PrimitiveComp = std::dynamic_pointer_cast<UPrimitiveComponent>(SceneComponent))
+			{
+				if (PrimitiveComp->GetBodyInstance() && PrimitiveComp->GetBodyInstance()->GetRigidActor())
+				{
+					CCTQueryCallBack.AddIgnoreActor(PrimitiveComp->GetBodyInstance()->GetRigidActor());
+				}
+			}
+		}
+
+	}
+	Filters.mFilterCallback = &CCTQueryCallBack;
 }
 
 void ATestPawn::OnComponentHitEvent(UShapeComponent* HitComponent, AActor* OtherActor, UShapeComponent* OtherComp, const FHitResult& HitResults)
@@ -148,7 +185,6 @@ void ATestPawn::Tick(float DeltaSeconds)
 	physx::PxVec3 Velocity = InputDir * MaxSpeed;
 	Velocity.y = VelocityY;
 	Velocity.z *= -1;
-	physx::PxControllerFilters Filters;
 	physx::PxControllerCollisionFlags MoveFlags = Controller->move(Velocity * DeltaSeconds, 0.01f, DeltaSeconds, Filters);
 
 	if (MoveFlags & physx::PxControllerCollisionFlag::eCOLLISION_DOWN)
