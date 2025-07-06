@@ -13,35 +13,22 @@ class MyQueryFilterCallback : public physx::PxQueryFilterCallback
 {
 public:
 	// 무시할 actor 저장용 set
-	std::unordered_set<const physx::PxRigidActor*> IgnoreActors;
+	std::weak_ptr<AActor> IgnoreActor;
 
-	// 추가 함수: 무시할 actor 등록
-	void AddIgnoreActor(const physx::PxRigidActor* actor)
-	{
-		IgnoreActors.insert(actor);
-	}
-
-	// 추가 함수: 무시할 actor 해제
-	void RemoveIgnoreActor(const physx::PxRigidActor* actor)
-	{
-		IgnoreActors.erase(actor);
-	}
-
-	// 쿼리 프리필터 구현
 	virtual physx::PxQueryHitType::Enum preFilter(
 		const physx::PxFilterData& /*filterData*/,
 		const physx::PxShape* /*shape*/,
 		const physx::PxRigidActor* actor,
 		physx::PxHitFlags& /*queryFlags*/) override
 	{
-		// IgnoreActors에 있으면 무시
-		if (IgnoreActors.contains(actor))
+		if (actor->userData)
 		{
-			return physx::PxQueryHitType::eNONE; // 충돌 무시
+			if (IgnoreActor.lock().get() == static_cast<UShapeComponent*>(actor->userData)->GetOwner())
+			{
+				return physx::PxQueryHitType::eNONE; // 충돌 무시
+			}	
 		}
-
-
-		// 아니면 충돌 허용
+		
 		return physx::PxQueryHitType::eBLOCK;
 	}
 
