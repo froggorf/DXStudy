@@ -27,7 +27,6 @@ struct FTask
 
 // 언리얼엔진에서는 인터페이스로서 사용되지만
 // LeeEngine에서는 자체적으로 쓰레드풀을 제공하는 역할로 진행
-
 // std::condition_variable을 통해 작업자 쓰레드를 대기상태로 유지할 수 있도록 조정
 class FQueuedThreadPool
 {

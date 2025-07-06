@@ -47,24 +47,8 @@ struct GS_OUT
 	if (false == particle.Active)
 		return;
 
-	//// WorldSpace -> ViewSpace
-	//float4 vViewPos = mul(float4(particle.WorldPos, 1.f), gView);
-
-	//// 정점 4개 위치 설정
-	//// 0 -- 1
-	//// | \  |
-	//// 3 -- 2
-	//GS_OUT arrOut[4] = { (GS_OUT) 0.f, (GS_OUT) 0.f, (GS_OUT) 0.f, (GS_OUT) 0.f };
-
-	//arrOut[0].vPosition = float4(vViewPos.x - particle.WorldScale.x / 2.f, vViewPos.y + particle.WorldScale.y / 2.f, vViewPos.z, 1.f);
-	//arrOut[1].vPosition = float4(vViewPos.x + particle.WorldScale.x / 2.f, vViewPos.y + particle.WorldScale.y / 2.f, vViewPos.z, 1.f);
-	//arrOut[2].vPosition = float4(vViewPos.x + particle.WorldScale.x / 2.f, vViewPos.y - particle.WorldScale.y / 2.f, vViewPos.z, 1.f);
-	//arrOut[3].vPosition = float4(vViewPos.x - particle.WorldScale.x / 2.f, vViewPos.y - particle.WorldScale.y / 2.f, vViewPos.z, 1.f);
-
-	// WorldSpace -> ViewSpace
 	float4 vViewPos = mul(float4(particle.WorldPos, 1.f), gView);
 
-	// 오프셋(로컬)
 	float2 halfScale  = particle.WorldScale.xy * 0.5f;
 	float2 offsets[4] = {float2(-halfScale.x, halfScale.y), float2(halfScale.x, halfScale.y), float2(halfScale.x, -halfScale.y), float2(-halfScale.x, -halfScale.y)};
 

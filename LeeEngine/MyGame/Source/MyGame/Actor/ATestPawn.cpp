@@ -6,6 +6,14 @@
 
 ATestPawn::ATestPawn()
 {
+	Radius = 20.0f;
+	HalfHeight = 65.0f;
+	CapsuleComp = std::make_shared<UCapsuleComponent>();
+	CapsuleComp->SetRadius(Radius);
+	CapsuleComp->SetHalfHeight(HalfHeight);
+	SetRootComponent(CapsuleComp);
+	
+
 
 	SKComp = std::make_shared<USkeletalMeshComponent>();
 	SKComp->SetupAttachment(GetRootComponent());
@@ -14,6 +22,7 @@ ATestPawn::ATestPawn()
 			SKComp->SetSkeletalMesh(std::static_pointer_cast<USkeletalMesh>(Object));
 		});
 	SKComp->SetAnimInstanceClass("UMyAnimInstance");
+	SKComp->SetRelativeLocation({0,-85,0});
 
 	SMSword = std::make_shared<UStaticMeshComponent>();
 	SMSword->SetupAttachment(SKComp, "hand_r");
@@ -32,13 +41,21 @@ ATestPawn::ATestPawn()
 	{
 		TestComp = std::make_shared<UTestComponent>(*NewTestComp);	
 	}
+
+	
 	
 }
 
 void ATestPawn::BeginPlay()
 {
 	AActor::BeginPlay();
-	SMSword->GetBodyInstance()->SetDebugDraw(true);
+
+	CapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	CapsuleComp->SetSimulatePhysics(true);
+	CapsuleComp->SetKinematicRigidBody(true);
+	CapsuleComp->SetDebugDraw(true);
+	CapsuleComp->SetupAttachment(GetRootComponent());
+
 	SMSword->GetBodyInstance()->OnComponentBeginOverlap.Add(this, &ATestPawn::AttackStart);
 	SMSword->GetBodyInstance()->OnComponentHit.Add(this, &ATestPawn::OnComponentHitEvent);
 
@@ -52,11 +69,15 @@ void ATestPawn::BeginPlay()
 	}
 	SMSword->GetBodyInstance()->SetObjectType(ECollisionChannel::Pawn);
 
-	//CapsuleComp->SetResponseToChannel(ECollisionChannel::WorldStatic, ECollisionResponse::Overlap);
-	//CapsuleComp->SetDebugDraw(true);
-	//CapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	//CapsuleComp->OnComponentBeginOverlap.Add(this, &ATestPawn::AttackStart);
-	//CapsuleComp->OnComponentEndOverlap.Add(this, &ATestPawn::AttackEnd);
+	Manager = PxCreateControllerManager(*gPhysicsEngine->GetScene());
+	physx::PxCapsuleControllerDesc desc;
+	desc.height = HalfHeight*2;
+	desc.radius = Radius;
+	desc.position = physx::PxExtendedVec3(0,0,0);
+	desc.material = gPhysicsEngine->GetDefaultMaterial();
+	desc.stepOffset = 10.0f;
+
+	Controller = Manager->createController(desc);
 }
 
 void ATestPawn::OnComponentHitEvent(UShapeComponent* HitComponent, AActor* OtherActor, UShapeComponent* OtherComp, const FHitResult& HitResults)
@@ -83,22 +104,15 @@ void ATestPawn::SetAttackStart()
 {
 	SMSword->GetBodyInstance()->SetSimulatePhysics(true);
 	SMSword->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::Physics);
-	if (SMSword->GetBodyInstance())
-	{
-		if (SMSword->GetBodyInstance()->GetRigidActor())
-		{
-			if (physx::PxRigidDynamic* Dynamic = (SMSword->GetBodyInstance()->GetRigidActor())->is<physx::PxRigidDynamic>())
-			{
-				Dynamic->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC,true);
-			}		
-		}
-	}
+	SMSword->GetBodyInstance()->SetKinematicRigidBody(true);
+	SMSword->GetBodyInstance()->SetDebugDraw(true);
 }
 
 void ATestPawn::SetAttackEnd()
 {
 	SMSword->GetBodyInstance()->SetSimulatePhysics(false);
 	SMSword->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SMSword->GetBodyInstance()->SetDebugDraw(false);
 }
 
 
@@ -106,24 +120,4 @@ void ATestPawn::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
 	const float power = 3;
-
-	/*
-	if (ImGui::IsKeyDown(ImGuiKey_K))
-	{
-		CapsuleComp->AddForce({0,0,-power});
-	}
-	if (ImGui::IsKeyDown(ImGuiKey_J))
-	{
-		CapsuleComp->AddForce({-power,0,0});
-	}
-	if (ImGui::IsKeyDown(ImGuiKey_L))
-	{
-		CapsuleComp->AddForce({power,0,0});
-	}
-
-	if (ImGui::IsKeyDown(ImGuiKey_Space))
-	{
-		CapsuleComp->AddForce({0,power,0});
-	}*/
-
 }

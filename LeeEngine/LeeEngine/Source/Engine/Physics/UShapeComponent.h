@@ -58,6 +58,7 @@ public:
 	void SetResponseToChannel(ECollisionChannel Channel, ECollisionResponse NewResponse);
 	void UpdatePhysicsFilterData();
 	void SetSimulatePhysics(bool bNewSimulatePhysics);
+	void SetKinematicRigidBody(bool bNewKinematic);
 
 	virtual void DebugDraw_RenderThread() const {}
 
@@ -65,7 +66,7 @@ public:
 
 	void SetDebugDraw(bool bNewDrawDebug)
 	{
-		bDrawDebug = true;
+		bDrawDebug = bNewDrawDebug;
 	}
 
 	ECollisionEnabled CollisionEnabled;

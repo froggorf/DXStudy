@@ -222,10 +222,7 @@ void UMaterial::Binding()
 	GDirectXDevice->SetGeometryShader(GeometryShader.get());
 
 	ComPtr<ID3D11DeviceContext> DeviceContext = GDirectXDevice->GetDeviceContext();
-	if (Textures.size() == 2)
-	{
-		int a= 0;
-	}
+
 	for (int i = 0; i < Textures.size(); ++i)
 	{
 		DeviceContext->PSSetShaderResources(i, 1, Textures[i]->GetSRV().GetAddressOf());

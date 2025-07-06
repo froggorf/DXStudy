@@ -74,7 +74,6 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 	{
 		// BlendSpace_Locomotion
 		std::vector<XMMATRIX> BS_IdleWalkRunMatrices(MAX_BONES, XMMatrixIdentity());
-
 		BS_MyUEFN_Locomotion->GetAnimationBoneMatrices(XMFLOAT2{0.0f, TestComp->TestSpeed}, CurrentTime, BS_IdleWalkRunMatrices, FinalNotifies);
 
 		// 애니메이션 시퀀스 계산
@@ -94,7 +93,7 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 			break;
 		}
 		
-
+		// spine_01 을 기준으로 상체와 하체를 블렌딩
 		LayeredBlendPerBone(BS_IdleWalkRunMatrices, AS_Matrices, "spine_01", 1.0f, FinalBoneMatrices);
 
 		// 몽타쥬 연결

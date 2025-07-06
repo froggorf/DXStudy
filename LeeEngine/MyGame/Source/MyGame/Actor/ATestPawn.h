@@ -32,6 +32,14 @@ protected:
 
 	std::shared_ptr<UStaticMeshComponent> SMSword;
 
+	std::shared_ptr<UCapsuleComponent> CapsuleComp;
+
+	physx::PxControllerManager* Manager;
+	physx::PxController* Controller;
+
+	float Radius;
+	float HalfHeight;
+
 private:
 	
 };

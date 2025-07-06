@@ -25,7 +25,6 @@ void FPhysicsEventCallback::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 
 		
 		if (Pair.status & physx::PxPairFlag::eNOTIFY_TOUCH_FOUND)
 		{
-			//MY_LOG("OnTrigger", EDebugLogLevel::DLL_Warning, "Overlap Start" + std::to_string(A->GetPrimitiveID()) + " - " + std::to_string(B->GetPrimitiveID()));
 			A->OnComponentBeginOverlap.Broadcast(A,B->GetOwner(),B);
 			B->OnComponentBeginOverlap.Broadcast(B,A->GetOwner(),A);
 		}
@@ -33,10 +32,7 @@ void FPhysicsEventCallback::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 
 		{
 			A->OnComponentEndOverlap.Broadcast(A,B->GetOwner(),B);
 			B->OnComponentEndOverlap.Broadcast(B,A->GetOwner(),A);
-			//MY_LOG("OnTrigger", EDebugLogLevel::DLL_Warning, "Overlap End" + std::to_string(A->GetPrimitiveID()) + " - " + std::to_string(B->GetPrimitiveID()));
 		}
-
-		//MY_LOG("OnTrigger", EDebugLogLevel::DLL_Warning, "Overlap ing" + std::to_string(A->GetPrimitiveID()) + " - " + std::to_string(B->GetPrimitiveID()));
 
 	}
 }
@@ -72,10 +68,6 @@ void FPhysicsEventCallback::onContact(const physx::PxContactPairHeader& pairHead
 
 			B->OnComponentHit.Broadcast(B, A->GetOwner(), A, HitResult);
 		}
-		//if (ContactPair.events & physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
-		
-
-		
 	}
 }
 
@@ -270,8 +262,6 @@ physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterConvexActor(const FTransfo
 	physx::PxShape*      shape = PxPhysics->createShape(convexGeom, *DefaultMaterial,true);
 	shape->setContactOffset(0.009f);
 	shape->setRestOffset(0.0f);
-
-
 	Actor->attachShape(*shape);
 	shape->release();
 
@@ -279,8 +269,7 @@ physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterConvexActor(const FTransfo
 	{
 		PxScene->addActor(*Actor);	
 	}
-	
-	
+
 	return Actor;
 }
 
@@ -407,7 +396,6 @@ bool UPhysicsEngine::LineTraceSingleByChannel(const XMFLOAT3& Start, const XMFLO
 	float Dist = Dir.normalize();
 	physx::PxRaycastBuffer HitBuffer;
 
-	// TODO: Filter 넣기
 	physx::PxQueryFilterData FilterData;
 	for (size_t i = 0; i < TraceChannel.size(); ++i)
 	{

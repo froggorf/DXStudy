@@ -144,8 +144,6 @@ void UShapeComponent::UpdatePhysicsFilterData()
 		return;
 	}
 
-	
-
 	physx::PxU32 ShapeCount = RigidActor->getNbShapes();
 	std::vector<physx::PxShape*> Shapes(ShapeCount);
 	RigidActor->getShapes(Shapes.data(), ShapeCount);
@@ -195,6 +193,17 @@ void UShapeComponent::SetSimulatePhysics(bool bNewSimulatePhysics)
 	{
 		bSimulatePhysics = bNewSimulatePhysics;
 		ResetPhysics();
+	}
+}
+
+void UShapeComponent::SetKinematicRigidBody(bool bNewKinematic)
+{
+	if (GetRigidActor())
+	{
+		if (physx::PxRigidDynamic* Dynamic = (GetRigidActor())->is<physx::PxRigidDynamic>())
+		{
+			Dynamic->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC,true);
+		}		
 	}
 }
 

@@ -24,6 +24,7 @@
 #pragma comment(lib, "PhysXFoundation_64_D.lib")
 #pragma comment(lib, "PhysXExtensions_static_64_D.lib")
 #pragma comment(lib, "PhysXCooking_64_D.lib")
+#pragma comment(lib, "PhysXCharacterKinematic_static_64_D.lib")
 #else
 #pragma comment(lib, "assimp-vc143-mt.lib")
 #pragma comment(lib, "fmod_vc.lib")
@@ -32,6 +33,7 @@
 #pragma comment(lib, "PhysXFoundation_64.lib")
 #pragma comment(lib, "PhysXExtensions_static_64.lib")
 #pragma comment(lib, "PhysXCooking_64.lib")
+#pragma comment(lib, "PhysXCharacterKinematic_static_64.lib")
 #endif
 #pragma comment(lib, "DirectXTex.lib")
 

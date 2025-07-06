@@ -1,4 +1,4 @@
-// 02.13
+﻿// 02.13
 // 언리얼 엔진 5 코드를 분석하며 자체엔진으로 작성중인 코드입니다.
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
@@ -22,8 +22,9 @@ void AActor::Init()
 {
 	UObject::Init();
 	RootComponent = std::make_shared<USceneComponent>();
+	SetRootComponent(RootComponent);
 	RootComponent->Rename("RootComponent");
-	RootComponent->SetOwner(this);
+	
 
 	ActorID = ActorIDCount++;
 	Rename("Actor_" + std::to_string(ActorID));
@@ -57,6 +58,12 @@ void AActor::BeginPlay()
 	{
 		Component->BeginPlay();
 	}
+}
+
+void AActor::SetRootComponent(const std::shared_ptr<USceneComponent>& NewRootComp)
+{
+	RootComponent = NewRootComp;
+	RootComponent->SetOwner(this);
 }
 
 XMFLOAT3 AActor::GetActorLocation() const

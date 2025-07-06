@@ -103,6 +103,8 @@ public:
 
 	// LineTrace
 	bool LineTraceSingleByChannel(const XMFLOAT3& Start, const XMFLOAT3& End, const std::vector<ECollisionChannel>& TraceChannel, FHitResult& HitResult, float DebugDrawTime = 0.0f, const XMFLOAT3& TraceColor = XMFLOAT3(1.0f,0.0f,0.0f), const XMFLOAT3& TraceHitColor = XMFLOAT3(0.0f,1.0f,0.0f)) const;
+
+	physx::PxMaterial* GetDefaultMaterial() const {return DefaultMaterial;}
 protected:
 	// StaticMesh정보를 통해 ConvexMesh를 만들어 반환해주는 함수
 	physx::PxConvexMesh* CreateConvexMesh(const std::shared_ptr<UStaticMesh>& StaticMesh) const;

@@ -63,7 +63,6 @@ bool USkeletalMeshComponent::SetSkeletalMesh(const std::shared_ptr<USkeletalMesh
 		MY_LOG("SetStaticMesh", EDebugLogLevel::DLL_Warning, "nullptr StaticMesh");
 		return false;
 	}
-
 	if (NewMesh.get() == GetSkeletalMesh().get())
 	{
 		return false;
