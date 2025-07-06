@@ -82,7 +82,7 @@ void UShapeComponent::TickComponent(float DeltaSeconds)
 	if ( RigidActor && (!bSimulatePhysics)  )
 	{
 		const FTransform& CurTransform = GetComponentTransform();
-		RigidActor->setGlobalPose(physx::PxTransform{CurTransform.Translation.x,CurTransform.Translation.y,-CurTransform.Translation.z, {CurTransform.Rotation.x,CurTransform.Rotation.y,CurTransform.Rotation.z,CurTransform.Rotation.w}});
+		RigidActor->setGlobalPose(physx::PxTransform{CurTransform.Translation.x,CurTransform.Translation.y,-CurTransform.Translation.z, {-CurTransform.Rotation.x,-CurTransform.Rotation.y,CurTransform.Rotation.z,CurTransform.Rotation.w}});
 	}
 	// 피직스인데 kinematic인경우엔
 	else if (RigidActor && CollisionEnabled == ECollisionEnabled::Physics)
@@ -92,7 +92,7 @@ void UShapeComponent::TickComponent(float DeltaSeconds)
 			if (Dynamic->getRigidBodyFlags().isSet(physx::PxRigidBodyFlag::eKINEMATIC))
 			{
 				const FTransform& CurTransform = GetComponentTransform();
-				Dynamic->setKinematicTarget(physx::PxTransform{CurTransform.Translation.x,CurTransform.Translation.y,-CurTransform.Translation.z, {CurTransform.Rotation.x,CurTransform.Rotation.y,CurTransform.Rotation.z,CurTransform.Rotation.w}});
+				Dynamic->setKinematicTarget(physx::PxTransform{CurTransform.Translation.x,CurTransform.Translation.y,-CurTransform.Translation.z, {-CurTransform.Rotation.x,-CurTransform.Rotation.y,CurTransform.Rotation.z,CurTransform.Rotation.w}});
 			}
 		}
 		

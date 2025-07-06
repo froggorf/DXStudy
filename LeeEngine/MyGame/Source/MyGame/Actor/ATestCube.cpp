@@ -159,8 +159,8 @@ ATestCube::ATestCube()
 	});
 	SM_Ramp->SetupAttachment(GetRootComponent());
 	SM_Ramp->SetRelativeScale3D({1,1,3});
-	SM_Ramp->SetRelativeLocation({00,-50,0});
-	//SM_Ramp->SetRelativeRotation(XMFLOAT3{0,90,0});
+	SM_Ramp->SetRelativeLocation({500,-50,0});
+	SM_Ramp->SetRelativeRotation(XMFLOAT3{0,90,0});
 	
 
 }
