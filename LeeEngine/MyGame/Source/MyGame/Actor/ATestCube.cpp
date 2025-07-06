@@ -152,6 +152,17 @@ ATestCube::ATestCube()
 	TriggerBox1->SetupAttachment(GetRootComponent());
 	TriggerBox1->SetRelativeLocation(XMFLOAT3{0,-10,0});
 
+	SM_Ramp = std::make_shared<UStaticMeshComponent>();
+	AssetManager::GetAsyncAssetCache("SM_Ramp", [this](std::shared_ptr<UObject> Object)
+	{
+		SM_Ramp->SetStaticMesh(std::static_pointer_cast<UStaticMesh>(Object));
+	});
+	SM_Ramp->SetupAttachment(GetRootComponent());
+	SM_Ramp->SetRelativeScale3D({1,1,3});
+	SM_Ramp->SetRelativeLocation({00,-50,0});
+	//SM_Ramp->SetRelativeRotation(XMFLOAT3{0,90,0});
+	
+
 }
 
 void ATestCube::BeginPlay()

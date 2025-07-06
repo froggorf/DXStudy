@@ -1,0 +1,6 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_Ramp",
+    "ModelData": "/Content/Resource/Model/Ramp.FBX",
+    "Material" : [ "M_Cube" ]
+}

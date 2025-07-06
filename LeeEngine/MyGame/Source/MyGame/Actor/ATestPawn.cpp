@@ -164,6 +164,5 @@ void ATestPawn::Tick(float DeltaSeconds)
 	physx::PxExtendedVec3 NewPos = Controller->getPosition();
 	
 	XMFLOAT3 NewP = {static_cast<float>(NewPos.x),static_cast<float>(NewPos.y),static_cast<float>(-NewPos.z)};
-	//MY_LOG("LOg",EDebugLogLevel::DLL_Warning, XMFLOAT3_TO_TEXT(NewP));
 	CapsuleComp->SetWorldLocation(NewP);
 }

@@ -58,6 +58,8 @@ private:
 	std::shared_ptr<UStaticMeshComponent> TestCube3;
 	std::shared_ptr<UStaticMeshComponent> TestCube4;
 
+	std::shared_ptr<UStaticMeshComponent> SM_Ramp;
+
 	std::shared_ptr<UNiagaraComponent> NC_BillboardRibbon;
 	std::shared_ptr<USceneComponent>   DummyComp;
 
