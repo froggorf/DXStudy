@@ -92,7 +92,7 @@ class ATestPawn : public AActor
 protected:
 	
 
-	std::shared_ptr<UTestComponent> TestComp;
+	std::weak_ptr<UTestComponent> TestComp;
 
 	std::shared_ptr<USkeletalMeshComponent> SKComp;
 
@@ -100,7 +100,7 @@ protected:
 
 	std::shared_ptr<UCapsuleComponent> CapsuleComp;
 
-	UCharacterMovementComponent* MovementComp;
+	std::weak_ptr<UCharacterMovementComponent> MovementComp;
 
 
 	float Radius;

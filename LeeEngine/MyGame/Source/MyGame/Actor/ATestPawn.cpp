@@ -138,19 +138,10 @@ ATestPawn::ATestPawn()
 
 	
 
-	UTestComponent* NewTestComp = dynamic_cast<UTestComponent*>( CreateDefaultSubobject("TestActorComp", "UTestComponent"));
-	if(NewTestComp)
-	{
-		TestComp = std::make_shared<UTestComponent>(*NewTestComp);	
-	}
+	TestComp = std::dynamic_pointer_cast<UTestComponent>(CreateDefaultSubobject("TestActorComp", "UTestComponent"));
 
-	// TODO : CreateDefaultSubObject가 std::shared_ptr 반환한 뒤에 오브젝트들은 weak_ptr로 받도록 하기
-	UCharacterMovementComponent* NewMovementComp = dynamic_cast<UCharacterMovementComponent*>( CreateDefaultSubobject("MovementComponent", "UCharacterMovementComponent"));
-	if(NewMovementComp)
-	{
-		MovementComp = NewMovementComp;	
-	}
 	
+	MovementComp = std::dynamic_pointer_cast<UCharacterMovementComponent>( CreateDefaultSubobject("MovementComponent", "UCharacterMovementComponent"));
 }
 
 
@@ -224,17 +215,17 @@ void ATestPawn::SetAttackEnd()
 
 void ATestPawn::AddMovementInput(const XMFLOAT3& WorldDirection, float ScaleValue)
 {
-	if (MovementComp)
+	if (std::shared_ptr<UCharacterMovementComponent> CharacterMovementComp = MovementComp.lock())
 	{
-		MovementComp->AddInputVector(WorldDirection,ScaleValue);
+		CharacterMovementComp->AddInputVector(WorldDirection,ScaleValue);
 	}
 }
 
 void ATestPawn::Jump()
 {
-	if (MovementComp)
+	if (std::shared_ptr<UCharacterMovementComponent> CharacterMovementComp = MovementComp.lock())
 	{
-		MovementComp->Jump();
+		CharacterMovementComp->Jump();
 	}
 }
 

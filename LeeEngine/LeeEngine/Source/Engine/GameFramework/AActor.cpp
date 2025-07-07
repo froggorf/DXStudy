@@ -164,7 +164,7 @@ void AActor::LoadDataFromFileData(const nlohmann::json& AssetData)
 	SetActorScale3D(XMFLOAT3(ScaleData[X], ScaleData[Y], ScaleData[Z]));
 }
 
-UActorComponent* AActor::CreateDefaultSubobject(const std::string& SubobjectName, const std::string& ClassToCreateByDefault)
+std::shared_ptr<UActorComponent> AActor::CreateDefaultSubobject(const std::string& SubobjectName, const std::string& ClassToCreateByDefault)
 {
 	// nullptr를 반환하기 위하여 Raw Pointer 전달
 	const UObject* DefaultObject = GetDefaultObject(ClassToCreateByDefault);
@@ -176,7 +176,7 @@ UActorComponent* AActor::CreateDefaultSubobject(const std::string& SubobjectName
 			NewComponent->Rename(SubobjectName);
 			NewComponent->SetOwner(this);
 			OwnedComponents.insert(NewComponent);
-			return NewComponent.get();
+			return NewComponent;
 		}
 	}
 

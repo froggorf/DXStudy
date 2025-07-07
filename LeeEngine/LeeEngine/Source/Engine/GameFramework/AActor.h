@@ -39,7 +39,7 @@ class AActor : public UObject, public std::enable_shared_from_this<AActor>
 	void SaveDataFromAssetToFile(nlohmann::json& Json) override;
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 
-	UActorComponent* CreateDefaultSubobject(const std::string& SubobjectName, const std::string& ClassToCreateByDefault);
+	std::shared_ptr<UActorComponent> CreateDefaultSubobject(const std::string& SubobjectName, const std::string& ClassToCreateByDefault);
 
 	// OwnedComponents의 GetClass()를 인자로 받은 Class와 비교하는것을 N번 진행함
 	// Tick에서는 사용하면 성능감소가 일어날 수 있음
