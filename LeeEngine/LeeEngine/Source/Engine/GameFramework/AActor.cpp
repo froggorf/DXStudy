@@ -129,6 +129,11 @@ void AActor::Tick(float DeltaSeconds)
 	{
 		GetRootComponent()->TickComponent(DeltaSeconds);
 	}
+
+	for (const std::shared_ptr<UActorComponent>& ActorComp : GetComponents())
+	{
+		ActorComp->TickComponent(DeltaSeconds);
+	}
 }
 
 void AActor::SaveDataFromAssetToFile(nlohmann::json& Json)

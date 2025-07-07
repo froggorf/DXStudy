@@ -4,6 +4,107 @@
 #include "ATestCube2.h"
 #include "Engine/World/UWorld.h"
 
+void UCharacterMovementComponent::BeginPlay()
+{
+	UActorComponent::BeginPlay();
+
+	GravityScale = 12.5f;
+	MaxStepHeight = 20.0f;
+	WalkableFloorAngle = 44.5f;
+	MaxWalkSpeed = 500.0f;
+	JumpZVelocity = 450.0f;
+	Braking = 2048.0f;
+	Acceleration = 2048.0f;
+
+	Manager = PxCreateControllerManager(*gPhysicsEngine->GetScene());
+
+	// UCharacterMovementComponent를 받는 것은 ACharacter 이며,
+	// 무조건 RootComponent로 UCapsuleComponent를 가짐
+	/*float GravityScale;
+	float Mass;
+	float MaxWalkSpeed;
+	float JumpZVelocity;*/
+	desc.height = std::static_pointer_cast<UCapsuleComponent>(GetOwner()->GetRootComponent())->GetHalfHeight()*2;
+	desc.radius = std::static_pointer_cast<UCapsuleComponent>(GetOwner()->GetRootComponent())->GetRadius();
+	desc.position = physx::PxExtendedVec3(GetOwner()->GetActorLocation().x,GetOwner()->GetActorLocation().y,-GetOwner()->GetActorLocation().z);
+	desc.material = gPhysicsEngine->GetDefaultMaterial();
+	desc.stepOffset = MaxStepHeight;
+	desc.slopeLimit = XMConvertToRadians(WalkableFloorAngle);
+
+	Controller = Manager->createController(desc);
+
+	CCTQueryCallBack.IgnoreActor = GetOwner();
+	Filters.mFilterCallback = &CCTQueryCallBack;
+}
+
+void UCharacterMovementComponent::TickComponent(float DeltaSeconds)
+{
+	UActorComponent::TickComponent(DeltaSeconds);
+
+	XMVECTOR InputDir = XMLoadFloat3(&ControlInputVector);
+	float InputLen = XMVectorGetX(XMVector3Length(InputDir));
+	XMVECTOR MoveDir = (InputLen > 0.01f) ? XMVector3Normalize(InputDir) : XMVectorZero();
+
+	XMVECTOR CurVel = XMLoadFloat3(&Velocity);
+
+	// 입력이 있으면 가속 진행
+	if (InputLen > 0.01f)
+	{
+		XMVECTOR TargetVel = MoveDir * MaxWalkSpeed;
+		XMVECTOR DeltaVel = TargetVel - CurVel;
+
+		float DeltaVelLen = XMVectorGetX(XMVector3Length(DeltaVel));
+		float MaxDelta = Acceleration * DeltaSeconds;
+
+		if (DeltaVelLen > MaxDelta)
+			DeltaVel = XMVector3Normalize(DeltaVel) * MaxDelta;
+
+		CurVel += DeltaVel;
+	}
+	// 입력이 없을 때는 감속
+	else
+	{
+		float Speed = XMVectorGetX(XMVector3Length(CurVel));
+		float Drop = Braking * DeltaSeconds;
+
+		if (Speed > Drop)
+			CurVel -= XMVector3Normalize(CurVel) * Drop;
+		else
+			CurVel = XMVectorZero();
+	}
+
+	XMStoreFloat3(&Velocity, CurVel);
+
+	CurVelocityY -= 9.8f*gPhysicsEngine->GetSceneDefaultGravityScale()*DeltaSeconds*GravityScale;
+	physx::PxVec3 MoveVel = {Velocity.x,Velocity.y,-Velocity.z};
+	MoveVel.y = CurVelocityY;
+	physx::PxControllerCollisionFlags MoveFlags = Controller->move(MoveVel * DeltaSeconds, 0.01f, DeltaSeconds, Filters);
+
+	if (MoveFlags & physx::PxControllerCollisionFlag::eCOLLISION_DOWN)
+	{
+		CurVelocityY = 0;
+	}
+
+	physx::PxExtendedVec3 NewPos = Controller->getPosition();
+
+	XMFLOAT3 NewP = {static_cast<float>(NewPos.x),static_cast<float>(NewPos.y),static_cast<float>(-NewPos.z)};
+	GetOwner()->SetActorLocation(NewP);
+
+	ControlInputVector = {0,0,0};
+}
+
+void UCharacterMovementComponent::AddInputVector(XMFLOAT3 WorldAccel, float Power)
+{
+	ControlInputVector.x += WorldAccel.x * Power;
+	ControlInputVector.y += WorldAccel.y * Power;
+	ControlInputVector.z += WorldAccel.z * Power;
+}
+
+void UCharacterMovementComponent::Jump()
+{
+	CurVelocityY = JumpZVelocity;
+}
+
 ATestPawn::ATestPawn()
 {
 	Radius = 20.0f;
@@ -43,7 +144,12 @@ ATestPawn::ATestPawn()
 		TestComp = std::make_shared<UTestComponent>(*NewTestComp);	
 	}
 
-	
+	// TODO : CreateDefaultSubObject가 std::shared_ptr 반환한 뒤에 오브젝트들은 weak_ptr로 받도록 하기
+	UCharacterMovementComponent* NewMovementComp = dynamic_cast<UCharacterMovementComponent*>( CreateDefaultSubobject("MovementComponent", "UCharacterMovementComponent"));
+	if(NewMovementComp)
+	{
+		MovementComp = NewMovementComp;	
+	}
 	
 }
 
@@ -78,18 +184,7 @@ void ATestPawn::BeginPlay()
 	}
 	SMSword->GetBodyInstance()->SetObjectType(ECollisionChannel::Pawn);
 
-	Manager = PxCreateControllerManager(*gPhysicsEngine->GetScene());
-	physx::PxCapsuleControllerDesc desc;
-	desc.height = HalfHeight*2;
-	desc.radius = Radius;
-	desc.position = physx::PxExtendedVec3(0,0,0);
-	desc.material = gPhysicsEngine->GetDefaultMaterial();
-	desc.stepOffset = 10.0f;
-
-	Controller = Manager->createController(desc);
-
-	CCTQueryCallBack.IgnoreActor = shared_from_this();
-	Filters.mFilterCallback = &CCTQueryCallBack;
+	
 }
 
 void ATestPawn::OnComponentHitEvent(UShapeComponent* HitComponent, AActor* OtherActor, UShapeComponent* OtherComp, const FHitResult& HitResults)
@@ -127,42 +222,34 @@ void ATestPawn::SetAttackEnd()
 	SMSword->GetBodyInstance()->SetDebugDraw(false);
 }
 
+void ATestPawn::AddMovementInput(const XMFLOAT3& WorldDirection, float ScaleValue)
+{
+	if (MovementComp)
+	{
+		MovementComp->AddInputVector(WorldDirection,ScaleValue);
+	}
+}
+
+void ATestPawn::Jump()
+{
+	if (MovementComp)
+	{
+		MovementComp->Jump();
+	}
+}
+
 
 void ATestPawn::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
-	constexpr float MaxSpeed = 100.0f;
-	static float VelocityY;
-	physx::PxVec3 InputDir = {0,0,0};
-	if (ImGui::IsKeyDown(ImGuiKey_I)) InputDir.z += 1;
-	if (ImGui::IsKeyDown(ImGuiKey_K)) InputDir.z -= 1;
-	if (ImGui::IsKeyDown(ImGuiKey_J)) InputDir.x -= 1;
-	if (ImGui::IsKeyDown(ImGuiKey_L)) InputDir.x += 1;
-	if (InputDir.magnitudeSquared() > 0)
-	{
-		InputDir.normalize();
-	}
 
-	VelocityY -= 9.8f*7.5f*DeltaSeconds;
+	if (ImGui::IsKeyDown(ImGuiKey_I)) AddMovementInput({0,0,1}, 1);
+	if (ImGui::IsKeyDown(ImGuiKey_K)) AddMovementInput({0,0,-1}, 1);
+	if (ImGui::IsKeyDown(ImGuiKey_J)) AddMovementInput({-1,0,0}, 1);
+	if (ImGui::IsKeyDown(ImGuiKey_L)) AddMovementInput({1,0,0}, 1);
 
 	if (ImGui::IsKeyPressed(ImGuiKey_Space))
 	{
-		VelocityY = 12.f*7.5f; 
+		Jump();
 	}
-
-	physx::PxVec3 Velocity = InputDir * MaxSpeed;
-	Velocity.y = VelocityY;
-	Velocity.z *= -1;
-	physx::PxControllerCollisionFlags MoveFlags = Controller->move(Velocity * DeltaSeconds, 0.01f, DeltaSeconds, Filters);
-
-	if (MoveFlags & physx::PxControllerCollisionFlag::eCOLLISION_DOWN)
-	{
-		VelocityY = 0;
-	}
-		
-
-	physx::PxExtendedVec3 NewPos = Controller->getPosition();
-	
-	XMFLOAT3 NewP = {static_cast<float>(NewPos.x),static_cast<float>(NewPos.y),static_cast<float>(-NewPos.z)};
-	CapsuleComp->SetWorldLocation(NewP);
 }

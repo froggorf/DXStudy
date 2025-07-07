@@ -13,7 +13,7 @@ class MyQueryFilterCallback : public physx::PxQueryFilterCallback
 {
 public:
 	// 무시할 actor 저장용 set
-	std::weak_ptr<AActor> IgnoreActor;
+	AActor* IgnoreActor;
 
 	virtual physx::PxQueryHitType::Enum preFilter(
 		const physx::PxFilterData& /*filterData*/,
@@ -23,7 +23,7 @@ public:
 	{
 		if (actor->userData)
 		{
-			if (IgnoreActor.lock().get() == static_cast<UShapeComponent*>(actor->userData)->GetOwner())
+			if (IgnoreActor == static_cast<UShapeComponent*>(actor->userData)->GetOwner())
 			{
 				return physx::PxQueryHitType::eNONE; // 충돌 무시
 			}	
@@ -36,6 +36,40 @@ public:
 	{
 		return physx::PxQueryHitType::eBLOCK;
 	}
+};
+
+enum class EMovementMode
+{
+	Walking, Flying, Swimming
+};
+class UCharacterMovementComponent : public UActorComponent
+{
+	MY_GENERATE_BODY(UCharacterMovementComponent)
+public:
+	void BeginPlay() override;
+	void TickComponent(float DeltaSeconds) override;
+
+	void AddInputVector(XMFLOAT3 WorldAccel, float Power);
+	void Jump();
+	physx::PxControllerManager* Manager;
+	physx::PxController* Controller;
+	physx::PxControllerFilters Filters;
+	MyQueryFilterCallback CCTQueryCallBack;
+
+	float GravityScale = 12.5f;
+	float MaxStepHeight = 20.0f;
+	float WalkableFloorAngle = 44.5f;
+	float MaxWalkSpeed = 500.0f;
+	float JumpZVelocity = 450.0f;
+	float Braking = 2048.0f;
+	float Acceleration = 2048.0f;
+
+	physx::PxCapsuleControllerDesc desc;
+	EMovementMode MovementMode;
+
+	float CurVelocityY;
+	XMFLOAT3 ControlInputVector;
+	XMFLOAT3 Velocity;
 };
 
 class ATestPawn : public AActor
@@ -52,6 +86,9 @@ class ATestPawn : public AActor
 
 	void SetAttackStart();
 	void SetAttackEnd();
+
+	void AddMovementInput(const XMFLOAT3& WorldDirection, float ScaleValue = 1.0f);
+	void Jump();
 protected:
 	
 
@@ -63,14 +100,13 @@ protected:
 
 	std::shared_ptr<UCapsuleComponent> CapsuleComp;
 
-	physx::PxControllerManager* Manager;
-	physx::PxController* Controller;
+	UCharacterMovementComponent* MovementComp;
+
 
 	float Radius;
 	float HalfHeight;
 
-	physx::PxControllerFilters Filters;
-	MyQueryFilterCallback CCTQueryCallBack;
+
 
 private:
 	

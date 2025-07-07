@@ -265,7 +265,7 @@ physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterConvexActor(const FTransfo
 	Actor->attachShape(*shape);
 	shape->release();
 
-	if (PxScene)
+	if (PxScene && Actor)
 	{
 		PxScene->addActor(*Actor);	
 	}
