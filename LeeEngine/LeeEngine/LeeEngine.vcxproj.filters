@@ -88,6 +88,9 @@
     <Filter Include="Source\Engine\Physics">
       <UniqueIdentifier>{3fcd1143-3614-4881-aa0e-81f20d1f0696}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Engine\Class\Framework">
+      <UniqueIdentifier>{0b1f0899-5b6b-4b83-9af6-84502e65e56b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\DirectX\ShadowMap.cpp">
@@ -323,6 +326,9 @@
     </ClCompile>
     <ClCompile Include="Source\Engine\Physics\UCapsuleComponent.cpp">
       <Filter>Source\Engine\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Class\Framework\ACharacter.cpp">
+      <Filter>Source\Engine\Class\Framework</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -577,6 +583,9 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\Physics\UCapsuleComponent.h">
       <Filter>Source\Engine\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Class\Framework\ACharacter.h">
+      <Filter>Source\Engine\Class\Framework</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
