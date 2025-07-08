@@ -36,28 +36,8 @@ ULevel::ULevel(const ULevel* LevelInstance)
 			Actors.push_back(NewActor);
 		}
 	}
-	/*size_t      ActorCount  = LevelInstance->GetLevelActors().size();
-	const auto& LevelActors = LevelInstance->GetLevelActors();
-	Actors.reserve(ActorCount);
-	for (const auto& Actor : LevelActors)
-	{
-		std::shared_ptr<AActor> NewActor = std::dynamic_pointer_cast<AActor>(Actor->CreateInstance());
-		NewActor->Rename(Actor->GetName());
-		NewActor->SetActorLocation(Actor->GetActorLocation());
-		NewActor->SetActorRotation(Actor->GetActorRotation());
-		NewActor->SetActorScale3D(Actor->GetActorScale3D());
-		Actors.push_back(NewActor);
-	}*/
 }
 
-//ULevel::ULevel(const std::shared_ptr<UWorld>& World)
-//{
-//	OwningWorld = World;
-//
-//	std::shared_ptr<AActor> TestActor = std::make_shared<ATestCube>();
-//	Actors.push_back(TestActor);
-//
-//}
 
 ULevel::~ULevel()
 {
@@ -124,4 +104,21 @@ void ULevel::SaveDataFromAssetToFile(nlohmann::json& Json)
 
 		Json["Actor"].push_back(ActorJson);
 	}
+}
+
+std::shared_ptr<AActor> ULevel::SpawnActor(const std::string& ClassName, const FTransform& SpawnTransform)
+{
+	std::shared_ptr<AActor> NewActor  = std::dynamic_pointer_cast<AActor>(GetDefaultObject(ClassName)->CreateInstance());
+	if (NewActor)
+	{
+		NewActor->SetActorLocation(SpawnTransform.GetTranslation());
+		NewActor->SetActorRotation(SpawnTransform.GetRotation());
+		NewActor->SetActorScale3D(SpawnTransform.GetScale3D());
+		Actors.emplace_back(NewActor);
+
+		NewActor->Register();
+		NewActor->BeginPlay();
+	}
+
+	return NewActor;
 }

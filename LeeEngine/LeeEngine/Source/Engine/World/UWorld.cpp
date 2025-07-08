@@ -8,6 +8,7 @@
 #include "Engine/AssetManager/AssetManager.h"
 #include "Engine/UEditorEngine.h"
 #include "Engine/UEngine.h"
+#include "Engine/Class/Framework/APlayerController.h"
 #include "Engine/Physics/UBoxComponent.h"
 #include "Engine/Physics/UPhysicsEngine.h"
 #include "Engine/RenderCore/EditorScene.h"
@@ -43,21 +44,15 @@ void UWorld::BeginPlay()
 {
 	UObject::BeginPlay();
 
-	// 테스트용 컴퓨트 셰이더 생성
-	{
-		std::shared_ptr<UTexture> Texture = AssetManager::CreateTexture("TestTexture", 1023, 1023, DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS);
-
-		//std::shared_ptr<FSetColorCS> SetColorCS = std::reinterpret_pointer_cast<FSetColorCS>(FShader::GetShader("FSetColorCS"));
-		//SetColorCS->SetTargetTexture(Texture);
-		//SetColorCS->SetClearColor(XMFLOAT4{0.0f,1.0f,1.0f,1.0f});
-		//SetColorCS->Execute();
-	}
-
 	if (!PersistentLevel)
 	{
 		MY_LOG("Error call", EDebugLogLevel::DLL_Error, "Not valid PersistentLevel");
 		return;
 	}
+
+	// TODO: 0709 임시적으로 PlayerController를 해당 위치에서 생성
+	//PlayerController = std::dynamic_pointer_cast<APlayerController>(PersistentLevel->SpawnActor("APlayerController", {}));
+
 	PersistentLevel->BeginPlay();
 }
 

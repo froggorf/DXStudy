@@ -42,6 +42,7 @@
     <ClCompile Include="Source\Engine\Class\Camera\APlayerCameraManager.cpp" />
     <ClCompile Include="Source\Engine\Class\Curve\UCurveBase.cpp" />
     <ClCompile Include="Source\Engine\Class\Framework\ACharacter.cpp" />
+    <ClCompile Include="Source\Engine\Class\Framework\APlayerController.cpp" />
     <ClCompile Include="Source\Engine\Class\UTexture.cpp" />
     <ClCompile Include="Source\Engine\Components\UActorComponent.cpp" />
     <ClCompile Include="Source\Engine\Components\UAnimMontage.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="Source\Engine\Class\Camera\APlayerCameraManager.h" />
     <ClInclude Include="Source\Engine\Class\Curve\UCurveBase.h" />
     <ClInclude Include="Source\Engine\Class\Framework\ACharacter.h" />
+    <ClInclude Include="Source\Engine\Class\Framework\APlayerController.h" />
     <ClInclude Include="Source\Engine\Class\UTexture.h" />
     <ClInclude Include="Source\Engine\Components\UActorComponent.h" />
     <ClInclude Include="Source\Engine\Components\UAnimMontage.h" />

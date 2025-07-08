@@ -336,6 +336,9 @@
     <ClCompile Include="Source\Engine\Class\Camera\APlayerCameraManager.cpp">
       <Filter>Source\Engine\Class\Camera</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Class\Framework\APlayerController.cpp">
+      <Filter>Source\Engine\Class\Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DirectX\ShadowMap.h">
@@ -595,6 +598,9 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\Class\Camera\APlayerCameraManager.h">
       <Filter>Source\Engine\Class\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Class\Framework\APlayerController.h">
+      <Filter>Source\Engine\Class\Framework</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
