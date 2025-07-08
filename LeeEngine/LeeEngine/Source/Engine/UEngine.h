@@ -66,35 +66,12 @@ class UEngine : public UObject
 
 	void MakeComponentTransformDirty(std::shared_ptr<USceneComponent>& SceneComponent);
 
-	XMMATRIX DELETELATER_VIEWMATRIX;
-	XMMATRIX Test_DeleteLater_GetViewMatrix() const
-	{
-#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
-		return DELETELATER_VIEWMATRIX;
-#else
-		auto Pos  = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		auto View = XMFLOAT3(0.0f, 0.0f, 1.0f);
-		XMStoreFloat3(&View, XMVector3Normalize(XMLoadFloat3(&View)));
-		return XMMatrixLookToLH(XMLoadFloat3(&Pos), XMLoadFloat3(&View), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
-#endif
+	
 
-	}
-	void TEST_DELETELATER_SetViewMatrix(const XMMATRIX& NewViewMat)
-	{
-		DELETELATER_VIEWMATRIX = NewViewMat;
-	}
-	XMMATRIX Test_DeleteLater_GetProjectionMatrix() const
-	{
-		return XMMatrixPerspectiveFovLH(0.5 * XM_PI, 2540.0f / 1440.0f, 0.01f, 10000.0f);
-	}
 
 	XMFLOAT3 Test_DeleteLater_GetCameraPosition() const
 	{
 		return Application->Test_DELETELATER_GetCameraPosition();
-	}
-	void Test_DeleteLater_SetCameraPosition(const XMFLOAT3& NewPos) const
-	{
-		Application->Test_DELETELATER_SetCameraPosition(NewPos);
 	}
 
 	void JoinThreadsAtDestroy();

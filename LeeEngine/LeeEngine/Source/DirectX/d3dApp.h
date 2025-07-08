@@ -60,7 +60,6 @@ public:
 	{
 		return XMFLOAT3{};
 	}
-	virtual void Test_DELETELATER_SetCameraPosition(const XMFLOAT3& NewPos){}
 
 	void TestSetWindowBarName(std::wostringstream& Test) const
 	{

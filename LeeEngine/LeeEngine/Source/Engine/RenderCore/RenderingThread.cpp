@@ -631,12 +631,12 @@ void FScene::SetDrawScenePipeline(const float* ClearColor)
 
 XMMATRIX FScene::GetViewMatrix()
 {
-	return GEngine->Test_DeleteLater_GetViewMatrix();
+	return ViewMatrices.GetViewMatrix();
 }
 
 XMMATRIX FScene::GetProjectionMatrix()
 {
-	return GEngine->Test_DeleteLater_GetProjectionMatrix();
+	return ViewMatrices.GetProjectionMatrix();
 }
 
 void FScene::EndRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData)

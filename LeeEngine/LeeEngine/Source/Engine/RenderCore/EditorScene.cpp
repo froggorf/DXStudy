@@ -49,6 +49,7 @@ void FEditorScene::SetDrawScenePipeline(const float* ClearColor)
 		auto CommandData         = std::make_shared<FImguiLevelViewportCommandData>();
 		CommandData->PanelType   = EImguiPanelType::IPT_LevelViewport;
 		CommandData->CommandType = ELevelViewportCommandType::LVCT_SetViewportSizeToEditorViewportSize;
+		CommandData->ViewMatrices = &ViewMatrices;
 		EditorClient->AddPanelCommand(CommandData);
 	}
 }
@@ -66,23 +67,18 @@ void FEditorScene::AfterDrawSceneAction(const std::shared_ptr<FScene> SceneData)
 
 XMMATRIX FEditorScene::GetViewMatrix()
 {
-	FViewMatrices EditorViewMatrices;
 	auto          CommandData = std::make_shared<FImguiLevelViewportCommandData>();
 	CommandData->PanelType    = EImguiPanelType::IPT_LevelViewport;
 	CommandData->CommandType  = ELevelViewportCommandType::LVCT_GetEditorViewMatrices;
-	CommandData->ViewMatrices = &EditorViewMatrices;
+	CommandData->ViewMatrices = &ViewMatrices;
 	EditorClient->AddPanelCommand(CommandData);
-	// TODO: 임시 카메라 위치 변경 코드, 추후 지울 예정
-	XMFLOAT3 NewPos = {-EditorViewMatrices.GetViewMatrix().r[3].m128_f32[0],-EditorViewMatrices.GetViewMatrix().r[3].m128_f32[1],-EditorViewMatrices.GetViewMatrix().r[3].m128_f32[2]};
-	GEditorEngine->Test_DeleteLater_SetCameraPosition(NewPos);
-	GEditorEngine->TEST_DELETELATER_SetViewMatrix(EditorViewMatrices.GetViewMatrix());
-	return EditorViewMatrices.GetViewMatrix();
+
+	return ViewMatrices.GetViewMatrix();
 }
 
 XMMATRIX FEditorScene::GetProjectionMatrix()
 {
-	// TODO: 수정 예정 03/20
-	return FScene::GetProjectionMatrix(); //ViewMatrices.GetProjectionMatrix();
+	return ViewMatrices.GetProjectionMatrix();
 }
 
 void FEditorScene::DrawIMGUI_RenderThread(std::shared_ptr<FScene> SceneData)
