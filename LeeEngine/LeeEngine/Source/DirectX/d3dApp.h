@@ -46,20 +46,7 @@ public:
 	{
 	}
 
-	virtual XMMATRIX Test_DeleteLater_GetViewMatrix() const
-	{
-		return XMMATRIX();
-	}
 
-	virtual XMMATRIX Test_DeleteLater_GetProjectionMatrix() const
-	{
-		return XMMATRIX();
-	}
-
-	virtual XMFLOAT3 Test_DELETELATER_GetCameraPosition() const
-	{
-		return XMFLOAT3{};
-	}
 
 	void TestSetWindowBarName(std::wostringstream& Test) const
 	{

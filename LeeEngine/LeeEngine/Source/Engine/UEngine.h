@@ -66,14 +66,6 @@ class UEngine : public UObject
 
 	void MakeComponentTransformDirty(std::shared_ptr<USceneComponent>& SceneComponent);
 
-	
-
-
-	XMFLOAT3 Test_DeleteLater_GetCameraPosition() const
-	{
-		return Application->Test_DELETELATER_GetCameraPosition();
-	}
-
 	void JoinThreadsAtDestroy();
 
 	bool IsStartGameThread()

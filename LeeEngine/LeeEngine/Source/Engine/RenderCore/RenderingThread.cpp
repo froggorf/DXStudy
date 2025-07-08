@@ -508,7 +508,8 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 					TempPointLight.Range    = 0.0f;
 					lfcb.gPointLight        = TempPointLight;
 					// Convert Spherical to Cartesian coordinates.
-					lfcb.gEyePosW = XMFLOAT3{GEngine->Test_DeleteLater_GetCameraPosition()};
+					XMStoreFloat3(&lfcb.gEyePosW, SceneData->ViewMatrices.GetViewMatrix().r[3]);
+					//lfcb.gEyePosW = {SceneData->ViewMatrices.GetViewMatrix().r[3]} 
 					GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_Light, &lfcb, sizeof(lfcb));
 				}
 			}

@@ -32,7 +32,6 @@ public:
 
 	// Init
 	bool Init() override;
-	void InitSamplerState();
 	//void InitForShadowMap();
 	void OnResize() override;
 	void UpdateScene(float dt) override;
@@ -40,97 +39,11 @@ public:
 	//void DrawSkeletalMesh();
 	void DrawScene() override;
 
-	// Shadow Map
-	//void DrawShadowMap();
-
-	void LoadAnimations();
-
 	void OnMouseDown(WPARAM btnState, int x, int y) override;
 	void OnMouseUp(WPARAM btnState, int x, int y) override;
 	void OnMouseMove(WPARAM btnState, int x, int y) override;
 
-	// TODO: DELETE_LATER
-	XMMATRIX Test_DeleteLater_GetViewMatrix() const override
-	{
-		return m_View;
-	}
-
-	XMMATRIX Test_DeleteLater_GetProjectionMatrix() const override
-	{
-		return m_Proj;
-	}
-
-	XMFLOAT3 Test_DELETELATER_GetCameraPosition() const override
-	{
-		return m_CameraPosition;
-	}
-
 private:
-	void BuildShader();
-
-	void BuildShaderForSkeletalMesh();
-	// DirectionalLight Matrix 반환하는 함수
-	//void BuildShadowTransform();
-
-	// 모델 정보
-	std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>>             m_ModelVertexBuffer;
-	std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>>             m_ModelIndexBuffer;
-	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> m_ModelShaderResourceView;
-	Material                                                      m_ModelMaterial;
-
-	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> m_BodyShaderResourceView;
-	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> m_FaceShaderResourceView;
-
-	XMFLOAT3 m_ModelPosition;
-	//XMFLOAT3										m_ModelRotation;
-	XMVECTOR m_ModelQuat;
-	XMFLOAT3 m_ModelScale;
-
-	// 기사 오브젝트의 본 정보		// TODO: 모듈화 시 getter 제작
-	std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>> m_PaladinVertexBuffer;
-	std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>> m_PaladinIndexBuffer;
-	std::map<std::string, BoneInfo>                   m_BoneInfoMap;
-	int                                               m_BoneCounter = 0;
-	//std::unique_ptr<Animator>						m_PaladinAnimator;
-	Microsoft::WRL::ComPtr<ID3D11VertexShader> m_SkeletalMeshVertexShader;
-	Microsoft::WRL::ComPtr<ID3D11InputLayout>  m_SkeletalMeshInputLayout;
-
-	// 큐브 출력용
-	Microsoft::WRL::ComPtr<ID3D11Buffer>             m_CubeVertexBuffer;
-	Microsoft::WRL::ComPtr<ID3D11Buffer>             m_CubeIndexBuffer;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_CubeWaterSRV;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_CubeWireSRV;
-
-	// 라이트 출력 용
-	std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>> m_SphereVertexBuffer;
-	std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>> m_SphereIndexBuffer;
-
-	// 그림자 맵 관련
-	std::unique_ptr<ShadowMap>                 m_ShadowMap;
-	XMMATRIX                                   m_LightView;
-	XMMATRIX                                   m_LightProj;
-	XMMATRIX                                   m_ShadowTransform;
-	Microsoft::WRL::ComPtr<ID3D11VertexShader> m_ShadowMapVertexShader;
-	Microsoft::WRL::ComPtr<ID3D11PixelShader>  m_ShadowMapPixelShader;
-	Microsoft::WRL::ComPtr<ID3D11Buffer>       m_ShadowObjConstantBuffer;
-	Microsoft::WRL::ComPtr<ID3D11Buffer>       m_ShadowLightMatrixConstantBuffer;
-	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_ShadowSamplerState;
-	float                                      m_ShadowBias;
-	Microsoft::WRL::ComPtr<ID3D11VertexShader> m_ShadowMapSkeletalMeshVertexShader;
-
-	// 카메라 정보
-	XMFLOAT3 m_CameraPosition;
-	XMFLOAT3 m_CameraViewVector;
-
-	// 라이트
-	//DirectionalLight								m_DirectionalLight;
-	//PointLight										m_PointLight;
-	//SpotLight										m_SpotLight;
-
-	// 변환 행렬
-	XMMATRIX m_World;
-	XMMATRIX m_View;
-	XMMATRIX m_Proj;
 
 	POINT m_LastMousePos;
 };
@@ -157,29 +70,6 @@ MyGame::MyGame(HINSTANCE hInstance)
 
 	m_LastMousePos.x = 0;
 	m_LastMousePos.y = 1;
-	m_World          = XMMatrixIdentity();
-	m_View           = XMMatrixIdentity();
-	m_Proj           = XMMatrixIdentity();
-
-	m_ModelPosition = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	//m_ModelRotation = XMFLOAT3(0.0f,0.0f,0.0f);
-	m_ModelQuat  = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(90.0f), 0.0f, 0.0f);
-	m_ModelScale = XMFLOAT3(0.0f, 0.0f, 0.0f);
-
-	m_CameraPosition   = XMFLOAT3(0.0f, 5.0f, -5.0f);
-	m_CameraViewVector = XMFLOAT3(0.0f, -1.0f, 1.0f);
-	XMStoreFloat3(&m_CameraViewVector, XMVector3Normalize(XMLoadFloat3(&m_CameraViewVector)));
-
-	// Directional light.
-
-	//m_DirectionalLight.Direction =  ;
-
-	// Point Light
-
-	// Material
-	m_ModelMaterial.Ambient  = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	m_ModelMaterial.Diffuse  = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	m_ModelMaterial.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 32.0f);
 }
 
 MyGame::~MyGame()
@@ -192,60 +82,9 @@ bool MyGame::Init()
 	if (!D3DApp::Init())
 		return false;
 
-	InitSamplerState();
-
-	LoadAnimations();
-
-	BuildShader();
-
-	BuildShaderForSkeletalMesh();
-
-	// 그림자 맵
-	//InitForShadowMap();
-
 	return true;
 }
 
-void MyGame::LoadAnimations()
-{
-	// TODO: 추후 모델 관련 데이터 오브젝트로 모듈화
-}
-
-void MyGame::InitSamplerState()
-{
-	D3D11_SAMPLER_DESC samplerDesc = {};
-	samplerDesc.Filter             = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	samplerDesc.AddressU           = D3D11_TEXTURE_ADDRESS_BORDER;
-	samplerDesc.AddressV           = D3D11_TEXTURE_ADDRESS_BORDER;
-	samplerDesc.AddressW           = D3D11_TEXTURE_ADDRESS_BORDER;
-	samplerDesc.BorderColor[0]     = 0.0f; // Border 색상(흰색)
-	samplerDesc.ComparisonFunc     = D3D11_COMPARISON_NEVER;
-	samplerDesc.MinLOD             = 0;
-	samplerDesc.MaxLOD             = D3D11_FLOAT32_MAX;
-	HR(GDirectXDevice->GetDevice()->CreateSamplerState(&samplerDesc, m_ShadowSamplerState.GetAddressOf()));
-
-	D3D11_BLEND_DESC blendDesc                      = {};
-	blendDesc.AlphaToCoverageEnable                 = FALSE;                        // 알파 커버리지 비활성화
-	blendDesc.IndependentBlendEnable                = FALSE;                        // 독립 블렌딩 비활성화
-	blendDesc.RenderTarget[0].BlendEnable           = TRUE;                         // 블렌딩 활성화
-	blendDesc.RenderTarget[0].SrcBlend              = D3D11_BLEND_SRC_ALPHA;        // 소스 알파값
-	blendDesc.RenderTarget[0].DestBlend             = D3D11_BLEND_INV_SRC_ALPHA;    // 대상 알파값의 반대
-	blendDesc.RenderTarget[0].BlendOp               = D3D11_BLEND_OP_ADD;           // 더하기 연산
-	blendDesc.RenderTarget[0].SrcBlendAlpha         = D3D11_BLEND_ONE;              // 알파값 소스
-	blendDesc.RenderTarget[0].DestBlendAlpha        = D3D11_BLEND_ZERO;             // 알파값 대상
-	blendDesc.RenderTarget[0].BlendOpAlpha          = D3D11_BLEND_OP_ADD;           // 알파값 더하기 연산
-	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL; // RGBA 모두 활성화
-
-	ID3D11BlendState* blendState = nullptr;
-	HR(GDirectXDevice->GetDevice()->CreateBlendState(&blendDesc, &blendState));
-
-	// 파이프라인에 블렌딩 상태 설정
-	float blendFactor[4] = {0.0f, 0.0f, 0.0f, 0.0f}; // 블렌드 팩터 (기본값)
-	UINT  sampleMask     = 0xFFFFFFFF;               // 샘플 마스크 (기본값)
-	GDirectXDevice->GetDeviceContext()->OMSetBlendState(blendState, blendFactor, sampleMask);
-
-	// DepthgStencilState
-}
 
 //void AnimationApp::InitForShadowMap()
 //{
@@ -293,16 +132,11 @@ void MyGame::InitSamplerState()
 void MyGame::OnResize()
 {
 	D3DApp::OnResize();
-
-	// 프로젝션 매트릭스
-	m_Proj = XMMatrixPerspectiveFovLH(0.5 * XM_PI, GetWindowAspectRatio(), 1.0f, 1000.0f);
 }
 
 void MyGame::UpdateScene(float dt)
 {
 	GEngine->Tick(dt);
-
-	//m_PaladinAnimator->UpdateAnimation(m_Timer.DeltaTime());
 }
 
 //
@@ -539,26 +373,6 @@ void MyGame::OnMouseMove(WPARAM btnState, int x, int y)
 {
 	m_LastMousePos.x = x;
 	m_LastMousePos.y = y;
-}
-
-void MyGame::BuildShader()
-{
-	D3D11_BUFFER_DESC bufferDesc = {};
-	bufferDesc.ByteWidth         = sizeof(FrameConstantBuffer);
-	bufferDesc.Usage             = D3D11_USAGE_DEFAULT;
-	bufferDesc.BindFlags         = D3D11_BIND_CONSTANT_BUFFER;
-	bufferDesc.CPUAccessFlags    = 0;
-
-	bufferDesc.ByteWidth = sizeof(ShadowLightMatrixConstantBuffer);
-	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_ShadowLightMatrixConstantBuffer.GetAddressOf() ));
-
-	bufferDesc.ByteWidth = sizeof(ShadowObjConstantBuffer);
-	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, m_ShadowObjConstantBuffer.GetAddressOf()));
-}
-
-void MyGame::BuildShaderForSkeletalMesh()
-{
-	//m_d3dDeviceContext->IASetInputLayout(m_InputLayout.Get());
 }
 
 //
