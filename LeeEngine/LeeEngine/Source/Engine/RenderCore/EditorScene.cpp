@@ -67,13 +67,21 @@ void FEditorScene::AfterDrawSceneAction(const std::shared_ptr<FScene> SceneData)
 
 XMMATRIX FEditorScene::GetViewMatrix()
 {
-	auto          CommandData = std::make_shared<FImguiLevelViewportCommandData>();
-	CommandData->PanelType    = EImguiPanelType::IPT_LevelViewport;
-	CommandData->CommandType  = ELevelViewportCommandType::LVCT_GetEditorViewMatrices;
-	CommandData->ViewMatrices = &ViewMatrices;
-	EditorClient->AddPanelCommand(CommandData);
+	if (GEngine->bGameStart)
+	{
+		return FScene::GetViewMatrix();
+	}
+	else
+	{
+		auto          CommandData = std::make_shared<FImguiLevelViewportCommandData>();
+		CommandData->PanelType    = EImguiPanelType::IPT_LevelViewport;
+		CommandData->CommandType  = ELevelViewportCommandType::LVCT_GetEditorViewMatrices;
+		CommandData->ViewMatrices = &ViewMatrices;
+		EditorClient->AddPanelCommand(CommandData);
 
-	return ViewMatrices.GetViewMatrix();
+		return ViewMatrices.GetViewMatrix();	
+	}
+	
 }
 
 XMMATRIX FEditorScene::GetProjectionMatrix()

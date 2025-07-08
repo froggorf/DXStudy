@@ -27,13 +27,14 @@ ATestPawn::ATestPawn()
 
 	TestComp = std::dynamic_pointer_cast<UTestComponent>(CreateDefaultSubobject("TestActorComp", "UTestComponent"));
 
-	}
+
+}
 
 
 
 void ATestPawn::BeginPlay()
 {
-	AActor::BeginPlay();
+	ACharacter::BeginPlay();
 
 	CapsuleComp->SetDebugDraw(true);
 	

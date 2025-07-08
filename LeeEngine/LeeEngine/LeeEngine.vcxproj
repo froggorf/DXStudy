@@ -40,6 +40,7 @@
     <ClCompile Include="Source\Engine\Animation\UBlendSpace.cpp" />
     <ClCompile Include="Source\Engine\AssetManager\AssetManager.cpp" />
     <ClCompile Include="Source\Engine\Class\Camera\APlayerCameraManager.cpp" />
+    <ClCompile Include="Source\Engine\Class\Camera\UCameraComponent.cpp" />
     <ClCompile Include="Source\Engine\Class\Curve\UCurveBase.cpp" />
     <ClCompile Include="Source\Engine\Class\Framework\ACharacter.cpp" />
     <ClCompile Include="Source\Engine\Class\Framework\APlayerController.cpp" />
@@ -158,6 +159,7 @@
     <ClInclude Include="Source\Engine\Animation\UBlendSpace.h" />
     <ClInclude Include="Source\Engine\AssetManager\AssetManager.h" />
     <ClInclude Include="Source\Engine\Class\Camera\APlayerCameraManager.h" />
+    <ClInclude Include="Source\Engine\Class\Camera\UCameraComponent.h" />
     <ClInclude Include="Source\Engine\Class\Curve\UCurveBase.h" />
     <ClInclude Include="Source\Engine\Class\Framework\ACharacter.h" />
     <ClInclude Include="Source\Engine\Class\Framework\APlayerController.h" />

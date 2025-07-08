@@ -4,13 +4,24 @@
 // 이윤석
 
 #pragma once
+#include "UCameraComponent.h"
 #include "Engine/GameFramework/AActor.h"
 
 class APlayerCameraManager : public AActor
 {
+public:
 	MY_GENERATE_BODY(APlayerCameraManager)
-	APlayerCameraManager() = default;
+
+	APlayerCameraManager();
 	~APlayerCameraManager() override;
 
 	void BeginPlay() override;
+	void Tick(float DeltaSeconds) override;
+	std::weak_ptr<UCameraComponent> TargetCamera;
+
+	void SetTargetCamera(const std::shared_ptr<UCameraComponent>& InCameraComp)
+	{
+		TargetCamera = InCameraComp;
+	}
+
 };

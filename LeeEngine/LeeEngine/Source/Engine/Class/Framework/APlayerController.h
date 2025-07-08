@@ -4,17 +4,16 @@
 // 이윤석
 
 #pragma once
+#include "Engine/Class/Camera/APlayerCameraManager.h"
 #include "Engine/GameFramework/AActor.h"
-
-class APlayerCameraManager;
 
 class APlayerController : public AActor
 {
 	MY_GENERATE_BODY(APlayerController)
 
-	APlayerController() = default;
-	~APlayerController();
+	APlayerController();
+	~APlayerController() = default;
 	void BeginPlay() override;
 
-	std::weak_ptr<APlayerController> CameraManager;
+	std::weak_ptr<APlayerCameraManager> CameraManager;
 };

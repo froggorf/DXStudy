@@ -9,6 +9,8 @@
 #include "Engine/GameFramework/AActor.h"
 #include "Engine/Physics/UCapsuleComponent.h"
 
+class UCameraComponent;
+
 class MyQueryFilterCallback : public physx::PxQueryFilterCallback
 {
 public:
@@ -94,6 +96,7 @@ protected:
 
 	std::shared_ptr<USkeletalMeshComponent> SkeletalMeshComponent;
 
+	std::shared_ptr<UCameraComponent> CameraComp;
 private:
 	float Radius;
 	float HalfHeight;

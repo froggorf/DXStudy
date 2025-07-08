@@ -302,6 +302,18 @@ public:
 	virtual XMMATRIX GetViewMatrix();
 	virtual XMMATRIX GetProjectionMatrix();
 
+	static void UpdateViewMatrix_GameThread(const FViewMatrices& NewViewMatrices)
+	{
+		ENQUEUE_RENDER_COMMAND([NewViewMatrices](std::shared_ptr<FScene>& SceneData)
+		{
+			SceneData->UpdateViewMatrix_RenderThread(NewViewMatrices);
+		})
+	}
+	void UpdateViewMatrix_RenderThread(const FViewMatrices& NewViewMatrices)
+	{
+		ViewMatrices = NewViewMatrices;
+	}
+
 #if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
 	static void DrawDebugData_GameThread(const FDebugRenderData& RenderData)
 	{

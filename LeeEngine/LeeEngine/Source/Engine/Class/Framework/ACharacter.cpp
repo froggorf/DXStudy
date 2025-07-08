@@ -1,6 +1,9 @@
 ﻿#include "CoreMinimal.h"
 #include "ACharacter.h"
 
+#include "Engine/Class/Camera/UCameraComponent.h"
+#include "Engine/World/UWorld.h"
+
 
 UCharacterMovementComponent::UCharacterMovementComponent()
 {
@@ -116,6 +119,9 @@ ACharacter::ACharacter()
 
 	CharacterMovement = std::dynamic_pointer_cast<UCharacterMovementComponent>( CreateDefaultSubobject("MovementComponent", "UCharacterMovementComponent"));
 
+	CameraComp = std::make_shared<UCameraComponent>();
+	CameraComp->SetupAttachment(CapsuleComp);
+	
 }
 
 void ACharacter::BeginPlay()
@@ -131,6 +137,7 @@ void ACharacter::BeginPlay()
 		CapsuleComp->SetResponseToChannel(static_cast<ECollisionChannel>(i), ECollisionResponse::Overlap);	
 	}
 
+	GEngine->GetWorld()->GetCameraManager()->SetTargetCamera(CameraComp);
 }
 
 void ACharacter::Tick(float DeltaSeconds)
