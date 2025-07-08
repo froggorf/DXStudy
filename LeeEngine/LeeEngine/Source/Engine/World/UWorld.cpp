@@ -21,6 +21,7 @@ UWorld::UWorld()
 
 UWorld::~UWorld()
 {
+	printf("??");
 }
 
 void UWorld::Init()

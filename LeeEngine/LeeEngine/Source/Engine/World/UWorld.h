@@ -6,6 +6,7 @@
 // VFX 업데이트, Subsystem업데이트, 레벨 업데이트 같은 전체적인 역할을 관리하는 클래스
 #pragma once
 #include "CoreMinimal.h"
+
 #include "Engine/Level/ULevel.h"
 #include "Engine/UObject/UObject.h"
 
@@ -49,7 +50,7 @@ class UWorld : public UObject, public std::enable_shared_from_this<UWorld>
 	void DrawDebugBox(const XMFLOAT3& Center, const XMFLOAT3& Extent, const XMFLOAT3& LineColor = XMFLOAT3{1,0,0}, XMVECTOR Rotate = XMVectorSet(0,0,0,1), const float DebugDrawTime = 5.0f) const;
 #endif
 protected:
-	std::shared_ptr<APlayerController> PlayerController;
+	std::weak_ptr<APlayerController> PlayerControllers;
 
 
 private:

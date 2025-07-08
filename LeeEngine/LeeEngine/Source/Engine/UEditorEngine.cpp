@@ -39,15 +39,6 @@ void UEditorEngine::InitEngine()
 void UEditorEngine::PostLoad()
 {
 	UEngine::PostLoad();
-
-	// Default Engine Map
-	//if(GetWorld())
-	//{
-	//	//std::shared_ptr<ULevel> NewLevel = std::make_shared<ULevel>(*AssetManager::ReadMyAsset<ULevel>(EngineData["EditorStartupMap"]));
-	//	//GetWorld()->SetPersistentLevel(NewLevel);
-	//	std::shared_ptr<ULevel> NewLevel = std::make_shared<ULevel>(GetWorld());
-	//	GetWorld()->SetPersistentLevel(NewLevel);
-	//}
 }
 
 const std::string& UEditorEngine::GetDefaultMapName()

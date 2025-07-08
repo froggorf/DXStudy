@@ -8,9 +8,9 @@
 
 class APlayerCameraManager : public AActor
 {
-	/*MY_GENERATE_BODY(APlayerCameraManager)
+	MY_GENERATE_BODY(APlayerCameraManager)
 	APlayerCameraManager() = default;
-	~APlayerCameraManager() override = default;*/
+	~APlayerCameraManager() override;
 
 	void BeginPlay() override;
 };

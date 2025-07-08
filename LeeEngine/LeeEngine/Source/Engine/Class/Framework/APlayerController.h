@@ -6,13 +6,15 @@
 #pragma once
 #include "Engine/GameFramework/AActor.h"
 
+class APlayerCameraManager;
+
 class APlayerController : public AActor
 {
-	/*MY_GENERATE_BODY(APlayerController)
+	MY_GENERATE_BODY(APlayerController)
 
 	APlayerController() = default;
-	~APlayerController() override = default;*/
+	~APlayerController();
 	void BeginPlay() override;
 
-	
+	std::weak_ptr<APlayerController> CameraManager;
 };
