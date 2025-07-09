@@ -7,12 +7,19 @@
 
 ATestPawn::ATestPawn()
 {
+	if (UCharacterMovementComponent* CharacterMovement = GetCharacterMovement())
+	{
+		CharacterMovement->bOrientRotationToMovement = true;
+		CharacterMovement->RotationRate = XMFLOAT3{0.0f, 1500.0f, 0.0f};
+	}
+
 	AssetManager::GetAsyncAssetCache("SK_MyUEFN",[this](std::shared_ptr<UObject> Object)
 		{
 			SkeletalMeshComponent->SetSkeletalMesh(std::static_pointer_cast<USkeletalMesh>(Object));
 		});
 	SkeletalMeshComponent->SetAnimInstanceClass("UMyAnimInstance");
 	SkeletalMeshComponent->SetRelativeLocation({0,-85,0});
+	SkeletalMeshComponent->SetRelativeRotation(XMFLOAT3{0,180,0});
 
 	SMSword = std::make_shared<UStaticMeshComponent>();
 	SMSword->SetupAttachment(SkeletalMeshComponent, "hand_r");
@@ -35,7 +42,7 @@ void ATestPawn::BeginPlay()
 
 	GEngine->GetWorld()->GetPlayerController()->OnPossess(this);
 
-	CapsuleComp->SetDebugDraw(true);
+	//CapsuleComp->SetDebugDraw(true);
 	
 
 	SMSword->GetBodyInstance()->OnComponentBeginOverlap.Add(this, &ATestPawn::AttackStart);
@@ -50,6 +57,11 @@ void ATestPawn::BeginPlay()
 		SMSword->GetBodyInstance()->SetCollisionResponseToChannel(static_cast<ECollisionChannel>(i), ECollisionResponse::Overlap);
 	}
 	SMSword->GetBodyInstance()->SetObjectType(ECollisionChannel::Pawn);
+
+	AssetManager::GetAsyncAssetCache("AM_Sword", [this](std::shared_ptr<UObject> Object)
+		{
+			AM_Sword = std::static_pointer_cast<UAnimMontage>(Object);
+		});
 
 	
 }
@@ -122,5 +134,17 @@ void ATestPawn::Tick(float DeltaSeconds)
 		}	
 	}
 	
-
+	if (ImGui::IsKeyPressed(ImGuiKey_1))
+	{
+		if (SkeletalMeshComponent)
+		{
+			if (const std::shared_ptr<UAnimInstance>& AnimInstance = SkeletalMeshComponent->GetAnimInstance())
+			{
+				if (AM_Sword)
+				{
+					AnimInstance->Montage_Play(AM_Sword, 0.0f);
+				}
+			}
+		}
+	}
 }

@@ -8,6 +8,8 @@
 #include "Engine/Components/UAnimMontage.h"
 #include "Engine/Misc/Delegate.h"
 
+class UCharacterMovementComponent;
+
 class UMyAnimInstance : public UAnimInstance
 {
 	MY_GENERATE_BODY(UMyAnimInstance)
@@ -30,6 +32,7 @@ class UMyAnimInstance : public UAnimInstance
 private:
 	std::shared_ptr<UBlendSpace>    BS_MyUEFN_Locomotion;
 	std::shared_ptr<UTestComponent> TestComp;
+	UCharacterMovementComponent* MovementComp;
 
 
 	std::shared_ptr<UAnimSequence> AS_Test0;

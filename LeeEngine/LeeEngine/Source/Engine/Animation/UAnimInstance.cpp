@@ -67,6 +67,7 @@ void UAnimInstance::Tick(float DeltaSeconds)
 				Notify->second.Broadcast();
 			}
 		}
+		FinalNotifies.clear();
 
 		// 애니메이션 데이터를 렌더링쓰레드에 전달
 		FScene::UpdateSkeletalMeshAnimation_GameThread(GetSkeletalMeshComponent()->GetPrimitiveID(), FinalBoneMatrices);

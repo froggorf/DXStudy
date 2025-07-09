@@ -30,6 +30,7 @@ class USkeletalMeshComponent : public USkinnedMeshComponent
 
 	void TickComponent(float DeltaSeconds) override;
 
+	std::shared_ptr<UAnimInstance> GetAnimInstance() const {return AnimInstance;}
 private:
 	std::shared_ptr<USkeletalMesh> SkeletalMesh;
 	std::string SkeletalMeshName;

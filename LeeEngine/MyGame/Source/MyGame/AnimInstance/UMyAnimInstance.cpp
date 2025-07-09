@@ -55,6 +55,7 @@ void UMyAnimInstance::NativeInitializeAnimation()
 			{
 				TestComp = OwnerTestComp;
 			}
+			MovementComp = TestActor->GetCharacterMovement();
 		}
 	}
 	MyAnimInstance = this;
@@ -70,11 +71,11 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 {
 	UAnimInstance::UpdateAnimation(dt);
 
-	if (GetSkeletalMeshComponent() && TestComp&& BS_MyUEFN_Locomotion  && AS_Test0 && AS_Test1 && AS_Test2)
+	if (GetSkeletalMeshComponent() && TestComp&& BS_MyUEFN_Locomotion  && AS_Test0 && AS_Test1 && AS_Test2 && MovementComp)
 	{
 		// BlendSpace_Locomotion
 		std::vector<XMMATRIX> BS_IdleWalkRunMatrices(MAX_BONES, XMMatrixIdentity());
-		BS_MyUEFN_Locomotion->GetAnimationBoneMatrices(XMFLOAT2{0.0f, TestComp->TestSpeed}, CurrentTime, BS_IdleWalkRunMatrices, FinalNotifies);
+		BS_MyUEFN_Locomotion->GetAnimationBoneMatrices(XMFLOAT2{0.0f, XMVectorGetX(XMVector3Length(XMLoadFloat3(&MovementComp->Velocity))) }, CurrentTime, BS_IdleWalkRunMatrices, FinalNotifies);
 
 		// 애니메이션 시퀀스 계산
 		std::vector<XMMATRIX> AS_Matrices(MAX_BONES, XMMatrixIdentity());

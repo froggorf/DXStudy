@@ -27,6 +27,9 @@ protected:
 	std::weak_ptr<UTestComponent> TestComp;
 	std::shared_ptr<UStaticMeshComponent> SMSword;
 
+
+	std::shared_ptr<UAnimMontage> AM_Sword;
+
 private:
 	
 };

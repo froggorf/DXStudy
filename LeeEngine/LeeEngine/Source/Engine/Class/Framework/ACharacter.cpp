@@ -40,6 +40,7 @@ void UCharacterMovementComponent::TickComponent(float DeltaSeconds)
 {
 	UActorComponent::TickComponent(DeltaSeconds);
 
+	/// 캐릭터 이동
 	XMVECTOR InputDir = XMLoadFloat3(&ControlInputVector);
 	float InputLen = XMVectorGetX(XMVector3Length(InputDir));
 	XMVECTOR MoveDir = (InputLen > 0.01f) ? XMVector3Normalize(InputDir) : XMVectorZero();
@@ -90,6 +91,62 @@ void UCharacterMovementComponent::TickComponent(float DeltaSeconds)
 	GetOwner()->SetActorLocation(NewP);
 
 	ControlInputVector = {0,0,0};
+	/// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	/// 캐릭터 회전
+	if (XMVectorGetX(XMVector3LengthEst(XMLoadFloat3(&Velocity))) > FLT_EPSILON && bOrientRotationToMovement && GetOwner())
+	{
+		XMFLOAT4 CharacterRotation = GetOwner()->GetActorRotation();
+		XMVECTOR CharacterRotationQuat = XMLoadFloat4(&CharacterRotation);
+
+		// Forward Vector 를 Velocity 방향벡터 점이 될 수 있도록 회전 쿼터니언을 구한다음에
+		XMVECTOR WorldForward = XMVectorSet(0, 0, 1, 0);
+		XMFLOAT3 ToRotation = XMFLOAT3{Velocity.x,0, Velocity.z};
+		XMVECTOR ToVector = XMVector3Normalize(XMLoadFloat3(&ToRotation));
+		XMVECTOR Axis = XMVector3Cross(WorldForward, ToVector);
+		float Dot = XMVectorGetX(XMVector3Dot(WorldForward, ToVector));
+		float Angle = acosf(Dot);
+		XMVECTOR MoveVelocityQuat;
+
+		if (XMVector3Equal(Axis, XMVectorZero()))
+		{
+			if (Dot > 0)
+			{
+				MoveVelocityQuat = XMQuaternionIdentity();
+			}
+			else
+			{
+				MoveVelocityQuat = XMQuaternionRotationAxis(XMVectorSet(0,1,0,0), XM_PI);
+			}
+				
+		}
+		else
+		{
+			MoveVelocityQuat = XMQuaternionRotationAxis(XMVector3Normalize(Axis), Angle);
+		}
+		// 그 쿼터니언과 현재 캐릭터 RotationQuat을 보간하고
+		float RotationSpeed = RotationRate.y; 
+		float MaxStep = RotationSpeed * DeltaSeconds; 
+		float AngleBetween;
+		XMQuaternionToAxisAngle(&Axis, &AngleBetween, MoveVelocityQuat * XMQuaternionInverse(CharacterRotationQuat));
+		AngleBetween = XMConvertToDegrees(AngleBetween);
+
+		float T = 1.0f;
+		if (AngleBetween > MaxStep && AngleBetween > 0.001f)
+		{
+			T = MaxStep / AngleBetween;
+			T = std::clamp(T, 0.0f, 1.0f);
+		}
+
+		XMVECTOR NewQuat = XMQuaternionSlerp(CharacterRotationQuat, MoveVelocityQuat, T);
+
+		XMFLOAT4 NewRot;
+		XMStoreFloat4(&NewRot,NewQuat);
+		
+		// 그 값을 적용하면 됨
+		GetOwner()->SetActorRotation(NewRot);
+	}
+	/// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
 void UCharacterMovementComponent::AddInputVector(XMFLOAT3 WorldAccel, float Power)

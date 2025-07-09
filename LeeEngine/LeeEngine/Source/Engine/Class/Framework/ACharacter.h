@@ -69,6 +69,9 @@ public:
 	float Braking = 2048.0f;
 	float Acceleration = 2048.0f;
 
+	bool bOrientRotationToMovement = true;
+	XMFLOAT3 RotationRate = XMFLOAT3{0.0f,0.0f,0.0f};
+
 	physx::PxCapsuleControllerDesc desc{};
 	EMovementMode MovementMode = EMovementMode::Walking;
 
@@ -96,7 +99,7 @@ public:
 	void SetControlRotation(const XMFLOAT4& NewRot);
 	XMFLOAT4 GetControlRotation() const {return ControlRotation;}
 
-	UCharacterMovementComponent* GetMovementComponent() const {return CharacterMovement.lock().get(); }
+	UCharacterMovementComponent* GetCharacterMovement() const {return CharacterMovement.lock().get(); }
 protected:
 private:
 public:
