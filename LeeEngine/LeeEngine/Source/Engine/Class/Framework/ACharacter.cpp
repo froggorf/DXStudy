@@ -119,8 +119,12 @@ ACharacter::ACharacter()
 
 	CharacterMovement = std::dynamic_pointer_cast<UCharacterMovementComponent>( CreateDefaultSubobject("MovementComponent", "UCharacterMovementComponent"));
 
+	SpringArm = std::make_shared<USpringArmComponent>();
+	SpringArm->SetArmLength(300.0f);
+	SpringArm->SetupAttachment(CapsuleComp);
+
 	CameraComp = std::make_shared<UCameraComponent>();
-	CameraComp->SetupAttachment(CapsuleComp);
+	CameraComp->SetupAttachment(SpringArm, "");
 	
 }
 

@@ -7,7 +7,6 @@
 
 ATestPawn::ATestPawn()
 {
-
 	AssetManager::GetAsyncAssetCache("SK_MyUEFN",[this](std::shared_ptr<UObject> Object)
 		{
 			SkeletalMeshComponent->SetSkeletalMesh(std::static_pointer_cast<USkeletalMesh>(Object));
@@ -26,8 +25,6 @@ ATestPawn::ATestPawn()
 	SMSword->SetRelativeRotation(XMFLOAT4{0.073,0.09,-0.638,0.761});
 
 	TestComp = std::dynamic_pointer_cast<UTestComponent>(CreateDefaultSubobject("TestActorComp", "UTestComponent"));
-
-
 }
 
 

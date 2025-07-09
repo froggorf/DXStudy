@@ -4,6 +4,7 @@
 // 이윤석
 
 #pragma once
+#include "USpringArmComponent.h"
 #include "Engine/Components/USkeletalMeshComponent.h"
 #include "Engine/Components/UStaticMeshComponent.h"
 #include "Engine/GameFramework/AActor.h"
@@ -91,6 +92,7 @@ protected:
 private:
 public:
 protected:
+	std::shared_ptr<USpringArmComponent> SpringArm;
 
 	std::shared_ptr<UCapsuleComponent> CapsuleComp;
 
