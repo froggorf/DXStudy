@@ -304,7 +304,9 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_MBUTTONUP:
 	case WM_RBUTTONUP:
 	case WM_MOUSEMOVE:
+	case WM_MOUSEWHEEL:
 	case WM_KEYDOWN:
+	case WM_KEYUP:
 		if(GEngine)
 		{
 			GEngine->HandleInput(msg,wParam,lParam);

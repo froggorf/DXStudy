@@ -149,6 +149,8 @@ void UEditorEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 			SaveModifiedData();
 		}
 	}
+
+	UEngine::HandleInput(msg, wParam, lParam);
 }
 
 void UEditorEngine::EditorModify(EEditorModificationType Type, std::function<void(bool)> Func)

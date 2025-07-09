@@ -101,6 +101,7 @@ public:
 
 	UCharacterMovementComponent* GetCharacterMovement() const {return CharacterMovement.lock().get(); }
 protected:
+	virtual void BindKeyInputs() {}
 private:
 public:
 	// 현재 이 액터를 소유중인 컨트롤러

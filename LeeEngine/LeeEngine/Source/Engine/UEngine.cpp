@@ -6,6 +6,7 @@
 #include "UEngine.h"
 
 #include "FAudioDevice.h"
+#include "Class/Framework/UPlayerInput.h"
 #include "Mesh/UStaticMesh.h"
 #include "RenderCore/RenderingThread.h"
 #include "World/UWorld.h"
@@ -267,21 +268,193 @@ void UEngine::JoinThreadsAtDestroy()
 	}
 }
 
+// AI를 이용하여 생성
+static EKeys VKCodeToEKey(WPARAM vk, LPARAM lParam = 0)
+{
+	switch (vk)
+	{
+		// 알파벳
+	case 'A': return EKeys::A;
+	case 'B': return EKeys::B;
+	case 'C': return EKeys::C;
+	case 'D': return EKeys::D;
+	case 'E': return EKeys::E;
+	case 'F': return EKeys::F;
+	case 'G': return EKeys::G;
+	case 'H': return EKeys::H;
+	case 'I': return EKeys::I;
+	case 'J': return EKeys::J;
+	case 'K': return EKeys::K;
+	case 'L': return EKeys::L;
+	case 'M': return EKeys::M;
+	case 'N': return EKeys::N;
+	case 'O': return EKeys::O;
+	case 'P': return EKeys::P;
+	case 'Q': return EKeys::Q;
+	case 'R': return EKeys::R;
+	case 'S': return EKeys::S;
+	case 'T': return EKeys::T;
+	case 'U': return EKeys::U;
+	case 'V': return EKeys::V;
+	case 'W': return EKeys::W;
+	case 'X': return EKeys::X;
+	case 'Y': return EKeys::Y;
+	case 'Z': return EKeys::Z;
+
+		// 숫자(상단)
+	case '0': return EKeys::Num0;
+	case '1': return EKeys::Num1;
+	case '2': return EKeys::Num2;
+	case '3': return EKeys::Num3;
+	case '4': return EKeys::Num4;
+	case '5': return EKeys::Num5;
+	case '6': return EKeys::Num6;
+	case '7': return EKeys::Num7;
+	case '8': return EKeys::Num8;
+	case '9': return EKeys::Num9;
+
+		// 숫자패드
+	case VK_NUMPAD0: return EKeys::Numpad0;
+	case VK_NUMPAD1: return EKeys::Numpad1;
+	case VK_NUMPAD2: return EKeys::Numpad2;
+	case VK_NUMPAD3: return EKeys::Numpad3;
+	case VK_NUMPAD4: return EKeys::Numpad4;
+	case VK_NUMPAD5: return EKeys::Numpad5;
+	case VK_NUMPAD6: return EKeys::Numpad6;
+	case VK_NUMPAD7: return EKeys::Numpad7;
+	case VK_NUMPAD8: return EKeys::Numpad8;
+	case VK_NUMPAD9: return EKeys::Numpad9;
+	case VK_ADD:      return EKeys::NumpadAdd;
+	case VK_SUBTRACT: return EKeys::NumpadSubtract;
+	case VK_MULTIPLY: return EKeys::NumpadMultiply;
+	case VK_DIVIDE:   return EKeys::NumpadDivide;
+	case VK_DECIMAL:  return EKeys::NumpadDecimal;
+
+		// 방향키
+	case VK_UP:    return EKeys::Up;
+	case VK_DOWN:  return EKeys::Down;
+	case VK_LEFT:  return EKeys::Left;
+	case VK_RIGHT: return EKeys::Right;
+
+		// 마우스 버튼 (메시지에서 직접 구분하는 게 일반적이지만, VK로도 정의)
+	case VK_LBUTTON: return EKeys::MouseLeft;
+	case VK_RBUTTON: return EKeys::MouseRight;
+	case VK_MBUTTON: return EKeys::MouseMiddle;
+	case VK_XBUTTON1: return EKeys::MouseXButton1;
+	case VK_XBUTTON2: return EKeys::MouseXButton2;
+		// 마우스 휠은 메시지(예: WM_MOUSEWHEEL)에서 별도로 처리
+
+		// 펑션키
+	case VK_F1:  return EKeys::F1;
+	case VK_F2:  return EKeys::F2;
+	case VK_F3:  return EKeys::F3;
+	case VK_F4:  return EKeys::F4;
+	case VK_F5:  return EKeys::F5;
+	case VK_F6:  return EKeys::F6;
+	case VK_F7:  return EKeys::F7;
+	case VK_F8:  return EKeys::F8;
+	case VK_F9:  return EKeys::F9;
+	case VK_F10: return EKeys::F10;
+	case VK_F11: return EKeys::F11;
+	case VK_F12: return EKeys::F12;
+
+		// 특수키
+	case VK_SPACE:     return EKeys::Space;
+	case VK_TAB:       return EKeys::Tab;
+	case VK_RETURN:    return EKeys::Enter;
+	case VK_ESCAPE:    return EKeys::Escape;
+	case VK_BACK:      return EKeys::Backspace;
+	case VK_INSERT:    return EKeys::Insert;
+	case VK_DELETE:    return EKeys::Delete;
+	case VK_HOME:      return EKeys::Home;
+	case VK_END:       return EKeys::End;
+	case VK_PRIOR:     return EKeys::PageUp;
+	case VK_NEXT:      return EKeys::PageDown;
+	case VK_CAPITAL:   return EKeys::CapsLock;
+	case VK_SCROLL:    return EKeys::ScrollLock;
+	case VK_PAUSE:     return EKeys::PauseBreak;
+	case VK_SNAPSHOT:  return EKeys::PrintScreen;
+	case VK_APPS:      return EKeys::Apps;
+	case VK_MENU:      // Alt (좌/우 구분 필요)
+	{
+		bool isRight = (lParam & 0x01000000) != 0;
+		return isRight ? EKeys::RAlt : EKeys::LAlt;
+	}
+	case VK_LMENU:     return EKeys::LAlt;
+	case VK_RMENU:     return EKeys::RAlt;
+	case VK_LWIN:      return EKeys::Menu; // 윈도우키
+	case VK_RWIN:      return EKeys::Menu;
+
+		// Modifier
+	case VK_SHIFT:
+	{
+		// 좌/우 구분 (스캔코드 사용)
+		UINT scancode = (lParam & 0x00ff0000) >> 16;
+		UINT vk_ex = MapVirtualKey(scancode, MAPVK_VSC_TO_VK_EX);
+		if (vk_ex == VK_LSHIFT) return EKeys::LShift;
+		else if (vk_ex == VK_RSHIFT) return EKeys::RShift;
+		else return EKeys::LShift; // 기본값
+	}
+	case VK_LSHIFT: return EKeys::LShift;
+	case VK_RSHIFT: return EKeys::RShift;
+	case VK_CONTROL:
+	{
+		bool isRight = (lParam & 0x01000000) != 0;
+		return isRight ? EKeys::RCtrl : EKeys::LCtrl;
+	}
+	case VK_LCONTROL: return EKeys::LCtrl;
+	case VK_RCONTROL: return EKeys::RCtrl;
+
+	default:
+		return EKeys::None;
+	}
+}
+
 void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 {
+	static XMFLOAT2 LastMousePosition;
+	static XMFLOAT2 LastMouseDelta;
+
+	FInputEvent InputEvent;
+	InputEvent.Key = EKeys::None;
 	switch (msg)
 	{
 	case WM_LBUTTONDOWN:
 	case WM_MBUTTONDOWN:
 	case WM_RBUTTONDOWN:
+		break;
 	case WM_LBUTTONUP:
 	case WM_MBUTTONUP:
 	case WM_RBUTTONUP:
-	case WM_MOUSEMOVE:
-	case WM_KEYDOWN:
-
-	default:
 		break;
+	case WM_MOUSEMOVE:
+		
+		break;
+	case WM_MOUSEWHEEL:
+		{
+		int delta = GET_WHEEL_DELTA_WPARAM(wParam);	
+		}
+		
+	break;
+	case WM_KEYDOWN:
+	case WM_KEYUP:
+		InputEvent.Key = VKCodeToEKey(wParam,lParam);
+		InputEvent.bKeyDown = (msg == WM_KEYDOWN);
+		InputEvent.CurPosition = LastMousePosition;
+		InputEvent.Delta = LastMouseDelta;
+		break;
+	default:
+		// 잘못된 데이터는 그냥 종료
+		return;
+	}
+
+	/// UI에서 처리를 해보고
+	
+	/// 남은것에 대해서 PlayerInput으로 처리
+	if (GetWorld() && GetWorld()->GetPlayerController())
+	{
+		APlayerController* PC = GetWorld()->GetPlayerController();
+		PC->PlayerInput->HandleInput(InputEvent);
 	}
 }
 

@@ -11,6 +11,8 @@ APlayerController::APlayerController()
 {
 	static UINT PlayerControllerID = 0;
 	Rename("PlayerController_"+ (PlayerControllerID++));
+
+	PlayerInput = std::make_shared<UPlayerInput>();
 }
 
 void APlayerController::BeginPlay()

@@ -38,9 +38,10 @@ ATestPawn::ATestPawn()
 
 void ATestPawn::BeginPlay()
 {
+	GEngine->GetWorld()->GetPlayerController()->OnPossess(this);
+
 	ACharacter::BeginPlay();
 
-	GEngine->GetWorld()->GetPlayerController()->OnPossess(this);
 
 	//CapsuleComp->SetDebugDraw(true);
 	
@@ -64,6 +65,24 @@ void ATestPawn::BeginPlay()
 		});
 
 	
+}
+
+void ATestPawn::BindKeyInputs()
+{
+	if (Controller)
+	{
+		if (std::shared_ptr<UPlayerInput> InputSystem = Controller->PlayerInput)
+		{
+			InputSystem->BindAction(EKeys::Num1, ETriggerEvent::Started, this, &ATestPawn::Attack);
+			InputSystem->BindAxis2D(EKeys::W, ETriggerEvent::Trigger, 1, 0,this, &ATestPawn::Move);
+			InputSystem->BindAxis2D(EKeys::S, ETriggerEvent::Trigger, -1, 0,this, &ATestPawn::Move);
+			InputSystem->BindAxis2D(EKeys::D, ETriggerEvent::Trigger, 0, 1,this, &ATestPawn::Move);
+			InputSystem->BindAxis2D(EKeys::A, ETriggerEvent::Trigger, 0, -1,this, &ATestPawn::Move);
+
+			InputSystem->BindAction<ATestPawn>(EKeys::Space, ETriggerEvent::Started, this, &ATestPawn::Jump);
+		}
+		
+	}
 }
 
 void ATestPawn::OnComponentHitEvent(UShapeComponent* HitComponent, AActor* OtherActor, UShapeComponent* OtherComp, const FHitResult& HitResults)
@@ -101,27 +120,36 @@ void ATestPawn::SetAttackEnd()
 	SMSword->GetBodyInstance()->SetDebugDraw(false);
 }
 
+void ATestPawn::Attack()
+{
+	if (SkeletalMeshComponent)
+	{
+		if (const std::shared_ptr<UAnimInstance>& AnimInstance = SkeletalMeshComponent->GetAnimInstance())
+		{
+			if (AM_Sword)
+			{
+				AnimInstance->Montage_Play(AM_Sword, 0.0f);
+			}
+		}
+	}
+}
 
+void ATestPawn::Move(float X, float Y)
+{
+	XMFLOAT3 ForwardDirection = Controller->GetActorForwardVector();
+	XMFLOAT3 RightDirection = Controller->GetActorRightVector();
+
+	AddMovementInput(ForwardDirection, X);
+	AddMovementInput(RightDirection, Y);
+
+	MY_LOG("LOGTEMP", EDebugLogLevel::DLL_Warning, XMFLOAT2_TO_TEXT({X,Y}));
+}
 
 
 void ATestPawn::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
 
-	if (Controller)
-	{
-		XMFLOAT3 ForwardDirection = Controller->GetActorForwardVector();
-		XMFLOAT3 RightDirection = Controller->GetActorRightVector();
-		if (ImGui::IsKeyDown(ImGuiKey_W)) AddMovementInput(ForwardDirection, 1);
-		if (ImGui::IsKeyDown(ImGuiKey_S)) AddMovementInput(ForwardDirection, -1);
-		if (ImGui::IsKeyDown(ImGuiKey_A)) AddMovementInput(RightDirection, -1);
-		if (ImGui::IsKeyDown(ImGuiKey_D)) AddMovementInput(RightDirection, 1);
-	}
-	
-	if (ImGui::IsKeyPressed(ImGuiKey_Space))
-	{
-		Jump();
-	}
 
 	ImGuiIO io = ImGui::GetIO();
 	ImVec2 MouseDelta = io.MouseDelta;
@@ -134,17 +162,4 @@ void ATestPawn::Tick(float DeltaSeconds)
 		}	
 	}
 	
-	if (ImGui::IsKeyPressed(ImGuiKey_1))
-	{
-		if (SkeletalMeshComponent)
-		{
-			if (const std::shared_ptr<UAnimInstance>& AnimInstance = SkeletalMeshComponent->GetAnimInstance())
-			{
-				if (AM_Sword)
-				{
-					AnimInstance->Montage_Play(AM_Sword, 0.0f);
-				}
-			}
-		}
-	}
 }

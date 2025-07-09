@@ -4,6 +4,7 @@
 // 이윤석
 
 #pragma once
+#include "UPlayerInput.h"
 #include "Engine/Class/Camera/APlayerCameraManager.h"
 #include "Engine/GameFramework/AActor.h"
 
@@ -25,4 +26,7 @@ class APlayerController : public AActor
 	void OnPossess(ACharacter* CharacterToPossess);
 	ACharacter* Character;
 	std::weak_ptr<APlayerCameraManager> CameraManager;
+
+	// 플레이어 인풋을 관리하는 오브젝트
+	std::shared_ptr<UPlayerInput> PlayerInput;
 };

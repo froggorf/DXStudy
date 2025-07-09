@@ -188,6 +188,8 @@ void ACharacter::BeginPlay()
 {
 	AActor::BeginPlay();
 
+	BindKeyInputs();
+
 	CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	CapsuleComp->SetObjectType(ECollisionChannel::Pawn);
 	CapsuleComp->SetSimulatePhysics(true);
@@ -242,3 +244,4 @@ void ACharacter::SetControlRotation(const XMFLOAT4& NewRot)
 	ControlRotation = NewRot;
 
 }
+
