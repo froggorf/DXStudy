@@ -7,6 +7,8 @@
 #include "Engine/Class/Camera/APlayerCameraManager.h"
 #include "Engine/GameFramework/AActor.h"
 
+class ACharacter;
+
 class APlayerController : public AActor
 {
 	MY_GENERATE_BODY(APlayerController)
@@ -14,6 +16,9 @@ class APlayerController : public AActor
 	APlayerController();
 	~APlayerController() = default;
 	void BeginPlay() override;
+	void Tick(float DeltaSeconds) override;
 
+	void OnPossess(ACharacter* CharacterToPossess);
+	ACharacter* Character;
 	std::weak_ptr<APlayerCameraManager> CameraManager;
 };

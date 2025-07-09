@@ -79,6 +79,7 @@ public:
 class ACharacter : public AActor
 {
 	MY_GENERATE_BODY(ACharacter)
+	
 
 public:
 	ACharacter();
@@ -87,11 +88,17 @@ public:
 	void AddMovementInput(const XMFLOAT3& WorldDirection, float ScaleValue = 1.0f);
 	void Jump();
 
+	void SetControlRotation(const XMFLOAT4& NewRot);
+	XMFLOAT4 GetControlRotation() const {return ControlRotation;}
+
 	UCharacterMovementComponent* GetMovementComponent() const {return CharacterMovement.lock().get(); }
 protected:
 private:
 public:
 protected:
+	// 컨트롤러의 Rotation
+	XMFLOAT4 ControlRotation;
+
 	std::shared_ptr<USpringArmComponent> SpringArm;
 
 	std::shared_ptr<UCapsuleComponent> CapsuleComp;

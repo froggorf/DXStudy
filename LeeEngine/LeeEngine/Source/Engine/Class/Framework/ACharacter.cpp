@@ -164,3 +164,9 @@ void ACharacter::Jump()
 		CharacterMovementComp->Jump();
 	}
 }
+
+void ACharacter::SetControlRotation(const XMFLOAT4& NewRot)
+{
+	ControlRotation = NewRot;
+
+}

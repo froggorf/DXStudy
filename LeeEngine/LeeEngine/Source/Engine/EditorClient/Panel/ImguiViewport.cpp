@@ -102,6 +102,7 @@ void FImguiLevelViewport::Draw()
 				ImVec2 MouseDelta{0.0f, 0.0f};
 				if (LastMousePos.x >= 0.0f)
 				{
+					
 					MouseDelta = ImGui::GetMousePos() - LastMousePos;
 				}
 				LastMousePos = ImGui::GetMousePos();

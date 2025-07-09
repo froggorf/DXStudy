@@ -33,6 +33,8 @@ void ATestPawn::BeginPlay()
 {
 	ACharacter::BeginPlay();
 
+	GEngine->GetWorld()->GetPlayerController()->OnPossess(this);
+
 	CapsuleComp->SetDebugDraw(true);
 	
 

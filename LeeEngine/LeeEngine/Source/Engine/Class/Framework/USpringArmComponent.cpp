@@ -1,7 +1,15 @@
 ﻿#include "CoreMinimal.h"
 #include "USpringArmComponent.h"
 
+#include "ACharacter.h"
 #include "Engine/Physics/UPhysicsEngine.h"
+
+void USpringArmComponent::BeginPlay()
+{
+	USceneComponent::BeginPlay();
+
+	OwningCharacter = dynamic_cast<ACharacter*>(GetOwner());
+}
 
 void USpringArmComponent::TickComponent(float DeltaSeconds)
 {
@@ -20,7 +28,6 @@ void USpringArmComponent::TickComponent(float DeltaSeconds)
 		Channel.emplace_back(static_cast<ECollisionChannel>(i));	
 	}
 
-
 	FHitResult Result;
 	if (gPhysicsEngine->LineTraceSingleByChannel(Transform.GetTranslation(),Offset, Channel, Result))
 	{
@@ -31,15 +38,16 @@ void USpringArmComponent::TickComponent(float DeltaSeconds)
 		TargetOffset = Offset;
 	}
 
-	
+	if (bUsePawnControlRotation && OwningCharacter)
+	{
+		XMFLOAT4 Rot = OwningCharacter->GetControlRotation();
+		SetWorldRotation(XMLoadFloat4(&Rot));
+	}
 }
 
 FTransform USpringArmComponent::GetSocketTransform(const std::string& InSocketName)
 {
 	FTransform CurTransform = GetComponentTransform();
 	CurTransform.Translation = TargetOffset;
-	//CurTransform.Translation.x += TargetOffset.x;
-	//CurTransform.Translation.y += TargetOffset.y;
-	//CurTransform.Translation.z += TargetOffset.z;
 	return CurTransform;
 }

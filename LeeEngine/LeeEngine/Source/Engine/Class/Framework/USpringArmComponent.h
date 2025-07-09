@@ -6,14 +6,21 @@
 #pragma once
 #include "Engine/Components/USceneComponent.h"
 
+class ACharacter;
+
 class USpringArmComponent : public USceneComponent
 {
 	MY_GENERATE_BODY(USpringArmComponent)
 
+	void BeginPlay() override;
 	void TickComponent(float DeltaSeconds) override;
 	FTransform GetSocketTransform(const std::string& InSocketName) override;
 	float TargetArmLength = 300.0f;
 	XMFLOAT3 TargetOffset;
+
+	ACharacter* OwningCharacter;
+
+	bool bUsePawnControlRotation = true;
 
 	void SetArmLength(float InTargetArmLength){TargetArmLength = InTargetArmLength;}
 };
