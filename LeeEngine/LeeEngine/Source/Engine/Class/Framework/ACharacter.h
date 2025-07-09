@@ -10,6 +10,7 @@
 #include "Engine/GameFramework/AActor.h"
 #include "Engine/Physics/UCapsuleComponent.h"
 
+class APlayerController;
 class UCameraComponent;
 
 class MyQueryFilterCallback : public physx::PxQueryFilterCallback
@@ -85,7 +86,11 @@ public:
 	ACharacter();
 	void BeginPlay() override;
 	void Tick(float DeltaSeconds) override;
+
 	void AddMovementInput(const XMFLOAT3& WorldDirection, float ScaleValue = 1.0f);
+	void AddControllerYawInput(float Val);
+	void AddControllerPitchInput(float Val);
+
 	void Jump();
 
 	void SetControlRotation(const XMFLOAT4& NewRot);
@@ -95,9 +100,12 @@ public:
 protected:
 private:
 public:
+	// 현재 이 액터를 소유중인 컨트롤러
+	APlayerController*  Controller;
 protected:
 	// 컨트롤러의 Rotation
 	XMFLOAT4 ControlRotation;
+
 
 	std::shared_ptr<USpringArmComponent> SpringArm;
 

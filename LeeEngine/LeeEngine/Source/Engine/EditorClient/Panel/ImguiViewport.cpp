@@ -170,7 +170,7 @@ void FImguiLevelViewport::ExecuteCommand(const std::shared_ptr<FImguiPanelComman
 
 		case ELevelViewportCommandType::LVCT_SetViewportSizeToEditorViewportSize:
 			GDirectXDevice->SetViewPortSize(ResizeEditorRenderTargetSize.x, ResizeEditorRenderTargetSize.y);
-			Data->ViewMatrices->ProjectionMatrix = XMMatrixPerspectiveFovLH(0.5*XM_PI, ResizeEditorRenderTargetSize.x/ResizeEditorRenderTargetSize.y,1.0f, 1000.0f);
+			Data->ViewMatrices->ProjectionMatrix = XMMatrixPerspectiveFovLH(0.5*XM_PI, ResizeEditorRenderTargetSize.x/ResizeEditorRenderTargetSize.y,1.0f, 20000.0f);
 			break;
 
 		case ELevelViewportCommandType::LVCT_GetEditorViewMatrices:
@@ -238,7 +238,6 @@ void FImguiLevelViewport::DrawImguizmoSelectedActor(float AspectRatio)
 	// TODO: 03.20 Editor 를 static이 아닌 FEditorScene내에서 작동하도록 변경하기
 	XMMATRIX ViewMat = EditorViewMatrices.GetViewMatrix(); //GEngine->Test_DeleteLater_GetViewMatrix();
 	XMMATRIX ProjMat = FRenderCommandExecutor::CurrentSceneData->GetProjectionMatrix();
-	//XMMatrixPerspectiveFovLH(0.5*XM_PI, AspectRatio, 1.0f, 1000.0f);
 
 	//ProjMat = XMMatrixPerspectiveFovRH(0.5*XM_PI, 1600.0f/1200.0f, 1.0f, 1000.0f);;
 	//ImGuizmo::AllowAxisFlip(true);

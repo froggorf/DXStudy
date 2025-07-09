@@ -13,6 +13,7 @@ class ATestPawn : public ACharacter
 	ATestPawn();
 	
 	void BeginPlay() override;
+	
 	void Tick(float DeltaSeconds) override;
 	void OnComponentHitEvent(UShapeComponent* HitComponent, AActor* OtherActor, UShapeComponent* OtherComp, const FHitResult& HitResults);
 	void AttackStart(UShapeComponent* OverlappedComponent, AActor* OtherActor, UShapeComponent* OtherComp);

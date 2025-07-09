@@ -34,6 +34,9 @@ class AActor : public UObject, public std::enable_shared_from_this<AActor>
 	void     SetActorRotation(const XMFLOAT4& NewRotation) const;
 	void     SetActorScale3D(const XMFLOAT3& NewScale3D) const;
 
+	XMFLOAT3 GetActorForwardVector() const;
+	XMFLOAT3 GetActorRightVector() const;
+
 	virtual void Tick(float DeltaSeconds);
 
 	void SaveDataFromAssetToFile(nlohmann::json& Json) override;

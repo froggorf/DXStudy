@@ -18,6 +18,10 @@ class APlayerController : public AActor
 	void BeginPlay() override;
 	void Tick(float DeltaSeconds) override;
 
+	XMFLOAT4 GetControlRotation() const {return GetActorRotation();}
+	void AddYawInput(float Val);
+	void AddPitchInput(float Val);
+
 	void OnPossess(ACharacter* CharacterToPossess);
 	ACharacter* Character;
 	std::weak_ptr<APlayerCameraManager> CameraManager;

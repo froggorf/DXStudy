@@ -96,13 +96,31 @@ void ATestPawn::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
 
-	if (ImGui::IsKeyDown(ImGuiKey_I)) AddMovementInput({0,0,1}, 1);
-	if (ImGui::IsKeyDown(ImGuiKey_K)) AddMovementInput({0,0,-1}, 1);
-	if (ImGui::IsKeyDown(ImGuiKey_J)) AddMovementInput({-1,0,0}, 1);
-	if (ImGui::IsKeyDown(ImGuiKey_L)) AddMovementInput({1,0,0}, 1);
-
+	if (Controller)
+	{
+		XMFLOAT3 ForwardDirection = Controller->GetActorForwardVector();
+		XMFLOAT3 RightDirection = Controller->GetActorRightVector();
+		if (ImGui::IsKeyDown(ImGuiKey_W)) AddMovementInput(ForwardDirection, 1);
+		if (ImGui::IsKeyDown(ImGuiKey_S)) AddMovementInput(ForwardDirection, -1);
+		if (ImGui::IsKeyDown(ImGuiKey_A)) AddMovementInput(RightDirection, -1);
+		if (ImGui::IsKeyDown(ImGuiKey_D)) AddMovementInput(RightDirection, 1);
+	}
+	
 	if (ImGui::IsKeyPressed(ImGuiKey_Space))
 	{
 		Jump();
 	}
+
+	ImGuiIO io = ImGui::GetIO();
+	ImVec2 MouseDelta = io.MouseDelta;
+	if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
+	{
+		if (Controller)
+		{
+			AddControllerYawInput(io.MouseDelta.x/2);
+			AddControllerPitchInput(io.MouseDelta.y/2);
+		}	
+	}
+	
+
 }

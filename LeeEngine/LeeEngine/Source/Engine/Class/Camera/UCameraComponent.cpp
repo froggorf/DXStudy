@@ -13,7 +13,7 @@ void UCameraComponent::BeginPlay()
 {
 	USceneComponent::BeginPlay();
 
-	ViewMatrices.UpdateProjectionMatrix(XMMatrixPerspectiveFovLH(0.5*XM_PI, AspectRatio, 0.1f, 1000.0f));
+	ViewMatrices.UpdateProjectionMatrix(XMMatrixPerspectiveFovLH(0.5*XM_PI, AspectRatio, 0.1f, 20000.0f));
 }
 
 void UCameraComponent::UpdateCameraData()

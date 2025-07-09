@@ -123,6 +123,26 @@ void AActor::SetActorScale3D(const XMFLOAT3& NewScale3D) const
 	}
 }
 
+XMFLOAT3 AActor::GetActorForwardVector() const
+{
+	XMVECTOR WorldFront = XMVectorSet(0,0,1,0);
+	XMFLOAT4 CurRot = GetActorRotation();
+	XMVECTOR ActorFront = XMVector3Rotate(WorldFront, XMLoadFloat4(&CurRot));
+	XMFLOAT3 ActorFrontVector;
+	XMStoreFloat3(&ActorFrontVector,ActorFront);
+	return ActorFrontVector;
+}
+
+XMFLOAT3 AActor::GetActorRightVector() const
+{
+	XMVECTOR WorldRight = XMVectorSet(1,0,0,0);
+	XMFLOAT4 CurRot = GetActorRotation();
+	XMVECTOR ActorRight = XMVector3Rotate(WorldRight, XMLoadFloat4(&CurRot));
+	XMFLOAT3 ActorRightVector;
+	XMStoreFloat3(&ActorRightVector,ActorRight);
+	return ActorRightVector;
+}
+
 void AActor::Tick(float DeltaSeconds)
 {
 	if (GetRootComponent())
