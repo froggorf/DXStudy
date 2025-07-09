@@ -33,21 +33,6 @@ public:
 
 	virtual LRESULT MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-	// 인풋 관련 함수
-	virtual void OnMouseDown(WPARAM btnState, int x, int y)
-	{
-	}
-
-	virtual void OnMouseUp(WPARAM btnState, int x, int y)
-	{
-	}
-
-	virtual void OnMouseMove(WPARAM btnState, int x, int y)
-	{
-	}
-
-
-
 	void TestSetWindowBarName(std::wostringstream& Test) const
 	{
 		SetWindowText(m_hMainWnd, Test.str().c_str());

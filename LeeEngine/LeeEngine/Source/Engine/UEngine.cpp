@@ -269,7 +269,20 @@ void UEngine::JoinThreadsAtDestroy()
 
 void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	// 엔진에서의 인풋 관리
+	switch (msg)
+	{
+	case WM_LBUTTONDOWN:
+	case WM_MBUTTONDOWN:
+	case WM_RBUTTONDOWN:
+	case WM_LBUTTONUP:
+	case WM_MBUTTONUP:
+	case WM_RBUTTONUP:
+	case WM_MOUSEMOVE:
+	case WM_KEYDOWN:
+
+	default:
+		break;
+	}
 }
 
 void UEngine::CreateRenderThread()

@@ -39,9 +39,6 @@ public:
 	//void DrawSkeletalMesh();
 	void DrawScene() override;
 
-	void OnMouseDown(WPARAM btnState, int x, int y) override;
-	void OnMouseUp(WPARAM btnState, int x, int y) override;
-	void OnMouseMove(WPARAM btnState, int x, int y) override;
 
 private:
 
@@ -355,26 +352,6 @@ void MyGame::DrawScene()
 		//#endif
 	}
 }
-
-void MyGame::OnMouseDown(WPARAM btnState, int x, int y)
-{
-	m_LastMousePos.x = x;
-	m_LastMousePos.y = y;
-
-	SetCapture(m_hMainWnd);
-}
-
-void MyGame::OnMouseUp(WPARAM btnState, int x, int y)
-{
-	ReleaseCapture();
-}
-
-void MyGame::OnMouseMove(WPARAM btnState, int x, int y)
-{
-	m_LastMousePos.x = x;
-	m_LastMousePos.y = y;
-}
-
 //
 //void AnimationApp::BuildShadowTransform()
 //{

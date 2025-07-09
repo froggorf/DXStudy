@@ -300,21 +300,15 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_LBUTTONDOWN:
 	case WM_MBUTTONDOWN:
 	case WM_RBUTTONDOWN:
-		//OnMouseDown(wParam, LOWORD(lParam), HIWORD(lParam));
-		std::cout << "??";
 	case WM_LBUTTONUP:
 	case WM_MBUTTONUP:
 	case WM_RBUTTONUP:
-	//OnMouseUp(wParam, LOWORD(lParam), HIWORD(lParam));
-	//case WM_MOUSEMOVE:
-	//OnMouseMove(wParam, LOWORD(lParam), HIWORD(lParam));
+	case WM_MOUSEMOVE:
 	case WM_KEYDOWN:
-#ifndef WITH_EDITOR
 		if(GEngine)
 		{
 			GEngine->HandleInput(msg,wParam,lParam);
 		}
-#endif
 		return 0;
 	}
 

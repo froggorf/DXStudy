@@ -20,7 +20,6 @@ void UCharacterMovementComponent::BeginPlay()
 {
 	UActorComponent::BeginPlay();
 
-
 	Manager = PxCreateControllerManager(*gPhysicsEngine->GetScene());
 
 	desc.height = std::static_pointer_cast<UCapsuleComponent>(GetOwner()->GetRootComponent())->GetHalfHeight()*2;

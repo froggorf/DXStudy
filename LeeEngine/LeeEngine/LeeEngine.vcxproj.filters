@@ -345,6 +345,9 @@
     <ClCompile Include="Source\Engine\Class\Framework\USpringArmComponent.cpp">
       <Filter>Source\Engine\Class\Framework</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Class\Framework\UPlayerInput.cpp">
+      <Filter>Source\Engine\Class\Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DirectX\ShadowMap.h">
@@ -612,6 +615,9 @@
       <Filter>Source\Engine\Class\Camera</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Class\Framework\USpringArmComponent.h">
+      <Filter>Source\Engine\Class\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Class\Framework\UPlayerInput.h">
       <Filter>Source\Engine\Class\Framework</Filter>
     </ClInclude>
   </ItemGroup>
