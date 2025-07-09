@@ -26,10 +26,16 @@ void APlayerController::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
 
+	if (PlayerInput)
+	{
+		PlayerInput->Tick();
+	}
+
 	if (Character)
 	{
 		Character->SetControlRotation(GetActorRotation());
 	}
+
 }
 
 void APlayerController::AddYawInput(float Val)

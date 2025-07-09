@@ -141,8 +141,6 @@ void ATestPawn::Move(float X, float Y)
 
 	AddMovementInput(ForwardDirection, X);
 	AddMovementInput(RightDirection, Y);
-
-	MY_LOG("LOGTEMP", EDebugLogLevel::DLL_Warning, XMFLOAT2_TO_TEXT({X,Y}));
 }
 
 

@@ -84,6 +84,8 @@ public:
     // 바인딩 액션을 관리하는 변수
     std::unordered_map<std::pair<EKeys, ETriggerEvent>, std::function<void()>,KeyEventHash> BindEvents;
 
+    void Tick();
+
     // Input을 처리하는 함수
     void HandleInput(const FInputEvent& InputEvent);
 
