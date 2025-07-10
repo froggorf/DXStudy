@@ -154,3 +154,27 @@ inline float NormalizeAxis(float Angle)
 	}
 	return Angle;
 }
+
+inline XMMATRIX MyMatrixLerpForAnimation(const XMMATRIX& AMatrix, const XMMATRIX& BMatrix, float Value){
+	// 1. 행렬 분해
+	XMVECTOR OriginScale, OriginRot, OriginLoc;
+	XMVECTOR MontageScale, MontageRot, MontageLoc;
+
+	bool ok1 = XMMatrixDecompose(&OriginScale, &OriginRot, &OriginLoc, AMatrix);
+	bool ok2 = XMMatrixDecompose(&MontageScale, &MontageRot, &MontageLoc, BMatrix);
+
+	XMVECTOR BlendedLoc   = XMVectorLerp(OriginLoc, MontageLoc, Value);
+	XMVECTOR BlendedScale = XMVectorLerp(OriginScale, MontageScale, Value);
+	XMVECTOR BlendedRot   = XMQuaternionSlerp(OriginRot, MontageRot,Value);
+
+	XMMATRIX BlendedMatrix = XMMatrixTransformation(
+		XMVectorZero(),               
+		XMQuaternionIdentity(),       
+		BlendedScale,                 
+		XMVectorZero(),               
+		BlendedRot,                   
+		BlendedLoc                    
+	);
+
+	return BlendedMatrix;
+}

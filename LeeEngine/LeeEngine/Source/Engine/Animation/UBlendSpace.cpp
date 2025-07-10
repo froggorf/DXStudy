@@ -517,7 +517,7 @@ void UBlendSpace::LinearInterpolation(const XMFLOAT2& CurrentValue, const std::s
 
 	for (int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
 	{
-		XMMatrixLerp(P1AnimMatrices[BoneIndex], P2AnimMatrices[BoneIndex], P1Weight, OutMatrices[BoneIndex]);
+		OutMatrices[BoneIndex] = MyMatrixLerpForAnimation(P1AnimMatrices[BoneIndex], P2AnimMatrices[BoneIndex], P1Weight);
 	}
 }
 

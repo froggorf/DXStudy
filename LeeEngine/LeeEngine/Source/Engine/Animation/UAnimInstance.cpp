@@ -197,7 +197,7 @@ void UAnimInstance::LayeredBlendPerBone(const std::vector<XMMATRIX>& BasePose, c
 			{
 				if (bHasTargetParentBone)
 				{
-					XMMatrixLerp(BasePose[CurrentBoneIndex], BlendPose[CurrentBoneIndex] * ToBaseAnimTargetBoneMatrix, BlendWeights, OutMatrices[CurrentBoneIndex]);
+					OutMatrices[CurrentBoneIndex] = MyMatrixLerpForAnimation(BasePose[CurrentBoneIndex], BlendPose[CurrentBoneIndex] * ToBaseAnimTargetBoneMatrix, BlendWeights);
 				}
 				else
 				{
@@ -236,7 +236,7 @@ void UAnimInstance::PlayMontage(const std::string& SlotName, std::vector<XMMATRI
 				float             CurveValue     = BlendInCurve.Eval(NormalizedTime);
 				for (int i = 0; i < MAX_BONES; ++i)
 				{
-					XMMatrixLerp(OriginMatrices[i], MontageMatrices[i], CurveValue, OriginMatrices[i]);
+				 	OriginMatrices[i] = MyMatrixLerpForAnimation(OriginMatrices[i],MontageMatrices[i], CurveValue);
 				}
 			}
 			else if (EndTime - BlendOutBlendTime <= MontageInstance->CurrentPlayTime && MontageInstance->CurrentPlayTime < EndTime)
@@ -247,7 +247,7 @@ void UAnimInstance::PlayMontage(const std::string& SlotName, std::vector<XMMATRI
 				float             CurveValue     = BlendOutCurve.Eval(NormalizedTime);
 				for (int i = 0; i < MAX_BONES; ++i)
 				{
-					XMMatrixLerp(OriginMatrices[i], MontageMatrices[i], CurveValue, OriginMatrices[i]);
+					OriginMatrices[i] = MyMatrixLerpForAnimation(OriginMatrices[i],MontageMatrices[i], CurveValue);
 				}
 			}
 			else
