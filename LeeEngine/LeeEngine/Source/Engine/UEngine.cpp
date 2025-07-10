@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "UEngine.h"
 
+#include <windowsx.h>
+
 #include "FAudioDevice.h"
 #include "Class/Framework/UPlayerInput.h"
 #include "Mesh/UStaticMesh.h"
@@ -420,15 +422,34 @@ void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 	switch (msg)
 	{
 	case WM_LBUTTONDOWN:
-	case WM_MBUTTONDOWN:
-	case WM_RBUTTONDOWN:
-		break;
 	case WM_LBUTTONUP:
-	case WM_MBUTTONUP:
+		InputEvent.Key= EKeys::MouseLeft;
+		InputEvent.CurPosition.x = GET_X_LPARAM(lParam);
+		InputEvent.CurPosition.y = GET_Y_LPARAM(lParam);
+		InputEvent.bKeyDown = (msg == WM_LBUTTONDOWN);
+		break;
 	case WM_RBUTTONUP:
+	case WM_RBUTTONDOWN:
+		InputEvent.Key= EKeys::MouseRight;
+		InputEvent.CurPosition.x = GET_X_LPARAM(lParam);
+		InputEvent.CurPosition.y = GET_Y_LPARAM(lParam);
+		InputEvent.bKeyDown = (msg == WM_RBUTTONDOWN);
+		break;
+	case WM_MBUTTONUP:
+	case WM_MBUTTONDOWN:
 		break;
 	case WM_MOUSEMOVE:
-		
+		{
+			int x = GET_X_LPARAM(lParam);
+			int y = GET_Y_LPARAM(lParam);
+			LastMouseDelta = {x - LastMousePosition.x, y - LastMousePosition.y};
+			LastMousePosition = {static_cast<float>(x),static_cast<float>(y)};
+
+			InputEvent.Key = EKeys::MouseXY2DAxis;
+			InputEvent.bKeyDown = false;
+			InputEvent.Delta = LastMouseDelta;
+			InputEvent.CurPosition = LastMousePosition;
+		}
 		break;
 	case WM_MOUSEWHEEL:
 		{
@@ -447,6 +468,7 @@ void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 		// 잘못된 데이터는 그냥 종료
 		return;
 	}
+	
 
 	/// UI에서 처리를 해보고
 	
@@ -454,6 +476,8 @@ void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 	if (GetWorld() && GetWorld()->GetPlayerController())
 	{
 		APlayerController* PC = GetWorld()->GetPlayerController();
+		PC->PlayerInput->LastMousePosition = LastMousePosition;
+		PC->PlayerInput->LastMouseDelta = LastMouseDelta;
 		PC->PlayerInput->HandleInput(InputEvent);
 	}
 }

@@ -26,6 +26,9 @@ class ATestPawn : public ACharacter
 
 	void Attack();
 	void Move(float X, float Y);
+	void Look(float X, float Y);
+	void MouseRotateStart();
+	void MouseRotateEnd();
 
 protected:
 	std::weak_ptr<UTestComponent> TestComp;
@@ -35,5 +38,5 @@ protected:
 	std::shared_ptr<UAnimMontage> AM_Sword;
 
 private:
-	
+	bool bRightButtonPressed = false;
 };

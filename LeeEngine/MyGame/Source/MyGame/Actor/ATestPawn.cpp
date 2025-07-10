@@ -73,13 +73,18 @@ void ATestPawn::BindKeyInputs()
 	{
 		if (std::shared_ptr<UPlayerInput> InputSystem = Controller->PlayerInput)
 		{
-			InputSystem->BindAction(EKeys::Num1, ETriggerEvent::Started, this, &ATestPawn::Attack);
+			InputSystem->BindAction(EKeys::MouseLeft, ETriggerEvent::Started, this, &ATestPawn::Attack);
 			InputSystem->BindAxis2D(EKeys::W, ETriggerEvent::Trigger, 1, 0,this, &ATestPawn::Move);
 			InputSystem->BindAxis2D(EKeys::S, ETriggerEvent::Trigger, -1, 0,this, &ATestPawn::Move);
 			InputSystem->BindAxis2D(EKeys::D, ETriggerEvent::Trigger, 0, 1,this, &ATestPawn::Move);
 			InputSystem->BindAxis2D(EKeys::A, ETriggerEvent::Trigger, 0, -1,this, &ATestPawn::Move);
 
 			InputSystem->BindAction<ATestPawn>(EKeys::Space, ETriggerEvent::Started, this, &ATestPawn::Jump);
+
+			InputSystem->BindAxis2D(EKeys::MouseXY2DAxis, ETriggerEvent::Trigger, 0,0, this, &ATestPawn::Look);
+
+			InputSystem->BindAction(EKeys::MouseRight, ETriggerEvent::Started, this, &ATestPawn::MouseRotateStart);
+			InputSystem->BindAction(EKeys::MouseRight, ETriggerEvent::Released, this, &ATestPawn::MouseRotateEnd);
 		}
 		
 	}
@@ -143,21 +148,29 @@ void ATestPawn::Move(float X, float Y)
 	AddMovementInput(RightDirection, Y);
 }
 
+void ATestPawn::Look(float X, float Y)
+{
+	// 우클릭이 되어있다면
+	if (bRightButtonPressed && Controller && Controller->PlayerInput)
+	{
+		XMFLOAT2 Delta = Controller->PlayerInput->LastMouseDelta;
+		AddControllerYawInput(Delta.x);
+		AddControllerPitchInput(Delta.y);
+	}
+}
+
+void ATestPawn::MouseRotateStart()
+{
+	bRightButtonPressed = true;
+}
+
+void ATestPawn::MouseRotateEnd()
+{
+	bRightButtonPressed = false;
+}
+
 
 void ATestPawn::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
-
-
-	ImGuiIO io = ImGui::GetIO();
-	ImVec2 MouseDelta = io.MouseDelta;
-	if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
-	{
-		if (Controller)
-		{
-			AddControllerYawInput(io.MouseDelta.x/2);
-			AddControllerPitchInput(io.MouseDelta.y/2);
-		}	
-	}
-	
 }

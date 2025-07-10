@@ -30,6 +30,7 @@ enum class EKeys : uint16_t
     MouseLeft, MouseRight, MouseMiddle,
     MouseXButton1, MouseXButton2,
     MouseWheelUp, MouseWheelDown,
+    MouseXY2DAxis,
 
     // 펑션키
     F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
@@ -80,6 +81,9 @@ class UPlayerInput : public UObject
 public:
     // 키가 눌려있는지를 체크하는 변수
 	std::array<bool, static_cast<UINT>(EKeys::NUM_KEYS)> Touches;
+
+    XMFLOAT2 LastMousePosition;
+    XMFLOAT2 LastMouseDelta;
 
     // 바인딩 액션을 관리하는 변수
     std::unordered_map<std::pair<EKeys, ETriggerEvent>, std::function<void()>,KeyEventHash> BindEvents;

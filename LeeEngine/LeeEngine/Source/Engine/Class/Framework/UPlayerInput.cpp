@@ -20,6 +20,17 @@ void UPlayerInput::Tick()
 
 void UPlayerInput::HandleInput(const FInputEvent& InputEvent)
 {
+	// 마우스 2DAxis에 대한 처리는 별도로 진행
+	if (InputEvent.Key == EKeys::MouseXY2DAxis)
+	{
+		auto MouseXY2dAxisEvent = BindEvents.find({EKeys::MouseXY2DAxis, ETriggerEvent::Trigger});
+		if (MouseXY2dAxisEvent != BindEvents.end())
+		{
+			MouseXY2dAxisEvent->second();
+		}
+		return;
+	}
+
 	// 키 누름
 	UINT KeyIndex = static_cast<UINT>(InputEvent.Key);
 	if (InputEvent.bKeyDown)
