@@ -5,7 +5,7 @@
 	
 	"BlendIn" : {
 		"CurveName" : "TestCurve",
-		"BlendTime" : 0.3
+		"BlendTime" : 0.15
 	},
 	"BlendOut" : {
 		"CurveName" : "TestCurve",
