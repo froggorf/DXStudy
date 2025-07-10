@@ -1,4 +1,4 @@
-#include "CoreMinimal.h"
+﻿#include "CoreMinimal.h"
 #include "MyEngineUtils.h"
 
 FTransform FTransform::operator*(const FTransform& OtherTransform)
@@ -78,4 +78,24 @@ XMFLOAT3 FTransform::CalculateEulerRotationFromQuaternion(const XMVECTOR& Quater
 	Euler.y = XMConvertToDegrees(Euler.y);
 	Euler.z = XMConvertToDegrees(Euler.z);
 	return Euler;
+}
+
+XMMATRIX MyMatrixLerpForAnimation(const XMMATRIX& AMatrix, const XMMATRIX& BMatrix, float Value)
+{
+	XMVECTOR ScaleA, RotA, TransA;
+	XMVECTOR ScaleB, RotB, TransB;
+
+	bool ok1 = XMMatrixDecompose(&ScaleA, &RotA, &TransA, AMatrix);
+	bool ok2 = XMMatrixDecompose(&ScaleB, &RotB, &TransB, BMatrix);
+
+	RotA = XMQuaternionNormalize(RotA);
+	RotB = XMQuaternionNormalize(RotB);
+
+	XMVECTOR BlendedScale = XMVectorLerp(ScaleA, ScaleB, Value);
+	XMVECTOR BlendedRot   = XMQuaternionSlerp(RotA, RotB, Value);
+	XMVECTOR BlendedTrans = XMVectorLerp(TransA, TransB, Value);
+
+	XMMATRIX Result = XMMatrixScalingFromVector(BlendedScale) * XMMatrixRotationQuaternion(BlendedRot) * XMMatrixTranslationFromVector(BlendedTrans);
+
+	return Result;
 }
