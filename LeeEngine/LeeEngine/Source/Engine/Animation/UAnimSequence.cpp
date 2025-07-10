@@ -31,7 +31,7 @@ Bone* UAnimSequence::FindBone(const std::string& name)
 	return &(*iter);
 }
 
-void UAnimSequence::GetBoneTransform(float CurrentAnimTime, std::vector<XMMATRIX>& FinalBoneMatrices)
+void UAnimSequence::GetBoneTransform(float CurrentAnimTime, std::vector<XMMATRIX>& FinalBoneMatrices, bool* bPlayRootMotion)
 {
 	if (CurrentAnimTime == 0.0f && bIsCachedFirstFrameBoneMatrices)
 	{
@@ -41,6 +41,9 @@ void UAnimSequence::GetBoneTransform(float CurrentAnimTime, std::vector<XMMATRIX
 		}
 		return;
 	}
+
+	*bPlayRootMotion = bEnableRootMotion;
+
 	CurrentAnimTime = fmod(CurrentAnimTime, Duration);
 	std::vector<XMMATRIX> GlobalTransform(BoneHierarchy.size(), XMMatrixIdentity());
 
@@ -81,6 +84,12 @@ void UAnimSequence::LoadDataFromFileData(const nlohmann::json& AssetData)
 	}
 
 	ReadMyAssetFile(AssetData["AnimationDataPath"], GetAnimationSkeleton().get());
+
+	if (AssetData.contains("RootMotion"))
+	{
+		int Val = AssetData["RootMotion"];
+		bEnableRootMotion = Val;
+	}
 
 	PrecomputeAnimationData(GetAnimationSkeleton()->GetName());
 }
@@ -216,6 +225,7 @@ void UAnimSequence::PrecomputeAnimationData(const std::string& Name)
 
 	// 첫 프레임의 본 변환 행렬을 캐시
 	CachedFirstFrameBoneMatrices = std::vector<XMMATRIX>(MAX_BONES, XMMatrixIdentity());
-	GetBoneTransform(0.0f, CachedFirstFrameBoneMatrices);
+	bool Dummy;
+	GetBoneTransform(0.0f, CachedFirstFrameBoneMatrices, &Dummy);
 	bIsCachedFirstFrameBoneMatrices = true;
 }

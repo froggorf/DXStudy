@@ -387,7 +387,8 @@ void UBlendSpace::TriangleInterpolation(const XMFLOAT2& AnimValue, const std::sh
 		std::atomic<bool> bAnim1Updated = false;
 		auto              Anim1Work     = [P1, P1AnimDuration, WantedTimeRate, &P1AnimMatrices]()
 		{
-			P1->AnimSequence->GetBoneTransform(P1AnimDuration * WantedTimeRate, (P1AnimMatrices));
+			bool Dummy;
+			P1->AnimSequence->GetBoneTransform(P1AnimDuration * WantedTimeRate, (P1AnimMatrices), &Dummy);
 		};
 		GThreadPool->AddTask(FTask{2, Anim1Work, &bAnim1Updated});
 
@@ -396,7 +397,8 @@ void UBlendSpace::TriangleInterpolation(const XMFLOAT2& AnimValue, const std::sh
 		std::vector<XMMATRIX> P2AnimMatrices(MAX_BONES, XMMatrixIdentity());
 		auto                  Anim2Work = [P2, P2AnimDuration, WantedTimeRate, &P2AnimMatrices]()
 		{
-			P2->AnimSequence->GetBoneTransform(P2AnimDuration * WantedTimeRate, (P2AnimMatrices));
+			bool Dummy;
+			P2->AnimSequence->GetBoneTransform(P2AnimDuration * WantedTimeRate, (P2AnimMatrices), &Dummy);
 		};
 		GThreadPool->AddTask(FTask{2, Anim2Work, &bAnim2Updated});
 
@@ -404,7 +406,8 @@ void UBlendSpace::TriangleInterpolation(const XMFLOAT2& AnimValue, const std::sh
 		std::vector<XMMATRIX> P3AnimMatrices(MAX_BONES, XMMatrixIdentity());
 		auto                  Anim3Work = [P3, P3AnimDuration, WantedTimeRate, &P3AnimMatrices]()
 		{
-			P3->AnimSequence->GetBoneTransform(P3AnimDuration * WantedTimeRate, (P3AnimMatrices));
+			bool Dummy;
+			P3->AnimSequence->GetBoneTransform(P3AnimDuration * WantedTimeRate, (P3AnimMatrices), &Dummy);
 		};
 		GThreadPool->AddTask(FTask{2, Anim3Work, &bAnim3Updated});
 
@@ -477,7 +480,8 @@ void UBlendSpace::LinearInterpolation(const XMFLOAT2& CurrentValue, const std::s
 	std::atomic<bool> bAnim1Updated = false;
 	auto              Anim1Work     = [P1, P1AnimDuration, WantedTimeRate, &P1AnimMatrices]()
 	{
-		P1->AnimSequence->GetBoneTransform(P1AnimDuration * WantedTimeRate, (P1AnimMatrices));
+		bool bDummy;
+		P1->AnimSequence->GetBoneTransform(P1AnimDuration * WantedTimeRate, (P1AnimMatrices), &bDummy);
 	};
 	GThreadPool->AddTask(FTask{2, Anim1Work, &bAnim1Updated});
 
@@ -486,7 +490,8 @@ void UBlendSpace::LinearInterpolation(const XMFLOAT2& CurrentValue, const std::s
 	std::vector<XMMATRIX> P2AnimMatrices(MAX_BONES, XMMatrixIdentity());
 	auto                  Anim2Work = [P2, P2AnimDuration, WantedTimeRate, &P2AnimMatrices]()
 	{
-		P2->AnimSequence->GetBoneTransform(P2AnimDuration * WantedTimeRate, (P2AnimMatrices));
+		bool bDummy;
+		P2->AnimSequence->GetBoneTransform(P2AnimDuration * WantedTimeRate, (P2AnimMatrices), &bDummy);
 	};
 	GThreadPool->AddTask(FTask{2, Anim2Work, &bAnim2Updated});
 
@@ -518,7 +523,8 @@ void UBlendSpace::LinearInterpolation(const XMFLOAT2& CurrentValue, const std::s
 
 void UBlendSpace::CalculateOneAnimation(const std::shared_ptr<FAnimClipPoint>& Point, float AnimTime, std::vector<XMMATRIX>& OutMatrices, std::vector<FAnimNotifyEvent>& OutActiveNotifies)
 {
-	Point->AnimSequence->GetBoneTransform(fmod(AnimTime, Point->AnimSequence->GetDuration()), OutMatrices);
+	bool bDummy;
+	Point->AnimSequence->GetBoneTransform(fmod(AnimTime, Point->AnimSequence->GetDuration()), OutMatrices, &bDummy);
 	float DeltaSeconds = GEngine->GetDeltaSeconds();
 	Point->AnimSequence->GetAnimNotifies(fmod(AnimTime, Point->AnimSequence->GetDuration()), OutActiveNotifies);
 }

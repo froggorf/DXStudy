@@ -82,13 +82,13 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 		switch (TestComp->TargetAnim)
 		{
 		case 0:
-			AS_Test0->GetBoneTransform(CurrentTime, AS_Matrices);	
+			AS_Test0->GetBoneTransform(CurrentTime, AS_Matrices, &bPlayRootMotion);	
 			break;
 		case 1:
-			AS_Test1->GetBoneTransform(CurrentTime, AS_Matrices);
+			AS_Test1->GetBoneTransform(CurrentTime, AS_Matrices, &bPlayRootMotion);
 			break;
 		case 2:
-			AS_Test2->GetBoneTransform(CurrentTime, AS_Matrices);
+			AS_Test2->GetBoneTransform(CurrentTime, AS_Matrices, &bPlayRootMotion);
 			break;
 		default:
 			break;

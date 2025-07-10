@@ -13,6 +13,7 @@ class ACharacter;
 class APlayerController : public AActor
 {
 	MY_GENERATE_BODY(APlayerController)
+	
 
 	APlayerController();
 	~APlayerController() = default;
@@ -24,10 +25,15 @@ class APlayerController : public AActor
 	void AddPitchInput(float Val);
 
 	void OnPossess(ACharacter* CharacterToPossess);
+
+	void HandleRootMotion(const XMMATRIX& Root);
+
 	ACharacter* Character;
 	std::weak_ptr<APlayerCameraManager> CameraManager;
 
 	// 플레이어 인풋을 관리하는 오브젝트
 	std::shared_ptr<UPlayerInput> PlayerInput;
 
+	// 현재 소유중인 캐릭터가 루트모션 애니메이션을 플레이하는지에 대한 변수
+	bool bPlayRootMotion;
 };

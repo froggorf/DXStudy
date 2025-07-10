@@ -2,5 +2,6 @@
     "Class": "UAnimSequence",
     "Name": "AS_Attack01",
     "Skeleton": "SK_MyUEFN",
-    "AnimationDataPath": "/Content/Resource/Animation/MyUEFN/Attack/Attack01.FBX"
+    "AnimationDataPath": "/Content/Resource/Animation/MyUEFN/Attack/Attack01.FBX",
+    "RootMotion": 1
 }

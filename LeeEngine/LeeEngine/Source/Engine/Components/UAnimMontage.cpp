@@ -183,7 +183,7 @@ void FAnimMontageInstance::Play()
 			continue;
 		}
 
-		Anim->GetBoneTransform(AnimSegmentPosition, MontageBones);
+		Anim->GetBoneTransform(AnimSegmentPosition, MontageBones, &bPlayRootMotion);
 	}
 	Notifies.clear();
 	Montage->GetAnimNotifies(Position, Notifies);

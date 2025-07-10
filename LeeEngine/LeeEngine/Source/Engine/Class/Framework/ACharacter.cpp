@@ -29,7 +29,7 @@ void UCharacterMovementComponent::BeginPlay()
 	desc.stepOffset = MaxStepHeight;
 	desc.slopeLimit = XMConvertToRadians(WalkableFloorAngle);
 
-	Controller = Manager->createController(desc);
+	PxCharacterController = Manager->createController(desc);
 
 	CCTQueryCallBack.IgnoreActor = GetOwner();
 	Filters.mFilterCallback = &CCTQueryCallBack;
@@ -39,7 +39,7 @@ void UCharacterMovementComponent::TickComponent(float DeltaSeconds)
 {
 	UActorComponent::TickComponent(DeltaSeconds);
 
-	if (!Controller)
+	if (!PxCharacterController)
 	{
 		return;
 	}
@@ -82,14 +82,14 @@ void UCharacterMovementComponent::TickComponent(float DeltaSeconds)
 	CurVelocityY -= 9.8f*gPhysicsEngine->GetSceneDefaultGravityScale()*DeltaSeconds*GravityScale;
 	physx::PxVec3 MoveVel = {Velocity.x,Velocity.y,-Velocity.z};
 	MoveVel.y = CurVelocityY;
-	physx::PxControllerCollisionFlags MoveFlags = Controller->move(MoveVel * DeltaSeconds, 0.01f, DeltaSeconds, Filters);
+	physx::PxControllerCollisionFlags MoveFlags = PxCharacterController->move(MoveVel * DeltaSeconds, 0.01f, DeltaSeconds, Filters);
 
 	if (MoveFlags & physx::PxControllerCollisionFlag::eCOLLISION_DOWN)
 	{
 		CurVelocityY = 0;
 	}
 
-	physx::PxExtendedVec3 NewPos = Controller->getPosition();
+	physx::PxExtendedVec3 NewPos = PxCharacterController->getPosition();
 
 	XMFLOAT3 NewP = {static_cast<float>(NewPos.x),static_cast<float>(NewPos.y),static_cast<float>(-NewPos.z)};
 	GetOwner()->SetActorLocation(NewP);

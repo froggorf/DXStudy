@@ -71,7 +71,8 @@ class UAnimSequence : public UAnimCompositeBase
 	}
 
 	// 특정 애니메이션 시간의 본 Matrices를 반환받는 함수
-	void GetBoneTransform(float CurrentAnimTime, std::vector<XMMATRIX>& FinalBoneMatrices);
+	// bPlayRootMotion은 UAnimInstance::bPlayRootMotion을 넣어줘야 정상적으로 루트모션이 적용됨
+	void GetBoneTransform(float CurrentAnimTime, std::vector<XMMATRIX>& FinalBoneMatrices, bool* bPlayRootMotion);
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 	void ReadMyAssetFile(const std::string& FilePath, USkeletalMesh* SkeletalMesh);
@@ -103,4 +104,6 @@ private:
 
 	std::vector<XMMATRIX> CachedFirstFrameBoneMatrices;
 	bool                  bIsCachedFirstFrameBoneMatrices;
+
+	bool bEnableRootMotion = false;
 };

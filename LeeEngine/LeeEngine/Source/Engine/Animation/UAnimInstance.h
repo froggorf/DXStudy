@@ -71,6 +71,9 @@ protected:
 
 	std::vector<XMMATRIX>         FinalBoneMatrices;
 	std::vector<FAnimNotifyEvent> FinalNotifies;
+
+	bool bPlayRootMotion = false;
+	bool bBlendOut = false;
 private:
 	USkeletalMeshComponent* CurrentSkeletalMeshComponent;
 

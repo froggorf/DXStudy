@@ -3,8 +3,11 @@
 #include "UAnimInstance.h"
 
 #include "UAnimSequence.h"
+#include "Engine/Class/Framework/ACharacter.h"
+#include "Engine/Class/Framework/APlayerController.h"
 #include "Engine/Components/USkeletalMeshComponent.h"
 #include "Engine/RenderCore/renderingthread.h"
+#include "Engine/World/UWorld.h"
 
 UAnimInstance::UAnimInstance()
 {
@@ -51,6 +54,7 @@ void UAnimInstance::Tick(float DeltaSeconds)
 	static float TicksPerSecondTime = 1.0f / 30 * DefaultSpeed;
 	if (LatestUpdateTime + TicksPerSecondTime < CurrentTime)
 	{
+		bPlayRootMotion = false;
 		LatestUpdateTime = CurrentTime;
 
 		NativeUpdateAnimation(DeltaSeconds);
@@ -68,6 +72,42 @@ void UAnimInstance::Tick(float DeltaSeconds)
 			}
 		}
 		FinalNotifies.clear();
+
+		/// 루트 모션 처리
+		if (APlayerController* PC = GEngine->GetWorld()->GetPlayerController())
+		{
+			// PlayerController에 의해 조종되는 캐릭터일 경우
+			bool bPlayerCharacter =  (PC->Character && PC->Character->GetSkeletalMeshComponent() == GetSkeletalMeshComponent());
+			if (bPlayerCharacter)
+			{
+				PC->bPlayRootMotion = false;	
+			}
+			
+			if (bPlayRootMotion)
+			{
+				for (size_t i = 1 ; i < MAX_BONES; ++i)
+				{
+					FinalBoneMatrices[i] = XMMatrixMultiply(FinalBoneMatrices[i], XMMatrixInverse(nullptr, FinalBoneMatrices[0])); 
+				}
+
+				if (bPlayerCharacter)
+				{
+					PC->bPlayRootMotion = true;
+				}
+
+				if (!bBlendOut)
+				{
+					PC->HandleRootMotion(FinalBoneMatrices[0]);	
+				}
+				
+
+				FinalBoneMatrices[0] = XMMatrixIdentity();	
+			}	
+		}
+		
+		
+		
+
 
 		// 애니메이션 데이터를 렌더링쓰레드에 전달
 		FScene::UpdateSkeletalMeshAnimation_GameThread(GetSkeletalMeshComponent()->GetPrimitiveID(), FinalBoneMatrices);
@@ -176,6 +216,8 @@ void UAnimInstance::PlayMontage(const std::string& SlotName, std::vector<XMMATRI
 		if (MontageInstance->Montage->SlotName == SlotName)
 		{
 			MontageMatrices = MontageInstance->MontageBones;
+			// 몽타쥬가 RootMotion 애니메이션을 재생중인지를 변수로 캐싱
+			bPlayRootMotion = MontageInstance->bPlayRootMotion;
 			// 해당 섹션의 애니메이션을 재생중일 경우 기존의 노티파이는 모두 제거하고 해당 몽타쥬의 노티파이만 진행
 			OriginNotifies          = MontageInstance->Notifies;
 			float BlendInBlendTime  = MontageInstance->Montage->BlendIn.GetBlendTime();
@@ -185,6 +227,7 @@ void UAnimInstance::PlayMontage(const std::string& SlotName, std::vector<XMMATRI
 			MontageInstance->Montage->GetSectionStartAndEndTime(static_cast<UINT>(MontageInstance->GetPosition()), StartTimeFrame, EndTimeFrame);
 			float StartTime = StartTimeFrame / 30; // 30FPS
 			float EndTime   = EndTimeFrame / 30;
+			bBlendOut =false;
 
 			if (MontageInstance->CurrentPlayTime < BlendInBlendTime)
 			{
@@ -198,6 +241,7 @@ void UAnimInstance::PlayMontage(const std::string& SlotName, std::vector<XMMATRI
 			}
 			else if (EndTime - BlendOutBlendTime <= MontageInstance->CurrentPlayTime && MontageInstance->CurrentPlayTime < EndTime)
 			{
+				bBlendOut = true;
 				const FRichCurve& BlendOutCurve  = MontageInstance->Montage->BlendOut.GetCurve()->GetRichCurve();
 				float             NormalizedTime = (EndTime - MontageInstance->CurrentPlayTime) / BlendOutBlendTime; // 1~0의 값
 				float             CurveValue     = BlendOutCurve.Eval(NormalizedTime);

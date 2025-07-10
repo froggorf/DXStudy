@@ -57,7 +57,7 @@ public:
 	void AddInputVector(XMFLOAT3 WorldAccel, float Power);
 	void Jump();
 	physx::PxControllerManager* Manager = nullptr;
-	physx::PxController* Controller= nullptr;
+	physx::PxController* PxCharacterController= nullptr;
 	physx::PxControllerFilters Filters;
 	MyQueryFilterCallback CCTQueryCallBack{};
 
@@ -83,7 +83,6 @@ public:
 class ACharacter : public AActor
 {
 	MY_GENERATE_BODY(ACharacter)
-	
 
 public:
 	ACharacter();
@@ -100,6 +99,7 @@ public:
 	XMFLOAT4 GetControlRotation() const {return ControlRotation;}
 
 	UCharacterMovementComponent* GetCharacterMovement() const {return CharacterMovement.lock().get(); }
+	USkeletalMeshComponent* GetSkeletalMeshComponent() const {return SkeletalMeshComponent.get();};
 protected:
 	virtual void BindKeyInputs() {}
 private:

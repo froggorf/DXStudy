@@ -3,6 +3,7 @@
 
 #include "ACharacter.h"
 #include "Engine/UEngine.h"
+#include "Engine/Physics/ULineComponent.h"
 #include "Engine/RenderCore/EditorScene.h"
 #include "Engine/World/UWorld.h"
 
@@ -75,6 +76,50 @@ void APlayerController::OnPossess(ACharacter* CharacterToPossess)
 	{
 		Character = CharacterToPossess;
 		Character->Controller = this;
+	}
+}
+
+void APlayerController::HandleRootMotion(const XMMATRIX& Root)
+{
+	if (Character && Character->GetCharacterMovement())
+	{
+		static float LastRootMotionTime = -1.0f;
+		static XMMATRIX PrevRootMatrix = XMMatrixIdentity();
+		// 1초 이상 적용 안됐었다면
+		if (LastRootMotionTime + 1.0f <= GEngine->GetTimeSeconds())
+		{
+			LastRootMotionTime = GEngine->GetTimeSeconds();
+			PrevRootMatrix = XMMatrixIdentity();
+		}
+
+		XMMATRIX DeltaMatrix = XMMatrixMultiply(Root, XMMatrixInverse(nullptr, PrevRootMatrix));
+
+		// 위치
+		XMVECTOR Pos = XMVectorSet(DeltaMatrix.r[3].m128_f32[0],DeltaMatrix.r[3].m128_f32[1],-DeltaMatrix.r[3].m128_f32[2],0.0f);
+		XMFLOAT4 ActorRotate = Character->GetActorRotation();
+		Pos = XMVector3Rotate(Pos,  XMLoadFloat4(&ActorRotate));
+		XMFLOAT3 RootPosition;
+		XMStoreFloat3(&RootPosition, Pos);
+
+		// 회전
+		XMVECTOR Quat = XMQuaternionRotationMatrix(DeltaMatrix);
+		XMFLOAT4 RootRotation;
+		XMStoreFloat4(&RootRotation, Quat);
+
+		physx::PxVec3 PxDelta(RootPosition.x,RootPosition.y,-RootPosition.z);
+
+		// TODO 모듈화하기
+		XMFLOAT3 Start = Character->GetActorLocation();
+		Character->GetCharacterMovement()->PxCharacterController->move(PxDelta,0.01f, GEngine->GetDeltaSeconds(), Character->GetCharacterMovement()->Filters);
+		XMFLOAT3 End = Character->GetActorLocation();
+		std::shared_ptr<ULineComponent> LineComp = std::make_shared<ULineComponent>(false,Start,End,End);	
+		FDebugRenderData Data;
+		Data.Transform = LineComp->GetComponentTransform();
+		Data.RemainTime = 5.0f;
+		Data.ShapeComp = LineComp;
+		FScene::DrawDebugData_GameThread(Data);
+
+		PrevRootMatrix = Root;
 	}
 }
 
