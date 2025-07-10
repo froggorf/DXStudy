@@ -39,6 +39,11 @@ void UCharacterMovementComponent::TickComponent(float DeltaSeconds)
 {
 	UActorComponent::TickComponent(DeltaSeconds);
 
+	if (!Controller)
+	{
+		return;
+	}
+
 	/// 캐릭터 이동
 	XMVECTOR InputDir = XMLoadFloat3(&ControlInputVector);
 	float InputLen = XMVectorGetX(XMVector3Length(InputDir));

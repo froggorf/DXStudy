@@ -30,7 +30,7 @@
 #endif
 #endif
 
-#define IS_EDITOR TRUE
+#define IS_EDITOR FALSE
 #if (IS_EDITOR == TRUE)
 #ifndef WITH_EDITOR
 #define WITH_EDITOR

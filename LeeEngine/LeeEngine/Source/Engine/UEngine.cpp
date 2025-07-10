@@ -67,9 +67,7 @@ void UEngine::InitEngine()
 	LoadDefaultMap();
 
 	CurrentWorld->Init();
-
-	//RenderThread = std::thread(&UEngine::Draw,this);
-
+	Sleep(100);
 #ifndef WITH_EDITOR
 	// 에디터가 아닐경우 바로 게임이 실행되도록 설정
 	//GameStart();
@@ -186,9 +184,9 @@ void UEngine::Tick(float DeltaSeconds)
 		if (CurrentWorld)
 		{
 			CurrentWorld->TickWorld(DeltaSeconds);
+			gPhysicsEngine->TickPhysics(DeltaSeconds);
 		}
-
-		gPhysicsEngine->TickPhysics(DeltaSeconds);
+		
 	}
 
 	for (const auto& IDAndComponent : ComponentsTransformDirty)
@@ -214,18 +212,6 @@ void UEngine::Tick(float DeltaSeconds)
 		FScene::DrawScene_GameThread();
 	}
 
-	// TODO: DeleteLater 임시레벨 변경 코드
-	//static int i = 0;
-	//++i;
-	//if(i == 10000)
-	//{
-	//	GEngine->DELETELATER_TestChangeLevel("Test2Level");
-	//}
-	//if(i == 20000)
-	//{
-	//	i = 0;
-	//	GEngine->DELETELATER_TestChangeLevel("TestLevel");
-	//}
 	static bool b = false;
 	if(ImGui::IsKeyReleased(ImGuiKey_0))
 	{
