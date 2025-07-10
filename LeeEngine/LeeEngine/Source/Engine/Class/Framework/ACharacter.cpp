@@ -220,7 +220,6 @@ void ACharacter::AddMovementInput(const XMFLOAT3& WorldDirection, float ScaleVal
 		{
 			CharacterMovementComp->AddInputVector(WorldDirection,ScaleValue);	
 		}
-		
 	}
 }
 

@@ -11,6 +11,7 @@ ATestPawn::ATestPawn()
 	{
 		CharacterMovement->bOrientRotationToMovement = true;
 		CharacterMovement->RotationRate = XMFLOAT3{0.0f, 1500.0f, 0.0f};
+		CharacterMovement->MaxWalkSpeed = 600.0f;
 	}
 
 	AssetManager::GetAsyncAssetCache("SK_MyUEFN",[this](std::shared_ptr<UObject> Object)
