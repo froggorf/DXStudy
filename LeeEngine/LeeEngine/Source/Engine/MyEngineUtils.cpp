@@ -100,16 +100,15 @@ XMMATRIX MyMatrixLerpForAnimation(const XMMATRIX& AMatrix, const XMMATRIX& BMatr
 
 	XMVECTOR BlendedLoc   = XMVectorLerp(OriginLoc, MontageLoc, Value);
 	XMVECTOR BlendedScale = XMVectorLerp(OriginScale, MontageScale, Value);
-	XMVECTOR BlendedRot   = XMQuaternionSlerp(OriginRot, MontageRot,Value);
 
-	XMMATRIX BlendedMatrix = XMMatrixTransformation(
-		XMVectorZero(),               
-		XMQuaternionIdentity(),       
-		BlendedScale,                 
-		XMVectorZero(),               
-		BlendedRot,                   
-		BlendedLoc                    
-	);
+	float dot = XMVectorGetX(XMQuaternionDot(OriginRot, MontageRot));
+	if (dot < 0.0f)
+	{
+		MontageRot = XMVectorNegate(MontageRot);
+	}
+	XMVECTOR BlendedRot = XMQuaternionSlerp(OriginRot, MontageRot, Value);
+
+	XMMATRIX BlendedMatrix = XMMatrixScalingFromVector(BlendedScale) * XMMatrixRotationQuaternion(BlendedRot) * XMMatrixTranslationFromVector(BlendedLoc);
 
 	return BlendedMatrix;
 }

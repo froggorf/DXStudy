@@ -229,6 +229,7 @@ void UAnimInstance::PlayMontage(const std::string& SlotName, std::vector<XMMATRI
 				const FRichCurve& BlendInCurve   = MontageInstance->Montage->BlendIn.GetCurve()->GetRichCurve();
 				float             NormalizedTime = MontageInstance->CurrentPlayTime / BlendInBlendTime; // 0 ~ 1 의 값
 				float             CurveValue     = BlendInCurve.Eval(NormalizedTime);
+
 				for (int i = 0; i < MAX_BONES; ++i)
 				{
 				 	OriginMatrices[i] = MyMatrixLerpForAnimation(OriginMatrices[i],MontageMatrices[i], CurveValue);
@@ -236,7 +237,6 @@ void UAnimInstance::PlayMontage(const std::string& SlotName, std::vector<XMMATRI
 			}
 			else if (EndTime - BlendOutBlendTime <= MontageInstance->CurrentPlayTime && MontageInstance->CurrentPlayTime < EndTime)
 			{
-				bBlendOut = true;
 				const FRichCurve& BlendOutCurve  = MontageInstance->Montage->BlendOut.GetCurve()->GetRichCurve();
 				float             NormalizedTime = (EndTime - MontageInstance->CurrentPlayTime) / BlendOutBlendTime; // 1~0의 값
 				float             CurveValue     = BlendOutCurve.Eval(NormalizedTime);
@@ -248,6 +248,11 @@ void UAnimInstance::PlayMontage(const std::string& SlotName, std::vector<XMMATRI
 			else
 			{
 				OriginMatrices = MontageMatrices;
+			}
+
+			if (EndTime - BlendOutBlendTime - 0.3f <= MontageInstance->CurrentPlayTime && MontageInstance->CurrentPlayTime < EndTime)
+			{
+				bBlendOut = true;
 			}
 		}
 	}
