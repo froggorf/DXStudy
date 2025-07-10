@@ -5,11 +5,11 @@
 	
 	"BlendIn" : {
 		"CurveName" : "TestCurve",
-		"BlendTime" : 0.6
+		"BlendTime" : 0.2
 	},
 	"BlendOut" : {
 		"CurveName" : "TestCurve",
-		"BlendTime" : 0.3
+		"BlendTime" : 0.2
 	},
 
 	"SlotName": "DefaultSlot",

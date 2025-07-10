@@ -80,22 +80,36 @@ XMFLOAT3 FTransform::CalculateEulerRotationFromQuaternion(const XMVECTOR& Quater
 	return Euler;
 }
 
+
+
 XMMATRIX MyMatrixLerpForAnimation(const XMMATRIX& AMatrix, const XMMATRIX& BMatrix, float Value)
 {
-	XMVECTOR ScaleA, RotA, TransA;
-	XMVECTOR ScaleB, RotB, TransB;
+	/*XMVECTOR V1 = XMVectorLerp(AMatrix.r[0], BMatrix.r[0], Value);
+	XMVECTOR V2 = XMVectorLerp(AMatrix.r[1], BMatrix.r[1], Value);
+	XMVECTOR V3 = XMVectorLerp(AMatrix.r[2], BMatrix.r[2], Value);
+	XMVECTOR V4 = XMVectorLerp(AMatrix.r[3], BMatrix.r[3], Value);
 
-	bool ok1 = XMMatrixDecompose(&ScaleA, &RotA, &TransA, AMatrix);
-	bool ok2 = XMMatrixDecompose(&ScaleB, &RotB, &TransB, BMatrix);
+	XMMATRIX Out = XMMATRIX{V1, V2, V3, V4};
+	return Out;*/
 
-	RotA = XMQuaternionNormalize(RotA);
-	RotB = XMQuaternionNormalize(RotB);
+	XMVECTOR OriginScale, OriginRot, OriginLoc;
+	XMVECTOR MontageScale, MontageRot, MontageLoc;
 
-	XMVECTOR BlendedScale = XMVectorLerp(ScaleA, ScaleB, Value);
-	XMVECTOR BlendedRot   = XMQuaternionSlerp(RotA, RotB, Value);
-	XMVECTOR BlendedTrans = XMVectorLerp(TransA, TransB, Value);
+	bool ok1 = XMMatrixDecompose(&OriginScale, &OriginRot, &OriginLoc, AMatrix);
+	bool ok2 = XMMatrixDecompose(&MontageScale, &MontageRot, &MontageLoc, BMatrix);
 
-	XMMATRIX Result = XMMatrixScalingFromVector(BlendedScale) * XMMatrixRotationQuaternion(BlendedRot) * XMMatrixTranslationFromVector(BlendedTrans);
+	XMVECTOR BlendedLoc   = XMVectorLerp(OriginLoc, MontageLoc, Value);
+	XMVECTOR BlendedScale = XMVectorLerp(OriginScale, MontageScale, Value);
+	XMVECTOR BlendedRot   = XMQuaternionSlerp(OriginRot, MontageRot,Value);
 
-	return Result;
+	XMMATRIX BlendedMatrix = XMMatrixTransformation(
+		XMVectorZero(),               
+		XMQuaternionIdentity(),       
+		BlendedScale,                 
+		XMVectorZero(),               
+		BlendedRot,                   
+		BlendedLoc                    
+	);
+
+	return BlendedMatrix;
 }
