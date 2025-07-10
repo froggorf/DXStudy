@@ -216,7 +216,11 @@ void ACharacter::AddMovementInput(const XMFLOAT3& WorldDirection, float ScaleVal
 {
 	if (std::shared_ptr<UCharacterMovementComponent> CharacterMovementComp = CharacterMovement.lock())
 	{
-		CharacterMovementComp->AddInputVector(WorldDirection,ScaleValue);
+		if (Controller && !Controller->bPlayRootMotion)
+		{
+			CharacterMovementComp->AddInputVector(WorldDirection,ScaleValue);	
+		}
+		
 	}
 }
 
