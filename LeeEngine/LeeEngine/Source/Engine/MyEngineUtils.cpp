@@ -84,6 +84,15 @@ XMFLOAT3 FTransform::CalculateEulerRotationFromQuaternion(const XMVECTOR& Quater
 }
 
 
+XMMATRIX LinearMatrixLerp(const XMMATRIX& AMatrix, const XMMATRIX& BMatrix, float Value)
+{
+	XMVECTOR V1 = XMVectorLerp(AMatrix.r[0], BMatrix.r[0], Value);
+	XMVECTOR V2 = XMVectorLerp(AMatrix.r[1], BMatrix.r[1], Value);
+	XMVECTOR V3 = XMVectorLerp(AMatrix.r[2], BMatrix.r[2], Value);
+	XMVECTOR V4 = XMVectorLerp(AMatrix.r[3], BMatrix.r[3], Value);
+
+	return XMMATRIX{V1, V2, V3, V4};
+}
 
 XMMATRIX MyMatrixLerpForAnimation(const XMMATRIX& AMatrix, const XMMATRIX& BMatrix, float Value)
 {

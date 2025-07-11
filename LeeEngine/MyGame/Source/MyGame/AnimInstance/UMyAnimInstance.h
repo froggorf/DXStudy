@@ -10,6 +10,13 @@
 
 class UCharacterMovementComponent;
 
+
+enum class EAnimState
+{
+	Idle, WalkRun,
+};
+
+
 class UMyAnimInstance : public UAnimInstance
 {
 	MY_GENERATE_BODY(UMyAnimInstance)
@@ -30,11 +37,15 @@ class UMyAnimInstance : public UAnimInstance
 	void AnimNotify_AttackStart();
 	void AnimNotify_AttackEnd();
 private:
-	std::shared_ptr<UBlendSpace>    BS_MyUEFN_Locomotion;
+	std::shared_ptr<UBlendSpace>    BS_LowPoly_Locomotion;
+	std::shared_ptr<UAnimSequence> AS_LowPoly_Idle;
 	std::shared_ptr<UTestComponent> TestComp;
 	UCharacterMovementComponent* MovementComp;
 
 	std::shared_ptr<UAnimMontage> AM_Test;
+
+	EAnimState CurrentState = EAnimState::Idle;
+	EAnimState NextState = EAnimState::Idle;
 
 	float CurrentSpeed = 0.0f;
 };

@@ -11,6 +11,14 @@
 
 class USkeletalMeshComponent;
 
+struct AnimTransition
+{
+	bool bBlending =false;
+	float BlendTime = 0.0f;
+	float BlendDuration = 0.5f;
+	std::vector<XMMATRIX> PrevBoneMatrices = std::vector<XMMATRIX>(MAX_BONES);
+};
+
 class UAnimInstance : public UObject
 {
 	MY_GENERATE_BODY(UAnimInstance)
@@ -74,6 +82,9 @@ protected:
 
 	bool bPlayRootMotion = false;
 	bool bBlendOut = false;
+
+	AnimTransition LocomotionTransition;
+
 private:
 	USkeletalMeshComponent* CurrentSkeletalMeshComponent;
 

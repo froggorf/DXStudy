@@ -14,9 +14,12 @@ UMyAnimInstance::UMyAnimInstance()
 {
 	AssetManager::GetAsyncAssetCache("BS_LowPoly_LocomotionRPG", [this](std::shared_ptr<UObject> Object)
 		{
-			BS_MyUEFN_Locomotion = std::dynamic_pointer_cast<UBlendSpace>(Object);
+			BS_LowPoly_Locomotion = std::dynamic_pointer_cast<UBlendSpace>(Object);
 		});
-
+	AssetManager::GetAsyncAssetCache("AS_LowPoly_Idle", [this](std::shared_ptr<UObject> Object)
+		{
+			AS_LowPoly_Idle = std::dynamic_pointer_cast<UAnimSequence>(Object);
+		});
 }
 
 void UMyAnimInstance::BeginPlay()
@@ -58,13 +61,95 @@ void UMyAnimInstance::UpdateAnimation(float dt)
 {
 	UAnimInstance::UpdateAnimation(dt);
 
-	if (GetSkeletalMeshComponent() && TestComp&& BS_MyUEFN_Locomotion && MovementComp)
+	if (GetSkeletalMeshComponent() && TestComp&& BS_LowPoly_Locomotion && MovementComp)
 	{
-		// BlendSpace_Locomotion
-		//std::vector<XMMATRIX> BS_IdleWalkRunMatrices(MAX_BONES, XMMatrixIdentity());
-		XMFLOAT3 MoveVel = MovementComp->Velocity;
-		MoveVel.y = 0.0f;
-		BS_MyUEFN_Locomotion->GetAnimationBoneMatrices(XMFLOAT2{0.0f, XMVectorGetX(XMVector3Length(XMLoadFloat3(&MoveVel))) }, CurrentTime, FinalBoneMatrices, FinalNotifies);
+        // Locomotion Transition
+        {
+            XMFLOAT3 MoveVel = MovementComp->Velocity;
+            MoveVel.y = 0.0f;
+            float CurSpeed = XMVectorGetX(XMVector3Length(XMLoadFloat3(&MoveVel)));
+            EAnimState DesiredState = (CurSpeed > 5.0f) ? EAnimState::WalkRun : EAnimState::Idle;
+
+            // 상태 변화 감지 및 블렌딩 시작
+            if (CurrentState != DesiredState && !LocomotionTransition.bBlending)
+            {
+                MY_LOG("log", EDebugLogLevel::DLL_Warning, "TO" + std::to_string(static_cast<UINT>(CurrentState)) +" -> "+std::to_string(static_cast<UINT>(DesiredState)));
+                LocomotionTransition.bBlending = true;
+                LocomotionTransition.BlendTime = 0.0f;
+                NextState = DesiredState;
+
+                // 블렌딩 시작 시 PrevBoneMatrices를 '현재 상태'의 본 행렬로 저장
+                switch (CurrentState)
+                {
+                case EAnimState::Idle:
+                {
+                    bool bDummy;
+                    AS_LowPoly_Idle->GetBoneTransform(CurrentTime, LocomotionTransition.PrevBoneMatrices, &bDummy);    
+                }
+                break;
+                case EAnimState::WalkRun:
+                    BS_LowPoly_Locomotion->GetAnimationBoneMatrices(XMFLOAT2{0.0f, CurSpeed }, CurrentTime, LocomotionTransition.PrevBoneMatrices, FinalNotifies);        
+                    break;
+                default:
+                    break;
+                }
+            }
+
+            if (LocomotionTransition.bBlending)
+            {
+                // 목표 상태의 본 행렬 계산
+                std::vector<XMMATRIX> NewBoneMatrices(MAX_BONES, XMMatrixIdentity());
+                switch (NextState)
+                {
+                case EAnimState::Idle:
+                {
+                    bool bDummy;
+                    AS_LowPoly_Idle->GetBoneTransform(CurrentTime, NewBoneMatrices, &bDummy);    
+                }
+                break;
+                case EAnimState::WalkRun:
+                    BS_LowPoly_Locomotion->GetAnimationBoneMatrices(XMFLOAT2{0.0f, CurSpeed }, CurrentTime, NewBoneMatrices, FinalNotifies);        
+                    break;
+                default:
+                    break;
+                }
+
+                LocomotionTransition.BlendTime += static_cast<float>(1)/30.0f;
+                float Alpha = LocomotionTransition.BlendTime / 2.0f;
+                if (Alpha >= 1.0f)
+                {
+                    // 블렌딩 종료
+                    LocomotionTransition.bBlending = false;
+                    CurrentState = NextState;
+                    FinalBoneMatrices = NewBoneMatrices;
+                }
+                else
+                {
+                    for (int i = 0; i < MAX_BONES; ++i)
+                    {
+                        FinalBoneMatrices[i] = LinearMatrixLerp(LocomotionTransition.PrevBoneMatrices[i], NewBoneMatrices[i], std::min(Alpha+0.1f, 1.0f) );
+                    }
+                }
+            }
+            else
+            {
+                // 블렌딩 중이 아니면 '현재 상태'의 본 행렬로 FinalBoneMatrices를 갱신!
+                switch (CurrentState)
+                {
+                case EAnimState::Idle:
+                {
+                    bool bDummy;
+                    AS_LowPoly_Idle->GetBoneTransform(CurrentTime, FinalBoneMatrices, &bDummy);    
+                }
+                break;
+                case EAnimState::WalkRun:
+                    BS_LowPoly_Locomotion->GetAnimationBoneMatrices(XMFLOAT2{0.0f, CurSpeed }, CurrentTime, FinalBoneMatrices, FinalNotifies);        
+                    break;
+                default:
+                    break;
+                }
+            }
+        }
 		
 		// spine_01 을 기준으로 상체와 하체를 블렌딩
 		//LayeredBlendPerBone(BS_IdleWalkRunMatrices, AS_Matrices, "spine_01", 1.0f, FinalBoneMatrices);
