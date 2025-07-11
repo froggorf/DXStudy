@@ -1,0 +1,11 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_LowPoly_WalkForward",
+    "Skeleton": "SK_LowPoly",
+    "AnimationDataPath": "/Content/Resource/Animation/LowPoly/Locomotion/LowPoly_WalkForward.fbx",
+    "Notifies" : [
+        { "NotifyClass" : "UAnimNotify_PlaySound", "TriggerTime" : 11, "SoundName" : "Walk_Left" },
+        { "NotifyClass" : "UAnimNotify_PlaySound", "TriggerTime" : 27, "SoundName": "Walk_Right"}
+
+    ]
+}

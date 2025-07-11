@@ -34,11 +34,6 @@ private:
 	std::shared_ptr<UTestComponent> TestComp;
 	UCharacterMovementComponent* MovementComp;
 
-
-	std::shared_ptr<UAnimSequence> AS_Test0;
-	std::shared_ptr<UAnimSequence> AS_Test1;
-	std::shared_ptr<UAnimSequence> AS_Test2;
-
 	std::shared_ptr<UAnimMontage> AM_Test;
 
 	float CurrentSpeed = 0.0f;

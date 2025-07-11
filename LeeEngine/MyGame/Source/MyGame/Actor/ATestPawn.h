@@ -25,6 +25,7 @@ class ATestPawn : public ACharacter
 	void SetAttackEnd();
 
 	void Attack();
+	void Smash();
 	void Move(float X, float Y);
 	void Look(float X, float Y);
 	void MouseRotateStart();
@@ -36,6 +37,7 @@ protected:
 
 
 	std::shared_ptr<UAnimMontage> AM_Sword;
+	std::shared_ptr<UAnimMontage> AM_Smash;
 
 private:
 	bool bRightButtonPressed = false;

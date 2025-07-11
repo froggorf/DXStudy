@@ -1,0 +1,27 @@
+{
+	"Class": "UAnimMontage",
+	"Name": "AM_Smash",
+	"Skeleton": "SK_LowPoly",
+	
+	"BlendIn" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.1
+	},
+	"BlendOut" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.15
+	},
+
+	"SlotName": "DefaultSlot",
+	"AnimTrack" : [
+		{"AnimName" : "AS_Smash"}
+	],
+	"Sections" : [
+		{ "SectionName" : "Fire", "StartTime" : 0.0 }
+	],
+    	"Notifies" : [
+		{ "NotifyClass" : "UAnimNotify_AttackStart", "TriggerTime" : 20 },
+		{ "NotifyClass" : "UAnimNotify_AttackEnd", "TriggerTime" : 60 }
+
+  	  ]
+}

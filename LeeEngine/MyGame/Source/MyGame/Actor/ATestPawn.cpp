@@ -14,7 +14,7 @@ ATestPawn::ATestPawn()
 		CharacterMovement->MaxWalkSpeed = 600.0f;
 	}
 
-	AssetManager::GetAsyncAssetCache("SK_MyUEFN",[this](std::shared_ptr<UObject> Object)
+	AssetManager::GetAsyncAssetCache("SK_LowPoly",[this](std::shared_ptr<UObject> Object)
 		{
 			SkeletalMeshComponent->SetSkeletalMesh(std::static_pointer_cast<USkeletalMesh>(Object));
 		});
@@ -23,7 +23,7 @@ ATestPawn::ATestPawn()
 	SkeletalMeshComponent->SetRelativeRotation(XMFLOAT3{0,180,0});
 
 	SMSword = std::make_shared<UStaticMeshComponent>();
-	SMSword->SetupAttachment(SkeletalMeshComponent, "hand_r");
+	SMSword->SetupAttachment(SkeletalMeshComponent, "Hand_R");
 	AssetManager::GetAsyncAssetCache("SM_Sword", [this](std::shared_ptr<UObject> Object)
 	{
 			SMSword->SetStaticMesh(std::static_pointer_cast<UStaticMesh>(Object));
@@ -64,6 +64,10 @@ void ATestPawn::BeginPlay()
 		{
 			AM_Sword = std::static_pointer_cast<UAnimMontage>(Object);
 		});
+	AssetManager::GetAsyncAssetCache("AM_Smash", [this](std::shared_ptr<UObject> Object)
+		{
+			AM_Smash = std::static_pointer_cast<UAnimMontage>(Object);
+		});
 
 	
 }
@@ -74,7 +78,8 @@ void ATestPawn::BindKeyInputs()
 	{
 		if (std::shared_ptr<UPlayerInput> InputSystem = Controller->PlayerInput)
 		{
-			InputSystem->BindAction(EKeys::MouseLeft, ETriggerEvent::Started, this, &ATestPawn::Attack);
+			InputSystem->BindAction(EKeys::Num1, ETriggerEvent::Started, this, &ATestPawn::Attack);
+			InputSystem->BindAction(EKeys::Num2, ETriggerEvent::Started, this, &ATestPawn::Smash);
 			InputSystem->BindAxis2D(EKeys::W, ETriggerEvent::Trigger, 1, 0,this, &ATestPawn::Move);
 			InputSystem->BindAxis2D(EKeys::S, ETriggerEvent::Trigger, -1, 0,this, &ATestPawn::Move);
 			InputSystem->BindAxis2D(EKeys::D, ETriggerEvent::Trigger, 0, 1,this, &ATestPawn::Move);
@@ -135,6 +140,20 @@ void ATestPawn::Attack()
 			if (AM_Sword)
 			{
 				AnimInstance->Montage_Play(AM_Sword, 0.0f);
+			}
+		}
+	}
+}
+
+void ATestPawn::Smash()
+{
+	if (SkeletalMeshComponent)
+	{
+		if (const std::shared_ptr<UAnimInstance>& AnimInstance = SkeletalMeshComponent->GetAnimInstance())
+		{
+			if (AM_Smash)
+			{
+				AnimInstance->Montage_Play(AM_Smash, 0.0f);
 			}
 		}
 	}

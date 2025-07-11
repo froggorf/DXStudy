@@ -1,7 +1,0 @@
-{
-    "Class": "USkeletalMesh",
-    "Name": "SK_MyUEFN",
-    "ModelData": "/Content/Resource/Model/SKM_MyUEFN.FBX",
-    "DefaultPoseAnimData" : "/Content/Resource/Animation/MyUEFN/SKM_MyUEFN_DefaultPose.FBX",
-    "Material" : [ "M_MyUEFN" ]
-}

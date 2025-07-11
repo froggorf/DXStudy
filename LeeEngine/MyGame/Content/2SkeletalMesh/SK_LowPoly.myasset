@@ -1,0 +1,7 @@
+{
+    "Class": "USkeletalMesh",
+    "Name": "SK_LowPoly",
+    "ModelData": "/Content/Resource/Model/SKM_LowPoly.FBX",
+    "DefaultPoseAnimData" : "/Content/Resource/Animation/MyUEFN/SKM_LowPoly_DefaultPose.FBX",
+    "Material" : [ "M_MyUEFN" ]
+}
