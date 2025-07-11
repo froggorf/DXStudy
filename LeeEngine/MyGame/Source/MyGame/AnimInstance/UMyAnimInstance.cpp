@@ -68,31 +68,48 @@ void UMyAnimInstance::UpdateAnimation(float dt)
             XMFLOAT3 MoveVel = MovementComp->Velocity;
             MoveVel.y = 0.0f;
             float CurSpeed = XMVectorGetX(XMVector3Length(XMLoadFloat3(&MoveVel)));
+            BS_LowPoly_Locomotion->GetAnimationBoneMatrices(XMFLOAT2{0.0f, CurSpeed }, CurrentTime, FinalBoneMatrices, FinalNotifies);      
+            
+        }
+		
+		// spine_01 을 기준으로 상체와 하체를 블렌딩
+		//LayeredBlendPerBone(BS_IdleWalkRunMatrices, AS_Matrices, "spine_01", 1.0f, FinalBoneMatrices);
+
+		// 몽타쥬 연결
+		{
+			std::string SlotName = "DefaultSlot";
+			PlayMontage(SlotName, FinalBoneMatrices, FinalNotifies);
+		}
+	}
+}
+/*
+ *XMFLOAT3 MoveVel = MovementComp->Velocity;
+            MoveVel.y = 0.0f;
+            float CurSpeed = XMVectorGetX(XMVector3Length(XMLoadFloat3(&MoveVel)));
             EAnimState DesiredState = (CurSpeed > 5.0f) ? EAnimState::WalkRun : EAnimState::Idle;
 
             // 상태 변화 감지 및 블렌딩 시작
-            if (CurrentState != DesiredState && !LocomotionTransition.bBlending)
+            if (CurrentState != DesiredState && (!LocomotionTransition.bBlending || CurDesiredState != DesiredState))
             {
-                MY_LOG("log", EDebugLogLevel::DLL_Warning, "TO" + std::to_string(static_cast<UINT>(CurrentState)) +" -> "+std::to_string(static_cast<UINT>(DesiredState)));
+                CurDesiredState = DesiredState;
                 LocomotionTransition.bBlending = true;
                 LocomotionTransition.BlendTime = 0.0f;
                 NextState = DesiredState;
+            }
 
-                // 블렌딩 시작 시 PrevBoneMatrices를 '현재 상태'의 본 행렬로 저장
-                switch (CurrentState)
-                {
-                case EAnimState::Idle:
-                {
-                    bool bDummy;
-                    AS_LowPoly_Idle->GetBoneTransform(CurrentTime, LocomotionTransition.PrevBoneMatrices, &bDummy);    
-                }
+            switch (CurrentState)
+            {
+            case EAnimState::Idle:
+            {
+                bool bDummy;
+                AS_LowPoly_Idle->GetBoneTransform(CurrentTime, LocomotionTransition.PrevBoneMatrices, &bDummy);    
+            }
+            break;
+            case EAnimState::WalkRun:
+                BS_LowPoly_Locomotion->GetAnimationBoneMatrices(XMFLOAT2{0.0f, CurSpeed }, CurrentTime, LocomotionTransition.PrevBoneMatrices, FinalNotifies);        
                 break;
-                case EAnimState::WalkRun:
-                    BS_LowPoly_Locomotion->GetAnimationBoneMatrices(XMFLOAT2{0.0f, CurSpeed }, CurrentTime, LocomotionTransition.PrevBoneMatrices, FinalNotifies);        
-                    break;
-                default:
-                    break;
-                }
+            default:
+                break;
             }
 
             if (LocomotionTransition.bBlending)
@@ -115,7 +132,7 @@ void UMyAnimInstance::UpdateAnimation(float dt)
                 }
 
                 LocomotionTransition.BlendTime += static_cast<float>(1)/30.0f;
-                float Alpha = LocomotionTransition.BlendTime / 2.0f;
+                float Alpha = LocomotionTransition.BlendTime / 0.25f;
                 if (Alpha >= 1.0f)
                 {
                     // 블렌딩 종료
@@ -133,34 +150,9 @@ void UMyAnimInstance::UpdateAnimation(float dt)
             }
             else
             {
-                // 블렌딩 중이 아니면 '현재 상태'의 본 행렬로 FinalBoneMatrices를 갱신!
-                switch (CurrentState)
-                {
-                case EAnimState::Idle:
-                {
-                    bool bDummy;
-                    AS_LowPoly_Idle->GetBoneTransform(CurrentTime, FinalBoneMatrices, &bDummy);    
-                }
-                break;
-                case EAnimState::WalkRun:
-                    BS_LowPoly_Locomotion->GetAnimationBoneMatrices(XMFLOAT2{0.0f, CurSpeed }, CurrentTime, FinalBoneMatrices, FinalNotifies);        
-                    break;
-                default:
-                    break;
-                }
+                FinalBoneMatrices = LocomotionTransition.PrevBoneMatrices;
             }
-        }
-		
-		// spine_01 을 기준으로 상체와 하체를 블렌딩
-		//LayeredBlendPerBone(BS_IdleWalkRunMatrices, AS_Matrices, "spine_01", 1.0f, FinalBoneMatrices);
-
-		// 몽타쥬 연결
-		{
-			std::string SlotName = "DefaultSlot";
-			PlayMontage(SlotName, FinalBoneMatrices, FinalNotifies);
-		}
-	}
-}
+ */
 
 
 void UMyAnimInstance::AnimNotify_AttackStart()

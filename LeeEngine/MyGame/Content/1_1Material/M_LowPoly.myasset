@@ -1,0 +1,16 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_LowPoly",
+    "VertexShader" : {
+	"FilePath" : "/Shader/SkeletalMesh.hlsl",
+	"Func" : "VS"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/LightColor.hlsl",
+	"Func": "PS"
+    },
+    "Textures" : [ "T_White" ],
+    "BlendMode": "Opaque",
+    "TwoSided" : 0
+	
+}

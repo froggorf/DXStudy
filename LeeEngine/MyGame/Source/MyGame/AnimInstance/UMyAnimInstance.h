@@ -45,6 +45,7 @@ private:
 	std::shared_ptr<UAnimMontage> AM_Test;
 
 	EAnimState CurrentState = EAnimState::Idle;
+	EAnimState CurDesiredState = EAnimState::Idle;
 	EAnimState NextState = EAnimState::Idle;
 
 	float CurrentSpeed = 0.0f;

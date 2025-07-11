@@ -12,6 +12,7 @@ ATestPawn::ATestPawn()
 		CharacterMovement->bOrientRotationToMovement = true;
 		CharacterMovement->RotationRate = XMFLOAT3{0.0f, 1500.0f, 0.0f};
 		CharacterMovement->MaxWalkSpeed = 600.0f;
+		CharacterMovement->Braking = 512+256;
 	}
 
 	SpringArm->SetArmLength(250);

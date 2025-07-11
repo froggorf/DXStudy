@@ -3,5 +3,5 @@
     "Name": "SK_LowPoly",
     "ModelData": "/Content/Resource/Model/SKM_LowPoly.FBX",
     "DefaultPoseAnimData" : "/Content/Resource/Animation/LowPoly/SKM_LowPoly_DefaultPose.FBX",
-    "Material" : [ "M_MyUEFN" ]
+    "Material" : [ "M_LowPoly" ]
 }
