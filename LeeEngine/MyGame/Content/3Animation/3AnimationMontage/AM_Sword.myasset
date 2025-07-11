@@ -4,12 +4,12 @@
 	"Skeleton": "SK_MyUEFN",
 	
 	"BlendIn" : {
-		"CurveName" : "TestCurve",
+		"CurveName" : "CustomCurve",
 		"BlendTime" : 0.1
 	},
 	"BlendOut" : {
-		"CurveName" : "TestCurve",
-		"BlendTime" : 0.05
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.2
 	},
 
 	"SlotName": "DefaultSlot",

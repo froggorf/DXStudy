@@ -1,6 +1,8 @@
 ﻿#include "CoreMinimal.h"
 #include "MyEngineUtils.h"
 
+#include "Animation/UAnimSequence.h"
+
 FTransform FTransform::operator*(const FTransform& OtherTransform)
 
 {

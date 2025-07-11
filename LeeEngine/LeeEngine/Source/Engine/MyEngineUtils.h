@@ -37,6 +37,7 @@
 #endif
 #endif
 
+struct FPrecomputedBoneData;
 extern std::shared_ptr<class UEngine> GEngine;
 #ifdef WITH_EDITOR
 extern std::shared_ptr<class UEditorEngine> GEditorEngine;
