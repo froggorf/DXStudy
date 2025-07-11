@@ -101,7 +101,8 @@ void UAnimSequence::ReadMyAssetFile(const std::string& FilePath, USkeletalMesh* 
 	const aiScene*   scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_ConvertToLeftHanded);
 	if (!scene || !scene->mRootNode)
 	{
-		std::cerr << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
+		assert(nullptr && "Wrong");
+		//std::cerr << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
 		return;
 	}
 	aiAnimation* animation = scene->mAnimations[0];

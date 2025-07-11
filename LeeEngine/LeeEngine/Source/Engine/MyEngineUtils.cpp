@@ -2,6 +2,7 @@
 #include "MyEngineUtils.h"
 
 #include "Animation/UAnimSequence.h"
+#include "RenderCore/EditorScene.h"
 
 FTransform FTransform::operator*(const FTransform& OtherTransform)
 
@@ -93,6 +94,16 @@ XMMATRIX MyMatrixLerpForAnimation(const XMMATRIX& AMatrix, const XMMATRIX& BMatr
 
 	XMMATRIX Out = XMMATRIX{V1, V2, V3, V4};
 	return Out;*/
+
+	//if (Value < 0.2f)
+	//{	
+	//	return AMatrix;
+	//}
+	//else if (Value > 0.8f)
+	//{
+	//	return BMatrix;
+	//}
+
 
 	XMVECTOR OriginScale, OriginRot, OriginLoc;
 	XMVECTOR MontageScale, MontageRot, MontageLoc;

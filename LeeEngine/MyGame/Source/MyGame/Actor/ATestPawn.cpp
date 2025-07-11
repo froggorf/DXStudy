@@ -14,6 +14,9 @@ ATestPawn::ATestPawn()
 		CharacterMovement->MaxWalkSpeed = 600.0f;
 	}
 
+	SpringArm->SetArmLength(250);
+	//SpringArm->SetRelativeLocation({0,50,-50.0f});
+
 	AssetManager::GetAsyncAssetCache("SK_LowPoly",[this](std::shared_ptr<UObject> Object)
 		{
 			SkeletalMeshComponent->SetSkeletalMesh(std::static_pointer_cast<USkeletalMesh>(Object));
@@ -29,8 +32,8 @@ ATestPawn::ATestPawn()
 			SMSword->SetStaticMesh(std::static_pointer_cast<UStaticMesh>(Object));
 	});
 	SMSword->SetRelativeScale3D({0.2f,0.2f,0.2f});
-	SMSword->SetRelativeLocation({-9.895, -3.056, -6.95});
-	SMSword->SetRelativeRotation(XMFLOAT4{0.073,0.09,-0.638,0.761});
+	SMSword->SetRelativeLocation({-9.898,5.167, 8.479});
+	SMSword->SetRelativeRotation(XMFLOAT4{0.765, 0.644, 0.017, 0.014});
 
 	TestComp = std::dynamic_pointer_cast<UTestComponent>(CreateDefaultSubobject("TestActorComp", "UTestComponent"));
 }

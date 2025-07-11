@@ -93,7 +93,10 @@ FTransform USkeletalMeshComponent::GetSocketTransform(const std::string& InSocke
 		{
 			int a= 0;
 		}
+		
 		std::vector<FPrecomputedBoneData>& BoneHierarchy = BoneHierarchyMap[SkeletalMeshName];
+
+
 		auto TargetSocket = std::ranges::find_if(BoneHierarchy, [InSocketName](const FPrecomputedBoneData& Data)
 		{
 			return Data.BoneName == InSocketName;
