@@ -68,7 +68,7 @@ void ATestPawn::BeginPlay()
 		{
 			AM_Sword = std::static_pointer_cast<UAnimMontage>(Object);
 		});
-	AssetManager::GetAsyncAssetCache("AM_Smash", [this](std::shared_ptr<UObject> Object)
+	AssetManager::GetAsyncAssetCache("AM_Backstep", [this](std::shared_ptr<UObject> Object)
 		{
 			AM_Smash = std::static_pointer_cast<UAnimMontage>(Object);
 		});
@@ -83,7 +83,9 @@ void ATestPawn::BindKeyInputs()
 		if (std::shared_ptr<UPlayerInput> InputSystem = Controller->PlayerInput)
 		{
 			InputSystem->BindAction(EKeys::Num1, ETriggerEvent::Started, this, &ATestPawn::Attack);
-			InputSystem->BindAction(EKeys::Num2, ETriggerEvent::Started, this, &ATestPawn::Smash);
+			InputSystem->BindAction(EKeys::Num2, ETriggerEvent::Started, this, &ATestPawn::Backstep);
+			InputSystem->BindAction(EKeys::LShift, ETriggerEvent::Started, this, &ATestPawn::SetWalk);
+			InputSystem->BindAction(EKeys::LShift, ETriggerEvent::Released, this, &ATestPawn::SetRun);
 			InputSystem->BindAxis2D(EKeys::W, ETriggerEvent::Trigger, 1, 0,this, &ATestPawn::Move);
 			InputSystem->BindAxis2D(EKeys::S, ETriggerEvent::Trigger, -1, 0,this, &ATestPawn::Move);
 			InputSystem->BindAxis2D(EKeys::D, ETriggerEvent::Trigger, 0, 1,this, &ATestPawn::Move);
@@ -149,7 +151,7 @@ void ATestPawn::Attack()
 	}
 }
 
-void ATestPawn::Smash()
+void ATestPawn::Backstep()
 {
 	if (SkeletalMeshComponent)
 	{
@@ -191,6 +193,22 @@ void ATestPawn::MouseRotateStart()
 void ATestPawn::MouseRotateEnd()
 {
 	bRightButtonPressed = false;
+}
+
+void ATestPawn::SetWalk()
+{
+	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
+	{
+		Movement->MaxWalkSpeed = 150.0f;
+	}
+}
+
+void ATestPawn::SetRun()
+{
+	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
+	{
+		Movement->MaxWalkSpeed = 600.0f;
+	}
 }
 
 

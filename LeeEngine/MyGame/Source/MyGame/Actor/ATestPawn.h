@@ -25,11 +25,13 @@ class ATestPawn : public ACharacter
 	void SetAttackEnd();
 
 	void Attack();
-	void Smash();
+	void Backstep();
 	void Move(float X, float Y);
 	void Look(float X, float Y);
 	void MouseRotateStart();
 	void MouseRotateEnd();
+	void SetWalk();
+	void SetRun();
 
 protected:
 	std::weak_ptr<UTestComponent> TestComp;

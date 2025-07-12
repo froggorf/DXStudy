@@ -29,14 +29,43 @@ void USpringArmComponent::TickComponent(float DeltaSeconds)
 	}
 
 	FHitResult Result;
-	if (gPhysicsEngine->LineTraceSingleByChannel(Transform.GetTranslation(),Offset, Channel, Result))
+	bool bHitOwner = false;
+	XMFLOAT3 StartLocation = Transform.GetTranslation();
+	while (true)
 	{
-		TargetOffset = Result.Location;	
+		if (gPhysicsEngine->LineTraceSingleByChannel(StartLocation, Offset, Channel, Result))
+		{
+			if (Result.HitActor == GetOwner())
+			{
+				XMFLOAT3 GapDirection;
+				float Gap = 0.2f;
+				XMStoreFloat3(&GapDirection, XMVectorScale(XMVectorSubtract(XMLoadFloat3(&Offset), XMLoadFloat3(&StartLocation)), Gap));
+
+				StartLocation.x = Result.Location.x + GapDirection.x;
+				StartLocation.y = Result.Location.y + GapDirection.y;
+				StartLocation.z = Result.Location.z + GapDirection.z;
+			}
+			else
+			{
+				TargetOffset = Result.Location;
+				break;
+			}
+		}
+		else
+		{
+			TargetOffset = Offset;
+			break;
+		}
+
 	}
-	else
-	{
-		TargetOffset = Offset;
-	}
+	//if (gPhysicsEngine->LineTraceSingleByChannel(Transform.GetTranslation(),Offset, Channel, Result))
+	//{
+	//	TargetOffset = Result.Location;	
+	//}
+	//else
+	//{
+	//	TargetOffset = Offset;
+	//}
 
 	if (bUsePawnControlRotation && OwningCharacter)
 	{

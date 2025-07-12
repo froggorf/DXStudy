@@ -1,7 +1,0 @@
-{
-    "Class": "UAnimSequence",
-    "Name": "AS_Smash",
-    "Skeleton": "SK_LowPoly",
-    "AnimationDataPath": "/Content/Resource/Animation/LowPoly/Attack/Smash.FBX",
-    "RootMotion": 1
-}
