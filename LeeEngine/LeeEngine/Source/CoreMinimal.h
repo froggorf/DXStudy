@@ -74,3 +74,11 @@
 #include <PhysX/PxPhysicsAPI.h>
 #include <PhysX/cooking/PxCooking.h>
 #include <PhysX/cooking/PxConvexMeshDesc.h>
+
+// Recast & Detour
+#include <Recast/Recast.h>
+#include <Detour/DetourNavMesh.h>
+#include <RecastDetourDebug/DebugDraw.h>
+#include <Detour/DetourDebugDraw.h>
+#include <RecastDetourDebug/RecastDebugDraw.h>
+#include <RecastDetourDebug/RecastDump.h>

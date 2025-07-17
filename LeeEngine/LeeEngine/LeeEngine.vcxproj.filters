@@ -94,6 +94,9 @@
     <Filter Include="Source\Engine\Class\Camera">
       <UniqueIdentifier>{66221374-2d20-497a-ba08-54d424c10eb0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\ThirdParty\RecastDetour">
+      <UniqueIdentifier>{04d8be30-0f93-4938-a10c-ea2f0d1a0b6c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\DirectX\ShadowMap.cpp">
