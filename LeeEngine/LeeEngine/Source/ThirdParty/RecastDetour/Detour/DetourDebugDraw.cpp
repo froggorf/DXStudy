@@ -1,3 +1,4 @@
+﻿#include "CoreMinimal.h"
 //
 // Copyright (c) 2009-2010 Mikko Mononen memon@inside.org
 //
@@ -16,7 +17,6 @@
 // 3. This notice may not be removed or altered from any source distribution.
 //
 
-#include "DebugDraw.h"
 #include "DetourDebugDraw.h"
 #include "DetourNavMesh.h"
 #include "DetourCommon.h"

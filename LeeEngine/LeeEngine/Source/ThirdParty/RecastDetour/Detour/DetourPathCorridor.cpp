@@ -1,3 +1,4 @@
+﻿#include "CoreMinimal.h"
 //
 // Copyright (c) 2009-2010 Mikko Mononen memon@inside.org
 //

@@ -1,3 +1,4 @@
+﻿#include "CoreMinimal.h"
 //
 // Copyright (c) 2009-2010 Mikko Mononen memon@inside.org
 //
@@ -20,9 +21,9 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
-#include "Recast.h"
-#include "RecastAlloc.h"
 #include "RecastDump.h"
+
+#include "Recast/RecastAlloc.h"
 
 duFileIO::~duFileIO()
 {

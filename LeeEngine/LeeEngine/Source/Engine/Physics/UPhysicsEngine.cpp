@@ -240,6 +240,8 @@ physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterConvexActor(const FTransfo
 	OutVertexBuffer = CreateVertexBufferForConvexActor(ConvexMesh);
 #endif
 
+
+
 	// RigidActor
 	physx::PxRigidActor* Actor = nullptr;
 	if (bIsDynamic)

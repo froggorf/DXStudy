@@ -351,6 +351,96 @@
     <ClCompile Include="Source\Engine\Class\Framework\UPlayerInput.cpp">
       <Filter>Source\Engine\Class\Framework</Filter>
     </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Recast\Recast.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Recast\RecastAlloc.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Recast\RecastArea.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Recast\RecastAssert.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Recast\RecastContour.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Recast\RecastFilter.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Recast\RecastLayers.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Recast\RecastMesh.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Recast\RecastMeshDetail.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Recast\RecastRasterization.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Recast\RecastRegion.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\RecastDetourDebug\DebugDraw.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\RecastDetourDebug\RecastDebugDraw.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\RecastDetourDebug\RecastDump.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Detour\DetourAlloc.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Detour\DetourAssert.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Detour\DetourCommon.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Detour\DetourCrowd.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Detour\DetourDebugDraw.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Detour\DetourLocalBoundary.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Detour\DetourNavMesh.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Detour\DetourNavMeshBuilder.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Detour\DetourNavMeshQuery.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Detour\DetourNode.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Detour\DetourObstacleAvoidance.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Detour\DetourPathCorridor.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Detour\DetourPathQueue.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Detour\DetourProximityGrid.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Detour\DetourTileCache.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\RecastDetour\Detour\DetourTileCacheBuilder.cpp">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DirectX\ShadowMap.h">
@@ -622,6 +712,78 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\Class\Framework\UPlayerInput.h">
       <Filter>Source\Engine\Class\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\RecastDetour\Recast\Recast.h">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\RecastDetour\Recast\RecastAlloc.h">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\RecastDetour\Recast\RecastAssert.h">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\RecastDetour\RecastDetourDebug\DebugDraw.h">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\RecastDetour\RecastDetourDebug\RecastDebugDraw.h">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\RecastDetour\RecastDetourDebug\RecastDump.h">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\RecastDetour\Detour\DetourAlloc.h">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\RecastDetour\Detour\DetourAssert.h">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\RecastDetour\Detour\DetourCommon.h">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\RecastDetour\Detour\DetourCrowd.h">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\RecastDetour\Detour\DetourDebugDraw.h">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\RecastDetour\Detour\DetourLocalBoundary.h">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\RecastDetour\Detour\DetourMath.h">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\RecastDetour\Detour\DetourNavMesh.h">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\RecastDetour\Detour\DetourNavMeshBuilder.h">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\RecastDetour\Detour\DetourNavMeshQuery.h">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\RecastDetour\Detour\DetourNode.h">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\RecastDetour\Detour\DetourObstacleAvoidance.h">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\RecastDetour\Detour\DetourPathCorridor.h">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\RecastDetour\Detour\DetourPathQueue.h">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\RecastDetour\Detour\DetourProximityGrid.h">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\RecastDetour\Detour\DetourStatus.h">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\RecastDetour\Detour\DetourTileCache.h">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\RecastDetour\Detour\DetourTileCacheBuilder.h">
+      <Filter>Source\ThirdParty\RecastDetour</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

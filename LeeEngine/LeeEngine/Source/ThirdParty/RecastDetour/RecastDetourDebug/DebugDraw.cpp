@@ -1,3 +1,4 @@
+﻿#include "CoreMinimal.h"
 //
 // Copyright (c) 2009-2010 Mikko Mononen memon@inside.org
 //
@@ -18,8 +19,8 @@
 
 #include <string.h>
 #include "DebugDraw.h"
-#include "DetourMath.h"
-#include "DetourNavMesh.h"
+
+#include "Detour/DetourMath.h"
 
 
 duDebugDraw::~duDebugDraw()

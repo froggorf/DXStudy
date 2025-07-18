@@ -21,6 +21,7 @@ class ATestCube : public AActor
 	void OnComponentHitEvent(UShapeComponent* HitComponent, AActor* OtherActor, UShapeComponent* OtherComp, const FHitResult& HitResults);
 	void OnComponentBeginOverlapEvent(UShapeComponent* OverlappedComponent, AActor* OtherActor, UShapeComponent* OtherComp );
 
+	void DoRecast();
 
 protected:
 	std::shared_ptr<UStaticMeshComponent> TestCubeStaticMeshComp;

@@ -20,6 +20,7 @@ public:
 
 public:
 	void SetStaticMesh(const std::shared_ptr<UStaticMesh>& InStaticMesh);
+	std::shared_ptr<UStaticMesh> GetStaticMesh() const;
 
 	void RegisterSceneProxies() override;
 
@@ -28,7 +29,12 @@ public:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> GetVertexBuffer() const override{return ConvexMeshVertexBuffer;}
 
 	void DebugDraw_RenderThread() const override;
+
+	// NavMesh 를 렌더링하기 위한 목적으로 임시적으로 VertexBuffer를 만들어 관리하는 함수
+	void CreateVertexBufferForNavMesh(rcPolyMeshDetail* dmesh);
 protected:
 	std::weak_ptr<UStaticMesh> BaseStaticMesh;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> ConvexMeshVertexBuffer;
+
+	bool bRenderNavMesh = false;
 };
