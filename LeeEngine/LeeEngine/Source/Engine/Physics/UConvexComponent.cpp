@@ -77,25 +77,40 @@ void UConvexComponent::DebugDraw_RenderThread() const
 
 void UConvexComponent::CreateVertexBufferForNavMesh(rcPolyMeshDetail* dmesh)
 {
-	if (dmesh->nverts == 0)
+	if (dmesh->nmeshes == 0)
 	{
 		return;
 	}
 
 	bRenderNavMesh = true;
 	
-	std::vector<MyVertexData> VertexData(dmesh->ntris * 3);
-	for (int i = 0; i < dmesh->ntris; ++i)
+	std::vector<MyVertexData> VertexData;
+	for (int m = 0; m < dmesh->nmeshes; ++m)
 	{
-		for (int j = 0; j < 3; ++j)
+		const unsigned int* mesh = &dmesh->meshes[m * 4];
+		int vertBase = mesh[0]; // 이 메쉬의 첫 버텍스 인덱스
+		int vertCount = mesh[1];
+		int triBase = mesh[2];  // 이 메쉬의 첫 삼각형 인덱스
+		int triCount = mesh[3];
+
+		// 이 메쉬의 삼각형들만 순회
+		for (int i = 0; i < triCount; ++i)
 		{
-			int vi = dmesh->tris[i*4 + j];
-			VertexData[i*3 + j].Pos.x = dmesh->verts[vi*3 + 0];
-			VertexData[i*3 + j].Pos.y = dmesh->verts[vi*3 + 1] + 0.5f;
-			VertexData[i*3 + j].Pos.z = -dmesh->verts[vi*3 + 2];
+			const unsigned char* tri = &dmesh->tris[(triBase + i) * 4];
+			for (int j = 0; j < 3; ++j)
+			{
+				int idx = tri[j];
+				// 이 메쉬의 버텍스 범위 내에 있는지 확인 (보통 맞음)
+				float x = dmesh->verts[(vertBase + idx) * 3 + 0];
+				float y = dmesh->verts[(vertBase + idx) * 3 + 1];
+				float z = dmesh->verts[(vertBase + idx) * 3 + 2];
+
+				MyVertexData vtx;
+				vtx.Pos = DirectX::XMFLOAT3(x, y, -z);
+				VertexData.push_back(vtx);
+			}
 		}
 	}
-
 	VertexData.shrink_to_fit();
 
 	// DirectX 11 버텍스 버퍼 생성

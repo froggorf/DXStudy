@@ -15,15 +15,15 @@ ATestCube::ATestCube()
 	TestCube2 = std::make_shared<UStaticMeshComponent>();
 	TestCube2->SetupAttachment(GetRootComponent());
 	// 비동기 에셋 로드 테스트
-	AssetManager::GetAsyncAssetCache("SM_Nav_Test",[this](std::shared_ptr<UObject> Object)
+	AssetManager::GetAsyncAssetCache("SM_Cube",[this](std::shared_ptr<UObject> Object)
 	{
 		TestCube2->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
 	});
 
 	//TestCube2->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Cube"));
-	//TestCube2->SetRelativeScale3D(XMFLOAT3(1600.0f, 0.01f, 1600.0f));
-	TestCube2->SetRelativeScale3D(XMFLOAT3(100.0f,100.0f,100.0f));
-	TestCube2->SetRelativeLocation(XMFLOAT3(0.0f, -2000, 0.0f));
+	TestCube2->SetRelativeScale3D(XMFLOAT3(1600.0f, 0.01f, 1600.0f));
+	//TestCube2->SetRelativeScale3D(XMFLOAT3(100.0f,100.0f,100.0f));
+	TestCube2->SetRelativeLocation(XMFLOAT3(0.0f, -50, 0.0f));
 	TestCube2->SetCollisionObjectType(ECollisionChannel::WorldStatic);
 	
 
@@ -269,66 +269,8 @@ void ATestCube::OnComponentBeginOverlapEvent(UShapeComponent* OverlappedComponen
 	StaticMeshComp->SetTextureParam(0, 0, UTexture::GetTextureCache("T_Cube"));
 }
 
-void ATestCube::DoRecast()
+bool CreateRecastPolyMesh(const std::vector<float> verts, const std::vector<int> tris, int nverts, int ntris, rcPolyMesh* LastPolyMesh, rcPolyMeshDetail* LastPolyDetail, rcPolyMesh** OutPolyMesh, rcPolyMeshDetail** OutPolyDetail)
 {
-	// ========================================
-	// 1. 입력 데이터 준비
-	// ========================================
-
-	std::vector<float> verts;
-	std::vector<int> tris;
-
-	int vertexOffset = 0;
-
-	// 오브젝트 리스트 반복 (TestCube2, SM_Ramp 등)
-	for (const std::shared_ptr<UStaticMeshComponent>& Obj : {TestCube2})
-	{
-		if (std::shared_ptr<UConvexComponent> ConvexComp = std::dynamic_pointer_cast<UConvexComponent>(Obj->GetBodyInstance()))
-		{
-			FStaticMeshRenderData* Data = ConvexComp->GetStaticMesh()->GetStaticMeshRenderData();
-			const std::vector<std::vector<MyVertexData>>& VertexData = Data->VertexData;
-			const XMMATRIX& TransformMatrix = Obj->GetComponentTransform().ToMatrixWithScale();
-
-			// === 1. 정점 push ===
-			int thisMeshVertCount = 0;
-			for (const auto& VertexPerMesh : VertexData)
-			{
-				for (const MyVertexData& Vertex : VertexPerMesh)
-				{
-					XMVECTOR VertexVec = XMLoadFloat3(&Vertex.Pos);
-					VertexVec = XMVector3TransformCoord(VertexVec, TransformMatrix);
-					verts.push_back(XMVectorGetX(VertexVec));
-					verts.push_back(XMVectorGetY(VertexVec));
-					verts.push_back(-XMVectorGetZ(VertexVec)); // 좌표계 변환 필요시
-					thisMeshVertCount++;
-				}
-			}
-
-			// === 2. 인덱스 push ===
-			const std::vector<std::vector<uint32_t>>& Indices = Data->IndexData;
-			int subVertOffset = 0;
-			for (size_t meshIdx = 0; meshIdx < VertexData.size(); ++meshIdx)
-			{
-				const auto& SubIndices = Indices[meshIdx];
-				for (size_t i = 0; i < SubIndices.size(); i += 3)
-				{
-					tris.push_back(vertexOffset + subVertOffset + SubIndices[i + 0]);
-					tris.push_back(vertexOffset + subVertOffset + SubIndices[i + 1]);
-					tris.push_back(vertexOffset + subVertOffset + SubIndices[i + 2]);
-				}
-				subVertOffset += VertexData[meshIdx].size();
-			}
-
-			// === 3. vertexOffset 누적 ===
-			vertexOffset += thisMeshVertCount;
-		}
-	}
-
-
-	int nverts = verts.size() / 3;
-	int ntris = tris.size() / 3;
-	
-
 	// AABB 구하기
 	float bmin[3] = { verts[0], verts[1], verts[2] };
 	float bmax[3] = { verts[0], verts[1], verts[2] };
@@ -353,7 +295,7 @@ void ATestCube::DoRecast()
 	m_cfg.walkableSlopeAngle = 45.0f;
 	m_cfg.walkableHeight = (int)ceilf(2.0*Gap / m_cfg.ch);
 	m_cfg.walkableClimb = (int)floorf(0.9*Gap / m_cfg.ch);
-	m_cfg.walkableRadius = (int)ceilf(0.6*Gap / m_cfg.cs);
+	m_cfg.walkableRadius = (int)ceilf(0.6 / m_cfg.cs);
 	m_cfg.maxEdgeLen = (int)(12 / m_cfg.cs);
 	m_cfg.maxSimplificationError = 1.3;
 	m_cfg.minRegionArea = (int)rcSqr(8);		// Note: area = size*size
@@ -375,9 +317,9 @@ void ATestCube::DoRecast()
 	//
 	// Allocate voxel heightfield where we rasterize our input data to.
 	rcHeightfield* solid = rcAllocHeightfield();
-	
 
-	
+
+
 	if (!solid)
 	{
 		assert(nullptr&&"!solid");
@@ -385,6 +327,7 @@ void ATestCube::DoRecast()
 	if (!rcCreateHeightfield(ctx, *solid, m_cfg.width, m_cfg.height, m_cfg.bmin, m_cfg.bmax, m_cfg.cs, m_cfg.ch))
 	{
 		assert(nullptr&&"!rcCreateHeightfield");
+		return false;
 	}
 
 	// Allocate array that can hold triangle area types.
@@ -400,6 +343,7 @@ void ATestCube::DoRecast()
 	if (!rcRasterizeTriangles(ctx, verts.data(), nverts, tris.data(), triAreas, ntris, *solid, m_cfg.walkableClimb))
 	{
 		assert(nullptr && "!rcRasterizeTriangles");
+		return false;
 	}
 
 	//
@@ -425,12 +369,14 @@ void ATestCube::DoRecast()
 	if (!rcBuildCompactHeightfield(ctx, m_cfg.walkableHeight, m_cfg.walkableClimb, *solid, *chf))
 	{
 		assert(nullptr && "!rcBuildCompactHeightField");
+		return false;
 	}
 
 	// Erode the walkable area by agent radius.
 	if (!rcErodeWalkableArea(ctx, m_cfg.walkableRadius, *chf))
 	{
 		assert(nullptr && "!rcErodeWalkableArea");
+		return false;
 	}
 
 	// ========================================
@@ -438,9 +384,11 @@ void ATestCube::DoRecast()
 	// ========================================
 	if (!rcBuildDistanceField(ctx, *chf)) {
 		assert(nullptr && "!rcBuildDistanceField");
+		return false;
 	}
 	if (!rcBuildRegions(ctx, *chf, 0, m_cfg.minRegionArea, m_cfg.mergeRegionArea)) {
 		assert(nullptr && "!rcBuildRegions");
+		return false;
 	}
 
 	// ========================================
@@ -450,6 +398,7 @@ void ATestCube::DoRecast()
 	if (!rcBuildContours(ctx, *chf, m_cfg.maxSimplificationError, m_cfg.maxEdgeLen, *cset))
 	{
 		assert(nullptr && "!rcBuildContours");
+		return false;
 	}
 
 	// ========================================
@@ -459,6 +408,7 @@ void ATestCube::DoRecast()
 	if (!rcBuildPolyMesh(ctx, *cset, m_cfg.maxVertsPerPoly, *pmesh))
 	{
 		assert(nullptr && "!rcBuildPolyMesh");
+		return false;
 	}
 
 	// ========================================
@@ -468,12 +418,110 @@ void ATestCube::DoRecast()
 	if (!rcBuildPolyMeshDetail(ctx, *pmesh, *chf, m_cfg.detailSampleDist, m_cfg.detailSampleMaxError, *dmesh))
 	{
 		assert(nullptr && "!rcBuildPolyMeshDetail");
+		return false;
 	}
 
+	if(LastPolyMesh)
+	{
+		std::vector<rcPolyMesh*> PolyMeshes { LastPolyMesh, pmesh };
+		rcPolyMesh* mergedMesh = rcAllocPolyMesh();
+		if (!rcMergePolyMeshes(ctx, PolyMeshes.data(), PolyMeshes.size(), *mergedMesh))
+		{
+			assert(nullptr && "!rcMergePolyMeshes");
+			return false;
+		}
+		rcFreePolyMesh(pmesh); // 이전 pmesh는 더 이상 필요 없음
+		pmesh = mergedMesh;
+
+		rcFreePolyMeshDetail(dmesh);
+		dmesh = rcAllocPolyMeshDetail();
+		if(!rcBuildPolyMeshDetail(ctx, *pmesh, *chf, m_cfg.detailSampleDist, m_cfg.detailSampleMaxError, *dmesh))
+		{
+			assert(nullptr && "!rcBuildPolyMeshDetail");
+			return false;
+		}
+	}
+
+	*OutPolyMesh = pmesh;
+	*OutPolyDetail =dmesh;
+	return true;
+}
+
+void ATestCube::DoRecast()
+{
+	// ========================================
+	// 1. 입력 데이터 준비
+	// ========================================
+
+
+	rcPolyMesh* CurPolyMesh = nullptr;
+	rcPolyMeshDetail* CurPolyDetail = nullptr;
+
+	// 오브젝트 리스트 반복 (TestCube2, SM_Ramp 등)
+	for (const std::shared_ptr<UStaticMeshComponent>& Obj : { SM_Ramp, TestCube2})
+	{
+		if (std::shared_ptr<UConvexComponent> ConvexComp = std::dynamic_pointer_cast<UConvexComponent>(Obj->GetBodyInstance()))
+		{
+			FStaticMeshRenderData* Data = ConvexComp->GetStaticMesh()->GetStaticMeshRenderData();
+			const std::vector<std::vector<MyVertexData>>& VertexData = Data->VertexData;
+			const XMMATRIX& TransformMatrix = Obj->GetComponentTransform().ToMatrixWithScale();
+
+			int vertexOffset = 0;
+			std::vector<float> verts;
+			std::vector<int> tris;
+			int thisMeshVertCount = 0;
+			for (const auto& VertexPerMesh : VertexData)
+			{
+				for (const MyVertexData& Vertex : VertexPerMesh)
+				{
+					XMVECTOR VertexVec = XMLoadFloat3(&Vertex.Pos);
+					VertexVec = XMVector3TransformCoord(VertexVec, TransformMatrix);
+					verts.push_back(XMVectorGetX(VertexVec));
+					verts.push_back(XMVectorGetY(VertexVec));
+					verts.push_back(-XMVectorGetZ(VertexVec)); // 좌표계 변환 필요시
+					thisMeshVertCount++;
+				}
+			}
+			
+			// === 2. 인덱스 push ===
+			const std::vector<std::vector<uint32_t>>& Indices = Data->IndexData;
+			int subVertOffset = 0;
+			for (size_t meshIdx = 0; meshIdx < VertexData.size(); ++meshIdx)
+			{
+				const auto& SubIndices = Indices[meshIdx];
+				for (size_t i = 0; i < SubIndices.size(); i += 3)
+				{
+					tris.push_back(vertexOffset + subVertOffset + SubIndices[i + 0]);
+					tris.push_back(vertexOffset + subVertOffset + SubIndices[i + 1]);
+					tris.push_back(vertexOffset + subVertOffset + SubIndices[i + 2]);
+				}
+				subVertOffset += VertexData[meshIdx].size();
+			}
+
+			// === 3. vertexOffset 누적 ===
+			vertexOffset += thisMeshVertCount;
+
+			rcPolyMesh* PolyMesh = nullptr;
+			rcPolyMeshDetail* PolyMeshDetail = nullptr;
+			CreateRecastPolyMesh(verts, tris, verts.size()/3, tris.size()/3, CurPolyMesh, CurPolyDetail, &PolyMesh, &PolyMeshDetail);
+
+			// 병합된 결과가 PolyMesh로 반환됨 → CurPolyMesh에 저장
+			CurPolyMesh = PolyMesh;
+			CurPolyDetail = PolyMeshDetail;
+
+		}
+	}
+	
+
+	
+
+	
+
+	
 	std::shared_ptr<UConvexComponent> ConvexComp= std::make_shared<UConvexComponent>();
 	FDebugRenderData Data;
 	Data.Transform = ConvexComp->GetComponentTransform();
-	ConvexComp->CreateVertexBufferForNavMesh(dmesh);
+	ConvexComp->CreateVertexBufferForNavMesh(CurPolyDetail);
 	Data.RemainTime = 100.0f;
 	Data.ShapeComp = ConvexComp;
 	Data.DebugColor = XMFLOAT4{0.0f,0.0f,1.0f,0.3f};
