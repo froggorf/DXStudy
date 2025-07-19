@@ -156,7 +156,18 @@ FTransform USceneComponent::GetSocketTransform(const std::string& InSocketName)
 	return ComponentToWorld;
 }
 
+XMFLOAT3 USceneComponent::GetForwardVector()
+{
+	XMVECTOR WorldFront = XMVectorSet(0,0,1,0);
+	XMFLOAT4 CurRot = GetWorldRotation();
+	XMVECTOR ComponentFront = XMVector3Rotate(WorldFront, XMLoadFloat4(&CurRot));
+	XMFLOAT3 ComponentFrontVector;
+	XMStoreFloat3(&ComponentFrontVector,ComponentFront);
+	return ComponentFrontVector;
+}
+
 #ifdef WITH_EDITOR
+
 void USceneComponent::DrawDetailPanel(UINT ComponentDepth)
 {
 	if (ComponentDepth == 0)

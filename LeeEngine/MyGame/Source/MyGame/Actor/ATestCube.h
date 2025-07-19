@@ -23,6 +23,10 @@ class ATestCube : public AActor
 
 	void DoRecast();
 
+	static rcPolyMesh* MyPolyMesh;
+	static rcPolyMeshDetail* MyPolyDetail;
+	static dtNavMesh* MyDtNavMesh;
+	static dtNavMeshQuery* MyDtNavQuery;
 protected:
 	std::shared_ptr<UStaticMeshComponent> TestCubeStaticMeshComp;
 
@@ -69,10 +73,6 @@ private:
 
 	std::shared_ptr<UNiagaraComponent> NC_Fire;
 
-	static rcPolyMesh* MyPolyMesh;
-	static rcPolyMeshDetail* MyPolyDetail;
-	static dtNavMesh* MyDtNavMesh;
-	static dtNavMeshQuery* MyDtNavQuery;
 
 	void CreateDetour();
 };

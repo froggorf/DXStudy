@@ -76,6 +76,11 @@ void APlayerController::OnPossess(ACharacter* CharacterToPossess)
 	{
 		Character = CharacterToPossess;
 		Character->Controller = this;
+
+		if (std::shared_ptr<APlayerCameraManager> CM = CameraManager.lock())
+		{
+			CM->TargetCamera = Character->GetCameraComponent();
+		}
 	}
 }
 

@@ -9,6 +9,7 @@
 #include "Engine/DirectX/Device.h"
 
 ImVec2 FImguiLevelViewport::PreviousViewPortSize = ImVec2(0.0f, 0.0f);
+XMFLOAT2 FImguiLevelViewport::LevelViewportPos = XMFLOAT2(0.0f,0.0f);
 
 FImguiLevelViewport::FImguiLevelViewport(FScene* SceneData)
 	: FImguiPanel(SceneData)
@@ -50,6 +51,7 @@ void FImguiLevelViewport::Draw()
 		ScreenPos = ImGui::GetCursorScreenPos();
 		if (GDirectXDevice->GetSRVEditorRenderTarget())
 		{
+			LevelViewportPos = {ScreenPos.x, ScreenPos.y};
 			ImGui::Image(reinterpret_cast<ImTextureID>(GDirectXDevice->GetSRVEditorRenderTarget().Get()), ViewPortSize);
 		}
 		if (PreviousViewPortSize != CurrentViewPortSize)
@@ -59,11 +61,12 @@ void FImguiLevelViewport::Draw()
 			bResizeEditorRenderTargetAtEndFrame = true;
 		}
 
+
+
 		// SelectActor ImGuizmo
 		ImGuizmo::Enable(true);
 		ImGuizmo::SetOrthographic(false);
 		ImGuizmo::SetDrawlist(ImGui::GetForegroundDrawList());
-
 		ImGuizmo::SetRect(ScreenPos.x, ScreenPos.y, ViewPortSize.x, ViewPortSize.y);
 
 		ImGui::PushClipRect(ImVec2{0, 0}, ImVec2{ViewPortSize.x, ViewPortSize.y}, true);

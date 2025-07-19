@@ -295,9 +295,9 @@ bool CreateRecastPolyMesh(const std::vector<float> verts, const std::vector<int>
 
 	rcConfig m_cfg;	
 	memset(&m_cfg, 0, sizeof(m_cfg));
-	float Gap = 100.0f;
-	m_cfg.cs = 0.3*Gap;
-	m_cfg.ch = 0.2*Gap;
+	float Gap = 50.0f;
+	m_cfg.cs = 0.3f*Gap;
+	m_cfg.ch = 0.2f*Gap;
 	m_cfg.walkableSlopeAngle = 45.0f;
 	m_cfg.walkableHeight = (int)ceilf(2.0*Gap / m_cfg.ch);
 	m_cfg.walkableClimb = (int)floorf(0.2*Gap / m_cfg.ch);
@@ -426,6 +426,7 @@ bool CreateRecastPolyMesh(const std::vector<float> verts, const std::vector<int>
 		assert(nullptr && "!rcBuildPolyMeshDetail");
 		return false;
 	}
+
 
 	if(LastPolyMesh)
 	{
@@ -642,7 +643,13 @@ void ATestCube::CreateDetour(){
 	params.vertCount = MyPolyMesh->nverts;
 	params.polys = MyPolyMesh->polys;
 	params.polyAreas = MyPolyMesh->areas;
-	params.polyFlags = MyPolyMesh->flags;
+	unsigned short* polyFlags = new unsigned short[params.polyCount];
+	for (int i = 0; i < params.polyCount; ++i)
+	{
+		// 모든 폴리곤을 "걷기 가능"으로 세팅
+		polyFlags[i] = 0x01;
+	}
+	params.polyFlags = polyFlags;
 	params.polyCount = MyPolyMesh->npolys;
 	params.nvp = MyPolyMesh->nvp;
 
@@ -658,7 +665,7 @@ void ATestCube::CreateDetour(){
 	
 	rcConfig m_cfg;	
 	memset(&m_cfg, 0, sizeof(m_cfg));
-	float Gap = 100.0f;
+	float Gap = 50.0f;
 	m_cfg.cs = 0.3*Gap;
 	m_cfg.ch = 0.2*Gap;
 	m_cfg.walkableSlopeAngle = 45.0f;
@@ -678,7 +685,7 @@ void ATestCube::CreateDetour(){
 	params.bmax[2] = MyPolyMesh->bmax[2];
 	params.cs = MyPolyMesh->cs;
 	params.ch = MyPolyMesh->ch;
-	params.buildBvTree = true; // BV트리 사용 여부
+	params.buildBvTree = false; // BV트리 사용 여부
 
 	unsigned char* navData = nullptr;
 	int navDataSize = 0;

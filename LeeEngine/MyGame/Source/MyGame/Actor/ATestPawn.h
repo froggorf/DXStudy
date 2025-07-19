@@ -33,6 +33,9 @@ class ATestPawn : public ACharacter
 	void SetWalk();
 	void SetRun();
 
+
+	void PressLeftButton();
+
 protected:
 	std::weak_ptr<UTestComponent> TestComp;
 	std::shared_ptr<UStaticMeshComponent> SMSword;
@@ -43,4 +46,14 @@ protected:
 
 private:
 	bool bRightButtonPressed = false;
+
+
+
+	// TODO: TEMP 추후 지우기
+	bool bMustFindPath = false;
+	XMFLOAT3 ArriveLoc;
+	float PathFindCooldown = 1.0f/60.0f;
+	float CurPathFindTime = 0.0f;
+	std::deque<XMFLOAT3> StraightPath;
+
 };

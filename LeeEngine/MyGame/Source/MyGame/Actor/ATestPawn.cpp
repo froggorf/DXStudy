@@ -1,7 +1,10 @@
 ﻿#include "CoreMinimal.h"
 #include "ATestPawn.h"
 
+#include "ATestCube.h"
 #include "ATestCube2.h"
+#include "Engine/EditorClient/Panel/ImguiViewport.h"
+#include "Engine/Physics/UBoxComponent.h"
 #include "Engine/World/UWorld.h"
 
 
@@ -98,6 +101,8 @@ void ATestPawn::BindKeyInputs()
 
 			InputSystem->BindAction(EKeys::MouseRight, ETriggerEvent::Started, this, &ATestPawn::MouseRotateStart);
 			InputSystem->BindAction(EKeys::MouseRight, ETriggerEvent::Released, this, &ATestPawn::MouseRotateEnd);
+
+			InputSystem->BindAction(EKeys::MouseLeft, ETriggerEvent::Started, this, &ATestPawn::PressLeftButton);
 		}
 		
 	}
@@ -212,8 +217,143 @@ void ATestPawn::SetRun()
 	}
 }
 
+void ATestPawn::PressLeftButton()
+{
+	if (Controller)
+	{
+		XMFLOAT2 MousePos = Controller->PlayerInput->LastMousePosition;
+		XMFLOAT2 NDC;
+#ifdef WITH_EDITOR
+		MousePos.x -= FImguiLevelViewport::LevelViewportPos.x;
+		MousePos.y -= FImguiLevelViewport::LevelViewportPos.y;
+
+		NDC.x = (MousePos.x / FImguiLevelViewport::PreviousViewPortSize.x) * 2.0f - 1.0f;
+		NDC.y = 1.0f - (MousePos.y / FImguiLevelViewport::PreviousViewPortSize.y) * 2.0f;
+#else
+		//TODO: 화면 길이 구하는것 해야함
+#endif
+		
+
+		XMVECTOR ScreenPos = XMLoadFloat2(&NDC);
+		if (CameraComp)
+		{
+			XMVECTOR ClipNear = XMVectorSet(NDC.x, NDC.y, 0.0f, 1.0f); // near
+			XMVECTOR ClipFar  = XMVectorSet(NDC.x, NDC.y, 1.0f, 1.0f); // far
+
+			XMMATRIX Proj = CameraComp->ViewMatrices.GetProjectionMatrix();
+			XMMATRIX InvProj = XMMatrixInverse(nullptr, Proj);
+			XMVECTOR ViewNear = XMVector4Transform(ClipNear, InvProj);
+			XMVECTOR ViewFar  = XMVector4Transform(ClipFar,  InvProj);
+
+			// w 나누기
+			ViewNear = XMVectorScale(ViewNear, 1.0f / XMVectorGetW(ViewNear));
+			ViewFar  = XMVectorScale(ViewFar,  1.0f / XMVectorGetW(ViewFar));
+
+			XMMATRIX ViewMatrix = CameraComp->ViewMatrices.GetViewMatrix();
+			XMMATRIX InvView = XMMatrixInverse(nullptr, ViewMatrix);
+			XMVECTOR WorldNear = XMVector4Transform(ViewNear, InvView);
+			XMVECTOR WorldFar  = XMVector4Transform(ViewFar,  InvView);
+
+			XMFLOAT3 Start, End;
+			XMStoreFloat3(&Start, WorldNear);
+			XMStoreFloat3(&End,   WorldFar);
+
+			std::vector<ECollisionChannel> Channel {ECollisionChannel::WorldDynamic, ECollisionChannel::WorldStatic};
+			FHitResult HitResult;
+			if (gPhysicsEngine->LineTraceSingleByChannel(Start,End, Channel, HitResult, 5))
+			{
+				bMustFindPath = true;
+				ArriveLoc = HitResult.Location;
+
+			}
+
+		}
+
+
+	}
+
+
+}
+
 
 void ATestPawn::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
+
+	if (bMustFindPath)
+	{
+		CurPathFindTime -= DeltaSeconds;
+		// 경로 찾기
+		if (CurPathFindTime <= 0.0f)
+		{
+			CurPathFindTime = PathFindCooldown;
+			// 2. 시작점, 도착점 지정
+			float startPos[3] = {GetActorLocation().x,GetActorLocation().y,-GetActorLocation().z};
+			float endPos[3] = {ArriveLoc.x,ArriveLoc.y,-ArriveLoc.z};
+
+			// 3. 폴리곤 찾기 (nearest poly)
+			dtPolyRef startRef, endRef;
+			float nearestStart[3], nearestEnd[3];
+			dtQueryFilter filter;
+			filter.setIncludeFlags(0xffffffff);
+			filter.setExcludeFlags(0);
+			float extents[3] = {200,400,200};
+			ATestCube::MyDtNavQuery->findNearestPoly(startPos, extents, &filter, &startRef, nearestStart);
+			ATestCube::MyDtNavQuery->findNearestPoly(endPos, extents, &filter, &endRef, nearestEnd);
+
+			// 4. 경로 찾기 (findPath)
+#define MAX_POLYS 3000
+			dtPolyRef pathPolys[MAX_POLYS];
+			int pathCount = 0;
+			ATestCube::MyDtNavQuery->findPath(startRef, endRef, nearestStart, nearestEnd, &filter, pathPolys, &pathCount, MAX_POLYS);
+
+			// 5. 경로 좌표 추출 (findStraightPath)
+			float straightPath[MAX_POLYS*3];
+			unsigned char straightPathFlags[MAX_POLYS];
+			dtPolyRef straightPathPolys[MAX_POLYS];
+			int straightPathCount = 0;
+
+			ATestCube::MyDtNavQuery->findStraightPath(nearestStart, nearestEnd, pathPolys, pathCount, straightPath, straightPathFlags, straightPathPolys, &straightPathCount, MAX_POLYS);
+
+			StraightPath.clear();
+			for (int i = 0; i < straightPathCount; ++i)
+			{
+				XMFLOAT3 NewPos = {straightPath[i*3+0],straightPath[i*3+1],straightPath[i*3+2]};
+				StraightPath.emplace_back(NewPos);
+			}
+		}
+
+		if (!StraightPath.empty())
+		{
+			XMFLOAT3 CurPos = GetActorLocation();
+			XMFLOAT3 Target = StraightPath.front();
+
+			// 목표점까지의 벡터
+			XMFLOAT3 Delta = {Target.x - CurPos.x, Target.y - CurPos.y, Target.z - CurPos.z};
+
+			float dist = sqrtf(Delta.x*Delta.x + Delta.y*Delta.y + Delta.z*Delta.z);
+			float moveSpeed = 200.0f; // 1초에 200만큼 이동 (원하는 속도로 조절)
+			float step = GetCharacterMovement()->MaxWalkSpeed * DeltaSeconds;
+
+			if (dist < step) // 목표점에 거의 도착했다면
+			{
+				// 캐릭터를 목표점에 정확히 위치시키고, 다음 점으로 넘어감
+				StraightPath.erase(StraightPath.begin());
+				if (StraightPath.empty())
+				{
+					bMustFindPath = false;
+					CurPathFindTime = 0.0f;
+				}
+			}
+			else
+			{
+				// 방향으로 step만큼 이동
+				XMFLOAT3 MoveDir = {Delta.x/dist, Delta.y/dist, Delta.z/dist};
+				XMFLOAT3 MoveStep = {MoveDir.x * step, MoveDir.y * step, MoveDir.z * step};
+
+				// 또는 PxCharacterController->move(...) 사용 시, MoveStep을 델타로 넣어줌
+				GetCharacterMovement()->PxCharacterController->move({MoveStep.x*100,MoveStep.y*100,MoveStep.z*100},0.01f, GEngine->GetDeltaSeconds(), GetCharacterMovement()->Filters);
+			}
+		}
+	}
 }

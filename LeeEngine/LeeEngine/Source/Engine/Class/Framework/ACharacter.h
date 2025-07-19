@@ -100,6 +100,7 @@ public:
 
 	UCharacterMovementComponent* GetCharacterMovement() const {return CharacterMovement.lock().get(); }
 	USkeletalMeshComponent* GetSkeletalMeshComponent() const {return SkeletalMeshComponent.get();};
+	std::shared_ptr<UCameraComponent> GetCameraComponent() const {return CameraComp;}
 protected:
 	virtual void BindKeyInputs() {}
 private:

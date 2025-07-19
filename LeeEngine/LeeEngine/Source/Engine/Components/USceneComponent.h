@@ -45,6 +45,11 @@ class USceneComponent : public UActorComponent, public std::enable_shared_from_t
 		return ComponentToWorld.GetTranslation();
 	}
 
+	XMFLOAT4 GetWorldRotation() const
+	{
+		return ComponentToWorld.GetRotation();
+	}
+
 	XMFLOAT3 GetRelativeLocation() const
 	{
 		return RelativeLocation;
@@ -95,6 +100,8 @@ class USceneComponent : public UActorComponent, public std::enable_shared_from_t
 	{
 		return bIsPrimitive;
 	}
+
+	XMFLOAT3 GetForwardVector();
 
 #ifdef WITH_EDITOR
 	void DrawDetailPanel(UINT ComponentDepth) override;
