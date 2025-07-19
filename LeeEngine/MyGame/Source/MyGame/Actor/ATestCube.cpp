@@ -10,6 +10,12 @@
 #include "Engine/Mesh/UStaticMesh.h"
 #include "Engine/Physics/UPhysicsEngine.h"
 
+rcPolyMesh* ATestCube::MyPolyMesh;
+rcPolyMeshDetail* ATestCube::MyPolyDetail;
+dtNavMesh* ATestCube::MyDtNavMesh;
+dtNavMeshQuery* ATestCube::MyDtNavQuery;
+
+
 ATestCube::ATestCube()
 {
 	TestCube2 = std::make_shared<UStaticMeshComponent>();
@@ -300,7 +306,7 @@ bool CreateRecastPolyMesh(const std::vector<float> verts, const std::vector<int>
 	m_cfg.maxSimplificationError = 1.3;
 	m_cfg.minRegionArea = (int)rcSqr(8);		// Note: area = size*size
 	m_cfg.mergeRegionArea = (int)rcSqr(20);	// Note: area = size*size
-	m_cfg.maxVertsPerPoly = (int)6*Gap;
+	m_cfg.maxVertsPerPoly = (int)6;
 	m_cfg.detailSampleDist = m_cfg.cs * 6;
 	m_cfg.detailSampleMaxError = m_cfg.ch * 1;
 
@@ -609,7 +615,10 @@ void ATestCube::DoRecast()
 	// ========================================
 	// Detour를 사용한다면 pmesh, dmesh 내용을 Detour NavMesh로 변환
 
+	MyPolyMesh = CurPolyMesh;
+	MyPolyDetail = CurPolyDetail;
 
+	CreateDetour();
 
 	// ========================================
 	// 13. 메모리 해제
@@ -621,4 +630,81 @@ void ATestCube::DoRecast()
 	rcFreePolyMesh(pmesh);
 	rcFreePolyMeshDetail(dmesh);
 	delete ctx;*/
+}
+
+void ATestCube::CreateDetour(){
+
+	dtNavMeshCreateParams params = {};
+	memset(&params, 0, sizeof(params));
+
+	// rcPolyMesh에서 정보 복사
+	params.verts = MyPolyMesh->verts;
+	params.vertCount = MyPolyMesh->nverts;
+	params.polys = MyPolyMesh->polys;
+	params.polyAreas = MyPolyMesh->areas;
+	params.polyFlags = MyPolyMesh->flags;
+	params.polyCount = MyPolyMesh->npolys;
+	params.nvp = MyPolyMesh->nvp;
+
+	// rcPolyMeshDetail에서 정보 복사
+	params.detailMeshes = MyPolyDetail->meshes;
+	params.detailVerts = MyPolyDetail->verts;
+	params.detailVertsCount = MyPolyDetail->nverts;
+	params.detailTris = MyPolyDetail->tris;
+	params.detailTriCount = MyPolyDetail->ntris;
+
+	// 기타 옵션
+	params.walkableHeight = 45; // 빌드시 사용한 값과 동일하게
+	
+	rcConfig m_cfg;	
+	memset(&m_cfg, 0, sizeof(m_cfg));
+	float Gap = 100.0f;
+	m_cfg.cs = 0.3*Gap;
+	m_cfg.ch = 0.2*Gap;
+	m_cfg.walkableSlopeAngle = 45.0f;
+	m_cfg.walkableClimb = (int)floorf(0.2*Gap / m_cfg.ch);
+	m_cfg.walkableRadius = (int)ceilf(0.6 / m_cfg.cs);
+	
+	params.walkableRadius = m_cfg.walkableRadius;
+	params.walkableClimb = m_cfg.walkableClimb;
+	params.tileX = 0;
+	params.tileY = 0;
+	params.tileLayer = 0;
+	params.bmin[0] = MyPolyMesh->bmin[0];
+	params.bmin[1] = MyPolyMesh->bmin[1];
+	params.bmin[2] = MyPolyMesh->bmin[2];
+	params.bmax[0] = MyPolyMesh->bmax[0];
+	params.bmax[1] = MyPolyMesh->bmax[1];
+	params.bmax[2] = MyPolyMesh->bmax[2];
+	params.cs = MyPolyMesh->cs;
+	params.ch = MyPolyMesh->ch;
+	params.buildBvTree = true; // BV트리 사용 여부
+
+	unsigned char* navData = nullptr;
+	int navDataSize = 0;
+
+	if (!dtCreateNavMeshData(&params, &navData, &navDataSize))
+	{
+		assert(nullptr&& "!dtCreateNavMeshData");
+		return;
+	}
+
+	dtNavMesh* navMesh = dtAllocNavMesh();
+	if (!navMesh)
+	{
+		assert(nullptr&& "!dtCreateNavMeshData");
+		return;
+	}
+
+	dtStatus status = navMesh->init(navData, navDataSize, DT_TILE_FREE_DATA);
+	if (dtStatusFailed(status))
+	{
+		dtFree(navMesh);
+		assert(nullptr&& "!dtCreateNavMeshData");
+		return;
+	}
+
+	MyDtNavMesh = navMesh;
+	MyDtNavQuery = dtAllocNavMeshQuery();
+	MyDtNavQuery->init(MyDtNavMesh, 2048);
 }

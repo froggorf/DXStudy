@@ -77,7 +77,8 @@
 
 // Recast & Detour
 #include <Recast/Recast.h>
-#include <Detour/DetourNavMesh.h>
+#include <Detour/DetourNavMesh.h>	
+#include <Detour/DetourNavMeshBuilder.h>
 #include <RecastDetourDebug/DebugDraw.h>
 #include <Detour/DetourDebugDraw.h>
 #include <RecastDetourDebug/RecastDebugDraw.h>

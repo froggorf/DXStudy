@@ -68,4 +68,11 @@ private:
 	std::shared_ptr<USceneComponent>   DummyComp2;
 
 	std::shared_ptr<UNiagaraComponent> NC_Fire;
+
+	static rcPolyMesh* MyPolyMesh;
+	static rcPolyMeshDetail* MyPolyDetail;
+	static dtNavMesh* MyDtNavMesh;
+	static dtNavMeshQuery* MyDtNavQuery;
+
+	void CreateDetour();
 };
