@@ -79,11 +79,11 @@ ATestCube::ATestCube()
 		SMVec[i]->SetRelativeScale3D({100,20,100});
 		if (i < 10)
 		{
-			SMVec[i]->SetRelativeLocation(XMFLOAT3{500+80*static_cast<float>(i),   19*static_cast<float>(i), 200});
+			SMVec[i]->SetRelativeLocation(XMFLOAT3{500+80*static_cast<float>(i),   19*static_cast<float>(i)-50, 200});
 		}
 		else
 		{
-			SMVec[i]->SetRelativeLocation(XMFLOAT3{500+80*static_cast<float>(i),  200  - 19*static_cast<float>(i-10), 200});
+			SMVec[i]->SetRelativeLocation(XMFLOAT3{500+80*static_cast<float>(i),  150  - 19*static_cast<float>(i-10), 200});
 		}
 		AssetManager::GetAsyncAssetCache("SM_Box", [SMVec,i](std::shared_ptr<UObject> Object)
 		{
@@ -294,7 +294,7 @@ bool CreateRecastPolyMesh(const std::vector<float> verts, const std::vector<int>
 	m_cfg.ch = 0.2*Gap;
 	m_cfg.walkableSlopeAngle = 45.0f;
 	m_cfg.walkableHeight = (int)ceilf(2.0*Gap / m_cfg.ch);
-	m_cfg.walkableClimb = (int)floorf(0.9*Gap / m_cfg.ch);
+	m_cfg.walkableClimb = (int)floorf(0.2*Gap / m_cfg.ch);
 	m_cfg.walkableRadius = (int)ceilf(0.6 / m_cfg.cs);
 	m_cfg.maxEdgeLen = (int)(12 / m_cfg.cs);
 	m_cfg.maxSimplificationError = 1.3;
@@ -457,8 +457,94 @@ void ATestCube::DoRecast()
 	rcPolyMesh* CurPolyMesh = nullptr;
 	rcPolyMeshDetail* CurPolyDetail = nullptr;
 
+	//// 오브젝트 리스트 반복 (TestCube2, SM_Ramp 등)
+	//for (const std::shared_ptr<UStaticMeshComponent>& Obj : { TestCube2})
+	//{
+	//	if (std::shared_ptr<UConvexComponent> ConvexComp = std::dynamic_pointer_cast<UConvexComponent>(Obj->GetBodyInstance()))
+	//	{
+	//		FStaticMeshRenderData* Data = ConvexComp->GetStaticMesh()->GetStaticMeshRenderData();
+	//		const std::vector<std::vector<MyVertexData>>& VertexData = Data->VertexData;
+	//		const XMMATRIX& TransformMatrix = Obj->GetComponentTransform().ToMatrixWithScale();
+
+	//		int vertexOffset = 0;
+	//		std::vector<float> verts;
+	//		std::vector<int> tris;
+	//		int thisMeshVertCount = 0;
+	//		for (const auto& VertexPerMesh : VertexData)
+	//		{
+	//			for (const MyVertexData& Vertex : VertexPerMesh)
+	//			{
+	//				XMVECTOR VertexVec = XMLoadFloat3(&Vertex.Pos);
+	//				VertexVec = XMVector3TransformCoord(VertexVec, TransformMatrix);
+	//				verts.push_back(XMVectorGetX(VertexVec));
+	//				verts.push_back(XMVectorGetY(VertexVec));
+	//				verts.push_back(-XMVectorGetZ(VertexVec)); // 좌표계 변환 필요시
+	//				thisMeshVertCount++;
+	//			}
+	//		}
+	//		
+	//		// === 2. 인덱스 push ===
+	//		const std::vector<std::vector<uint32_t>>& Indices = Data->IndexData;
+	//		int subVertOffset = 0;
+	//		for (size_t meshIdx = 0; meshIdx < VertexData.size(); ++meshIdx)
+	//		{
+	//			const auto& SubIndices = Indices[meshIdx];
+	//			for (size_t i = 0; i < SubIndices.size(); i += 3)
+	//			{
+	//				tris.push_back(vertexOffset + subVertOffset + SubIndices[i + 0]);
+	//				tris.push_back(vertexOffset + subVertOffset + SubIndices[i + 1]);
+	//				tris.push_back(vertexOffset + subVertOffset + SubIndices[i + 2]);
+	//			}
+	//			subVertOffset += VertexData[meshIdx].size();
+	//		}
+
+	//		// === 3. vertexOffset 누적 ===
+	//		vertexOffset += thisMeshVertCount;
+
+	//		rcPolyMesh* PolyMesh = nullptr;
+	//		rcPolyMeshDetail* PolyMeshDetail = nullptr;
+	//		CreateRecastPolyMesh(verts, tris, verts.size()/3, tris.size()/3, CurPolyMesh, CurPolyDetail, &PolyMesh, &PolyMeshDetail);
+
+	//		// 병합된 결과가 PolyMesh로 반환됨 → CurPolyMesh에 저장
+	//		CurPolyMesh = PolyMesh;
+	//		CurPolyDetail = PolyMeshDetail;
+
+	//	}
+	//}
+	//
+
+	
+	// ========================================
+	// 1. 입력 데이터 준비
+	// ========================================
+
+	std::vector<float> verts;
+	std::vector<int> tris;
+
+	int vertexOffset = 0;
+
 	// 오브젝트 리스트 반복 (TestCube2, SM_Ramp 등)
-	for (const std::shared_ptr<UStaticMeshComponent>& Obj : { SM_Ramp, TestCube2})
+	for (const std::shared_ptr<UStaticMeshComponent>& Obj : {TestCube2, SM_Ramp, 	TestCubeSM1	,
+		TestCubeSM2	,
+		TestCubeSM3	,
+		TestCubeSM4	,
+		TestCubeSM5	,
+		TestCubeSM6	,
+		TestCubeSM9	,
+		TestCubeSM7	,
+		TestCubeSM8	,
+		TestCubeSM10,
+		TestCubeSM11,
+		TestCubeSM12,
+		TestCubeSM13,
+		TestCubeSM14,
+		TestCubeSM15,
+		TestCubeSM16,
+		TestCubeSM17,
+		TestCubeSM18,
+		TestCubeSM19,
+		TestCubeSM20,
+		TestCubeSM21,})
 	{
 		if (std::shared_ptr<UConvexComponent> ConvexComp = std::dynamic_pointer_cast<UConvexComponent>(Obj->GetBodyInstance()))
 		{
@@ -466,9 +552,7 @@ void ATestCube::DoRecast()
 			const std::vector<std::vector<MyVertexData>>& VertexData = Data->VertexData;
 			const XMMATRIX& TransformMatrix = Obj->GetComponentTransform().ToMatrixWithScale();
 
-			int vertexOffset = 0;
-			std::vector<float> verts;
-			std::vector<int> tris;
+			// === 1. 정점 push ===
 			int thisMeshVertCount = 0;
 			for (const auto& VertexPerMesh : VertexData)
 			{
@@ -482,7 +566,7 @@ void ATestCube::DoRecast()
 					thisMeshVertCount++;
 				}
 			}
-			
+
 			// === 2. 인덱스 push ===
 			const std::vector<std::vector<uint32_t>>& Indices = Data->IndexData;
 			int subVertOffset = 0;
@@ -500,22 +584,15 @@ void ATestCube::DoRecast()
 
 			// === 3. vertexOffset 누적 ===
 			vertexOffset += thisMeshVertCount;
-
-			rcPolyMesh* PolyMesh = nullptr;
-			rcPolyMeshDetail* PolyMeshDetail = nullptr;
-			CreateRecastPolyMesh(verts, tris, verts.size()/3, tris.size()/3, CurPolyMesh, CurPolyDetail, &PolyMesh, &PolyMeshDetail);
-
-			// 병합된 결과가 PolyMesh로 반환됨 → CurPolyMesh에 저장
-			CurPolyMesh = PolyMesh;
-			CurPolyDetail = PolyMeshDetail;
-
 		}
 	}
-	
 
-	
 
-	
+	int nverts = verts.size() / 3;
+	int ntris = tris.size() / 3;
+
+
+	CreateRecastPolyMesh(verts, tris,  verts.size()/3, tris.size()/3, nullptr, nullptr, &CurPolyMesh, &CurPolyDetail);
 
 	
 	std::shared_ptr<UConvexComponent> ConvexComp= std::make_shared<UConvexComponent>();
