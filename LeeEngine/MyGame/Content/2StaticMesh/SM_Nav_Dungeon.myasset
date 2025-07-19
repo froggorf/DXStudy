@@ -1,0 +1,6 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_Nav_Dungeon",
+    "ModelData": "/Content/Resource/Model/dungeon.obj",
+    "Material" : [ "MI_Box" ]
+}

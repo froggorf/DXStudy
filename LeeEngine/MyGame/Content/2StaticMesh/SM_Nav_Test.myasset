@@ -1,0 +1,6 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_Nav_Test",
+    "ModelData": "/Content/Resource/Model/nav_test.obj",
+    "Material" : [ "MI_Box" ]
+}

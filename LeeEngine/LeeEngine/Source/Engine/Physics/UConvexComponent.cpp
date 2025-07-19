@@ -83,15 +83,15 @@ void UConvexComponent::CreateVertexBufferForNavMesh(rcPolyMeshDetail* dmesh)
 	}
 
 	bRenderNavMesh = true;
-
+	
 	std::vector<MyVertexData> VertexData(dmesh->ntris * 3);
 	for (int i = 0; i < dmesh->ntris; ++i)
 	{
 		for (int j = 0; j < 3; ++j)
 		{
-			int vi = dmesh->tris[i*4 + j]; // 정점 인덱스
+			int vi = dmesh->tris[i*4 + j];
 			VertexData[i*3 + j].Pos.x = dmesh->verts[vi*3 + 0];
-			VertexData[i*3 + j].Pos.y = dmesh->verts[vi*3 + 1] + 3.f;
+			VertexData[i*3 + j].Pos.y = dmesh->verts[vi*3 + 1] + 0.5f;
 			VertexData[i*3 + j].Pos.z = -dmesh->verts[vi*3 + 2];
 		}
 	}

@@ -15,14 +15,15 @@ ATestCube::ATestCube()
 	TestCube2 = std::make_shared<UStaticMeshComponent>();
 	TestCube2->SetupAttachment(GetRootComponent());
 	// 비동기 에셋 로드 테스트
-	AssetManager::GetAsyncAssetCache("SM_Cube",[this](std::shared_ptr<UObject> Object)
+	AssetManager::GetAsyncAssetCache("SM_Nav_Test",[this](std::shared_ptr<UObject> Object)
 	{
 		TestCube2->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
 	});
 
 	//TestCube2->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Cube"));
-	TestCube2->SetRelativeScale3D(XMFLOAT3(1600.0f, 0.01f, 1600.0f));
-	TestCube2->SetRelativeLocation(XMFLOAT3(0.0f, -50, 0.0f));
+	//TestCube2->SetRelativeScale3D(XMFLOAT3(1600.0f, 0.01f, 1600.0f));
+	TestCube2->SetRelativeScale3D(XMFLOAT3(100.0f,100.0f,100.0f));
+	TestCube2->SetRelativeLocation(XMFLOAT3(0.0f, -2000, 0.0f));
 	TestCube2->SetCollisionObjectType(ECollisionChannel::WorldStatic);
 	
 
@@ -136,8 +137,8 @@ ATestCube::ATestCube()
 		SM_Ramp->SetStaticMesh(std::static_pointer_cast<UStaticMesh>(Object));
 	});
 	SM_Ramp->SetupAttachment(GetRootComponent());
-	SM_Ramp->SetRelativeScale3D({1,1,3});
-	SM_Ramp->SetRelativeLocation({500,-50,0});
+	SM_Ramp->SetRelativeScale3D({3,3,9});
+	SM_Ramp->SetRelativeLocation({1000,-50,0});
 	SM_Ramp->SetRelativeRotation(XMFLOAT3{0,90,0});
 	
 
@@ -276,37 +277,54 @@ void ATestCube::DoRecast()
 
 	std::vector<float> verts;
 	std::vector<int> tris;
-	
-	if (std::shared_ptr<UConvexComponent> ConvexComp = std::dynamic_pointer_cast<UConvexComponent>(TestCube2->GetBodyInstance()))
-	{
-		FStaticMeshRenderData* Data = ConvexComp->GetStaticMesh()->GetStaticMeshRenderData();
-		const std::vector<std::vector<MyVertexData>>& VertexData = Data->VertexData;
-		const XMMATRIX& TransformMatrix = TestCube2->GetComponentTransform().ToMatrixWithScale();
-		for (const auto& VertexPerMesh : VertexData)
-		{
-			for (const MyVertexData& Vertex : VertexPerMesh)
-			{
-				XMVECTOR VertexVec = XMLoadFloat3(&Vertex.Pos);
-				VertexVec = XMVector3TransformCoord(VertexVec, TransformMatrix);
-				verts.push_back(XMVectorGetX(VertexVec));
-				verts.push_back(XMVectorGetY(VertexVec));
-				verts.push_back(-XMVectorGetZ(VertexVec)); // 좌표계 변환 필요시
-			}
-		}
 
-		const std::vector<std::vector<uint32_t>>& Indices = Data->IndexData;
-		int vertexOffset = 0;
-		for (const auto& SubIndices : Indices)
+	int vertexOffset = 0;
+
+	// 오브젝트 리스트 반복 (TestCube2, SM_Ramp 등)
+	for (const std::shared_ptr<UStaticMeshComponent>& Obj : {TestCube2})
+	{
+		if (std::shared_ptr<UConvexComponent> ConvexComp = std::dynamic_pointer_cast<UConvexComponent>(Obj->GetBodyInstance()))
 		{
-			for (size_t i = 0; i < SubIndices.size(); i += 3)
+			FStaticMeshRenderData* Data = ConvexComp->GetStaticMesh()->GetStaticMeshRenderData();
+			const std::vector<std::vector<MyVertexData>>& VertexData = Data->VertexData;
+			const XMMATRIX& TransformMatrix = Obj->GetComponentTransform().ToMatrixWithScale();
+
+			// === 1. 정점 push ===
+			int thisMeshVertCount = 0;
+			for (const auto& VertexPerMesh : VertexData)
 			{
-				tris.push_back(vertexOffset + SubIndices[i + 0]);
-				tris.push_back(vertexOffset + SubIndices[i + 1]);
-				tris.push_back(vertexOffset + SubIndices[i + 2]);
+				for (const MyVertexData& Vertex : VertexPerMesh)
+				{
+					XMVECTOR VertexVec = XMLoadFloat3(&Vertex.Pos);
+					VertexVec = XMVector3TransformCoord(VertexVec, TransformMatrix);
+					verts.push_back(XMVectorGetX(VertexVec));
+					verts.push_back(XMVectorGetY(VertexVec));
+					verts.push_back(-XMVectorGetZ(VertexVec)); // 좌표계 변환 필요시
+					thisMeshVertCount++;
+				}
 			}
-			vertexOffset += VertexData[&SubIndices - &Indices[0]].size(); // 각 submesh별 offset
+
+			// === 2. 인덱스 push ===
+			const std::vector<std::vector<uint32_t>>& Indices = Data->IndexData;
+			int subVertOffset = 0;
+			for (size_t meshIdx = 0; meshIdx < VertexData.size(); ++meshIdx)
+			{
+				const auto& SubIndices = Indices[meshIdx];
+				for (size_t i = 0; i < SubIndices.size(); i += 3)
+				{
+					tris.push_back(vertexOffset + subVertOffset + SubIndices[i + 0]);
+					tris.push_back(vertexOffset + subVertOffset + SubIndices[i + 1]);
+					tris.push_back(vertexOffset + subVertOffset + SubIndices[i + 2]);
+				}
+				subVertOffset += VertexData[meshIdx].size();
+			}
+
+			// === 3. vertexOffset 누적 ===
+			vertexOffset += thisMeshVertCount;
 		}
 	}
+
+
 	int nverts = verts.size() / 3;
 	int ntris = tris.size() / 3;
 	
@@ -326,98 +344,130 @@ void ATestCube::DoRecast()
 		if (y > bmax[1]) bmax[1] = y;
 		if (z > bmax[2]) bmax[2] = z;
 	}
-	// ========================================
-	// 2. 주요 파라미터 설정 (추천값 포함)
-	// ========================================
 
-	float cellSize = 3.f;           // 셀 가로/세로 길이 (월드 단위, 0.2~0.3 권장)
-	float cellHeight = 2.f;         // 셀 높이 (월드 단위, 0.1~0.2 권장)
-	float walkableSlopeAngle = 45.0f; // 걷기 허용 최대 경사각 (도 단위, 30~50 권장)
-	float walkableHeight = 2.0f;     // 캐릭터가 설 수 있는 최소 천장 높이 (미터, 1.8~2.0 권장)
-	float walkableClimb = 0.4f;      // 넘을 수 있는 최대 턱 높이 (미터, 0.3~0.4 권장)
-	int borderSize = 8;              // 내비메쉬 경계 여유 셀 수 (8 권장)
-	int minRegionArea = rcSqr(8);    // 최소 지역 크기 (셀 수, 8x8 권장)
-	int mergeRegionArea = rcSqr(20); // 병합 지역 크기 (셀 수, 20x20 권장)
-	float maxSimplificationError = 1.3f; // 윤곽선 단순화 오차 (1.3 권장)
-	int maxEdgeLen = 12;             // 윤곽선 최대 에지 길이 (12 권장)
-	int nvp = 6;                     // 폴리곤당 최대 꼭짓점 수 (6 권장)
-	float sampleDist = 6.0f;         // 디테일 메시 샘플 간격 (6.0 권장)
-	float sampleMaxError = 1.0f;     // 디테일 메시 최대 오차 (1.0 권장)
+	rcConfig m_cfg;	
+	memset(&m_cfg, 0, sizeof(m_cfg));
+	float Gap = 100.0f;
+	m_cfg.cs = 0.3*Gap;
+	m_cfg.ch = 0.2*Gap;
+	m_cfg.walkableSlopeAngle = 45.0f;
+	m_cfg.walkableHeight = (int)ceilf(2.0*Gap / m_cfg.ch);
+	m_cfg.walkableClimb = (int)floorf(0.9*Gap / m_cfg.ch);
+	m_cfg.walkableRadius = (int)ceilf(0.6*Gap / m_cfg.cs);
+	m_cfg.maxEdgeLen = (int)(12 / m_cfg.cs);
+	m_cfg.maxSimplificationError = 1.3;
+	m_cfg.minRegionArea = (int)rcSqr(8);		// Note: area = size*size
+	m_cfg.mergeRegionArea = (int)rcSqr(20);	// Note: area = size*size
+	m_cfg.maxVertsPerPoly = (int)6*Gap;
+	m_cfg.detailSampleDist = m_cfg.cs * 6;
+	m_cfg.detailSampleMaxError = m_cfg.ch * 1;
 
+	m_cfg.bmin[0] = bmin[0]; m_cfg.bmin[1] = bmin[1]; m_cfg.bmin[2] = bmin[2];
+	m_cfg.bmax[0] = bmax[0]; m_cfg.bmax[1] = bmax[1]; m_cfg.bmax[2] = bmax[2];
+	rcCalcGridSize(m_cfg.bmin, m_cfg.bmax, m_cfg.cs, &m_cfg.width, &m_cfg.height);
 	// ========================================
 	// 3. rcContext 생성
 	// ========================================
 	rcContext* ctx = new rcContext();
 
-	// ========================================
-	// 4. rcHeightfield 생성
-	// ========================================
-	int width = (int)((bmax[0] - bmin[0]) / cellSize + 0.5f);  // X축 셀 개수
-	int height = (int)((bmax[2] - bmin[2]) / cellSize + 0.5f); // Z축 셀 개수
-
+	//
+	// Step 2. Rasterize input polygon soup.
+	//
+	// Allocate voxel heightfield where we rasterize our input data to.
 	rcHeightfield* solid = rcAllocHeightfield();
-	if (!rcCreateHeightfield(ctx, *solid, width, height, bmin, bmax, cellSize, cellHeight)) {
-		// 실패 처리
+	
+
+	
+	if (!solid)
+	{
+		assert(nullptr&&"!solid");
+	}
+	if (!rcCreateHeightfield(ctx, *solid, m_cfg.width, m_cfg.height, m_cfg.bmin, m_cfg.bmax, m_cfg.cs, m_cfg.ch))
+	{
+		assert(nullptr&&"!rcCreateHeightfield");
 	}
 
-	// ========================================
-	// 5. 걷기 가능 삼각형 마킹 및 rasterize
-	// ========================================
+	// Allocate array that can hold triangle area types.
+	// If you have multiple meshes you need to process, allocate
+	// and array which can hold the max number of triangles you need to process.
 	unsigned char* triAreas = new unsigned char[ntris]; // 삼각형별 걷기 가능/불가능 정보
 
-	// 걷기 가능한 삼각형 마킹
-	rcMarkWalkableTriangles(ctx, walkableSlopeAngle, verts.data(), nverts, tris.data(), ntris, triAreas);
+	// Find triangles which are walkable based on their slope and rasterize them.
+	// If your input data is multiple meshes, you can transform them here, calculate
+	// the are type for each of the meshes and rasterize them.
+	memset(triAreas, 0, ntris*sizeof(unsigned char));
+	rcMarkWalkableTriangles(ctx, m_cfg.walkableSlopeAngle, verts.data(), nverts, tris.data(), ntris, triAreas);
+	if (!rcRasterizeTriangles(ctx, verts.data(), nverts, tris.data(), triAreas, ntris, *solid, m_cfg.walkableClimb))
+	{
+		assert(nullptr && "!rcRasterizeTriangles");
+	}
 
-	// 삼각형을 높이필드에 rasterize
-	rcRasterizeTriangles(ctx, verts.data(), nverts, tris.data(), triAreas, ntris, *solid, walkableClimb);
+	//
+	// Step 3. Filter walkable surfaces.
+	//
 
-	// ========================================
-	// 6. 필터링 (낮은 천장, 낭떠러지, 장애물 등)
-	// ========================================
-	rcFilterLowHangingWalkableObstacles(ctx, walkableClimb, *solid);
-	rcFilterLedgeSpans(ctx, walkableHeight, walkableClimb, *solid);
-	rcFilterWalkableLowHeightSpans(ctx, walkableHeight, *solid);
+	// Once all geometry is rasterized, we do initial pass of filtering to
+	// remove unwanted overhangs caused by the conservative rasterization
+	// as well as filter spans where the character cannot possibly stand.
+	rcFilterLowHangingWalkableObstacles(ctx, m_cfg.walkableClimb, *solid);
+	rcFilterLedgeSpans(ctx, m_cfg.walkableHeight, m_cfg.walkableClimb, *solid);
+	rcFilterWalkableLowHeightSpans(ctx, m_cfg.walkableHeight, *solid);
 
-	// ========================================
-	// 7. Compact Heightfield 생성
-	// ========================================
+
+	//
+	// Step 4. Partition walkable surface to simple regions.
+	//
+
+	// Compact the heightfield so that it is faster to handle from now on.
+	// This will result more cache coherent data as well as the neighbours
+	// between walkable cells will be calculated.
 	rcCompactHeightfield* chf = rcAllocCompactHeightfield();
-	if (!rcBuildCompactHeightfield(ctx, walkableHeight, walkableClimb, *solid, *chf)) {
-		// 실패 처리
+	if (!rcBuildCompactHeightfield(ctx, m_cfg.walkableHeight, m_cfg.walkableClimb, *solid, *chf))
+	{
+		assert(nullptr && "!rcBuildCompactHeightField");
+	}
+
+	// Erode the walkable area by agent radius.
+	if (!rcErodeWalkableArea(ctx, m_cfg.walkableRadius, *chf))
+	{
+		assert(nullptr && "!rcErodeWalkableArea");
 	}
 
 	// ========================================
 	// 8. 거리 필드 & 지역 분할
 	// ========================================
 	if (!rcBuildDistanceField(ctx, *chf)) {
-		// 실패 처리
+		assert(nullptr && "!rcBuildDistanceField");
 	}
-	if (!rcBuildRegions(ctx, *chf, borderSize, minRegionArea, mergeRegionArea)) {
-		// 실패 처리
+	if (!rcBuildRegions(ctx, *chf, 0, m_cfg.minRegionArea, m_cfg.mergeRegionArea)) {
+		assert(nullptr && "!rcBuildRegions");
 	}
 
 	// ========================================
 	// 9. 윤곽선(Contour) 생성
 	// ========================================
 	rcContourSet* cset = rcAllocContourSet();
-	if (!rcBuildContours(ctx, *chf, maxSimplificationError, maxEdgeLen, *cset)) {
-		// 실패 처리
+	if (!rcBuildContours(ctx, *chf, m_cfg.maxSimplificationError, m_cfg.maxEdgeLen, *cset))
+	{
+		assert(nullptr && "!rcBuildContours");
 	}
 
 	// ========================================
 	// 10. 폴리곤 메시 생성
 	// ========================================
 	rcPolyMesh* pmesh = rcAllocPolyMesh();
-	if (!rcBuildPolyMesh(ctx, *cset, nvp, *pmesh)) {
-		// 실패 처리
+	if (!rcBuildPolyMesh(ctx, *cset, m_cfg.maxVertsPerPoly, *pmesh))
+	{
+		assert(nullptr && "!rcBuildPolyMesh");
 	}
 
 	// ========================================
 	// 11. 디테일 메시 생성
 	// ========================================
 	rcPolyMeshDetail* dmesh = rcAllocPolyMeshDetail();
-	if (!rcBuildPolyMeshDetail(ctx, *pmesh, *chf, sampleDist, sampleMaxError, *dmesh)) {
-		// 실패 처리
+	if (!rcBuildPolyMeshDetail(ctx, *pmesh, *chf, m_cfg.detailSampleDist, m_cfg.detailSampleMaxError, *dmesh))
+	{
+		assert(nullptr && "!rcBuildPolyMeshDetail");
 	}
 
 	std::shared_ptr<UConvexComponent> ConvexComp= std::make_shared<UConvexComponent>();
