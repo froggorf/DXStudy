@@ -326,10 +326,11 @@ void ATestPawn::Tick(float DeltaSeconds)
 		if (!StraightPath.empty())
 		{
 			XMFLOAT3 CurPos = GetActorLocation();
+			CurPos.z *=-1;
 			XMFLOAT3 Target = StraightPath.front();
 
 			// 목표점까지의 벡터
-			XMFLOAT3 Delta = {Target.x - CurPos.x, Target.y - CurPos.y, Target.z - CurPos.z};
+			XMFLOAT3 Delta = {Target.x - CurPos.x, 0, Target.z - CurPos.z};
 
 			float dist = sqrtf(Delta.x*Delta.x + Delta.y*Delta.y + Delta.z*Delta.z);
 			float moveSpeed = 200.0f; // 1초에 200만큼 이동 (원하는 속도로 조절)
@@ -352,7 +353,8 @@ void ATestPawn::Tick(float DeltaSeconds)
 				XMFLOAT3 MoveStep = {MoveDir.x * step, MoveDir.y * step, MoveDir.z * step};
 
 				// 또는 PxCharacterController->move(...) 사용 시, MoveStep을 델타로 넣어줌
-				GetCharacterMovement()->PxCharacterController->move({MoveStep.x*100,MoveStep.y*100,MoveStep.z*100},0.01f, GEngine->GetDeltaSeconds(), GetCharacterMovement()->Filters);
+				physx::PxVec3 Go = {MoveStep.x,MoveStep.y,MoveStep.z};
+				GetCharacterMovement()->PxCharacterController->move(Go,0.0001f, GEngine->GetDeltaSeconds(), GetCharacterMovement()->Filters);
 			}
 		}
 	}
