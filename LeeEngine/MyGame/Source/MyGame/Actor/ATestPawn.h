@@ -35,6 +35,8 @@ class ATestPawn : public ACharacter
 
 
 	void PressLeftButton();
+	void WheelUp();
+	void WheelDown();
 
 protected:
 	std::weak_ptr<UTestComponent> TestComp;
@@ -52,7 +54,7 @@ private:
 	// TODO: TEMP 추후 지우기
 	bool bMustFindPath = false;
 	XMFLOAT3 ArriveLoc;
-	float PathFindCooldown = 1.0f/60.0f;
+	float PathFindCooldown = 1.0f/10.0f;
 	float CurPathFindTime = 0.0f;
 	std::deque<XMFLOAT3> StraightPath;
 

@@ -111,7 +111,7 @@ void ULineComponent::CreateVertexBuffer(const XMFLOAT3& Start, const XMFLOAT3& E
         // Hit Box
         {
             std::vector<MyVertexData> VertexData;
-            float BoxSize = 0.5f;
+            float BoxSize = 20.f;
             XMFLOAT3 BoxExtent = {BoxSize,BoxSize,BoxSize };
             XMFLOAT3 Point[8] =
             {

@@ -41,9 +41,18 @@ void UPlayerInput::HandleInput(const FInputEvent& InputEvent)
 			{
 				int a= 0;
 			}
-			Touches[KeyIndex] = true;
-			// Start에 대한 처리하기
 
+			if (InputEvent.Key == EKeys::MouseWheelDown || InputEvent.Key == EKeys::MouseWheelUp)
+			{
+				// 휠 버튼에 대해서는 처리를 하지 말아야함
+			}
+			else
+			{
+				Touches[KeyIndex] = true;	
+			}
+			
+
+			// Start에 대한 처리하기
 			auto StartEvent = BindEvents.find({InputEvent.Key, ETriggerEvent::Started});
 			if (StartEvent != BindEvents.end())
 			{

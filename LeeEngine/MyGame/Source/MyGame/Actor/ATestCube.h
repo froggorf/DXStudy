@@ -6,6 +6,7 @@
 #include "Engine/Components/UNiagaraComponent.h"
 #include "Engine/GameFramework/AActor.h"
 #include "Engine/Physics/UBoxComponent.h"
+#include "Engine/Physics/UConvexComponent.h"
 
 class UStaticMeshComponent;
 
@@ -21,6 +22,7 @@ class ATestCube : public AActor
 	void OnComponentHitEvent(UShapeComponent* HitComponent, AActor* OtherActor, UShapeComponent* OtherComp, const FHitResult& HitResults);
 	void OnComponentBeginOverlapEvent(UShapeComponent* OverlappedComponent, AActor* OtherActor, UShapeComponent* OtherComp );
 
+	void ShowDebug();
 	void DoRecast();
 
 	static rcPolyMesh* MyPolyMesh;
@@ -72,6 +74,8 @@ private:
 	std::shared_ptr<USceneComponent>   DummyComp2;
 
 	std::shared_ptr<UNiagaraComponent> NC_Fire;
+
+	std::shared_ptr<UConvexComponent> RecastConvexMesh;
 
 
 	void CreateDetour();

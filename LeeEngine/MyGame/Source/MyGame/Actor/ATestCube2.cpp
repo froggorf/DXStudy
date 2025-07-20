@@ -9,7 +9,7 @@ ATestCube2::ATestCube2()
 	CapsuleComponent = std::make_shared<UCapsuleComponent>();
 	CapsuleComponent->SetRadius(75);
 	CapsuleComponent->SetHalfHeight(75/2);
-	CapsuleComponent->SetRelativeLocation({0,50,-200});
+	CapsuleComponent->SetRelativeLocation({0,50,-1800});
 	CapsuleComponent->SetupAttachment(GetRootComponent());
 
 	TestComp = std::make_shared<UStaticMeshComponent>();

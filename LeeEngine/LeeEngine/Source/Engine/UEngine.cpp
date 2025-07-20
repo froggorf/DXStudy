@@ -438,9 +438,16 @@ void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	case WM_MOUSEWHEEL:
+		if (GET_WHEEL_DELTA_WPARAM(wParam) > 0)
 		{
-		int delta = GET_WHEEL_DELTA_WPARAM(wParam);	
+			InputEvent.Key = EKeys::MouseWheelUp;	
 		}
+		else
+		{
+			InputEvent.Key = EKeys::MouseWheelDown;	
+		}
+		InputEvent.bKeyDown = true;
+		
 		
 	break;
 	case WM_KEYDOWN:

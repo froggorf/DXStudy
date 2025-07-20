@@ -82,14 +82,14 @@ ATestCube::ATestCube()
 	for (size_t i = 0; i < SMVec.size(); ++i)
 	{
 		SMVec[i]->SetupAttachment(GetRootComponent());
-		SMVec[i]->SetRelativeScale3D({100,20,100});
+		SMVec[i]->SetRelativeScale3D({300,20,300});
 		if (i < 10)
 		{
-			SMVec[i]->SetRelativeLocation(XMFLOAT3{500+80*static_cast<float>(i),   19*static_cast<float>(i)-50, 200});
+			SMVec[i]->SetRelativeLocation(XMFLOAT3{500+150*static_cast<float>(i),   19*static_cast<float>(i)-50, 200});
 		}
 		else
 		{
-			SMVec[i]->SetRelativeLocation(XMFLOAT3{500+80*static_cast<float>(i),  150  - 19*static_cast<float>(i-10), 200});
+			SMVec[i]->SetRelativeLocation(XMFLOAT3{500+150*static_cast<float>(i),  150  - 19*static_cast<float>(i-10), 200});
 		}
 		AssetManager::GetAsyncAssetCache("SM_Box", [SMVec,i](std::shared_ptr<UObject> Object)
 		{
@@ -146,7 +146,7 @@ ATestCube::ATestCube()
 	SM_Ramp->SetRelativeScale3D({3,3,9});
 	SM_Ramp->SetRelativeLocation({1000,-50,0});
 	SM_Ramp->SetRelativeRotation(XMFLOAT3{0,90,0});
-	
+	SM_Ramp->SetCollisionObjectType(ECollisionChannel::WorldStatic);
 
 }
 
@@ -181,10 +181,11 @@ void ATestCube::BeginPlay()
 	{
 		SMC->GetBodyInstance()->SetSimulatePhysics(false);
 		SMC->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::Physics);
+		SMC->GetBodyInstance()->SetObjectType(ECollisionChannel::WorldStatic);
 	}
 
 	TestCube2->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::Physics);
-
+	SM_Ramp->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::Physics);
 	DoRecast();
 }
 
@@ -192,15 +193,6 @@ void ATestCube::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
 
-
-
-	//
-	//gPhysicsEngine->TickPhysics(DeltaSeconds);
-
-	//physx::PxTransform pos = SphereActor->getGlobalPose();
-	//TestRigidSM->SetRelativeLocation(XMFLOAT3{pos.p.x,pos.p.y,-pos.p.z}); 
-
-	//SetActorRotation(XMFLOAT4(0.0f,0.0f,0.0f,1.0f));
 
 	DummyComp2->AddWorldRotation(XMFLOAT3(0.0f, 0.0f, DeltaSeconds * 90));
 	//NiagaraComp2->AddWorldRotation(XMFLOAT3(0.0f,.0f*DeltaSeconds,0.0f));
@@ -237,29 +229,19 @@ void ATestCube::Tick(float DeltaSeconds)
 	//DummyComp->SetWorldLocation(Loc);
 
 
-	static bool bCheck = false;
-	if(ImGui::IsKeyReleased(ImGuiKey_P))
+	static bool btrue = true;
+	if(ImGui::IsKeyPressed(ImGuiKey_3))
 	{
-		if(!bCheck)
+		if (btrue)
 		{
-			TestCube2->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Sphere"));
-			MY_LOG("PRESSED", EDebugLogLevel::DLL_Warning, "P");
-			bCheck = true;
+			btrue = false;
+			ShowDebug();
 		}
-		
 	}
-	{
-		static bool bCheck2 = false;
-		if(ImGui::IsKeyReleased(ImGuiKey_O))
-		{
-			if(!bCheck2)
-			{
-				TestCube2->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Cube"));
-				MY_LOG("PRESSED", EDebugLogLevel::DLL_Warning, "O");
-				bCheck2 = true;
-			}
 
-		}
+	if (ImGui::IsKeyPressed(ImGuiKey_4))
+	{
+		btrue = true;
 	}
 }
 
@@ -273,6 +255,16 @@ void ATestCube::OnComponentBeginOverlapEvent(UShapeComponent* OverlappedComponen
 {
 	UStaticMeshComponent* StaticMeshComp =  static_cast<UStaticMeshComponent*>(OverlappedComponent->GetAttachParent().get());
 	StaticMeshComp->SetTextureParam(0, 0, UTexture::GetTextureCache("T_Cube"));
+}
+
+void ATestCube::ShowDebug()
+{
+	FDebugRenderData Data;
+	Data.Transform = RecastConvexMesh->GetComponentTransform();
+	Data.RemainTime = 10.0f;
+	Data.ShapeComp = RecastConvexMesh;
+	Data.DebugColor = XMFLOAT4{0.0f,0.0f,1.0f,0.3f};
+	FScene::DrawDebugData_GameThread(Data);
 }
 
 bool CreateRecastPolyMesh(const std::vector<float> verts, const std::vector<int> tris, int nverts, int ntris, rcPolyMesh* LastPolyMesh, rcPolyMeshDetail* LastPolyDetail, rcPolyMesh** OutPolyMesh, rcPolyMeshDetail** OutPolyDetail)
@@ -295,13 +287,13 @@ bool CreateRecastPolyMesh(const std::vector<float> verts, const std::vector<int>
 
 	rcConfig m_cfg;	
 	memset(&m_cfg, 0, sizeof(m_cfg));
-	float Gap = 50.0f;
+	float Gap = 100.0f;
 	m_cfg.cs = 0.3f*Gap;
 	m_cfg.ch = 0.2f*Gap;
 	m_cfg.walkableSlopeAngle = 45.0f;
 	m_cfg.walkableHeight = (int)ceilf(2.0*Gap / m_cfg.ch);
-	m_cfg.walkableClimb = (int)floorf(0.2*Gap / m_cfg.ch);
-	m_cfg.walkableRadius = (int)ceilf(0.6 / m_cfg.cs);
+	m_cfg.walkableClimb = (int)floorf(0.35*Gap / m_cfg.ch);
+	m_cfg.walkableRadius = (int)ceilf(0.3*Gap / m_cfg.cs);
 	m_cfg.maxEdgeLen = (int)(12 / m_cfg.cs);
 	m_cfg.maxSimplificationError = 1.3;
 	m_cfg.minRegionArea = (int)rcSqr(8);		// Note: area = size*size
@@ -456,74 +448,8 @@ bool CreateRecastPolyMesh(const std::vector<float> verts, const std::vector<int>
 
 void ATestCube::DoRecast()
 {
-	// ========================================
-	// 1. 입력 데이터 준비
-	// ========================================
-
-
 	rcPolyMesh* CurPolyMesh = nullptr;
 	rcPolyMeshDetail* CurPolyDetail = nullptr;
-
-	//// 오브젝트 리스트 반복 (TestCube2, SM_Ramp 등)
-	//for (const std::shared_ptr<UStaticMeshComponent>& Obj : { TestCube2})
-	//{
-	//	if (std::shared_ptr<UConvexComponent> ConvexComp = std::dynamic_pointer_cast<UConvexComponent>(Obj->GetBodyInstance()))
-	//	{
-	//		FStaticMeshRenderData* Data = ConvexComp->GetStaticMesh()->GetStaticMeshRenderData();
-	//		const std::vector<std::vector<MyVertexData>>& VertexData = Data->VertexData;
-	//		const XMMATRIX& TransformMatrix = Obj->GetComponentTransform().ToMatrixWithScale();
-
-	//		int vertexOffset = 0;
-	//		std::vector<float> verts;
-	//		std::vector<int> tris;
-	//		int thisMeshVertCount = 0;
-	//		for (const auto& VertexPerMesh : VertexData)
-	//		{
-	//			for (const MyVertexData& Vertex : VertexPerMesh)
-	//			{
-	//				XMVECTOR VertexVec = XMLoadFloat3(&Vertex.Pos);
-	//				VertexVec = XMVector3TransformCoord(VertexVec, TransformMatrix);
-	//				verts.push_back(XMVectorGetX(VertexVec));
-	//				verts.push_back(XMVectorGetY(VertexVec));
-	//				verts.push_back(-XMVectorGetZ(VertexVec)); // 좌표계 변환 필요시
-	//				thisMeshVertCount++;
-	//			}
-	//		}
-	//		
-	//		// === 2. 인덱스 push ===
-	//		const std::vector<std::vector<uint32_t>>& Indices = Data->IndexData;
-	//		int subVertOffset = 0;
-	//		for (size_t meshIdx = 0; meshIdx < VertexData.size(); ++meshIdx)
-	//		{
-	//			const auto& SubIndices = Indices[meshIdx];
-	//			for (size_t i = 0; i < SubIndices.size(); i += 3)
-	//			{
-	//				tris.push_back(vertexOffset + subVertOffset + SubIndices[i + 0]);
-	//				tris.push_back(vertexOffset + subVertOffset + SubIndices[i + 1]);
-	//				tris.push_back(vertexOffset + subVertOffset + SubIndices[i + 2]);
-	//			}
-	//			subVertOffset += VertexData[meshIdx].size();
-	//		}
-
-	//		// === 3. vertexOffset 누적 ===
-	//		vertexOffset += thisMeshVertCount;
-
-	//		rcPolyMesh* PolyMesh = nullptr;
-	//		rcPolyMeshDetail* PolyMeshDetail = nullptr;
-	//		CreateRecastPolyMesh(verts, tris, verts.size()/3, tris.size()/3, CurPolyMesh, CurPolyDetail, &PolyMesh, &PolyMeshDetail);
-
-	//		// 병합된 결과가 PolyMesh로 반환됨 → CurPolyMesh에 저장
-	//		CurPolyMesh = PolyMesh;
-	//		CurPolyDetail = PolyMeshDetail;
-
-	//	}
-	//}
-	//
-
-	
-	// ========================================
-	// 1. 입력 데이터 준비
-	// ========================================
 
 	std::vector<float> verts;
 	std::vector<int> tris;
@@ -602,14 +528,10 @@ void ATestCube::DoRecast()
 	CreateRecastPolyMesh(verts, tris,  verts.size()/3, tris.size()/3, nullptr, nullptr, &CurPolyMesh, &CurPolyDetail);
 
 	
-	std::shared_ptr<UConvexComponent> ConvexComp= std::make_shared<UConvexComponent>();
-	FDebugRenderData Data;
-	Data.Transform = ConvexComp->GetComponentTransform();
-	ConvexComp->CreateVertexBufferForNavMesh(CurPolyDetail);
-	Data.RemainTime = 100.0f;
-	Data.ShapeComp = ConvexComp;
-	Data.DebugColor = XMFLOAT4{0.0f,0.0f,1.0f,0.3f};
-	FScene::DrawDebugData_GameThread(Data);
+	RecastConvexMesh = std::make_shared<UConvexComponent>();
+	RecastConvexMesh->CreateVertexBufferForNavMesh(CurPolyDetail);
+
+	ShowDebug();
 
 	// ========================================
 	// 12. Detour 데이터로 변환 (선택)
@@ -660,20 +582,12 @@ void ATestCube::CreateDetour(){
 	params.detailTris = MyPolyDetail->tris;
 	params.detailTriCount = MyPolyDetail->ntris;
 
+	float Gap = MyPolyMesh->ch/0.2f;
 	// 기타 옵션
 	params.walkableHeight = 45; // 빌드시 사용한 값과 동일하게
-	
-	rcConfig m_cfg;	
-	memset(&m_cfg, 0, sizeof(m_cfg));
-	float Gap = 50.0f;
-	m_cfg.cs = 0.3*Gap;
-	m_cfg.ch = 0.2*Gap;
-	m_cfg.walkableSlopeAngle = 45.0f;
-	m_cfg.walkableClimb = (int)floorf(0.2*Gap / m_cfg.ch);
-	m_cfg.walkableRadius = (int)ceilf(0.6 / m_cfg.cs);
-	
-	params.walkableRadius = m_cfg.walkableRadius;
-	params.walkableClimb = m_cfg.walkableClimb;
+	params.walkableHeight = (int)ceilf(2.0*Gap / MyPolyMesh->ch);
+	params.walkableClimb = (int)ceilf(0.35*Gap / MyPolyMesh->ch);
+	params.walkableRadius = (int)floorf(0.3*Gap / MyPolyMesh->cs);
 	params.tileX = 0;
 	params.tileY = 0;
 	params.tileLayer = 0;

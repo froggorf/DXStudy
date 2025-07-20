@@ -16,7 +16,7 @@ ATestPawn::ATestPawn()
 		CharacterMovement->Acceleration = 4096.0f;
 		CharacterMovement->RotationRate = XMFLOAT3{0.0f, 1500.0f, 0.0f};
 		CharacterMovement->MaxWalkSpeed = 600.0f;
-		CharacterMovement->Braking = 512+256;
+		CharacterMovement->Braking = 4096;
 	}
 
 	SpringArm->SetArmLength(250);
@@ -103,6 +103,8 @@ void ATestPawn::BindKeyInputs()
 			InputSystem->BindAction(EKeys::MouseRight, ETriggerEvent::Released, this, &ATestPawn::MouseRotateEnd);
 
 			InputSystem->BindAction(EKeys::MouseLeft, ETriggerEvent::Started, this, &ATestPawn::PressLeftButton);
+			InputSystem->BindAction(EKeys::MouseWheelUp, Started, this, &ATestPawn::WheelUp);
+			InputSystem->BindAction(EKeys::MouseWheelDown, Started, this, &ATestPawn::WheelDown);
 		}
 		
 	}
@@ -173,6 +175,7 @@ void ATestPawn::Backstep()
 
 void ATestPawn::Move(float X, float Y)
 {
+	bMustFindPath = false;
 	XMFLOAT3 ForwardDirection = Controller->GetActorForwardVector();
 	XMFLOAT3 RightDirection = Controller->GetActorRightVector();
 
@@ -258,13 +261,17 @@ void ATestPawn::PressLeftButton()
 			XMStoreFloat3(&Start, WorldNear);
 			XMStoreFloat3(&End,   WorldFar);
 
-			std::vector<ECollisionChannel> Channel {ECollisionChannel::WorldDynamic, ECollisionChannel::WorldStatic};
+			std::vector<ECollisionChannel> Channel(static_cast<UINT>(ECollisionChannel::Count));
+			for (size_t i = 0 ; i < Channel.size(); ++i)
+			{
+				Channel[i] = static_cast<ECollisionChannel>(i);
+			}
 			FHitResult HitResult;
 			if (gPhysicsEngine->LineTraceSingleByChannel(Start,End, Channel, HitResult, 5))
 			{
 				bMustFindPath = true;
 				ArriveLoc = HitResult.Location;
-
+				MY_LOG("LOG",EDebugLogLevel::DLL_Warning, XMFLOAT3_TO_TEXT(ArriveLoc));
 			}
 
 		}
@@ -273,6 +280,22 @@ void ATestPawn::PressLeftButton()
 	}
 
 
+}
+
+void ATestPawn::WheelUp()
+{
+	if (SpringArm)
+	{
+		SpringArm->SetArmLength(SpringArm->TargetArmLength - 10.0f);
+	}
+}
+
+void ATestPawn::WheelDown()
+{
+	if (SpringArm)
+	{
+		SpringArm->SetArmLength(SpringArm->TargetArmLength + 10.0f);
+	}
 }
 
 
@@ -297,10 +320,14 @@ void ATestPawn::Tick(float DeltaSeconds)
 			dtQueryFilter filter;
 			filter.setIncludeFlags(0xffffffff);
 			filter.setExcludeFlags(0);
-			float extents[3] = {200,400,200};
+			float extents[3] = {10,300,10};
 			ATestCube::MyDtNavQuery->findNearestPoly(startPos, extents, &filter, &startRef, nearestStart);
 			ATestCube::MyDtNavQuery->findNearestPoly(endPos, extents, &filter, &endRef, nearestEnd);
 
+			if (startRef == 0 || endRef == 0)
+			{
+				MY_LOG("NotFound" , EDebugLogLevel::DLL_Warning, "No Found NearestPoly" + std::to_string(startRef) + " " + std::to_string(endRef));
+			}
 			// 4. 경로 찾기 (findPath)
 #define MAX_POLYS 3000
 			dtPolyRef pathPolys[MAX_POLYS];
@@ -321,6 +348,12 @@ void ATestPawn::Tick(float DeltaSeconds)
 				XMFLOAT3 NewPos = {straightPath[i*3+0],straightPath[i*3+1],straightPath[i*3+2]};
 				StraightPath.emplace_back(NewPos);
 			}
+
+			if (StraightPath.empty())
+			{
+				bMustFindPath = false;
+				CurPathFindTime = 0.0f;
+			}
 		}
 
 		if (!StraightPath.empty())
@@ -332,11 +365,11 @@ void ATestPawn::Tick(float DeltaSeconds)
 			// 목표점까지의 벡터
 			XMFLOAT3 Delta = {Target.x - CurPos.x, 0, Target.z - CurPos.z};
 
-			float dist = sqrtf(Delta.x*Delta.x + Delta.y*Delta.y + Delta.z*Delta.z);
+			float dist = sqrtf(Delta.x*Delta.x + 0 + Delta.z*Delta.z);
 			float moveSpeed = 200.0f; // 1초에 200만큼 이동 (원하는 속도로 조절)
 			float step = GetCharacterMovement()->MaxWalkSpeed * DeltaSeconds;
 
-			if (dist < step) // 목표점에 거의 도착했다면
+			if (dist < 5.f) // 목표점에 거의 도착했다면
 			{
 				// 캐릭터를 목표점에 정확히 위치시키고, 다음 점으로 넘어감
 				StraightPath.erase(StraightPath.begin());
@@ -348,13 +381,12 @@ void ATestPawn::Tick(float DeltaSeconds)
 			}
 			else
 			{
-				// 방향으로 step만큼 이동
-				XMFLOAT3 MoveDir = {Delta.x/dist, Delta.y/dist, Delta.z/dist};
-				XMFLOAT3 MoveStep = {MoveDir.x * step, MoveDir.y * step, MoveDir.z * step};
-
-				// 또는 PxCharacterController->move(...) 사용 시, MoveStep을 델타로 넣어줌
-				physx::PxVec3 Go = {MoveStep.x,MoveStep.y,MoveStep.z};
-				GetCharacterMovement()->PxCharacterController->move(Go,0.0001f, GEngine->GetDeltaSeconds(), GetCharacterMovement()->Filters);
+				XMFLOAT3 MoveDir = {Delta.x / dist, 0, Delta.z / dist};
+				XMFLOAT3 MoveStep = {MoveDir.x * step, 0, MoveDir.z * step};
+				MoveStep.z *= -1.0f;
+				// 애니메이션 속도를 맞추기위해 강제로 MaxWalkSpeed 에 맞추기 위해 값을 조정
+				XMStoreFloat3(&MoveStep, XMVectorScale(XMLoadFloat3(&MoveStep), (1.0f/XMVectorGetX(XMVector3Length(XMLoadFloat3(&MoveStep))) * step*1.3)));
+				GetCharacterMovement()->AddInputVector(MoveStep, 1);
 			}
 		}
 	}
