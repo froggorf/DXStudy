@@ -385,7 +385,7 @@ void ATestPawn::Tick(float DeltaSeconds)
 				XMFLOAT3 MoveStep = {MoveDir.x * step, 0, MoveDir.z * step};
 				MoveStep.z *= -1.0f;
 				// 애니메이션 속도를 맞추기위해 강제로 MaxWalkSpeed 에 맞추기 위해 값을 조정
-				XMStoreFloat3(&MoveStep, XMVectorScale(XMLoadFloat3(&MoveStep), (1.0f/XMVectorGetX(XMVector3Length(XMLoadFloat3(&MoveStep))) * step*1.3)));
+				XMStoreFloat3(&MoveStep, XMVectorScale(XMLoadFloat3(&MoveStep), (1.0f/XMVectorGetX(XMVector3Length(XMLoadFloat3(&MoveStep))) * step*5)));
 				GetCharacterMovement()->AddInputVector(MoveStep, 1);
 			}
 		}

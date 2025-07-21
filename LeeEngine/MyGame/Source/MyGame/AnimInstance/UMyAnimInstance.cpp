@@ -66,8 +66,10 @@ void UMyAnimInstance::UpdateAnimation(float dt)
         // Locomotion Transition
         {
             XMFLOAT3 MoveVel = MovementComp->Velocity;
+            
             MoveVel.y = 0.0f;
             float CurSpeed = XMVectorGetX(XMVector3Length(XMLoadFloat3(&MoveVel)));
+            
             BS_LowPoly_Locomotion->GetAnimationBoneMatrices(XMFLOAT2{0.0f, CurSpeed }, CurrentTime, FinalBoneMatrices, FinalNotifies);      
             
         }
