@@ -292,7 +292,7 @@ bool CreateRecastPolyMesh(const std::vector<float> verts, const std::vector<int>
 	m_cfg.ch = 0.2f*Gap;
 	m_cfg.walkableSlopeAngle = 45.0f;
 	m_cfg.walkableHeight = (int)ceilf(2.0*Gap / m_cfg.ch);
-	m_cfg.walkableClimb = (int)floorf(0.35*Gap / m_cfg.ch);
+	m_cfg.walkableClimb = (int)floorf(0.3*Gap / m_cfg.ch);
 	m_cfg.walkableRadius = (int)ceilf(0.3*Gap / m_cfg.cs);
 	m_cfg.maxEdgeLen = (int)(12 / m_cfg.cs);
 	m_cfg.maxSimplificationError = 1.3;
@@ -584,9 +584,8 @@ void ATestCube::CreateDetour(){
 
 	float Gap = MyPolyMesh->ch/0.2f;
 	// 기타 옵션
-	params.walkableHeight = 45; // 빌드시 사용한 값과 동일하게
 	params.walkableHeight = (int)ceilf(2.0*Gap / MyPolyMesh->ch);
-	params.walkableClimb = (int)ceilf(0.35*Gap / MyPolyMesh->ch);
+	params.walkableClimb = (int)ceilf(0.3*Gap / MyPolyMesh->ch);
 	params.walkableRadius = (int)floorf(0.3*Gap / MyPolyMesh->cs);
 	params.tileX = 0;
 	params.tileY = 0;
@@ -600,6 +599,7 @@ void ATestCube::CreateDetour(){
 	params.cs = MyPolyMesh->cs;
 	params.ch = MyPolyMesh->ch;
 	params.buildBvTree = false; // BV트리 사용 여부
+	
 
 	unsigned char* navData = nullptr;
 	int navDataSize = 0;
@@ -627,5 +627,5 @@ void ATestCube::CreateDetour(){
 
 	MyDtNavMesh = navMesh;
 	MyDtNavQuery = dtAllocNavMeshQuery();
-	MyDtNavQuery->init(MyDtNavMesh, 2048);
+	MyDtNavQuery->init(MyDtNavMesh, 4096*4);
 }
