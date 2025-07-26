@@ -466,8 +466,10 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 		constexpr float ClearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
 		SceneData->SetDrawScenePipeline(ClearColor);
 
-		GDirectXDevice->GetDeviceContext()->ClearRenderTargetView(GDirectXDevice->GetRenderTargetView().Get(), ClearColor);
-		GDirectXDevice->GetDeviceContext()->ClearDepthStencilView(GDirectXDevice->GetDepthStencilView().Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->ClearRenderTarget();	
+		GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->ClearDepthStencilTarget();
+		//GDirectXDevice->GetDeviceContext()->ClearRenderTargetView(GDirectXDevice->GetRenderTargetView().Get(), ClearColor);
+		//GDirectXDevice->GetDeviceContext()->ClearDepthStencilView(GDirectXDevice->GetDepthStencilView().Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 		{
 			// Frame 상수 버퍼 설정
@@ -625,7 +627,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 
 void FScene::SetDrawScenePipeline(const float* ClearColor)
 {
-	GDirectXDevice->GetDeviceContext()->OMSetRenderTargets(1, GDirectXDevice->GetRenderTargetView().GetAddressOf(), GDirectXDevice->GetDepthStencilView().Get());
+	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->OMSet();
 	GDirectXDevice->GetDeviceContext()->RSSetViewports(1, GDirectXDevice->GetScreenViewport());
 }
 

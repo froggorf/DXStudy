@@ -8,6 +8,8 @@
 #include "Engine/MyEngineUtils.h"
 #include <wrl/client.h>
 
+#include "Engine/RenderCore/FMultiRenderTarget.h"
+
 enum class EConstantBufferType
 {
 	CBT_PerFrame,
@@ -58,8 +60,6 @@ public:
 
 	bool InitDirect3D();
 
-	// 엔진 초기화 시 호출
-	void BuildAllShaders();
 	void OnWindowResize();
 	void ResizeWindow();
 	void ResetRenderTargets();
@@ -98,16 +98,6 @@ public:
 		return m_SwapChain;
 	}
 
-	const Microsoft::WRL::ComPtr<ID3D11RenderTargetView>& GetRenderTargetView() const
-	{
-		return m_RenderTargetView;
-	}
-
-	const Microsoft::WRL::ComPtr<ID3D11DepthStencilView>& GetDepthStencilView() const
-	{
-		return m_DepthStencilView;
-	}
-
 	const D3D11_VIEWPORT* GetScreenViewport() const
 	{
 		return &m_ScreenViewport;
@@ -137,36 +127,9 @@ public:
 	UINT CurrentGeometryShaderID = -1;
 	void SetGeometryShader(class FGeometryShader* InGeometryShader);
 
-#ifdef WITH_EDITOR
-	const Microsoft::WRL::ComPtr<ID3D11Texture2D>& GetEditorRenderTargetTexture() const
-	{
-		return m_EditorRenderTargetTexture;
-	}
-
-	const Microsoft::WRL::ComPtr<ID3D11RenderTargetView>& GetEditorRenderTargetView() const
-	{
-		return m_EditorRenderTargetView;
-	}
-
-	const Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& GetSRVEditorRenderTarget() const
-	{
-		return m_SRVEditorRenderTarget;
-	}
-
-	const Microsoft::WRL::ComPtr<ID3D11DepthStencilView>& GetEditorDepthStencilView() const
-	{
-		return m_EditorDepthStencilView;
-	}
 
 	void ResizeEditorRenderTarget(float NewX, float NewY);
 
-private:
-	Microsoft::WRL::ComPtr<ID3D11Texture2D>          m_EditorRenderTargetTexture;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>   m_EditorRenderTargetView;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_SRVEditorRenderTarget;
-	Microsoft::WRL::ComPtr<ID3D11Texture2D>          m_EditorDepthStencilBuffer;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>   m_EditorDepthStencilView;
-#endif
 
 	// RasterizerState / BlendState / DepthStencilState
 public:
@@ -178,7 +141,7 @@ public:
 	void SetRSState(ERasterizerType InRSType);
 	void SetDSState(EDepthStencilStateType InDSType);
 	void SetBSState(EBlendStateType InBSType);
-
+	std::shared_ptr<FMultiRenderTarget> GetMultiRenderTarget(EMultiRenderTargetType	Type) { return MultiRenderTargets[(UINT)Type]; }
 private:
 	ERasterizerType        CurrentRSType = ERasterizerType::RT_Count;
 	EDepthStencilStateType CurrentDSType = EDepthStencilStateType::DST_COUNT;
@@ -195,17 +158,15 @@ private:
 
 	void InitSamplerState();
 
-	void BuildAllComputeShader();
+	void InitMultiRenderTarget();
 
 	Microsoft::WRL::ComPtr<ID3D11Device>           m_d3dDevice;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>    m_d3dDeviceContext;
 	Microsoft::WRL::ComPtr<IDXGISwapChain>         m_SwapChain;
-	Microsoft::WRL::ComPtr<ID3D11Texture2D>        m_DepthStencilBuffer;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_RenderTargetView;
-
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_DepthStencilView;
 	D3D11_VIEWPORT                                 m_ScreenViewport;
 
+	std::shared_ptr<FMultiRenderTarget>				MultiRenderTargets[static_cast<UINT>(EMultiRenderTargetType::Count)];
+	
 	// 파이프라인
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_SamplerState;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_SamplerState2;

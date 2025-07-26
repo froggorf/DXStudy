@@ -41,8 +41,7 @@ void FEditorScene::BeginRenderFrame()
 
 void FEditorScene::SetDrawScenePipeline(const float* ClearColor)
 {
-	GDirectXDevice->GetDeviceContext()->OMSetRenderTargets(1, GDirectXDevice->GetEditorRenderTargetView().GetAddressOf(), GDirectXDevice->GetDepthStencilView().Get());
-	GDirectXDevice->GetDeviceContext()->ClearRenderTargetView(GDirectXDevice->GetEditorRenderTargetView().Get(), ClearColor);
+	FScene::SetDrawScenePipeline(ClearColor);
 
 	// 에디터 뷰포트 사이즈 설정하기
 	{
@@ -56,12 +55,7 @@ void FEditorScene::SetDrawScenePipeline(const float* ClearColor)
 
 void FEditorScene::AfterDrawSceneAction(const std::shared_ptr<FScene> SceneData)
 {
-	FScene::AfterDrawSceneAction(SceneData);
-
-	GDirectXDevice->GetDeviceContext()->OMSetRenderTargets(1, GDirectXDevice->GetRenderTargetView().GetAddressOf(), GDirectXDevice->GetDepthStencilView().Get());
-	GDirectXDevice->GetDeviceContext()->RSSetViewports(1, GDirectXDevice->GetScreenViewport());
 	GDirectXDevice->SetDefaultViewPort();
-
 	EditorClient->Draw();
 }
 

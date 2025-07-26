@@ -49,10 +49,10 @@ void FImguiLevelViewport::Draw()
 
 		ImGui::SetCursorPos(ImVec2(XMargin, YMargin + TopMargin));
 		ScreenPos = ImGui::GetCursorScreenPos();
-		if (GDirectXDevice->GetSRVEditorRenderTarget())
+		if (const std::shared_ptr<UTexture>& RenderTexture = GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->GetRenderTargetTexture(0))
 		{
 			LevelViewportPos = {ScreenPos.x, ScreenPos.y};
-			ImGui::Image(reinterpret_cast<ImTextureID>(GDirectXDevice->GetSRVEditorRenderTarget().Get()), ViewPortSize);
+			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), ViewPortSize);
 		}
 		if (PreviousViewPortSize != CurrentViewPortSize)
 		{
@@ -77,6 +77,7 @@ void FImguiLevelViewport::Draw()
 		if (bResizeEditorRenderTargetAtEndFrame)
 		{
 			bResizeEditorRenderTargetAtEndFrame = false;
+			MY_LOG("LOG",EDebugLogLevel::DLL_Warning,"1");
 			GDirectXDevice->ResizeEditorRenderTarget(ResizeEditorRenderTargetSize.x, ResizeEditorRenderTargetSize.y);
 		}
 

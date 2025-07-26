@@ -6,7 +6,9 @@
 #include "CoreMinimal.h"
 #include "Device.h"
 #include "Engine/UEngine.h"
+#include "Engine/AssetManager/AssetManager.h"
 #include "Engine/RenderCore/EditorScene.h"
+#include "Engine/RenderCore/FMultiRenderTarget.h"
 #include "Engine/RenderCore/RenderingThread.h"
 
 using namespace Microsoft::WRL;
@@ -21,9 +23,6 @@ FDirectXDevice::FDirectXDevice(HWND* hWnd, int* ClientWidth, int* ClientHeight)
 	m_d3dDevice          = nullptr;
 	m_d3dDeviceContext   = nullptr;
 	m_SwapChain          = nullptr;
-	m_DepthStencilBuffer = nullptr;
-	m_RenderTargetView   = nullptr;
-	m_DepthStencilView   = nullptr;
 
 	m_d3dDriverType = D3D_DRIVER_TYPE_HARDWARE;
 	m_Enable4xMsaa  = false;
@@ -31,15 +30,10 @@ FDirectXDevice::FDirectXDevice(HWND* hWnd, int* ClientWidth, int* ClientHeight)
 
 	ZeroMemory(&m_ScreenViewport, sizeof(D3D11_VIEWPORT));
 
-#ifdef WITH_EDITOR
-
-	m_EditorRenderTargetTexture = nullptr;
-	m_EditorRenderTargetView    = nullptr;
-	m_SRVEditorRenderTarget     = nullptr;
-#endif
-
 	m_hWnd = hWnd;
+
 }
+
 
 bool FDirectXDevice::InitDirect3D()
 {
@@ -124,8 +118,117 @@ bool FDirectXDevice::InitDirect3D()
 
 	GDirectXDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+	InitMultiRenderTarget();
+
 	return true;
 }
+
+
+void FDirectXDevice::InitMultiRenderTarget()
+{
+	XMFLOAT2 RenderResolution = {static_cast<float>(*m_ClientWidth), static_cast<float>(*m_ClientHeight)};
+
+	// =============
+	// SwapChain MRT
+	// =============
+	{
+		// 1. RenderTargetTexture 생성
+		//  - SwapChain 이 만들어질때 생성된 Texture2D 의 주소값을 받아옴
+		ComPtr<ID3D11Texture2D> pTex2D = nullptr;
+		GetSwapChain()->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)pTex2D.GetAddressOf());
+
+		std::shared_ptr<UTexture> RTTex = std::make_shared<UTexture>();
+		RTTex->Create(pTex2D);
+
+		// 2. DepthStencilTexture 생성
+		std::shared_ptr<UTexture> pDSTex = AssetManager::CreateTexture("DepthStencilTexture", (UINT)RenderResolution.x, (UINT)RenderResolution.y
+																			, DXGI_FORMAT_D24_UNORM_S8_UINT
+																			, D3D11_BIND_DEPTH_STENCIL
+																			, D3D11_USAGE_DEFAULT);
+
+		XMFLOAT4 ClearColor = XMFLOAT4(0.f, 0.f, 0.f, 1.f);
+
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::SwapChain] = std::make_shared<FMultiRenderTarget>();
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::SwapChain]->Create(&RTTex, 1, pDSTex);
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::SwapChain]->SetClearColor(&ClearColor, 1);
+	}
+
+	//// =============
+	//// Deferred MRT
+	//// =============
+	//{
+	//	Ptr<ATexture> arrTex[5] =
+	//	{
+	//		AssetMgr::GetInst()->CreateTexture(L"ColorTargetTex"
+	//			, vRenderResol.x, vRenderResol.y
+	//			, DXGI_FORMAT_R8G8B8A8_UNORM
+	//			, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+
+	//			AssetMgr::GetInst()->CreateTexture(L"NormalTargetTex"
+	//				, vRenderResol.x, vRenderResol.y
+	//				, DXGI_FORMAT_R32G32B32A32_FLOAT
+	//				, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+
+	//			AssetMgr::GetInst()->CreateTexture(L"PositionTargetTex"
+	//				, vRenderResol.x, vRenderResol.y
+	//				, DXGI_FORMAT_R32G32B32A32_FLOAT
+	//				, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+
+	//			AssetMgr::GetInst()->CreateTexture(L"EmissiveTargetTex"
+	//				, vRenderResol.x, vRenderResol.y
+	//				, DXGI_FORMAT_R32G32B32A32_FLOAT
+	//				, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+
+	//			AssetMgr::GetInst()->CreateTexture(L"CustomTargetTex"
+	//				, vRenderResol.x, vRenderResol.y
+	//				, DXGI_FORMAT_R32G32B32A32_FLOAT
+	//				, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+	//	};
+
+	//	Vec4 ClearColor[5] =
+	//	{
+	//		Vec4(0.f, 0.f, 0.f, 1.f),
+	//		Vec4(0.f, 0.f, 0.f, 1.f),
+	//		Vec4(0.f, 0.f, 0.f, 1.f),
+	//		Vec4(0.f, 0.f, 0.f, 1.f),
+	//		Vec4(0.f, 0.f, 0.f, 1.f),
+	//	};
+
+	//	m_arrMRT[(UINT)MRT_TYPE::DEFERRED] = new MRT;
+	//	m_arrMRT[(UINT)MRT_TYPE::DEFERRED]->Create(arrTex, 5, GetMRT(MRT_TYPE::SWAPCHAIN)->GetDSTex());
+	//	m_arrMRT[(UINT)MRT_TYPE::DEFERRED]->SetClearColor(ClearColor, 5);
+	//}
+
+
+	//// =========
+	//// Light MRT
+	//// =========
+	//{
+	//	Ptr<ATexture> arrTex[2] =
+	//	{
+	//		AssetMgr::GetInst()->CreateTexture(L"DiffuseTargetTex"
+	//			, vRenderResol.x, vRenderResol.y
+	//			, DXGI_FORMAT_R32G32B32A32_FLOAT
+	//			, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+
+	//			AssetMgr::GetInst()->CreateTexture(L"SpecularTargetTex"
+	//				, vRenderResol.x, vRenderResol.y
+	//				, DXGI_FORMAT_R32G32B32A32_FLOAT
+	//				, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+	//	};
+
+	//	Vec4 ClearColor[2] =
+	//	{
+	//		Vec4(0.f, 0.f, 0.f, 1.f),
+	//		Vec4(0.f, 0.f, 0.f, 1.f),
+	//	};
+
+	//	m_arrMRT[(UINT)MRT_TYPE::LIGHT] = new MRT;
+	//	m_arrMRT[(UINT)MRT_TYPE::LIGHT]->Create(arrTex, 2, nullptr);
+	//	m_arrMRT[(UINT)MRT_TYPE::LIGHT]->SetClearColor(ClearColor, 2);
+	//}
+}
+
 
 void FDirectXDevice::SetVertexShader(class FVertexShader* InVertexShader)
 {
@@ -193,51 +296,51 @@ void FDirectXDevice::ResizeEditorRenderTarget(float NewX, float NewY)
 {
 	NewX = max(2.0f, NewX);
 	NewY = max(2.0f, NewY);
-	HRESULT hr;
-	// 텍스처 설명
-	D3D11_TEXTURE2D_DESC textureDesc = {};
-	textureDesc.Width                = static_cast<int>(NewX);
-	textureDesc.Height               = static_cast<int>(NewY);
-	textureDesc.MipLevels            = 1;
-	textureDesc.ArraySize            = 1;
-	textureDesc.Format               = DXGI_FORMAT_B8G8R8X8_UNORM;
-	textureDesc.SampleDesc.Count     = 1;
-	textureDesc.Usage                = D3D11_USAGE_DEFAULT;
-	textureDesc.BindFlags            = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	//HRESULT hr;
+	//// 텍스처 설명
+	//D3D11_TEXTURE2D_DESC textureDesc = {};
+	//textureDesc.Width                = static_cast<int>(NewX);
+	//textureDesc.Height               = static_cast<int>(NewY);
+	//textureDesc.MipLevels            = 1;
+	//textureDesc.ArraySize            = 1;
+	//textureDesc.Format               = DXGI_FORMAT_B8G8R8X8_UNORM;
+	//textureDesc.SampleDesc.Count     = 1;
+	//textureDesc.Usage                = D3D11_USAGE_DEFAULT;
+	//textureDesc.BindFlags            = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 
-	// 텍스처 생성
-	hr = m_d3dDevice->CreateTexture2D(&textureDesc, nullptr, m_EditorRenderTargetTexture.GetAddressOf());
+	//// 텍스처 생성
+	//hr = m_d3dDevice->CreateTexture2D(&textureDesc, nullptr, m_EditorRenderTargetTexture.GetAddressOf());
 
-	// 렌더 타겟 뷰 생성
-	hr = m_d3dDevice->CreateRenderTargetView(m_EditorRenderTargetTexture.Get(), nullptr, m_EditorRenderTargetView.GetAddressOf());
+	//// 렌더 타겟 뷰 생성
+	//hr = m_d3dDevice->CreateRenderTargetView(m_EditorRenderTargetTexture.Get(), nullptr, m_EditorRenderTargetView.GetAddressOf());
 
-	// DSV 생성
-	// 뎁스 스텐실 버퍼/뷰 생성
-	D3D11_TEXTURE2D_DESC depthStencilDesc = {};
-	depthStencilDesc.Width                = textureDesc.Width;
-	depthStencilDesc.Height               = textureDesc.Height;
-	depthStencilDesc.MipLevels            = 1;
-	depthStencilDesc.ArraySize            = 1;
-	depthStencilDesc.Format               = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilDesc.SampleDesc.Count     = 1; // 멀티샘플링 필요시 조절
-	depthStencilDesc.SampleDesc.Quality   = 0;
-	depthStencilDesc.Usage                = D3D11_USAGE_DEFAULT;
-	depthStencilDesc.BindFlags            = D3D11_BIND_DEPTH_STENCIL;
-	depthStencilDesc.CPUAccessFlags       = 0;
-	depthStencilDesc.MiscFlags            = 0;
+	//// DSV 생성
+	//// 뎁스 스텐실 버퍼/뷰 생성
+	//D3D11_TEXTURE2D_DESC depthStencilDesc = {};
+	//depthStencilDesc.Width                = textureDesc.Width;
+	//depthStencilDesc.Height               = textureDesc.Height;
+	//depthStencilDesc.MipLevels            = 1;
+	//depthStencilDesc.ArraySize            = 1;
+	//depthStencilDesc.Format               = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	//depthStencilDesc.SampleDesc.Count     = 1; // 멀티샘플링 필요시 조절
+	//depthStencilDesc.SampleDesc.Quality   = 0;
+	//depthStencilDesc.Usage                = D3D11_USAGE_DEFAULT;
+	//depthStencilDesc.BindFlags            = D3D11_BIND_DEPTH_STENCIL;
+	//depthStencilDesc.CPUAccessFlags       = 0;
+	//depthStencilDesc.MiscFlags            = 0;
 
-	// 기존 뎁스 스텐실 리소스 해제 (ComPtr 사용시 자동이지만 명확하게 하려면)
-	m_EditorDepthStencilBuffer.Reset();
-	m_EditorDepthStencilView.Reset();
+	//// 기존 뎁스 스텐실 리소스 해제 (ComPtr 사용시 자동이지만 명확하게 하려면)
+	//m_EditorDepthStencilBuffer.Reset();
+	//m_EditorDepthStencilView.Reset();
 
-	// 텍스처2D 생성
-	hr = m_d3dDevice->CreateTexture2D(&depthStencilDesc, nullptr, m_EditorDepthStencilBuffer.GetAddressOf());
+	//// 텍스처2D 생성
+	//hr = m_d3dDevice->CreateTexture2D(&depthStencilDesc, nullptr, m_EditorDepthStencilBuffer.GetAddressOf());
 
-	// 뷰 생성
-	hr = m_d3dDevice->CreateDepthStencilView(m_EditorDepthStencilBuffer.Get(), nullptr, m_EditorDepthStencilView.GetAddressOf());
+	//// 뷰 생성
+	//hr = m_d3dDevice->CreateDepthStencilView(m_EditorDepthStencilBuffer.Get(), nullptr, m_EditorDepthStencilView.GetAddressOf());
 
-	// 셰이더 리소스 뷰 생성
-	hr = m_d3dDevice->CreateShaderResourceView(m_EditorRenderTargetTexture.Get(), nullptr, m_SRVEditorRenderTarget.GetAddressOf());
+	//// 셰이더 리소스 뷰 생성
+	//hr = m_d3dDevice->CreateShaderResourceView(m_EditorRenderTargetTexture.Get(), nullptr, m_SRVEditorRenderTarget.GetAddressOf());
 }
 #endif
 
@@ -388,16 +491,6 @@ void FDirectXDevice::InitSamplerState()
 	m_d3dDeviceContext->CSSetSamplers(1, 1, m_SamplerState2.GetAddressOf());
 }
 
-void FDirectXDevice::BuildAllComputeShader()
-{
-	auto SetColorCS = std::make_shared<FSetColorCS>();
-	FShader::AddShaderCache("FSetColorCS", SetColorCS);
-}
-
-void FDirectXDevice::BuildAllShaders()
-{
-	BuildAllComputeShader();
-}
 
 void FDirectXDevice::OnWindowResize()
 {
@@ -418,79 +511,28 @@ void FDirectXDevice::ResizeWindow()
 	assert(m_d3dDevice);
 	assert(m_SwapChain);
 
-	// 이전의 뷰들과 버퍼 초기화
-	m_RenderTargetView.Reset();
-	m_DepthStencilView.Reset();
-	m_DepthStencilBuffer.Reset();
-
 	// RTV 재생성
 	if (m_SwapChain->ResizeBuffers(1, *m_ClientWidth, *m_ClientHeight, DXGI_FORMAT_R8G8B8A8_UNORM, 0))
 	{
 	}
 
-	ComPtr<ID3D11Texture2D> backBuffer;
-	m_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(backBuffer.GetAddressOf()));
-	m_d3dDevice->CreateRenderTargetView(backBuffer.Get(), nullptr, m_RenderTargetView.GetAddressOf());
+	InitMultiRenderTarget();
 
-#ifdef WITH_EDITOR
-	if (RenderingThreadFrameCount < 1)
-	{
-		ResizeEditorRenderTarget(400.0f, 300.0f);
-	}
+	//// 뷰포트 설정
+	//m_ScreenViewport.TopLeftX = 0;
+	//m_ScreenViewport.TopLeftY = 0;
+	//m_ScreenViewport.Width    = static_cast<float>(*m_ClientWidth);
+	//m_ScreenViewport.Height   = static_cast<float>(*m_ClientHeight);
+	//m_ScreenViewport.MinDepth = 0.0f;
+	//m_ScreenViewport.MaxDepth = 1.0f;
 
-#endif
-
-	D3D11_TEXTURE2D_DESC backBufferDesc;
-	backBuffer->GetDesc(&backBufferDesc);
-
-	// backBuffer 는 ComPtr로 관리되므로 제거 x
-
-	// 뎁스 스텐실 버퍼, 뷰 생성
-	D3D11_TEXTURE2D_DESC depthStencilDesc{};
-	depthStencilDesc.Width     = backBufferDesc.Width;
-	depthStencilDesc.Height    = backBufferDesc.Height;
-	depthStencilDesc.MipLevels = 1;
-	depthStencilDesc.ArraySize = 1;
-	depthStencilDesc.Format    = DXGI_FORMAT_D24_UNORM_S8_UINT;
-
-	// 멀티 샘플링
-	if (m_Enable4xMsaa)
-	{
-		depthStencilDesc.SampleDesc.Count   = 4;
-		depthStencilDesc.SampleDesc.Quality = m_4xMsaaQuality - 1;
-	}
-	else
-	{
-		depthStencilDesc.SampleDesc.Count   = 1;
-		depthStencilDesc.SampleDesc.Quality = 0;
-	}
-
-	depthStencilDesc.Usage          = D3D11_USAGE_DEFAULT;
-	depthStencilDesc.BindFlags      = D3D11_BIND_DEPTH_STENCIL;
-	depthStencilDesc.CPUAccessFlags = 0;
-	depthStencilDesc.MiscFlags      = 0;
-
-	m_d3dDevice->CreateTexture2D(&depthStencilDesc, nullptr, m_DepthStencilBuffer.GetAddressOf());
-	m_d3dDevice->CreateDepthStencilView(m_DepthStencilBuffer.Get(), nullptr, m_DepthStencilView.GetAddressOf());
-
-	// 파이프라인에 바인딩
-	m_d3dDeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), m_DepthStencilView.Get());
-
-	// 뷰포트 설정
-	m_ScreenViewport.TopLeftX = 0;
-	m_ScreenViewport.TopLeftY = 0;
-	m_ScreenViewport.Width    = static_cast<float>(*m_ClientWidth);
-	m_ScreenViewport.Height   = static_cast<float>(*m_ClientHeight);
-	m_ScreenViewport.MinDepth = 0.0f;
-	m_ScreenViewport.MaxDepth = 1.0f;
-
-	m_d3dDeviceContext->RSSetViewports(1, &m_ScreenViewport);
+	//m_d3dDeviceContext->RSSetViewports(1, &m_ScreenViewport);
 }
 
 void FDirectXDevice::ResetRenderTargets()
 {
 	// 파이프라인에 바인딩
-	m_d3dDeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), m_DepthStencilView.Get());
+	//m_d3dDeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), m_DepthStencilView.Get());
 }
 
 void FDirectXDevice::SetViewPortSize(float x, float y)
@@ -501,6 +543,7 @@ void FDirectXDevice::SetViewPortSize(float x, float y)
 	m_ScreenViewport.Height   = y;
 	m_ScreenViewport.MinDepth = 0.0f;
 	m_ScreenViewport.MaxDepth = 1.0f;
+	GDirectXDevice->GetDeviceContext()->RSSetViewports(1, GDirectXDevice->GetScreenViewport());
 }
 
 void FDirectXDevice::SetDefaultViewPort()
@@ -511,6 +554,7 @@ void FDirectXDevice::SetDefaultViewPort()
 	m_ScreenViewport.Height   = static_cast<float>(*m_ClientHeight);
 	m_ScreenViewport.MinDepth = 0.0f;
 	m_ScreenViewport.MaxDepth = 1.0f;
+	GDirectXDevice->GetDeviceContext()->RSSetViewports(1, GDirectXDevice->GetScreenViewport());
 }
 
 void FDirectXDevice::CreateConstantBuffers()

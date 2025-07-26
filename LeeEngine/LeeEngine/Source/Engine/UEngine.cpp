@@ -85,8 +85,6 @@ void UEngine::PostLoad()
 
 	LoadAllObjectsFromFile();
 
-	GDirectXDevice->BuildAllShaders();
-
 	// TODO: 추후엔 Level을 직렬화를 통해 저장 및 로드를 할 수 있는 기능을 만드는게 낫지 않을까?
 	// 그렇다면 여기에서 로드를 진행하기
 }
