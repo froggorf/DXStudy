@@ -84,6 +84,7 @@
     <ClCompile Include="Source\Engine\Physics\UPhysicsEngine.cpp" />
     <ClCompile Include="Source\Engine\Physics\UShapeComponent.cpp" />
     <ClCompile Include="Source\Engine\RenderCore\EditorScene.cpp" />
+    <ClCompile Include="Source\Engine\RenderCore\FMultiRenderTarget.cpp" />
     <ClCompile Include="Source\Engine\RenderCore\ImGUIActionTask.cpp" />
     <ClCompile Include="Source\Engine\RenderCore\RenderingThread.cpp" />
     <ClCompile Include="Source\Engine\SceneProxy\FNiagaraSceneProxy.cpp" />
@@ -236,6 +237,7 @@
     <ClInclude Include="Source\Engine\Physics\UPhysicsEngine.h" />
     <ClInclude Include="Source\Engine\Physics\UShapeComponent.h" />
     <ClInclude Include="Source\Engine\RenderCore\EditorScene.h" />
+    <ClInclude Include="Source\Engine\RenderCore\FMultiRenderTarget.h" />
     <ClInclude Include="Source\Engine\RenderCore\ImGUIActionTask.h" />
     <ClInclude Include="Source\Engine\RenderCore\RenderingThread.h" />
     <ClInclude Include="Source\Engine\SceneProxy\FNiagaraSceneProxy.h" />
