@@ -164,51 +164,47 @@ void FDirectXDevice::InitMultiRenderTarget()
 #endif
 
 
-	//// =============
-	//// Deferred MRT
-	//// =============
-	//{
-	//	Ptr<ATexture> arrTex[5] =
-	//	{
-	//		AssetMgr::GetInst()->CreateTexture(L"ColorTargetTex"
-	//			, vRenderResol.x, vRenderResol.y
-	//			, DXGI_FORMAT_R8G8B8A8_UNORM
-	//			, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+	// =============
+	// Deferred MRT
+	// =============
+	{
+		std::shared_ptr<UTexture> RenderTargetTextures[5] =
+		{
+			
+			AssetManager::CreateTexture("ColorTargetTex", RenderResolution.x,RenderResolution.y
+				, DXGI_FORMAT_R8G8B8A8_UNORM
+				, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
 
-	//			AssetMgr::GetInst()->CreateTexture(L"NormalTargetTex"
-	//				, vRenderResol.x, vRenderResol.y
-	//				, DXGI_FORMAT_R32G32B32A32_FLOAT
-	//				, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+				AssetManager::CreateTexture("NormalTargetTex", RenderResolution.x,RenderResolution.y
+					, DXGI_FORMAT_R32G32B32A32_FLOAT
+					, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
 
-	//			AssetMgr::GetInst()->CreateTexture(L"PositionTargetTex"
-	//				, vRenderResol.x, vRenderResol.y
-	//				, DXGI_FORMAT_R32G32B32A32_FLOAT
-	//				, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+				AssetManager::CreateTexture("PositionTargetTex", RenderResolution.x,RenderResolution.y
+					, DXGI_FORMAT_R32G32B32A32_FLOAT
+					, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
 
-	//			AssetMgr::GetInst()->CreateTexture(L"EmissiveTargetTex"
-	//				, vRenderResol.x, vRenderResol.y
-	//				, DXGI_FORMAT_R32G32B32A32_FLOAT
-	//				, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+				AssetManager::CreateTexture("EmissiveTargetTex", RenderResolution.x,RenderResolution.y
+					, DXGI_FORMAT_R32G32B32A32_FLOAT
+					, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
 
-	//			AssetMgr::GetInst()->CreateTexture(L"CustomTargetTex"
-	//				, vRenderResol.x, vRenderResol.y
-	//				, DXGI_FORMAT_R32G32B32A32_FLOAT
-	//				, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
-	//	};
+				AssetManager::CreateTexture("CustomTargetTex", RenderResolution.x,RenderResolution.y
+					, DXGI_FORMAT_R32G32B32A32_FLOAT
+					, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+		};
 
-	//	Vec4 ClearColor[5] =
-	//	{
-	//		Vec4(0.f, 0.f, 0.f, 1.f),
-	//		Vec4(0.f, 0.f, 0.f, 1.f),
-	//		Vec4(0.f, 0.f, 0.f, 1.f),
-	//		Vec4(0.f, 0.f, 0.f, 1.f),
-	//		Vec4(0.f, 0.f, 0.f, 1.f),
-	//	};
+		XMFLOAT4 ClearColor[5] =
+		{
+			XMFLOAT4(0.f, 0.f, 0.f, 1.f),
+			XMFLOAT4(0.f, 0.f, 0.f, 1.f),
+			XMFLOAT4(0.f, 0.f, 0.f, 1.f),
+			XMFLOAT4(0.f, 0.f, 0.f, 1.f),
+			XMFLOAT4(0.f, 0.f, 0.f, 1.f),
+		};
 
-	//	m_arrMRT[(UINT)MRT_TYPE::DEFERRED] = new MRT;
-	//	m_arrMRT[(UINT)MRT_TYPE::DEFERRED]->Create(arrTex, 5, GetMRT(MRT_TYPE::SWAPCHAIN)->GetDSTex());
-	//	m_arrMRT[(UINT)MRT_TYPE::DEFERRED]->SetClearColor(ClearColor, 5);
-	//}
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred] = std::make_shared<FMultiRenderTarget>();
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred]->Create(RenderTargetTextures, 5, GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->GetDepthStencilTexture());
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred]->SetClearColor(ClearColor, 5);
+	}
 
 
 	//// =========
