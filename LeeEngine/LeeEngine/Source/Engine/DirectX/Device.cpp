@@ -153,6 +153,17 @@ void FDirectXDevice::InitMultiRenderTarget()
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::SwapChain]->SetClearColor(&ClearColor, 1);
 	}
 
+#ifdef WITH_EDITOR
+	// =============
+	// EDITOR MRT
+	// =============
+	{
+		CreateEditorMRT();
+		
+	}
+#endif
+
+
 	//// =============
 	//// Deferred MRT
 	//// =============
@@ -296,51 +307,10 @@ void FDirectXDevice::ResizeEditorRenderTarget(float NewX, float NewY)
 {
 	NewX = max(2.0f, NewX);
 	NewY = max(2.0f, NewY);
-	//HRESULT hr;
-	//// 텍스처 설명
-	//D3D11_TEXTURE2D_DESC textureDesc = {};
-	//textureDesc.Width                = static_cast<int>(NewX);
-	//textureDesc.Height               = static_cast<int>(NewY);
-	//textureDesc.MipLevels            = 1;
-	//textureDesc.ArraySize            = 1;
-	//textureDesc.Format               = DXGI_FORMAT_B8G8R8X8_UNORM;
-	//textureDesc.SampleDesc.Count     = 1;
-	//textureDesc.Usage                = D3D11_USAGE_DEFAULT;
-	//textureDesc.BindFlags            = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 
-	//// 텍스처 생성
-	//hr = m_d3dDevice->CreateTexture2D(&textureDesc, nullptr, m_EditorRenderTargetTexture.GetAddressOf());
+	EditorViewportSize = {NewX, NewY};
 
-	//// 렌더 타겟 뷰 생성
-	//hr = m_d3dDevice->CreateRenderTargetView(m_EditorRenderTargetTexture.Get(), nullptr, m_EditorRenderTargetView.GetAddressOf());
-
-	//// DSV 생성
-	//// 뎁스 스텐실 버퍼/뷰 생성
-	//D3D11_TEXTURE2D_DESC depthStencilDesc = {};
-	//depthStencilDesc.Width                = textureDesc.Width;
-	//depthStencilDesc.Height               = textureDesc.Height;
-	//depthStencilDesc.MipLevels            = 1;
-	//depthStencilDesc.ArraySize            = 1;
-	//depthStencilDesc.Format               = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	//depthStencilDesc.SampleDesc.Count     = 1; // 멀티샘플링 필요시 조절
-	//depthStencilDesc.SampleDesc.Quality   = 0;
-	//depthStencilDesc.Usage                = D3D11_USAGE_DEFAULT;
-	//depthStencilDesc.BindFlags            = D3D11_BIND_DEPTH_STENCIL;
-	//depthStencilDesc.CPUAccessFlags       = 0;
-	//depthStencilDesc.MiscFlags            = 0;
-
-	//// 기존 뎁스 스텐실 리소스 해제 (ComPtr 사용시 자동이지만 명확하게 하려면)
-	//m_EditorDepthStencilBuffer.Reset();
-	//m_EditorDepthStencilView.Reset();
-
-	//// 텍스처2D 생성
-	//hr = m_d3dDevice->CreateTexture2D(&depthStencilDesc, nullptr, m_EditorDepthStencilBuffer.GetAddressOf());
-
-	//// 뷰 생성
-	//hr = m_d3dDevice->CreateDepthStencilView(m_EditorDepthStencilBuffer.Get(), nullptr, m_EditorDepthStencilView.GetAddressOf());
-
-	//// 셰이더 리소스 뷰 생성
-	//hr = m_d3dDevice->CreateShaderResourceView(m_EditorRenderTargetTexture.Get(), nullptr, m_SRVEditorRenderTarget.GetAddressOf());
+	CreateEditorMRT();
 }
 #endif
 
@@ -491,6 +461,25 @@ void FDirectXDevice::InitSamplerState()
 	m_d3dDeviceContext->CSSetSamplers(1, 1, m_SamplerState2.GetAddressOf());
 }
 
+#ifdef WITH_EDITOR
+void FDirectXDevice::CreateEditorMRT()
+{
+	std::shared_ptr<UTexture> RTTex = AssetManager::CreateTexture("EditorRenderTexture",(UINT)EditorViewportSize.x,(UINT)EditorViewportSize.y,DXGI_FORMAT_B8G8R8X8_UNORM,
+	D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
+
+	// 2. DepthStencilTexture 생성
+	std::shared_ptr<UTexture> pDSTex = AssetManager::CreateTexture("EditorDepthStencilTexture", (UINT)EditorViewportSize.x, (UINT)EditorViewportSize.y
+		, DXGI_FORMAT_D24_UNORM_S8_UINT
+		, D3D11_BIND_DEPTH_STENCIL
+		, D3D11_USAGE_DEFAULT);
+
+	XMFLOAT4 ClearColor = XMFLOAT4(0.f, 0.f, 0.f, 1.f);
+
+	MultiRenderTargets[(UINT)EMultiRenderTargetType::Editor] = std::make_shared<FMultiRenderTarget>();
+	MultiRenderTargets[(UINT)EMultiRenderTargetType::Editor]->Create(&RTTex, 1, pDSTex);
+	MultiRenderTargets[(UINT)EMultiRenderTargetType::Editor]->SetClearColor(&ClearColor, 1);
+}
+#endif
 
 void FDirectXDevice::OnWindowResize()
 {

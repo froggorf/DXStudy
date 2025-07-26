@@ -621,7 +621,6 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 
 	HR(GDirectXDevice->GetSwapChain()->Present(0, 0));
 
-	// SceneProxy Render
 	EndRenderFrame_RenderThread(SceneData);
 }
 

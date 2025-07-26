@@ -127,9 +127,9 @@ public:
 	UINT CurrentGeometryShaderID = -1;
 	void SetGeometryShader(class FGeometryShader* InGeometryShader);
 
-
+#ifdef WITH_EDITOR
 	void ResizeEditorRenderTarget(float NewX, float NewY);
-
+#endif
 
 	// RasterizerState / BlendState / DepthStencilState
 public:
@@ -157,7 +157,10 @@ private:
 	// =================================================
 
 	void InitSamplerState();
-
+#ifdef WITH_EDITOR
+	XMFLOAT2 EditorViewportSize = {2,2};
+	void CreateEditorMRT();
+#endif
 	void InitMultiRenderTarget();
 
 	Microsoft::WRL::ComPtr<ID3D11Device>           m_d3dDevice;

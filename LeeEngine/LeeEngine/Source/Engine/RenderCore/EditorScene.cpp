@@ -34,14 +34,12 @@ void FEditorScene::InitSceneData_GameThread()
 	})
 }
 
-void FEditorScene::BeginRenderFrame()
-{
-	FScene::BeginRenderFrame();
-}
-
 void FEditorScene::SetDrawScenePipeline(const float* ClearColor)
 {
-	FScene::SetDrawScenePipeline(ClearColor);
+	//FScene::SetDrawScenePipeline(ClearColor);
+	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor)->OMSet();
+	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor)->ClearRenderTarget();
+	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor)->ClearDepthStencilTarget();
 
 	// 에디터 뷰포트 사이즈 설정하기
 	{

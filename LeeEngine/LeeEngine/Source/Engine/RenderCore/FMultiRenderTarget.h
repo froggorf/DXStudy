@@ -10,6 +10,7 @@ enum class EMultiRenderTargetType
 {
     Deferred,
     Light,
+    Editor,
     SwapChain,	
     Count,
 };
