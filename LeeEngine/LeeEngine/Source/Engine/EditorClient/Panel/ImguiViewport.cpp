@@ -27,6 +27,36 @@ void FImguiLevelViewport::Draw()
 	// Actor
 	if (ImGui::Begin("Place Actors", nullptr))
 	{
+		ImGui::Text("ColorTargetTex");
+		if (const std::shared_ptr<UTexture>& RenderTexture = UTexture::GetTextureCache("ColorTargetTex"))
+		{
+			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {100,100});
+		}
+
+		ImGui::Text("NormalTargetTex");
+		if (const std::shared_ptr<UTexture>& RenderTexture = UTexture::GetTextureCache("NormalTargetTex"))
+		{
+			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {100,100});
+		}
+
+		ImGui::Text("PositionTargetTex");
+		if (const std::shared_ptr<UTexture>& RenderTexture = UTexture::GetTextureCache("PositionTargetTex"))
+		{
+			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {100,100});
+		}
+
+		ImGui::Text("EmissiveTargetTex");
+		if (const std::shared_ptr<UTexture>& RenderTexture = UTexture::GetTextureCache("EmissiveTargetTex"))
+		{
+			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {100,100});
+		}
+
+		ImGui::Text("CustomTargetTex");
+		if (const std::shared_ptr<UTexture>& RenderTexture = UTexture::GetTextureCache("CustomTargetTex"))
+		{
+			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {100,100});
+		}
+
 		ImGui::End();
 	}
 

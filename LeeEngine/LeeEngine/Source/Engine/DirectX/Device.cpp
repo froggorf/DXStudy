@@ -168,26 +168,33 @@ void FDirectXDevice::InitMultiRenderTarget()
 	// Deferred MRT
 	// =============
 	{
+		XMFLOAT2 DeferredResolution = {};
+#ifdef WITH_EDITOR
+		DeferredResolution = {EditorViewportSize.x, EditorViewportSize.y};
+#else
+		DeferredResolution = {RenderResolution.x,RenderResolution.y};
+		
+#endif
 		std::shared_ptr<UTexture> RenderTargetTextures[5] =
 		{
-			
-			AssetManager::CreateTexture("ColorTargetTex", RenderResolution.x,RenderResolution.y
+
+			AssetManager::CreateTexture("ColorTargetTex", DeferredResolution.x,DeferredResolution.y
 				, DXGI_FORMAT_R8G8B8A8_UNORM
 				, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
 
-				AssetManager::CreateTexture("NormalTargetTex", RenderResolution.x,RenderResolution.y
+				AssetManager::CreateTexture("NormalTargetTex", DeferredResolution.x,DeferredResolution.y
 					, DXGI_FORMAT_R32G32B32A32_FLOAT
 					, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
 
-				AssetManager::CreateTexture("PositionTargetTex", RenderResolution.x,RenderResolution.y
+				AssetManager::CreateTexture("PositionTargetTex", DeferredResolution.x,DeferredResolution.y
 					, DXGI_FORMAT_R32G32B32A32_FLOAT
 					, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
 
-				AssetManager::CreateTexture("EmissiveTargetTex", RenderResolution.x,RenderResolution.y
+				AssetManager::CreateTexture("EmissiveTargetTex", DeferredResolution.x,DeferredResolution.y
 					, DXGI_FORMAT_R32G32B32A32_FLOAT
 					, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
 
-				AssetManager::CreateTexture("CustomTargetTex", RenderResolution.x,RenderResolution.y
+				AssetManager::CreateTexture("CustomTargetTex", DeferredResolution.x,DeferredResolution.y
 					, DXGI_FORMAT_R32G32B32A32_FLOAT
 					, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
 		};
@@ -202,7 +209,11 @@ void FDirectXDevice::InitMultiRenderTarget()
 		};
 
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred] = std::make_shared<FMultiRenderTarget>();
+#ifdef WITH_EDITOR
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred]->Create(RenderTargetTextures, 5, GetMultiRenderTarget(EMultiRenderTargetType::Editor)->GetDepthStencilTexture());
+#else
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred]->Create(RenderTargetTextures, 5, GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->GetDepthStencilTexture());
+#endif
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred]->SetClearColor(ClearColor, 5);
 	}
 

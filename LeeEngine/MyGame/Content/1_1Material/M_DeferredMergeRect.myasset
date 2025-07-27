@@ -1,0 +1,15 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_DeferredMergeRect",
+    "VertexShader" : {
+	"FilePath" : "/Shader/merge.fx",
+	"Func" : "VS_Merge"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/merge.fx",
+	"Func": "PS_Merge"
+    },
+    "BlendMode": "ForDeferredMerge",
+    "TwoSided" : 1
+	
+}

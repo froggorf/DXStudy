@@ -134,10 +134,14 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 		{
 			BlendMode = EBlendMode::BM_Translucent;
 		}
+		else if (BlendModeStr == "Deferred")
+		{
+			BlendMode = EBlendMode::BM_Deferred;
+		}
 		else
 		{
 			// 잘못된 BlendMode
-			assert(0);
+			//assert(0 && "잘못된 BlendMode");
 		}
 	}
 

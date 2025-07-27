@@ -124,9 +124,7 @@ struct FDebugRenderData
 class FScene
 {
 public:
-	FScene()
-	{
-	}
+	FScene();
 
 	virtual ~FScene()
 	{
@@ -134,6 +132,7 @@ public:
 
 	// ==================== FPrimitiveSceneProxy ====================
 	// { UINT(MaterialID) , RenderData }
+	std::unordered_map<UINT, std::vector<FPrimitiveRenderData>> DeferredSceneProxyRenderData;
 	std::unordered_map<UINT, std::vector<FPrimitiveRenderData>> OpaqueSceneProxyRenderData;
 	std::unordered_map<UINT, std::vector<FPrimitiveRenderData>> MaskedSceneProxyRenderData;
 	std::unordered_map<UINT, std::vector<FPrimitiveRenderData>> TranslucentSceneProxyRenderData;
@@ -148,6 +147,8 @@ public:
 
 	std::map<UINT, FTransform> PendingNewTransformProxies;
 	// ==================== FPrimitiveSceneProxy ====================
+
+	FPrimitiveRenderData DeferredMergeRenderData;
 
 	bool bIsFrameStart;
 	float LastUpdateTime=0;
@@ -294,6 +295,7 @@ public:
 
 	static void  DrawScene_RenderThread(std::shared_ptr<FScene> SceneData);
 	virtual void SetDrawScenePipeline(const float* ClearColor);
+	virtual void SetRSViewport();
 
 	virtual void AfterDrawSceneAction(const std::shared_ptr<FScene> SceneData){}
 

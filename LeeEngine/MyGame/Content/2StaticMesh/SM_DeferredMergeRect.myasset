@@ -1,0 +1,6 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_DeferredMergeRect",
+    "ModelData": "/Content/Resource/Model/Rect.obj",
+    "Material" : [ "M_DeferredMergeRect" ]
+}

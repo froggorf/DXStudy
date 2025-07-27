@@ -54,6 +54,7 @@ public:
 
 	// ==================== ImGui ====================
 	void SetDrawScenePipeline(const float* ClearColor) override;
+	void SetRSViewport() override;
 	void AfterDrawSceneAction(std::shared_ptr<FScene> SceneData) override;
 
 	XMMATRIX GetViewMatrix() override;

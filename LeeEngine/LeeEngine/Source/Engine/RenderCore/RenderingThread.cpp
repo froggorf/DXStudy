@@ -9,8 +9,24 @@
 #include "Engine/Physics/UShapeComponent.h"
 #include "Engine/SceneProxy/FNiagaraSceneProxy.h"
 #include "Engine/SceneProxy/FSkeletalMeshSceneProxy.h"
+#include "Engine/SceneProxy/FStaticMeshSceneProxy.h"
 
 std::shared_ptr<FScene> FRenderCommandExecutor::CurrentSceneData = nullptr;
+
+FScene::FScene()
+{
+	DeferredMergeRenderData.MaterialInterface = UMaterial::GetMaterialCache("M_DeferredMergeRect");
+	
+	std::shared_ptr<UStaticMesh> StaticMesh = UStaticMesh::GetStaticMesh("SM_DeferredMergeRect");
+	if (!StaticMesh)
+	{
+		AssetManager::ReadMyAsset(AssetManager::GetAssetNameAndAssetPathMap()["SM_DeferredMergeRect"]);	
+		StaticMesh = UStaticMesh::GetStaticMesh("SM_DeferredMergeRect");
+	}
+	DeferredMergeRenderData.SceneProxy = std::make_shared<FStaticMeshSceneProxy>(-1,0,StaticMesh);
+
+	
+}
 
 void FScene::BeginRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData, UINT GameThreadFrameCount)
 {
@@ -50,6 +66,7 @@ void FScene::BeginRenderFrame()
 		KillProxies(OpaqueSceneProxyRenderData, PendingKillPrimitiveIDs);
 		KillProxies(MaskedSceneProxyRenderData, PendingKillPrimitiveIDs);
 		KillProxies(TranslucentSceneProxyRenderData, PendingKillPrimitiveIDs);
+		KillProxies(DeferredSceneProxyRenderData, PendingKillPrimitiveIDs);
 		PendingKillPrimitiveIDs.clear();
 	}
 	
@@ -110,6 +127,16 @@ void FScene::BeginRenderFrame()
 					TranslucentSceneProxyRenderData[MaterialID].insert(TranslucentSceneProxyRenderData[MaterialID].begin(), RenderData);
 				}
 				break;
+			case EBlendMode::BM_Deferred:
+				if (bUseMaterialInstance)
+				{
+					DeferredSceneProxyRenderData[MaterialID].emplace_back(RenderData);
+				}
+				else
+				{
+					DeferredSceneProxyRenderData[MaterialID].insert(DeferredSceneProxyRenderData[MaterialID].begin(), RenderData);
+				}
+			break;
 			default:
 				// 잘못된 데이터
 				assert(0);
@@ -180,6 +207,25 @@ void FScene::BeginRenderFrame()
 				}
 			}
 		}
+
+		// Deferred
+		for (auto Iter = DeferredSceneProxyRenderData.begin(); Iter != DeferredSceneProxyRenderData.end(); ++Iter)
+		{
+			for (auto PrimitiveIter = Iter->second.begin(); PrimitiveIter != Iter->second.end();)
+			{
+				PrimitiveIter = std::find_if(PrimitiveIter,
+					Iter->second.end(),
+					[FindPrimitiveID](const FPrimitiveRenderData& A)
+					{
+						return A.PrimitiveID == FindPrimitiveID;
+					});
+				if (PrimitiveIter != Iter->second.end())
+				{
+					PrimitiveIter->SceneProxy->SetSceneProxyWorldTransform(NewTransform.second);
+					++PrimitiveIter;
+				}
+			}
+		}
 	}
 	PendingNewTransformProxies.clear();
 }
@@ -194,7 +240,7 @@ void FScene::UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std:
 			FSkeletalMeshSceneProxy* SkeletalMeshSceneProxy = nullptr;
 
 			// Opaque
-			auto OpaqueRenderData = SceneData->OpaqueSceneProxyRenderData;
+			auto& OpaqueRenderData = SceneData->OpaqueSceneProxyRenderData;
 			for (auto Iter = OpaqueRenderData.begin(); Iter != OpaqueRenderData.end(); ++Iter)
 			{
 				for (auto PrimitiveIter = Iter->second.begin(); PrimitiveIter != Iter->second.end();)
@@ -221,7 +267,7 @@ void FScene::UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std:
 			}
 
 			// Masked
-			auto MaskedRenderData = SceneData->MaskedSceneProxyRenderData;
+			auto& MaskedRenderData = SceneData->MaskedSceneProxyRenderData;
 			for (auto Iter = MaskedRenderData.begin(); Iter != MaskedRenderData.end(); ++Iter)
 			{
 				for (auto PrimitiveIter = Iter->second.begin(); PrimitiveIter != Iter->second.end();)
@@ -248,7 +294,7 @@ void FScene::UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std:
 			}
 
 			//Translucent
-			auto TranslucentRenderData = SceneData->TranslucentSceneProxyRenderData;
+			auto& TranslucentRenderData = SceneData->TranslucentSceneProxyRenderData;
 			for (auto Iter = TranslucentRenderData.begin(); Iter != TranslucentRenderData.end(); ++Iter)
 			{
 				for (auto PrimitiveIter = Iter->second.begin(); PrimitiveIter != Iter->second.end();)
@@ -273,6 +319,34 @@ void FScene::UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std:
 					}
 				}
 			}
+
+			// Deferred
+			auto& DeferredRenderData = SceneData->DeferredSceneProxyRenderData;
+			for (auto Iter = DeferredRenderData.begin(); Iter != DeferredRenderData.end(); ++Iter)
+			{
+				for (auto PrimitiveIter = Iter->second.begin(); PrimitiveIter != Iter->second.end();)
+				{
+					PrimitiveIter = std::find_if(PrimitiveIter,
+						Iter->second.end(),
+						[PrimitiveID](const FPrimitiveRenderData& A)
+						{
+							return A.PrimitiveID == PrimitiveID;
+						});
+					if (PrimitiveIter != Iter->second.end())
+					{
+						SkeletalMeshSceneProxy = dynamic_cast<FSkeletalMeshSceneProxy*>(PrimitiveIter->SceneProxy.get());
+						if (SkeletalMeshSceneProxy)
+						{
+							for (int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
+							{
+								SkeletalMeshSceneProxy->BoneFinalMatrices[BoneIndex] = FinalMatrices[BoneIndex];
+							}
+						}
+						++PrimitiveIter;
+					}
+				}
+			}
+
 
 			//Pending Add
 			auto p = SceneData->PendingAddSceneProxies.find(PrimitiveID);
@@ -354,6 +428,25 @@ void FScene::SetMaterialScalarParam_RenderThread(UINT PrimitiveID, UINT MeshInde
 			}
 		}
 	}
+	// Deferred
+	for (const auto& RenderData : DeferredSceneProxyRenderData)
+	{
+		auto TargetRenderData = std::ranges::find_if(RenderData.second,
+			[PrimitiveID, MeshIndex](const FPrimitiveRenderData& A)
+			{
+				return A.PrimitiveID == PrimitiveID && A.MeshIndex == MeshIndex;
+			});
+
+		if (TargetRenderData != RenderData.second.end())
+		{
+			std::shared_ptr<UMaterialInstance> MaterialInstance = std::dynamic_pointer_cast<UMaterialInstance>(TargetRenderData->MaterialInterface);
+			if (MaterialInstance)
+			{
+				MaterialInstance->SetScalarParam(ParamName, Value);
+				return;
+			}
+		}
+	}
 }
 
 void FScene::SetTextureParam_RenderThread(UINT PrimitiveID, UINT MeshIndex, UINT TextureSlot, std::shared_ptr<UTexture> Texture)
@@ -415,6 +508,25 @@ void FScene::SetTextureParam_RenderThread(UINT PrimitiveID, UINT MeshIndex, UINT
 			}
 		}
 	}
+	// deferred
+	for (const auto& RenderData : DeferredSceneProxyRenderData)
+	{
+		auto TargetRenderData = std::ranges::find_if(RenderData.second,
+			[PrimitiveID, MeshIndex](const FPrimitiveRenderData& A)
+			{
+				return A.PrimitiveID == PrimitiveID && A.MeshIndex == MeshIndex;
+			});
+
+		if (TargetRenderData != RenderData.second.end())
+		{
+			std::shared_ptr<UMaterialInstance> MaterialInstance = std::dynamic_pointer_cast<UMaterialInstance>(TargetRenderData->MaterialInterface);
+			if (MaterialInstance)
+			{
+				MaterialInstance->SetTextureParam(TextureSlot, Texture);
+				return;
+			}
+		}
+	}
 }
 
 void FScene::SetNiagaraEffectActivate_GameThread(std::vector<std::shared_ptr<FNiagaraSceneProxy>>& TargetSceneProxies, bool bNewActivate)
@@ -428,6 +540,26 @@ void FScene::SetNiagaraEffectActivate_GameThread(std::vector<std::shared_ptr<FNi
 		}
 	};
 	ENQUEUE_RENDER_COMMAND(Lambda);
+}
+
+static void DrawSceneProxies(const std::unordered_map<UINT, std::vector<FPrimitiveRenderData>>& RenderDataSceneProxies)
+{
+	for (const auto& SceneProxies : RenderDataSceneProxies | std::views::values)
+	{
+		bool bIsBinding = false;
+		for (const auto& SceneProxy : SceneProxies)
+		{
+			if (!bIsBinding)
+			{
+				SceneProxy.MaterialInterface->Binding();
+				bIsBinding = true;
+			}
+			// 머테리얼 파라미터 설정 (Material::Binding 내에서 기본 디폴트값이 매핑되며,
+			// MaterialInstance에서 오버라이드 한 파라미터만 세팅됨
+			SceneProxy.MaterialInterface->BindingMaterialInstanceUserParam();
+			SceneProxy.SceneProxy->Draw();
+		}
+	}
 }
 
 void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
@@ -463,11 +595,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 	{
 		//GDirectXDevice->ResetRenderTargets();
 
-		constexpr float ClearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
-		SceneData->SetDrawScenePipeline(ClearColor);
 
-		GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->ClearRenderTarget();	
-		GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->ClearDepthStencilTarget();
 		//GDirectXDevice->GetDeviceContext()->ClearRenderTargetView(GDirectXDevice->GetRenderTargetView().Get(), ClearColor);
 		//GDirectXDevice->GetDeviceContext()->ClearDepthStencilView(GDirectXDevice->GetDepthStencilView().Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
@@ -515,61 +643,37 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				}
 			}
 
-			// Sampler State 설정
-			//GDirectXDevice->GetDeviceContext()->PSSetSamplers(0, 1, GDirectXDevice->GetSamplerState().GetAddressOf());
+			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->ClearRenderTarget();	
+			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->ClearDepthStencilTarget();
+			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->OMSet();
+			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->ClearRenderTarget();
+			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->ClearDepthStencilTarget();
+			GDirectXDevice->SetDSState(EDepthStencilStateType::DST_LESS);
+			SceneData->SetRSViewport();
+			//deferred
+			DrawSceneProxies(SceneData->DeferredSceneProxyRenderData);
 
-			GDirectXDevice->SetBSState(EBlendStateType::BST_Default);
-			for (const auto& SceneProxies : SceneData->OpaqueSceneProxyRenderData | std::views::values)
+			// Deferred로 그린 gbuffer 텍스쳐를 렌더타겟에 머지
 			{
-				bool bIsBinding = false;
-				for (const auto& SceneProxy : SceneProxies)
-				{
-					if (!bIsBinding)
-					{
-						SceneProxy.MaterialInterface->Binding();
-						bIsBinding = true;
-					}
-					// 머테리얼 파라미터 설정 (Material::Binding 내에서 기본 디폴트값이 매핑되며,
-					// MaterialInstance에서 오버라이드 한 파라미터만 세팅됨
-					SceneProxy.MaterialInterface->BindingMaterialInstanceUserParam();
-					SceneProxy.SceneProxy->Draw();
-				}
+				// SwapChain MRT로 OMSet
+				constexpr float ClearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
+				SceneData->SetDrawScenePipeline(ClearColor);
+				SceneData->DeferredMergeRenderData.MaterialInterface->Binding();
+				GDirectXDevice->SetRSState(ERasterizerType::RT_CullBack);
+				GDirectXDevice->SetDSState(EDepthStencilStateType::DST_NO_TEST_NO_WRITE);
+				GDirectXDevice->SetBSState(EBlendStateType::BST_Default);
+				std::shared_ptr<UTexture> ColorTexture = UTexture::GetTextureCache("ColorTargetTex");
+				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(0,1,ColorTexture->GetSRV().GetAddressOf());
+				SceneData->DeferredMergeRenderData.SceneProxy->Draw();
 			}
+
+
+			GDirectXDevice->SetDSState(EDepthStencilStateType::DST_LESS);
+			DrawSceneProxies(SceneData->OpaqueSceneProxyRenderData);
 			GDirectXDevice->SetBSState(EBlendStateType::BST_AlphaBlend);
-			for (const auto& SceneProxies : SceneData->MaskedSceneProxyRenderData | std::views::values)
-			{
-				bool bIsBinding = false;
-				for (const auto& SceneProxy : SceneProxies)
-				{
-					if (!bIsBinding)
-					{
-						SceneProxy.MaterialInterface->Binding();
-						bIsBinding = true;
-					}
-					// 머테리얼 파라미터 설정 (Material::Binding 내에서 기본 디폴트값이 매핑되며,
-					// MaterialInstance에서 오버라이드 한 파라미터만 세팅됨
-					SceneProxy.MaterialInterface->BindingMaterialInstanceUserParam();
-					SceneProxy.SceneProxy->Draw();
-				}
-			}
-
-			for (const auto& SceneProxies : SceneData->TranslucentSceneProxyRenderData | std::views::values)
-			{
-				bool bIsBinding = false;
-				for (const auto& SceneProxy : SceneProxies)
-				{
-					if (!bIsBinding)
-					{
-						SceneProxy.MaterialInterface->Binding();
-						bIsBinding = true;
-					}
-					// 머테리얼 파라미터 설정 (Material::Binding 내에서 기본 디폴트값이 매핑되며,
-					// MaterialInstance에서 오버라이드 한 파라미터만 세팅됨
-					SceneProxy.MaterialInterface->BindingMaterialInstanceUserParam();
-					SceneProxy.SceneProxy->Draw();
-				}
-			}
-
+			DrawSceneProxies(SceneData->MaskedSceneProxyRenderData);
+			DrawSceneProxies(SceneData->TranslucentSceneProxyRenderData);
+			
 
 			
 #if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
@@ -627,8 +731,12 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 void FScene::SetDrawScenePipeline(const float* ClearColor)
 {
 	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->OMSet();
+}
+void FScene::SetRSViewport()
+{
 	GDirectXDevice->GetDeviceContext()->RSSetViewports(1, GDirectXDevice->GetScreenViewport());
 }
+
 
 XMMATRIX FScene::GetViewMatrix()
 {
