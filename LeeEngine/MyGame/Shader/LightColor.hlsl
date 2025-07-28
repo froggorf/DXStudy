@@ -10,6 +10,16 @@ SamplerState samLinear : register( s0 );
 Texture2D    gShadowMap : register(t1);
 SamplerState gShadowSampler : register(s1);
 
+struct VS_INPUT
+{
+	float4 Pos : POSITION;
+	float3 Normal : NORMAL;
+	float2 TexCoord : TEXCOORD;
+
+	float3 Tangent : TANGENT;
+	float3 Binormal : BINORMAL;
+};
+
 struct VS_OUTPUT
 {
 	float4 PosScreen : SV_POSITION;
@@ -23,25 +33,25 @@ struct VS_OUTPUT
 //--------------------------------------------------------------------------------------
 // Vertex Shader
 //--------------------------------------------------------------------------------------
-VS_OUTPUT VS(float4 Pos : POSITION, float3 Normal : NORMAL, float2 TexCoord : TEXCOORD)
+VS_OUTPUT VS(VS_INPUT Input)
 {
 	VS_OUTPUT output = (VS_OUTPUT)0;
 
 	// 픽셀 셰이더 내에서 라이팅을 위해 
-	output.PosWorld = mul(Pos, World).xyz;
+	output.PosWorld = mul(Input.Pos, World).xyz;
 
 	// PosScreen
-	output.PosScreen = CalculateScreenPosition(Pos, World, gView, gProjection);
+	output.PosScreen = CalculateScreenPosition(Input.Pos, World, gView, gProjection);
 	output.Depth     = output.PosScreen.z;
 
 	// 노말벡터를 월드좌표계로
-	output.NormalW = mul(Normal, (float3x3)WorldInvTranspose);
+	output.NormalW = mul(Input.Normal, (float3x3)WorldInvTranspose);
 	output.NormalW = normalize(output.NormalW);
 
-	output.Tex = TexCoord;
+	output.Tex = Input.TexCoord;
 
 	// light source에서 버텍스로의 position
-	output.PosLightSpace = CalculateScreenPosition(Pos, World, gLightView, gLightProj);
+	output.PosLightSpace = CalculateScreenPosition(Input.Pos, World, gLightView, gLightProj);
 
 	return output;
 }

@@ -1,4 +1,4 @@
-﻿#include "CoreMinimal.h"
+#include "CoreMinimal.h"
 #include "AssetManager.h"
 
 #include "Engine/Class/UTexture.h"
@@ -397,11 +397,15 @@ void AssetManager::ProcessMesh(aiMesh* mesh, std::vector<MyVertexData>& vertices
 			vertex.Normal.y = mesh->mNormals[i].y;
 			vertex.Normal.z = mesh->mNormals[i].z;
 		}
-		if (nullptr != mesh->mTangents && nullptr != mesh->mBitangents/*mesh->HasTangentsAndBitangents()*/)
+		if (nullptr != mesh->mTangents && nullptr != mesh->mBitangents /*mesh->HasTangentsAndBitangents()*/)
 		{
-			
-			mesh->mTangents;
-			mesh->mBitangents;
+			vertex.Tangent.x = mesh->mTangents[i].x;
+			vertex.Tangent.y = mesh->mTangents[i].y;
+			vertex.Tangent.z = mesh->mTangents[i].z;
+
+			vertex.Bitangent.x = mesh->mBitangents[i].x;
+			vertex.Bitangent.y = mesh->mBitangents[i].y;
+			vertex.Bitangent.z = mesh->mBitangents[i].z;
 		}
 
 		// 텍스처 좌표 (첫 번째 텍스처 채널만 사용)

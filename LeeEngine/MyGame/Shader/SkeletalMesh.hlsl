@@ -23,6 +23,8 @@ struct VS_INPUT
 	float2 TexCoord : TEXCOORD;
 	int4   boneIDs : BONEIDS;
 	float4 boneWeights : BONEWEIGHTS;
+	float3 Tangent : TANGENT;
+	float3 Binormal : BINORMAL;
 };
 
 struct VS_OUTPUT

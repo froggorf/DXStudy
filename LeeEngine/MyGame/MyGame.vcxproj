@@ -44,6 +44,7 @@
     <None Include="Shader\LightColor.hlsl">
       <FileType>Document</FileType>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VS</EntryPointName>
     </None>
     <None Include="Shader\SkeletalMesh.hlsl">
       <FileType>Document</FileType>

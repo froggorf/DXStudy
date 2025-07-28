@@ -110,10 +110,10 @@
     <None Include="Shader\RibbonRenderer.fx">
       <Filter>Shader\Niagara\Render\Ribbon</Filter>
     </None>
-    <None Include="Shader\LightColor.hlsl">
+    <None Include="Shader\DebugDraw.hlsl">
       <Filter>Shader</Filter>
     </None>
-    <None Include="Shader\DebugDraw.hlsl">
+    <None Include="Shader\LightColor.hlsl">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>
