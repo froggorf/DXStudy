@@ -17,7 +17,7 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
 	std::string filePath = GEngine->GetDirectoryPath() + path;
 
 	Assimp::Importer importer;
-	const aiScene*   scene = importer.ReadFile(filePath, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_CalcTangentSpace | aiProcess_GenNormals | aiProcess_ConvertToLeftHanded | aiProcess_FlipWindingOrder);
+	const aiScene*   scene = importer.ReadFile(filePath, aiProcess_ConvertToLeftHanded | aiProcess_Triangulate | aiProcess_GenNormals |aiProcess_CalcTangentSpace);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -64,7 +64,7 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
 	std::string filePath = GEngine->GetDirectoryPath() + path;
 
 	Assimp::Importer importer;
-	const aiScene*   scene = importer.ReadFile(filePath, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_CalcTangentSpace | aiProcess_GenNormals | aiProcess_ConvertToLeftHanded | aiProcess_FlipWindingOrder);
+	const aiScene*   scene = importer.ReadFile(filePath, aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenNormals | aiProcess_ConvertToLeftHanded);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -115,7 +115,7 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const ComPtr<I
 	std::string filePath = GEngine->GetDirectoryPath() + path;
 
 	Assimp::Importer importer;
-	const aiScene*   scene = importer.ReadFile(filePath, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_CalcTangentSpace | aiProcess_GenNormals | aiProcess_ConvertToLeftHanded | aiProcess_FlipWindingOrder);
+	const aiScene*   scene = importer.ReadFile(filePath, aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenNormals | aiProcess_ConvertToLeftHanded);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -396,6 +396,12 @@ void AssetManager::ProcessMesh(aiMesh* mesh, std::vector<MyVertexData>& vertices
 			vertex.Normal.x = mesh->mNormals[i].x;
 			vertex.Normal.y = mesh->mNormals[i].y;
 			vertex.Normal.z = mesh->mNormals[i].z;
+		}
+		if (nullptr != mesh->mTangents && nullptr != mesh->mBitangents/*mesh->HasTangentsAndBitangents()*/)
+		{
+			
+			mesh->mTangents;
+			mesh->mBitangents;
 		}
 
 		// 텍스처 좌표 (첫 번째 텍스처 채널만 사용)
