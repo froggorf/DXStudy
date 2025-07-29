@@ -14,7 +14,9 @@ cbuffer cbPerFrame : register(b0)
 cbuffer cbPerObject : register(b1)
 {
 	matrix   World;
+	row_major float4x4	gMatWV;
 	float4x4 WorldInvTranspose;
+	
 	Material ObjectMaterial;
 };
 

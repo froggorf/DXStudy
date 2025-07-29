@@ -45,12 +45,11 @@ VS_OUTPUT VS_Std3D_Deferred(VS_INPUT Input)
 	output.Tex = Input.TexCoord;
 
 	// 정점의 데이터를 ViewSpace 로 이동시킨다.
-	float4x4 MatWV = mul(World, gView);
-	output.ViewPosition = mul(float4(Input.Pos.xyz, 1.f), MatWV);
+	output.ViewPosition = mul(float4(Input.Pos.xyz, 1.f), gMatWV);
 
-	output.ViewTangent = normalize(mul(float4(Input.Tangent, 0.f), MatWV)).xyz;
-	output.ViewNormal = normalize(mul(float4(Input.Normal, 0.f), MatWV)).xyz;
-	output.ViewBinormal = normalize(mul(float4(Input.Binormal, 0.f), MatWV)).xyz;
+	output.ViewTangent = normalize(mul(float4(Input.Tangent, 0.f), gMatWV)).xyz;
+	output.ViewNormal = normalize(mul(float4(Input.Normal, 0.f), gMatWV)).xyz;
+	output.ViewBinormal = normalize(mul(float4(Input.Binormal, 0.f), gMatWV)).xyz;
 
 	return output;
 }

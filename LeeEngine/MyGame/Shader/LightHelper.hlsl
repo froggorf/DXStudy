@@ -15,6 +15,8 @@ struct FLightInfo
 	float	Angle;	
 };
 
+
+
 struct DirectionalLight
 {
 	float4 Ambient;
