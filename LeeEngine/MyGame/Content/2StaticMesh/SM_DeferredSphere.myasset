@@ -1,0 +1,6 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_DeferredSphere",
+    "ModelData": "/Content/Resource/Model/Sphere.obj",
+    "Material" : [ "M_DeferredSphere" ]
+}

@@ -6,11 +6,11 @@
 	"Func" : "VS"
     },
     "PixelShader" : {
-	"FilePath" : "/Shader/Deferred.fx",
-	"Func": "PS_Std3D_Deferred"
+	"FilePath" : "/Shader/LightColor.hlsl",
+	"Func": "PS"
     },
     "Textures" : [ "T_White" ],
-    "BlendMode": "Deferred",
+    "BlendMode": "Opaque",
     "TwoSided" : 0
 	
 }

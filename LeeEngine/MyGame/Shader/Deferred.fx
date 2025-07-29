@@ -44,15 +44,15 @@ VS_OUTPUT VS_Std3D_Deferred(VS_INPUT Input)
 	output.PosScreen = CalculateScreenPosition(Input.Pos, World, gView, gProjection);
 	output.Tex = Input.TexCoord;
 
+	// 정점의 데이터를 ViewSpace 로 이동시킨다.
 	float4x4 MatWV = mul(World, gView);
+	output.ViewPosition = mul(float4(Input.Pos.xyz, 1.f), MatWV);
 
-	// 노멀 변환 행렬 (WorldView의 3x3만 추출)
-	float3x3 MatWV3x3 = (float3x3)MatWV;
-	float3x3 NormalMatrix = transpose((MatWV3x3));
+	output.ViewTangent = normalize(mul(float4(Input.Tangent, 0.f), MatWV)).xyz;
+	output.ViewNormal = normalize(mul(float4(Input.Normal, 0.f), MatWV)).xyz;
+	output.ViewBinormal = normalize(mul(float4(Input.Binormal, 0.f), MatWV)).xyz;
 
-	output.ViewNormal   = normalize(mul(Input.Normal,   NormalMatrix));
-	output.ViewTangent  = normalize(mul(Input.Tangent,  NormalMatrix));
-	output.ViewBinormal = normalize(mul(Input.Binormal, NormalMatrix));
+	return output;
 }
 
 PS_OUT PS_Std3D_Deferred(VS_OUTPUT Input)

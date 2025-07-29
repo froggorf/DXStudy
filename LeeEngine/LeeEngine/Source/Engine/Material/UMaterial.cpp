@@ -19,8 +19,12 @@ void FVertexShader::CompileVertexShader(const std::string& FilePath, const std::
 	auto         TempShaderPath    = std::wstring(TempDirectoryPath.begin(), TempDirectoryPath.end());
 	std::wstring ShaderFilePath    = TempShaderPath + std::wstring{FilePath.begin(), FilePath.end()};
 	HR(CompileShaderFromFile(ShaderFilePath.c_str(), FuncName.c_str(), "vs_4_0", VSBlob.GetAddressOf()));
+	if (VSBlob == nullptr)
+	{
+		assert(0 && "VSBlob nullptr");
+	}
 	HR(GDirectXDevice->GetDevice()->CreateVertexShader(VSBlob->GetBufferPointer(), VSBlob->GetBufferSize(), nullptr, VertexShader.GetAddressOf()));
-
+	
 	// Input Layout
 
 	D3D11_INPUT_ELEMENT_DESC inputLayout[] = {
@@ -45,6 +49,10 @@ void FPixelShader::CompilePixelShader(const std::string& FilePath, const std::st
 	HR(CompileShaderFromFile(ShaderFilePath.c_str(), FuncName.c_str(), "ps_4_0", PSBlob.GetAddressOf()));
 
 	HR(GDirectXDevice->GetDevice()->CreatePixelShader(PSBlob->GetBufferPointer(), PSBlob->GetBufferSize(), nullptr, PixelShader.GetAddressOf()));
+	if (PSBlob == nullptr)
+	{
+		assert(0 && "psblob nullptr");
+	}
 }
 
 std::shared_ptr<UMaterialInterface> UMaterialInterface::GetMaterialCache(const std::string& MaterialName)
@@ -60,7 +68,10 @@ void UMaterialInterface::LoadDataFromFileData(const nlohmann::json& AssetData)
 void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
 	UMaterialInterface::LoadDataFromFileData(AssetData);
-
+	if (AssetData["Name"] == "M_DeferredSphere")
+	{
+		int a = 0;
+	}
 	// 버텍스 셰이더 로드
 	{
 		auto        VertexShaderData = AssetData["VertexShader"];

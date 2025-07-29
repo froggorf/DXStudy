@@ -1,4 +1,4 @@
-﻿// 02.16
+// 02.16
 // ULevel 내 배치를 위한 테스트용 큐브 액터
 
 #pragma once
@@ -31,6 +31,8 @@ class ATestCube : public AActor
 	static dtNavMeshQuery* MyDtNavQuery;
 protected:
 	std::shared_ptr<UStaticMeshComponent> TestCubeStaticMeshComp;
+
+	std::shared_ptr<UStaticMeshComponent> SM_DeferredSphere;
 
 	std::shared_ptr<UStaticMeshComponent> TestCubeSM1;
 	std::shared_ptr<UStaticMeshComponent> TestCubeSM2;

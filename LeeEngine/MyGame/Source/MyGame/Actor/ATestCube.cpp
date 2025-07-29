@@ -1,4 +1,4 @@
-﻿#include <CoreMinimal.h>
+#include <CoreMinimal.h>
 
 #include "ATestCube.h"
 
@@ -18,6 +18,15 @@ dtNavMeshQuery* ATestCube::MyDtNavQuery;
 
 ATestCube::ATestCube()
 {
+	SM_DeferredSphere = std::make_shared<UStaticMeshComponent>();\
+	SM_DeferredSphere->SetupAttachment(GetRootComponent());
+	AssetManager::GetAsyncAssetCache("SM_DeferredSphere",[this](std::shared_ptr<UObject> Object)
+		{
+			SM_DeferredSphere->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
+		});
+	SM_DeferredSphere->SetRelativeLocation({0,100,100});
+	SM_DeferredSphere->SetRelativeScale3D({75,75,75});
+
 	TestCube2 = std::make_shared<UStaticMeshComponent>();
 	TestCube2->SetupAttachment(GetRootComponent());
 	// 비동기 에셋 로드 테스트
