@@ -46,6 +46,9 @@
     <ClCompile Include="Source\Engine\Class\Framework\APlayerController.cpp" />
     <ClCompile Include="Source\Engine\Class\Framework\UPlayerInput.cpp" />
     <ClCompile Include="Source\Engine\Class\Framework\USpringArmComponent.cpp" />
+    <ClCompile Include="Source\Engine\Class\Light\UDirectionalLightComponent.cpp" />
+    <ClCompile Include="Source\Engine\Class\Light\ULightComponent.cpp" />
+    <ClCompile Include="Source\Engine\Class\Light\UPointLightComponent.cpp" />
     <ClCompile Include="Source\Engine\Class\UTexture.cpp" />
     <ClCompile Include="Source\Engine\Components\UActorComponent.cpp" />
     <ClCompile Include="Source\Engine\Components\UAnimMontage.cpp" />
@@ -198,6 +201,10 @@
     <ClInclude Include="Source\Engine\Class\Framework\APlayerController.h" />
     <ClInclude Include="Source\Engine\Class\Framework\UPlayerInput.h" />
     <ClInclude Include="Source\Engine\Class\Framework\USpringArmComponent.h" />
+    <ClInclude Include="Source\Engine\Class\Light\Light.h" />
+    <ClInclude Include="Source\Engine\Class\Light\UDirectionalLightComponent.h" />
+    <ClInclude Include="Source\Engine\Class\Light\ULightComponent.h" />
+    <ClInclude Include="Source\Engine\Class\Light\UPointLightComponent.h" />
     <ClInclude Include="Source\Engine\Class\UTexture.h" />
     <ClInclude Include="Source\Engine\Components\UActorComponent.h" />
     <ClInclude Include="Source\Engine\Components\UAnimMontage.h" />

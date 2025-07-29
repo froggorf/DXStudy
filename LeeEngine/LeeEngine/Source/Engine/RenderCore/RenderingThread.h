@@ -1,4 +1,4 @@
-﻿// 03.09
+// 03.09
 // 언리얼 엔진 5 코드를 분석하며 자체엔진으로 작성중인 코드입니다.
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
@@ -6,6 +6,7 @@
 #include "Engine/MyEngineUtils.h"
 #include "Engine/SceneView.h"
 #include "Engine/UEditorEngine.h"
+#include "Engine/Class/Light/Light.h"
 #include "Engine/Components/USceneComponent.h"
 #include "Engine/SceneProxy/FPrimitiveSceneProxy.h"
 
@@ -146,6 +147,8 @@ public:
 	std::vector<UINT>              PendingKillPrimitiveIDs;
 
 	std::map<UINT, FTransform> PendingNewTransformProxies;
+
+	std::vector<FLightInfo> CurrentFrameLightInfo;
 	// ==================== FPrimitiveSceneProxy ====================
 
 	FPrimitiveRenderData DeferredMergeRenderData;
@@ -327,6 +330,12 @@ public:
 		DebugRenderData.emplace_back(InDebugRenderData);
 	}
 #endif
+
+	void SetFrameLightInfo(const std::vector<FLightInfo>& LightInfo)
+	{
+		CurrentFrameLightInfo.clear();
+		std::ranges::copy(LightInfo, CurrentFrameLightInfo.begin());
+	}
 
 private:
 	static void EndRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData);

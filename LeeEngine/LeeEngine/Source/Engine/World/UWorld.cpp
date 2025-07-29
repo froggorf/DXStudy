@@ -1,4 +1,4 @@
-﻿// 02.14
+// 02.14
 // 언리얼 엔진 5 코드를 분석하며 자체엔진으로 작성중인 코드입니다.
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
@@ -65,6 +65,19 @@ void UWorld::TickWorld(float DeltaSeconds)
 		PersistentLevel->TickLevel(DeltaSeconds);
 	}
 
+	// 이번프레임의 Light정보를 FScene에 등록
+	{
+		std::vector<FLightInfo> LightInfoCopy;
+		std::ranges::copy(CurrentFrameLightInfo, LightInfoCopy.begin());
+		auto Lambda = [LightInfoCopy](std::shared_ptr<FScene>& SceneData)
+		{
+			SceneData->SetFrameLightInfo(LightInfoCopy);
+		};
+		ENQUEUE_RENDER_COMMAND(Lambda);
+		CurrentFrameLightInfo.clear();	
+	}
+	
+
 	// Niagara Proxy Tick 요청
 	for (auto& TickNiagaraSceneProxy : ToBeTickedNiagaraSceneProxies)
 	{
@@ -75,6 +88,8 @@ void UWorld::TickWorld(float DeltaSeconds)
 		ENQUEUE_RENDER_COMMAND(Lambda);
 	}
 	ToBeTickedNiagaraSceneProxies.clear();
+
+	
 }
 
 void UWorld::Tick()

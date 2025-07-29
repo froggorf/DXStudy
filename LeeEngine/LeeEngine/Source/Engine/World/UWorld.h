@@ -1,4 +1,4 @@
-﻿// 02.14
+// 02.14
 // 언리얼 엔진 5 코드를 분석하며 자체엔진으로 작성중인 코드입니다.
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
@@ -8,6 +8,7 @@
 #include "CoreMinimal.h"
 
 #include "Engine/Class/Framework/APlayerController.h"
+#include "Engine/Class/Light/Light.h"
 #include "Engine/Level/ULevel.h"
 #include "Engine/UObject/UObject.h"
 
@@ -48,6 +49,11 @@ class UWorld : public UObject, public std::enable_shared_from_this<UWorld>
 		ToBeTickedNiagaraSceneProxies.emplace_back(NewNiagaraSceneProxy);
 	}
 
+	void AddCurrentFrameLightInfo(const FLightInfo& NewLightInfo)
+	{
+		CurrentFrameLightInfo.emplace_back(NewLightInfo);
+	}
+
 	APlayerController* GetPlayerController() const {return PlayerController.lock().get();}
 	APlayerCameraManager* GetCameraManager() const
 	{
@@ -74,6 +80,8 @@ private:
 
 	// Tick을 진행할 이펙트 들에 대한 SceneProxies
 	std::vector<std::shared_ptr<FNiagaraSceneProxy>> ToBeTickedNiagaraSceneProxies;
+
+	std::vector<FLightInfo> CurrentFrameLightInfo;
 
 	// 현재 선택된 액터
 	// TODO: 추후 에디터 기능으로 분리하기

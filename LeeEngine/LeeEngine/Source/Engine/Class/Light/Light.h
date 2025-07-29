@@ -1,0 +1,20 @@
+#pragma once
+
+// LightType
+enum class ELightType
+{
+	DIRECTIONAL, // 방향성 광원(전역 광원, 태양광)
+	POINT,		 // 점광원 (전구, 등불, 횃불)
+	SPOT,		 // 스포트 라이트 (조명)
+};
+
+struct FLightInfo
+{
+	int			LightType;		// 방향성, 점, 스포트라이트
+	XMFLOAT3	WorldPos;		// 광원의 위치
+	XMFLOAT3	WorldDir;		// 광원이 바라보는 방향
+	XMFLOAT3	LightColor;		// 광원의 빛의 색상
+	XMFLOAT3	LightAmbient;	// 광원으로 발생하는 최소한의 빛(환경광)
+	float		Radius;			// 광원의 범위
+	float		Angle;			// 스포트라이트 범위각도
+};

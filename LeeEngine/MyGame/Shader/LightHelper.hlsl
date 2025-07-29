@@ -4,6 +4,17 @@
 // Structures and functions for lighting calculations.
 //***************************************************************************************
 
+struct FLightInfo
+{
+	int		LightType;
+	float3  WorldPos;
+	float3  WorldDir;
+	float3	LightColor;
+	float3  LightAmbient;
+	float	Radius;
+	float	Angle;	
+};
+
 struct DirectionalLight
 {
 	float4 Ambient;
