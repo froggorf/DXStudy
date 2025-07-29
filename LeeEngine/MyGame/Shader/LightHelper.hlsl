@@ -4,6 +4,8 @@
 // Structures and functions for lighting calculations.
 //***************************************************************************************
 
+#define PI 3.141592
+
 struct FLightInfo
 {
 	int		LightType;
@@ -15,7 +17,71 @@ struct FLightInfo
 	float	Angle;	
 };
 
+StructuredBuffer<FLightInfo> g_LightBuffer : register(t14);
 
+void CalcLight(float4x4 ViewMat, float3 _ViewPos, float3 _ViewNormal, int _Idx
+	, inout float3 _LightColor, inout float3 _Specular)
+{
+	FLightInfo info = g_LightBuffer[_Idx];
+
+	// Directional Light
+	if (0 == info.LightType)
+	{
+		// View 공간상에서 광원이 진행하는 방향
+		float3 vLightDir = normalize(mul(float4(normalize(info.WorldDir), 0.f), ViewMat).xyz);
+		float fLightPow = saturate(dot(_ViewNormal, -vLightDir));
+
+		// 반사광 세기 구하기
+		float3 vReflect = vLightDir + 2.f * dot(-vLightDir, _ViewNormal) * _ViewNormal;
+		vReflect = normalize(vReflect);
+
+		// 시선벡터
+		float3 vEye = normalize(_ViewPos);
+
+		// 반사벡터랑 시선벡터를 내적해서 반사광 세기 구함
+		float fReclectPow = saturate(dot(vReflect, -vEye));
+		fReclectPow = pow(fReclectPow, 20);
+
+		_LightColor += info.LightColor * fLightPow + info.LightAmbient;
+		_Specular += info.LightColor * fReclectPow;
+	}
+
+	// Point Light
+	else if (1 == info.LightType)
+	{   
+		// 광원의 위치를 View 공간으로 가져온다.
+		float3 LightViewPos = mul(float4(info.WorldPos, 1.f), ViewMat);
+
+		// 광원이 표면에 오는 방향벡터
+		float3 vLightDir = normalize(_ViewPos - LightViewPos);
+
+		// 빛의 진입각도 세기(램버트 코사인법칙)
+		float fLightPow = saturate(dot(_ViewNormal, -vLightDir));
+
+		// 빛의 반사벡터 구하기
+		float3 vReflect = vLightDir + 2.f * dot(-vLightDir, _ViewNormal) * _ViewNormal;
+		vReflect = normalize(vReflect);
+
+		// 시선벡터
+		float3 vEye = normalize(_ViewPos);
+
+		// 반사벡터랑 시선벡터를 내적해서 반사광 세기 구함
+		float fReclectPow = saturate(dot(vReflect, -vEye));
+		fReclectPow = pow(fReclectPow, 20);
+
+		// 광원으로부터 물체가 떨어진 거리에 따른 빛의 감쇄비율
+		float Attenuation = saturate(1.f - (length(_ViewPos - LightViewPos) / info.Radius));
+
+		_LightColor += info.LightColor * fLightPow * Attenuation;
+		_Specular += info.LightColor * fReclectPow * Attenuation;
+	}
+
+	// Spot Light
+	else
+	{
+
+	}
+}
 
 struct DirectionalLight
 {

@@ -23,11 +23,14 @@ struct VS_INPUT
 struct VS_OUTPUT
 {
 	float4 PosScreen : SV_POSITION;
-	float3 PosWorld : POSITION;
-	float4 PosLightSpace : POSITION1;
-	float3 NormalW : TEXCOORD1;
 	float2 Tex : TEXCOORD;
-	float  Depth : TEXCOORD2;
+
+	float3 ViewPos : POSITION;
+
+	float3 ViewTangent : TANGENT;
+	float3 ViewNormal : NORMAL;  
+	float3 ViewBinormal : BINORMAL;
+
 };
 
 //--------------------------------------------------------------------------------------
@@ -37,21 +40,14 @@ VS_OUTPUT VS(VS_INPUT Input)
 {
 	VS_OUTPUT output = (VS_OUTPUT)0;
 
-	// 픽셀 셰이더 내에서 라이팅을 위해 
-	output.PosWorld = mul(Input.Pos, World).xyz;
-
-	// PosScreen
 	output.PosScreen = CalculateScreenPosition(Input.Pos, World, gView, gProjection);
-	output.Depth     = output.PosScreen.z;
-
-	// 노말벡터를 월드좌표계로
-	output.NormalW = mul(Input.Normal, (float3x3)WorldInvTranspose);
-	output.NormalW = normalize(output.NormalW);
-
 	output.Tex = Input.TexCoord;
 
-	// light source에서 버텍스로의 position
-	//output.PosLightSpace = CalculateScreenPosition(Input.Pos, World, gLightView, gLightProj);
+	output.ViewPos = mul(float4(Input.Pos.xyz, 1.f), gMatWV);
+
+	output.ViewTangent = normalize(mul(float4(Input.Tangent, 0.f), gMatWV)).xyz;
+	output.ViewNormal = normalize(mul(float4(Input.Normal, 0.f), gMatWV)).xyz;
+	output.ViewBinormal = normalize(mul(float4(Input.Binormal, 0.f), gMatWV)).xyz;
 
 	return output;
 }
@@ -61,51 +57,20 @@ VS_OUTPUT VS(VS_INPUT Input)
 //--------------------------------------------------------------------------------------
 float4 PS(VS_OUTPUT input) : SV_Target
 {
-	float4 color = txDiffuse.Sample(samLinear, input.Tex);
+	float4 OutColor = (float4) 0.f;
+	float4 ObjectColor = txDiffuse.Sample(samLinear, input.Tex);
 
-	// 조명 계산시 사용될 변수 초기화
-	float4 ambient = 0;
-	float4 diffuse = 0;
-	float4 spec    = 0;
+	float3 LightColor = (float3)0.f;
+	float3 Specular = (float3) 0.f;
 
-	float3 toEye = normalize(gEyePosW - input.PosWorld);
-
-	float4 A, D, S;
-
-	ComputeDirectionalLight(ObjectMaterial, gDirLight, input.NormalW, toEye, A, D, S);
-	ambient += A;
-	diffuse += D;
-	spec += S;
-
-	ComputePointLight(ObjectMaterial, gPointLight, input.PosWorld, input.NormalW, toEye, A, D, S);
-	ambient += A;
-	diffuse += D;
-	spec += S;
-
-	// 조명 적용
-	color.rgb = color.rgb * (ambient + diffuse) + spec;
-
-	// 그림자 매핑
-	float3 shadowCoord = input.PosLightSpace.xyz / input.PosLightSpace.w;
-	// [-1~1] -> [0~1] 텍스쳐 NDC
-	shadowCoord.x = shadowCoord / 2 + 0.5f;
-	shadowCoord.y = -shadowCoord.y / 2 + 0.5f;
-	if ((saturate(shadowCoord.x) == shadowCoord.x) && (saturate(shadowCoord.y) == shadowCoord.y))
+	for (int i = 0; i < gLightCount; ++i)
 	{
-		float depthValue = gShadowMap.Sample(gShadowSampler, shadowCoord.xy).r;
-
-		// TODO: 03.09 임시적 수정 추후 꼭 정상화하기
-		float bias            = 0.001f;
-		float lightDepthValue = shadowCoord.z - bias;
-
-		//if(lightDepthValue > depthValue)
-		//{
-		//	float shadowfactor = 0.5f;
-		//	color.rgb = color.rgb * shadowfactor;
-		//}
+		CalcLight(gView, input.ViewPos, input.ViewNormal, i, LightColor, Specular);
 	}
 
-	return color;
+	OutColor.rgb = (ObjectColor.rgb) * LightColor.rgb + Specular;
+	OutColor.a = ObjectColor.a;
+	return OutColor;
 }
 
 cbuffer cbTest : register(b4)
@@ -124,47 +89,7 @@ float4 TestWater(VS_OUTPUT input) : SV_Target
 
 	//float4 color = txDiffuse.Sample( samLinear, input.Tex );
 
-	// 조명 계산시 사용될 변수 초기화
-	float4 ambient = 0;
-	float4 diffuse = 0;
-	float4 spec    = 0;
-
-	float3 toEye = normalize(gEyePosW - input.PosWorld);
-
-	float4 A, D, S;
-
-	ComputeDirectionalLight(ObjectMaterial, gDirLight, input.NormalW, toEye, A, D, S);
-	ambient += A;
-	diffuse += D;
-	spec += S;
-
-	ComputePointLight(ObjectMaterial, gPointLight, input.PosWorld, input.NormalW, toEye, A, D, S);
-	ambient += A;
-	diffuse += D;
-	spec += S;
-
-	// 조명 적용
-	color.rgb = color.rgb * (ambient + diffuse) + spec;
-
-	// 그림자 매핑
-	float3 shadowCoord = input.PosLightSpace.xyz / input.PosLightSpace.w;
-	// [-1~1] -> [0~1] 텍스쳐 NDC
-	shadowCoord.x = shadowCoord / 2 + 0.5f;
-	shadowCoord.y = -shadowCoord.y / 2 + 0.5f;
-	if ((saturate(shadowCoord.x) == shadowCoord.x) && (saturate(shadowCoord.y) == shadowCoord.y))
-	{
-		float depthValue = gShadowMap.Sample(gShadowSampler, shadowCoord.xy).r;
-
-		// TODO: 03.09 임시적 수정 추후 꼭 정상화하기
-		float bias            = 0.001f;
-		float lightDepthValue = shadowCoord.z - bias;
-
-		//if(lightDepthValue > depthValue)
-		//{
-		//	float shadowfactor = 0.5f;
-		//	color.rgb = color.rgb * shadowfactor;
-		//}
-	}
+	
 
 	return color;
 }

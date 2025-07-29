@@ -29,6 +29,3 @@ cbuffer cbLight : register(b2)
 }
 
 
-StructuredBuffer<FLightInfo> g_Light3DBuffer : register(t14);
-
-#define PI 3.141592
