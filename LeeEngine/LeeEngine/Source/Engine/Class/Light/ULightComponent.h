@@ -34,6 +34,9 @@ class ULightComponent : public USceneComponent
 	void SetActive(bool NewActive){bActive = NewActive;}
 	bool GetActive() const {return bActive;}
 private:
+	void AddLightInfo();
+
+
 	FLightInfo Info;
 	bool bActive = true;
 };

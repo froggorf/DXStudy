@@ -8,8 +8,7 @@ void ULightComponent::Register()
 {
 	USceneComponent::Register();
 
-	Info.WorldPos = GetWorldLocation();
-	GEngine->GetWorld()->AddCurrentFrameLightInfo(Info);
+	AddLightInfo();	
 
 	GEngine->GetWorld()->DrawDebugBox(GetWorldLocation(), {GetRadius(),GetRadius(),GetRadius()}, GetLightColor(), {0,0,0,1}, 100);
 }
@@ -31,8 +30,14 @@ void ULightComponent::TickComponent(float DeltaSeconds)
 
 	if (bActive)
 	{
-		Info.WorldPos = GetWorldLocation();
-		GEngine->GetWorld()->AddCurrentFrameLightInfo(Info);
+		AddLightInfo();
 
 	}
+}
+
+void ULightComponent::AddLightInfo()
+{
+	Info.WorldPos = GetWorldLocation();
+	Info.WorldDir = GetForwardVector();
+	GEngine->GetWorld()->AddCurrentFrameLightInfo(Info);
 }
