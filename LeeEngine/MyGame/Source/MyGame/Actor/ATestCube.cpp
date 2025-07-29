@@ -18,6 +18,34 @@ dtNavMeshQuery* ATestCube::MyDtNavQuery;
 
 ATestCube::ATestCube()
 {
+	Light1 = std::make_shared<ULightComponent>();
+	Light1->SetupAttachment(GetRootComponent());
+	Light1->SetLightType(ELightType::POINT);
+	Light1->SetRadius(100);
+	Light1->SetLightColor({1,0,0});
+	Light1->SetWorldLocation({100,0,100});
+
+	Light2 = std::make_shared<ULightComponent>();
+	Light2->SetupAttachment(GetRootComponent());
+	Light2->SetLightType(ELightType::POINT);
+	Light2->SetRadius(100);
+	Light2->SetLightColor({0,1,0});
+	Light2->SetWorldLocation({-100,0,100});
+
+	Light3 = std::make_shared<ULightComponent>();
+	Light3->SetupAttachment(GetRootComponent());
+	Light3->SetLightType(ELightType::POINT);
+	Light3->SetRadius(100);
+	Light3->SetLightColor({0,0,1});
+	Light3->SetWorldLocation({100,0,-100});
+
+	Light4 = std::make_shared<ULightComponent>();
+	Light4->SetupAttachment(GetRootComponent());
+	Light4->SetLightType(ELightType::POINT);
+	Light4->SetRadius(100);
+	Light4->SetLightColor({0,1,1});
+	Light4->SetWorldLocation({-100,0,-100});
+
 	SM_DeferredSphere = std::make_shared<UStaticMeshComponent>();\
 	SM_DeferredSphere->SetupAttachment(GetRootComponent());
 	AssetManager::GetAsyncAssetCache("SM_DeferredSphere",[this](std::shared_ptr<UObject> Object)

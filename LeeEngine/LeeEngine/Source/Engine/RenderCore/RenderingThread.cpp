@@ -1,4 +1,4 @@
-﻿// 03.09
+// 03.09
 // 언리얼 엔진 5 코드를 분석하며 자체엔진으로 작성중인 코드입니다.
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
@@ -25,7 +25,7 @@ FScene::FScene()
 	}
 	DeferredMergeRenderData.SceneProxy = std::make_shared<FStaticMeshSceneProxy>(-1,0,StaticMesh);
 
-	
+	LightBuffer = std::make_shared<FStructuredBuffer>();
 }
 
 void FScene::BeginRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData, UINT GameThreadFrameCount)
@@ -593,12 +593,6 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 	}
 	// 프레임 단위 세팅
 	{
-		//GDirectXDevice->ResetRenderTargets();
-
-
-		//GDirectXDevice->GetDeviceContext()->ClearRenderTargetView(GDirectXDevice->GetRenderTargetView().Get(), ClearColor);
-		//GDirectXDevice->GetDeviceContext()->ClearDepthStencilView(GDirectXDevice->GetDepthStencilView().Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
 		{
 			// Frame 상수 버퍼 설정
 			{
@@ -610,12 +604,27 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 					fcb.View = (SceneData->GetViewMatrix());
 					// TODO: 카메라 구현 시 수정
 					fcb.Projection = (SceneData->GetProjectionMatrix());
-					fcb.LightView  = XMMatrixTranspose(XMMatrixIdentity()); //m_LightView
-					fcb.LightProj  = XMMatrixTranspose(XMMatrixIdentity()); //m_LightProj
 
 					fcb.Time      = GEngine->GetTimeSeconds();
 					fcb.DeltaTime = GEngine->GetDeltaSeconds();
+					fcb.LightCount = SceneData->CurrentFrameLightInfo.size();
 					GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_PerFrame, &fcb, sizeof(fcb));
+				}
+
+				// 라이팅 관련
+				{
+					// 버퍼크기가 모자라면 재할당
+					if (SceneData->LightBuffer->GetElementCount() < SceneData->CurrentFrameLightInfo.size())
+					{
+						SceneData->LightBuffer->Create(sizeof(FLightInfo), (UINT)SceneData->CurrentFrameLightInfo.size(), SB_TYPE::SRV_ONLY, true);
+					}
+					
+					// LightInfo 정보를 구조화버퍼로 보내고 레지스터 바인딩
+					if (!SceneData->CurrentFrameLightInfo.empty())
+					{
+						SceneData->LightBuffer->SetData(SceneData->CurrentFrameLightInfo.data(), (UINT)SceneData->CurrentFrameLightInfo.size());
+						SceneData->LightBuffer->Binding(14);
+					}
 				}
 
 				// 라이팅 관련
@@ -747,6 +756,15 @@ XMMATRIX FScene::GetProjectionMatrix()
 {
 	return ViewMatrices.GetProjectionMatrix();
 }
+
+void FScene::SetFrameLightInfo(const std::vector<FLightInfo>& LightInfo)
+{
+	
+	CurrentFrameLightInfo.clear();
+	CurrentFrameLightInfo.resize(LightInfo.size());
+	std::ranges::copy(LightInfo, CurrentFrameLightInfo.begin());
+}
+
 
 void FScene::EndRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData)
 {

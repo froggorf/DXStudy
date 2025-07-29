@@ -51,7 +51,7 @@ VS_OUTPUT VS(VS_INPUT Input)
 	output.Tex = Input.TexCoord;
 
 	// light source에서 버텍스로의 position
-	output.PosLightSpace = CalculateScreenPosition(Input.Pos, World, gLightView, gLightProj);
+	//output.PosLightSpace = CalculateScreenPosition(Input.Pos, World, gLightView, gLightProj);
 
 	return output;
 }

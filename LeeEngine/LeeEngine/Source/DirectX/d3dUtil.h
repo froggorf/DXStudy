@@ -139,11 +139,10 @@ struct FrameConstantBuffer
 	XMMATRIX View;
 	XMMATRIX Projection;
 
-	XMMATRIX LightView;
-	XMMATRIX LightProj;
 	float    Time;
 	float    DeltaTime;
-	float    Padding[2];
+	int		 LightCount;
+	float    Padding;
 };
 
 struct SkeletalMeshBoneTransformConstantBuffer

@@ -149,6 +149,7 @@ public:
 	std::map<UINT, FTransform> PendingNewTransformProxies;
 
 	std::vector<FLightInfo> CurrentFrameLightInfo;
+	std::shared_ptr<FStructuredBuffer> LightBuffer;
 	// ==================== FPrimitiveSceneProxy ====================
 
 	FPrimitiveRenderData DeferredMergeRenderData;
@@ -331,11 +332,7 @@ public:
 	}
 #endif
 
-	void SetFrameLightInfo(const std::vector<FLightInfo>& LightInfo)
-	{
-		CurrentFrameLightInfo.clear();
-		std::ranges::copy(LightInfo, CurrentFrameLightInfo.begin());
-	}
+	void SetFrameLightInfo(const std::vector<FLightInfo>& LightInfo);
 
 private:
 	static void EndRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData);

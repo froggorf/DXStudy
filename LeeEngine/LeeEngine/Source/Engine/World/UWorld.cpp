@@ -57,6 +57,25 @@ void UWorld::BeginPlay()
 	PersistentLevel->BeginPlay();
 }
 
+void UWorld::TickLight()
+{
+	// 이번프레임의 Light정보를 FScene에 등록
+	{
+		std::vector<FLightInfo> LightInfoCopy(CurrentFrameLightInfo.size());
+		std::ranges::copy(CurrentFrameLightInfo, LightInfoCopy.begin());
+		auto Lambda = [LightInfoCopy](std::shared_ptr<FScene>& SceneData)
+			{
+				SceneData->SetFrameLightInfo(LightInfoCopy);
+			};
+		ENQUEUE_RENDER_COMMAND(Lambda);
+		if (GEngine->bGameStart)
+		{
+			CurrentFrameLightInfo.clear();		
+		}
+
+	}
+}
+
 void UWorld::TickWorld(float DeltaSeconds)
 {
 	// Level Tick
@@ -64,19 +83,6 @@ void UWorld::TickWorld(float DeltaSeconds)
 	{
 		PersistentLevel->TickLevel(DeltaSeconds);
 	}
-
-	// 이번프레임의 Light정보를 FScene에 등록
-	{
-		std::vector<FLightInfo> LightInfoCopy;
-		std::ranges::copy(CurrentFrameLightInfo, LightInfoCopy.begin());
-		auto Lambda = [LightInfoCopy](std::shared_ptr<FScene>& SceneData)
-		{
-			SceneData->SetFrameLightInfo(LightInfoCopy);
-		};
-		ENQUEUE_RENDER_COMMAND(Lambda);
-		CurrentFrameLightInfo.clear();	
-	}
-	
 
 	// Niagara Proxy Tick 요청
 	for (auto& TickNiagaraSceneProxy : ToBeTickedNiagaraSceneProxies)

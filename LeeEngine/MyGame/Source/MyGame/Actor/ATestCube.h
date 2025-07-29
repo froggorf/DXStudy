@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "Engine/Class/Light/ULightComponent.h"
 #include "Engine/Components/UNiagaraComponent.h"
 #include "Engine/GameFramework/AActor.h"
 #include "Engine/Physics/UBoxComponent.h"
@@ -30,6 +31,11 @@ class ATestCube : public AActor
 	static dtNavMesh* MyDtNavMesh;
 	static dtNavMeshQuery* MyDtNavQuery;
 protected:
+	std::shared_ptr<ULightComponent> Light1;
+	std::shared_ptr<ULightComponent> Light2;
+	std::shared_ptr<ULightComponent> Light3;
+	std::shared_ptr<ULightComponent> Light4;
+
 	std::shared_ptr<UStaticMeshComponent> TestCubeStaticMeshComp;
 
 	std::shared_ptr<UStaticMeshComponent> SM_DeferredSphere;

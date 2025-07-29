@@ -11,6 +11,8 @@ class ULightComponent : public USceneComponent
 {
 	MY_GENERATE_BODY(ULightComponent)
 
+	void Register() override;
+
 	void SetLightType(ELightType _Type);
 	ELightType GetLightType() { return (ELightType)Info.LightType; }
 

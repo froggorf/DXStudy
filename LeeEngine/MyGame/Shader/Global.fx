@@ -4,11 +4,11 @@ cbuffer cbPerFrame : register(b0)
 {
 	row_major matrix gView;
 	row_major matrix gProjection;
-	matrix           gLightView;
-	matrix           gLightProj;
+
 	float            gTime;
 	float            gDeltaTime;
-	float2           Padding;
+	int				 gLightCount;
+	float           Padding;
 }
 
 cbuffer cbPerObject : register(b1)

@@ -29,6 +29,7 @@ class UWorld : public UObject, public std::enable_shared_from_this<UWorld>
 
 	void BeginPlay() override;
 
+	void TickLight();
 	void TickWorld(float DeltaSeconds);
 	void Tick();
 
