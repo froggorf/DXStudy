@@ -249,6 +249,7 @@ void UMaterial::Binding()
 	GDirectXDevice->SetPixelShader(PixelShader.get());
 	GDirectXDevice->SetGeometryShader(GeometryShader.get());
 
+	GDirectXDevice->SetRSState(GetRSType());
 	ComPtr<ID3D11DeviceContext> DeviceContext = GDirectXDevice->GetDeviceContext();
 
 	for (int i = 0; i < Textures.size(); ++i)

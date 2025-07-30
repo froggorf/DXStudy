@@ -140,11 +140,11 @@ struct FrameConstantBuffer
 	XMMATRIX View;
 	XMMATRIX Projection;
 
+	XMFLOAT2 Resolution;
 	float    Time;
 	float    DeltaTime;
 	int		 LightCount;
 
-	XMFLOAT2 Resolution;
 
 	XMFLOAT3    Padding;
 };

@@ -63,7 +63,7 @@ void FLightInfo::Render()
 			LightVolumeMaterial->Binding();
 			GDirectXDevice->SetRSState(ERasterizerType::RT_TwoSided);
 			GDirectXDevice->SetBSState(EBlendStateType::BST_Default);
-			GDirectXDevice->SetDSState(EDepthStencilStateType::VOLUME_CHECK);
+			GDirectXDevice->SetDSState(EDepthStencilStateType::VOLUME_CHECK,1);
 			LightVolumeMesh[LightType]->Draw();
 
 

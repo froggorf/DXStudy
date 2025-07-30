@@ -19,7 +19,7 @@ dtNavMeshQuery* ATestCube::MyDtNavQuery;
 ATestCube::ATestCube()
 {
 	Light1 = std::make_shared<ULightComponent>();
-	//Light1->SetupAttachment(GetRootComponent());
+	Light1->SetupAttachment(GetRootComponent());
 	Light1->SetLightType(ELightType::Point);
 	Light1->SetRadius(150);
 	Light1->SetLightColor({5,0,0});
@@ -30,17 +30,17 @@ ATestCube::ATestCube()
 	Light2->SetLightType(ELightType::Point);
 	Light2->SetRadius(300);
 	Light2->SetLightColor({0,5,0});
-	Light2->SetWorldLocation({-500,0,100});
+	Light2->SetWorldLocation({-350,0,100});
 	
 	Light3 = std::make_shared<ULightComponent>();
-	//Light3->SetupAttachment(GetRootComponent());
+	Light3->SetupAttachment(GetRootComponent());
 	Light3->SetLightType(ELightType::Point);
 	Light3->SetRadius(150);
 	Light3->SetLightColor({0,0,5});
 	Light3->SetWorldLocation({100,0,-100});
 	
 	Light4 = std::make_shared<ULightComponent>();
-	//Light4->SetupAttachment(GetRootComponent());
+	Light4->SetupAttachment(GetRootComponent());
 	Light4->SetLightType(ELightType::Directional);
 	Light4->SetWorldRotation(
 		XMQuaternionRotationRollPitchYaw(

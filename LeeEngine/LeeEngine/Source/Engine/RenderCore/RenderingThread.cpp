@@ -699,7 +699,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				constexpr float ClearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
 				SceneData->SetDrawScenePipeline(ClearColor);
 				SceneData->DeferredMergeRenderData.MaterialInterface->Binding();
-				GDirectXDevice->SetRSState(ERasterizerType::RT_CullBack);
+				GDirectXDevice->SetRSState(ERasterizerType::RT_TwoSided);
 				GDirectXDevice->SetDSState(EDepthStencilStateType::DST_NO_TEST_NO_WRITE);
 				GDirectXDevice->SetBSState(EBlendStateType::BST_Default);
 				std::shared_ptr<UTexture> ColorTexture = UTexture::GetTextureCache("DiffuseTargetTex");

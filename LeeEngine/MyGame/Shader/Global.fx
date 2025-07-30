@@ -5,11 +5,11 @@ cbuffer cbPerFrame : register(b0)
 	row_major matrix gView;
 	row_major matrix gProjection;
 
+	float2			 gResolution;
 	float            gTime;
 	float            gDeltaTime;
 	int				 gLightCount;
 
-	float2			 gResolution;
 	float3           Padding;
 }
 
