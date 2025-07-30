@@ -71,4 +71,47 @@ PS_OUT PS_DirLight(VS_OUT Input)
 }
 
 
+//////////////////////
+/// Point Light
+//////////////////////
+VS_OUT VS_PointLight(VS_IN _in)
+{
+	VS_OUT output = (VS_OUT) 0.f;
+
+	output.Position = mul( mul( mul(float4(_in.Pos, 1.f), World),gView),gProjection);
+	output.UV = _in.UV;
+
+	return output;
+}
+
+PS_OUT PS_PointLight(VS_OUT Input)
+{
+	PS_OUT output = (PS_OUT) 0.f;
+	output.Diffuse = float4(0.0f,0.0f,1.0f,1.0f);
+	return output;
+	// 픽셀 쉐이더를 호출시킨 픽셀의 좌표
+	float2 ScreenUV = Input.Position.xy / gResolution;
+
+	// Position Target 에서 호출된 픽셀 자리에 해당하는 곳에 기록된 물체의 좌표를 확인한다.
+	float4 vViewPos = POSITION_TARGET.Sample(samLinear, ScreenUV);
+
+	// 빛을 받을 물체가 존재하지 않는다.
+	if (vViewPos.x == 0.f && vViewPos.y == 0.f && vViewPos.z == 0.f)
+	{
+		discard;
+	}
+
+	
+
+	// 호출된 픽셀 자리에 해당하는 곳에 기록된 물체의 Normal 벡터를 가져온다.
+	float3 vViewNormal = NORMAL_TARGET.Sample(samLinear, ScreenUV).xyz;
+
+	CalcLight(gView, vViewPos.xyz, vViewNormal, gLightIndex, output.Diffuse.xyz, output.Specular.xyz);
+	output.Diffuse.a = 1.0f;
+	output.Specular.a = 1.0f;
+	//output.vSpecular.xyz *= vViewPos.w;   
+
+	return output;
+}
+
 #endif

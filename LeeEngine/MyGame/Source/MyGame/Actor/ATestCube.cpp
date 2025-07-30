@@ -19,7 +19,7 @@ dtNavMeshQuery* ATestCube::MyDtNavQuery;
 ATestCube::ATestCube()
 {
 	Light1 = std::make_shared<ULightComponent>();
-	Light1->SetupAttachment(GetRootComponent());
+	//Light1->SetupAttachment(GetRootComponent());
 	Light1->SetLightType(ELightType::Point);
 	Light1->SetRadius(150);
 	Light1->SetLightColor({5,0,0});
@@ -28,19 +28,19 @@ ATestCube::ATestCube()
 	Light2 = std::make_shared<ULightComponent>();
 	Light2->SetupAttachment(GetRootComponent());
 	Light2->SetLightType(ELightType::Point);
-	Light2->SetRadius(150);
+	Light2->SetRadius(300);
 	Light2->SetLightColor({0,5,0});
-	Light2->SetWorldLocation({-100,0,100});
+	Light2->SetWorldLocation({-500,0,100});
 	
 	Light3 = std::make_shared<ULightComponent>();
-	Light3->SetupAttachment(GetRootComponent());
+	//Light3->SetupAttachment(GetRootComponent());
 	Light3->SetLightType(ELightType::Point);
 	Light3->SetRadius(150);
 	Light3->SetLightColor({0,0,5});
 	Light3->SetWorldLocation({100,0,-100});
 	
 	Light4 = std::make_shared<ULightComponent>();
-	Light4->SetupAttachment(GetRootComponent());
+	//Light4->SetupAttachment(GetRootComponent());
 	Light4->SetLightType(ELightType::Directional);
 	Light4->SetWorldRotation(
 		XMQuaternionRotationRollPitchYaw(
@@ -66,7 +66,7 @@ ATestCube::ATestCube()
 	TestCube2 = std::make_shared<UStaticMeshComponent>();
 	TestCube2->SetupAttachment(GetRootComponent());
 	// 비동기 에셋 로드 테스트
-	AssetManager::GetAsyncAssetCache("SM_Cube",[this](std::shared_ptr<UObject> Object)
+	AssetManager::GetAsyncAssetCache("SM_DeferredCube",[this](std::shared_ptr<UObject> Object)
 	{
 		TestCube2->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
 	});

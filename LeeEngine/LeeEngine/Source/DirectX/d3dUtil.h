@@ -143,7 +143,10 @@ struct FrameConstantBuffer
 	float    Time;
 	float    DeltaTime;
 	int		 LightCount;
-	float    Padding;
+
+	XMFLOAT2 Resolution;
+
+	XMFLOAT3    Padding;
 };
 
 struct SkeletalMeshBoneTransformConstantBuffer

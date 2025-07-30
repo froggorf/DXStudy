@@ -607,6 +607,11 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 
 					fcb.Time      = GEngine->GetTimeSeconds();
 					fcb.DeltaTime = GEngine->GetDeltaSeconds();
+#ifdef WITH_EDITOR
+					fcb.Resolution = GDirectXDevice->GetEditorResolution();
+#else
+					fcb.Resolution = GDirectXDevice->GetResolution();
+#endif
 					fcb.LightCount = SceneData->CurrentFrameLightInfo.size();
 					GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_PerFrame, &fcb, sizeof(fcb));
 				}
@@ -682,6 +687,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 					GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_LightIndex, &LightIndex, sizeof(LightIndex));
 					SceneData->CurrentFrameLightInfo[i].Render();
 				}
+
 			}
 			
 

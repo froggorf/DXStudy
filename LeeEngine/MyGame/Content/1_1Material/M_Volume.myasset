@@ -1,0 +1,11 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_Volume",
+    "VertexShader" : {
+	"FilePath" : "/Shader/volume.fx",
+	"Func" : "VS_Volume"
+    },
+    "BlendMode": "ForDeferredMerge",
+    "TwoSided" : 0
+	
+}

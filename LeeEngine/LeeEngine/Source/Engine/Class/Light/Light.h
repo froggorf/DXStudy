@@ -26,6 +26,7 @@ struct FLightInfo
 
 	static std::shared_ptr<FStaticMeshSceneProxy>	LightVolumeMesh[static_cast<UINT>(ELightType::Count)];
 	static std::shared_ptr<UMaterialInterface>		LightMaterial[static_cast<UINT>(ELightType::Count)];
+	static std::shared_ptr<UMaterialInterface>		LightVolumeMaterial;
 
 	void InitLight();
 	void Render();

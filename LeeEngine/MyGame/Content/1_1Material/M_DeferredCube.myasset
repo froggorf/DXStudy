@@ -1,0 +1,16 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_DeferredCube",
+    "VertexShader" : {
+	"FilePath" : "/Shader/Deferred.fx",
+	"Func" : "VS_Std3D_Deferred"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/Deferred.fx",
+	"Func": "PS_Std3D_Deferred"
+    },
+    "Textures" : [ "T_Cube" ],
+    "BlendMode": "Deferred",
+    "TwoSided" : 0
+	
+}

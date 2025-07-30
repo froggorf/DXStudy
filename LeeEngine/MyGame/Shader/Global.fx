@@ -8,7 +8,9 @@ cbuffer cbPerFrame : register(b0)
 	float            gTime;
 	float            gDeltaTime;
 	int				 gLightCount;
-	float           Padding;
+
+	float2			 gResolution;
+	float3           Padding;
 }
 
 cbuffer cbPerObject : register(b1)

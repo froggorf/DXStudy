@@ -25,6 +25,7 @@ enum class EConstantBufferType
 
 enum class ERasterizerType
 {
+	RT_CullFront,
 	RT_CullBack,
 	RT_TwoSided,
 	RT_WireFrame,
@@ -44,9 +45,12 @@ enum class EDepthStencilStateType
 {
 	DST_LESS,       // Less, Depth Write
 	DST_LESS_EQUAL, // LessEqual, Depth Write
-	DST_GREATER,    // Greater, No Write VolumeMesh Check
 	DST_NO_WRITE,   // Less, No write
 	DST_NO_TEST_NO_WRITE,
+
+	// 라이팅 등 볼륨메쉬 체크용
+	VOLUME_CHECK,
+	STENCIL_EQUAL,
 
 	DST_COUNT
 };
@@ -71,6 +75,17 @@ public:
 	{
 		return static_cast<float>(*m_ClientWidth) / *m_ClientHeight;
 	}
+
+	XMFLOAT2 GetResolution() const
+	{
+		return XMFLOAT2{static_cast<float>(*m_ClientWidth), static_cast<float>(*m_ClientHeight)};
+	}
+#ifdef WITH_EDITOR
+	XMFLOAT2 GetEditorResolution() const
+	{
+		return EditorViewportSize;
+	}
+#endif
 
 	// ConstantBuffers
 private:
@@ -140,7 +155,7 @@ public:
 	}
 
 	void SetRSState(ERasterizerType InRSType);
-	void SetDSState(EDepthStencilStateType InDSType);
+	void SetDSState(EDepthStencilStateType InDSType, UINT StencilRef = 0);
 	void SetBSState(EBlendStateType InBSType);
 	std::shared_ptr<FMultiRenderTarget> GetMultiRenderTarget(EMultiRenderTargetType	Type) { return MultiRenderTargets[(UINT)Type]; }
 private:

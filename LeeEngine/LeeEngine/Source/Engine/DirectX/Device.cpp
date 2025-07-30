@@ -249,7 +249,11 @@ void FDirectXDevice::InitMultiRenderTarget()
 		};
 
 		MultiRenderTargets[static_cast<UINT>(EMultiRenderTargetType::Light)] = std::make_shared<FMultiRenderTarget>();
-		MultiRenderTargets[static_cast<UINT>(EMultiRenderTargetType::Light)]->Create(RenderTargets, 2, nullptr);
+#ifdef WITH_EDITOR
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::Light]->Create(RenderTargets, 2, GetMultiRenderTarget(EMultiRenderTargetType::Editor)->GetDepthStencilTexture());
+#else
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::Light]->Create(RenderTargets, 2, GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->GetDepthStencilTexture());
+#endif
 		MultiRenderTargets[static_cast<UINT>(EMultiRenderTargetType::Light)]->SetClearColor(ClearColor, 2);
 	}
 }
@@ -268,6 +272,15 @@ void FDirectXDevice::SetVertexShader(class FVertexShader* InVertexShader)
 
 void FDirectXDevice::SetPixelShader(class FPixelShader* InPixelShader)
 {
+	if (InPixelShader == nullptr)
+	{
+		CurrentPixelShaderID  = -1;
+		ID3D11PixelShader* PS = nullptr;
+		m_d3dDeviceContext->PSSetShader(PS, nullptr, 0);
+		
+		return;
+	}
+
 	UINT NewShaderID = InPixelShader->GetShaderID();
 	if (NewShaderID != CurrentPixelShaderID)
 	{
@@ -337,13 +350,10 @@ void FDirectXDevice::SetRSState(ERasterizerType InRSType)
 	}
 }
 
-void FDirectXDevice::SetDSState(EDepthStencilStateType InDSType)
+void FDirectXDevice::SetDSState(EDepthStencilStateType InDSType, UINT StencilRef)
 {
-	if (InDSType != CurrentDSType)
-	{
-		m_d3dDeviceContext->OMSetDepthStencilState(m_DSState[static_cast<UINT>(InDSType)].Get(), 0);
-		CurrentDSType = InDSType;
-	}
+	m_d3dDeviceContext->OMSetDepthStencilState(m_DSState[static_cast<UINT>(InDSType)].Get(), StencilRef);
+	CurrentDSType = InDSType;
 }
 
 void FDirectXDevice::SetBSState(EBlendStateType InBSType)
@@ -360,6 +370,11 @@ void FDirectXDevice::CreateRasterizerState()
 	m_RSState[static_cast<UINT>(ERasterizerType::RT_CullBack)] = nullptr;
 
 	D3D11_RASTERIZER_DESC RasterizerDesc{};
+
+	// Cull Front
+	RasterizerDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_FRONT;
+	RasterizerDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;	
+	GDirectXDevice->GetDevice()->CreateRasterizerState(&RasterizerDesc, m_RSState[static_cast<UINT>(ERasterizerType::RT_CullFront)].GetAddressOf());
 
 	// Two Sided
 	RasterizerDesc.CullMode = D3D11_CULL_NONE;
@@ -422,13 +437,6 @@ void FDirectXDevice::CreateDepthStencilState()
 	Desc.StencilEnable  = false;
 	HR(m_d3dDevice->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(EDepthStencilStateType::DST_LESS_EQUAL)]. GetAddressOf()));
 
-	// Greater
-	Desc.DepthEnable    = true;
-	Desc.DepthFunc      = D3D11_COMPARISON_GREATER;
-	Desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	Desc.StencilEnable  = false;
-	HR(m_d3dDevice->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(EDepthStencilStateType::DST_GREATER)]. GetAddressOf()));
-
 	// NO_WRITE
 	Desc.DepthEnable    = true;
 	Desc.DepthFunc      = D3D11_COMPARISON_LESS;
@@ -439,6 +447,51 @@ void FDirectXDevice::CreateDepthStencilState()
 	// NO_TEST_NO_WRITE
 	Desc.DepthEnable = false;
 	HR(m_d3dDevice->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(EDepthStencilStateType:: DST_NO_TEST_NO_WRITE)].GetAddressOf()));
+
+	// VOLUE_CHECK
+	// 뒷면을 렌더링할때 사용
+	{
+		// 테스트가 성공했다, 성공한 영역은 VolumeMesh 뒷면보다 앞쪽에 있다.
+		Desc.DepthEnable = true;
+		Desc.DepthFunc = D3D11_COMPARISON_GREATER;
+		Desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO; // VolueMesh 는 실제가 없기때문에, 자신의 깊이를 남기지 않는다.
+
+		Desc.StencilEnable = true;	
+		Desc.StencilReadMask = 0xff;
+		Desc.StencilWriteMask = 0xff;
+
+		Desc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS; // 무조건 통과
+		Desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_INCR;// 깊이 테스트와 스텐실 테스트 모두 성공한 경우 옵션
+		Desc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_ZERO;
+		Desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_ZERO;
+
+		Desc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS; // 특정 전달값과 Stencil 값이 일치할 경우 통과
+		Desc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_ZERO;// 깊이 테스트와 스텐실 테스트 모두 성공한 경우 옵션
+		Desc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+		Desc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_ZERO;
+
+		GDirectXDevice->GetDevice()->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(EDepthStencilStateType::VOLUME_CHECK)].GetAddressOf());
+	}
+
+	// STENCIL_EQUAL
+	{
+		// 테스트가 성공했다, 지정된 Stencil 값을 보유한 영역만 통과
+		Desc.DepthEnable = true;
+		Desc.DepthFunc = D3D11_COMPARISON_ALWAYS;
+		Desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO; // VolueMesh 는 실제가 없기때문에, 자신의 깊이를 남기지 않는다.
+
+		Desc.StencilEnable = true;
+		Desc.StencilReadMask = 0xff;
+		Desc.StencilWriteMask = 0xff;
+		Desc.BackFace.StencilFunc = D3D11_COMPARISON_LESS; // 특정 전달값과 Stencil 값이 일치할 경우 통과
+		Desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_ZERO;// VolumeMesh 내부영역에 대해서 처리를 한 이후에 다시 Stencil 값을 0로 클리어
+		Desc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_ZERO;
+		Desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_ZERO;
+
+		Desc.FrontFace = Desc.BackFace;
+
+		GDirectXDevice->GetDevice()->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(EDepthStencilStateType::STENCIL_EQUAL)].GetAddressOf());
+	}
 }
 
 void FDirectXDevice::InitSamplerState()

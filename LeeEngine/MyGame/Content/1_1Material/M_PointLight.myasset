@@ -1,0 +1,15 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_PointLight",
+    "VertexShader" : {
+	"FilePath" : "/Shader/DeferredLight.fx",
+	"Func" : "VS_PointLight"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/DeferredLight.fx",
+	"Func": "PS_PointLight"
+    },
+    "BlendMode": "ForDeferredMerge",
+    "TwoSided" : 0
+	
+}

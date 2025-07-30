@@ -91,18 +91,23 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 
 	// 픽셀셰이더 로드
 	{
-		auto        PixelShaderData = AssetData["PixelShader"];
-		std::string PSName          = PixelShaderData["FilePath"];
-		std::string FuncName        = PixelShaderData["Func"];
-		auto        PSTarget        = FShader::ShaderCache.find(PSName + FuncName);
-		if (PSTarget == FShader::ShaderCache.end())
+		// 07.30 : 픽셀셰이더는 존재하지 않는 머테리얼이 있을수도 있으므로
+		if (AssetData.contains("PixelShader"))
 		{
-			auto NewPS = std::make_shared<FPixelShader>();
-			NewPS->CompilePixelShader(PSName, FuncName);
-			PSTarget = FShader::ShaderCache.insert(std::pair<std::string, std::shared_ptr<FShader>>{PSName + FuncName, NewPS}).first;
-			PSTarget->second->SetShaderID(static_cast<UINT>(FShader::ShaderCache.size()));
+			auto        PixelShaderData = AssetData["PixelShader"];
+			std::string PSName          = PixelShaderData["FilePath"];
+			std::string FuncName        = PixelShaderData["Func"];
+			auto        PSTarget        = FShader::ShaderCache.find(PSName + FuncName);
+			if (PSTarget == FShader::ShaderCache.end())
+			{
+				auto NewPS = std::make_shared<FPixelShader>();
+				NewPS->CompilePixelShader(PSName, FuncName);
+				PSTarget = FShader::ShaderCache.insert(std::pair<std::string, std::shared_ptr<FShader>>{PSName + FuncName, NewPS}).first;
+				PSTarget->second->SetShaderID(static_cast<UINT>(FShader::ShaderCache.size()));
+			}
+			PixelShader = std::dynamic_pointer_cast<FPixelShader>(PSTarget->second);
 		}
-		PixelShader = std::dynamic_pointer_cast<FPixelShader>(PSTarget->second);
+		
 	}
 
 	// GeometryShader 로드
