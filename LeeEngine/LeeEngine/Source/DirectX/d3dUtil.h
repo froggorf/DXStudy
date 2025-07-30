@@ -156,6 +156,12 @@ struct FDebugColor
 	XMFLOAT4 DebugColor;
 };
 
+struct FLightIndex
+{
+	int LightIndex;
+	XMFLOAT3 Pad;
+};
+
 struct LightFrameConstantBuffer
 {
 	DirectionalLight gDirLight;

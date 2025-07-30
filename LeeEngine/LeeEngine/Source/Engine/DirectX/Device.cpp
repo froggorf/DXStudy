@@ -1,4 +1,4 @@
-﻿// 03.09
+// 03.09
 // 언리얼 엔진 5 코드를 분석하며 자체엔진으로 작성중인 코드입니다.
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
@@ -218,33 +218,40 @@ void FDirectXDevice::InitMultiRenderTarget()
 	}
 
 
-	//// =========
-	//// Light MRT
-	//// =========
-	//{
-	//	Ptr<ATexture> arrTex[2] =
-	//	{
-	//		AssetMgr::GetInst()->CreateTexture(L"DiffuseTargetTex"
-	//			, vRenderResol.x, vRenderResol.y
-	//			, DXGI_FORMAT_R32G32B32A32_FLOAT
-	//			, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+	// =========
+	// Light MRT
+	// =========
+	{
+		XMFLOAT2 Resolution = {};
+#ifdef WITH_EDITOR
+		Resolution = {EditorViewportSize.x, EditorViewportSize.y};
+#else
+		Resolution = {RenderResolution.x,RenderResolution.y};
 
-	//			AssetMgr::GetInst()->CreateTexture(L"SpecularTargetTex"
-	//				, vRenderResol.x, vRenderResol.y
-	//				, DXGI_FORMAT_R32G32B32A32_FLOAT
-	//				, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
-	//	};
+#endif
+		std::shared_ptr<UTexture> RenderTargets[2] =
+		{
+			AssetManager::CreateTexture("DiffuseTargetTex"
+				, Resolution.x, Resolution.y
+				, DXGI_FORMAT_R32G32B32A32_FLOAT
+				, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
 
-	//	Vec4 ClearColor[2] =
-	//	{
-	//		Vec4(0.f, 0.f, 0.f, 1.f),
-	//		Vec4(0.f, 0.f, 0.f, 1.f),
-	//	};
+				AssetManager::CreateTexture("SpecularTargetTex"
+					, Resolution.x, Resolution.y
+					, DXGI_FORMAT_R32G32B32A32_FLOAT
+					, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+		};
 
-	//	m_arrMRT[(UINT)MRT_TYPE::LIGHT] = new MRT;
-	//	m_arrMRT[(UINT)MRT_TYPE::LIGHT]->Create(arrTex, 2, nullptr);
-	//	m_arrMRT[(UINT)MRT_TYPE::LIGHT]->SetClearColor(ClearColor, 2);
-	//}
+		XMFLOAT4 ClearColor[2] =
+		{
+			XMFLOAT4(0.f, 0.f, 0.f, 1.f),
+			XMFLOAT4(0.f, 0.f, 0.f, 1.f),
+		};
+
+		MultiRenderTargets[static_cast<UINT>(EMultiRenderTargetType::Light)] = std::make_shared<FMultiRenderTarget>();
+		MultiRenderTargets[static_cast<UINT>(EMultiRenderTargetType::Light)]->Create(RenderTargets, 2, nullptr);
+		MultiRenderTargets[static_cast<UINT>(EMultiRenderTargetType::Light)]->SetClearColor(ClearColor, 2);
+	}
 }
 
 
@@ -585,10 +592,15 @@ void FDirectXDevice::CreateConstantBuffers()
 	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ConstantBuffers[static_cast<UINT>( EConstantBufferType::CBT_SkeletalData)].GetAddressOf()));
 	m_d3dDeviceContext->VSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_SkeletalData), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_SkeletalData)].GetAddressOf());
 
-	// SkeletalMeshBoneTransformConstantBuffer
+	// FDebugColor
 	bufferDesc.ByteWidth = sizeof(FDebugColor);
 	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ConstantBuffers[static_cast<UINT>( EConstantBufferType::CBT_DebugDraw)].GetAddressOf()));
 	m_d3dDeviceContext->PSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_DebugDraw), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_DebugDraw)].GetAddressOf());
+
+	// LightIndex
+	bufferDesc.ByteWidth = sizeof(FLightIndex);
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ConstantBuffers[static_cast<UINT>( EConstantBufferType::CBT_LightIndex)].GetAddressOf()));
+	m_d3dDeviceContext->PSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_LightIndex), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_LightIndex)].GetAddressOf());
 }
 
 void FDirectXDevice::MapConstantBuffer(EConstantBufferType Type, void* Data, size_t Size) const

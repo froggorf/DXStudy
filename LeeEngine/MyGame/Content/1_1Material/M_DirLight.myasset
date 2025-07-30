@@ -1,0 +1,15 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_DirLight",
+    "VertexShader" : {
+	"FilePath" : "/Shader/DeferredLight.fx",
+	"Func" : "VS_DirLight"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/DeferredLight.fx",
+	"Func": "PS_DirLight"
+    },
+    "BlendMode": "ForDeferredMerge",
+    "TwoSided" : 1
+	
+}

@@ -27,6 +27,19 @@ void FImguiLevelViewport::Draw()
 	// Actor
 	if (ImGui::Begin("Place Actors", nullptr))
 	{
+		ImGui::Text("DiffuseTargetTex");
+		if (const std::shared_ptr<UTexture>& RenderTexture = UTexture::GetTextureCache("DiffuseTargetTex"))
+		{
+			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {200,200});
+		}
+
+		ImGui::Text("SpecularTargetTex");
+		if (const std::shared_ptr<UTexture>& RenderTexture = UTexture::GetTextureCache("SpecularTargetTex"))
+		{
+			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {200,200});
+		}
+
+
 		ImGui::Text("ColorTargetTex");
 		if (const std::shared_ptr<UTexture>& RenderTexture = UTexture::GetTextureCache("ColorTargetTex"))
 		{

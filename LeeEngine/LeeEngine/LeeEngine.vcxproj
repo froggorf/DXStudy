@@ -46,6 +46,7 @@
     <ClCompile Include="Source\Engine\Class\Framework\APlayerController.cpp" />
     <ClCompile Include="Source\Engine\Class\Framework\UPlayerInput.cpp" />
     <ClCompile Include="Source\Engine\Class\Framework\USpringArmComponent.cpp" />
+    <ClCompile Include="Source\Engine\Class\Light\Light.cpp" />
     <ClCompile Include="Source\Engine\Class\Light\UDirectionalLightComponent.cpp" />
     <ClCompile Include="Source\Engine\Class\Light\ULightComponent.cpp" />
     <ClCompile Include="Source\Engine\Class\Light\UPointLightComponent.cpp" />

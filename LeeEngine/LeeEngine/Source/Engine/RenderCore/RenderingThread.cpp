@@ -627,7 +627,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 					}
 				}
 
-				// 라이팅 관련
+				// TODO : 구시대 코드 , 지워야함 ) 라이팅 관련
 				{
 					LightFrameConstantBuffer lfcb;
 					DirectionalLight         TempDirectionalLight;
@@ -654,13 +654,38 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 
 			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->ClearRenderTarget();	
 			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->ClearDepthStencilTarget();
-			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->OMSet();
 			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->ClearRenderTarget();
 			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->ClearDepthStencilTarget();
 			GDirectXDevice->SetDSState(EDepthStencilStateType::DST_LESS);
 			SceneData->SetRSViewport();
-			//deferred
-			DrawSceneProxies(SceneData->DeferredSceneProxyRenderData);
+
+			// Deferred 렌더링
+			{
+				GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->OMSet();
+				// Deferred 오브젝트 렌더링
+				DrawSceneProxies(SceneData->DeferredSceneProxyRenderData);
+
+				// Deferred 라이팅 렌더링
+				GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Light)->OMSet();
+				GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Light)->ClearRenderTarget();
+
+				const std::shared_ptr<UTexture>& PositionTexture = UTexture::GetTextureCache("PositionTargetTex");
+				 GDirectXDevice->GetDeviceContext()->PSSetShaderResources(0,1, PositionTexture->GetSRV().GetAddressOf());
+				 const std::shared_ptr<UTexture>& NormalTexture = UTexture::GetTextureCache("NormalTargetTex");
+				 GDirectXDevice->GetDeviceContext()->PSSetShaderResources(1,1, NormalTexture->GetSRV().GetAddressOf());
+
+				int LightSize = static_cast<int>(SceneData->CurrentFrameLightInfo.size());
+				for (int i = 0; i < LightSize; ++i)
+				{
+					FLightIndex LightIndex;
+					LightIndex.LightIndex = i;
+					GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_LightIndex, &LightIndex, sizeof(LightIndex));
+					SceneData->CurrentFrameLightInfo[i].Render();
+				}
+			}
+			
+
+			
 
 			// Deferred로 그린 gbuffer 텍스쳐를 렌더타겟에 머지
 			{
@@ -671,19 +696,19 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				GDirectXDevice->SetRSState(ERasterizerType::RT_CullBack);
 				GDirectXDevice->SetDSState(EDepthStencilStateType::DST_NO_TEST_NO_WRITE);
 				GDirectXDevice->SetBSState(EBlendStateType::BST_Default);
-				std::shared_ptr<UTexture> ColorTexture = UTexture::GetTextureCache("ColorTargetTex");
+				std::shared_ptr<UTexture> ColorTexture = UTexture::GetTextureCache("DiffuseTargetTex");
 				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(0,1,ColorTexture->GetSRV().GetAddressOf());
 				SceneData->DeferredMergeRenderData.SceneProxy->Draw();
 			}
 
-
-			GDirectXDevice->SetDSState(EDepthStencilStateType::DST_LESS);
-			DrawSceneProxies(SceneData->OpaqueSceneProxyRenderData);
-			GDirectXDevice->SetBSState(EBlendStateType::BST_AlphaBlend);
-			DrawSceneProxies(SceneData->MaskedSceneProxyRenderData);
-			DrawSceneProxies(SceneData->TranslucentSceneProxyRenderData);
-			
-
+			// 포워드 렌더링 진행
+			{
+				GDirectXDevice->SetDSState(EDepthStencilStateType::DST_LESS);
+				DrawSceneProxies(SceneData->OpaqueSceneProxyRenderData);
+				GDirectXDevice->SetBSState(EBlendStateType::BST_AlphaBlend);
+				DrawSceneProxies(SceneData->MaskedSceneProxyRenderData);
+				DrawSceneProxies(SceneData->TranslucentSceneProxyRenderData);
+			}
 			
 #if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
 			// 디버그 드로우
