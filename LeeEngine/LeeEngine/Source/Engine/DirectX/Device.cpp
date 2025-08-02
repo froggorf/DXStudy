@@ -575,12 +575,12 @@ void FDirectXDevice::ResizeWindow()
 	InitMultiRenderTarget();
 
 	//// 뷰포트 설정
-	//m_ScreenViewport.TopLeftX = 0;
-	//m_ScreenViewport.TopLeftY = 0;
-	//m_ScreenViewport.Width    = static_cast<float>(*m_ClientWidth);
-	//m_ScreenViewport.Height   = static_cast<float>(*m_ClientHeight);
-	//m_ScreenViewport.MinDepth = 0.0f;
-	//m_ScreenViewport.MaxDepth = 1.0f;
+	m_ScreenViewport.TopLeftX = 0;
+	m_ScreenViewport.TopLeftY = 0;
+	m_ScreenViewport.Width    = static_cast<float>(*m_ClientWidth);
+	m_ScreenViewport.Height   = static_cast<float>(*m_ClientHeight);
+	m_ScreenViewport.MinDepth = 0.0f;
+	m_ScreenViewport.MaxDepth = 1.0f;
 
 	//m_d3dDeviceContext->RSSetViewports(1, &m_ScreenViewport);
 }
