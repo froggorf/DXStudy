@@ -1,4 +1,4 @@
-﻿// 04.19
+// 04.19
 // 언리얼 엔진 5 코드를 분석하며 자체엔진으로 작성중인 코드입니다.
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
@@ -125,7 +125,6 @@ class UMaterialInterface : public UObject
 	MY_GENERATE_BODY(UMaterialInterface)
 
 	UMaterialInterface()
-		: BlendMode(EBlendMode::BM_Opaque), RasterizerType(ERasterizerType::RT_CullBack), BlendStateType(EBlendStateType::BST_Default)
 	{
 	};
 	~UMaterialInterface() override = default;
@@ -139,6 +138,13 @@ class UMaterialInterface : public UObject
 	{
 		return RasterizerType;
 	};
+
+	virtual EDepthStencilStateType GetDepthStencilState() const
+	{
+		return DepthStencilState;
+	}
+
+	virtual EBlendStateType GetBlendStateType() const {return BlendStateType;}
 
 	virtual EBlendMode GetBlendModeType() const
 	{
@@ -181,9 +187,15 @@ class UMaterialInterface : public UObject
 	{
 	};
 
-	EBlendMode      BlendMode;
-	ERasterizerType RasterizerType;
-	EBlendStateType BlendStateType;
+	void SetBlendMode(EBlendMode InBlendMode) {BlendMode = InBlendMode;}
+	void SetRasterizerType(ERasterizerType InRasterizerType) {RasterizerType = InRasterizerType;}
+	void SetBlendStateType(EBlendStateType InBlendStateType) {BlendStateType = InBlendStateType;}
+	void SetDepthStencilState(EDepthStencilStateType InDepthStencilState) {DepthStencilState = InDepthStencilState;}
+
+	EBlendMode      BlendMode = EBlendMode::BM_Opaque;
+	ERasterizerType RasterizerType = ERasterizerType::RT_CullBack;
+	EBlendStateType BlendStateType = EBlendStateType::BST_Default;
+	EDepthStencilStateType DepthStencilState = EDepthStencilStateType::DST_LESS;
 };
 
 class UMaterial : public UMaterialInterface
@@ -210,6 +222,8 @@ class UMaterial : public UMaterialInterface
 	}
 
 	void MapAndBindParameterConstantBuffer() const;
+
+	void SetTexture(UINT SlotIndex, const std::shared_ptr<UTexture>& NewTexture);
 
 protected:
 	std::shared_ptr<FVertexShader>   VertexShader;

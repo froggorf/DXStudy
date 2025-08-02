@@ -20,7 +20,9 @@ void FLightInfo::InitLight()
 			DirectionalRectMesh = UStaticMesh::GetStaticMesh("SM_DeferredMergeRect");
 		}
 		LightVolumeMesh[static_cast<UINT>(ELightType::Directional)] = std::make_shared<FStaticMeshSceneProxy>(0,0,DirectionalRectMesh);
-		LightMaterial[static_cast<UINT>(ELightType::Directional)] = UMaterial::GetMaterialCache("M_DirLight");	
+		LightMaterial[static_cast<UINT>(ELightType::Directional)] = UMaterial::GetMaterialCache("M_DirLight");
+		LightMaterial[static_cast<UINT>(ELightType::Directional)]->SetDepthStencilState(EDepthStencilStateType::DST_NO_TEST_NO_WRITE);
+		LightMaterial[static_cast<UINT>(ELightType::Directional)]->SetBlendStateType(EBlendStateType::BST_One_One);
 	}
 
 	// Point Light
@@ -51,8 +53,6 @@ void FLightInfo::Render()
 	{
 		if (LightType == static_cast<int>(ELightType::Directional))
 		{
-			GDirectXDevice->SetDSState(EDepthStencilStateType::DST_NO_TEST_NO_WRITE);
-			GDirectXDevice->SetBSState(EBlendStateType::BST_One_One);
 			LightMaterial[LightType]->Binding();
 			LightVolumeMesh[LightType]->Draw();
 		}

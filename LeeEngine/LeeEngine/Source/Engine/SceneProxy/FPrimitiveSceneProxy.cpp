@@ -22,9 +22,4 @@ void FPrimitiveSceneProxy::Draw()
 
 		GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_PerObject, &ocb, sizeof(ocb));
 	}
-
-	ID3D11DeviceContext* DeviceContext = GDirectXDevice->GetDeviceContext().Get();
-
-	// Rasterizer State
-	//GDirectXDevice->SetRSState(MaterialInterface->GetRSType());
 }

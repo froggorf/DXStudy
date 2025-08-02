@@ -16,6 +16,10 @@ std::shared_ptr<FScene> FRenderCommandExecutor::CurrentSceneData = nullptr;
 FScene::FScene()
 {
 	DeferredMergeRenderData.MaterialInterface = UMaterial::GetMaterialCache("M_DeferredMergeRect");
+	DeferredMergeRenderData.MaterialInterface->SetRasterizerType(ERasterizerType::RT_TwoSided);
+	DeferredMergeRenderData.MaterialInterface->SetDepthStencilState(EDepthStencilStateType::DST_NO_TEST_NO_WRITE);
+	DeferredMergeRenderData.MaterialInterface->SetBlendStateType(EBlendStateType::BST_Default);
+	std::static_pointer_cast<UMaterial>(DeferredMergeRenderData.MaterialInterface)->SetTexture(0, UTexture::GetTextureCache("DiffuseTargetTex")); 
 	
 	std::shared_ptr<UStaticMesh> StaticMesh = UStaticMesh::GetStaticMesh("SM_DeferredMergeRect");
 	if (!StaticMesh)
@@ -699,16 +703,19 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				constexpr float ClearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
 				SceneData->SetDrawScenePipeline(ClearColor);
 				SceneData->DeferredMergeRenderData.MaterialInterface->Binding();
-				GDirectXDevice->SetRSState(ERasterizerType::RT_TwoSided);
-				GDirectXDevice->SetDSState(EDepthStencilStateType::DST_NO_TEST_NO_WRITE);
-				GDirectXDevice->SetBSState(EBlendStateType::BST_Default);
-				std::shared_ptr<UTexture> ColorTexture = UTexture::GetTextureCache("DiffuseTargetTex");
+				std::shared_ptr<UTexture> ColorTexture = UTexture::GetTextureCache("ColorTargetTex");
 				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(0,1,ColorTexture->GetSRV().GetAddressOf());
+				std::shared_ptr<UTexture> DiffuseTexture = UTexture::GetTextureCache("DiffuseTargetTex");
+				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(1,1,DiffuseTexture->GetSRV().GetAddressOf());
+				std::shared_ptr<UTexture> SpecularTexture = UTexture::GetTextureCache("SpecularTargetTex");
+				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(2,1,SpecularTexture->GetSRV().GetAddressOf());
+
 				SceneData->DeferredMergeRenderData.SceneProxy->Draw();
 			}
 
 			// 포워드 렌더링 진행
 			{
+				
 				GDirectXDevice->SetDSState(EDepthStencilStateType::DST_LESS);
 				DrawSceneProxies(SceneData->OpaqueSceneProxyRenderData);
 				GDirectXDevice->SetBSState(EBlendStateType::BST_AlphaBlend);

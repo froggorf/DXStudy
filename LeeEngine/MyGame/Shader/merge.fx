@@ -1,7 +1,9 @@
 #include "Global.fx"
 #include "TransformHelpers.hlsl"
 
-Texture2D    txDiffuse : register( t0 );
+Texture2D    txColorTexture : register( t0 );
+Texture2D    txDiffuseTexture : register( t1 );
+Texture2D    txSpecularTexture : register( t2 );
 SamplerState samLinear : register( s0 );
 
 struct VS_IN
@@ -33,8 +35,12 @@ VS_OUT VS_Merge(VS_IN _in)
 float4 PS_Merge(VS_OUT _in) : SV_Target
 {
     float4 OutColor = (float4) 0.f;
-       
-    OutColor = txDiffuse.Sample(samLinear, _in.vUV);
+
+	float4 Color = txColorTexture.Sample(samLinear, _in.vUV);
+	float4 Diffuse = txDiffuseTexture.Sample(samLinear, _in.vUV);
+	float4 Specular = txSpecularTexture.Sample(samLinear, _in.vUV);
+
+	OutColor.rgb = Color.rgb * Diffuse.rgb + Specular.rgb;
     
     return OutColor;
 }

@@ -250,6 +250,9 @@ void UMaterial::Binding()
 	GDirectXDevice->SetGeometryShader(GeometryShader.get());
 
 	GDirectXDevice->SetRSState(GetRSType());
+	GDirectXDevice->SetDSState(GetDepthStencilState());
+	GDirectXDevice->SetBSState(GetBlendStateType());
+
 	ComPtr<ID3D11DeviceContext> DeviceContext = GDirectXDevice->GetDeviceContext();
 
 	for (int i = 0; i < Textures.size(); ++i)
@@ -287,6 +290,15 @@ void UMaterial::MapAndBindParameterConstantBuffer() const
 	GDirectXDevice->GetDeviceContext()->Unmap(ParamConstantBuffer.Get(), 0);
 
 	GDirectXDevice->GetDeviceContext()->PSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_UserParam), 1, ParamConstantBuffer.GetAddressOf());
+}
+
+void UMaterial::SetTexture(UINT SlotIndex, const std::shared_ptr<UTexture>& NewTexture)
+{
+	if (Textures.size() < SlotIndex+1)
+	{
+		Textures.resize(SlotIndex+1);
+	}
+	Textures[SlotIndex] = NewTexture;
 }
 
 void UMaterialInstance::LoadDataFromFileData(const nlohmann::json& AssetData)
