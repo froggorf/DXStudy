@@ -10,7 +10,7 @@ void ULightComponent::Register()
 
 	AddLightInfo();	
 
-	GEngine->GetWorld()->DrawDebugBox(GetWorldLocation(), {GetRadius(),GetRadius(),GetRadius()}, GetLightColor(), {0,0,0,1}, 100);
+	
 }
 
 void ULightComponent::SetLightType(ELightType Type)
@@ -32,6 +32,18 @@ void ULightComponent::TickComponent(float DeltaSeconds)
 	{
 		AddLightInfo();
 
+	}
+}
+
+void ULightComponent::Tick_Editor(float DeltaSeconds)
+{
+	USceneComponent::Tick_Editor(DeltaSeconds);
+
+
+	if (bActive)
+	{
+		AddLightInfo();
+		GEngine->GetWorld()->DrawDebugBox(GetWorldLocation(), {GetRadius(),GetRadius(),GetRadius()}, GetLightColor(), {0,0,0,1}, DeltaSeconds);
 	}
 }
 

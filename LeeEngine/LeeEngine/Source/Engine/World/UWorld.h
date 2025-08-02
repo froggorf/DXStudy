@@ -31,6 +31,7 @@ class UWorld : public UObject, public std::enable_shared_from_this<UWorld>
 
 	void TickLight();
 	void TickWorld(float DeltaSeconds);
+	void Tick_Editor(float DeltaSeconds);
 	void Tick();
 
 	std::shared_ptr<ULevel> GetPersistentLevel() const

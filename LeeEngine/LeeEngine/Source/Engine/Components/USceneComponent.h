@@ -1,4 +1,4 @@
-﻿// 02.13
+// 02.13
 // 언리얼 엔진 5 코드를 분석하며 자체엔진으로 작성중인 코드입니다.
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
@@ -18,6 +18,7 @@ class USceneComponent : public UActorComponent, public std::enable_shared_from_t
 	void Register() override;
 	void BeginPlay() override;
 	void TickComponent(float DeltaSeconds) override;
+	virtual void Tick_Editor(float DeltaSeconds);
 
 	const std::shared_ptr<USceneComponent>& GetAttachParent() const
 	{

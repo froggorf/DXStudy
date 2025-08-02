@@ -30,6 +30,7 @@ class ULightComponent : public USceneComponent
 
 
 	void TickComponent(float DeltaSeconds) override;
+	void Tick_Editor(float DeltaSeconds) override;
 
 	void SetActive(bool NewActive){bActive = NewActive;}
 	bool GetActive() const {return bActive;}

@@ -68,11 +68,8 @@ void UWorld::TickLight()
 				SceneData->SetFrameLightInfo(LightInfoCopy);
 			};
 		ENQUEUE_RENDER_COMMAND(Lambda);
-		if (GEngine->bGameStart)
-		{
-			CurrentFrameLightInfo.clear();		
-		}
-
+		CurrentFrameLightInfo.clear();		
+		
 	}
 }
 
@@ -96,6 +93,15 @@ void UWorld::TickWorld(float DeltaSeconds)
 	ToBeTickedNiagaraSceneProxies.clear();
 
 	
+}
+
+void UWorld::Tick_Editor(float DeltaSeconds)
+{
+	// Level Tick
+	if (PersistentLevel)
+	{
+		PersistentLevel->Tick_Editor(DeltaSeconds);
+	}
 }
 
 void UWorld::Tick()

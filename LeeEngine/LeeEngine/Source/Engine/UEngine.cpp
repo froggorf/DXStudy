@@ -184,8 +184,16 @@ void UEngine::Tick(float DeltaSeconds)
 			CurrentWorld->TickWorld(DeltaSeconds);
 			gPhysicsEngine->TickPhysics(DeltaSeconds);
 		}
-		
 	}
+#ifdef WITH_EDITOR
+	else
+	{
+		if (CurrentWorld)
+		{
+			CurrentWorld->Tick_Editor(DeltaSeconds);
+		}
+	}
+#endif
 
 	// 라이팅 적용
 	if (GetWorld())
