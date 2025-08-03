@@ -15,6 +15,7 @@ void FPrimitiveSceneProxy::Draw()
 		// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
 		ocb.InvTransposeMatrix = (XMMatrixInverse(nullptr, world));
 		ocb.World              = XMMatrixTranspose(world);
+		ocb.WorldInv			= XMMatrixInverse(nullptr, world);
 		ocb.MatWV				= XMMatrixMultiply(world,FRenderCommandExecutor::CurrentSceneData->GetViewMatrix());
 		ocb.ObjectMaterial.Ambient  = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 		ocb.ObjectMaterial.Diffuse  = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);

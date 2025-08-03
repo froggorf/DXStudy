@@ -130,6 +130,7 @@ struct BoneInfo
 struct ObjConstantBuffer
 {
 	XMMATRIX World;
+	XMMATRIX WorldInv;
 	XMMATRIX MatWV;
 	XMMATRIX InvTransposeMatrix;
 	Material ObjectMaterial;
@@ -138,6 +139,7 @@ struct ObjConstantBuffer
 struct FrameConstantBuffer
 {
 	XMMATRIX View;
+	XMMATRIX ViewInv;
 	XMMATRIX Projection;
 
 	XMFLOAT2 Resolution;

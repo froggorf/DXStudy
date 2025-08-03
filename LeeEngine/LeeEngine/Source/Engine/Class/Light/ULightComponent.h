@@ -50,12 +50,10 @@ class UDecalComponent : public USceneComponent
 	MY_GENERATE_BODY(UDecalComponent)
 
 public:
-	std::shared_ptr<UTexture> DecalTexture;
-	bool					  bIsLight;
+	
 
-	bool bIsActive = true;
-
-	void SetDecalTexture(const std::shared_ptr<UTexture>& NewDecalTexture) { DecalTexture = NewDecalTexture; }
+	const std::shared_ptr<UMaterialInterface>& GetDecalMaterial() const {return DecalMaterial;}
+	void SetDecalMaterial(const std::shared_ptr<UMaterialInterface>& NewDecalMaterial) { DecalMaterial = NewDecalMaterial; }
 	void SetIsLight(bool NewIsLight) { bIsLight = NewIsLight;}
 	void SetActive(bool NewActive) { bIsActive = NewActive;}
 
@@ -63,5 +61,8 @@ public:
 	void Tick_Editor(float DeltaSeconds) override;
 
 private:
+	std::shared_ptr<UMaterialInterface> DecalMaterial;
+	bool					  bIsLight = false;
+	bool bIsActive = true;
 	void AddDecalInfo();
 };

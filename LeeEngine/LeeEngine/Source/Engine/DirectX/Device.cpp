@@ -446,6 +446,38 @@ void FDirectXDevice::CreateBlendState()
 
 	m_d3dDevice->CreateBlendState(&BlendDesc, m_BSState[static_cast<UINT>(EBlendStateType::BST_One_One)].GetAddressOf());
 
+	// Decal
+	BlendDesc.AlphaToCoverageEnable = false;
+	BlendDesc.IndependentBlendEnable = true; // 각 타겟별로 블렌딩 공식을 다르게 적용한다.
+
+	// 0 번 타겟은 AlaphaBlend
+	BlendDesc.RenderTarget[0].BlendEnable = true;
+	BlendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	BlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	BlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+
+	BlendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	BlendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	BlendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+
+	BlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+
+	// 1 번 타겟 One_One 
+	BlendDesc.RenderTarget[1].BlendEnable = true;
+	BlendDesc.RenderTarget[1].BlendOp = D3D11_BLEND_OP_ADD;
+	BlendDesc.RenderTarget[1].SrcBlend = D3D11_BLEND_ONE;
+	BlendDesc.RenderTarget[1].DestBlend = D3D11_BLEND_ONE;
+
+	BlendDesc.RenderTarget[1].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	BlendDesc.RenderTarget[1].SrcBlendAlpha = D3D11_BLEND_ONE;
+	BlendDesc.RenderTarget[1].DestBlendAlpha = D3D11_BLEND_ZERO;
+
+	BlendDesc.RenderTarget[1].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+
+	GDirectXDevice->GetDevice()->CreateBlendState(&BlendDesc, m_BSState[static_cast<UINT>(EBlendStateType::BST_Decal)].GetAddressOf());
+
 	SetBSState(EBlendStateType::BST_AlphaBlend);
 }
 

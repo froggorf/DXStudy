@@ -1,0 +1,16 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_Decal",
+    "VertexShader" : {
+	"FilePath" : "/Shader/Decal.fx",
+	"Func" : "VS_Decal"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/Decal.fx",
+	"Func": "PS_Decal"
+    },
+    "BlendMode": "ForDeferredMerge",
+    "Textures" : [ "T_CircleEffect" ],
+    "TwoSided" : 1
+	
+}

@@ -77,3 +77,26 @@ void FLightInfo::Render()
 		
 	}
 }
+
+
+std::shared_ptr<FStaticMeshSceneProxy> FDecalInfo::BoxSceneProxy;
+void FDecalInfo::Render()
+{
+	if (!BoxSceneProxy)
+	{
+		std::shared_ptr<UStaticMesh> BoxMesh = UStaticMesh::GetStaticMesh("SM_Cube");
+		if (!BoxMesh)
+		{
+			AssetManager::ReadMyAsset(AssetManager::GetAssetNameAndAssetPathMap()["SM_Cube"]);	
+			BoxMesh = UStaticMesh::GetStaticMesh("SM_Cube");
+		}
+		BoxSceneProxy = std::make_shared<FStaticMeshSceneProxy>(0,0,BoxMesh);
+	}
+
+	BoxSceneProxy->SetSceneProxyWorldTransform(Transform);
+	DecalMaterial->Binding();
+	const std::shared_ptr<UTexture>& PositionTargetTexture = UTexture::GetTextureCache("PositionTargetTex");
+	GDirectXDevice->GetDeviceContext()->PSSetShaderResources(10,1,PositionTargetTexture->GetSRV().GetAddressOf());
+	BoxSceneProxy->Draw();
+
+}

@@ -38,6 +38,7 @@ enum class EBlendStateType
 	BST_AlphaBlend,          // src(A) / Dest(1-A)
 	BST_AlphaBlend_Coverage, // 알파값에 따른 깊이 문제 해결
 	BST_One_One,             // Src(1), Dest(1) - 검은색 색상 제거 or 색상 누적
+	BST_Decal,
 	BST_Count
 };
 

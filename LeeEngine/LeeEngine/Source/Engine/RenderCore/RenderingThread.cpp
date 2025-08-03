@@ -606,6 +606,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 					// TODO: 카메라 구현 시 수정
 
 					fcb.View = (SceneData->GetViewMatrix());
+					fcb.ViewInv = XMMatrixInverse(nullptr, fcb.View);
 					// TODO: 카메라 구현 시 수정
 					fcb.Projection = (SceneData->GetProjectionMatrix());
 
@@ -673,6 +674,18 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->OMSet();
 				// Deferred 오브젝트 렌더링
 				DrawSceneProxies(SceneData->DeferredSceneProxyRenderData);
+
+				// Decal 오브젝트 렌더링
+				GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Decal)->OMSet();
+				for (FDecalInfo& DecalInfo : SceneData->CurrentFrameDecalInfo)
+				{
+					// 같은 구조체를 가지는 FLightIndex를 활용해 데칼의 bIsLight 정보를 전달
+					FLightIndex DecalData;
+					DecalData.LightIndex = DecalInfo.bIsLight;
+					GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_LightIndex, &DecalData, sizeof(DecalData));
+					DecalInfo.Render();
+				}
+
 
 				// Deferred 라이팅 렌더링
 				GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Light)->OMSet();

@@ -20,8 +20,13 @@ ATestCube::ATestCube()
 {
 	DecalTest1 = std::make_shared<UDecalComponent>();
 	DecalTest1->SetupAttachment(GetRootComponent());
-	DecalTest1->SetDecalTexture(UTexture::GetTextureCache("T_CircleEffect"));
-	DecalTest1->SetRelativeScale3D({100,100,100});
+	const std::shared_ptr<UMaterialInterface>& DecalMaterial = UMaterial::GetMaterialCache("M_Decal");
+	//DecalMaterial->SetRasterizerType(ERasterizerType::RT_CullFront);
+	//DecalMaterial->SetBlendStateType(EBlendStateType::BST_Decal);
+	//DecalMaterial->SetDepthStencilState(EDepthStencilStateType::DST_NO_TEST_NO_WRITE);
+	DecalTest1->SetDecalMaterial(DecalMaterial);
+	DecalTest1->SetIsLight(false);
+	DecalTest1->SetRelativeScale3D({1000,1000,1000});
 
 
 	Light1 = std::make_shared<ULightComponent>();

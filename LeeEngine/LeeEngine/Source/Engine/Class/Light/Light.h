@@ -38,7 +38,11 @@ struct FLightInfo
 struct FDecalInfo
 {
 	int bIsLight;
-	class UTexture* DecalTexture;
+	std::shared_ptr<UMaterialInterface> DecalMaterial;
 
 	FTransform Transform;
+
+	void Render();
+
+	static std::shared_ptr<FStaticMeshSceneProxy> BoxSceneProxy;
 };
