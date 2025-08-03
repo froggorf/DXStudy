@@ -217,6 +217,32 @@ void FDirectXDevice::InitMultiRenderTarget()
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred]->SetClearColor(ClearColor, 5);
 	}
 
+	// =========
+	// Decal MRT
+	// =========
+	{
+		
+		std::shared_ptr<UTexture> RenderTextures[2] =
+		{
+			UTexture::GetTextureCache("ColorTargetTex"),
+			UTexture::GetTextureCache("EmissiveTargetTex"),
+		};
+
+		XMFLOAT4 ClearColor[2] =
+		{
+			XMFLOAT4(0.f, 0.f, 0.f, 1.f),
+			XMFLOAT4(0.f, 0.f, 0.f, 1.f),
+		};
+
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::Decal]= std::make_shared<FMultiRenderTarget>();
+#ifdef WITH_EDITOR
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::Decal]->Create(RenderTextures, 2, GetMultiRenderTarget(EMultiRenderTargetType::Editor)->GetDepthStencilTexture());
+#else
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::Decal]->Create(RenderTextures, 2, GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->GetDepthStencilTexture());
+#endif
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::Decal]->SetClearColor(ClearColor, 2);
+	}
+
 
 	// =========
 	// Light MRT

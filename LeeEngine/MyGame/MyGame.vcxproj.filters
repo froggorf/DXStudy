@@ -128,5 +128,8 @@
     <None Include="Shader\volume.fx">
       <Filter>Shader</Filter>
     </None>
+    <None Include="Shader\Decal.fx">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

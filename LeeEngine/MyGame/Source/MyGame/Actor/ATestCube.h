@@ -36,6 +36,8 @@ protected:
 	std::shared_ptr<ULightComponent> Light3;
 	std::shared_ptr<ULightComponent> Light4;
 
+	std::shared_ptr<UDecalComponent> DecalTest1;
+
 	std::shared_ptr<UStaticMeshComponent> TestCubeStaticMeshComp;
 
 	std::shared_ptr<UStaticMeshComponent> SM_DeferredSphere;

@@ -198,7 +198,7 @@ void UEngine::Tick(float DeltaSeconds)
 	// 라이팅 적용
 	if (GetWorld())
 	{
-		GetWorld()->TickLight();
+		GetWorld()->TickLightAndDecal();
 	}
 
 	for (const auto& IDAndComponent : ComponentsTransformDirty)

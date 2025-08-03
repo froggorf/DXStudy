@@ -29,7 +29,7 @@ class UWorld : public UObject, public std::enable_shared_from_this<UWorld>
 
 	void BeginPlay() override;
 
-	void TickLight();
+	void TickLightAndDecal();
 	void TickWorld(float DeltaSeconds);
 	void Tick_Editor(float DeltaSeconds);
 	void Tick();
@@ -54,6 +54,11 @@ class UWorld : public UObject, public std::enable_shared_from_this<UWorld>
 	void AddCurrentFrameLightInfo(const FLightInfo& NewLightInfo)
 	{
 		CurrentFrameLightInfo.emplace_back(NewLightInfo);
+	}
+
+	void AddCurrentFrameDecalInfo(const FDecalInfo& NewDecalInfo)
+	{
+		CurrentFrameDecalInfo.emplace_back(NewDecalInfo);
 	}
 
 	APlayerController* GetPlayerController() const {return PlayerController.lock().get();}
@@ -84,6 +89,8 @@ private:
 	std::vector<std::shared_ptr<FNiagaraSceneProxy>> ToBeTickedNiagaraSceneProxies;
 
 	std::vector<FLightInfo> CurrentFrameLightInfo;
+
+	std::vector<FDecalInfo> CurrentFrameDecalInfo;
 
 	// 현재 선택된 액터
 	// TODO: 추후 에디터 기능으로 분리하기

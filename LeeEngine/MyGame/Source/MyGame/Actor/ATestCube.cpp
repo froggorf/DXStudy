@@ -18,6 +18,12 @@ dtNavMeshQuery* ATestCube::MyDtNavQuery;
 
 ATestCube::ATestCube()
 {
+	DecalTest1 = std::make_shared<UDecalComponent>();
+	DecalTest1->SetupAttachment(GetRootComponent());
+	DecalTest1->SetDecalTexture(UTexture::GetTextureCache("T_CircleEffect"));
+	DecalTest1->SetRelativeScale3D({100,100,100});
+
+
 	Light1 = std::make_shared<ULightComponent>();
 	Light1->SetupAttachment(GetRootComponent());
 	Light1->SetLightType(ELightType::Point);

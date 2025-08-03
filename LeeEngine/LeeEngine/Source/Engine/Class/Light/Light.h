@@ -33,3 +33,12 @@ struct FLightInfo
 
 	
 };
+
+
+struct FDecalInfo
+{
+	int bIsLight;
+	class UTexture* DecalTexture;
+
+	FTransform Transform;
+};

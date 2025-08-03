@@ -57,7 +57,7 @@ void UWorld::BeginPlay()
 	PersistentLevel->BeginPlay();
 }
 
-void UWorld::TickLight()
+void UWorld::TickLightAndDecal()
 {
 	// 이번프레임의 Light정보를 FScene에 등록
 	{
@@ -69,7 +69,18 @@ void UWorld::TickLight()
 			};
 		ENQUEUE_RENDER_COMMAND(Lambda);
 		CurrentFrameLightInfo.clear();		
-		
+	}
+
+	// Decal
+	{
+		std::vector<FDecalInfo> DecalInfoCopy(CurrentFrameDecalInfo.size());
+		std::ranges::copy(CurrentFrameDecalInfo, DecalInfoCopy.begin());
+		auto Lambda = [DecalInfoCopy](std::shared_ptr<FScene>& SceneData)
+			{
+				SceneData->SetFrameDecalInfo(DecalInfoCopy);
+			};
+		ENQUEUE_RENDER_COMMAND(Lambda);
+		CurrentFrameDecalInfo.clear();		
 	}
 }
 

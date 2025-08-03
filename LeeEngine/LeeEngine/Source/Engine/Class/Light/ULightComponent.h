@@ -11,6 +11,7 @@ class ULightComponent : public USceneComponent
 {
 	MY_GENERATE_BODY(ULightComponent)
 
+
 	void Register() override;
 
 	void SetLightType(ELightType _Type);
@@ -40,4 +41,27 @@ private:
 
 	FLightInfo Info;
 	bool bActive = true;
+};
+
+
+
+class UDecalComponent : public USceneComponent
+{
+	MY_GENERATE_BODY(UDecalComponent)
+
+public:
+	std::shared_ptr<UTexture> DecalTexture;
+	bool					  bIsLight;
+
+	bool bIsActive = true;
+
+	void SetDecalTexture(const std::shared_ptr<UTexture>& NewDecalTexture) { DecalTexture = NewDecalTexture; }
+	void SetIsLight(bool NewIsLight) { bIsLight = NewIsLight;}
+	void SetActive(bool NewActive) { bIsActive = NewActive;}
+
+	void TickComponent(float DeltaSeconds) override;
+	void Tick_Editor(float DeltaSeconds) override;
+
+private:
+	void AddDecalInfo();
 };

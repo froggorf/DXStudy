@@ -148,8 +148,13 @@ public:
 
 	std::map<UINT, FTransform> PendingNewTransformProxies;
 
+	// Light Info
 	std::vector<FLightInfo> CurrentFrameLightInfo;
 	std::shared_ptr<FStructuredBuffer> LightBuffer;
+
+	// Decal Data
+	std::vector<FDecalInfo> CurrentFrameDecalInfo;
+
 	// ==================== FPrimitiveSceneProxy ====================
 
 	FPrimitiveRenderData DeferredMergeRenderData;
@@ -332,7 +337,10 @@ public:
 	}
 #endif
 
+	// 현재 프레임의 LightInfo 를 설정
 	void SetFrameLightInfo(const std::vector<FLightInfo>& LightInfo);
+	// 현재 프레임의 DecalInfo 를 설정
+	void SetFrameDecalInfo(const std::vector<FDecalInfo>& DecalInfo);
 
 private:
 	static void EndRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData);

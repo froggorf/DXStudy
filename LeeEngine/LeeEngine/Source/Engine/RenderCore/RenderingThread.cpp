@@ -803,6 +803,13 @@ void FScene::SetFrameLightInfo(const std::vector<FLightInfo>& LightInfo)
 	std::ranges::copy(LightInfo, CurrentFrameLightInfo.begin());
 }
 
+void FScene::SetFrameDecalInfo(const std::vector<FDecalInfo>& DecalInfo)
+{
+	CurrentFrameDecalInfo.clear();
+	CurrentFrameDecalInfo.resize(DecalInfo.size());
+	std::ranges::copy(DecalInfo, CurrentFrameDecalInfo.begin());
+}
+
 
 void FScene::EndRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData)
 {
