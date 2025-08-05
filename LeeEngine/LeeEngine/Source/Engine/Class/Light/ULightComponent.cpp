@@ -5,6 +5,12 @@
 #include "Engine/World/UWorld.h"
 
 
+ULightComponent::ULightComponent()
+{
+	ShadowMRT = std::make_shared<FMultiRenderTarget>();
+	ShadowCameraComp = std::make_shared<UCameraComponent>();
+}
+
 void ULightComponent::Register()
 {
 	USceneComponent::Register();
@@ -17,6 +23,37 @@ void ULightComponent::SetLightType(ELightType Type)
 {
 	Info.LightType = static_cast<int>(Type);
 
+	switch (Type)
+	{
+	case ELightType::Directional:
+	{
+		std::shared_ptr<UTexture> RenderTexture = AssetManager::CreateTexture(
+															"DirShadowRT" + std::to_string(ComponentID)
+																,8192, 8192, DXGI_FORMAT_R32_FLOAT
+																, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE
+																, D3D11_USAGE_DEFAULT);
+		
+		std::shared_ptr<UTexture> DepthTexture =	AssetManager::CreateTexture(
+																"DirShadowDT" + std::to_string(ComponentID)
+																,8192, 8192, DXGI_FORMAT_D32_FLOAT
+																, D3D11_BIND_DEPTH_STENCIL
+																, D3D11_USAGE_DEFAULT);
+		
+		ShadowMRT->Create(&RenderTexture, 1, DepthTexture);
+		
+		// 카메라 최대시야를 널널하게 설정
+		ShadowCameraComp->SetFar(100000.f);
+		ShadowCameraComp->SetProjectionType(EProjectionType::OrthoGraphic);
+		ShadowCameraComp->SetOrthoScale(1.f);
+		ShadowCameraComp->SetWidth(8192.f);
+		ShadowCameraComp->SetAspectRatio(1.f);
+	}
+	break;
+	case ELightType::Point:
+	break;
+	case ELightType::Spot:
+	break;
+	}
 }
 
 void ULightComponent::SetRadius(float Radius)

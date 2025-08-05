@@ -1,4 +1,4 @@
-﻿#include "CoreMinimal.h"
+#include "CoreMinimal.h"
 #include "ATestPawn.h"
 
 #include "ATestCube.h"
@@ -243,7 +243,7 @@ void ATestPawn::PressLeftButton()
 			XMVECTOR ClipNear = XMVectorSet(NDC.x, NDC.y, 0.0f, 1.0f); // near
 			XMVECTOR ClipFar  = XMVectorSet(NDC.x, NDC.y, 1.0f, 1.0f); // far
 
-			XMMATRIX Proj = CameraComp->ViewMatrices.GetProjectionMatrix();
+			XMMATRIX Proj = CameraComp->GetViewMatrices().GetProjectionMatrix();
 			XMMATRIX InvProj = XMMatrixInverse(nullptr, Proj);
 			XMVECTOR ViewNear = XMVector4Transform(ClipNear, InvProj);
 			XMVECTOR ViewFar  = XMVector4Transform(ClipFar,  InvProj);
@@ -252,7 +252,7 @@ void ATestPawn::PressLeftButton()
 			ViewNear = XMVectorScale(ViewNear, 1.0f / XMVectorGetW(ViewNear));
 			ViewFar  = XMVectorScale(ViewFar,  1.0f / XMVectorGetW(ViewFar));
 
-			XMMATRIX ViewMatrix = CameraComp->ViewMatrices.GetViewMatrix();
+			XMMATRIX ViewMatrix = CameraComp->GetViewMatrices().GetViewMatrix();
 			XMMATRIX InvView = XMMatrixInverse(nullptr, ViewMatrix);
 			XMVECTOR WorldNear = XMVector4Transform(ViewNear, InvView);
 			XMVECTOR WorldFar  = XMVector4Transform(ViewFar,  InvView);

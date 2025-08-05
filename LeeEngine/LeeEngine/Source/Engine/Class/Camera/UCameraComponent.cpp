@@ -1,4 +1,4 @@
-﻿#include "CoreMinimal.h"
+#include "CoreMinimal.h"
 #include "UCameraComponent.h"
 
 #include "Engine/RenderCore/RenderingThread.h"
@@ -12,14 +12,37 @@ UCameraComponent::UCameraComponent()
 void UCameraComponent::BeginPlay()
 {
 	USceneComponent::BeginPlay();
+}
 
-	ViewMatrices.UpdateProjectionMatrix(XMMatrixPerspectiveFovLH(0.5*XM_PI, AspectRatio, 0.1f, 20000.0f));
+void UCameraComponent::TickComponent(float DeltaSeconds)
+{
+	USceneComponent::TickComponent(DeltaSeconds);
+
+	UpdateCameraMatrices();
+}
+
+void UCameraComponent::UpdateCameraMatrices()
+{
+	const FTransform& ComponentToWorld = GetComponentTransform();
+
+	ViewMatrices.UpdateViewMatrix(ComponentToWorld.GetTranslation(), ComponentToWorld.GetRotationQuat());
+
+	switch (ProjectType)
+	{
+	case EProjectionType::OrthoGraphic:
+		ViewMatrices.UpdateProjectionMatrix(XMMatrixOrthographicLH(Width * OrthoScale, Width / AspectRatio * OrthoScale, Near, Far));
+	break;
+	case EProjectionType::Perspective:
+		ViewMatrices.UpdateProjectionMatrix(XMMatrixPerspectiveFovLH(FOV, AspectRatio, Near, Far));
+	break;
+	default:
+	break;
+	}
+	
 }
 
 void UCameraComponent::UpdateCameraData()
 {
- 	const FTransform& ComponentToWorld = GetComponentTransform();
-	ViewMatrices.UpdateViewMatrix(ComponentToWorld.GetTranslation(), ComponentToWorld.GetRotationQuat());
-
+	UpdateCameraMatrices();
 	FScene::UpdateViewMatrix_GameThread(ViewMatrices);
 }

@@ -280,6 +280,10 @@ void AssetManager::LoadTexture(class UTexture* Texture, const nlohmann::json& As
 
 std::shared_ptr<UTexture> AssetManager::CreateTexture(const std::string& Name, UINT Width, UINT Height, DXGI_FORMAT PixelFormat, UINT BindFlag, D3D11_USAGE Usage)
 {
+	if (!GDirectXDevice || !GDirectXDevice->GetDevice())
+	{
+		return nullptr;
+	}
 	auto Texture = std::make_shared<UTexture>();
 
 	Texture->Desc.Format             = PixelFormat;

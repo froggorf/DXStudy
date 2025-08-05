@@ -24,12 +24,12 @@ cbuffer cbPerObject : register(b1)
 	Material ObjectMaterial;
 };
 
-cbuffer cbLight : register(b2)
-{
-	DirectionalLight gDirLight;
-	PointLight       gPointLight;
-	float3           gEyePosW;
-	float            pad;
-}
+//cbuffer cbLight : register(b2)
+//{
+//	DirectionalLight gDirLight;
+//	PointLight       gPointLight;
+//	float3           gEyePosW;
+//	float            pad;
+//}
 
 

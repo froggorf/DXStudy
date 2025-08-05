@@ -7,10 +7,13 @@
 #include "Light.h"
 #include "Engine/Components/UPrimitiveComponent.h"
 
+class UCameraComponent;
+
 class ULightComponent : public USceneComponent
 {
 	MY_GENERATE_BODY(ULightComponent)
 
+	ULightComponent();
 
 	void Register() override;
 
@@ -38,9 +41,15 @@ class ULightComponent : public USceneComponent
 private:
 	void AddLightInfo();
 
+	bool bActive = true;
 
 	FLightInfo Info;
-	bool bActive = true;
+
+	// 그림자 맵을 만들기 위한 RenderTarget
+	std::shared_ptr<FMultiRenderTarget> ShadowMRT;
+	// 그림자 맵을 위한 그림자 시점 카메라 컴퍼넌트
+	std::shared_ptr<UCameraComponent> ShadowCameraComp;
+
 };
 
 

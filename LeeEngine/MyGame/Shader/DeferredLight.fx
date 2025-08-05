@@ -57,7 +57,6 @@ PS_OUT PS_DirLight(VS_OUT Input)
 		discard;
 	}   
 
-
 	// 호출된 픽셀 자리에 해당하는 곳에 기록된 물체의 Normal 벡터를 가져온다.
 	float3 ViewNormal = NORMAL_TARGET.Sample(samLinear, Input.UV).xyz;
 
