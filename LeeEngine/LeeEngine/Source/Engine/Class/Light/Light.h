@@ -18,10 +18,10 @@ struct FLightInfo
 	int			LightType;		// 방향성, 점, 스포트라이트
 	XMFLOAT3	WorldPos;		// 광원의 위치
 	XMFLOAT3	WorldDir;		// 광원이 바라보는 방향
-	XMFLOAT3	LightColor;		// 광원의 빛의 색상
-	XMFLOAT3	LightAmbient;	// 광원으로 발생하는 최소한의 빛(환경광)
-	float		Radius;			// 광원의 범위
-	float		Angle;			// 스포트라이트 범위각도
+	XMFLOAT3	LightColor = XMFLOAT3{1.0f,1.0f,1.0f};		// 광원의 빛의 색상
+	XMFLOAT3	LightAmbient = XMFLOAT3{0.0f, 0.0f, 0.0f};	// 광원으로 발생하는 최소한의 빛(환경광)
+	float		Radius = 0.0f;			// 광원의 범위
+	float		Angle = 0.0f;			// 스포트라이트 범위각도
 
 
 	static std::shared_ptr<FStaticMeshSceneProxy>	LightVolumeMesh[static_cast<UINT>(ELightType::Count)];

@@ -18,37 +18,37 @@ dtNavMeshQuery* ATestCube::MyDtNavQuery;
 
 ATestCube::ATestCube()
 {
-	DecalTest1 = std::make_shared<UDecalComponent>();
-	DecalTest1->SetupAttachment(GetRootComponent());
-	const std::shared_ptr<UMaterialInterface>& DecalMaterial = UMaterial::GetMaterialCache("M_Decal");
-	//DecalMaterial->SetRasterizerType(ERasterizerType::RT_CullFront);
-	//DecalMaterial->SetBlendStateType(EBlendStateType::BST_Decal);
-	//DecalMaterial->SetDepthStencilState(EDepthStencilStateType::DST_NO_TEST_NO_WRITE);
-	DecalTest1->SetDecalMaterial(DecalMaterial);
-	DecalTest1->SetIsLight(false);
-	DecalTest1->SetRelativeScale3D({1000,1000,1000});
+	//DecalTest1 = std::make_shared<UDecalComponent>();
+	//DecalTest1->SetupAttachment(GetRootComponent());
+	//const std::shared_ptr<UMaterialInterface>& DecalMaterial = UMaterial::GetMaterialCache("M_Decal");
+	////DecalMaterial->SetRasterizerType(ERasterizerType::RT_CullFront);
+	////DecalMaterial->SetBlendStateType(EBlendStateType::BST_Decal);
+	////DecalMaterial->SetDepthStencilState(EDepthStencilStateType::DST_NO_TEST_NO_WRITE);
+	//DecalTest1->SetDecalMaterial(DecalMaterial);
+	//DecalTest1->SetIsLight(false);
+	//DecalTest1->SetRelativeScale3D({1000,1000,1000});
 
 
-	Light1 = std::make_shared<ULightComponent>();
-	Light1->SetupAttachment(GetRootComponent());
-	Light1->SetLightType(ELightType::Point);
-	Light1->SetRadius(150);
-	Light1->SetLightColor({5,0,0});
-	Light1->SetWorldLocation({100,0,100});
-
-	Light2 = std::make_shared<ULightComponent>();
-	Light2->SetupAttachment(GetRootComponent());
-	Light2->SetLightType(ELightType::Point);
-	Light2->SetRadius(300);
-	Light2->SetLightColor({0,5,0});
-	Light2->SetWorldLocation({-350,0,100});
-	
-	Light3 = std::make_shared<ULightComponent>();
-	Light3->SetupAttachment(GetRootComponent());
-	Light3->SetLightType(ELightType::Point);
-	Light3->SetRadius(150);
-	Light3->SetLightColor({0,0,5});
-	Light3->SetWorldLocation({100,0,-100});
+	//Light1 = std::make_shared<ULightComponent>();
+	//Light1->SetupAttachment(GetRootComponent());
+	//Light1->SetLightType(ELightType::Point);
+	//Light1->SetRadius(150);
+	//Light1->SetLightColor({5,0,0});
+	//Light1->SetWorldLocation({100,0,100});
+	//
+	//Light2 = std::make_shared<ULightComponent>();
+	//Light2->SetupAttachment(GetRootComponent());
+	//Light2->SetLightType(ELightType::Point);
+	//Light2->SetRadius(300);
+	//Light2->SetLightColor({0,5,0});
+	//Light2->SetWorldLocation({-350,0,100});
+	//
+	//Light3 = std::make_shared<ULightComponent>();
+	//Light3->SetupAttachment(GetRootComponent());
+	//Light3->SetLightType(ELightType::Point);
+	//Light3->SetRadius(150);
+	//Light3->SetLightColor({0,0,5});
+	//Light3->SetWorldLocation({100,0,-100});
 	
 	Light4 = std::make_shared<ULightComponent>();
 	Light4->SetupAttachment(GetRootComponent());
