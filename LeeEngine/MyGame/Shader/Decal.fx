@@ -67,8 +67,8 @@ PS_OUT PS_Decal(VS_OUT _in)
 
 	if (gDecalIsLight)
 	{
-		output.Emissive = float4(1.0f,0.0f,0.0f,1.0f);
-		output.Color = float4(0.0f,0.0f,0.0f,0.0f);
+		DecalColor.rgb *= DecalColor.a;
+		output.Emissive = DecalColor;
 	}
 	else
 	{
