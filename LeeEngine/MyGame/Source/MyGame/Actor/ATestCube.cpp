@@ -52,17 +52,16 @@ ATestCube::ATestCube()
 	
 	Light4 = std::make_shared<ULightComponent>();
 	Light4->SetupAttachment(GetRootComponent());
+	Light4->SetWorldLocation(XMFLOAT3{-1000, 2000,-1000});
 	Light4->SetLightType(ELightType::Directional);
-	Light4->SetWorldRotation(
-		XMQuaternionRotationRollPitchYaw(
-			XMConvertToRadians(45.0f),
-			XMConvertToRadians(45.0f),
-			XMConvertToRadians(0.0f)
-		)
+	XMVECTOR RotQuat = XMQuaternionRotationRollPitchYaw(
+		XMConvertToRadians(45.0f),
+		XMConvertToRadians(45.0f),
+		XMConvertToRadians(0.0f)
 	);
+	Light4->SetWorldRotation(RotQuat);
 	//Light4->SetRadius(150);
-	Light4->SetLightColor({1,1,1});
-	Light4->SetWorldLocation({0,100000,0});
+	Light4->SetLightColor({2,2,2});
 
 
 	SM_DeferredSphere = std::make_shared<UStaticMeshComponent>();\

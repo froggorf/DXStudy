@@ -161,8 +161,10 @@ struct FDebugColor
 	XMFLOAT4 DebugColor;
 };
 
-struct FLightIndex
+struct FLightInfoConstantBuffer
 {
+	XMMATRIX LightVP;
+
 	int LightIndex;
 	XMFLOAT3 Pad;
 };

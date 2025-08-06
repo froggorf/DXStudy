@@ -30,6 +30,8 @@ FScene::FScene()
 	DeferredMergeRenderData.SceneProxy = std::make_shared<FStaticMeshSceneProxy>(-1,0,StaticMesh);
 
 	LightBuffer = std::make_shared<FStructuredBuffer>();
+
+	M_LightShadow[static_cast<UINT>(ELightType::Directional)] = UMaterial::GetMaterialCache("M_DirShadow");
 }
 
 void FScene::BeginRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData, UINT GameThreadFrameCount)
@@ -546,6 +548,25 @@ void FScene::SetNiagaraEffectActivate_GameThread(std::vector<std::shared_ptr<FNi
 	ENQUEUE_RENDER_COMMAND(Lambda);
 }
 
+static void DrawShadowMapSceneProxies(const std::unordered_map<UINT, std::vector<FPrimitiveRenderData>>& SceneProxies)
+{
+	for (const std::vector<FPrimitiveRenderData>& Proxies : SceneProxies | std::views::values)
+	{
+		for (const FPrimitiveRenderData& RenderData : Proxies)
+		{
+			RenderData.SceneProxy->Draw();
+		}
+	}
+}
+
+void FScene::DrawShadowMap()
+{
+	DrawShadowMapSceneProxies(DeferredSceneProxyRenderData);
+	DrawShadowMapSceneProxies(OpaqueSceneProxyRenderData);
+	DrawShadowMapSceneProxies(MaskedSceneProxyRenderData);
+	//DrawShadowMapSceneProxies(TranslucentSceneProxyRenderData);
+}
+
 static void DrawSceneProxies(const std::unordered_map<UINT, std::vector<FPrimitiveRenderData>>& RenderDataSceneProxies)
 {
 	for (const auto& SceneProxies : RenderDataSceneProxies | std::views::values)
@@ -680,7 +701,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				for (FDecalInfo& DecalInfo : SceneData->CurrentFrameDecalInfo)
 				{
 					// 같은 구조체를 가지는 FLightIndex를 활용해 데칼의 bIsLight 정보를 전달
-					FLightIndex DecalData;
+					FLightInfoConstantBuffer DecalData;
 					DecalData.LightIndex = DecalInfo.bIsLight;
 					GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_LightIndex, &DecalData, sizeof(DecalData));
 					DecalInfo.Render();
@@ -688,20 +709,40 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 
 
 				// Deferred 라이팅 렌더링
-				GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Light)->OMSet();
 				GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Light)->ClearRenderTarget();
 
 				const std::shared_ptr<UTexture>& PositionTexture = UTexture::GetTextureCache("PositionTargetTex");
-				 GDirectXDevice->GetDeviceContext()->PSSetShaderResources(0,1, PositionTexture->GetSRV().GetAddressOf());
-				 const std::shared_ptr<UTexture>& NormalTexture = UTexture::GetTextureCache("NormalTargetTex");
-				 GDirectXDevice->GetDeviceContext()->PSSetShaderResources(1,1, NormalTexture->GetSRV().GetAddressOf());
+				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(0,1, PositionTexture->GetSRV().GetAddressOf());
+				const std::shared_ptr<UTexture>& NormalTexture = UTexture::GetTextureCache("NormalTargetTex");
+				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(1,1, NormalTexture->GetSRV().GetAddressOf());
 
 				int LightSize = static_cast<int>(SceneData->CurrentFrameLightInfo.size());
 				for (int i = 0; i < LightSize; ++i)
 				{
-					FLightIndex LightIndex;
-					LightIndex.LightIndex = i;
-					GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_LightIndex, &LightIndex, sizeof(LightIndex));
+					// 라이트 정보를 상수버퍼에 바인딩해준 뒤
+					FLightInfoConstantBuffer LightInfo;
+					LightInfo.LightIndex = i;
+					LightInfo.LightVP = SceneData->CurrentFrameLightInfo[i].LightVP;
+					GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_LightIndex, &LightInfo, sizeof(LightInfo));
+
+					// 그림자 맵을 그리고
+					SceneData->CurrentFrameLightInfo[i].ShadowMultiRenderTarget->OMSet();
+					SceneData->CurrentFrameLightInfo[i].ShadowMultiRenderTarget->ClearRenderTarget();
+					SceneData->CurrentFrameLightInfo[i].ShadowMultiRenderTarget->ClearDepthStencilTarget();
+					D3D11_VIEWPORT ViewPort{0,0,8192,8192,0,1};
+					GDirectXDevice->GetDeviceContext()->RSSetViewports(1, &ViewPort);
+					SceneData->M_LightShadow[static_cast<UINT>(ELightType::Directional)]->Binding();
+					SceneData->DrawShadowMap();
+
+					
+
+					// 렌더링을 진행한다.
+					GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Light)->OMSet();
+					SceneData->SetRSViewport();
+					// 그린 그림자 맵을 바인딩 한 다음에
+					const std::shared_ptr<UTexture>& ShadowMap = SceneData->CurrentFrameLightInfo[i].ShadowMultiRenderTarget->GetRenderTargetTexture(0);
+					GDirectXDevice->GetDeviceContext()->PSSetShaderResources(2,1, ShadowMap->GetSRV().GetAddressOf());
+
 					SceneData->CurrentFrameLightInfo[i].Render();
 				}
 
@@ -716,11 +757,11 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				constexpr float ClearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
 				SceneData->SetDrawScenePipeline(ClearColor);
 				SceneData->DeferredMergeRenderData.MaterialInterface->Binding();
-				std::shared_ptr<UTexture> ColorTexture = UTexture::GetTextureCache("ColorTargetTex");
+				const std::shared_ptr<UTexture>& ColorTexture = UTexture::GetTextureCache("ColorTargetTex");
 				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(0,1,ColorTexture->GetSRV().GetAddressOf());
-				std::shared_ptr<UTexture> DiffuseTexture = UTexture::GetTextureCache("DiffuseTargetTex");
+				const std::shared_ptr<UTexture>& DiffuseTexture = UTexture::GetTextureCache("DiffuseTargetTex");
 				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(1,1,DiffuseTexture->GetSRV().GetAddressOf());
-				std::shared_ptr<UTexture> SpecularTexture = UTexture::GetTextureCache("SpecularTargetTex");
+				const std::shared_ptr<UTexture>& SpecularTexture = UTexture::GetTextureCache("SpecularTargetTex");
 				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(2,1,SpecularTexture->GetSRV().GetAddressOf());
 
 				SceneData->DeferredMergeRenderData.SceneProxy->Draw();

@@ -1,0 +1,15 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_DirShadow",
+    "VertexShader" : {
+	"FilePath" : "/Shader/ShadowMap.fx",
+	"Func" : "VS_ShadowMap"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/ShadowMap.fx",
+	"Func": "PS_ShadowMap"
+    },
+    "BlendMode": "ForDeferredMerge",
+    "TwoSided" : 0
+	
+}

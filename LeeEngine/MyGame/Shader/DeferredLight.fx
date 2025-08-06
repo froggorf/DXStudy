@@ -8,9 +8,12 @@ SamplerState samLinear : register( s0 );
 
 Texture2D    POSITION_TARGET : register( t0 );
 Texture2D    NORMAL_TARGET : register( t1 );
+Texture2D    SHADOW_MAP : register( t2 );
 
-cbuffer cbLightIndex : register( b7 )
+cbuffer cbLightInfo : register( b7 )
 {
+	row_major matrix LightVP;
+
 	int gLightIndex;
 	float3 Pad;
 };
@@ -62,9 +65,30 @@ PS_OUT PS_DirLight(VS_OUT Input)
 
 	CalcLight(gView, ViewPos.xyz, ViewNormal, gLightIndex, output.Diffuse.xyz, output.Specular.xyz);
 
+	//output.Specular.xyz *= ViewPos.w;
+
+	// 그림자 테스트
+	{
+		float3 WorldPos = mul(float4(ViewPos.xyz, 1.f), gViewInv).xyz;
+
+		float4 ShadowMapPos = mul(float4(WorldPos, 1.f), LightVP);
+		ShadowMapPos.xyz /= ShadowMapPos.w;
+
+		float2 ShadowMapUV = float2((ShadowMapPos.x / 2.f) + 0.5f, 1.f - ((ShadowMapPos.y / 2.f) + 0.5f));
+
+		float fDepth = SHADOW_MAP.Sample(samLinear, ShadowMapUV).x;
+		
+		if (fDepth + 0.001f < ShadowMapPos.z)
+		{
+			output.Diffuse *= 0.1f;
+			output.Specular *= 0.1f;
+		}
+
+
+	}
+
 	output.Diffuse.a = 1.0f;
 	output.Specular.a = 1.0f;
-	//output.Specular.xyz *= ViewPos.w;
 
 	return output;
 }

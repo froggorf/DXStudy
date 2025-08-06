@@ -3,30 +3,40 @@
 
 #include "Global.fx"
 
+cbuffer cbLightInfo : register( b7 )
+{
+	row_major matrix LightVP;
+
+	int gLightIndex;
+	float3 Pad;
+};
+
 struct VS_IN
 {
-	float3 vPos : POSITION;    
+	float3 Pos : POSITION;    
 };
 
 struct VS_OUT
 {
-	float4 vPosition : SV_Position;
-	float4 vProjPos : POSITION;
+	float4 Position : SV_Position;
+	float4 ProjPos : POSITION;
 };
 
-VS_OUT VS_ShadowMap(VS_IN _in)
+
+
+VS_OUT VS_ShadowMap(VS_IN Input)
 {
 	VS_OUT output = (VS_OUT) 0.f;
 
-	output.vPosition = mul(mul(mul(float4(_in.vPos, 1.f), World),gView),gProjection);    
-	output.vProjPos = output.vPosition;
+	output.Position = mul(mul(float4(Input.Pos, 1.f), World),LightVP);    
+	output.ProjPos = output.Position;
 
 	return output;
 }
 
-float4 PS_ShadowMap(VS_OUT _in) : SV_Target
-{    
-	return float4(_in.vProjPos.z /= _in.vProjPos.w, 0.f, 0.f, 0.f);
+float PS_ShadowMap(VS_OUT Input) : SV_Target
+{
+	return Input.ProjPos.z / Input.ProjPos.w;
 }
 
 

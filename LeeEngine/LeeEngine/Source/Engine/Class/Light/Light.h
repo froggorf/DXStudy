@@ -23,6 +23,9 @@ struct FLightInfo
 	float		Radius = 0.0f;			// 광원의 범위
 	float		Angle = 0.0f;			// 스포트라이트 범위각도
 
+	XMMATRIX	LightVP;
+	std::shared_ptr<FMultiRenderTarget> ShadowMultiRenderTarget;
+
 
 	static std::shared_ptr<FStaticMeshSceneProxy>	LightVolumeMesh[static_cast<UINT>(ELightType::Count)];
 	static std::shared_ptr<UMaterialInterface>		LightMaterial[static_cast<UINT>(ELightType::Count)];

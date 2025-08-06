@@ -11,6 +11,8 @@ Texture2D    DecalTexture : register( t0 );
 
 cbuffer cbDecal : register( b7 )
 {
+	float4x4 Dummy1;
+
 	int gDecalIsLight;
 	float3 Pad;
 };

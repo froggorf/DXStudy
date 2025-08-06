@@ -27,6 +27,13 @@ void FImguiLevelViewport::Draw()
 	// Actor
 	if (ImGui::Begin("Place Actors", nullptr))
 	{
+		
+		ImGui::Text("DirShadowRT");
+		if (const std::shared_ptr<UTexture>& RenderTexture = UTexture::GetTextureCache("DirShadowRT"))
+		{
+			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {200,200});
+		}
+
 		ImGui::Text("DiffuseTargetTex");
 		if (const std::shared_ptr<UTexture>& RenderTexture = UTexture::GetTextureCache("DiffuseTargetTex"))
 		{
