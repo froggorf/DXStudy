@@ -26,15 +26,23 @@ struct FLightInfo
 	XMMATRIX	LightVP;
 	std::shared_ptr<FMultiRenderTarget> ShadowMultiRenderTarget;
 
-
 	static std::shared_ptr<FStaticMeshSceneProxy>	LightVolumeMesh[static_cast<UINT>(ELightType::Count)];
 	static std::shared_ptr<UMaterialInterface>		LightMaterial[static_cast<UINT>(ELightType::Count)];
 	static std::shared_ptr<UMaterialInterface>		LightVolumeMaterial;
 
 	void InitLight();
 	void Render();
+};
 
-	
+struct FLightInfo_ToGPU
+{
+	int			LightType;		
+	XMFLOAT3	WorldPos;		
+	XMFLOAT3	WorldDir;		
+	XMFLOAT3	LightColor = XMFLOAT3{1.0f,1.0f,1.0f};		
+	XMFLOAT3	LightAmbient = XMFLOAT3{0.0f, 0.0f, 0.0f};	
+	float		Radius = 0.0f;			
+	float		Angle = 0.0f;			
 };
 
 

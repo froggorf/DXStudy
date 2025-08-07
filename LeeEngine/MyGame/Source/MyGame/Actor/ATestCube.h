@@ -40,33 +40,8 @@ protected:
 
 	std::shared_ptr<UStaticMeshComponent> TestCubeStaticMeshComp;
 
-	std::shared_ptr<UStaticMeshComponent> SM_DeferredSphere;
+	std::shared_ptr<UStaticMeshComponent> SM_DeferredSphere[5];
 
-	std::shared_ptr<UStaticMeshComponent> TestCubeSM1;
-	std::shared_ptr<UStaticMeshComponent> TestCubeSM2;
-	std::shared_ptr<UStaticMeshComponent> TestCubeSM3;
-	std::shared_ptr<UStaticMeshComponent> TestCubeSM4;
-	std::shared_ptr<UStaticMeshComponent> TestCubeSM5;
-	std::shared_ptr<UStaticMeshComponent> TestCubeSM6;
-	std::shared_ptr<UStaticMeshComponent> TestCubeSM9;
-	std::shared_ptr<UStaticMeshComponent> TestCubeSM7;
-	std::shared_ptr<UStaticMeshComponent> TestCubeSM8;
-	std::shared_ptr<UStaticMeshComponent> TestCubeSM10;
-	std::shared_ptr<UStaticMeshComponent> TestCubeSM11;
-	std::shared_ptr<UStaticMeshComponent> TestCubeSM12;
-	std::shared_ptr<UStaticMeshComponent> TestCubeSM13;
-	std::shared_ptr<UStaticMeshComponent> TestCubeSM14;
-	std::shared_ptr<UStaticMeshComponent> TestCubeSM15;
-	std::shared_ptr<UStaticMeshComponent> TestCubeSM16;
-	std::shared_ptr<UStaticMeshComponent> TestCubeSM17;
-	std::shared_ptr<UStaticMeshComponent> TestCubeSM18;
-	std::shared_ptr<UStaticMeshComponent> TestCubeSM19;
-	std::shared_ptr<UStaticMeshComponent> TestCubeSM20;
-	std::shared_ptr<UStaticMeshComponent> TestCubeSM21;
-	std::shared_ptr<UStaticMeshComponent> TestCubeSM22;
-	std::shared_ptr<UStaticMeshComponent> TestCubeSM23;
-	std::shared_ptr<UStaticMeshComponent> TestCubeSM24;
-	std::shared_ptr<UStaticMeshComponent> TestCubeSM25;
 
 	std::shared_ptr<UBoxComponent> TriggerBox1;
 
@@ -75,7 +50,6 @@ private:
 	std::shared_ptr<UStaticMeshComponent> TestCube3;
 	std::shared_ptr<UStaticMeshComponent> TestCube4;
 
-	std::shared_ptr<UStaticMeshComponent> SM_Ramp;
 
 	std::shared_ptr<UNiagaraComponent> NC_BillboardRibbon;
 	std::shared_ptr<USceneComponent>   DummyComp;

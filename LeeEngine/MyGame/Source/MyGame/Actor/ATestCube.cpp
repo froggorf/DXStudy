@@ -46,32 +46,43 @@ ATestCube::ATestCube()
 	Light3 = std::make_shared<ULightComponent>();
 	Light3->SetupAttachment(GetRootComponent());
 	Light3->SetLightType(ELightType::Point);
-	Light3->SetRadius(2000);
-	Light3->SetLightColor({10,10,10});
+	Light3->SetRadius(1000);
+	Light3->SetLightColor({0,3,3});
 	Light3->SetWorldLocation({100,0,-100});
 	
-	//Light4 = std::make_shared<ULightComponent>();
-	//Light4->SetupAttachment(GetRootComponent());
-	//Light4->SetWorldLocation(XMFLOAT3{-1000, 2000,-1000});
-	//Light4->SetLightType(ELightType::Directional);
-	//XMVECTOR RotQuat = XMQuaternionRotationRollPitchYaw(
-	//	XMConvertToRadians(45.0f),
-	//	XMConvertToRadians(45.0f),
-	//	XMConvertToRadians(0.0f)
-	//);
-	//Light4->SetWorldRotation(RotQuat);
-	////Light4->SetRadius(150);
-	//Light4->SetLightColor({2,2,2});
+	Light4 = std::make_shared<ULightComponent>();
+	Light4->SetupAttachment(GetRootComponent());
+	Light4->SetWorldLocation(XMFLOAT3{-3000, 6000,-3000});
+	Light4->SetLightType(ELightType::Directional);
+	XMVECTOR RotQuat = XMQuaternionRotationRollPitchYaw(
+		XMConvertToRadians(45.0f),
+		XMConvertToRadians(45.0f),
+		XMConvertToRadians(0.0f)
+	);
+	Light4->SetWorldRotation(RotQuat);
+	//Light4->SetRadius(150);
+	Light4->SetLightColor({1,1,1});
 
+	const int ObjectCount = 5; // 오브젝트 개수
+	const float Radius = 300.0f; // 원의 반지름 (원하는 값으로)
+	const float CenterY = 100.0f; // Z 중심값 (원의 높이)
 
-	SM_DeferredSphere = std::make_shared<UStaticMeshComponent>();\
-	SM_DeferredSphere->SetupAttachment(GetRootComponent());
-	AssetManager::GetAsyncAssetCache("SM_DeferredSphere",[this](std::shared_ptr<UObject> Object)
-		{
-			SM_DeferredSphere->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
-		});
-	SM_DeferredSphere->SetRelativeLocation({0,100,100});
-	SM_DeferredSphere->SetRelativeScale3D({75,75,75});
+	for (UINT i = 0; i < 6; ++i)
+	{
+		float Angle = (2 * XM_PI / ObjectCount) * i; // 라디안 각도
+		float X = std::cos(Angle) * Radius;
+		float Y = std::sin(Angle) * Radius;
+		float Z = CenterY;
+		SM_DeferredSphere[i] = std::make_shared<UStaticMeshComponent>();
+		SM_DeferredSphere[i]->SetupAttachment(GetRootComponent());
+		AssetManager::GetAsyncAssetCache("SM_DeferredSphere",[this, i](std::shared_ptr<UObject> Object)
+			{
+				SM_DeferredSphere[i]->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
+			});
+		SM_DeferredSphere[i]->SetRelativeLocation({X, Z,Y});
+		SM_DeferredSphere[i]->SetRelativeScale3D({15,100,15});
+	}
+	
 
 	TestCube2 = std::make_shared<UStaticMeshComponent>();
 	TestCube2->SetupAttachment(GetRootComponent());
@@ -88,70 +99,7 @@ ATestCube::ATestCube()
 	TestCube2->SetCollisionObjectType(ECollisionChannel::WorldStatic);
 	
 
-	TestCubeSM1	 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM2	 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM3	 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM4	 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM5	 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM6	 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM9	 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM7	 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM8	 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM10 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM11 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM12 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM13 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM14 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM15 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM16 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM17 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM18 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM19 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM20 = std::make_shared<UStaticMeshComponent>();
-	TestCubeSM21 = std::make_shared<UStaticMeshComponent>();
-
-
-	std::vector<std::shared_ptr<UStaticMeshComponent>> SMVec = {
-		TestCubeSM1	,
-		TestCubeSM2	,
-		TestCubeSM3	,
-		TestCubeSM4	,
-		TestCubeSM5	,
-		TestCubeSM6	,
-		TestCubeSM9	,
-		TestCubeSM7	,
-		TestCubeSM8	,
-		TestCubeSM10,
-		TestCubeSM11,
-		TestCubeSM12,
-		TestCubeSM13,
-		TestCubeSM14,
-		TestCubeSM15,
-		TestCubeSM16,
-		TestCubeSM17,
-		TestCubeSM18,
-		TestCubeSM19,
-		TestCubeSM20,
-		TestCubeSM21,
-	};
-	for (size_t i = 0; i < SMVec.size(); ++i)
-	{
-		SMVec[i]->SetupAttachment(GetRootComponent());
-		SMVec[i]->SetRelativeScale3D({300,20,300});
-		if (i < 10)
-		{
-			SMVec[i]->SetRelativeLocation(XMFLOAT3{500+150*static_cast<float>(i),   19*static_cast<float>(i)-50, 200});
-		}
-		else
-		{
-			SMVec[i]->SetRelativeLocation(XMFLOAT3{500+150*static_cast<float>(i),  150  - 19*static_cast<float>(i-10), 200});
-		}
-		AssetManager::GetAsyncAssetCache("SM_Box", [SMVec,i](std::shared_ptr<UObject> Object)
-		{
-				SMVec[i]->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));	
-		});
-		
-	}
+	
 
 	DummyComp = std::make_shared<USceneComponent>();
 	DummyComp->Rename("DummyComp");
@@ -192,55 +140,17 @@ ATestCube::ATestCube()
 	TriggerBox1->SetupAttachment(GetRootComponent());
 	TriggerBox1->SetRelativeLocation(XMFLOAT3{0,-10,0});
 
-	SM_Ramp = std::make_shared<UStaticMeshComponent>();
-	AssetManager::GetAsyncAssetCache("SM_Ramp", [this](std::shared_ptr<UObject> Object)
-	{
-		SM_Ramp->SetStaticMesh(std::static_pointer_cast<UStaticMesh>(Object));
-	});
-	SM_Ramp->SetupAttachment(GetRootComponent());
-	SM_Ramp->SetRelativeScale3D({3,3,9});
-	SM_Ramp->SetRelativeLocation({1000,-50,0});
-	SM_Ramp->SetRelativeRotation(XMFLOAT3{0,90,0});
-	SM_Ramp->SetCollisionObjectType(ECollisionChannel::WorldStatic);
-
+	
 }
 
 void ATestCube::BeginPlay()
 {
 	AActor::BeginPlay();
 
-	std::vector<std::shared_ptr<UStaticMeshComponent>> SMVec = {
-		TestCubeSM1	,
-		TestCubeSM2	,
-		TestCubeSM3	,
-		TestCubeSM4	,
-		TestCubeSM5	,
-		TestCubeSM6	,
-		TestCubeSM9	,
-		TestCubeSM7	,
-		TestCubeSM8	,
-		TestCubeSM10,
-		TestCubeSM11,
-		TestCubeSM12,
-		TestCubeSM13,
-		TestCubeSM14,
-		TestCubeSM15,
-		TestCubeSM16,
-		TestCubeSM17,
-		TestCubeSM18,
-		TestCubeSM19,
-		TestCubeSM20,
-		TestCubeSM21,
-	};
-	for (const std::shared_ptr<UStaticMeshComponent>& SMC : SMVec)
-	{
-		SMC->GetBodyInstance()->SetSimulatePhysics(false);
-		SMC->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::Physics);
-		SMC->GetBodyInstance()->SetObjectType(ECollisionChannel::WorldStatic);
-	}
+	
 
 	TestCube2->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::Physics);
-	SM_Ramp->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::Physics);
+	
 	DoRecast();
 }
 
@@ -510,70 +420,6 @@ void ATestCube::DoRecast()
 	std::vector<int> tris;
 
 	int vertexOffset = 0;
-
-	// 오브젝트 리스트 반복 (TestCube2, SM_Ramp 등)
-	for (const std::shared_ptr<UStaticMeshComponent>& Obj : {TestCube2, SM_Ramp, 	TestCubeSM1	,
-		TestCubeSM2	,
-		TestCubeSM3	,
-		TestCubeSM4	,
-		TestCubeSM5	,
-		TestCubeSM6	,
-		TestCubeSM9	,
-		TestCubeSM7	,
-		TestCubeSM8	,
-		TestCubeSM10,
-		TestCubeSM11,
-		TestCubeSM12,
-		TestCubeSM13,
-		TestCubeSM14,
-		TestCubeSM15,
-		TestCubeSM16,
-		TestCubeSM17,
-		TestCubeSM18,
-		TestCubeSM19,
-		TestCubeSM20,
-		TestCubeSM21,})
-	{
-		if (std::shared_ptr<UConvexComponent> ConvexComp = std::dynamic_pointer_cast<UConvexComponent>(Obj->GetBodyInstance()))
-		{
-			FStaticMeshRenderData* Data = ConvexComp->GetStaticMesh()->GetStaticMeshRenderData();
-			const std::vector<std::vector<MyVertexData>>& VertexData = Data->VertexData;
-			const XMMATRIX& TransformMatrix = Obj->GetComponentTransform().ToMatrixWithScale();
-
-			// === 1. 정점 push ===
-			int thisMeshVertCount = 0;
-			for (const auto& VertexPerMesh : VertexData)
-			{
-				for (const MyVertexData& Vertex : VertexPerMesh)
-				{
-					XMVECTOR VertexVec = XMLoadFloat3(&Vertex.Pos);
-					VertexVec = XMVector3TransformCoord(VertexVec, TransformMatrix);
-					verts.push_back(XMVectorGetX(VertexVec));
-					verts.push_back(XMVectorGetY(VertexVec));
-					verts.push_back(-XMVectorGetZ(VertexVec)); // 좌표계 변환 필요시
-					thisMeshVertCount++;
-				}
-			}
-
-			// === 2. 인덱스 push ===
-			const std::vector<std::vector<uint32_t>>& Indices = Data->IndexData;
-			int subVertOffset = 0;
-			for (size_t meshIdx = 0; meshIdx < VertexData.size(); ++meshIdx)
-			{
-				const auto& SubIndices = Indices[meshIdx];
-				for (size_t i = 0; i < SubIndices.size(); i += 3)
-				{
-					tris.push_back(vertexOffset + subVertOffset + SubIndices[i + 0]);
-					tris.push_back(vertexOffset + subVertOffset + SubIndices[i + 1]);
-					tris.push_back(vertexOffset + subVertOffset + SubIndices[i + 2]);
-				}
-				subVertOffset += VertexData[meshIdx].size();
-			}
-
-			// === 3. vertexOffset 누적 ===
-			vertexOffset += thisMeshVertCount;
-		}
-	}
 
 
 	int nverts = verts.size() / 3;

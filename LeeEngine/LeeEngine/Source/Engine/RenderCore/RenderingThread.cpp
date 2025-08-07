@@ -648,13 +648,19 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 					// 버퍼크기가 모자라면 재할당
 					if (SceneData->LightBuffer->GetElementCount() < SceneData->CurrentFrameLightInfo.size())
 					{
-						SceneData->LightBuffer->Create(sizeof(FLightInfo), (UINT)SceneData->CurrentFrameLightInfo.size(), SB_TYPE::SRV_ONLY, true);
+						SceneData->LightBuffer->Create(sizeof(FLightInfo_ToGPU), (UINT)SceneData->CurrentFrameLightInfo.size(), SB_TYPE::SRV_ONLY, true);
 					}
 					
 					// LightInfo 정보를 구조화버퍼로 보내고 레지스터 바인딩
 					if (!SceneData->CurrentFrameLightInfo.empty())
 					{
-						SceneData->LightBuffer->SetData(SceneData->CurrentFrameLightInfo.data(), (UINT)SceneData->CurrentFrameLightInfo.size());
+						std::vector<FLightInfo_ToGPU> Data(SceneData->CurrentFrameLightInfo.size());
+						for (size_t i = 0; i < SceneData->CurrentFrameLightInfo.size(); ++i)
+						{
+							const FLightInfo& LightInfo = SceneData->CurrentFrameLightInfo[i];
+							Data[i] = FLightInfo_ToGPU{LightInfo.LightType,LightInfo.WorldPos,LightInfo.WorldDir,LightInfo.LightColor,LightInfo.LightAmbient,LightInfo.Radius,LightInfo.Angle};
+						}
+						SceneData->LightBuffer->SetData(Data.data(), (UINT)Data.size());
 						SceneData->LightBuffer->Binding(14);
 					}
 				}

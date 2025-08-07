@@ -14,7 +14,7 @@ struct FLightInfo
 	float3	LightColor;
 	float3  LightAmbient;
 	float	Radius;
-	float	Angle;	
+	float	Angle;
 };
 
 StructuredBuffer<FLightInfo> g_LightBuffer : register(t14);
