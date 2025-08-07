@@ -43,25 +43,25 @@ ATestCube::ATestCube()
 	//Light2->SetLightColor({0,5,0});
 	//Light2->SetWorldLocation({-350,0,100});
 	//
-	//Light3 = std::make_shared<ULightComponent>();
-	//Light3->SetupAttachment(GetRootComponent());
-	//Light3->SetLightType(ELightType::Point);
-	//Light3->SetRadius(150);
-	//Light3->SetLightColor({0,0,5});
-	//Light3->SetWorldLocation({100,0,-100});
+	Light3 = std::make_shared<ULightComponent>();
+	Light3->SetupAttachment(GetRootComponent());
+	Light3->SetLightType(ELightType::Point);
+	Light3->SetRadius(2000);
+	Light3->SetLightColor({10,10,10});
+	Light3->SetWorldLocation({100,0,-100});
 	
-	Light4 = std::make_shared<ULightComponent>();
-	Light4->SetupAttachment(GetRootComponent());
-	Light4->SetWorldLocation(XMFLOAT3{-1000, 2000,-1000});
-	Light4->SetLightType(ELightType::Directional);
-	XMVECTOR RotQuat = XMQuaternionRotationRollPitchYaw(
-		XMConvertToRadians(45.0f),
-		XMConvertToRadians(45.0f),
-		XMConvertToRadians(0.0f)
-	);
-	Light4->SetWorldRotation(RotQuat);
-	//Light4->SetRadius(150);
-	Light4->SetLightColor({2,2,2});
+	//Light4 = std::make_shared<ULightComponent>();
+	//Light4->SetupAttachment(GetRootComponent());
+	//Light4->SetWorldLocation(XMFLOAT3{-1000, 2000,-1000});
+	//Light4->SetLightType(ELightType::Directional);
+	//XMVECTOR RotQuat = XMQuaternionRotationRollPitchYaw(
+	//	XMConvertToRadians(45.0f),
+	//	XMConvertToRadians(45.0f),
+	//	XMConvertToRadians(0.0f)
+	//);
+	//Light4->SetWorldRotation(RotQuat);
+	////Light4->SetRadius(150);
+	//Light4->SetLightColor({2,2,2});
 
 
 	SM_DeferredSphere = std::make_shared<UStaticMeshComponent>();\

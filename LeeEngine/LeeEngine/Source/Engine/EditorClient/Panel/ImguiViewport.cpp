@@ -28,8 +28,8 @@ void FImguiLevelViewport::Draw()
 	if (ImGui::Begin("Place Actors", nullptr))
 	{
 		
-		ImGui::Text("DirShadowRT");
-		if (const std::shared_ptr<UTexture>& RenderTexture = UTexture::GetTextureCache("DirShadowRT"))
+		ImGui::Text("PointShadowRT");
+		if (const std::shared_ptr<UTexture>& RenderTexture = UTexture::GetTextureCache("PointShadowRT"))
 		{
 			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {200,200});
 		}

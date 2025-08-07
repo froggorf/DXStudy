@@ -9,6 +9,7 @@ SamplerState samLinear : register( s0 );
 Texture2D    POSITION_TARGET : register( t0 );
 Texture2D    NORMAL_TARGET : register( t1 );
 Texture2D    SHADOW_MAP : register( t2 );
+TextureCube<float> PointShadowMap : register(t2);
 
 cbuffer cbLightInfo : register( b7 )
 {
@@ -54,13 +55,11 @@ PS_OUT PS_DirLight(VS_OUT Input)
 	// Position Target 에서 호출된 픽셀 자리에 해당하는 곳에 기록된 물체의 좌표를 확인한다.
 	float4 ViewPos = POSITION_TARGET.Sample(samLinear, Input.UV);
 
-	// 빛을 받을 물체가 존재하지 않는다.
 	if (ViewPos.x == 0.f && ViewPos.y == 0.f && ViewPos.z == 0.f)
 	{
 		discard;
-	}   
+	}
 
-	// 호출된 픽셀 자리에 해당하는 곳에 기록된 물체의 Normal 벡터를 가져온다.
 	float3 ViewNormal = NORMAL_TARGET.Sample(samLinear, Input.UV).xyz;
 
 	CalcLight(gView, ViewPos.xyz, ViewNormal, gLightIndex, output.Diffuse.xyz, output.Specular.xyz);
@@ -130,9 +129,34 @@ PS_OUT PS_PointLight(VS_OUT Input)
 
 
 	CalcLight(gView, vViewPos.xyz, vViewNormal, gLightIndex, output.Diffuse.xyz, output.Specular.xyz);
+	//output.vSpecular.xyz *= vViewPos.w;   
+
+	// 그림자 테스트
+	{
+		float3 WorldPos = mul(float4(vViewPos.xyz, 1.f), gViewInv).xyz;
+		float3 LightPos = g_LightBuffer[gLightIndex].WorldPos;
+
+		float3 LightToPixel = WorldPos - LightPos;
+		float DistanceToPixel = length(LightToPixel);
+		float3 LightDirection = normalize(LightToPixel);
+
+		float DepthInShadowMap = PointShadowMap.Sample(samLinear, LightDirection).x;
+
+		if (DepthInShadowMap + 0.05f < DistanceToPixel)
+		{
+			output.Diffuse *= 0.1f;
+			output.Specular *= 0.1f;
+		}
+
+
+	}
+
+
+
+
+
 	output.Diffuse.a = 1.0f;
 	output.Specular.a = 1.0f;
-	//output.vSpecular.xyz *= vViewPos.w;   
 
 	return output;
 }

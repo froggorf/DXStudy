@@ -32,6 +32,7 @@ FScene::FScene()
 	LightBuffer = std::make_shared<FStructuredBuffer>();
 
 	M_LightShadow[static_cast<UINT>(ELightType::Directional)] = UMaterial::GetMaterialCache("M_DirShadow");
+	M_LightShadow[static_cast<UINT>(ELightType::Point)] = UMaterial::GetMaterialCache("M_PointShadow");
 }
 
 void FScene::BeginRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData, UINT GameThreadFrameCount)
@@ -729,9 +730,19 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 					SceneData->CurrentFrameLightInfo[i].ShadowMultiRenderTarget->OMSet();
 					SceneData->CurrentFrameLightInfo[i].ShadowMultiRenderTarget->ClearRenderTarget();
 					SceneData->CurrentFrameLightInfo[i].ShadowMultiRenderTarget->ClearDepthStencilTarget();
-					D3D11_VIEWPORT ViewPort{0,0,8192,8192,0,1};
+					// 하드코딩
+					D3D11_VIEWPORT ViewPort;
+					if (SceneData->CurrentFrameLightInfo[i].LightType == static_cast<int>(ELightType::Directional))
+					{
+						ViewPort = D3D11_VIEWPORT{0,0,8192,8192,0,1};	
+						SceneData->M_LightShadow[static_cast<UINT>(ELightType::Directional)]->Binding();
+					}
+					else
+					{
+						ViewPort = D3D11_VIEWPORT{0,0,512,512,0,1};
+						SceneData->M_LightShadow[static_cast<UINT>(ELightType::Point)]->Binding();
+					}
 					GDirectXDevice->GetDeviceContext()->RSSetViewports(1, &ViewPort);
-					SceneData->M_LightShadow[static_cast<UINT>(ELightType::Directional)]->Binding();
 					SceneData->DrawShadowMap();
 
 					

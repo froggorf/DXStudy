@@ -55,21 +55,25 @@ void ULightComponent::SetLightType(ELightType Type)
 		ShadowCameraComp->SetWidth(8192.f);
 		ShadowCameraComp->SetAspectRatio(1.f);
 
-			std::shared_ptr<UTexture> CubeRT = AssetManager::CreateCubeTexture("PointShadow0"
-												, 512,512
-												,DXGI_FORMAT_R8G8B8A8_UNORM
-												, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
-			std::shared_ptr<UTexture> CubeDS = AssetManager::CreateCubeTexture("PointShadow0DT"
-				, 512,512
-				,DXGI_FORMAT_D32_FLOAT
-				, D3D11_BIND_DEPTH_STENCIL);
-			std::shared_ptr<FMultiRenderTarget> MultiRenderTarget = std::make_shared<FMultiRenderTarget>();
-			MultiRenderTarget->Create(&CubeRT,1,CubeDS);
+			
 	}
 	break;
 	case ELightType::Point:
-		{
-		}
+	{
+		static UINT PointLightCount = -1;
+		++PointLightCount;
+		std::shared_ptr<UTexture> CubeRT = AssetManager::CreateCubeTexture("PointShadowRT"
+			, 512,512
+			,DXGI_FORMAT_R32_FLOAT
+			, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
+		std::shared_ptr<UTexture> CubeDS = AssetManager::CreateCubeTexture("PointShadowDT" + std::to_string(PointLightCount)
+			, 512,512
+			,DXGI_FORMAT_D32_FLOAT
+			, D3D11_BIND_DEPTH_STENCIL);
+		ShadowMRT->Create(&CubeRT,1,CubeDS);
+		XMFLOAT4 ClearColor = {0,0,0,1};
+		ShadowMRT->SetClearColor(&ClearColor,1);
+	}
 	break;
 	case ELightType::Spot:
 	break;

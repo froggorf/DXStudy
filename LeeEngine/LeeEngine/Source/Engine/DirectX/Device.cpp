@@ -712,6 +712,7 @@ void FDirectXDevice::CreateConstantBuffers()
 	bufferDesc.ByteWidth = sizeof(FLightInfoConstantBuffer);
 	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ConstantBuffers[static_cast<UINT>( EConstantBufferType::CBT_LightIndex)].GetAddressOf()));
 	m_d3dDeviceContext->VSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_LightIndex), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_LightIndex)].GetAddressOf());
+	m_d3dDeviceContext->GSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_LightIndex), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_LightIndex)].GetAddressOf());
 	m_d3dDeviceContext->PSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_LightIndex), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_LightIndex)].GetAddressOf());
 }
 
