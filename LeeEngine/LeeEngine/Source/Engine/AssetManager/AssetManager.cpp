@@ -335,6 +335,89 @@ std::shared_ptr<UTexture> AssetManager::CreateTexture(const std::string& Name, U
 	return Texture;
 }
 
+std::shared_ptr<UTexture> AssetManager::CreateCubeTexture(const std::string& Name, UINT Width, UINT Height, DXGI_FORMAT PixelFormat, UINT BindFlag, D3D11_USAGE Usage)
+{
+	if (!GDirectXDevice || !GDirectXDevice->GetDevice())
+	{
+		return nullptr;
+	}
+	std::shared_ptr<UTexture> Texture = std::make_shared<UTexture>();
+
+	Texture->Desc.Format             = PixelFormat;
+	Texture->Desc.Width              = Width;
+	Texture->Desc.Height             = Height;
+	Texture->Desc.ArraySize          = 6;
+	Texture->Desc.BindFlags          = BindFlag;
+	Texture->Desc.CPUAccessFlags     = 0;
+	Texture->Desc.Usage              = Usage;
+	Texture->Desc.MipLevels          = 1;
+	Texture->Desc.SampleDesc.Count   = 1;
+	Texture->Desc.SampleDesc.Quality = 0;
+	Texture->Desc.MiscFlags          = D3D11_RESOURCE_MISC_TEXTURECUBE;
+	
+	HRESULT hr = GDirectXDevice->GetDevice()->CreateTexture2D(&Texture->Desc, nullptr, Texture->Texture2D.GetAddressOf());
+	if (FAILED(hr))
+	{
+		assert(0 && "CubeTexture 생성 실패");
+		return nullptr;
+	}
+
+	// View 제작
+	if (Texture->Desc.BindFlags & D3D11_BIND_RENDER_TARGET)
+	{
+		D3D11_RENDER_TARGET_VIEW_DESC RTVDesc{};
+		RTVDesc.Format = Texture->Desc.Format;
+		RTVDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
+		RTVDesc.Texture2DArray.MipSlice = 0;
+		RTVDesc.Texture2DArray.FirstArraySlice = 0;
+		RTVDesc.Texture2DArray.ArraySize = 6;
+
+		if (FAILED(GDirectXDevice->GetDevice()->CreateRenderTargetView(Texture->Texture2D.Get(), &RTVDesc, Texture->RTView. GetAddressOf())))
+		{
+			assert(0 && "RTV 생성 실패");
+		}
+	}
+
+	if (Texture->Desc.BindFlags & D3D11_BIND_DEPTH_STENCIL)
+	{
+		D3D11_DEPTH_STENCIL_VIEW_DESC DSVDesc{};
+		DSVDesc.Format = Texture->Desc.Format;
+		DSVDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+		DSVDesc.Texture2DArray.MipSlice = 0;
+		DSVDesc.Texture2DArray.FirstArraySlice = 0;
+		DSVDesc.Texture2DArray.ArraySize = 6;
+
+		if (FAILED(GDirectXDevice->GetDevice()->CreateDepthStencilView(Texture->Texture2D.Get(), &DSVDesc, Texture->DSView. GetAddressOf())))
+		{
+			assert(0 && "DSV 생성 실패");
+		}
+	}
+
+	if (Texture->Desc.BindFlags & D3D11_BIND_SHADER_RESOURCE)
+	{
+		D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
+		SRVDesc.Format = Texture->Desc.Format;
+		SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+		SRVDesc.Texture2DArray.MipLevels = Texture->Desc.MipLevels;
+		
+		SRVDesc.Texture2DArray.MostDetailedMip = 0;
+		if (FAILED(GDirectXDevice->GetDevice()->CreateShaderResourceView(Texture->Texture2D.Get(), &SRVDesc, Texture->SRView. GetAddressOf())))
+		{
+			assert(0 && "SRV 생성 실패");
+		}
+	}
+
+	if (Texture->Desc.BindFlags & D3D11_BIND_UNORDERED_ACCESS)
+	{
+		if (FAILED(GDirectXDevice->GetDevice()->CreateUnorderedAccessView(Texture->Texture2D.Get(), nullptr, Texture->UAView. GetAddressOf())))
+			assert(0 && "UAV 생성 실패");
+	}
+
+	GetAssetCacheMap()[Name] = Texture;
+
+	return Texture;
+}
+
 UObject* AssetManager::ReadMyAsset(const std::string& FilePath)
 {
 	std::unordered_map<std::string, std::shared_ptr<UObject>>& AssetCache = GetAssetCacheMap();
