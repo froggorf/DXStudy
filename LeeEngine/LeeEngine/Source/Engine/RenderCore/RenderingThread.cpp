@@ -555,6 +555,7 @@ static void DrawShadowMapSceneProxies(const std::unordered_map<UINT, std::vector
 	{
 		for (const FPrimitiveRenderData& RenderData : Proxies)
 		{
+			
 			RenderData.SceneProxy->Draw();
 		}
 	}

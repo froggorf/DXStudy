@@ -1,10 +1,27 @@
-﻿// 03.20
+// 03.20
 // 언리얼 엔진 5 코드를 분석하며 자체엔진으로 작성중인 코드입니다.
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
 
 #pragma once
 #include "Engine/MyEngineUtils.h"
+
+enum class EFrustumFace
+{
+	Near, Far, Up, Down, Left, Right, Count
+};
+
+struct FCameraFrustum
+{
+	FCameraFrustum();
+	// 
+	XMFLOAT3 ProjPos[8];
+	XMVECTOR Face[8];
+
+	void CalculateFace(const XMMATRIX& ViewInvMat, const XMMATRIX& ProjInvMat);
+	bool IsSphereInside(const XMFLOAT3 WorldCenter, float SphereRadius);
+};
+
 
 struct FViewMatrices
 {
@@ -16,10 +33,13 @@ struct FViewMatrices
 		CameraRotQuat    = XMQuaternionRotationRollPitchYaw(0.0f, 0.0f, 0.0f);
 	}
 
-	// World To View
+	FCameraFrustum Frustum;
+
 	XMMATRIX ViewMatrix;
-	// View To Clip
+	XMMATRIX ViewInvMatrix;
+
 	XMMATRIX ProjectionMatrix;
+	XMMATRIX ProjInvMatrix;
 
 	// 월드 좌표에서의 카메라 위치정보
 	XMFLOAT3 ViewOrigin;
