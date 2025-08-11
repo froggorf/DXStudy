@@ -19,7 +19,7 @@ struct FCameraFrustum
 	XMVECTOR Face[8];
 
 	void CalculateFace(const XMMATRIX& ViewInvMat, const XMMATRIX& ProjInvMat);
-	bool IsSphereInside(const XMFLOAT3 WorldCenter, float SphereRadius);
+	bool IsSphereInside(const XMFLOAT3 WorldCenter, float SphereRadius) const;
 };
 
 
@@ -46,6 +46,7 @@ struct FViewMatrices
 	XMVECTOR CameraRotQuat;
 
 	void UpdateViewMatrix(XMFLOAT3 ViewLocation, const XMVECTOR& ViewRotation);
+	void UpdateViewMatrix(const XMMATRIX& NewViewMatrix);
 	void UpdateProjectionMatrix(const XMMATRIX& NewProjectionMatrix);
 
 	const XMMATRIX GetProjectionMatrix() const

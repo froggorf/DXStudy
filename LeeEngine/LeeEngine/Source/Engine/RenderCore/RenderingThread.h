@@ -167,6 +167,7 @@ public:
 
 	// 카메라 ViewMatrix, Projection Matrix를 관리
 	FViewMatrices ViewMatrices;
+	virtual const FViewMatrices& GetViewMatrices() {return ViewMatrices;}
 
 	// 엔진 종료 시 렌더링 쓰레드를 죽이는 함수
 	static void KillRenderingThread()

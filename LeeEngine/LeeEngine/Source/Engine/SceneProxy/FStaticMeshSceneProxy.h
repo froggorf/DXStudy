@@ -21,4 +21,6 @@ public:
 	void SetNewRenderData(const std::shared_ptr<UStaticMesh>& NewStaticMesh);
 
 	void Draw() override;
+
+	float GetBoundSphereRadius() const override { return RenderData->BoundSphereRadius; }
 };

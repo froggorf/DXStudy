@@ -16,7 +16,7 @@ FSkeletalMeshRenderData::FSkeletalMeshRenderData(const nlohmann::json& SkeletalM
 	}
 	MaterialInterfaces.clear();
 
-	AssetManager::LoadSkeletalModelData(SkeletalMeshFilePathData["ModelData"], GDirectXDevice->GetDevice(), VertexBuffer, IndexBuffer, ModelBoneInfoMap, BoundSphereLength);
+	AssetManager::LoadSkeletalModelData(SkeletalMeshFilePathData["ModelData"], GDirectXDevice->GetDevice(), VertexBuffer, IndexBuffer, ModelBoneInfoMap, BoundSphereRadius);
 	MeshCount = static_cast<UINT>(VertexBuffer.size());
 
 	// 머테리얼

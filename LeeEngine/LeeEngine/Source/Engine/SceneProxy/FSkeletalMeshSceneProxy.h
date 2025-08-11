@@ -23,4 +23,6 @@ public:
 	std::vector<XMMATRIX> BoneFinalMatrices;
 
 	void Draw() override;
+
+	float GetBoundSphereRadius() const override { return RenderData->BoundSphereRadius; }
 };

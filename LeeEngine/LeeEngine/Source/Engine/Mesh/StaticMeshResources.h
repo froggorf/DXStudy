@@ -28,7 +28,7 @@ public:
 		}
 		Materials.clear();
 
-		AssetManager::LoadModelData(StaticMeshFilePathData["ModelData"], GDirectXDevice->GetDevice(), VertexData,IndexData, VertexBuffer, IndexBuffer,BoundSphereLength);
+		AssetManager::LoadModelData(StaticMeshFilePathData["ModelData"], GDirectXDevice->GetDevice(), VertexData,IndexData, VertexBuffer, IndexBuffer,BoundSphereRadius);
 		MeshCount = static_cast<UINT>(VertexBuffer.size());
 
 		// 머테리얼
@@ -86,5 +86,5 @@ public:
 	// 따라서 로드에 성공했는지를 두어 관리
 	std::atomic<bool> bLoadSuccess = false;
 
-	float BoundSphereLength = 0;
+	float BoundSphereRadius = 0;
 };

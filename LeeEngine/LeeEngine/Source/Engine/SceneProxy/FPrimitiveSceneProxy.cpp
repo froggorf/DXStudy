@@ -9,18 +9,28 @@
 
 void FPrimitiveSceneProxy::Draw()
 {
-	{
-		ObjConstantBuffer ocb;
-		XMMATRIX          world = ComponentToWorld.ToMatrixWithScale();
-		// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
-		ocb.InvTransposeMatrix = (XMMatrixInverse(nullptr, world));
-		ocb.World              = XMMatrixTranspose(world);
-		ocb.WorldInv			= XMMatrixInverse(nullptr, world);
-		ocb.MatWV				= XMMatrixMultiply(world,FRenderCommandExecutor::CurrentSceneData->GetViewMatrix());
-		ocb.ObjectMaterial.Ambient  = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-		ocb.ObjectMaterial.Diffuse  = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-		ocb.ObjectMaterial.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 32.0f);
+	
+	ObjConstantBuffer ocb;
+	XMMATRIX          world = ComponentToWorld.ToMatrixWithScale();
+	// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
+	ocb.InvTransposeMatrix = (XMMatrixInverse(nullptr, world));
+	ocb.World              = XMMatrixTranspose(world);
+	ocb.WorldInv			= XMMatrixInverse(nullptr, world);
+	ocb.MatWV				= XMMatrixMultiply(world,FRenderCommandExecutor::CurrentSceneData->GetViewMatrix());
+	ocb.ObjectMaterial.Ambient  = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	ocb.ObjectMaterial.Diffuse  = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	ocb.ObjectMaterial.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 32.0f);
 
-		GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_PerObject, &ocb, sizeof(ocb));
-	}
+	GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_PerObject, &ocb, sizeof(ocb));
+	
 }
+
+bool FPrimitiveSceneProxy::IsSphereInCameraFrustum(const FCameraFrustum* Frustum)
+{
+	float BoundSphereRadius = GetBoundSphereRadius();
+	XMFLOAT3 WorldScale = ComponentToWorld.GetScale3D();
+	float MaxWorldScale = max(WorldScale.x, max(WorldScale.y,WorldScale.z));
+	
+	return Frustum->IsSphereInside(ComponentToWorld.GetTranslation(), BoundSphereRadius*MaxWorldScale);
+}
+

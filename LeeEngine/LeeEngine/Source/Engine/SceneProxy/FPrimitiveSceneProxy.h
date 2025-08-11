@@ -15,6 +15,8 @@
 // 렌더 쓰레드에서는 ID를 받아 SceneProxy를 직접적으로 조정하여
 // 상호배제를 진행
 
+struct FCameraFrustum;
+
 class FPrimitiveSceneProxy
 {
 public:
@@ -52,7 +54,9 @@ public:
 		return MaterialInterface;
 	}
 
-	
+	bool IsSphereInCameraFrustum(const FCameraFrustum* Frustum);
+	// TODO: 08.11 기준 StaticMesh / SkeletalMesh에 대해서만 바운드 스피어를 설정하였기에 다른 씬 프록시가 잘 그려질 수 있도록 값을 간략히만 조정
+	virtual float GetBoundSphereRadius() const {return FLT_MAX/10000;}
 
 protected:
 	UINT PrimitiveID;

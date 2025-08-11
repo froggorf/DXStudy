@@ -25,7 +25,7 @@ public:
 	// 본이름 - BoneInfo 맵
 	std::map<std::string, BoneInfo> ModelBoneInfoMap;
 
-	float BoundSphereLength = 0;
+	float BoundSphereRadius = 0;
 };
 
 class USkeletalMesh : public UObject

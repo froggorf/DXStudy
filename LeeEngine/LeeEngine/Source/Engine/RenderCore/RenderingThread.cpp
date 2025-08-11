@@ -569,22 +569,26 @@ void FScene::DrawShadowMap()
 	//DrawShadowMapSceneProxies(TranslucentSceneProxyRenderData);
 }
 
-static void DrawSceneProxies(const std::unordered_map<UINT, std::vector<FPrimitiveRenderData>>& RenderDataSceneProxies)
+static void DrawSceneProxies(const std::shared_ptr<FScene>& SceneData, const std::unordered_map<UINT, std::vector<FPrimitiveRenderData>>& RenderDataSceneProxies)
 {
 	for (const auto& SceneProxies : RenderDataSceneProxies | std::views::values)
 	{
 		bool bIsBinding = false;
 		for (const auto& SceneProxy : SceneProxies)
 		{
-			if (!bIsBinding)
+			if (SceneProxy.SceneProxy->IsSphereInCameraFrustum(&SceneData->GetViewMatrices().Frustum))
 			{
-				SceneProxy.MaterialInterface->Binding();
-				bIsBinding = true;
+				if (!bIsBinding)
+				{
+					SceneProxy.MaterialInterface->Binding();
+					bIsBinding = true;
+				}
+				// 머테리얼 파라미터 설정 (Material::Binding 내에서 기본 디폴트값이 매핑되며,
+				// MaterialInstance에서 오버라이드 한 파라미터만 세팅됨
+				SceneProxy.MaterialInterface->BindingMaterialInstanceUserParam();
+				SceneProxy.SceneProxy->Draw();	
 			}
-			// 머테리얼 파라미터 설정 (Material::Binding 내에서 기본 디폴트값이 매핑되며,
-			// MaterialInstance에서 오버라이드 한 파라미터만 세팅됨
-			SceneProxy.MaterialInterface->BindingMaterialInstanceUserParam();
-			SceneProxy.SceneProxy->Draw();
+			
 		}
 	}
 }
@@ -702,7 +706,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 			{
 				GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->OMSet();
 				// Deferred 오브젝트 렌더링
-				DrawSceneProxies(SceneData->DeferredSceneProxyRenderData);
+				DrawSceneProxies(SceneData, SceneData->DeferredSceneProxyRenderData);
 
 				// Decal 오브젝트 렌더링
 				GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Decal)->OMSet();
@@ -789,10 +793,10 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 			{
 				
 				GDirectXDevice->SetDSState(EDepthStencilStateType::DST_LESS);
-				DrawSceneProxies(SceneData->OpaqueSceneProxyRenderData);
+				DrawSceneProxies(SceneData, SceneData->OpaqueSceneProxyRenderData);
 				GDirectXDevice->SetBSState(EBlendStateType::BST_AlphaBlend);
-				DrawSceneProxies(SceneData->MaskedSceneProxyRenderData);
-				DrawSceneProxies(SceneData->TranslucentSceneProxyRenderData);
+				DrawSceneProxies(SceneData, SceneData->MaskedSceneProxyRenderData);
+				DrawSceneProxies(SceneData, SceneData->TranslucentSceneProxyRenderData);
 			}
 			
 #if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)

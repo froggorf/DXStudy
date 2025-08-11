@@ -41,7 +41,7 @@ void FCameraFrustum::CalculateFace(const XMMATRIX& ViewInvMat, const XMMATRIX& P
 	Face[static_cast<UINT>(EFrustumFace::Down)]  = XMPlaneFromPoints(WorldPos[3], WorldPos[2], WorldPos[7]); // Down
 }
 
-bool FCameraFrustum::IsSphereInside(const XMFLOAT3 WorldCenter, float SphereRadius)
+bool FCameraFrustum::IsSphereInside(const XMFLOAT3 WorldCenter, float SphereRadius) const
 {
 	for (int i = 0; i < static_cast<int>(EFrustumFace::Count); ++i)
 	{
@@ -73,6 +73,14 @@ void FViewMatrices::UpdateViewMatrix(const XMFLOAT3 ViewLocation, const XMVECTOR
 	XMVECTOR UpVector = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 	ViewMatrix = XMMatrixLookToLH(XMLoadFloat3(&ViewOrigin), LookDirection, UpVector);
+	ViewInvMatrix = XMMatrixInverse(nullptr, ViewMatrix);
+
+	Frustum.CalculateFace(ViewInvMatrix, ProjInvMatrix);
+}
+
+void FViewMatrices::UpdateViewMatrix(const XMMATRIX& NewViewMatrix)
+{
+	ViewMatrix = NewViewMatrix;
 	ViewInvMatrix = XMMatrixInverse(nullptr, ViewMatrix);
 
 	Frustum.CalculateFace(ViewInvMatrix, ProjInvMatrix);
