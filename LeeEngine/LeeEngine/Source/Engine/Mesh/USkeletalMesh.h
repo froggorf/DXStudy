@@ -24,6 +24,8 @@ public:
 
 	// 본이름 - BoneInfo 맵
 	std::map<std::string, BoneInfo> ModelBoneInfoMap;
+
+	float BoundSphereLength = 0;
 };
 
 class USkeletalMesh : public UObject
@@ -51,4 +53,5 @@ private:
 	// TODO: LOD 데이터가 필요한 경우 std::map<UINT, std::unique_ptr<FStaticMeshRenderData> LODRenderData; 로 변경 예정
 	// StaticMesh의 버텍스, 인덱스 버퍼 등 렌더링에 필요한 데이터를 관리
 	std::shared_ptr<FSkeletalMeshRenderData> RenderData;
+
 };

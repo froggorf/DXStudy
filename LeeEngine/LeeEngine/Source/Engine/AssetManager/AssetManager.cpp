@@ -10,7 +10,7 @@ std::unordered_map<std::string, std::string> AssetManager::AssetNameAndAssetPath
 concurrent_unordered_map<std::string, std::weak_ptr<UObject>> AssetManager::AsyncAssetCache;
 concurrent_unordered_map<std::string, concurrent_vector<AssetLoadedCallback>> AssetManager::LoadingCallbackMap;
 
-void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Device> pDevice, std::vector<std::vector<MyVertexData>>& AllVertices,std::vector<std::vector<UINT>>& AllIndices,std::vector<ComPtr<ID3D11Buffer>>& pVertexBuffer, std::vector<ComPtr<ID3D11Buffer>>& pIndexBuffer)
+void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Device> pDevice, std::vector<std::vector<MyVertexData>>& AllVertices,std::vector<std::vector<UINT>>& AllIndices,std::vector<ComPtr<ID3D11Buffer>>& pVertexBuffer, std::vector<ComPtr<ID3D11Buffer>>& pIndexBuffer, float& BoundSphereLength)
 {
 	AllVertices.clear();
 	AllIndices.clear();
@@ -27,7 +27,24 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
 
 	ProcessScene(scene, AllVertices, AllIndices);
 
-	// 결과 출력
+	// BoundSphereLength 계산
+	aiVector3D MinBound = aiVector3D{FLT_MAX, FLT_MAX, FLT_MAX};
+	aiVector3D MaxBound = aiVector3D{-FLT_MAX, -FLT_MAX, -FLT_MAX};
+	for (const std::vector<MyVertexData>& Vertices : AllVertices)
+	{
+		for (const MyVertexData& Vertex : Vertices)
+		{
+			MinBound.x = std::min(MinBound.x, Vertex.Pos.x);
+			MinBound.y = std::min(MinBound.y, Vertex.Pos.y);
+			MinBound.z = std::min(MinBound.z, Vertex.Pos.z);
+
+			MaxBound.x = max(MaxBound.x, Vertex.Pos.x);
+			MaxBound.y = max(MaxBound.y, Vertex.Pos.y);
+			MaxBound.z = max(MaxBound.z, Vertex.Pos.z);
+		}
+	}
+	BoundSphereLength = (MaxBound - MinBound).Length() / 2;
+	
 
 	// 모델 로드 성공
 	MY_LOG("AssetLoad", EDebugLogLevel::DLL_Display, "Model - " + filePath+" Load Success");
@@ -109,7 +126,7 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
 	pIndexBuffer = (indexBuffer.Get());
 }
 
-void AssetManager::LoadSkeletalModelData(const std::string& path, const ComPtr<ID3D11Device> pDevice, std::vector<ComPtr<ID3D11Buffer>>& pVertexBuffer, std::vector<ComPtr<ID3D11Buffer>>& pIndexBuffer, std::map<std::string, BoneInfo>& modelBoneInfoMap)
+void AssetManager::LoadSkeletalModelData(const std::string& path, const ComPtr<ID3D11Device> pDevice, std::vector<ComPtr<ID3D11Buffer>>& pVertexBuffer, std::vector<ComPtr<ID3D11Buffer>>& pIndexBuffer, std::map<std::string, BoneInfo>& modelBoneInfoMap, float& BoundSphereLength)
 {
 	// https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
 	std::string filePath = GEngine->GetDirectoryPath() + path;
@@ -128,7 +145,24 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const ComPtr<I
 
 	ProcessScene(scene, allVertices, allIndices);
 
-	// 결과 출력
+	// BoundSphereLength 계산
+	aiVector3D MinBound = aiVector3D{FLT_MAX, FLT_MAX, FLT_MAX};
+	aiVector3D MaxBound = aiVector3D{-FLT_MAX, -FLT_MAX, -FLT_MAX};
+	for (const std::vector<MyVertexData>& Vertices : allVertices)
+	{
+		for (const MyVertexData& Vertex : Vertices)
+		{
+			MinBound.x = std::min(MinBound.x, Vertex.Pos.x);
+			MinBound.y = std::min(MinBound.y, Vertex.Pos.y);
+			MinBound.z = std::min(MinBound.z, Vertex.Pos.z);
+
+			MaxBound.x = max(MaxBound.x, Vertex.Pos.x);
+			MaxBound.y = max(MaxBound.y, Vertex.Pos.y);
+			MaxBound.z = max(MaxBound.z, Vertex.Pos.z);
+		}
+	}
+	BoundSphereLength = (MaxBound - MinBound).Length() / 2;
+	
 	// VertexData를 SkeletalVertexData로 변환
 	std::vector<std::vector<MyVertexData>> allSkeletalVertices(scene->mNumMeshes);
 	for (int meshIndex = 0; meshIndex < allVertices.size(); ++meshIndex)

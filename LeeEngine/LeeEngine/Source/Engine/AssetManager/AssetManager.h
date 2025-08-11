@@ -25,11 +25,11 @@ class AssetManager
 public:
 	// === 파일 데이터를 읽어 모델 정보를 로드하는 함수 ===
 	// 한 메쉬가 여러 오브젝트로 존재시 vector 데이터
-	static void LoadModelData(const std::string& path, Microsoft::WRL::ComPtr<ID3D11Device> pDevice, std::vector<std::vector<MyVertexData>>& AllVertices,std::vector<std::vector<UINT>>& AllIndices, std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>>& pVertexBuffer, std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>>& pIndexBuffer);
+	static void LoadModelData(const std::string& path, Microsoft::WRL::ComPtr<ID3D11Device> pDevice, std::vector<std::vector<MyVertexData>>& AllVertices,std::vector<std::vector<UINT>>& AllIndices, std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>>& pVertexBuffer, std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>>& pIndexBuffer, float& BoundSphereLength);
 	// 한 메쉬가 하나의 오브젝트로 존재시
 	static void LoadModelData(const std::string& path, Microsoft::WRL::ComPtr<ID3D11Device> pDevice, Microsoft::WRL::ComPtr<ID3D11Buffer>& pVertexBuffer, Microsoft::WRL::ComPtr<ID3D11Buffer>& pIndexBuffer);
 	// SkeletalMesh 모델 데이터 로드
-	static void LoadSkeletalModelData(const std::string& path, Microsoft::WRL::ComPtr<ID3D11Device> pDevice, std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>>& pVertexBuffer, std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>>& pIndexBuffer, std::map<std::string, BoneInfo>& modelBoneInfoMap);
+	static void LoadSkeletalModelData(const std::string& path, Microsoft::WRL::ComPtr<ID3D11Device> pDevice, std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>>& pVertexBuffer, std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>>& pIndexBuffer, std::map<std::string, BoneInfo>& modelBoneInfoMap, float& BoundSphereLength);
 
 	//static void LoadTextureFromTGA(const std::wstring& szFile, const Microsoft::WRL::ComPtr<ID3D11Device> pDevice,
 	//std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>>& vTextureShaderResourceView);

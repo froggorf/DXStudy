@@ -1,4 +1,4 @@
-﻿#include "CoreMinimal.h"
+#include "CoreMinimal.h"
 #include "Engine/AssetManager/AssetManager.h"
 #include "USkeletalMesh.h"
 
@@ -16,7 +16,7 @@ FSkeletalMeshRenderData::FSkeletalMeshRenderData(const nlohmann::json& SkeletalM
 	}
 	MaterialInterfaces.clear();
 
-	AssetManager::LoadSkeletalModelData(SkeletalMeshFilePathData["ModelData"], GDirectXDevice->GetDevice(), VertexBuffer, IndexBuffer, ModelBoneInfoMap);
+	AssetManager::LoadSkeletalModelData(SkeletalMeshFilePathData["ModelData"], GDirectXDevice->GetDevice(), VertexBuffer, IndexBuffer, ModelBoneInfoMap, BoundSphereLength);
 	MeshCount = static_cast<UINT>(VertexBuffer.size());
 
 	// 머테리얼
