@@ -70,9 +70,9 @@ void ULevel::BeginPlay()
 {
 	UObject::BeginPlay();
 
-	for (const auto& Actor : Actors)
+	for (size_t Index = 0; Index < Actors.size(); ++Index)
 	{
-		Actor->BeginPlay();
+		Actors[Index]->BeginPlay();
 	}
 }
 

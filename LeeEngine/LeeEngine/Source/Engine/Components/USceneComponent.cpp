@@ -159,6 +159,18 @@ void USceneComponent::SetWorldRotation(const XMVECTOR& NewRotation)
 	SetRelativeRotation(NewRelRotation);
 }
 
+void USceneComponent::SetWorldScale3D(const XMFLOAT3& NewScale)
+{
+	XMFLOAT3 NewRelScale = NewScale;
+	if (GetAttachParent())
+	{
+		FTransform ParentToWorld = GetAttachParent()->GetSocketTransform(GetAttachSocketName());
+		XMFLOAT3 ParentScale = ParentToWorld.GetScale3D();
+		XMStoreFloat3(&NewRelScale, XMVectorDivide(XMLoadFloat3(&ParentScale), XMLoadFloat3(&NewRelScale)));
+	}
+	SetRelativeScale3D(NewRelScale);
+}
+
 FTransform USceneComponent::GetSocketTransform(const std::string& InSocketName)
 {
 	return ComponentToWorld;

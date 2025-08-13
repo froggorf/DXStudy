@@ -171,15 +171,19 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 
 	// Rasterizer State
 	{
-		int bIsTwoSided = AssetData["TwoSided"];
-		if (bIsTwoSided)
+		if (AssetData.contains("TwoSided"))
 		{
-			RasterizerType = ERasterizerType::RT_TwoSided;
+			int bIsTwoSided = AssetData["TwoSided"];
+			if (bIsTwoSided)
+			{
+				RasterizerType = ERasterizerType::RT_TwoSided;
+			}
+			else
+			{
+				RasterizerType = ERasterizerType::RT_CullBack;
+			}	
 		}
-		else
-		{
-			RasterizerType = ERasterizerType::RT_CullBack;
-		}
+		
 	}
 
 	// Params

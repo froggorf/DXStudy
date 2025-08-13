@@ -1,4 +1,4 @@
-﻿#include "UTestComponent.h"
+#include "UTestComponent.h"
 #include <Engine/RenderCore/EditorScene.h>
 
 #include "Engine/Mesh/USkeletalMesh.h"

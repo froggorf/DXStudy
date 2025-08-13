@@ -38,7 +38,7 @@ class AActor : public UObject, public std::enable_shared_from_this<AActor>
 	XMFLOAT3 GetActorRightVector() const;
 
 	virtual void Tick(float DeltaSeconds);
-	void Tick_Editor(float DeltaSeconds);
+	virtual void Tick_Editor(float DeltaSeconds);
 
 	void SaveDataFromAssetToFile(nlohmann::json& Json) override;
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;

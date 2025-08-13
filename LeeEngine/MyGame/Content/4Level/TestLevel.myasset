@@ -20,6 +20,27 @@
                 1.0
             ]
         },
+ {
+            "Class": "ASkyBox",
+            "Location": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Name": "SkyBox",
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0,
+	  1.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+
   {
             "Class": "ATestCube2",
             "Location": [

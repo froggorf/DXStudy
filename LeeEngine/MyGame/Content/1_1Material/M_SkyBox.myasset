@@ -1,0 +1,15 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_SkyBox",
+    "VertexShader" : {
+	"FilePath" : "/Shader/SkyBox.fx",
+	"Func" : "VS"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/SkyBox.fx",
+	"Func": "PS"
+    },
+    "TextureParams" : [ "T_SkyBox" ],
+    "BlendMode": "Opaque"
+	
+}

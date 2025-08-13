@@ -1,4 +1,4 @@
-﻿//***************************************************************************************
+//***************************************************************************************
 // Init Direct3D.cpp by Frank Luna (C) 2011 All Rights Reserved.
 //
 // Demonstrates the sample framework by initializing Direct3D, clearing 
@@ -20,7 +20,10 @@
 #include "ThirdParty/ImGui/imgui_internal.h"
 #include "DirectX/ShadowMap.h"
 #include "Engine/UEngine.h"
+#include "Engine/Class/Actor/ASkyBox.h"
 #include "Engine/Mesh/UStaticMesh.h"
+
+ASkyBox* Dummy = nullptr;
 
 using namespace DirectX;
 

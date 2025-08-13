@@ -151,7 +151,7 @@ void ATestCube::BeginPlay()
 
 	TestCube2->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::Physics);
 	
-	DoRecast();
+	//DoRecast();
 }
 
 void ATestCube::Tick(float DeltaSeconds)

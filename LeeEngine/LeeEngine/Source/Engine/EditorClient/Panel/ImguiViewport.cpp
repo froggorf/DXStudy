@@ -223,7 +223,7 @@ void FImguiLevelViewport::ExecuteCommand(const std::shared_ptr<FImguiPanelComman
 
 		case ELevelViewportCommandType::LVCT_SetViewportSizeToEditorViewportSize:
 			GDirectXDevice->SetViewPortSize(ResizeEditorRenderTargetSize.x, ResizeEditorRenderTargetSize.y);
-			Data->ViewMatrices->ProjectionMatrix = XMMatrixPerspectiveFovLH(0.5*XM_PI, ResizeEditorRenderTargetSize.x/ResizeEditorRenderTargetSize.y,1.0f, 20000.0f);
+			Data->ViewMatrices->ProjectionMatrix = XMMatrixPerspectiveFovLH(0.5*XM_PI, ResizeEditorRenderTargetSize.x/ResizeEditorRenderTargetSize.y,1.0f, 200000.0f);
 			break;
 
 		case ELevelViewportCommandType::LVCT_GetEditorViewMatrices:

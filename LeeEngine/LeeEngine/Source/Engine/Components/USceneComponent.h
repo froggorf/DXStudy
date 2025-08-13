@@ -77,6 +77,7 @@ class USceneComponent : public UActorComponent, public std::enable_shared_from_t
 
 	void SetWorldLocation(const XMFLOAT3& NewLocation);
 	void SetWorldRotation(const XMVECTOR& NewRotation);
+	void SetWorldScale3D(const XMFLOAT3& NewScale);
 
 	const FTransform& GetComponentTransform() const
 	{

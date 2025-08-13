@@ -100,6 +100,9 @@
     <Filter Include="Source\Engine\Class\Light">
       <UniqueIdentifier>{2bf8a18f-0a93-4f09-af43-f0f5f9546402}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Engine\Class\Actor">
+      <UniqueIdentifier>{2b98f7f7-e823-4389-ad87-e25579faad30}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\DirectX\ShadowMap.cpp">
@@ -459,6 +462,9 @@
     <ClCompile Include="Source\Engine\Class\Light\Light.cpp">
       <Filter>Source\Engine\Class\Light</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Class\Actor\ASkyBox.cpp">
+      <Filter>Source\Engine\Class\Actor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DirectX\ShadowMap.h">
@@ -817,6 +823,9 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\Class\Light\Light.h">
       <Filter>Source\Engine\Class\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Class\Actor\ASkyBox.h">
+      <Filter>Source\Engine\Class\Actor</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

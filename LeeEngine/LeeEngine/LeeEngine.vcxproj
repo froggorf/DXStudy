@@ -39,6 +39,7 @@
     <ClCompile Include="Source\Engine\Animation\UAnimSequenceBase.cpp" />
     <ClCompile Include="Source\Engine\Animation\UBlendSpace.cpp" />
     <ClCompile Include="Source\Engine\AssetManager\AssetManager.cpp" />
+    <ClCompile Include="Source\Engine\Class\Actor\ASkyBox.cpp" />
     <ClCompile Include="Source\Engine\Class\Camera\APlayerCameraManager.cpp" />
     <ClCompile Include="Source\Engine\Class\Camera\UCameraComponent.cpp" />
     <ClCompile Include="Source\Engine\Class\Curve\UCurveBase.cpp" />
@@ -195,6 +196,7 @@
     <ClInclude Include="Source\Engine\Animation\UAnimSequenceBase.h" />
     <ClInclude Include="Source\Engine\Animation\UBlendSpace.h" />
     <ClInclude Include="Source\Engine\AssetManager\AssetManager.h" />
+    <ClInclude Include="Source\Engine\Class\Actor\ASkyBox.h" />
     <ClInclude Include="Source\Engine\Class\Camera\APlayerCameraManager.h" />
     <ClInclude Include="Source\Engine\Class\Camera\UCameraComponent.h" />
     <ClInclude Include="Source\Engine\Class\Curve\UCurveBase.h" />
