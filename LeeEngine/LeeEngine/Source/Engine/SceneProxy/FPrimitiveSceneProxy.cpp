@@ -17,9 +17,6 @@ void FPrimitiveSceneProxy::Draw()
 	ocb.World              = XMMatrixTranspose(world);
 	ocb.WorldInv			= XMMatrixInverse(nullptr, world);
 	ocb.MatWV				= XMMatrixMultiply(world,FRenderCommandExecutor::CurrentSceneData->GetViewMatrix());
-	ocb.ObjectMaterial.Ambient  = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	ocb.ObjectMaterial.Diffuse  = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	ocb.ObjectMaterial.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 32.0f);
 
 	GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_PerObject, &ocb, sizeof(ocb));
 	

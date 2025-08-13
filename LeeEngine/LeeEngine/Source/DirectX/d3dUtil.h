@@ -3,7 +3,7 @@
 
 // warning C4819: 현재 코드 페이지(949)에서 표시할 수 없는 문자가 파 일에 들어 있습니다. 데이터가 손실되지 않게 하려면 해당 파일을 유니코드 형식으로 저장하십시오.
 #pragma warning(disable:4819)
-
+using namespace DirectX;
 #include <d3d11_1.h>
 #include <d3dcompiler.h>
 #include <wrl.h>				// ComPtr
@@ -109,13 +109,13 @@ constexpr int MAX_BONES          = 100;
 
 __declspec(align(16)) struct MyVertexData
 {
-	XMFLOAT3 Pos;
-	XMFLOAT3 Normal;
-	XMFLOAT2 TexCoords;
-	XMFLOAT3 Tangent;
-	XMFLOAT3 Bitangent;
-	int      m_BoneIDs[MAX_BONE_INFLUENCE];
-	float    m_Weights[MAX_BONE_INFLUENCE];
+	DirectX::XMFLOAT3 Pos;
+	DirectX::XMFLOAT3 Normal;
+	DirectX::XMFLOAT2 TexCoords;
+	DirectX::XMFLOAT3 Tangent;
+	DirectX::XMFLOAT3 Bitangent;
+	int               m_BoneIDs[MAX_BONE_INFLUENCE];
+	float             m_Weights[MAX_BONE_INFLUENCE];
 
 };
 
@@ -133,7 +133,6 @@ struct ObjConstantBuffer
 	XMMATRIX WorldInv;
 	XMMATRIX MatWV;
 	XMMATRIX InvTransposeMatrix;
-	Material ObjectMaterial;
 };
 
 struct FrameConstantBuffer
@@ -167,14 +166,6 @@ struct FLightInfoConstantBuffer
 
 	int LightIndex;
 	XMFLOAT3 Pad;
-};
-
-struct LightFrameConstantBuffer
-{
-	DirectionalLight gDirLight;
-	PointLight       gPointLight;
-	XMFLOAT3         gEyePosW;
-	float            pad;
 };
 
 struct ShadowLightMatrixConstantBuffer

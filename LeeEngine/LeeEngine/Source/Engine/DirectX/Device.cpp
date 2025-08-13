@@ -693,10 +693,6 @@ void FDirectXDevice::CreateConstantBuffers()
 	m_d3dDeviceContext->VSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_PerObject), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_PerObject)].GetAddressOf());
 	m_d3dDeviceContext->PSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_PerObject), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_PerObject)].GetAddressOf());
 
-	// LightFrameConstantBuffer
-	bufferDesc.ByteWidth = sizeof(LightFrameConstantBuffer);
-	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ConstantBuffers[static_cast<UINT>( EConstantBufferType::CBT_Light)].GetAddressOf()));
-	m_d3dDeviceContext->PSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_Light), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_Light)].GetAddressOf());
 
 	// SkeletalMeshBoneTransformConstantBuffer
 	bufferDesc.ByteWidth = sizeof(SkeletalMeshBoneTransformConstantBuffer);

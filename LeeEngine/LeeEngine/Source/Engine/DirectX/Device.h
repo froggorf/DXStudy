@@ -14,7 +14,7 @@ enum class EConstantBufferType
 {
 	CBT_PerFrame,
 	CBT_PerObject,
-	CBT_Light,
+	CBT_NULL,
 	CBT_SkeletalData,
 	CBT_UserParam,
 	CBT_ComputeShader,

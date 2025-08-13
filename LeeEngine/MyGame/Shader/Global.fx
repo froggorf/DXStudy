@@ -20,16 +20,6 @@ cbuffer cbPerObject : register(b1)
 	row_major matrix WorldInv;
 	row_major float4x4	gMatWV;
 	float4x4 WorldInvTranspose;
-	
-	Material ObjectMaterial;
 };
-
-//cbuffer cbLight : register(b2)
-//{
-//	DirectionalLight gDirLight;
-//	PointLight       gPointLight;
-//	float3           gEyePosW;
-//	float            pad;
-//}
 
 

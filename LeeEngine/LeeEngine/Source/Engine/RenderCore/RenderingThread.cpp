@@ -669,30 +669,6 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 						SceneData->LightBuffer->Binding(14);
 					}
 				}
-
-				// TODO : 구시대 코드 , 지워야함 ) 라이팅 관련
-				{
-					LightFrameConstantBuffer lfcb;
-					DirectionalLight         TempDirectionalLight;
-					TempDirectionalLight.Ambient  = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
-					TempDirectionalLight.Diffuse  = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
-					TempDirectionalLight.Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-					XMStoreFloat3(&TempDirectionalLight.Direction, XMVector3Normalize(XMVectorSet(0.57735f, -0.57735f, 0.57735f, 0.0f)));
-					lfcb.gDirLight = TempDirectionalLight;
-
-					PointLight TempPointLight;
-					TempPointLight.Ambient  = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-					TempPointLight.Diffuse  = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-					TempPointLight.Specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-					TempPointLight.Att      = XMFLOAT3(0.0f, 0.1f, 0.0f);
-					TempPointLight.Position = XMFLOAT3(0.0f, -2.5f, 0.0f);
-					TempPointLight.Range    = 0.0f;
-					lfcb.gPointLight        = TempPointLight;
-					// Convert Spherical to Cartesian coordinates.
-					XMStoreFloat3(&lfcb.gEyePosW, SceneData->ViewMatrices.GetViewMatrix().r[3]);
-					//lfcb.gEyePosW = {SceneData->ViewMatrices.GetViewMatrix().r[3]} 
-					GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_Light, &lfcb, sizeof(lfcb));
-				}
 			}
 
 			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->ClearRenderTarget();	
@@ -814,15 +790,10 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				for (FDebugRenderData& DebugData : SceneData->DebugRenderData)
 				{
 					ObjConstantBuffer ocb;
-					XMMATRIX          world = DebugData.Transform.ToMatrixWithScale();
+					DirectX::XMMATRIX world = DebugData.Transform.ToMatrixWithScale();
 					// 조명 - 노말벡터의 변환을 위해 역전치 행렬 추가
 					ocb.InvTransposeMatrix = (XMMatrixInverse(nullptr, world));
 					ocb.World              = XMMatrixTranspose(world);
-
-					ocb.ObjectMaterial.Ambient  = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-					ocb.ObjectMaterial.Diffuse  = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-					ocb.ObjectMaterial.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 32.0f);
-
 					GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_PerObject, &ocb, sizeof(ocb));
 
 					FDebugColor ColorBuffer;
@@ -861,12 +832,12 @@ void FScene::SetRSViewport()
 }
 
 
-XMMATRIX FScene::GetViewMatrix()
+DirectX::XMMATRIX FScene::GetViewMatrix()
 {
 	return ViewMatrices.GetViewMatrix();
 }
 
-XMMATRIX FScene::GetProjectionMatrix()
+DirectX::XMMATRIX FScene::GetProjectionMatrix()
 {
 	return ViewMatrices.GetProjectionMatrix();
 }
