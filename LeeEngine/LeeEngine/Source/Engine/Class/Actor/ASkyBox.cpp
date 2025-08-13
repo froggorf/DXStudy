@@ -20,7 +20,7 @@ ASkyBox::ASkyBox()
 	});
 	//SM_SkyBox->SetRelativeScale3D({10000,10000,10000});
 	SM_SkyBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	
+	SM_SkyBox->SetDoFrustumCulling(false);
 }
 
 void ASkyBox::Tick(float DeltaSeconds)

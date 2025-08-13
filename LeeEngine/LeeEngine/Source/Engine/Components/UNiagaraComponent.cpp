@@ -18,7 +18,8 @@ std::vector<std::shared_ptr<FPrimitiveSceneProxy>> UNiagaraComponent::CreateScen
 
 	const auto& RenderData = NiagaraAsset->CreateDynamicRenderData();
 
-	std::vector<std::shared_ptr<FPrimitiveSceneProxy>> SceneProxies(RenderData.size());
+	std::vector<std::shared_ptr<FPrimitiveSceneProxy>> SceneProxies;
+	SceneProxies.reserve(RenderData.size());
 	this->SceneProxies.reserve(RenderData.size());
 	for (int i = 0; i < RenderData.size(); ++i)
 	{

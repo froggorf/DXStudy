@@ -58,6 +58,9 @@ public:
 	// TODO: 08.11 기준 StaticMesh / SkeletalMesh에 대해서만 바운드 스피어를 설정하였기에 다른 씬 프록시가 잘 그려질 수 있도록 값을 간략히만 조정
 	virtual float GetBoundSphereRadius() const {return FLT_MAX/10000;}
 
+	bool DoFrustumCulling() const {return bDoFrustumCulling;}
+	void SetDoFrustumCulling(bool NewDoFrustumCulling){ bDoFrustumCulling = NewDoFrustumCulling;}
+
 protected:
 	UINT PrimitiveID;
 	UINT MeshIndex;
@@ -65,4 +68,6 @@ protected:
 	std::shared_ptr<UMaterialInterface> MaterialInterface;
 
 	FTransform ComponentToWorld;
+
+	bool bDoFrustumCulling = true;
 };

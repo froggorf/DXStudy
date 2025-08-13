@@ -24,6 +24,12 @@ void FPrimitiveSceneProxy::Draw()
 
 bool FPrimitiveSceneProxy::IsSphereInCameraFrustum(const FCameraFrustum* Frustum)
 {
+	// 프러스텀 컬링을 안한다면 그냥 그려지도록 하기
+	if (!DoFrustumCulling())
+	{
+		return true;
+	}
+
 	float BoundSphereRadius = GetBoundSphereRadius();
 	XMFLOAT3 WorldScale = ComponentToWorld.GetScale3D();
 	float MaxWorldScale = max(WorldScale.x, max(WorldScale.y,WorldScale.z));

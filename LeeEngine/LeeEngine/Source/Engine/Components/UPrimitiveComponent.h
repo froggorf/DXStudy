@@ -1,4 +1,4 @@
-﻿// 03.07
+// 03.07
 // 언리얼 엔진 5 코드를 분석하며 자체엔진으로 작성중인 코드입니다.
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
@@ -63,6 +63,8 @@ class UPrimitiveComponent : public USceneComponent
 	// OnComponentEndOverlap
 	FComponentEndOverlapSignature OnComponentEndOverlap;
 
+	// TODO: 08.13 현재는 초기 설정값만 적용되도록 했는데 추후에는 런타임 중에도 적용할 수 있도록 변경해야함
+	void SetDoFrustumCulling(bool NewDoFrustumCulling){bDoFrustumCulling = NewDoFrustumCulling;}
 protected:
 	size_t RegisteredSceneProxyCount = 0;
 
@@ -73,4 +75,5 @@ protected:
 	ECollisionChannel TempCollisionChannel;
 	std::array<ECollisionResponse, static_cast<UINT>(ECollisionChannel::Count)> TempCollisionResponse = {};
 
+	bool bDoFrustumCulling = true;
 };
