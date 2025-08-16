@@ -1,4 +1,4 @@
-﻿#include "CoreMinimal.h"
+#include "CoreMinimal.h"
 // https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
 #include "UAnimInstance.h"
 
@@ -77,10 +77,10 @@ void UAnimInstance::Tick(float DeltaSeconds)
 		if (APlayerController* PC = GEngine->GetWorld()->GetPlayerController())
 		{
 			// PlayerController에 의해 조종되는 캐릭터일 경우
-			bool bPlayerCharacter =  (PC->Character && PC->Character->GetSkeletalMeshComponent() == GetSkeletalMeshComponent());
+			bool bPlayerCharacter =  (PC->GetCharacter() && PC->GetCharacter()->GetSkeletalMeshComponent() == GetSkeletalMeshComponent());
 			if (bPlayerCharacter)
 			{
-				PC->bPlayRootMotion = false;	
+				PC->SetPlayRootMotion(false);
 			}
 			
 			if (bPlayRootMotion)
@@ -92,7 +92,7 @@ void UAnimInstance::Tick(float DeltaSeconds)
 
 				if (bPlayerCharacter)
 				{
-					PC->bPlayRootMotion = true;
+					PC->SetPlayRootMotion(true);
 				}
 
 				if (!bBlendOut)

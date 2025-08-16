@@ -66,7 +66,7 @@ class UWorld : public UObject, public std::enable_shared_from_this<UWorld>
 	{
 		if (!PlayerController.expired())
 		{
-			return PlayerController.lock().get()->CameraManager.lock().get();
+			return PlayerController.lock().get()->GetCameraManager().get();
 		}
 		return nullptr;
 	}

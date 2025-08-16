@@ -100,6 +100,9 @@
     <ClCompile Include="Source\Engine\UEditorEngine.cpp" />
     <ClCompile Include="Source\Engine\UEngine.cpp" />
     <ClCompile Include="Source\Engine\UObject\UObject.cpp" />
+    <ClCompile Include="Source\Engine\Widget\ChildWidget.cpp" />
+    <ClCompile Include="Source\Engine\Widget\Slot.cpp" />
+    <ClCompile Include="Source\Engine\Widget\UUserWidget.cpp" />
     <ClCompile Include="Source\Engine\World\UWorld.cpp" />
     <ClCompile Include="Source\ThirdParty\ImGuizmo\GraphEditor.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -258,6 +261,9 @@
     <ClInclude Include="Source\Engine\UEditorEngine.h" />
     <ClInclude Include="Source\Engine\UEngine.h" />
     <ClInclude Include="Source\Engine\UObject\UObject.h" />
+    <ClInclude Include="Source\Engine\Widget\ChildWidget.h" />
+    <ClInclude Include="Source\Engine\Widget\Slot.h" />
+    <ClInclude Include="Source\Engine\Widget\UUserWidget.h" />
     <ClInclude Include="Source\Engine\World\UWorld.h" />
     <ClInclude Include="Source\ThirdParty\ImGuizmo\GraphEditor.h" />
     <ClInclude Include="Source\ThirdParty\ImGuizmo\ImCurveEdit.h" />

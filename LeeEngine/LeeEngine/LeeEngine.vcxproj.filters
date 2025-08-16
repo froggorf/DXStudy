@@ -103,6 +103,9 @@
     <Filter Include="Source\Engine\Class\Actor">
       <UniqueIdentifier>{2b98f7f7-e823-4389-ad87-e25579faad30}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Engine\Widget">
+      <UniqueIdentifier>{72688d92-7841-4a9c-9b74-46da373678a6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\DirectX\ShadowMap.cpp">
@@ -465,6 +468,15 @@
     <ClCompile Include="Source\Engine\Class\Actor\ASkyBox.cpp">
       <Filter>Source\Engine\Class\Actor</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Widget\UUserWidget.cpp">
+      <Filter>Source\Engine\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Widget\ChildWidget.cpp">
+      <Filter>Source\Engine\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Widget\Slot.cpp">
+      <Filter>Source\Engine\Widget</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DirectX\ShadowMap.h">
@@ -826,6 +838,15 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\Class\Actor\ASkyBox.h">
       <Filter>Source\Engine\Class\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Widget\UUserWidget.h">
+      <Filter>Source\Engine\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Widget\ChildWidget.h">
+      <Filter>Source\Engine\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Widget\Slot.h">
+      <Filter>Source\Engine\Widget</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -103,7 +103,10 @@ void UWorld::TickWorld(float DeltaSeconds)
 	}
 	ToBeTickedNiagaraSceneProxies.clear();
 
-	
+	if (APlayerController* PC = GetPlayerController())
+	{
+		
+	}
 }
 
 void UWorld::Tick_Editor(float DeltaSeconds)

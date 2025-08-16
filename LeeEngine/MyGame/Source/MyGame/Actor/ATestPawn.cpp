@@ -84,7 +84,7 @@ void ATestPawn::BindKeyInputs()
 {
 	if (Controller)
 	{
-		if (std::shared_ptr<UPlayerInput> InputSystem = Controller->PlayerInput)
+		if (std::shared_ptr<UPlayerInput> InputSystem = Controller->GetPlayerInput())
 		{
 			InputSystem->BindAction(EKeys::Num1, ETriggerEvent::Started, this, &ATestPawn::Attack);
 			InputSystem->BindAction(EKeys::Num2, ETriggerEvent::Started, this, &ATestPawn::Backstep);
@@ -186,9 +186,9 @@ void ATestPawn::Move(float X, float Y)
 void ATestPawn::Look(float X, float Y)
 {
 	// 우클릭이 되어있다면
-	if (bRightButtonPressed && Controller && Controller->PlayerInput)
+	if (bRightButtonPressed && Controller && Controller->GetPlayerInput())
 	{
-		XMFLOAT2 Delta = Controller->PlayerInput->LastMouseDelta;
+		XMFLOAT2 Delta = Controller->GetPlayerInput()->LastMouseDelta;
 		AddControllerYawInput(Delta.x);
 		AddControllerPitchInput(Delta.y);
 	}
@@ -224,7 +224,7 @@ void ATestPawn::PressLeftButton()
 {
 	if (Controller)
 	{
-		XMFLOAT2 MousePos = Controller->PlayerInput->LastMousePosition;
+		XMFLOAT2 MousePos = Controller->GetPlayerInput()->LastMousePosition;
 		XMFLOAT2 NDC;
 #ifdef WITH_EDITOR
 		MousePos.x -= FImguiLevelViewport::LevelViewportPos.x;

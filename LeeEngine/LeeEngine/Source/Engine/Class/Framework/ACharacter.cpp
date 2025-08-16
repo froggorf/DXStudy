@@ -1,4 +1,4 @@
-﻿#include "CoreMinimal.h"
+#include "CoreMinimal.h"
 #include "ACharacter.h"
 
 #include "Engine/Class/Camera/UCameraComponent.h"
@@ -216,7 +216,7 @@ void ACharacter::AddMovementInput(const XMFLOAT3& WorldDirection, float ScaleVal
 {
 	if (std::shared_ptr<UCharacterMovementComponent> CharacterMovementComp = CharacterMovement.lock())
 	{
-		if (Controller && !Controller->bPlayRootMotion)
+		if (Controller && !Controller->IsPlayRootMotion())
 		{
 			CharacterMovementComp->AddInputVector(WorldDirection,ScaleValue);	
 		}

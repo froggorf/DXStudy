@@ -481,9 +481,9 @@ void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 	if (GetWorld() && GetWorld()->GetPlayerController())
 	{
 		APlayerController* PC = GetWorld()->GetPlayerController();
-		PC->PlayerInput->LastMousePosition = LastMousePosition;
-		PC->PlayerInput->LastMouseDelta = LastMouseDelta;
-		PC->PlayerInput->HandleInput(InputEvent);
+		PC->GetPlayerInput()->LastMousePosition = LastMousePosition;
+		PC->GetPlayerInput()->LastMouseDelta = LastMouseDelta;
+		PC->GetPlayerInput()->HandleInput(InputEvent);
 	}
 }
 
