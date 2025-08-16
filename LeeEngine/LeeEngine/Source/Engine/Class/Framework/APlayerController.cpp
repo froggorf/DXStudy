@@ -128,3 +128,14 @@ void APlayerController::HandleRootMotion(const XMMATRIX& Root)
 	}
 }
 
+void APlayerController::CreateWidget(const std::string& Name, const std::shared_ptr<UUserWidget>& NewWidget)
+{
+	if (UserWidgets.contains(Name))
+	{
+		MY_LOG("Warning", EDebugLogLevel::DLL_Warning, "Already exist widget name");
+		return;
+	}
+
+	UserWidgets[Name] = NewWidget;
+}
+

@@ -14,22 +14,21 @@ public:
 
 	//AttachChildren에 따라 Slot 값이 다르게 제공됨
 	virtual std::shared_ptr<FSlot> CreateSlot() = 0;
-	void AddChild(const std::shared_ptr<class FChildWidget>& NewChild) { AttachChildren.emplace_back(NewChild);}
+	void AddChild(const std::shared_ptr<class FChildWidget>& NewChild);
 protected:
 	std::vector<std::shared_ptr<class FChildWidget>> AttachChildren;
 };
 
 // 모든 위젯의 부모 클래스
-class FChildWidget : std::enable_shared_from_this<FChildWidget>
+class FChildWidget : public std::enable_shared_from_this<FChildWidget>
 {
 public:
-	FChildWidget() = default;
+	FChildWidget();
 	virtual ~FChildWidget() = default;
 	FChildWidget(const FChildWidget& Other) = default;
 	FChildWidget(FChildWidget&& Other) = default;
 	FChildWidget& operator=(const FChildWidget& Other) = default;
 	FChildWidget& operator=(FChildWidget&& Other) = default;
-
 
 	void AttachToWidget(const std::shared_ptr<FChildWidget>& NewOwnerWidget){
 		std::shared_ptr<IPanelContainer> PanelOwner = std::dynamic_pointer_cast<IPanelContainer>(NewOwnerWidget);
@@ -39,10 +38,15 @@ public:
 		OwnerWidget = NewOwnerWidget;
 
 		Slot = PanelOwner->CreateSlot();
-		PanelOwner->AddChild(shared_from_this());
+		std::shared_ptr<FChildWidget> ThisShared = shared_from_this();
+		PanelOwner->AddChild(ThisShared);
 	}
 	virtual void Tick(float DeltaSeconds) = 0;
 	virtual void Draw() = 0;
+
+	const std::shared_ptr<FSlot>& GetSlot() const {return Slot;}
+
+	UINT WidgetID = -1;
 private:
 
 	bool bShow = true;
@@ -76,15 +80,23 @@ public:
 
 	void Draw() override
 	{
-		
+		for (const std::shared_ptr<FChildWidget>& ChildWidget : AttachChildren)
+		{
+			ChildWidget->Draw();
+		}
 	}
 
 	std::shared_ptr<FSlot> CreateSlot() override
 	{
-		return std::make_shared<FCanvasSlot>();
+		std::shared_ptr<FCanvasSlot> CanvasSlot = std::make_shared<FCanvasSlot>();
+		CanvasSlot->Anchors = ECanvasAnchor::LeftTop;
+		CanvasSlot->Position = {0,0};
+		CanvasSlot->Size = {100,30};
+		CanvasSlot->Alignment = {0,0};
+		return CanvasSlot;
 	}
 private:
-	XMFLOAT2 DesignResolution = {100.0f,100.0f};
+	XMFLOAT2 DesignResolution = {500.0f,500.0f};
 	XMFLOAT2 CurrentResolution{};  // 현재 화면 해상도
 };
 
@@ -99,25 +111,23 @@ class FVerticalBoxWidget : public FPanelWidget
 
 struct FImageBrush{
 	std::shared_ptr<UTexture> Image;
-	XMFLOAT2 ImageSize;
-	XMFLOAT4 Tint;
 };
 
 class FImageWidget : public FChildWidget
 {
+public:
 	FImageWidget(const FImageBrush& NewBrush, XMFLOAT4 NewColor)
 	{
 		Brush = NewBrush;
 		ColorAndOpacity = NewColor;
 	}
 
-
-	void Draw() override {
-		// LeftTopRightBottom 받아서
-
-		// 해당위치에 Imgui로 그리기
+	void Tick(float DeltaSeconds) override
+	{
+		
 	}
-
+	void Draw() override;
+private:
 	FImageBrush Brush;
 	XMFLOAT4 ColorAndOpacity;
 

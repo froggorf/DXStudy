@@ -56,6 +56,8 @@ public:
 		return nullptr;
 	}
 
+	void CreateWidget(const std::string& Name, const std::shared_ptr<UUserWidget>& NewWidget);
+
 private:
 	ACharacter* Character;
 	std::weak_ptr<APlayerCameraManager> CameraManager;

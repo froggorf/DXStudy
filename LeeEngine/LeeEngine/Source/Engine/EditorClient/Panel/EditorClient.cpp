@@ -33,13 +33,7 @@ void FEditorClient::AddPanelCommand(const std::shared_ptr<FImguiPanelCommandData
 void FEditorClient::Draw()
 {
 	//========== IMGUI ==========
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-
-	ImGui::NewFrame();
-
-	static ImFont* RobotoFont = ImGui::GetIO().Fonts->Fonts[0];
-	ImGui::PushFont(RobotoFont);
+	
 
 	for (UINT Type = 0; Type < static_cast<UINT>(EImguiPanelType::IPT_Count); ++Type)
 	{
@@ -49,15 +43,5 @@ void FEditorClient::Draw()
 		}
 	}
 
-	ImGui::PopFont();
-
-	ImGui::Render();
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-
-	ImGuiIO& io = ImGui::GetIO();
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-	{
-		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault();
-	}
+	
 }

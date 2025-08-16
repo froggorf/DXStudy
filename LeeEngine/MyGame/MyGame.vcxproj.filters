@@ -41,6 +41,9 @@
     <Filter Include="Shader\Niagara\Render\Ribbon">
       <UniqueIdentifier>{d3dc4b1c-64f0-4f86-bb3b-e1d76fd0bd85}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\Widget">
+      <UniqueIdentifier>{880a53e3-e44f-4f73-bd4f-89cd464df370}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -64,6 +67,9 @@
     <ClCompile Include="Source\MyGame\Actor\ATestPawn.cpp">
       <Filter>Source\MyGame\Actor</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Widget\UMyTestWidget.cpp">
+      <Filter>Source\MyGame\Widget</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -83,6 +89,9 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Actor\ATestPawn.h">
       <Filter>Source\MyGame\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Widget\UMyTestWidget.h">
+      <Filter>Source\MyGame\Widget</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

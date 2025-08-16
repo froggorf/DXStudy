@@ -305,7 +305,9 @@ public:
 	// 특정 씬 프록시의 이펙트를 Activate 시키는 함수
 	static void SetNiagaraEffectActivate_GameThread(std::vector<std::shared_ptr<class FNiagaraSceneProxy>>& TargetSceneProxies, bool bNewActivate);
 
-	void DrawShadowMap();
+	void         DrawShadowMap();
+	void         BeginImGUI();
+	void		EndImGUI();
 	static void  DrawScene_RenderThread(std::shared_ptr<FScene> SceneData);
 	virtual void SetDrawScenePipeline(const float* ClearColor);
 	virtual void SetRSViewport();

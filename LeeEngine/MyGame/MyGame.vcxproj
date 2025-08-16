@@ -26,6 +26,7 @@
     <ClCompile Include="Source\MyGame\Actor\ATestPawn.cpp" />
     <ClCompile Include="Source\MyGame\AnimInstance\UMyAnimInstance.cpp" />
     <ClCompile Include="Source\MyGame\Component\UTestComponent.cpp" />
+    <ClCompile Include="Source\MyGame\Widget\UMyTestWidget.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h" />
@@ -34,6 +35,7 @@
     <ClInclude Include="Source\MyGame\Actor\ATestPawn.h" />
     <ClInclude Include="Source\MyGame\AnimInstance\UMyAnimInstance.h" />
     <ClInclude Include="Source\MyGame\Component\UTestComponent.h" />
+    <ClInclude Include="Source\MyGame\Widget\UMyTestWidget.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\BillboardSpriteRenderer.fx">

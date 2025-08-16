@@ -3,12 +3,14 @@
 #include "ATestCube.h"
 
 #include "imgui_internal.h"
+#include "../Widget/UMyTestWidget.h"
 #include "Engine/UEditorEngine.h"
 #include "Engine/Components/UNiagaraComponent.h"
 #include "Engine/Components/USceneComponent.h"
 #include "Engine/Components/UStaticMeshComponent.h"
 #include "Engine/Mesh/UStaticMesh.h"
 #include "Engine/Physics/UPhysicsEngine.h"
+#include "Engine/World/UWorld.h"
 
 rcPolyMesh* ATestCube::MyPolyMesh;
 rcPolyMeshDetail* ATestCube::MyPolyDetail;
@@ -147,7 +149,12 @@ void ATestCube::BeginPlay()
 {
 	AActor::BeginPlay();
 
-	
+	if (APlayerController* PC = GEngine->GetWorld()->GetPlayerController())
+	{
+		std::shared_ptr<UMyTestWidget> MyTestWidget = std::make_shared<UMyTestWidget>();
+		MyTestWidget->NativeConstruct();
+		PC->CreateWidget("TestWidget", MyTestWidget);
+	}
 
 	TestCube2->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::Physics);
 	
