@@ -135,6 +135,18 @@ struct ObjConstantBuffer
 	XMMATRIX InvTransposeMatrix;
 };
 
+struct FWidgetConstantBuffer
+{
+	// 모두 NDC 좌표계를 기준
+	float Left;
+	float Up;
+	float Width;
+	float Height;
+
+	// 이미지 색상 Hint / 디폴트 : 1,1,1,1
+	XMFLOAT4 Hint = {1.0f, 1.0f, 1.0f, 1.0f};
+};
+
 struct FrameConstantBuffer
 {
 	XMMATRIX View;

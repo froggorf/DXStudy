@@ -23,13 +23,7 @@ public:
 
 	void AddToViewport(){ /* 뷰표트에 추가 */ }
 
-	// 모든 Widget  이 계층적으로 렌더링 되도록
-	void Draw() const
-	{ 
-		// TODO: 현재는 그냥 계층적으로 렌더링 하지만,
-		// 이후에는 ZOrder 값을 받아서 렌더링을 진행하도록 구현 예정
-		OwnerWidget->Draw(); 
-	}
+	
 
 protected:
 	std::shared_ptr<FPanelWidget> OwnerWidget;

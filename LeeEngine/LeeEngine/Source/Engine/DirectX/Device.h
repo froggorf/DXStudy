@@ -14,7 +14,7 @@ enum class EConstantBufferType
 {
 	CBT_PerFrame,
 	CBT_PerObject,
-	CBT_NULL,
+	CBT_Widget,
 	CBT_SkeletalData,
 	CBT_UserParam,
 	CBT_ComputeShader,
@@ -87,6 +87,7 @@ public:
 		return EditorViewportSize;
 	}
 #endif
+	XMFLOAT2 GetCurrentResolution() const;
 
 	// ConstantBuffers
 private:

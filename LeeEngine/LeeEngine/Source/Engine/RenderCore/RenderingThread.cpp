@@ -6,13 +6,12 @@
 
 #include "EditorScene.h"
 #include "renderingthread.h"
-#include "Engine/Class/Framework/APlayerController.h"
 #include "Engine/Physics/UShapeComponent.h"
 #include "Engine/SceneProxy/FNiagaraSceneProxy.h"
 #include "Engine/SceneProxy/FSkeletalMeshSceneProxy.h"
 #include "Engine/SceneProxy/FStaticMeshSceneProxy.h"
-#include "Engine/Widget/UUserWidget.h"
-#include "Engine/World/UWorld.h"
+
+
 
 std::shared_ptr<FScene> FRenderCommandExecutor::CurrentSceneData = nullptr;
 
@@ -572,31 +571,7 @@ void FScene::DrawShadowMap()
 	//DrawShadowMapSceneProxies(TranslucentSceneProxyRenderData);
 }
 
-void FScene::BeginImGUI()
-{
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
 
-	ImGui::NewFrame();
-
-	static ImFont* RobotoFont = ImGui::GetIO().Fonts->Fonts[0];
-	ImGui::PushFont(RobotoFont);
-}
-
-void FScene::EndImGUI()
-{
-	ImGui::PopFont();
-
-	ImGui::Render();
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-
-	ImGuiIO& io = ImGui::GetIO();
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-	{
-		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault();
-	}
-}
 
 static void DrawSceneProxies(const std::shared_ptr<FScene>& SceneData, const std::unordered_map<UINT, std::vector<FPrimitiveRenderData>>& RenderDataSceneProxies)
 {
@@ -844,30 +819,16 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 
 			
 		}
-	}
 
-	SceneData->BeginImGUI();
-
-	SceneData->AfterDrawSceneAction(SceneData);
-
-
-	// Draw UI
-	// 극히 테스트용임
-	{
-		if (GEngine && GEngine->GetWorld())
+		// Draw UI
 		{
-			if (APlayerController* PC = GEngine->GetWorld()->GetPlayerController())
-			{
-
-				std::shared_ptr<UUserWidget> Widget = PC->GetWidget("TestWidget");
-				Widget->Draw();
-			}
+			
 		}
 	}
 
-	SceneData->EndImGUI();
 
-	
+	SceneData->AfterDrawSceneAction(SceneData);
+
 	HR(GDirectXDevice->GetSwapChain()->Present(0, 0));
 
 	EndRenderFrame_RenderThread(SceneData);

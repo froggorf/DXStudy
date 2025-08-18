@@ -671,6 +671,15 @@ void FDirectXDevice::SetDefaultViewPort()
 	GDirectXDevice->GetDeviceContext()->RSSetViewports(1, GDirectXDevice->GetScreenViewport());
 }
 
+XMFLOAT2 FDirectXDevice::GetCurrentResolution() const
+{
+#ifdef WITH_EDITOR
+	return GetEditorResolution();
+#else
+	return GetResolution();
+#endif
+}
+
 void FDirectXDevice::CreateConstantBuffers()
 {
 	// Constant Buffer 생성
@@ -681,7 +690,7 @@ void FDirectXDevice::CreateConstantBuffers()
 
 	// FrameConstantBuffer
 	bufferDesc.ByteWidth = sizeof(FrameConstantBuffer);
-	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ConstantBuffers[static_cast<UINT>( EConstantBufferType::CBT_PerFrame)].GetAddressOf()));
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, .static_cast<UINT>( EConstantBufferType::CBT_PerFrame)].GetAddressOf()));
 	m_d3dDeviceContext->VSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_PerFrame), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_PerFrame)].GetAddressOf());
 	m_d3dDeviceContext->PSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_PerFrame), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_PerFrame)].GetAddressOf());
 	m_d3dDeviceContext->GSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_PerFrame), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_PerFrame)].GetAddressOf());
@@ -693,6 +702,11 @@ void FDirectXDevice::CreateConstantBuffers()
 	m_d3dDeviceContext->VSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_PerObject), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_PerObject)].GetAddressOf());
 	m_d3dDeviceContext->PSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_PerObject), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_PerObject)].GetAddressOf());
 
+	// FWidgetConstantBuffer
+	bufferDesc.ByteWidth = sizeof(FWidgetConstantBuffer);
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ConstantBuffers[static_cast<UINT>( EConstantBufferType::CBT_Widget)].GetAddressOf()));
+	m_d3dDeviceContext->VSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_Widget), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_Widget)].GetAddressOf());
+	m_d3dDeviceContext->PSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_Widget), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_Widget)].GetAddressOf());
 
 	// SkeletalMeshBoneTransformConstantBuffer
 	bufferDesc.ByteWidth = sizeof(SkeletalMeshBoneTransformConstantBuffer);

@@ -42,11 +42,12 @@ public:
 		PanelOwner->AddChild(ThisShared);
 	}
 	virtual void Tick(float DeltaSeconds) = 0;
-	virtual void Draw() = 0;
 
 	const std::shared_ptr<FSlot>& GetSlot() const {return Slot;}
 
 	UINT WidgetID = -1;
+
+	std::shared_ptr<FChildWidget> GetOwner() const {return OwnerWidget.lock();}
 private:
 
 	bool bShow = true;
@@ -64,27 +65,12 @@ class FPanelWidget : public FChildWidget, public IPanelContainer
 
 class FCanvasWidget : public FPanelWidget{
 public:
-	XMFLOAT2 GetScaleFactor() const {
-		return {
-			CurrentResolution.x / DesignResolution.x,
-			CurrentResolution.y / DesignResolution.y
-		};
-	}
-	void SetDesignResolution(XMFLOAT2 Resolution) { DesignResolution = Resolution; }
-	void UpdateCurrentResolution(XMFLOAT2 Resolution) { CurrentResolution = Resolution; }
-
 	void Tick(float DeltaSeconds) override
 	{
 		
 	}
 
-	void Draw() override
-	{
-		for (const std::shared_ptr<FChildWidget>& ChildWidget : AttachChildren)
-		{
-			ChildWidget->Draw();
-		}
-	}
+	
 
 	std::shared_ptr<FSlot> CreateSlot() override
 	{
@@ -122,11 +108,7 @@ public:
 		ColorAndOpacity = NewColor;
 	}
 
-	void Tick(float DeltaSeconds) override
-	{
-		
-	}
-	void Draw() override;
+	void Tick(float DeltaSeconds) override;
 private:
 	FImageBrush Brush;
 	XMFLOAT4 ColorAndOpacity;
