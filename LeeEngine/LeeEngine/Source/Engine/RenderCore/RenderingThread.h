@@ -9,6 +9,7 @@
 #include "Engine/Class/Light/Light.h"
 #include "Engine/Components/USceneComponent.h"
 #include "Engine/SceneProxy/FPrimitiveSceneProxy.h"
+#include "Engine/Widget/FWidgetRenderData.h"
 
 // 다수의 게임 쓰레드에서 단일의 렌더쓰레드가 수행할 명령을 관리하는 파이프라인
 // Multi-Producer(GameThread) Single-Consumer(RenderThread) Queue
@@ -154,6 +155,11 @@ public:
 
 	// Decal Data
 	std::vector<FDecalInfo> CurrentFrameDecalInfo;
+
+	// UI Widget Data
+	std::vector<FWidgetRenderData> CurrentFrameWidgetRenderData;
+	std::shared_ptr<UMaterialInterface> M_Widget;
+	std::shared_ptr<FPrimitiveSceneProxy> WidgetStaticMeshSceneProxy;
 
 	// ==================== FPrimitiveSceneProxy ====================
 
@@ -344,7 +350,9 @@ public:
 	// 현재 프레임의 LightInfo 를 설정
 	void SetFrameLightInfo(const std::vector<FLightInfo>& LightInfo);
 	// 현재 프레임의 DecalInfo 를 설정
-	void SetFrameDecalInfo(const std::vector<FDecalInfo>& DecalInfo);
+	void SetFrameDecalInfo(const std::vector<FDecalInfo>& DecalInfo);\
+	// 현재 프레임의 WidgetRenderData를 설정
+	void SetFrameWidgetRenderData(const std::vector<FWidgetRenderData>& WidgetRenderData);
 
 private:
 	static void EndRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData);

@@ -41,49 +41,50 @@ public:
 		std::shared_ptr<FChildWidget> ThisShared = shared_from_this();
 		PanelOwner->AddChild(ThisShared);
 	}
-	virtual void Tick(float DeltaSeconds) = 0;
+	virtual void Tick(float DeltaSeconds);
 
 	const std::shared_ptr<FSlot>& GetSlot() const {return Slot;}
 
 	UINT WidgetID = -1;
 
+	std::shared_ptr<class FCanvasWidget> GetRootWidget();
 	std::shared_ptr<FChildWidget> GetOwner() const {return OwnerWidget.lock();}
+
+	void SetScaleFactor(const XMFLOAT2& NewScaleFactor) {ScaleFactor = NewScaleFactor;}
+protected:
+	// 매프레임마다 계산되는 값
+	// Designed Resolution -> Render Resolution 이 되는 값
+	XMFLOAT2 ScaleFactor = {0,0};
 private:
-
 	bool bShow = true;
-
 	std::shared_ptr<FSlot> Slot;
-	std::weak_ptr<FChildWidget> OwnerWidget;		
-	
+	std::weak_ptr<FChildWidget> OwnerWidget;
 };
 
 class FPanelWidget : public FChildWidget, public IPanelContainer
 {
+public:
+	void SetDesignResolution(XMFLOAT2 Resolution) { DesignResolution = Resolution; }
 
+	void SetCurrentSize(const XMFLOAT2 NewSize) { CurrentSize = NewSize; };
+	XMFLOAT2 GetCurrentSize() const {return CurrentSize;}
+	void Tick(float DeltaSeconds) override;
+
+	XMFLOAT2 GetDesignResolution() const {return DesignResolution;}
+protected:
+	// 디자인 해상도(루트)
+	XMFLOAT2 DesignResolution = {500.0f,500.0f};
+
+	// 해당 위젯의 사이즈
+	XMFLOAT2 CurrentSize = {0.0f,0.0f};
 };
 
 
 class FCanvasWidget : public FPanelWidget{
 public:
-	void Tick(float DeltaSeconds) override
-	{
-		
-	}
+	void Tick(float DeltaSeconds) override;
 
-	
-
-	std::shared_ptr<FSlot> CreateSlot() override
-	{
-		std::shared_ptr<FCanvasSlot> CanvasSlot = std::make_shared<FCanvasSlot>();
-		CanvasSlot->Anchors = ECanvasAnchor::LeftTop;
-		CanvasSlot->Position = {0,0};
-		CanvasSlot->Size = {100,30};
-		CanvasSlot->Alignment = {0,0};
-		return CanvasSlot;
-	}
-private:
-	XMFLOAT2 DesignResolution = {500.0f,500.0f};
-	XMFLOAT2 CurrentResolution{};  // 현재 화면 해상도
+	std::shared_ptr<FSlot> CreateSlot() override { return std::make_shared<FCanvasSlot>(); }
 };
 
 class FHorizontalBoxWidget : public FPanelWidget{
@@ -113,5 +114,5 @@ private:
 	FImageBrush Brush;
 	XMFLOAT4 ColorAndOpacity;
 
-	Delegate<> OnMouseButtonDown;  // 추후 기존에 만든 델리게이트와 연결하기
+	Delegate<> OnMouseButtonDown;  
 };

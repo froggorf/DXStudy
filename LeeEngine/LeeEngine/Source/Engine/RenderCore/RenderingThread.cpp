@@ -35,6 +35,12 @@ FScene::FScene()
 
 	M_LightShadow[static_cast<UINT>(ELightType::Directional)] = UMaterial::GetMaterialCache("M_DirShadow");
 	M_LightShadow[static_cast<UINT>(ELightType::Point)] = UMaterial::GetMaterialCache("M_PointShadow");
+
+	M_Widget = UMaterial::GetMaterialCache("M_Widget");
+	M_Widget->SetRasterizerType(ERasterizerType::RT_TwoSided);
+	M_Widget->SetDepthStencilState(EDepthStencilStateType::DST_NO_TEST_NO_WRITE);
+	// 동일한 메쉬를 사용하므로 재사용
+	WidgetStaticMeshSceneProxy = DeferredMergeRenderData.SceneProxy;
 }
 
 void FScene::BeginRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData, UINT GameThreadFrameCount)
@@ -822,7 +828,20 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 
 		// Draw UI
 		{
-			
+			// 머테리얼 바인딩
+			SceneData->M_Widget->Binding();
+			for (const FWidgetRenderData& RenderData : SceneData->CurrentFrameWidgetRenderData)
+			{
+				// ConstantBuffer 바인딩
+				FWidgetConstantBuffer WCB{RenderData.Tint,RenderData.Left, RenderData.Top, RenderData.Width,RenderData.Height};
+				GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_Widget, &WCB, sizeof(WCB));
+
+				// 텍스쳐 바인딩
+				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(0,1, RenderData.Texture->GetSRV().GetAddressOf());
+
+				// 드로우
+				SceneData->WidgetStaticMeshSceneProxy->Draw();
+			}
 		}
 	}
 
@@ -867,6 +886,13 @@ void FScene::SetFrameDecalInfo(const std::vector<FDecalInfo>& DecalInfo)
 	CurrentFrameDecalInfo.clear();
 	CurrentFrameDecalInfo.resize(DecalInfo.size());
 	std::ranges::copy(DecalInfo, CurrentFrameDecalInfo.begin());
+}
+
+void FScene::SetFrameWidgetRenderData(const std::vector<FWidgetRenderData>& WidgetRenderData)
+{
+	CurrentFrameWidgetRenderData.clear();
+	CurrentFrameWidgetRenderData.resize(WidgetRenderData.size());
+	std::ranges::copy(WidgetRenderData, CurrentFrameWidgetRenderData.begin());
 }
 
 

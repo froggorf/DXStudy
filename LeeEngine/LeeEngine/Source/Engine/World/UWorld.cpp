@@ -103,9 +103,23 @@ void UWorld::TickWorld(float DeltaSeconds)
 	}
 	ToBeTickedNiagaraSceneProxies.clear();
 
+
 	if (APlayerController* PC = GetPlayerController())
 	{
-		
+		PC->TickWidget(DeltaSeconds);
+
+		std::ranges::stable_sort(CurrentFrameWidgetRenderData, [](const FWidgetRenderData& A, const FWidgetRenderData& B)
+		{
+			return A.ZOrder > B.ZOrder;
+		});
+		std::vector<FWidgetRenderData> WidgetRenderDataCopy(CurrentFrameWidgetRenderData.size());
+		std::ranges::copy(CurrentFrameWidgetRenderData, WidgetRenderDataCopy.begin());
+		auto Lambda = [WidgetRenderDataCopy](std::shared_ptr<FScene>& SceneData)
+			{
+				SceneData->SetFrameWidgetRenderData(WidgetRenderDataCopy);
+			};
+		ENQUEUE_RENDER_COMMAND(Lambda);
+		CurrentFrameWidgetRenderData.clear();
 	}
 }
 

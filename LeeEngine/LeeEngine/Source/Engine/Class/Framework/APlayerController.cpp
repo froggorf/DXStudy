@@ -5,6 +5,7 @@
 #include "Engine/UEngine.h"
 #include "Engine/Physics/ULineComponent.h"
 #include "Engine/RenderCore/EditorScene.h"
+#include "Engine/Widget/UUserWidget.h"
 #include "Engine/World/UWorld.h"
 
 
@@ -37,6 +38,14 @@ void APlayerController::Tick(float DeltaSeconds)
 		Character->SetControlRotation(GetActorRotation());
 	}
 
+}
+
+void APlayerController::TickWidget(float DeltaSeconds)
+{
+	for (const std::pair<std::string, std::shared_ptr<UUserWidget>> UserWidget : UserWidgets)
+	{
+		UserWidget.second->Tick(DeltaSeconds);
+	}
 }
 
 void APlayerController::AddYawInput(float Val)

@@ -146,5 +146,8 @@
     <None Include="Shader\SkyBox.fx">
       <Filter>Shader</Filter>
     </None>
+    <None Include="Shader\Widget.fx">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

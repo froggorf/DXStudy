@@ -13,6 +13,7 @@ class UMyTestWidget : public UUserWidget
 
 	void NativeConstruct() override
 	{
+		OwnerWidget->SetDesignResolution({1720,1080});
 		if (GEngine)
 		{
 			SetPlayerController(GEngine.get()->GetWorld().get()->GetPlayerController());
@@ -24,10 +25,16 @@ class UMyTestWidget : public UUserWidget
 		TestImage1->AttachToWidget(OwnerWidget);
 		TestImage2->AttachToWidget(OwnerWidget);
 
+		if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(TestImage1->GetSlot()))
+		{
+			CanvasSlot->Position = {100, 100};
+			CanvasSlot->Size = {100,100};
+		}
+
 		if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(TestImage2->GetSlot()))
 		{
-			CanvasSlot->Position = {150,200};
-			CanvasSlot->Size = {50,50};
+			CanvasSlot->Position = {500,500};
+			CanvasSlot->Size = {100,100};
 		}
 	}
 

@@ -6,13 +6,16 @@
 #pragma once
 struct FWidgetRenderData
 {
+	// NDC 좌표계로 저장할것
 	float Left;
-	float Up;
+	float Top;
 	float Width;
 	float Height;
 	
 	std::shared_ptr<UTexture> Texture;
 
-	DirectX::XMFLOAT4 Hint;
+	DirectX::XMFLOAT4 Tint = DirectX::XMFLOAT4{1.0f, 1.0f, 1.0f, 1.0f};
+
+	float ZOrder = 0;
 };
 

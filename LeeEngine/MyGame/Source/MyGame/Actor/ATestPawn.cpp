@@ -102,7 +102,7 @@ void ATestPawn::BindKeyInputs()
 			InputSystem->BindAction(EKeys::MouseRight, ETriggerEvent::Started, this, &ATestPawn::MouseRotateStart);
 			InputSystem->BindAction(EKeys::MouseRight, ETriggerEvent::Released, this, &ATestPawn::MouseRotateEnd);
 
-			InputSystem->BindAction(EKeys::MouseLeft, ETriggerEvent::Started, this, &ATestPawn::PressLeftButton);
+			//InputSystem->BindAction(EKeys::MouseLeft, ETriggerEvent::Started, this, &ATestPawn::PressLeftButton);
 			InputSystem->BindAction(EKeys::MouseWheelUp, Started, this, &ATestPawn::WheelUp);
 			InputSystem->BindAction(EKeys::MouseWheelDown, Started, this, &ATestPawn::WheelDown);
 		}

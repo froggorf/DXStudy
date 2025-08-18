@@ -18,6 +18,10 @@ struct FSlot
 	XMFLOAT2 GetPosition() const { return {GetLeft(), GetTop()}; }
 	XMFLOAT2 GetSize() const { return {GetRight() - GetLeft(), GetBottom() - GetTop()}; }
 	XMFLOAT4 GetRect() const { return {GetLeft(), GetTop(), GetRight(), GetBottom()}; }
+
+	void SetParentSize(const XMFLOAT2& InParentSize) { ParentSize = InParentSize; }
+protected:
+	XMFLOAT2 ParentSize = {0,0};
 };
 
 enum class ECanvasAnchor{
@@ -32,28 +36,16 @@ struct FCanvasSlot : FSlot
 	FCanvasSlot() = default;
 	~FCanvasSlot() override = default;
 
-	ECanvasAnchor Anchors;
 	// Anchors 에 따라 값을 다르게 계산
-	float GetLeft() const override
-	{
-		return 0;
-	}
-	float GetRight() const override
-	{
-		return 100;
-	}		
-	float GetTop() const override
-	{
-		return 0;
-	}		
-	float GetBottom() const override
-	{
-		return 100;
-	}		
+	float GetLeft() const override;
+	float GetRight() const override;
+	float GetTop() const override;
+	float GetBottom() const override;
 
-	XMFLOAT2 Position;
-	XMFLOAT2 Size;
-	XMFLOAT2 Alignment;
+	ECanvasAnchor Anchors = ECanvasAnchor::LeftTop;
+	XMFLOAT2 Position = {0,0};
+	XMFLOAT2 Size = {100,30};
+	XMFLOAT2 Alignment = {0,0};
 	bool bSizeToContent;   // 아마 구현 안할예정
 
 	int ZOrder;

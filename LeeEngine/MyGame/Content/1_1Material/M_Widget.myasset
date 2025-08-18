@@ -1,0 +1,14 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_Widget",
+    "VertexShader" : {
+	"FilePath" : "/Shader/Widget.fx",
+	"Func" : "VS_Widget"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/Widget.fx",
+	"Func" : "PS_Widget"
+    },
+    "BlendMode": "ForDeferredMerge",
+    "TwoSided" : 1
+}

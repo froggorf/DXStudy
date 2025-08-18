@@ -15,11 +15,13 @@ class APlayerController : public AActor
 {
 	MY_GENERATE_BODY(APlayerController)
 	
+
 public:
 	APlayerController();
 	~APlayerController() override = default;
 	void BeginPlay() override;
 	void Tick(float DeltaSeconds) override;
+	void TickWidget(float DeltaSeconds);
 
 	XMFLOAT4 GetControlRotation() const {return GetActorRotation();}
 	void AddYawInput(float Val);

@@ -11,6 +11,7 @@
 #include "Engine/Class/Light/Light.h"
 #include "Engine/Level/ULevel.h"
 #include "Engine/UObject/UObject.h"
+#include "Engine/Widget/FWidgetRenderData.h"
 
 class APlayerCameraManager;
 class APlayerController;
@@ -61,6 +62,11 @@ class UWorld : public UObject, public std::enable_shared_from_this<UWorld>
 		CurrentFrameDecalInfo.emplace_back(NewDecalInfo);
 	}
 
+	void AddCurrentFrameWidgetRenderData(const FWidgetRenderData& NewWidgetRenderData)
+	{
+		CurrentFrameWidgetRenderData.emplace_back(NewWidgetRenderData);
+	}
+
 	APlayerController* GetPlayerController() const {return PlayerController.lock().get();}
 	APlayerCameraManager* GetCameraManager() const
 	{
@@ -91,6 +97,9 @@ private:
 	std::vector<FLightInfo> CurrentFrameLightInfo;
 
 	std::vector<FDecalInfo> CurrentFrameDecalInfo;
+
+	// 현재 프레임의 렌더링 되어야할 위젯 데이터에 대한 데이터 변수
+	std::vector<FWidgetRenderData> CurrentFrameWidgetRenderData;
 
 	// 현재 선택된 액터
 	// TODO: 추후 에디터 기능으로 분리하기

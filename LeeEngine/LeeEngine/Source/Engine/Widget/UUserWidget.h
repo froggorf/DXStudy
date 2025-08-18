@@ -17,6 +17,14 @@ public:
 		OwnerWidget = std::make_shared<FCanvasWidget>();
 	}
 
+	void Tick(float DeltaSeconds)
+	{
+		if (OwnerWidget)
+		{
+			OwnerWidget->Tick(DeltaSeconds);
+		}
+	}
+
 	virtual void NativeConstruct() {}
 
 	void SetPlayerController(APlayerController* OwningPC) { OwningPlayer = OwningPC;}
