@@ -135,3 +135,64 @@ float FCanvasSlot::GetBottom() const
 	}
 	
 }
+
+float FHorizontalBoxSlot::GetLeft() const
+{
+	return LeftTop.x + HorizontalPadding.x;
+}
+
+float FHorizontalBoxSlot::GetRight() const
+{
+	return RightBottom.x - HorizontalPadding.y; 
+}
+
+float FHorizontalBoxSlot::GetTop() const
+{
+	float ContentTop = LeftTop.y + VerticalPadding.x;  // Top 패딩 적용
+	float ContentBottom = RightBottom.y - VerticalPadding.y;  // Bottom 패딩 적용
+	float AvailableHeight = ContentBottom - ContentTop;
+
+	// 자식 위젯의 원하는 높이 (임시로 30.0f)
+	constexpr float DesiredHeight = 30.0f;
+
+	switch (VerticalAlignment)
+	{
+	case EVerticalAlignment::Top:
+		return ContentTop;
+
+	case EVerticalAlignment::Middle:
+		return ContentTop + (AvailableHeight - DesiredHeight) * 0.5f;
+
+	case EVerticalAlignment::Bottom:
+		return ContentBottom - DesiredHeight;
+
+	case EVerticalAlignment::Wrap:  // Fill과 동일
+	default:
+		return ContentTop;
+	}
+}
+
+float FHorizontalBoxSlot::GetBottom() const
+{
+	float ContentTop = LeftTop.y + VerticalPadding.x;
+	float ContentBottom = RightBottom.y - VerticalPadding.y;
+	float AvailableHeight = ContentBottom - ContentTop;
+
+	constexpr float DesiredHeight = 30.0f; 
+
+	switch (VerticalAlignment)
+	{
+	case EVerticalAlignment::Top:
+		return ContentTop + DesiredHeight;
+
+	case EVerticalAlignment::Middle:
+		return ContentTop + (AvailableHeight + DesiredHeight) * 0.5f;
+
+	case EVerticalAlignment::Bottom:
+		return ContentBottom;
+
+	case EVerticalAlignment::Wrap:  // Fill과 동일
+	default:
+		return ContentBottom;
+	}
+}

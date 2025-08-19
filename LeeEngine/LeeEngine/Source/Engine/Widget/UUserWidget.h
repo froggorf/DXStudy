@@ -25,7 +25,7 @@ public:
 		}
 	}
 
-	virtual void NativeConstruct() {}
+	virtual void NativeConstruct();
 
 	void SetPlayerController(APlayerController* OwningPC) { OwningPlayer = OwningPC;}
 

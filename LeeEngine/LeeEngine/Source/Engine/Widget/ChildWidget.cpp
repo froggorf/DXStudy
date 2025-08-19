@@ -85,18 +85,95 @@ void FPanelWidget::Tick(float DeltaSeconds)
 		ChildWidget->SetScaleFactor(ScaleFactor);
 	}
 
-}
-
-void FCanvasWidget::Tick(float DeltaSeconds)
-{
-	FPanelWidget::Tick(DeltaSeconds);
-
-	
 
 	// 모든 자식들을 Tick 돌면서 Tick 및 렌더링 되도록 업데이트를 올리기
 	for (const std::shared_ptr<FChildWidget>& ChildWidget : AttachChildren)
 	{
 		ChildWidget->Tick(DeltaSeconds);
+	}
+}
+
+void FCanvasWidget::Tick(float DeltaSeconds)
+{
+	FPanelWidget::Tick(DeltaSeconds);
+}
+
+void FHorizontalBoxWidget::Tick(float DeltaSeconds)
+{
+	// TODO: 자식들의 Slot LeftRightTopBottom 을 미리 계산해줘야함
+	CalculateChildrenSlots();
+
+	FPanelWidget::Tick(DeltaSeconds);
+}
+
+void FHorizontalBoxWidget::CalculateChildrenSlots()
+{
+	if (AttachChildren.empty())
+	{
+		return;
+	}
+
+	constexpr float SlotDefaultSize = 50.0f;
+
+	const XMFLOAT2& BoxWidthHeight = GetCurrentSize();
+
+	// Auto 슬롯들이 사용한 너비
+	float UsedWidth = 0.0f;
+	// Fill 슬롯들의 총 비율
+	float TotalFillRatio = 0.0f;
+
+	for (const std::shared_ptr<FChildWidget>& Child : AttachChildren)
+	{
+		const std::shared_ptr<FHorizontalBoxSlot>& HorizontalBoxSlot = std::dynamic_pointer_cast<FHorizontalBoxSlot>(Child->GetSlot());
+		if (!HorizontalBoxSlot)
+		{
+			continue;
+		}
+
+		// Auto
+		if (HorizontalBoxSlot->GetFillSize() == 0.0f)
+		{
+			UsedWidth += SlotDefaultSize;
+		}
+		// Fill
+		else
+		{
+			TotalFillRatio += HorizontalBoxSlot->GetFillSize();
+		}
+	}
+
+	// Fill 슬롯들이 쓰고 남은 공간
+	float AvailableWidth = BoxWidthHeight.x - UsedWidth;
+
+	float CurrentX = 0.0f;
+
+	const float BoxLeft = GetSlot()->GetLeft();
+	const float BoxTop = GetSlot()->GetTop();
+
+	for (const std::shared_ptr<FChildWidget>& Child : AttachChildren)
+	{
+		const std::shared_ptr<FHorizontalBoxSlot>& HorizontalBoxSlot = std::dynamic_pointer_cast<FHorizontalBoxSlot>(Child->GetSlot());
+		if (!HorizontalBoxSlot)
+		{
+			continue;
+		}
+
+		float SlotWidth = 0.0f;
+		// Auto
+		if (HorizontalBoxSlot->GetFillSize() == 0.0f)
+		{
+			SlotWidth = SlotDefaultSize;
+		}
+		// Fill
+		else
+		{
+			SlotWidth = AvailableWidth * (HorizontalBoxSlot->GetFillSize() / TotalFillRatio);
+		}
+
+		
+
+		HorizontalBoxSlot->SetPosition(BoxLeft + CurrentX, BoxTop + 0.0f, BoxLeft + CurrentX+SlotWidth,BoxTop + BoxWidthHeight.y);
+		CurrentX += SlotWidth;
 	}
 }
 

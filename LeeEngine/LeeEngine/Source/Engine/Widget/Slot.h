@@ -50,35 +50,44 @@ struct FCanvasSlot : FSlot
 
 	int ZOrder;
 };
-//
-//enum class EHorizontalAlignment
-//{
-//	Left, Center, Right, Wrap
-//};
-//enum class EVerticalAlignment
-//{
-//	Top, Middle, Bottom, Wrap
-//};
-//
-//struct FBoxSlot : FSlot{
-//	float FillSize = 0.0f;    // 0.0f -> Auto, 그 외 : Fill{x}
-//	float GetFillSize() const {return FillSize;}
-//
-//	XMFLOAT2 HorizontalPadding;
-//	XMFLOAT2 VerticalPadding;
-//
-//	EHorizontalAlignment HorizontalAlignment;
-//	EVerticalAlignment VerticalAlignment;
-//
-//}
-//
-//struct FHorizontalBoxSlot : FBoxSlot {
-//	float GetLeft() override { ... }
-//	float GetRight() override { ... }		
-//	float GetTop() override { ... }		
-//	float GetBottom() override { ... }	
-//};
-//
+
+enum class EHorizontalAlignment
+{
+	Left, Center, Right, Wrap
+};
+enum class EVerticalAlignment
+{
+	Top, Middle, Bottom, Wrap
+};
+
+struct FBoxSlot : FSlot{
+	float FillSize = 0.0f;    // 0.0f -> Auto, 그 외 : Fill{x}
+	float GetFillSize() const {return FillSize;}
+
+	XMFLOAT2 HorizontalPadding;
+	XMFLOAT2 VerticalPadding;
+
+	EHorizontalAlignment HorizontalAlignment = EHorizontalAlignment::Wrap;
+	EVerticalAlignment VerticalAlignment = EVerticalAlignment::Wrap;
+
+};
+
+struct FHorizontalBoxSlot : FBoxSlot {
+	float GetLeft() const;
+	float GetRight() const;
+	float GetTop() const;
+	float GetBottom() const;
+
+	void SetPosition(float Left, float Top, float Right, float Bottom)
+	{
+		LeftTop = {Left,Top};
+		RightBottom = {Right, Bottom};
+	}
+protected:
+	XMFLOAT2 LeftTop;
+	XMFLOAT2 RightBottom;
+};
+
 //struct FVerticalBoxSlot : FBoxSlot {
 //	float GetLeft() override { ... }
 //	float GetRight() override { ... }		

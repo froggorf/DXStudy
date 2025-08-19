@@ -88,7 +88,12 @@ public:
 };
 
 class FHorizontalBoxWidget : public FPanelWidget{
-	// Horizontal Box 기능...
+public:
+	void Tick(float DeltaSeconds) override;
+
+	std::shared_ptr<FSlot> CreateSlot() override {return std::make_shared<FHorizontalBoxSlot>();}
+protected:
+	void CalculateChildrenSlots();
 };
 
 class FVerticalBoxWidget : public FPanelWidget
