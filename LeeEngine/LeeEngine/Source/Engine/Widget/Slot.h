@@ -70,27 +70,26 @@ struct FBoxSlot : FSlot{
 	EHorizontalAlignment HorizontalAlignment = EHorizontalAlignment::Wrap;
 	EVerticalAlignment VerticalAlignment = EVerticalAlignment::Wrap;
 
-};
-
-struct FHorizontalBoxSlot : FBoxSlot {
-	float GetLeft() const;
-	float GetRight() const;
-	float GetTop() const;
-	float GetBottom() const;
-
 	void SetPosition(float Left, float Top, float Right, float Bottom)
 	{
 		LeftTop = {Left,Top};
 		RightBottom = {Right, Bottom};
 	}
 protected:
-	XMFLOAT2 LeftTop;
-	XMFLOAT2 RightBottom;
+	XMFLOAT2 LeftTop {};
+	XMFLOAT2 RightBottom {};
 };
 
-//struct FVerticalBoxSlot : FBoxSlot {
-//	float GetLeft() override { ... }
-//	float GetRight() override { ... }		
-//	float GetTop() override { ... }		
-//	float GetBottom() override { ... }	
-//};
+struct FHorizontalBoxSlot : FBoxSlot {
+	float GetLeft() const override;
+	float GetRight() const override;
+	float GetTop() const override;
+	float GetBottom() const override;
+};
+
+struct FVerticalBoxSlot : FBoxSlot {
+	float GetLeft() const override;
+	float GetRight() const override;
+	float GetTop() const override;
+	float GetBottom() const override;
+};

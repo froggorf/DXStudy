@@ -100,7 +100,7 @@ void FCanvasWidget::Tick(float DeltaSeconds)
 
 void FHorizontalBoxWidget::Tick(float DeltaSeconds)
 {
-	// TODO: 자식들의 Slot LeftRightTopBottom 을 미리 계산해줘야함
+	// 자식들의 Slot LeftRightTopBottom 을 미리 계산해줘야함
 	CalculateChildrenSlots();
 
 	FPanelWidget::Tick(DeltaSeconds);
@@ -174,6 +174,83 @@ void FHorizontalBoxWidget::CalculateChildrenSlots()
 
 		HorizontalBoxSlot->SetPosition(BoxLeft + CurrentX, BoxTop + 0.0f, BoxLeft + CurrentX+SlotWidth,BoxTop + BoxWidthHeight.y);
 		CurrentX += SlotWidth;
+	}
+}
+
+void FVerticalBoxWidget::Tick(float DeltaSeconds)
+{
+	// 자식들의 Slot LeftRightTopBottom 을 미리 계산해줘야함
+	CalculateChildrenSlots();
+
+	FPanelWidget::Tick(DeltaSeconds);
+}
+
+void FVerticalBoxWidget::CalculateChildrenSlots()
+{
+	if (AttachChildren.empty())
+	{
+		return;
+	}
+
+	constexpr float SlotDefaultSize = 50.0f;
+
+	const XMFLOAT2& BoxWidthHeight = GetCurrentSize();
+
+	// Auto 슬롯들이 사용한 너비
+	float UsedHeight = 0.0f;
+	// Fill 슬롯들의 총 비율
+	float TotalFillRatio = 0.0f;
+
+	for (const std::shared_ptr<FChildWidget>& Child : AttachChildren)
+	{
+		const std::shared_ptr<FVerticalBoxSlot>& VerticalBoxSlot = std::dynamic_pointer_cast<FVerticalBoxSlot>(Child->GetSlot());
+		if (!VerticalBoxSlot)
+		{
+			continue;
+		}
+
+		// Auto
+		if (VerticalBoxSlot->GetFillSize() == 0.0f)
+		{
+			UsedHeight += SlotDefaultSize;
+		}
+		// Fill
+		else
+		{
+			TotalFillRatio += VerticalBoxSlot->GetFillSize();
+		}
+	}
+
+	// Fill 슬롯들이 쓰고 남은 공간
+	float AvailableHeight = BoxWidthHeight.y - UsedHeight;
+
+	float CurrentY = 0.0f;
+
+	const float BoxLeft = GetSlot()->GetLeft();
+	const float BoxTop = GetSlot()->GetTop();
+
+	for (const std::shared_ptr<FChildWidget>& Child : AttachChildren)
+	{
+		const std::shared_ptr<FVerticalBoxSlot>& VerticalBoxSlot = std::dynamic_pointer_cast<FVerticalBoxSlot>(Child->GetSlot());
+		if (!VerticalBoxSlot)
+		{
+			continue;
+		}
+
+		float SlotHeight = 0.0f;
+		// Auto
+		if (VerticalBoxSlot->GetFillSize() == 0.0f)
+		{
+			SlotHeight = SlotDefaultSize;
+		}
+		// Fill
+		else
+		{
+			SlotHeight = AvailableHeight * (VerticalBoxSlot->GetFillSize() / TotalFillRatio);
+		}
+
+		VerticalBoxSlot->SetPosition(BoxLeft + 0.0f, BoxTop + CurrentY, BoxLeft + BoxWidthHeight.x,BoxTop + CurrentY + SlotHeight);
+		CurrentY += SlotHeight;
 	}
 }
 

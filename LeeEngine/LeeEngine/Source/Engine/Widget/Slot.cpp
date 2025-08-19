@@ -196,3 +196,63 @@ float FHorizontalBoxSlot::GetBottom() const
 		return ContentBottom;
 	}
 }
+
+float FVerticalBoxSlot::GetLeft() const
+{
+	float ContentLeft = LeftTop.x + HorizontalPadding.x;    
+	float ContentRight = RightBottom.x - HorizontalPadding.y; 
+	float AvailableWidth = ContentRight - ContentLeft;
+
+	constexpr float DesiredWidth = 50.0f;
+
+	switch (HorizontalAlignment)
+	{
+	case EHorizontalAlignment::Left:
+		return ContentLeft;
+
+	case EHorizontalAlignment::Center:
+		return ContentLeft + (AvailableWidth - DesiredWidth) * 0.5f;
+
+	case EHorizontalAlignment::Right:
+		return ContentRight - DesiredWidth;
+
+	case EHorizontalAlignment::Wrap:
+	default:
+		return ContentLeft;
+	}
+}
+
+float FVerticalBoxSlot::GetRight() const
+{
+	float ContentLeft = LeftTop.x + HorizontalPadding.x;
+	float ContentRight = RightBottom.x - HorizontalPadding.y;
+	float AvailableWidth = ContentRight - ContentLeft;
+
+	constexpr float DesiredWidth = 50.0f;
+
+	switch (HorizontalAlignment)
+	{
+	case EHorizontalAlignment::Left:
+		return ContentLeft + DesiredWidth;
+
+	case EHorizontalAlignment::Center:
+		return ContentLeft + (AvailableWidth + DesiredWidth) * 0.5f;
+
+	case EHorizontalAlignment::Right:
+		return ContentRight;
+
+	case EHorizontalAlignment::Wrap:
+	default:
+		return ContentRight;
+	}
+}
+
+float FVerticalBoxSlot::GetTop() const
+{
+	return LeftTop.y + VerticalPadding.x;  
+}
+
+float FVerticalBoxSlot::GetBottom() const
+{
+	return RightBottom.y - VerticalPadding.y;
+}

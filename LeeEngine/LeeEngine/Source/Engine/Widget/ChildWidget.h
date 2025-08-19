@@ -87,10 +87,10 @@ public:
 	std::shared_ptr<FSlot> CreateSlot() override { return std::make_shared<FCanvasSlot>(); }
 };
 
+
 class FHorizontalBoxWidget : public FPanelWidget{
 public:
 	void Tick(float DeltaSeconds) override;
-
 	std::shared_ptr<FSlot> CreateSlot() override {return std::make_shared<FHorizontalBoxSlot>();}
 protected:
 	void CalculateChildrenSlots();
@@ -98,7 +98,11 @@ protected:
 
 class FVerticalBoxWidget : public FPanelWidget
 {
-	
+public:
+	void Tick(float DeltaSeconds) override;
+	std::shared_ptr<FSlot> CreateSlot() override {return std::make_shared<FVerticalBoxSlot>();}
+protected:
+	void CalculateChildrenSlots();
 };
 
 struct FImageBrush{

@@ -14,7 +14,7 @@ class UMyTestWidget : public UUserWidget
 	void NativeConstruct() override;
 
 private:
-	std::shared_ptr<FHorizontalBoxWidget> TestHorizontalBox1;
+	std::shared_ptr<FVerticalBoxWidget> TestVerticalBox1;
 
 	std::shared_ptr<FImageWidget> TestImage1;
 	std::shared_ptr<FImageWidget> TestImage2;
