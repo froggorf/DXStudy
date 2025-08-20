@@ -12,7 +12,11 @@ class FDirect2DDevice
 {
 public:
 	bool Initialize(const Microsoft::WRL::ComPtr<ID3D11Device>& D3DDevice);
-		
+
+	const Microsoft::WRL::ComPtr<ID2D1DeviceContext>& Get2DDeviceContext() const {return m_d2dContext;}
+
+	const Microsoft::WRL::ComPtr<IDWriteFactory1>& Test_WriteFactory() const {return m_writeFactory;}
+	const Microsoft::WRL::ComPtr<ID2D1RenderTarget>& Test_RenderTarget() const {return m_d2dRenderTarget;}
 private:
 	Microsoft::WRL::ComPtr<ID2D1Factory1>      m_d2dFactory;
 	Microsoft::WRL::ComPtr<ID2D1Device>        m_d2dDevice;

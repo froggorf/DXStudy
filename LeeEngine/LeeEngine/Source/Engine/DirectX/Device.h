@@ -106,9 +106,10 @@ public:
 	const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& GetDeviceContext() const { return m_d3dDeviceContext; }
 	const Microsoft::WRL::ComPtr<IDXGISwapChain>& GetSwapChain() const { return m_SwapChain;  } 
 	const D3D11_VIEWPORT* GetScreenViewport() const { return &m_ScreenViewport; } 
-	const Microsoft::WRL::ComPtr<ID3D11SamplerState>& GetSamplerState() const { return m_SamplerState; } 
-	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetLightConstantBuffer() const { return m_LightConstantBuffer; }
-	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetSkeletalMeshConstantBuffer() const { return m_SkeletalMeshConstantBuffer; }
+	const Microsoft::WRL::ComPtr<ID3D11SamplerState>& GetSamplerState() const { return m_SamplerState; }
+	// 텍스트 렌더링용
+	const Microsoft::WRL::ComPtr<ID2D1DeviceContext>& Get2DDeviceContext() const { return Direct2DDevice->Get2DDeviceContext();}
+	FDirect2DDevice* Test_Get2DDevice() const {return Direct2DDevice.get();}
 
 	UINT CurrentVertexShaderID = -1;
 	void SetVertexShader(class FVertexShader* InVertexShader);
@@ -169,9 +170,6 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_SamplerState;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_SamplerState2;
 
-	// 상수버퍼
-	Microsoft::WRL::ComPtr<ID3D11Buffer> m_LightConstantBuffer;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> m_SkeletalMeshConstantBuffer;
 
 	int*            m_ClientWidth;
 	int*            m_ClientHeight;

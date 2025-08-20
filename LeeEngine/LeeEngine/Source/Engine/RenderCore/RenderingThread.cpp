@@ -842,6 +842,38 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				// 드로우
 				SceneData->WidgetStaticMeshSceneProxy->Draw();
 			}
+
+			// Text 드로우 테스트
+			{
+				GDirectXDevice->Get2DDeviceContext()->BeginDraw();
+				static Microsoft::WRL::ComPtr<IDWriteTextFormat> textFormat;
+				static Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> TestBrush;
+				static bool test = false;
+				if (!test)
+				{
+					GDirectXDevice->Test_Get2DDevice()->Test_WriteFactory()->CreateTextFormat(
+						L"맑은 고딕", nullptr,
+						DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL,
+						32.0f, L"ko-kr", textFormat.GetAddressOf()
+					);
+					GDirectXDevice->Test_Get2DDevice()->Get2DDeviceContext()->CreateSolidColorBrush(
+						D2D1::ColorF(0.0f,0.0f,0.0f, 1.0f),
+						TestBrush.GetAddressOf()
+					);
+				}
+
+				
+
+				static std::wstring TestText = L"Test, Direct2D, 됐나?";
+				GDirectXDevice->Get2DDeviceContext()->DrawTextW(
+					TestText.c_str(),
+					static_cast<UINT32>(TestText.size()),
+					textFormat.Get(),
+					D2D1::RectF(100,100,400,200),
+					TestBrush.Get()
+				);
+				HRESULT hr = GDirectXDevice->Get2DDeviceContext()->EndDraw();
+			}
 		}
 	}
 
