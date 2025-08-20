@@ -480,6 +480,9 @@
     <ClCompile Include="Source\Engine\Widget\FWidgetRenderData.cpp">
       <Filter>Source\Engine\Widget</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\DirectX\FDirect2DDevice.cpp">
+      <Filter>Source\Engine\DirectX</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DirectX\ShadowMap.h">
@@ -853,6 +856,9 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\Widget\FWidgetRenderData.h">
       <Filter>Source\Engine\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\DirectX\FDirect2DDevice.h">
+      <Filter>Source\Engine\DirectX</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

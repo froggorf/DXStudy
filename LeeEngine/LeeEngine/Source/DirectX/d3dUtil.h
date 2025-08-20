@@ -5,6 +5,12 @@
 #pragma warning(disable:4819)
 using namespace DirectX;
 #include <d3d11_1.h>
+#include <d2d1.h>
+#include <d2d1_1.h>
+#include <dwrite.h>
+#include <dwrite_1.h>
+#include <wincodec.h>
+
 #include <d3dcompiler.h>
 #include <wrl.h>				// ComPtr
 #include <DirectXMath.h>
@@ -15,7 +21,9 @@ using namespace DirectX;
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "comctl32.lib")
-
+#pragma comment(lib, "d2d1.lib")
+#pragma comment(lib, "dwrite.lib")
+#pragma comment(lib, "windowscodecs.lib")
 #if defined(DEBUG) | defined(_DEBUG)
 #pragma comment(lib, "assimp-vc143-mtd.lib")
 #pragma comment(lib, "fmodL_vc.lib")
