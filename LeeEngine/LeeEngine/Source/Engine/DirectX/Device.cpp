@@ -32,6 +32,7 @@ FDirectXDevice::FDirectXDevice(HWND* hWnd, int* ClientWidth, int* ClientHeight)
 
 	m_hWnd = hWnd;
 
+	Direct2DDevice = std::make_unique<FDirect2DDevice>();
 }
 
 
@@ -42,6 +43,8 @@ bool FDirectXDevice::InitDirect3D()
 #if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
+	// 08.20 Direct2D 연동하려면 해당 플래그가 있어야한다고함
+	createDeviceFlags |= D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 
 	D3D_FEATURE_LEVEL featureLevel{};
 	HRESULT           hr = D3D11CreateDevice(nullptr /*default*/, m_d3dDriverType, nullptr, createDeviceFlags, nullptr, 0, D3D11_SDK_VERSION, m_d3dDevice.GetAddressOf(), &featureLevel, m_d3dDeviceContext.GetAddressOf());
@@ -52,7 +55,7 @@ bool FDirectXDevice::InitDirect3D()
 	}
 
 	// 4x Msaa quality를 지원하는지 확인
-	m_d3dDevice->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, 4, &m_4xMsaaQuality);
+	m_d3dDevice->CheckMultisampleQualityLevels(DXGI_FORMAT_B8G8R8A8_UNORM, 4, &m_4xMsaaQuality);
 	assert(m_4xMsaaQuality>0);
 
 	DXGI_SWAP_CHAIN_DESC sd{};
@@ -60,7 +63,7 @@ bool FDirectXDevice::InitDirect3D()
 	sd.BufferDesc.Height                  = *m_ClientHeight;
 	sd.BufferDesc.RefreshRate.Numerator   = 60;
 	sd.BufferDesc.RefreshRate.Denominator = 1;
-	sd.BufferDesc.Format                  = DXGI_FORMAT_R8G8B8A8_UNORM;
+	sd.BufferDesc.Format                  = DXGI_FORMAT_B8G8R8A8_UNORM;
 	sd.BufferDesc.ScanlineOrdering        = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	sd.BufferDesc.Scaling                 = DXGI_MODE_SCALING_UNSPECIFIED;
 
@@ -282,6 +285,8 @@ void FDirectXDevice::InitMultiRenderTarget()
 #endif
 		MultiRenderTargets[static_cast<UINT>(EMultiRenderTargetType::Light)]->SetClearColor(ClearColor, 2);
 	}
+
+	Direct2DDevice->Initialize(m_d3dDevice);
 }
 
 
@@ -589,7 +594,7 @@ void FDirectXDevice::InitSamplerState()
 #ifdef WITH_EDITOR
 void FDirectXDevice::CreateEditorMRT()
 {
-	std::shared_ptr<UTexture> RTTex = AssetManager::CreateTexture("EditorRenderTexture",(UINT)EditorViewportSize.x,(UINT)EditorViewportSize.y,DXGI_FORMAT_B8G8R8X8_UNORM,
+	std::shared_ptr<UTexture> RTTex = AssetManager::CreateTexture("EditorRenderTexture",(UINT)EditorViewportSize.x,(UINT)EditorViewportSize.y,DXGI_FORMAT_B8G8R8A8_UNORM,
 	D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
 
 	// 2. DepthStencilTexture 생성

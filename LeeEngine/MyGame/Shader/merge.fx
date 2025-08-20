@@ -41,6 +41,8 @@ float4 PS_Merge(VS_OUT _in) : SV_Target
 	float4 Specular = txSpecularTexture.Sample(samLinear, _in.vUV);
 
 	OutColor.rgb = Color.rgb * Diffuse.rgb + Specular.rgb;
+	// 08.20 백버퍼를 B8G8R8A8_UNORM 으로 바꾸니 알파값이 중요해져서 해당 코드를 추가
+	OutColor.a = 1.0f;
     
     return OutColor;
 }

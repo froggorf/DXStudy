@@ -8,6 +8,7 @@
 #include "Engine/MyEngineUtils.h"
 #include <wrl/client.h>
 
+#include "FDirect2DDevice.h"
 #include "Engine/RenderCore/FMultiRenderTarget.h"
 
 enum class EConstantBufferType
@@ -101,40 +102,13 @@ public:
 
 	// InputLayout
 
-	const Microsoft::WRL::ComPtr<ID3D11Device>& GetDevice() const
-	{
-		return m_d3dDevice;
-	}
-
-	const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& GetDeviceContext() const
-	{
-		return m_d3dDeviceContext;
-	}
-
-	const Microsoft::WRL::ComPtr<IDXGISwapChain>& GetSwapChain() const
-	{
-		return m_SwapChain;
-	}
-
-	const D3D11_VIEWPORT* GetScreenViewport() const
-	{
-		return &m_ScreenViewport;
-	}
-
-	const Microsoft::WRL::ComPtr<ID3D11SamplerState>& GetSamplerState() const
-	{
-		return m_SamplerState;
-	}
-
-	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetLightConstantBuffer() const
-	{
-		return m_LightConstantBuffer;
-	}
-
-	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetSkeletalMeshConstantBuffer() const
-	{
-		return m_SkeletalMeshConstantBuffer;
-	}
+	const Microsoft::WRL::ComPtr<ID3D11Device>& GetDevice() const  { return m_d3dDevice; }
+	const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& GetDeviceContext() const { return m_d3dDeviceContext; }
+	const Microsoft::WRL::ComPtr<IDXGISwapChain>& GetSwapChain() const { return m_SwapChain;  } 
+	const D3D11_VIEWPORT* GetScreenViewport() const { return &m_ScreenViewport; } 
+	const Microsoft::WRL::ComPtr<ID3D11SamplerState>& GetSamplerState() const { return m_SamplerState; } 
+	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetLightConstantBuffer() const { return m_LightConstantBuffer; }
+	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetSkeletalMeshConstantBuffer() const { return m_SkeletalMeshConstantBuffer; }
 
 	UINT CurrentVertexShaderID = -1;
 	void SetVertexShader(class FVertexShader* InVertexShader);
@@ -185,6 +159,9 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>    m_d3dDeviceContext;
 	Microsoft::WRL::ComPtr<IDXGISwapChain>         m_SwapChain;
 	D3D11_VIEWPORT                                 m_ScreenViewport;
+
+	std::unique_ptr<FDirect2DDevice>			   Direct2DDevice;
+
 
 	std::shared_ptr<FMultiRenderTarget>				MultiRenderTargets[static_cast<UINT>(EMultiRenderTargetType::Count)];
 	
