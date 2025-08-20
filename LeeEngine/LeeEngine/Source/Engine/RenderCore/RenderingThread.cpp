@@ -864,7 +864,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 
 				
 
-				static std::wstring TestText = L"Test, Direct2D, 됐나?";
+				static std::wstring TestText = L"Direct2D, DirectWrite, 한글, やっほ!";
 				GDirectXDevice->Get2DDeviceContext()->DrawTextW(
 					TestText.c_str(),
 					static_cast<UINT32>(TestText.size()),
@@ -873,6 +873,10 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 					TestBrush.Get()
 				);
 				HRESULT hr = GDirectXDevice->Get2DDeviceContext()->EndDraw();
+				if (FAILED(hr))
+				{
+					int a = 0;
+				}
 			}
 		}
 	}
