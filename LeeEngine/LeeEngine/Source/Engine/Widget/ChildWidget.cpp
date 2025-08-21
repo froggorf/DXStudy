@@ -2,6 +2,8 @@
 #include "ChildWidget.h"
 
 #include "Engine/UEngine.h"
+#include "Engine/EditorClient/Panel/ImguiViewport.h"
+#include "Engine/RenderCore/EditorScene.h"
 #include "Engine/World/UWorld.h"
 
 void IPanelContainer::AddChild(const std::shared_ptr<FChildWidget>& NewChild)
@@ -35,6 +37,40 @@ std::shared_ptr<FCanvasWidget> FChildWidget::GetRootWidget()
 	{
 		return GetRootWidget();
 	}
+}
+
+bool FChildWidget::HandleInput(const FInputEvent& InputEvent)
+{
+	if (InputEvent.bKeyEvent)
+	{
+		InputEvent.Key;
+		
+	}
+	else
+	{
+		const std::shared_ptr<FSlot>& Slot = GetSlot();
+		const float Left = Slot->GetLeft() * ScaleFactor.x;
+		const float Top = Slot->GetTop() * ScaleFactor.y;
+		const float Right = Slot->GetRight() * ScaleFactor.x;
+		const float Bottom = Slot->GetBottom() * ScaleFactor.y;
+
+		XMFLOAT2 MousePos = InputEvent.CurPosition;
+#ifdef WITH_EDITOR
+		const XMFLOAT2& EditorOffset = FImguiLevelViewport::LevelViewportPos;
+		MousePos.x -= EditorOffset.x;
+		MousePos.y -= EditorOffset.y;
+		MousePos.y += WindowTitleBarHeight;
+#endif
+		if (Left <= MousePos.x && MousePos.x <= Right
+				&& Top <= MousePos.y && MousePos.y <= Bottom)
+		{
+			
+			HandleMouseInput(InputEvent);
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void FPanelWidget::Tick(float DeltaSeconds)
@@ -90,6 +126,28 @@ void FPanelWidget::Tick(float DeltaSeconds)
 	for (const std::shared_ptr<FChildWidget>& ChildWidget : AttachChildren)
 	{
 		ChildWidget->Tick(DeltaSeconds);
+	}
+}
+
+bool FPanelWidget::HandleInput(const FInputEvent& InputEvent)
+{
+	for (const std::shared_ptr<FChildWidget> ChildWidget : AttachChildren)
+	{
+		if (ChildWidget->HandleInput(InputEvent))
+		{
+			return true;
+		}
+	}
+
+
+	return false;
+}
+
+void FPanelWidget::CollectAllWidgets(std::vector<std::shared_ptr<FChildWidget>>& Widgets)
+{
+	for (const std::shared_ptr<FChildWidget>& Child : AttachChildren)
+	{
+		Widgets.emplace_back(Child);
 	}
 }
 
@@ -254,6 +312,26 @@ void FVerticalBoxWidget::CalculateChildrenSlots()
 	}
 }
 
+void FImageWidget::HandleMouseInput(const FInputEvent& InputEvent)
+{
+	const std::shared_ptr<FSlot>& Slot = GetSlot();
+	const float Left = Slot->GetLeft();
+	const float Top = Slot->GetTop();
+	const float Right = Slot->GetRight();
+	const float Bottom = Slot->GetBottom();
+
+
+	if (InputEvent.Key == EKeys::MouseLeft)
+	{
+		MY_LOG("log",EDebugLogLevel::DLL_Warning, XMFLOAT4_TO_TEXT(XMFLOAT4{Left,Top,Right,Bottom}));
+	}
+	if (InputEvent.Key == EKeys::MouseRight)
+	{
+		MY_LOG("log", EDebugLogLevel::DLL_Warning, "MouseRight");	
+	}
+
+}
+
 void FImageWidget::Tick(float DeltaSeconds)
 {
 	FChildWidget::Tick(DeltaSeconds);
@@ -279,17 +357,17 @@ void FImageWidget::Tick(float DeltaSeconds)
 
 	float NDC_Left   = (Left / ScreenSize.x) * 2.0f - 1.0f;
 	float NDC_Right  = (Right / ScreenSize.x) * 2.0f - 1.0f;
-	float NDC_Top    = 1.0f - (Top / ScreenSize.y) * 2.0f;      // Y축 뒤집기
-	float NDC_Bottom = 1.0f - (Bottom / ScreenSize.y) * 2.0f;   // Y축 뒤집기
+	float NDC_Top    = 1.0f - (Top / ScreenSize.y) * 2.0f;      
+	float NDC_Bottom = 1.0f - (Bottom / ScreenSize.y) * 2.0f;   
 
 	FWidgetRenderData WidgetRenderData;
 	WidgetRenderData.Left = NDC_Left;
-	WidgetRenderData.Top = NDC_Top;
-	WidgetRenderData.Width = NDC_Right - NDC_Left;   // NDC 단위의 너비
-	WidgetRenderData.Height = NDC_Bottom - NDC_Top;  // NDC 단위의 높이 (음수가 될 수 있음)
+	WidgetRenderData.Top = max(NDC_Top,NDC_Bottom);
+	WidgetRenderData.Width = NDC_Right - NDC_Left;					
+	WidgetRenderData.Height = std::abs(NDC_Bottom - NDC_Top);	
 	WidgetRenderData.Texture = Brush.Image;
 	WidgetRenderData.Tint = ColorAndOpacity;
-
+	WidgetRenderData.ZOrder = GetZOrder();
 
 	GEngine->GetWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
 }
@@ -323,6 +401,7 @@ void FTextWidget::Tick(float DeltaSeconds)
 	WidgetRenderData.FontName = FontName;
 	WidgetRenderData.FontSize = FontSize;
 	WidgetRenderData.Tint = FontColor;
+	WidgetRenderData.ZOrder = GetZOrder();
 
 	GEngine->GetWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
 }

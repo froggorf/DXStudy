@@ -11,3 +11,11 @@ void UUserWidget::NativeConstruct()
 		SetPlayerController(GEngine.get()->GetWorld().get()->GetPlayerController());
 	}
 }
+
+void UUserWidget::CollectAllWidgets(std::vector<std::shared_ptr<FChildWidget>>& Widgets)
+{
+	if (OwnerWidget)
+	{
+		OwnerWidget->CollectAllWidgets(Widgets);
+	}
+}

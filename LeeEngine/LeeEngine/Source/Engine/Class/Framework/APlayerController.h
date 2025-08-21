@@ -59,7 +59,8 @@ public:
 	}
 
 	void CreateWidget(const std::string& Name, const std::shared_ptr<UUserWidget>& NewWidget);
-
+	// 해당 위젯에서 Input을 소모했는지를 bool값으로 반환
+	bool WidgetHandleInput(const FInputEvent& InputEvent);
 private:
 	ACharacter* Character;
 	std::weak_ptr<APlayerCameraManager> CameraManager;

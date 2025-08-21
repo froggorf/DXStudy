@@ -5,6 +5,7 @@
 
 #pragma once
 #include "ChildWidget.h"
+#include "Engine/Class/Framework/UPlayerInput.h"
 
 class APlayerController;
 
@@ -31,7 +32,7 @@ public:
 
 	void AddToViewport(){ /* 뷰표트에 추가 */ }
 
-	
+	void CollectAllWidgets(std::vector<std::shared_ptr<FChildWidget>>& Widgets);
 
 protected:
 	std::shared_ptr<FPanelWidget> OwnerWidget;

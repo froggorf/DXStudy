@@ -425,6 +425,7 @@ void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 		InputEvent.CurPosition.x = GET_X_LPARAM(lParam);
 		InputEvent.CurPosition.y = GET_Y_LPARAM(lParam);
 		InputEvent.bKeyDown = (msg == WM_LBUTTONDOWN);
+		InputEvent.bKeyEvent = false;
 		break;
 	case WM_RBUTTONUP:
 	case WM_RBUTTONDOWN:
@@ -432,9 +433,11 @@ void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 		InputEvent.CurPosition.x = GET_X_LPARAM(lParam);
 		InputEvent.CurPosition.y = GET_Y_LPARAM(lParam);
 		InputEvent.bKeyDown = (msg == WM_RBUTTONDOWN);
+		InputEvent.bKeyEvent = false;
 		break;
 	case WM_MBUTTONUP:
 	case WM_MBUTTONDOWN:
+		InputEvent.bKeyEvent = false;
 		break;
 	case WM_MOUSEMOVE:
 		{
@@ -447,6 +450,7 @@ void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 			InputEvent.bKeyDown = false;
 			InputEvent.Delta = LastMouseDelta;
 			InputEvent.CurPosition = LastMousePosition;
+			InputEvent.bKeyEvent = false;
 		}
 		break;
 	case WM_MOUSEWHEEL:
@@ -459,7 +463,7 @@ void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 			InputEvent.Key = EKeys::MouseWheelDown;	
 		}
 		InputEvent.bKeyDown = true;
-		
+		InputEvent.bKeyEvent = false;
 		
 	break;
 	case WM_KEYDOWN:
@@ -468,6 +472,7 @@ void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 		InputEvent.bKeyDown = (msg == WM_KEYDOWN);
 		InputEvent.CurPosition = LastMousePosition;
 		InputEvent.Delta = LastMouseDelta;
+		InputEvent.bKeyEvent = true;
 		break;
 	default:
 		// 잘못된 데이터는 그냥 종료
@@ -475,15 +480,19 @@ void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 	}
 	
 
-	/// UI에서 처리를 해보고
 	
-	/// 남은것에 대해서 PlayerInput으로 처리
 	if (GetWorld() && GetWorld()->GetPlayerController())
 	{
 		APlayerController* PC = GetWorld()->GetPlayerController();
 		PC->GetPlayerInput()->LastMousePosition = LastMousePosition;
 		PC->GetPlayerInput()->LastMouseDelta = LastMouseDelta;
-		PC->GetPlayerInput()->HandleInput(InputEvent);
+
+		bool bUsedInWidget = PC->WidgetHandleInput(InputEvent);
+
+		if (!bUsedInWidget)
+		{
+			PC->GetPlayerInput()->HandleInput(InputEvent);
+		}
 	}
 }
 

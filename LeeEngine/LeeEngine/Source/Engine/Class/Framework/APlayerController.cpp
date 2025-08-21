@@ -42,9 +42,9 @@ void APlayerController::Tick(float DeltaSeconds)
 
 void APlayerController::TickWidget(float DeltaSeconds)
 {
-	for (const std::pair<std::string, std::shared_ptr<UUserWidget>> UserWidget : UserWidgets)
+	for (const auto& UserWidget : UserWidgets | std::views::values)
 	{
-		UserWidget.second->Tick(DeltaSeconds);
+		UserWidget->Tick(DeltaSeconds);
 	}
 }
 
@@ -146,5 +146,31 @@ void APlayerController::CreateWidget(const std::string& Name, const std::shared_
 	}
 
 	UserWidgets[Name] = NewWidget;
+}
+
+// 해당 위젯에서 Input을 소모했는지를 bool값으로 반환
+bool APlayerController::WidgetHandleInput(const FInputEvent& InputEvent)
+{
+	std::vector<std::shared_ptr<FChildWidget>> Widgets;
+	Widgets.reserve(200);
+	for (const auto& UserWidget : UserWidgets | std::views::values)
+	{
+		UserWidget->CollectAllWidgets(Widgets);
+	}
+
+	std::ranges::stable_sort(Widgets, [](const std::shared_ptr<FChildWidget>& A, const std::shared_ptr<FChildWidget>& B)
+	{
+		return A->GetZOrder() > B->GetZOrder();
+	});
+
+	for (const std::shared_ptr<FChildWidget>& Widget : Widgets)
+	{
+		if (Widget->HandleInput(InputEvent))
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 

@@ -31,14 +31,7 @@ VS_OUT VS_Widget(VS_IN Input)
 
 	float3 scaledPos;
 	scaledPos.x = Left + (Input.Pos.x + 0.5) * abs(Width);
-
-	float actualTop = Top;
-	if (Height < 0.0f)
-	{
-		actualTop = Top + Height; 
-	}
-
-	scaledPos.y = actualTop + (Input.Pos.y + 0.5) * abs(Height);
+	scaledPos.y = Top - (Input.Pos.y + 0.5) * abs(Height);
 	scaledPos.z = 0.0f;
 
 	output.Position = float4(scaledPos, 1.0f);

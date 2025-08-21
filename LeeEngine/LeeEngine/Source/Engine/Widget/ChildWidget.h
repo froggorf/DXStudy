@@ -5,6 +5,7 @@
 
 #pragma once
 #include "Slot.h"
+#include "Engine/Class/Framework/UPlayerInput.h"
 #include "Engine/Misc/Delegate.h"
 
 class IPanelContainer
@@ -37,6 +38,8 @@ public:
 		}
 		OwnerWidget = NewOwnerWidget;
 
+		ZOrder = NewOwnerWidget->ZOrder;
+
 		Slot = PanelOwner->CreateSlot();
 		std::shared_ptr<FChildWidget> ThisShared = shared_from_this();
 		PanelOwner->AddChild(ThisShared);
@@ -51,6 +54,13 @@ public:
 	std::shared_ptr<FChildWidget> GetOwner() const {return OwnerWidget.lock();}
 
 	void SetScaleFactor(const XMFLOAT2& NewScaleFactor) {ScaleFactor = NewScaleFactor;}
+
+	virtual bool HandleInput(const FInputEvent& InputEvent);
+	virtual void HandleMouseInput(const FInputEvent& InputEvent) {}
+	virtual void HandleKeyboardInput(const FInputEvent& InputEvent) {}
+
+	float GetZOrder() const {return ZOrder;}
+	void SetZOrder(float NewZOrder) {ZOrder = NewZOrder;}
 protected:
 	// 매프레임마다 계산되는 값
 	// Designed Resolution -> Render Resolution 이 되는 값
@@ -59,6 +69,8 @@ private:
 	bool bShow = true;
 	std::shared_ptr<FSlot> Slot;
 	std::weak_ptr<FChildWidget> OwnerWidget;
+
+	float ZOrder = 0.0f;
 };
 
 class FPanelWidget : public FChildWidget, public IPanelContainer
@@ -71,6 +83,10 @@ public:
 	void Tick(float DeltaSeconds) override;
 
 	XMFLOAT2 GetDesignResolution() const {return DesignResolution;}
+
+	bool HandleInput(const FInputEvent& InputEvent) override;
+
+	void CollectAllWidgets(std::vector<std::shared_ptr<FChildWidget>>& Widgets);
 protected:
 	// 디자인 해상도(루트)
 	XMFLOAT2 DesignResolution = {500.0f,500.0f};
@@ -78,7 +94,6 @@ protected:
 	// 해당 위젯의 사이즈
 	XMFLOAT2 CurrentSize = {0.0f,0.0f};
 };
-
 
 class FCanvasWidget : public FPanelWidget{
 public:
@@ -118,6 +133,8 @@ public:
 		ColorAndOpacity = NewColor;
 	}
 
+	void HandleMouseInput(const FInputEvent& InputEvent) override;
+
 	void Tick(float DeltaSeconds) override;
 private:
 	FImageBrush Brush;
@@ -125,6 +142,8 @@ private:
 
 	Delegate<> OnMouseButtonDown;  
 };
+
+
 
 class FTextWidget : public FChildWidget
 {

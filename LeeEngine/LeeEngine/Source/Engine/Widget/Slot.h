@@ -47,7 +47,7 @@ struct FCanvasSlot : FSlot
 	XMFLOAT2 Size = {100,30};
 	XMFLOAT2 Alignment = {0,0};
 	bool bSizeToContent;   // 아마 구현 안할예정
-
+	
 	int ZOrder;
 };
 
