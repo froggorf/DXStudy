@@ -13,6 +13,8 @@ class UMyTestWidget : public UUserWidget
 
 	void NativeConstruct() override;
 
+	void ChangeImage1();
+	void ChangeImage2();
 private:
 	std::shared_ptr<FVerticalBoxWidget> TestVerticalBox1;
 

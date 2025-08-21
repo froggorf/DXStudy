@@ -314,22 +314,10 @@ void FVerticalBoxWidget::CalculateChildrenSlots()
 
 void FImageWidget::HandleMouseInput(const FInputEvent& InputEvent)
 {
-	const std::shared_ptr<FSlot>& Slot = GetSlot();
-	const float Left = Slot->GetLeft();
-	const float Top = Slot->GetTop();
-	const float Right = Slot->GetRight();
-	const float Bottom = Slot->GetBottom();
-
-
-	if (InputEvent.Key == EKeys::MouseLeft)
+	if (InputEvent.bKeyDown && InputEvent.Key == EKeys::MouseLeft)
 	{
-		MY_LOG("log",EDebugLogLevel::DLL_Warning, XMFLOAT4_TO_TEXT(XMFLOAT4{Left,Top,Right,Bottom}));
+		OnMouseButtonDown.Broadcast();
 	}
-	if (InputEvent.Key == EKeys::MouseRight)
-	{
-		MY_LOG("log", EDebugLogLevel::DLL_Warning, "MouseRight");	
-	}
-
 }
 
 void FImageWidget::Tick(float DeltaSeconds)

@@ -133,14 +133,20 @@ public:
 		ColorAndOpacity = NewColor;
 	}
 
+	void SetBrush(const FImageBrush& NewBrush) {Brush = NewBrush;}
+	void SetColor(const XMFLOAT4& NewColor) {ColorAndOpacity = NewColor;}
+
+	const XMFLOAT4& GetColor() const {return ColorAndOpacity;}
+
 	void HandleMouseInput(const FInputEvent& InputEvent) override;
 
 	void Tick(float DeltaSeconds) override;
+
+	Delegate<> OnMouseButtonDown;  
 private:
 	FImageBrush Brush;
 	XMFLOAT4 ColorAndOpacity;
 
-	Delegate<> OnMouseButtonDown;  
 };
 
 
