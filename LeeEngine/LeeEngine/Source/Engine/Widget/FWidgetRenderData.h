@@ -17,5 +17,11 @@ struct FWidgetRenderData
 	DirectX::XMFLOAT4 Tint = DirectX::XMFLOAT4{1.0f, 1.0f, 1.0f, 1.0f};
 
 	float ZOrder = 0;
+
+	std::wstring TextData = L"";
+	std::wstring FontName = L"맑은 고딕";
+	float FontSize = 16.0f;
+	XMFLOAT4 TextColor = {0.0f,0.0f,0.0f,1.0f};
+
 };
 

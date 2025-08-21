@@ -72,3 +72,10 @@ bool FDirect2DDevice::Initialize(const Microsoft::WRL::ComPtr<ID3D11Device>& D3D
 
 	return true;
 }
+
+void FDirect2DDevice::CreateTextFormat(const std::wstring& Font, float FontSize, Microsoft::WRL::ComPtr<IDWriteTextFormat>& TextFormat) const
+{
+	m_writeFactory->CreateTextFormat(
+		Font.c_str(), nullptr, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL,
+		FontSize, L"ko-kr", TextFormat.GetAddressOf());
+}

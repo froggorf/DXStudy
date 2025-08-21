@@ -109,7 +109,7 @@ public:
 	const Microsoft::WRL::ComPtr<ID3D11SamplerState>& GetSamplerState() const { return m_SamplerState; }
 	// 텍스트 렌더링용
 	const Microsoft::WRL::ComPtr<ID2D1DeviceContext>& Get2DDeviceContext() const { return Direct2DDevice->Get2DDeviceContext();}
-	FDirect2DDevice* Test_Get2DDevice() const {return Direct2DDevice.get();}
+	FDirect2DDevice* Get2DDevice() const {return Direct2DDevice.get();}
 
 	UINT CurrentVertexShaderID = -1;
 	void SetVertexShader(class FVertexShader* InVertexShader);

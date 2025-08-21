@@ -832,51 +832,49 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 			SceneData->M_Widget->Binding();
 			for (const FWidgetRenderData& RenderData : SceneData->CurrentFrameWidgetRenderData)
 			{
-				// ConstantBuffer 바인딩
-				FWidgetConstantBuffer WCB{RenderData.Tint,RenderData.Left, RenderData.Top, RenderData.Width,RenderData.Height};
-				GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_Widget, &WCB, sizeof(WCB));
-
-				// 텍스쳐 바인딩
-				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(0,1, RenderData.Texture->GetSRV().GetAddressOf());
-
-				// 드로우
-				SceneData->WidgetStaticMeshSceneProxy->Draw();
-			}
-
-			// Text 드로우 테스트
-			{
-				GDirectXDevice->Get2DDeviceContext()->BeginDraw();
-				static Microsoft::WRL::ComPtr<IDWriteTextFormat> textFormat;
-				static Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> TestBrush;
-				static bool test = false;
-				if (!test)
+				// 텍스트 렌더링
+				if(!RenderData.TextData.empty())
 				{
-					GDirectXDevice->Test_Get2DDevice()->Test_WriteFactory()->CreateTextFormat(
-						L"맑은 고딕", nullptr,
-						DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL,
-						32.0f, L"ko-kr", textFormat.GetAddressOf()
-					);
-					GDirectXDevice->Test_Get2DDevice()->Get2DDeviceContext()->CreateSolidColorBrush(
-						D2D1::ColorF(0.0f,0.0f,0.0f, 1.0f),
-						TestBrush.GetAddressOf()
-					);
-				}
+					const Microsoft::WRL::ComPtr<ID2D1DeviceContext> Text2DDeviceContext = GDirectXDevice->Get2DDeviceContext();
+					Text2DDeviceContext->BeginDraw();
 
+					// 텍스트 포맷 생성
+					Microsoft::WRL::ComPtr<IDWriteTextFormat> TextFormat;
+					GDirectXDevice->Get2DDevice()->CreateTextFormat(RenderData.FontName, RenderData.FontSize, TextFormat);
+
+					// Brush 생성
+					Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> ColorBrush;
+					Text2DDeviceContext->CreateSolidColorBrush(
+						D2D1::ColorF(RenderData.TextColor.x,RenderData.TextColor.y,RenderData.TextColor.z,RenderData.TextColor.w),
+						ColorBrush.GetAddressOf()
+					);
+
+					Text2DDeviceContext->DrawTextW(
+						RenderData.TextData.c_str(),
+						static_cast<UINT32>(RenderData.TextData.size()),
+						TextFormat.Get(),
+						D2D1::RectF(RenderData.Left,RenderData.Top,RenderData.Left+RenderData.Width,RenderData.Top+RenderData.Height),
+						ColorBrush.Get()
+					);
+					HRESULT hr = GDirectXDevice->Get2DDeviceContext()->EndDraw();
+					if (FAILED(hr))
+					{
+						int a = 0;
+					}
+				}
+				else
+				{
+					// ConstantBuffer 바인딩
+					FWidgetConstantBuffer WCB{RenderData.Tint,RenderData.Left, RenderData.Top, RenderData.Width,RenderData.Height};
+					GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_Widget, &WCB, sizeof(WCB));
+
+					// 텍스쳐 바인딩
+					GDirectXDevice->GetDeviceContext()->PSSetShaderResources(0,1, RenderData.Texture->GetSRV().GetAddressOf());
+
+					// 드로우
+					SceneData->WidgetStaticMeshSceneProxy->Draw();	
+				}
 				
-
-				static std::wstring TestText = L"Direct2D, DirectWrite, 한글, やっほ!";
-				GDirectXDevice->Get2DDeviceContext()->DrawTextW(
-					TestText.c_str(),
-					static_cast<UINT32>(TestText.size()),
-					textFormat.Get(),
-					D2D1::RectF(100,100,400,200),
-					TestBrush.Get()
-				);
-				HRESULT hr = GDirectXDevice->Get2DDeviceContext()->EndDraw();
-				if (FAILED(hr))
-				{
-					int a = 0;
-				}
 			}
 		}
 	}
