@@ -125,3 +125,21 @@ private:
 
 	Delegate<> OnMouseButtonDown;  
 };
+
+class FTextWidget : public FChildWidget
+{
+public:
+	FTextWidget() = default;
+
+	void SetText(const std::wstring& NewText) { Text = NewText; }
+	void SetFontSize(float NewFontSize) { FontSize = NewFontSize; }
+	void SetFontColor(const XMFLOAT4& NewFontColor) {FontColor = NewFontColor;}
+
+	void Tick(float DeltaSeconds) override;
+
+private:
+	std::wstring Text = L"";
+	std::wstring FontName = L"맑은 고딕";
+	float FontSize = 16.0f;
+	XMFLOAT4 FontColor = {0.0f,0.0f,0.0f,1.0f};
+};

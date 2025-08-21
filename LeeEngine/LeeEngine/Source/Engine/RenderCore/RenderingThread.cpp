@@ -845,7 +845,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 					// Brush 생성
 					Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> ColorBrush;
 					Text2DDeviceContext->CreateSolidColorBrush(
-						D2D1::ColorF(RenderData.TextColor.x,RenderData.TextColor.y,RenderData.TextColor.z,RenderData.TextColor.w),
+						D2D1::ColorF(RenderData.Tint.x,RenderData.Tint.y,RenderData.Tint.z,RenderData.Tint.w),
 						ColorBrush.GetAddressOf()
 					);
 

@@ -293,3 +293,36 @@ void FImageWidget::Tick(float DeltaSeconds)
 
 	GEngine->GetWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
 }
+
+void FTextWidget::Tick(float DeltaSeconds)
+{
+	FChildWidget::Tick(DeltaSeconds);
+
+	if (Text.empty())
+	{
+		return;
+	}
+
+	// LeftTopRightBottom 받아서
+	float Left = GetSlot()->GetLeft();
+	float Right = GetSlot()->GetRight();
+	float Top = GetSlot()->GetTop();
+	float Bottom = GetSlot()->GetBottom();
+
+	Left *= ScaleFactor.x;
+	Top *= ScaleFactor.y;
+	Right *= ScaleFactor.x;
+	Bottom *= ScaleFactor.y;
+
+	FWidgetRenderData WidgetRenderData;
+	WidgetRenderData.Left = Left;
+	WidgetRenderData.Top = Top;
+	WidgetRenderData.Width = Right-Left;
+	WidgetRenderData.Height = Bottom- Top;
+	WidgetRenderData.TextData = Text;
+	WidgetRenderData.FontName = FontName;
+	WidgetRenderData.FontSize = FontSize;
+	WidgetRenderData.Tint = FontColor;
+
+	GEngine->GetWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
+}

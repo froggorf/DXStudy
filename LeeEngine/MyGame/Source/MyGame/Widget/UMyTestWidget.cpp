@@ -32,4 +32,23 @@ void UMyTestWidget::NativeConstruct()
 	{
 		VerBoxSlot->FillSize = 3.0f;
 	}
+
+	TestText1 = std::make_shared<FTextWidget>();
+	TestText1->AttachToWidget(OwnerWidget);
+	if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(TestText1->GetSlot()))
+	{
+		CanvasSlot->Position = {700,500};
+		CanvasSlot->Size = {500,500};
+	}
+	TestText1->SetText(L"이건 Canvas에 부착한 Text");
+	TestText1->SetFontSize(50.0f);
+
+	TestText2 = std::make_shared<FTextWidget>();
+	TestText2->AttachToWidget(TestVerticalBox1);
+	if (const std::shared_ptr<FVerticalBoxSlot>& VerBoxSlot = std::dynamic_pointer_cast<FVerticalBoxSlot>(TestText2->GetSlot()))
+	{
+		VerBoxSlot->FillSize = 1.0f;
+	}
+	TestText2->SetText(L"이건 VerticalBox에 부착한 Text");
+	TestText2->SetFontSize(50.0f);
 }

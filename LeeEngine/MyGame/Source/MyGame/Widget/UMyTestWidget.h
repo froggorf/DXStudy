@@ -18,4 +18,7 @@ private:
 
 	std::shared_ptr<FImageWidget> TestImage1;
 	std::shared_ptr<FImageWidget> TestImage2;
+
+	std::shared_ptr<FTextWidget> TestText1;
+	std::shared_ptr<FTextWidget> TestText2;
 };
