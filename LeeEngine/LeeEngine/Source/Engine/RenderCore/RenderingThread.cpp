@@ -841,6 +841,9 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 					// 텍스트 포맷 생성
 					Microsoft::WRL::ComPtr<IDWriteTextFormat> TextFormat;
 					GDirectXDevice->Get2DDevice()->CreateTextFormat(RenderData.FontName, RenderData.FontSize, TextFormat);
+					// 텍스트 포맷 Alignment 설정
+					TextFormat->SetTextAlignment(RenderData.TextHorizontalAlignment);
+					TextFormat->SetParagraphAlignment(RenderData.TextVerticalAlignment);
 
 					// Brush 생성
 					Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> ColorBrush;

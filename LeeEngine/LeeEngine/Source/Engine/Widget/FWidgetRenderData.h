@@ -22,5 +22,19 @@ struct FWidgetRenderData
 	std::wstring FontName = L"맑은 고딕";
 	float FontSize = 16.0f;
 
+	/*
+	DWRITE_TEXT_ALIGNMENT_CENTER; // -> 가로 중앙
+	DWRITE_TEXT_ALIGNMENT_JUSTIFIED;  // -> 가로 문단 정렬(양쪽정렬?)
+	DWRITE_TEXT_ALIGNMENT_LEADING;	// -> 가로 좌측정렬
+	DWRITE_TEXT_ALIGNMENT_TRAILING; // -> 가로 우측정렬
+
+	DWRITE_PARAGRAPH_ALIGNMENT_CENTER; // -> 세로 중앙정렬
+	DWRITE_PARAGRAPH_ALIGNMENT_FAR; // -> 세로 하단정렬
+	DWRITE_PARAGRAPH_ALIGNMENT_NEAR; // -> 세로 상단정렬
+	 */
+	DWRITE_TEXT_ALIGNMENT TextHorizontalAlignment = DWRITE_TEXT_ALIGNMENT_LEADING;
+	DWRITE_PARAGRAPH_ALIGNMENT TextVerticalAlignment = DWRITE_PARAGRAPH_ALIGNMENT_NEAR;
+	
+
 };
 

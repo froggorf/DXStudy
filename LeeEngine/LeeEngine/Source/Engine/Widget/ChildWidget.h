@@ -198,6 +198,14 @@ private:
 
 };
 
+enum class ETextHorizontalAlignment
+{
+	Left, Center, Right
+};
+enum class ETextVerticalAlignment
+{
+	Top,Center,Bottom
+};
 class FTextWidget : public FChildWidget
 {
 public:
@@ -206,6 +214,8 @@ public:
 	void SetText(const std::wstring& NewText) { Text = NewText; }
 	void SetFontSize(float NewFontSize) { FontSize = NewFontSize; }
 	void SetFontColor(const XMFLOAT4& NewFontColor) {FontColor = NewFontColor;}
+	void SetHorizontalAlignment(ETextHorizontalAlignment HorizontalAlignment);
+	void SetVerticalAlignment(ETextVerticalAlignment VerticalAlignment);
 
 	void Tick(float DeltaSeconds) override;
 
@@ -214,5 +224,8 @@ private:
 	std::wstring FontName = L"맑은 고딕";
 	float FontSize = 16.0f;
 	XMFLOAT4 FontColor = {0.0f,0.0f,0.0f,1.0f};
+
+	DWRITE_TEXT_ALIGNMENT TextHorizontalAlignment = DWRITE_TEXT_ALIGNMENT_LEADING;
+	DWRITE_PARAGRAPH_ALIGNMENT TextVerticalAlignment = DWRITE_PARAGRAPH_ALIGNMENT_NEAR;
 };
 

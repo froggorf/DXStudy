@@ -12,11 +12,13 @@ void UMyTestWidget::NativeConstruct()
 	if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(ButtonVerticalBox->GetSlot()))
 	{
 		CanvasSlot->Position = {500,300};
-		CanvasSlot->Size = {900,700};
+		CanvasSlot->Size = {900,200};
 	}
 
 	Text1 = std::make_shared<FTextWidget>();
 	Text1->SetText(L"버튼들");
+	Text1->SetHorizontalAlignment(ETextHorizontalAlignment::Center);
+	Text1->SetVerticalAlignment(ETextVerticalAlignment::Center);
 	Text1->SetFontSize(25.0f);
 	Text1->AttachToWidget(ButtonVerticalBox);
 	if (const std::shared_ptr<FVerticalBoxSlot>& VerticalSlot = std::dynamic_pointer_cast<FVerticalBoxSlot>(Text1->GetSlot()))
@@ -28,7 +30,7 @@ void UMyTestWidget::NativeConstruct()
 	ButtonHorizontalBox->AttachToWidget(ButtonVerticalBox);
 	if (const std::shared_ptr<FVerticalBoxSlot>& VerticalSlot = std::dynamic_pointer_cast<FVerticalBoxSlot>(ButtonHorizontalBox ->GetSlot()))
 	{
-		VerticalSlot->FillSize = 6.0f;
+		VerticalSlot->FillSize = 3.0f;
 	}
 
 
@@ -69,6 +71,15 @@ void UMyTestWidget::NativeConstruct()
 	ButtonText3->SetText(L"Image바꾸기");
 	ButtonText3->SetFontSize(25.0f);
 	ButtonText3->AttachToWidget(TestButton3);
+
+	ButtonText1->SetHorizontalAlignment(ETextHorizontalAlignment::Left);
+	ButtonText1->SetVerticalAlignment(ETextVerticalAlignment::Center);
+
+	ButtonText2->SetHorizontalAlignment(ETextHorizontalAlignment::Center);
+	ButtonText2->SetVerticalAlignment(ETextVerticalAlignment::Center);
+
+	ButtonText3->SetHorizontalAlignment(ETextHorizontalAlignment::Right);
+	ButtonText3->SetVerticalAlignment(ETextVerticalAlignment::Center);
 }
 
 void UMyTestWidget::ChangeImage1()

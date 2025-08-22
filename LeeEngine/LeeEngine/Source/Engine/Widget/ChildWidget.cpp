@@ -433,6 +433,38 @@ void FImageWidget::Tick(float DeltaSeconds)
 	GEngine->GetWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
 }
 
+void FTextWidget::SetHorizontalAlignment(ETextHorizontalAlignment HorizontalAlignment)
+{
+	switch (HorizontalAlignment)
+	{
+	case ETextHorizontalAlignment::Center:
+		TextHorizontalAlignment = DWRITE_TEXT_ALIGNMENT_CENTER;
+		break;
+	case ETextHorizontalAlignment::Left:
+		TextHorizontalAlignment = DWRITE_TEXT_ALIGNMENT_LEADING;
+		break;
+	case ETextHorizontalAlignment::Right:
+		TextHorizontalAlignment = DWRITE_TEXT_ALIGNMENT_TRAILING;
+		break;
+	}
+}
+
+void FTextWidget::SetVerticalAlignment(ETextVerticalAlignment VerticalAlignment)
+{
+	switch (VerticalAlignment)
+	{
+	case ETextVerticalAlignment::Bottom:
+		TextVerticalAlignment = DWRITE_PARAGRAPH_ALIGNMENT_FAR;
+		break;
+	case ETextVerticalAlignment::Center:
+		TextVerticalAlignment = DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
+		break;
+	case ETextVerticalAlignment::Top:
+		TextVerticalAlignment = DWRITE_PARAGRAPH_ALIGNMENT_NEAR;
+		break;
+	}
+}
+
 void FTextWidget::Tick(float DeltaSeconds)
 {
 	FChildWidget::Tick(DeltaSeconds);
@@ -465,6 +497,8 @@ void FTextWidget::Tick(float DeltaSeconds)
 	WidgetRenderData.FontSize = FontSize;
 	WidgetRenderData.Tint = FontColor;
 	WidgetRenderData.ZOrder = GetZOrder();
+	WidgetRenderData.TextHorizontalAlignment = TextHorizontalAlignment;
+	WidgetRenderData.TextVerticalAlignment= TextVerticalAlignment;
 
 	GEngine->GetWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
 }
