@@ -170,12 +170,12 @@ public:
 	Delegate<> OnPressed;
 	Delegate<> OnReleased;
 
+	std::shared_ptr<USoundBase> PressedSound;
+	std::shared_ptr<USoundBase> HoveredSound;
 protected:
 	void SetButtonType(EButtonType NewButtonType) { CurrentButtonType = NewButtonType;}
 
 private:
-	std::shared_ptr<USoundBase> PressedSound;
-	std::shared_ptr<USoundBase> HoveredSound;
 
 	EButtonType CurrentButtonType = EButtonType::Normal;
 	bool bIsButtonDisabled = false;

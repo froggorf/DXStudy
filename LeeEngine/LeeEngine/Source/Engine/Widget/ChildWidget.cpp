@@ -442,7 +442,7 @@ bool FButtonWidget::HandleMouseInput(const FInputEvent& InputEvent)
 					if (HoveredSound)
 					{
 						GAudioDevice->PlaySound2D(HoveredSound);
-					}
+					}		
 				}	
 			}
 
@@ -468,7 +468,7 @@ bool FButtonWidget::HandleMouseInput(const FInputEvent& InputEvent)
 		{
 			if (CurrentButtonType == EButtonType::Pressed)
 			{
-				CurrentButtonType = EButtonType::Normal;
+				CurrentButtonType = bIsMouseInsideButton ? EButtonType::Hovered : EButtonType::Normal;
 				OnClicked.Broadcast();
 				OnReleased.Broadcast();
 			}

@@ -78,6 +78,11 @@ void UMyTestWidget::NativeConstruct()
 
 	ButtonText3->SetHorizontalAlignment(ETextHorizontalAlignment::Right);
 	ButtonText3->SetVerticalAlignment(ETextVerticalAlignment::Center);
+
+	TestButton1->HoveredSound = USoundBase::GetSoundAsset("SB_CameraShutter");
+	TestButton2->PressedSound = USoundBase::GetSoundAsset("SB_ButtonClick");
+	TestButton3->HoveredSound = USoundBase::GetSoundAsset("SB_CameraShutter");
+	TestButton3->PressedSound = USoundBase::GetSoundAsset("SB_ButtonClick");
 }
 
 void UMyTestWidget::ChangeImage1()
