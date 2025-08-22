@@ -16,9 +16,11 @@ class UMyTestWidget : public UUserWidget
 
 	void ChangeImage1();
 	void ChangeImage2();
-private:
-	
 
+	void SetButton3Active(bool NewActive);
+	void ChangeImage();
+	
+private:
 	std::shared_ptr<FVerticalBoxWidget> ButtonVerticalBox;
 	std::shared_ptr<FHorizontalBoxWidget> ButtonHorizontalBox;
 	std::shared_ptr<FButtonWidget> TestButton1;

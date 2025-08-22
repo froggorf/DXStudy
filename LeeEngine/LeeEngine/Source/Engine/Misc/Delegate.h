@@ -1,4 +1,4 @@
-﻿
+
 #pragma once
 #include "CoreMinimal.h"
 
@@ -13,6 +13,11 @@ public:
 		Callbacks.push_back([Obj, Func](Args... args) {
 			(Obj->*Func)(args...);
 			});
+	}
+
+	void Add(std::function<void(Args...)> Func)
+	{
+		Callbacks.emplace_back(Func);
 	}
 
 	void Broadcast(Args... args)

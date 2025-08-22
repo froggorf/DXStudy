@@ -5,14 +5,22 @@ void UMyTestWidget::NativeConstruct()
 {
 	UUserWidget::NativeConstruct();
 
-	OwnerWidget->SetDesignResolution({1720,1080});
+	OwnerWidget->SetDesignResolution({1720,880});
 
 	ButtonVerticalBox = std::make_shared<FVerticalBoxWidget>();
 	ButtonVerticalBox->AttachToWidget(OwnerWidget);
 	if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(ButtonVerticalBox->GetSlot()))
 	{
-		CanvasSlot->Position = {500,300};
-		CanvasSlot->Size = {900,200};
+		CanvasSlot->Position = {50,300};
+		CanvasSlot->Size = {800,150};
+	}
+
+	TestImage1 = std::make_shared<FImageWidget>(FImageBrush{UTexture::GetTextureCache("T_CircleEffect")}, XMFLOAT4{1.0f,1.0f,1.0f,1.0f});
+	TestImage1->AttachToWidget(OwnerWidget);
+	if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(TestImage1->GetSlot()))
+	{
+		CanvasSlot->Position = {900,200};
+		CanvasSlot->Size = {500,500};
 	}
 
 	Text1 = std::make_shared<FTextWidget>();
@@ -80,11 +88,45 @@ void UMyTestWidget::NativeConstruct()
 	ButtonText3->SetVerticalAlignment(ETextVerticalAlignment::Center);
 
 	TestButton1->HoveredSound = USoundBase::GetSoundAsset("SB_CameraShutter");
+	TestButton1->OnClicked.Add([this]()
+	{
+		this->SetButton3Active(false);
+	});
 	TestButton2->PressedSound = USoundBase::GetSoundAsset("SB_ButtonClick");
+	TestButton2->OnClicked.Add([this]()
+	{
+		this->SetButton3Active(true);
+	});
 	TestButton3->HoveredSound = USoundBase::GetSoundAsset("SB_CameraShutter");
 	TestButton3->PressedSound = USoundBase::GetSoundAsset("SB_ButtonClick");
+	TestButton3->OnClicked.Add([this]()
+	{
+		this->ChangeImage();
+	});
 }
+void UMyTestWidget::ChangeImage()
+{
+	static bool b = false;
+	static std::array<std::shared_ptr<UTexture>, 3> Texture;
+	if (!b)
+	{
+		b = true;
+		Texture = {
+			UTexture::GetTextureCache("T_CoolSword"),
+			UTexture::GetTextureCache("T_Flame"),
+			UTexture::GetTextureCache("T_BigFire")
+		};
+	}
 
+	static int a= -1;
+	++a;
+	if (a >= 3)
+	{
+		a = 0;
+	}
+	TestImage1->SetBrush(FImageBrush{Texture[a]});
+	
+}
 void UMyTestWidget::ChangeImage1()
 {
 	static bool bIsTrue = true;
@@ -103,7 +145,6 @@ void UMyTestWidget::ChangeImage1()
 	}
 	TestImage1->SetColor(Color);
 }
-
 void UMyTestWidget::ChangeImage2()
 {
 	static bool bIsTrue = true;
@@ -121,6 +162,11 @@ void UMyTestWidget::ChangeImage2()
 		TestImage2->SetBrush(FImageBrush{Texture});
 	}
 	TestImage2->SetColor(Color);
+}
+
+void UMyTestWidget::SetButton3Active(bool NewActive)
+{
+	TestButton3->SetDisabled(!NewActive);	
 }
 
 
