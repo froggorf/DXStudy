@@ -48,26 +48,34 @@ bool FChildWidget::HandleInput(const FInputEvent& InputEvent)
 	}
 	else
 	{
-		const std::shared_ptr<FSlot>& Slot = GetSlot();
-		const float Left = Slot->GetLeft() * ScaleFactor.x;
-		const float Top = Slot->GetTop() * ScaleFactor.y;
-		const float Right = Slot->GetRight() * ScaleFactor.x;
-		const float Bottom = Slot->GetBottom() * ScaleFactor.y;
-
-		XMFLOAT2 MousePos = InputEvent.CurPosition;
-#ifdef WITH_EDITOR
-		const XMFLOAT2& EditorOffset = FImguiLevelViewport::LevelViewportPos;
-		MousePos.x -= EditorOffset.x;
-		MousePos.y -= EditorOffset.y;
-		MousePos.y += WindowTitleBarHeight;
-#endif
-		if (Left <= MousePos.x && MousePos.x <= Right
-				&& Top <= MousePos.y && MousePos.y <= Bottom)
+		if (HandleMouseInput(InputEvent))
 		{
-			
-			HandleMouseInput(InputEvent);
 			return true;
 		}
+	}
+
+	return false;
+}
+
+bool FChildWidget::IsMouseInside(const FInputEvent& InputEvent) const
+{
+	const std::shared_ptr<FSlot>& Slot = GetSlot();
+	const float Left = Slot->GetLeft() * ScaleFactor.x;
+	const float Top = Slot->GetTop() * ScaleFactor.y;
+	const float Right = Slot->GetRight() * ScaleFactor.x;
+	const float Bottom = Slot->GetBottom() * ScaleFactor.y;
+
+	XMFLOAT2 MousePos = InputEvent.CurPosition;
+#ifdef WITH_EDITOR
+	const XMFLOAT2& EditorOffset = FImguiLevelViewport::LevelViewportPos;
+	MousePos.x -= EditorOffset.x;
+	MousePos.y -= EditorOffset.y;
+	MousePos.y += WindowTitleBarHeight;
+#endif
+	if (Left <= MousePos.x && MousePos.x <= Right
+		&& Top <= MousePos.y && MousePos.y <= Bottom)
+	{
+		return true;
 	}
 
 	return false;
@@ -131,8 +139,27 @@ void FPanelWidget::Tick(float DeltaSeconds)
 
 bool FPanelWidget::HandleInput(const FInputEvent& InputEvent)
 {
-	for (const std::shared_ptr<FChildWidget> ChildWidget : AttachChildren)
+	for (const std::shared_ptr<FChildWidget>& ChildWidget : AttachChildren)
 	{
+		if (dynamic_cast<FHorizontalBoxWidget*>(this))
+		{
+			int a = 0;
+			// 지금 호라이즌탈 박스 안에 버튼이 3개가 들어있는것
+		}
+		if (std::dynamic_pointer_cast<FButtonWidget>(ChildWidget))
+		{
+			int b = 0;
+		}
+
+		// 08.22 FButtonWidget의 경우 FChildWidget::HandleInput을 처리하여 마우스 인풋을 처리해야하는데,
+		// FPanelWidget이어서 FPanelWidget::HandleInput이 호출되어서 자신의 인풋이 무시되는 현상이 발생함,
+		// 따라서, 먼저 PanelWidget의 HandleInput을 처리해주고,
+		// 거기서 인풋이 처리되지 않을 경우 자식을 처리하는 것으로 진행
+		if (FChildWidget::HandleInput(InputEvent))
+		{
+			return true;
+		}
+
 		if (ChildWidget->HandleInput(InputEvent))
 		{
 			return true;
@@ -375,22 +402,105 @@ void FButtonWidget::Tick(float DeltaSeconds)
 	FPanelWidget::Tick(DeltaSeconds);
 }
 
-void FButtonWidget::HandleMouseInput(const FInputEvent& InputEvent)
+bool FButtonWidget::HandleMouseInput(const FInputEvent& InputEvent)
 {
-	//// 마우스 이벤트
-	//if (!InputEvent.bIsKeyEvent)
-	//{
-	//	const EKeys& Key = InputEvent.Key;
-	//	if (Key == EKeys::MouseLeft && )
-	//}
+	// 버튼이 비활성화 중이면 early return 
+	if (bIsButtonDisabled)
+	{
+		return false;
+	}
+
+	bool bIsMouseInsideButton = IsMouseInside(InputEvent);
+	if (bIsMouseInsideButton)
+	{
+		int a = 0;
+	}
+	// 마우스 이벤트
+	if (!InputEvent.bIsKeyEvent)
+	{
+		EKeys Key = InputEvent.Key;
+
+		// 버튼이 활성화 중이고 && 2DAxis 마우스면
+		if (Key == EKeys::MouseXY2DAxis)
+		{
+			if (!bIsMouseInsideButton)
+			{
+				// 호버링 중이었다가 풀리면
+				if (CurrentButtonType == EButtonType::Hovered || CurrentButtonType == EButtonType::Pressed)
+				{
+					CurrentButtonType = bIsButtonDisabled ? EButtonType::Disabled : EButtonType::Normal;
+					OnUnhovered.Broadcast();
+				}
+			}
+			else
+			{
+				// 첫 호버링 됐을 때 호버 이벤트
+				if (CurrentButtonType != EButtonType::Hovered)
+				{
+					CurrentButtonType = EButtonType::Hovered;
+					OnHovered.Broadcast();
+					if (HoveredSound)
+					{
+						GAudioDevice->PlaySound2D(HoveredSound);
+					}
+				}	
+			}
+
+			// MouseXY2DAxis 이벤트는 모든 UI에서 사용할 수 있으므로 해당 인풋은 소비되지 않도록 해야함
+			return false;
+		}
+
+		// Pressed
+		if (bIsMouseInsideButton && Key == EKeys::MouseLeft && InputEvent.bKeyDown)
+		{
+			CurrentButtonType = EButtonType::Pressed;
+			OnPressed.Broadcast();
+			if (PressedSound)
+			{
+				GAudioDevice->PlaySound2D(PressedSound);
+			}
+
+			// TODO: Consume 할지 설정하기
+			return true;
+		}
+		// Released
+		if (bIsMouseInsideButton && Key == EKeys::MouseLeft && !InputEvent.bKeyDown)
+		{
+			if (CurrentButtonType == EButtonType::Pressed)
+			{
+				CurrentButtonType = EButtonType::Normal;
+				OnClicked.Broadcast();
+				OnReleased.Broadcast();
+			}
+
+			return true;
+		}
+	}
+
+	return false;
 }
 
-void FImageWidget::HandleMouseInput(const FInputEvent& InputEvent)
+void FButtonWidget::SetDisabled(bool bNewDisabled)
 {
+	bIsButtonDisabled = bNewDisabled;
+	CurrentButtonType =  bIsButtonDisabled ? EButtonType::Disabled : EButtonType::Normal; 
+}
+
+bool FImageWidget::HandleMouseInput(const FInputEvent& InputEvent)
+{
+	// 마우스가 이미지 위에 없으면 나가기
+	if (!IsMouseInside(InputEvent))
+	{
+		return false;
+	}
+
 	if (InputEvent.bKeyDown && InputEvent.Key == EKeys::MouseLeft)
 	{
 		OnMouseButtonDown.Broadcast();
+		return true;
 	}
+
+	return false;
 }
 
 void FImageWidget::Tick(float DeltaSeconds)

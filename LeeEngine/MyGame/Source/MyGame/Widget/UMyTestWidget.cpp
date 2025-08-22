@@ -38,10 +38,8 @@ void UMyTestWidget::NativeConstruct()
 	TestButton2 = std::make_shared<FButtonWidget>();
 	TestButton3 = std::make_shared<FButtonWidget>();
 	TestButton1->AttachToWidget(ButtonHorizontalBox);
-	TestButton1->SetButtonType(EButtonType::Normal);
-	TestButton2->SetButtonType(EButtonType::Normal);
 	TestButton2->SetStyle(EButtonType::Normal, {UTexture::GetTextureCache("T_Cube"), XMFLOAT4{0.7f,0.7f,0.7f,1.0f}});
-	TestButton3->SetButtonType(EButtonType::Disabled);
+	TestButton3->SetDisabled(true);
 	if (const std::shared_ptr<FHorizontalBoxSlot>& HorizontalSlot = std::dynamic_pointer_cast<FHorizontalBoxSlot>(TestButton1->GetSlot()))
 	{
 		HorizontalSlot->FillSize = 1.0f;

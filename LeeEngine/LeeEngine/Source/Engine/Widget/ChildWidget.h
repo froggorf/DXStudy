@@ -57,7 +57,8 @@ public:
 	void SetScaleFactor(const XMFLOAT2& NewScaleFactor) {ScaleFactor = NewScaleFactor;}
 
 	virtual bool HandleInput(const FInputEvent& InputEvent);
-	virtual void HandleMouseInput(const FInputEvent& InputEvent) {}
+	bool IsMouseInside(const FInputEvent& InputEvent) const;
+	virtual bool HandleMouseInput(const FInputEvent& InputEvent) = 0;
 	virtual void HandleKeyboardInput(const FInputEvent& InputEvent) {}
 
 	float GetZOrder() const {return ZOrder;}
@@ -77,6 +78,8 @@ private:
 class FPanelWidget : public FChildWidget, public IPanelContainer
 {
 public:
+	~FPanelWidget() override = default;
+
 	void SetDesignResolution(XMFLOAT2 Resolution) { DesignResolution = Resolution; }
 
 	void SetCurrentSize(const XMFLOAT2 NewSize) { CurrentSize = NewSize; };
@@ -98,7 +101,9 @@ protected:
 
 class FCanvasWidget : public FPanelWidget{
 public:
+	~FCanvasWidget() override = default;
 	void Tick(float DeltaSeconds) override;
+	bool HandleMouseInput(const FInputEvent& InputEvent) override { return false; }
 
 	std::shared_ptr<FSlot> CreateSlot() override { return std::make_shared<FCanvasSlot>(); }
 };
@@ -106,7 +111,9 @@ public:
 
 class FHorizontalBoxWidget : public FPanelWidget{
 public:
+	~FHorizontalBoxWidget() override = default;
 	void Tick(float DeltaSeconds) override;
+	bool HandleMouseInput(const FInputEvent& InputEvent) override { return false; }
 	std::shared_ptr<FSlot> CreateSlot() override {return std::make_shared<FHorizontalBoxSlot>();}
 protected:
 	void CalculateChildrenSlots();
@@ -115,7 +122,9 @@ protected:
 class FVerticalBoxWidget : public FPanelWidget
 {
 public:
+	~FVerticalBoxWidget() override = default;
 	void Tick(float DeltaSeconds) override;
+	bool HandleMouseInput(const FInputEvent& InputEvent) override { return false; }
 	std::shared_ptr<FSlot> CreateSlot() override {return std::make_shared<FVerticalBoxSlot>();}
 protected:
 	void CalculateChildrenSlots();
@@ -140,30 +149,36 @@ public:
 		{
 			Style[i].Image = UTexture::GetTextureCache("T_White");
 		}
-		Style[static_cast<UINT>(EButtonType::Normal)].Tint = XMFLOAT4{0.7f,0.7f,0.7f,1.0f};
+		Style[static_cast<UINT>(EButtonType::Normal)].Tint = XMFLOAT4{0.8f,0.8f,0.8f,1.0f};
 		Style[static_cast<UINT>(EButtonType::Hovered)].Tint = XMFLOAT4{1.0f,1.0f,1.0f,1.0f};
-		Style[static_cast<UINT>(EButtonType::Pressed)].Tint = XMFLOAT4{0.4f,0.4f,0.4f,1.0f};
-		Style[static_cast<UINT>(EButtonType::Disabled)].Tint = XMFLOAT4{0.1f,0.1f,0.1f,1.0f};
+		Style[static_cast<UINT>(EButtonType::Pressed)].Tint = XMFLOAT4{0.6f,0.6f,0.6f,1.0f};
+		Style[static_cast<UINT>(EButtonType::Disabled)].Tint = XMFLOAT4{0.5f,0.5f,0.5f,1.0f};
 	}
-
+	~FButtonWidget() override = default;
 	void Tick(float DeltaSeconds) override;
-	void HandleMouseInput(const FInputEvent& InputEvent) override;
+	bool HandleMouseInput(const FInputEvent& InputEvent) override;
 
 	std::shared_ptr<FSlot> CreateSlot() override { return std::make_shared<FButtonSlot>();}
 
-	void SetButtonType(EButtonType NewButtonType) { CurrentButtonType = NewButtonType;}
 	void SetStyle(EButtonType StyleType, const FButtonStyle& NewStyle) { Style[static_cast<UINT>(StyleType)] = NewStyle; }
+	void SetDisabled(bool bNewDisabled);
+
 
 	Delegate<> OnClicked;
 	Delegate<> OnHovered;
 	Delegate<> OnUnhovered;
 	Delegate<> OnPressed;
 	Delegate<> OnReleased;
+
+protected:
+	void SetButtonType(EButtonType NewButtonType) { CurrentButtonType = NewButtonType;}
+
 private:
 	std::shared_ptr<USoundBase> PressedSound;
 	std::shared_ptr<USoundBase> HoveredSound;
 
 	EButtonType CurrentButtonType = EButtonType::Normal;
+	bool bIsButtonDisabled = false;
 
 	std::array<FButtonStyle, static_cast<UINT>(EButtonType::Count)> Style;
 
@@ -181,13 +196,14 @@ public:
 		Brush = NewBrush;
 		ColorAndOpacity = NewColor;
 	}
+	~FImageWidget() override = default;
 
 	void SetBrush(const FImageBrush& NewBrush) {Brush = NewBrush;}
 	void SetColor(const XMFLOAT4& NewColor) {ColorAndOpacity = NewColor;}
 
 	const XMFLOAT4& GetColor() const {return ColorAndOpacity;}
 
-	void HandleMouseInput(const FInputEvent& InputEvent) override;
+	bool HandleMouseInput(const FInputEvent& InputEvent) override;
 
 	void Tick(float DeltaSeconds) override;
 
@@ -210,13 +226,13 @@ class FTextWidget : public FChildWidget
 {
 public:
 	FTextWidget() = default;
-
+	~FTextWidget() override = default;
 	void SetText(const std::wstring& NewText) { Text = NewText; }
 	void SetFontSize(float NewFontSize) { FontSize = NewFontSize; }
 	void SetFontColor(const XMFLOAT4& NewFontColor) {FontColor = NewFontColor;}
 	void SetHorizontalAlignment(ETextHorizontalAlignment HorizontalAlignment);
 	void SetVerticalAlignment(ETextVerticalAlignment VerticalAlignment);
-
+	bool HandleMouseInput(const FInputEvent& InputEvent) override { return false; }
 	void Tick(float DeltaSeconds) override;
 
 private:
