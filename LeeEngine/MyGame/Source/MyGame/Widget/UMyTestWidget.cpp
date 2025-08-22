@@ -7,50 +7,68 @@ void UMyTestWidget::NativeConstruct()
 
 	OwnerWidget->SetDesignResolution({1720,1080});
 
-	TestVerticalBox1 = std::make_shared<FVerticalBoxWidget>();
-	TestVerticalBox1->AttachToWidget(OwnerWidget);
-	if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(TestVerticalBox1->GetSlot()))
+	ButtonVerticalBox = std::make_shared<FVerticalBoxWidget>();
+	ButtonVerticalBox->AttachToWidget(OwnerWidget);
+	if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(ButtonVerticalBox->GetSlot()))
 	{
-		CanvasSlot->Position = {500,500};
-		CanvasSlot->Size = {500,500};
+		CanvasSlot->Position = {500,300};
+		CanvasSlot->Size = {900,700};
 	}
 
-	TestImage1 = std::make_shared<FImageWidget>(FImageBrush{UTexture::GetTextureCache("T_Cube")}, XMFLOAT4{1,1,1,1});
-	TestImage2 = std::make_shared<FImageWidget>(FImageBrush{UTexture::GetTextureCache("T_White")}, XMFLOAT4{1,1,1,1});
-
-	TestImage1->AttachToWidget(TestVerticalBox1);
-	TestImage2->AttachToWidget(TestVerticalBox1);
-
-	if (const std::shared_ptr<FVerticalBoxSlot>& VerBoxSlot = std::dynamic_pointer_cast<FVerticalBoxSlot>(TestImage1->GetSlot()))
+	Text1 = std::make_shared<FTextWidget>();
+	Text1->SetText(L"버튼들");
+	Text1->SetFontSize(25.0f);
+	Text1->AttachToWidget(ButtonVerticalBox);
+	if (const std::shared_ptr<FVerticalBoxSlot>& VerticalSlot = std::dynamic_pointer_cast<FVerticalBoxSlot>(Text1->GetSlot()))
 	{
-		VerBoxSlot->FillSize = 1.0f;
+		VerticalSlot->FillSize = 1.0f;
 	}
-	TestImage1->OnMouseButtonDown.Add(this, &UMyTestWidget::ChangeImage1);
 
-	if (const std::shared_ptr<FVerticalBoxSlot>& VerBoxSlot = std::dynamic_pointer_cast<FVerticalBoxSlot>(TestImage2->GetSlot()))
+	ButtonHorizontalBox = std::make_shared<FHorizontalBoxWidget>();
+	ButtonHorizontalBox->AttachToWidget(ButtonVerticalBox);
+	if (const std::shared_ptr<FVerticalBoxSlot>& VerticalSlot = std::dynamic_pointer_cast<FVerticalBoxSlot>(ButtonHorizontalBox ->GetSlot()))
 	{
-		VerBoxSlot->FillSize = 3.0f;
+		VerticalSlot->FillSize = 6.0f;
 	}
-	TestImage2->OnMouseButtonDown.Add(this, &UMyTestWidget::ChangeImage2);
 
-	TestText1 = std::make_shared<FTextWidget>();
-	TestText1->AttachToWidget(OwnerWidget);
-	if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(TestText1->GetSlot()))
+
+	TestButton1 = std::make_shared<FButtonWidget>();
+	TestButton2 = std::make_shared<FButtonWidget>();
+	TestButton3 = std::make_shared<FButtonWidget>();
+	TestButton1->AttachToWidget(ButtonHorizontalBox);
+	TestButton1->SetButtonType(EButtonType::Normal);
+	TestButton2->SetButtonType(EButtonType::Normal);
+	TestButton2->SetStyle(EButtonType::Normal, {UTexture::GetTextureCache("T_Cube"), XMFLOAT4{0.7f,0.7f,0.7f,1.0f}});
+	TestButton3->SetButtonType(EButtonType::Disabled);
+	if (const std::shared_ptr<FHorizontalBoxSlot>& HorizontalSlot = std::dynamic_pointer_cast<FHorizontalBoxSlot>(TestButton1->GetSlot()))
 	{
-		CanvasSlot->Position = {1200,500};
-		CanvasSlot->Size = {500,500};
+		HorizontalSlot->FillSize = 1.0f;
 	}
-	TestText1->SetText(L"이건 Canvas에 부착한 Text");
-	TestText1->SetFontSize(25.0f);
-	
-	TestText2 = std::make_shared<FTextWidget>();
-	TestText2->AttachToWidget(TestVerticalBox1);
-	if (const std::shared_ptr<FVerticalBoxSlot>& VerBoxSlot = std::dynamic_pointer_cast<FVerticalBoxSlot>(TestText2->GetSlot()))
+	TestButton2->AttachToWidget(ButtonHorizontalBox);
+	if (const std::shared_ptr<FHorizontalBoxSlot>& HorizontalSlot = std::dynamic_pointer_cast<FHorizontalBoxSlot>(TestButton2->GetSlot()))
 	{
-		VerBoxSlot->FillSize = 1.0f;
+		HorizontalSlot->FillSize = 1.0f;
 	}
-	TestText2->SetText(L"이건 VerticalBox에 부착한 Text");
-	TestText2->SetFontSize(20.0f);
+	TestButton3->AttachToWidget(ButtonHorizontalBox);
+	if (const std::shared_ptr<FHorizontalBoxSlot>& HorizontalSlot = std::dynamic_pointer_cast<FHorizontalBoxSlot>(TestButton3->GetSlot()))
+	{
+		HorizontalSlot->FillSize = 1.0f;
+	}
+
+	ButtonText1 = std::make_shared<FTextWidget>();
+	ButtonText1->SetText(L"Disable로 만들기\nHoverSound O");
+	ButtonText1->SetFontSize(25.0f);
+	ButtonText1->AttachToWidget(TestButton1);
+
+	ButtonText2 = std::make_shared<FTextWidget>();
+	ButtonText2->SetText(L"Normal로 만들기\nClickSound O");
+	ButtonText2->SetFontSize(25.0f);
+	ButtonText2->AttachToWidget(TestButton2);
+
+	ButtonText3 = std::make_shared<FTextWidget>();
+	ButtonText3->SetText(L"Image바꾸기");
+	ButtonText3->SetFontSize(25.0f);
+	ButtonText3->AttachToWidget(TestButton3);
 }
 
 void UMyTestWidget::ChangeImage1()
@@ -90,3 +108,22 @@ void UMyTestWidget::ChangeImage2()
 	}
 	TestImage2->SetColor(Color);
 }
+
+
+//TestImage1 = std::make_shared<FImageWidget>(FImageBrush{UTexture::GetTextureCache("T_Cube")}, XMFLOAT4{1,1,1,1});
+//TestImage2 = std::make_shared<FImageWidget>(FImageBrush{UTexture::GetTextureCache("T_White")}, XMFLOAT4{1,1,1,1});
+
+//TestImage1->AttachToWidget(TestVerticalBox1);
+//TestImage2->AttachToWidget(TestVerticalBox1);
+
+//if (const std::shared_ptr<FVerticalBoxSlot>& VerBoxSlot = std::dynamic_pointer_cast<FVerticalBoxSlot>(TestImage1->GetSlot()))
+//{
+//	VerBoxSlot->FillSize = 1.0f;
+//}
+//TestImage1->OnMouseButtonDown.Add(this, &UMyTestWidget::ChangeImage1);
+
+//if (const std::shared_ptr<FVerticalBoxSlot>& VerBoxSlot = std::dynamic_pointer_cast<FVerticalBoxSlot>(TestImage2->GetSlot()))
+//{
+//	VerBoxSlot->FillSize = 3.0f;
+//}
+//TestImage2->OnMouseButtonDown.Add(this, &UMyTestWidget::ChangeImage2);

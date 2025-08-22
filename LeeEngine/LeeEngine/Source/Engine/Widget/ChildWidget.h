@@ -5,6 +5,7 @@
 
 #pragma once
 #include "Slot.h"
+#include "Engine/FAudioDevice.h"
 #include "Engine/Class/Framework/UPlayerInput.h"
 #include "Engine/Misc/Delegate.h"
 
@@ -120,6 +121,54 @@ protected:
 	void CalculateChildrenSlots();
 };
 
+struct FButtonStyle
+{
+	std::shared_ptr<UTexture> Image;
+	XMFLOAT4 Tint;
+};
+enum class EButtonType
+{
+	Normal, Hovered, Pressed, Disabled, Count
+};
+
+class FButtonWidget : public FPanelWidget
+{
+public:
+	FButtonWidget()
+	{
+		for (size_t i = 0; i < static_cast<size_t>(EButtonType::Count); ++i)
+		{
+			Style[i].Image = UTexture::GetTextureCache("T_White");
+		}
+		Style[static_cast<UINT>(EButtonType::Normal)].Tint = XMFLOAT4{0.7f,0.7f,0.7f,1.0f};
+		Style[static_cast<UINT>(EButtonType::Hovered)].Tint = XMFLOAT4{1.0f,1.0f,1.0f,1.0f};
+		Style[static_cast<UINT>(EButtonType::Pressed)].Tint = XMFLOAT4{0.4f,0.4f,0.4f,1.0f};
+		Style[static_cast<UINT>(EButtonType::Disabled)].Tint = XMFLOAT4{0.1f,0.1f,0.1f,1.0f};
+	}
+
+	void Tick(float DeltaSeconds) override;
+	void HandleMouseInput(const FInputEvent& InputEvent) override;
+
+	std::shared_ptr<FSlot> CreateSlot() override { return std::make_shared<FButtonSlot>();}
+
+	void SetButtonType(EButtonType NewButtonType) { CurrentButtonType = NewButtonType;}
+	void SetStyle(EButtonType StyleType, const FButtonStyle& NewStyle) { Style[static_cast<UINT>(StyleType)] = NewStyle; }
+
+	Delegate<> OnClicked;
+	Delegate<> OnHovered;
+	Delegate<> OnUnhovered;
+	Delegate<> OnPressed;
+	Delegate<> OnReleased;
+private:
+	std::shared_ptr<USoundBase> PressedSound;
+	std::shared_ptr<USoundBase> HoveredSound;
+
+	EButtonType CurrentButtonType = EButtonType::Normal;
+
+	std::array<FButtonStyle, static_cast<UINT>(EButtonType::Count)> Style;
+
+};
+
 struct FImageBrush{
 	std::shared_ptr<UTexture> Image;
 };
@@ -149,8 +198,6 @@ private:
 
 };
 
-
-
 class FTextWidget : public FChildWidget
 {
 public:
@@ -168,3 +215,4 @@ private:
 	float FontSize = 16.0f;
 	XMFLOAT4 FontColor = {0.0f,0.0f,0.0f,1.0f};
 };
+

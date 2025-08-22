@@ -849,6 +849,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 						ColorBrush.GetAddressOf()
 					);
 
+					
 					Text2DDeviceContext->DrawTextW(
 						RenderData.TextData.c_str(),
 						static_cast<UINT32>(RenderData.TextData.size()),

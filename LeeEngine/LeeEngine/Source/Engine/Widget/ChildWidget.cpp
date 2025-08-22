@@ -41,7 +41,7 @@ std::shared_ptr<FCanvasWidget> FChildWidget::GetRootWidget()
 
 bool FChildWidget::HandleInput(const FInputEvent& InputEvent)
 {
-	if (InputEvent.bKeyEvent)
+	if (InputEvent.bIsKeyEvent)
 	{
 		InputEvent.Key;
 		
@@ -228,9 +228,14 @@ void FHorizontalBoxWidget::CalculateChildrenSlots()
 			SlotWidth = AvailableWidth * (HorizontalBoxSlot->GetFillSize() / TotalFillRatio);
 		}
 
-		
-
+		// 자식의 슬롯 위치를 조정해주면서
 		HorizontalBoxSlot->SetPosition(BoxLeft + CurrentX, BoxTop + 0.0f, BoxLeft + CurrentX+SlotWidth,BoxTop + BoxWidthHeight.y);
+		// 만약 패널 위젯이면 사이즈를 인식시켜줘야함
+		if (const std::shared_ptr<FPanelWidget>& PanelWidget = std::dynamic_pointer_cast<FPanelWidget>(Child))
+		{
+			PanelWidget->SetCurrentSize({HorizontalBoxSlot->GetRight()-HorizontalBoxSlot->GetLeft(), HorizontalBoxSlot->GetBottom() - HorizontalBoxSlot->GetTop()});
+		}
+		
 		CurrentX += SlotWidth;
 	}
 }
@@ -308,8 +313,76 @@ void FVerticalBoxWidget::CalculateChildrenSlots()
 		}
 
 		VerticalBoxSlot->SetPosition(BoxLeft + 0.0f, BoxTop + CurrentY, BoxLeft + BoxWidthHeight.x,BoxTop + CurrentY + SlotHeight);
+		if (const std::shared_ptr<FPanelWidget>& PanelWidget = std::dynamic_pointer_cast<FPanelWidget>(Child))
+		{
+			PanelWidget->SetCurrentSize({VerticalBoxSlot->GetRight()-VerticalBoxSlot->GetLeft(), VerticalBoxSlot->GetBottom() - VerticalBoxSlot->GetTop()});
+		}
 		CurrentY += SlotHeight;
 	}
+}
+
+void FButtonWidget::Tick(float DeltaSeconds)
+{
+	// 일단 Box의 Slot으로 AttachChildren의 Slot을 지정
+	std::shared_ptr<FSlot> Slot = GetSlot();
+	const float ButtonLeft = Slot->GetLeft();
+	const float ButtonTop = Slot->GetTop();
+	const float ButtonRight = Slot->GetRight();
+	const float ButtonBottom = Slot->GetBottom();
+
+	for (const std::shared_ptr<FChildWidget>& Child : AttachChildren)
+	{
+		const std::shared_ptr<FButtonSlot>& ButtonSlot = std::dynamic_pointer_cast<FButtonSlot>(Child->GetSlot());
+		ButtonSlot->SetLeftTopRightBottom({ButtonLeft,ButtonTop,ButtonRight,ButtonBottom});
+	}
+
+
+	// Panel 로서 업데이트를 해줘야할 뿐 아니라 버튼만의 렌더링도 진행해줘야함
+	UINT CurButtonType = static_cast<UINT>(CurrentButtonType);
+	if (Style[CurButtonType].Image)
+	{
+		// LeftTopRightBottom 받아서
+		float Left = GetSlot()->GetLeft();
+		float Right = GetSlot()->GetRight();
+		float Top = GetSlot()->GetTop();
+		float Bottom = GetSlot()->GetBottom();
+
+		Left *= ScaleFactor.x;
+		Top *= ScaleFactor.y;
+		Right *= ScaleFactor.x;
+		Bottom *= ScaleFactor.y;
+
+		const XMFLOAT2& ScreenSize = GDirectXDevice->GetCurrentResolution();
+
+		float NDC_Left   = (Left / ScreenSize.x) * 2.0f - 1.0f;
+		float NDC_Right  = (Right / ScreenSize.x) * 2.0f - 1.0f;
+		float NDC_Top    = 1.0f - (Top / ScreenSize.y) * 2.0f;      
+		float NDC_Bottom = 1.0f - (Bottom / ScreenSize.y) * 2.0f;   
+
+		FWidgetRenderData WidgetRenderData;
+		WidgetRenderData.Left = NDC_Left;
+		WidgetRenderData.Top = max(NDC_Top,NDC_Bottom);
+		WidgetRenderData.Width = NDC_Right - NDC_Left;					
+		WidgetRenderData.Height = std::abs(NDC_Bottom - NDC_Top);	
+		WidgetRenderData.Texture = Style[CurButtonType].Image;
+		WidgetRenderData.Tint = Style[CurButtonType].Tint;
+		WidgetRenderData.ZOrder = GetZOrder();
+
+		GEngine->GetWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);	
+	}
+
+	// 모든것들이 이뤄진 후 자식들이 Tick 되면서 렌더링 큐에 넣어줘야함
+	FPanelWidget::Tick(DeltaSeconds);
+}
+
+void FButtonWidget::HandleMouseInput(const FInputEvent& InputEvent)
+{
+	//// 마우스 이벤트
+	//if (!InputEvent.bIsKeyEvent)
+	//{
+	//	const EKeys& Key = InputEvent.Key;
+	//	if (Key == EKeys::MouseLeft && )
+	//}
 }
 
 void FImageWidget::HandleMouseInput(const FInputEvent& InputEvent)
@@ -369,10 +442,12 @@ void FTextWidget::Tick(float DeltaSeconds)
 		return;
 	}
 
+	std::wstring T = Text;
+
 	// LeftTopRightBottom 받아서
 	float Left = GetSlot()->GetLeft();
-	float Right = GetSlot()->GetRight();
 	float Top = GetSlot()->GetTop();
+	float Right = GetSlot()->GetRight();
 	float Bottom = GetSlot()->GetBottom();
 
 	Left *= ScaleFactor.x;

@@ -110,6 +110,12 @@ void FAudioDevice::AudioThread_Update()
 	PendingStopActiveSounds.clear();
 }
 
+void FAudioDevice::PlaySound2D(const std::shared_ptr<USoundBase>& SoundBase) 
+{
+	const std::shared_ptr<FActiveSound>& NewActiveSound = std::make_shared<FActiveSound>(SoundBase);
+	AddNewActiveSound(NewActiveSound);
+}
+
 void FAudioDevice::GameKill()
 {
 	FAudioThread::bIsGameRunning = false;

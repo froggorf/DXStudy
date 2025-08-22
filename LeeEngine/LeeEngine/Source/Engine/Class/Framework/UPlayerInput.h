@@ -59,7 +59,7 @@ enum ETriggerEvent : int
 
 struct FInputEvent
 {
-    bool bKeyEvent;
+    bool bIsKeyEvent;
     EKeys Key;
     bool bKeyDown;
 

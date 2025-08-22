@@ -256,3 +256,4 @@ float FVerticalBoxSlot::GetBottom() const
 {
 	return RightBottom.y - VerticalPadding.y;
 }
+

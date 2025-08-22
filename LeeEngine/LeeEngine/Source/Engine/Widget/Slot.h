@@ -93,3 +93,17 @@ struct FVerticalBoxSlot : FBoxSlot {
 	float GetTop() const override;
 	float GetBottom() const override;
 };
+
+struct FButtonSlot : FSlot
+{
+	// TODO: Padding 이나 Wrap 기능 추가할 가능성이 있음
+	float GetLeft() const override { return LeftTopRightBottom.x; }
+	float GetTop() const override { return LeftTopRightBottom.y; }
+	float GetRight() const override { return LeftTopRightBottom.z; }
+	float GetBottom() const override { return LeftTopRightBottom.w; }
+
+	// XMFLOAT4 -> {Left, Top, Right, Bottom}
+	void SetLeftTopRightBottom(const XMFLOAT4& NewSize) {LeftTopRightBottom = NewSize;}
+private:
+	XMFLOAT4 LeftTopRightBottom {};
+};
