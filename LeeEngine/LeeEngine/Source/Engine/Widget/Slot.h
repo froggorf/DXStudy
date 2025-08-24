@@ -64,8 +64,7 @@ struct FBoxSlot : FSlot{
 	float FillSize = 0.0f;    // 0.0f -> Auto, 그 외 : Fill{x}
 	float GetFillSize() const {return FillSize;}
 
-	XMFLOAT2 HorizontalPadding;
-	XMFLOAT2 VerticalPadding;
+	
 
 	EHorizontalAlignment HorizontalAlignment = EHorizontalAlignment::Wrap;
 	EVerticalAlignment VerticalAlignment = EVerticalAlignment::Wrap;
@@ -75,9 +74,14 @@ struct FBoxSlot : FSlot{
 		LeftTop = {Left,Top};
 		RightBottom = {Right, Bottom};
 	}
+
+	void SetHorizontalPadding(const XMFLOAT2& NewPadding) {HorizontalPadding= NewPadding;}
+	void SetVerticalPadding(const XMFLOAT2& NewPadding) {VerticalPadding= NewPadding;}
 protected:
 	XMFLOAT2 LeftTop {};
 	XMFLOAT2 RightBottom {};
+	XMFLOAT2 HorizontalPadding{};
+	XMFLOAT2 VerticalPadding{};
 };
 
 struct FHorizontalBoxSlot : FBoxSlot {

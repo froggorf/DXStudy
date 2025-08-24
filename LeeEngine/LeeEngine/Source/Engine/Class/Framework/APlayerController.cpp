@@ -37,7 +37,6 @@ void APlayerController::Tick(float DeltaSeconds)
 	{
 		Character->SetControlRotation(GetActorRotation());
 	}
-
 }
 
 void APlayerController::TickWidget(float DeltaSeconds)
@@ -163,9 +162,10 @@ bool APlayerController::WidgetHandleInput(const FInputEvent& InputEvent)
 		return A->GetZOrder() > B->GetZOrder();
 	});
 
-	for (const std::shared_ptr<FChildWidget>& Widget : Widgets)
+	// 계층 구조상 아래부터, 그리고 ZOrder는 큰쪽부터 인풋이 들어가져야함
+	for (auto Iter = Widgets.rbegin(); Iter != Widgets.rend(); ++Iter)
 	{
-		if (Widget->HandleInput(InputEvent))
+		if ((*Iter)->HandleInput(InputEvent))
 		{
 			return true;
 		}

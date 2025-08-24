@@ -18,7 +18,7 @@ public:
 		OwnerWidget = std::make_shared<FCanvasWidget>();
 	}
 
-	void Tick(float DeltaSeconds)
+	virtual void Tick(float DeltaSeconds) 
 	{
 		if (OwnerWidget)
 		{

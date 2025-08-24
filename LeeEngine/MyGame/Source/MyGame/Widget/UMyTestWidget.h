@@ -13,26 +13,27 @@ class UMyTestWidget : public UUserWidget
 	}
 
 	void NativeConstruct() override;
+	void Tick(float DeltaSeconds) override;
 
-	void ChangeImage1();
-	void ChangeImage2();
-
-	void SetButton3Active(bool NewActive);
-	void ChangeImage();
-	
+	void SetValueTextButton(float NewValue);
 private:
-	std::shared_ptr<FVerticalBoxWidget> ButtonVerticalBox;
-	std::shared_ptr<FHorizontalBoxWidget> ButtonHorizontalBox;
-	std::shared_ptr<FButtonWidget> TestButton1;
-	std::shared_ptr<FButtonWidget> TestButton2;
-	std::shared_ptr<FButtonWidget> TestButton3;
+	std::shared_ptr<FImageWidget> MainBackgroundImage;
+	std::shared_ptr<FTextWidget> ValueText;
 
-	std::shared_ptr<FImageWidget> TestImage1;
-	std::shared_ptr<FImageWidget> TestImage2;
+	std::shared_ptr<FVerticalBoxWidget> VerticalBox;
+	std::shared_ptr<FHorizontalBoxWidget> UpperHorBox;
+	std::shared_ptr<FHorizontalBoxWidget> LowerHorBox;
 
-	std::shared_ptr<FTextWidget> Text1;
-	std::shared_ptr<FTextWidget> ButtonText1;
-	std::shared_ptr<FTextWidget> ButtonText2;
-	std::shared_ptr<FTextWidget> ButtonText3;
+	std::array<std::shared_ptr<FProgressBarWidget>, static_cast<UINT>(EProgressBarFillMode::Count)> ProgressBars;
+	std::shared_ptr<FCanvasWidget> DummyCanvas;
+	std::shared_ptr<FTextWidget> DummyText;
 
+	std::shared_ptr<FButtonWidget> ValueUpButton;
+	std::shared_ptr<FButtonWidget> ValueDownButton;
+
+	std::shared_ptr<FTextWidget> ValueUpText;
+	std::shared_ptr<FTextWidget> ValueDownText;
+
+	float CurrentValue = 0.0f;
+	float ValueChangeAxis = 0.0f;
 };

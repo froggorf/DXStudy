@@ -860,10 +860,10 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 						D2D1::RectF(RenderData.Left,RenderData.Top,RenderData.Left+RenderData.Width,RenderData.Top+RenderData.Height),
 						ColorBrush.Get()
 					);
-					HRESULT hr = GDirectXDevice->Get2DDeviceContext()->EndDraw();
-					if (FAILED(hr))
+
+					if (FAILED(GDirectXDevice->Get2DDeviceContext()->EndDraw()))
 					{
-						int a = 0;
+						assert(nullptr && "TextRenderingError");
 					}
 				}
 				else

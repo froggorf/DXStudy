@@ -81,6 +81,27 @@ bool FChildWidget::IsMouseInside(const FInputEvent& InputEvent) const
 	return false;
 }
 
+void FChildWidget::GetNDCPos(float& NDC_Left, float& NDC_Top, float& NDC_Right, float& NDC_Bottom) const
+{
+	// LeftTopRightBottom 받아서
+	float Left = GetSlot()->GetLeft();
+	float Right = GetSlot()->GetRight();
+	float Top = GetSlot()->GetTop();
+	float Bottom = GetSlot()->GetBottom();
+
+	Left *= ScaleFactor.x;
+	Top *= ScaleFactor.y;
+	Right *= ScaleFactor.x;
+	Bottom *= ScaleFactor.y;
+
+	const XMFLOAT2& ScreenSize = GDirectXDevice->GetCurrentResolution();
+
+	NDC_Left   = (Left / ScreenSize.x) * 2.0f - 1.0f;
+	NDC_Right  = (Right / ScreenSize.x) * 2.0f - 1.0f;
+	NDC_Top    = 1.0f - (Top / ScreenSize.y) * 2.0f;      
+	NDC_Bottom = 1.0f - (Bottom / ScreenSize.y) * 2.0f;
+}
+
 void FPanelWidget::Tick(float DeltaSeconds)
 {
 	FChildWidget::Tick(DeltaSeconds);
@@ -141,16 +162,6 @@ bool FPanelWidget::HandleInput(const FInputEvent& InputEvent)
 {
 	for (const std::shared_ptr<FChildWidget>& ChildWidget : AttachChildren)
 	{
-		if (dynamic_cast<FHorizontalBoxWidget*>(this))
-		{
-			int a = 0;
-			// 지금 호라이즌탈 박스 안에 버튼이 3개가 들어있는것
-		}
-		if (std::dynamic_pointer_cast<FButtonWidget>(ChildWidget))
-		{
-			int b = 0;
-		}
-
 		// 08.22 FButtonWidget의 경우 FChildWidget::HandleInput을 처리하여 마우스 인풋을 처리해야하는데,
 		// FPanelWidget이어서 FPanelWidget::HandleInput이 호출되어서 자신의 인풋이 무시되는 현상이 발생함,
 		// 따라서, 먼저 PanelWidget의 HandleInput을 처리해주고,
@@ -368,23 +379,8 @@ void FButtonWidget::Tick(float DeltaSeconds)
 	UINT CurButtonType = static_cast<UINT>(CurrentButtonType);
 	if (Style[CurButtonType].Image)
 	{
-		// LeftTopRightBottom 받아서
-		float Left = GetSlot()->GetLeft();
-		float Right = GetSlot()->GetRight();
-		float Top = GetSlot()->GetTop();
-		float Bottom = GetSlot()->GetBottom();
-
-		Left *= ScaleFactor.x;
-		Top *= ScaleFactor.y;
-		Right *= ScaleFactor.x;
-		Bottom *= ScaleFactor.y;
-
-		const XMFLOAT2& ScreenSize = GDirectXDevice->GetCurrentResolution();
-
-		float NDC_Left   = (Left / ScreenSize.x) * 2.0f - 1.0f;
-		float NDC_Right  = (Right / ScreenSize.x) * 2.0f - 1.0f;
-		float NDC_Top    = 1.0f - (Top / ScreenSize.y) * 2.0f;      
-		float NDC_Bottom = 1.0f - (Bottom / ScreenSize.y) * 2.0f;   
+		float NDC_Left{}, NDC_Right{}, NDC_Top{}, NDC_Bottom{};
+		GetNDCPos(NDC_Left, NDC_Top, NDC_Right, NDC_Bottom);
 
 		FWidgetRenderData WidgetRenderData;
 		WidgetRenderData.Left = NDC_Left;
@@ -409,12 +405,11 @@ bool FButtonWidget::HandleMouseInput(const FInputEvent& InputEvent)
 	{
 		return false;
 	}
+	
 
 	bool bIsMouseInsideButton = IsMouseInside(InputEvent);
-	if (bIsMouseInsideButton)
-	{
-		int a = 0;
-	}
+
+	
 	// 마우스 이벤트
 	if (!InputEvent.bIsKeyEvent)
 	{
@@ -435,7 +430,7 @@ bool FButtonWidget::HandleMouseInput(const FInputEvent& InputEvent)
 			else
 			{
 				// 첫 호버링 됐을 때 호버 이벤트
-				if (CurrentButtonType != EButtonType::Hovered)
+				if (CurrentButtonType != EButtonType::Hovered && CurrentButtonType != EButtonType::Pressed)
 				{
 					CurrentButtonType = EButtonType::Hovered;
 					OnHovered.Broadcast();
@@ -512,24 +507,8 @@ void FImageWidget::Tick(float DeltaSeconds)
 		return;
 	}
 
-	
-	// LeftTopRightBottom 받아서
-	float Left = GetSlot()->GetLeft();
-	float Right = GetSlot()->GetRight();
-	float Top = GetSlot()->GetTop();
-	float Bottom = GetSlot()->GetBottom();
-
-	Left *= ScaleFactor.x;
-	Top *= ScaleFactor.y;
-	Right *= ScaleFactor.x;
-	Bottom *= ScaleFactor.y;
-
-	const XMFLOAT2& ScreenSize = GDirectXDevice->GetCurrentResolution();
-
-	float NDC_Left   = (Left / ScreenSize.x) * 2.0f - 1.0f;
-	float NDC_Right  = (Right / ScreenSize.x) * 2.0f - 1.0f;
-	float NDC_Top    = 1.0f - (Top / ScreenSize.y) * 2.0f;      
-	float NDC_Bottom = 1.0f - (Bottom / ScreenSize.y) * 2.0f;   
+	float NDC_Left{}, NDC_Right{}, NDC_Top{}, NDC_Bottom{};
+	GetNDCPos(NDC_Left, NDC_Top, NDC_Right, NDC_Bottom);
 
 	FWidgetRenderData WidgetRenderData;
 	WidgetRenderData.Left = NDC_Left;
@@ -537,7 +516,7 @@ void FImageWidget::Tick(float DeltaSeconds)
 	WidgetRenderData.Width = NDC_Right - NDC_Left;					
 	WidgetRenderData.Height = std::abs(NDC_Bottom - NDC_Top);	
 	WidgetRenderData.Texture = Brush.Image;
-	WidgetRenderData.Tint = ColorAndOpacity;
+	WidgetRenderData.Tint = GetColor();
 	WidgetRenderData.ZOrder = GetZOrder();
 
 	GEngine->GetWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
@@ -586,7 +565,11 @@ void FTextWidget::Tick(float DeltaSeconds)
 
 	std::wstring T = Text;
 
-	// LeftTopRightBottom 받아서
+	// 텍스트 같은 경우엔 DWrite 라이브러리를 사용하기에
+	// NDC 좌표계로 직접 gpu로 렌더링 요청을 보내는것이 아닌
+	// Direct2D DeviceContext->DrawTextW 로 렌더링,
+	// 렌더링 시 윈도우 좌표를 요청하므로 Slot의 좌표를 그대로 전달
+
 	float Left = GetSlot()->GetLeft();
 	float Top = GetSlot()->GetTop();
 	float Right = GetSlot()->GetRight();
@@ -611,4 +594,140 @@ void FTextWidget::Tick(float DeltaSeconds)
 	WidgetRenderData.TextVerticalAlignment= TextVerticalAlignment;
 
 	GEngine->GetWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
+}
+
+FProgressBarWidget::FProgressBarWidget()
+{
+	FillBrush.Image = UTexture::GetTextureCache("T_White");
+	FillBrush.Tint = {0.0f, 0.5f, 1.0f, 1.0f};
+	BackgroundBrush.Image = UTexture::GetTextureCache("T_White");
+}
+
+void FProgressBarWidget::Tick(float DeltaSeconds)
+{
+	FChildWidget::Tick(DeltaSeconds);
+
+	if (!FillBrush.Image && !BackgroundBrush.Image)
+	{
+		return;
+	}
+
+	float BG_Left{}, BG_Right{}, BG_Top{}, BG_Bottom{};
+	GetNDCPos(BG_Left, BG_Top, BG_Right, BG_Bottom);
+
+	// 백그라운드 먼저 그리고
+	{
+		FWidgetRenderData WidgetRenderData;
+		WidgetRenderData.Left = BG_Left;
+		WidgetRenderData.Top = max(BG_Top,BG_Bottom);
+		WidgetRenderData.Width = BG_Right - BG_Left;					
+		WidgetRenderData.Height = std::abs(BG_Bottom - BG_Top);	
+		WidgetRenderData.Texture = BackgroundBrush.Image;
+		WidgetRenderData.Tint = BackgroundBrush.Tint;
+		WidgetRenderData.ZOrder = GetZOrder();
+
+		GEngine->GetWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
+	}
+
+	// Fill 그리기
+	{
+		float Fill_Left, Fill_Right, Fill_Top, Fill_Bottom;
+		CalculateFillImagePosition(BG_Left, BG_Top, BG_Right, BG_Bottom
+			,Fill_Left, Fill_Top, Fill_Right,Fill_Bottom);
+
+		FWidgetRenderData WidgetRenderData;
+		WidgetRenderData.Left = Fill_Left;
+		WidgetRenderData.Top = max(Fill_Top,Fill_Bottom);
+		WidgetRenderData.Width = Fill_Right - Fill_Left;					
+		WidgetRenderData.Height = std::abs(Fill_Bottom - Fill_Top);	
+		WidgetRenderData.Texture = FillBrush.Image;
+		WidgetRenderData.Tint = FillBrush.Tint;
+		WidgetRenderData.ZOrder = GetZOrder();
+
+		GEngine->GetWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
+	}
+	
+}
+
+void FProgressBarWidget::CalculateFillImagePosition(float BGLeft, float BGTop, float BGRight, float BGBottom, float& FillLeft, float& FillTop, float& FillRight, float& FillBottom)
+{
+	const float BGWidth =  BGRight - BGLeft;
+	const float FillWidth = BGWidth * Value;
+	const float BGHeight = std::abs(BGBottom - BGTop);
+	const float FillHeight = BGHeight * Value;
+
+	const float BGHorizontalCenter = (BGRight + BGLeft)/2;
+	const float FillHalfWidth = FillWidth/2;
+
+	const float BGVerticalCenter = (BGBottom + BGTop) / 2;
+	const float FillHalfHeight = FillHeight/2;
+	switch (FillMode)
+	{
+		// 왼 -> 오
+	case EProgressBarFillMode::LeftToRight:
+		{
+			FillLeft = BGLeft;
+			FillTop = BGTop;
+			FillBottom = BGBottom;
+			FillRight = FillLeft + FillWidth;
+		}
+		break;
+		// 오 -> 왼
+	case EProgressBarFillMode::RightToLeft:
+		{
+			FillRight = BGRight;
+			FillTop = BGTop;
+			FillBottom = BGBottom;
+			FillLeft = FillRight - FillWidth;
+		}
+		break;
+
+		// 밑 -> 위
+	case EProgressBarFillMode::BottomToTop:
+		{
+			FillLeft = BGLeft;
+			FillRight = BGRight;
+			FillBottom = BGBottom;
+			FillTop = BGBottom + FillHeight;
+		}
+		break;
+		// 위 -> 밑
+	case EProgressBarFillMode::TopToBottom:
+		{
+			FillLeft = BGLeft;
+			FillRight = BGRight;
+			FillTop = BGTop;
+			FillBottom = FillTop - FillHeight;
+		}
+		break;
+
+		// 중앙 -> 밖(양옆으로 퍼지듯)
+	case EProgressBarFillMode::FillFromCenterHorizontal:
+		{
+			FillTop = BGTop;
+			FillBottom = BGBottom;
+			FillLeft = BGHorizontalCenter - FillHalfWidth;
+			FillRight = BGHorizontalCenter + FillHalfWidth;
+		}
+	break;
+		// 중앙 -> 밖(위아래로 퍼지듯)
+	case EProgressBarFillMode::FillFromCenterVertical:
+		{
+			FillLeft = BGLeft;
+			FillRight = BGRight;
+			FillTop = BGVerticalCenter + FillHalfHeight;
+			FillBottom = BGVerticalCenter - FillHalfHeight;
+		}
+	break;
+		// 중앙 -> 밖
+	case EProgressBarFillMode::FillFromCenter:
+		{
+			FillTop = BGVerticalCenter + FillHalfHeight;
+			FillBottom = BGVerticalCenter - FillHalfHeight;
+			FillLeft = BGHorizontalCenter - FillHalfWidth;
+			FillRight = BGHorizontalCenter + FillHalfWidth;
+		}
+		break;
+	
+	}
 }

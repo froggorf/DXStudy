@@ -28,7 +28,7 @@ int main()
 
 	for (int i = 1; i < N+1; ++i)
 	{
-		for (int w = 0; w < W+1; ++w)
+		for (int w = 1; w < W+1; ++w)
 		{
 			// 무게가 안돼서 못넣는것
 			if (w < Weights[i])

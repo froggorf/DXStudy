@@ -64,6 +64,9 @@ public:
 	float GetZOrder() const {return ZOrder;}
 	void SetZOrder(float NewZOrder) {ZOrder = NewZOrder;}
 protected:
+	// 해당 위젯이 그려질 NDC 좌표계의 위치 반환
+	void GetNDCPos(float& NDC_Left, float& NDC_Top, float& NDC_Right, float& NDC_Bottom) const;
+protected:
 	// 매프레임마다 계산되는 값
 	// Designed Resolution -> Render Resolution 이 되는 값
 	XMFLOAT2 ScaleFactor = {0,0};
@@ -130,11 +133,11 @@ protected:
 	void CalculateChildrenSlots();
 };
 
-struct FButtonStyle
-{
+struct FImageBrush{
 	std::shared_ptr<UTexture> Image;
-	XMFLOAT4 Tint;
+	XMFLOAT4 Tint = XMFLOAT4{1.0f,1.0f,1.0f,1.0f};
 };
+
 enum class EButtonType
 {
 	Normal, Hovered, Pressed, Disabled, Count
@@ -160,7 +163,7 @@ public:
 
 	std::shared_ptr<FSlot> CreateSlot() override { return std::make_shared<FButtonSlot>();}
 
-	void SetStyle(EButtonType StyleType, const FButtonStyle& NewStyle) { Style[static_cast<UINT>(StyleType)] = NewStyle; }
+	void SetStyle(EButtonType StyleType, const FImageBrush& NewStyle) { Style[static_cast<UINT>(StyleType)] = NewStyle; }
 	void SetDisabled(bool bNewDisabled);
 
 
@@ -180,28 +183,25 @@ private:
 	EButtonType CurrentButtonType = EButtonType::Normal;
 	bool bIsButtonDisabled = false;
 
-	std::array<FButtonStyle, static_cast<UINT>(EButtonType::Count)> Style;
+	std::array<FImageBrush, static_cast<UINT>(EButtonType::Count)> Style;
 
 };
 
-struct FImageBrush{
-	std::shared_ptr<UTexture> Image;
-};
+
 
 class FImageWidget : public FChildWidget
 {
 public:
-	FImageWidget(const FImageBrush& NewBrush, XMFLOAT4 NewColor)
+	FImageWidget(const FImageBrush& NewBrush)
 	{
 		Brush = NewBrush;
-		ColorAndOpacity = NewColor;
 	}
 	~FImageWidget() override = default;
 
 	void SetBrush(const FImageBrush& NewBrush) {Brush = NewBrush;}
-	void SetColor(const XMFLOAT4& NewColor) {ColorAndOpacity = NewColor;}
+	void SetColor(const XMFLOAT4& NewColor) {Brush.Tint = NewColor;}
 
-	const XMFLOAT4& GetColor() const {return ColorAndOpacity;}
+	const XMFLOAT4& GetColor() const {return Brush.Tint;}
 
 	bool HandleMouseInput(const FInputEvent& InputEvent) override;
 
@@ -210,7 +210,6 @@ public:
 	Delegate<> OnMouseButtonDown;  
 private:
 	FImageBrush Brush;
-	XMFLOAT4 ColorAndOpacity;
 
 };
 
@@ -244,4 +243,45 @@ private:
 	DWRITE_TEXT_ALIGNMENT TextHorizontalAlignment = DWRITE_TEXT_ALIGNMENT_LEADING;
 	DWRITE_PARAGRAPH_ALIGNMENT TextVerticalAlignment = DWRITE_PARAGRAPH_ALIGNMENT_NEAR;
 };
+
+enum class EProgressBarFillMode
+{
+	LeftToRight,
+	RightToLeft,
+	FillFromCenter,
+	FillFromCenterHorizontal,
+	FillFromCenterVertical,
+	TopToBottom,
+	BottomToTop,
+	Count
+};
+class FProgressBarWidget : public FChildWidget
+{
+public:
+	FProgressBarWidget();
+	~FProgressBarWidget() override = default;
+	void SetFillMode(EProgressBarFillMode NewMode) {FillMode = NewMode;}
+	void SetBackgroundImageBrush(const FImageBrush& NewImageBrush){BackgroundBrush=NewImageBrush;}
+	void SetFillImageBrush(const FImageBrush& NewImageBrush){FillBrush = NewImageBrush;}
+
+	void HandleKeyboardInput(const FInputEvent& InputEvent) override {}
+	void Tick(float DeltaSeconds) override;
+
+	void SetValue(float NewValue)  { Value =  std::clamp(NewValue, 0.0f,1.0f); }
+	float GetValue() const {return Value;}
+private:
+	void CalculateFillImagePosition(float BGLeft, float BGTop, float BGRight, float BGBottom, float& FillLeft, float& FillTop, float& FillRight, float& FillBottom);
+
+public:
+	bool HandleMouseInput(const FInputEvent& InputEvent) override { return false;}
+
+private:
+	EProgressBarFillMode FillMode = EProgressBarFillMode::LeftToRight;
+
+	float Value = 0.0f;
+
+	FImageBrush BackgroundBrush;
+	FImageBrush FillBrush;
+};
+
 
