@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="백준 나무자르기 2805 실버2.cpp">
+    <ClCompile Include="백준 DFS와 BFS (그래프) 실버2.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
