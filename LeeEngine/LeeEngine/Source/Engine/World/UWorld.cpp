@@ -139,6 +139,7 @@ void UWorld::Tick()
 void UWorld::SetPersistentLevel(const std::shared_ptr<ULevel>& NewLevel)
 {
 	gPhysicsEngine->ResetScene();
+	PersistentLevel = nullptr;
 	PersistentLevel = NewLevel;
 	PersistentLevel->Register();
 	if (GEngine->bGameStart)

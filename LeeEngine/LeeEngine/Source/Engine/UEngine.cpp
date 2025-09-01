@@ -107,12 +107,13 @@ void UEngine::LoadDataFromDefaultEngineIni()
 
 void UEngine::LoadDefaultMap()
 {
-	AssetManager::GetAsyncAssetCache(GetDefaultMapName(), [this](std::shared_ptr<UObject> DefaultLevel)
-	{
-		// 레벨 정보를 생성자를 통해서 인스턴스를 만드는 방식
-		std::shared_ptr<ULevel> DefaultLevelInstance = std::make_shared<ULevel>(std::dynamic_pointer_cast<ULevel>(DefaultLevel).get());
-		CurrentWorld->SetPersistentLevel(DefaultLevelInstance);
-	});
+	ChangeLevelByName(GetDefaultMapName());
+	//AssetManager::GetAsyncAssetCache(GetDefaultMapName(), [this](std::shared_ptr<UObject> DefaultLevel)
+	//{
+	//	// 레벨 정보를 생성자를 통해서 인스턴스를 만드는 방식
+	//	std::shared_ptr<ULevel> DefaultLevelInstance = std::make_shared<ULevel>(std::dynamic_pointer_cast<ULevel>(DefaultLevel).get());
+	//	CurrentWorld->SetPersistentLevel(DefaultLevelInstance);
+	//});
 }
 
 const std::string& UEngine::GetDefaultMapName()
@@ -123,17 +124,32 @@ const std::string& UEngine::GetDefaultMapName()
 void UEngine::ChangeLevelByName(const std::string& str)
 {
 	// 비동기 로드 진행
-	AssetManager::GetAsyncAssetCache(str, [this](std::shared_ptr<UObject> LevelObject)
+	std::atomic<bool> bIsSuccess = false;
+	std::shared_ptr<ULevel> ChangeLevel = nullptr;
+	AssetManager::GetAsyncAssetCache(str, [&bIsSuccess, &ChangeLevel](std::shared_ptr<UObject> LevelObject)
 	{
 		if(LevelObject)
 		{
 			// 레벨 정보를 생성자를 통해서 인스턴스를 만드는 방식
-			std::shared_ptr<ULevel> TTT = std::make_shared<ULevel>(std::dynamic_pointer_cast<ULevel>(LevelObject).get());
-
-			CurrentWorld->SetPersistentLevel(TTT);		
+			ChangeLevel = std::make_shared<ULevel>(std::dynamic_pointer_cast<ULevel>(LevelObject).get());
 		}
-		
+		bIsSuccess = true;
 	});
+
+	// 0901) 비동기 로드로 레벨 로드를 진행 시 메인 스레드에서는 하는것이 없는데
+	// 레벨을 초기화 하는 타이밍에 메인 스레드의 틱이 돌면서
+	// 레벨의 액터 틱을 호출하면서 프로그램이 터지는 현상이 발생
+	// 따라서 레벨 변경 로직도 메인 쓰레드에서 처리하게 하고 에셋 로드 자체는 비동기 에셋 로드를 이용하는것으로 처리
+	while (!bIsSuccess)
+	{
+		
+	}
+
+	if (ChangeLevel)
+	{
+		CurrentWorld->SetPersistentLevel(ChangeLevel);	
+	}
+	
 }
 
 void UEngine::GameStart()
