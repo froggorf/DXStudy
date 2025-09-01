@@ -23,7 +23,6 @@ void DFS(int InputNext)
 		}
 	}
 }
-
 void BFS(std::queue<int>& Q)
 {
 	if (Q.empty())
@@ -47,10 +46,8 @@ void BFS(std::queue<int>& Q)
 
 	BFS(Q);
 }
-
 int main()
 {
-	
 	std::ios::sync_with_stdio(false);
 	std::cin.tie(nullptr);
 	std::cin>>N>>M>>V;
