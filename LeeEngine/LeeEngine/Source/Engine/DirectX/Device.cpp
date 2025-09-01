@@ -367,8 +367,8 @@ void FDirectXDevice::ResizeEditorRenderTarget(float NewX, float NewY)
 	NewY = max(2.0f, NewY);
 
 	EditorViewportSize = {NewX, NewY};
-
-	CreateEditorMRT();
+	InitMultiRenderTarget();
+	//CreateEditorMRT();
 }
 #endif
 

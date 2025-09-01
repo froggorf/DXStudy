@@ -23,7 +23,6 @@ void FImguiLevelViewport::Draw()
 {
 	// 렌더링 시작
 	ImVec2 CurrentViewPortSize{};
-	ImVec2 ScreenPos;
 
 	// Actor
 	if (ImGui::Begin("Place Actors", nullptr))
@@ -93,13 +92,16 @@ void FImguiLevelViewport::Draw()
 		float  YMargin    = 5.0f;
 		float  TopMargin  = 0.0f;
 
+		
+
 		ImVec2 ViewPortSize = WindowSize;
 		ViewPortSize.x -= XMargin * 2;
 		ViewPortSize.y      = ViewPortSize.y - YMargin * 2;
 		CurrentViewPortSize = ViewPortSize;
 
 		ImGui::SetCursorPos(ImVec2(XMargin, YMargin + TopMargin));
-		ScreenPos = ImGui::GetCursorScreenPos();
+		ImVec2 ScreenPos = ImGui::GetCursorScreenPos();
+		LevelViewportPos = {ScreenPos.x, ScreenPos.y};
 		
 		if (PreviousViewPortSize != CurrentViewPortSize )
 		{
@@ -110,12 +112,7 @@ void FImguiLevelViewport::Draw()
 
 		if (const std::shared_ptr<UTexture>& RenderTexture = GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor)->GetRenderTargetTexture(0))
 		{
-			LevelViewportPos = {ScreenPos.x, ScreenPos.y};
-			if (RenderTexture->GetSRV())
-			{
-				ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), ViewPortSize);	
-			}
-
+			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), ViewPortSize);	
 		}	
 		
 		

@@ -76,6 +76,7 @@ public:
 
 	const ImVec2& GetResizeEditorRenderTargetSize() const {return ResizeEditorRenderTargetSize;}
 	bool GetIsResizeEditorRenderTargetAtEndFrame() const {return bResizeEditorRenderTargetAtEndFrame;}
+	void ResetIsResizeEditorRenderTargetAtEndFrame() { bResizeEditorRenderTargetAtEndFrame = false;}
 private:
 	// CurrentSelectedActor의 Imguizmo 기즈모 렌더링 + 이동 조작 Imguizmo 커맨드 큐 추가
 	void DrawImguizmoSelectedActor(float AspectRatio);

@@ -70,7 +70,8 @@ void FEditorClient::Draw()
 		if (LevelViewport->GetIsResizeEditorRenderTargetAtEndFrame())
 		{
 			const ImVec2& ResizeEditorRenderTargetSize = LevelViewport->GetResizeEditorRenderTargetSize();
-			GDirectXDevice->ResizeEditorRenderTarget(ResizeEditorRenderTargetSize.x,ResizeEditorRenderTargetSize.y);	
+			GDirectXDevice->ResizeEditorRenderTarget(ResizeEditorRenderTargetSize.x,ResizeEditorRenderTargetSize.y);
+			LevelViewport->ResetIsResizeEditorRenderTargetAtEndFrame();
 		}
 		
 	}
