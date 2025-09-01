@@ -26,24 +26,14 @@ ASkyBox::ASkyBox()
 void ASkyBox::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
-
-	CalculateLocation();
 }
 
 void ASkyBox::Tick_Editor(float DeltaSeconds)
 {
 	AActor::Tick_Editor(DeltaSeconds);
-
-	CalculateLocation();
 }
 
 void ASkyBox::CalculateLocation()
 {
-	if (GEngine && GEngine->GetWorld()->GetCameraManager())
-	{
-		if (const std::shared_ptr<UCameraComponent>& CameraComp = GEngine->GetWorld()->GetCameraManager()->TargetCamera.lock())
-		{
-			SetActorLocation(CameraComp->GetWorldLocation());	
-		}
-	}
+	
 }

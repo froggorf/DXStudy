@@ -60,4 +60,18 @@ void FEditorClient::Draw()
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
 	}
+
+	// 0901) 해당 변수를 클래스 내에서 처리할 경우,
+	// Imgui 한 프레임이 끝나기 전에 뷰포트 리사이즈를 진행하게 될 경우 Imgui 프레임의 마지막 부에 렌더링을 진행하게 되는데
+	// 해당 리소스를 손실하게 되면서 리소스 누락이 발생해 프로그램이 터지게 됨
+	// 따라서 모든 Imgui 렌더링이 작동하고나서 리사이즈가 되게 해야함
+	if (FImguiLevelViewport* LevelViewport = dynamic_cast<FImguiLevelViewport*>(ImguiPanels[static_cast<int>(EImguiPanelType::IPT_LevelViewport)].get()))
+	{
+		if (LevelViewport->GetIsResizeEditorRenderTargetAtEndFrame())
+		{
+			const ImVec2& ResizeEditorRenderTargetSize = LevelViewport->GetResizeEditorRenderTargetSize();
+			GDirectXDevice->ResizeEditorRenderTarget(ResizeEditorRenderTargetSize.x,ResizeEditorRenderTargetSize.y);	
+		}
+		
+	}
 }

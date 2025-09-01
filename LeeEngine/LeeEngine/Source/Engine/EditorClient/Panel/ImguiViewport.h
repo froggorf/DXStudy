@@ -1,4 +1,4 @@
-﻿// 03.21
+// 03.21
 // 언리얼 엔진 5 코드를 분석하며 자체엔진으로 작성중인 코드입니다.
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
@@ -74,6 +74,8 @@ public:
 	// 월드 아웃라이너 패널에서 액터를 선택했을 시 호출
 	void SelectActorFromWorldOutliner(const std::shared_ptr<AActor>& NewSelectedActor);
 
+	const ImVec2& GetResizeEditorRenderTargetSize() const {return ResizeEditorRenderTargetSize;}
+	bool GetIsResizeEditorRenderTargetAtEndFrame() const {return bResizeEditorRenderTargetAtEndFrame;}
 private:
 	// CurrentSelectedActor의 Imguizmo 기즈모 렌더링 + 이동 조작 Imguizmo 커맨드 큐 추가
 	void DrawImguizmoSelectedActor(float AspectRatio);
@@ -95,14 +97,14 @@ private:
 public:
 	static ImVec2 PreviousViewPortSize;
 	static XMFLOAT2 LevelViewportPos;
+	
 
 private:
 	std::unique_ptr<FImguiWorldOutliner> WorldOutlinerPanel;
 	std::unique_ptr<FImguiActorDetail>   ActorDetailPanel;
 
 	// Level Viewport 변수
-	bool   bResizeEditorRenderTargetAtEndFrame = false;
+	bool   bResizeEditorRenderTargetAtEndFrame;
 	ImVec2 ResizeEditorRenderTargetSize        = {};
-
 	FViewMatrices EditorViewMatrices;
 };

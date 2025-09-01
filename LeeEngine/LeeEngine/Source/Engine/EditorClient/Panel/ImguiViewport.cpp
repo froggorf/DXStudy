@@ -11,6 +11,7 @@
 ImVec2 FImguiLevelViewport::PreviousViewPortSize = ImVec2(0.0f, 0.0f);
 XMFLOAT2 FImguiLevelViewport::LevelViewportPos = XMFLOAT2(0.0f,0.0f);
 
+
 FImguiLevelViewport::FImguiLevelViewport(FScene* SceneData)
 	: FImguiPanel(SceneData)
 {
@@ -99,17 +100,26 @@ void FImguiLevelViewport::Draw()
 
 		ImGui::SetCursorPos(ImVec2(XMargin, YMargin + TopMargin));
 		ScreenPos = ImGui::GetCursorScreenPos();
-		if (const std::shared_ptr<UTexture>& RenderTexture = GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor)->GetRenderTargetTexture(0))
-		{
-			LevelViewportPos = {ScreenPos.x, ScreenPos.y};
-			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), ViewPortSize);
-		}
-		if (PreviousViewPortSize != CurrentViewPortSize)
+		
+		if (PreviousViewPortSize != CurrentViewPortSize )
 		{
 			PreviousViewPortSize                = CurrentViewPortSize;
 			ResizeEditorRenderTargetSize        = CurrentViewPortSize;
 			bResizeEditorRenderTargetAtEndFrame = true;
 		}
+
+		if (const std::shared_ptr<UTexture>& RenderTexture = GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor)->GetRenderTargetTexture(0))
+		{
+			LevelViewportPos = {ScreenPos.x, ScreenPos.y};
+			if (RenderTexture->GetSRV())
+			{
+				ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), ViewPortSize);	
+			}
+
+		}	
+		
+		
+	
 
 
 
@@ -124,11 +134,7 @@ void FImguiLevelViewport::Draw()
 		DrawImguizmoSelectedActor(GDirectXDevice->GetAspectRatio());
 		ImGui::PopClipRect();
 
-		if (bResizeEditorRenderTargetAtEndFrame)
-		{
-			bResizeEditorRenderTargetAtEndFrame = false;
-			GDirectXDevice->ResizeEditorRenderTarget(ResizeEditorRenderTargetSize.x, ResizeEditorRenderTargetSize.y);
-		}
+		
 
 		// 키 입력 처리
 		if (ImGui::IsWindowFocused())
