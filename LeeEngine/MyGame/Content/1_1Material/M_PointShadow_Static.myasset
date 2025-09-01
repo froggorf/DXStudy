@@ -1,0 +1,19 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_PointShadow_Static",
+    "VertexShader" : {
+	"FilePath" : "/Shader/ShadowMap.fx",
+	"Func" : "VS_PointShadowMap_Static"
+    },
+    "GeometryShader": {
+	"FilePath" : "/Shader/ShadowMap.fx",
+	"Func": "GS_PointShadowMap"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/ShadowMap.fx",
+	"Func": "PS_PointShadowMap"
+    },
+    "BlendMode": "ForDeferredMerge",
+    "TwoSided" : 0
+	
+}

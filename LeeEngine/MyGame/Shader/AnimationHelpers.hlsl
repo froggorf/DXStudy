@@ -1,6 +1,11 @@
 #define MAX_BONES 100
 #define MAX_BONE_INFLUENCE 4
 
+cbuffer cbSkeletalMeshBoneFinalTransforms : register(b3)
+{
+	matrix gBoneFinalTransforms[MAX_BONES];
+}
+
 void CalculateSkinnedPosition(const in float4 Pos, const in float3 Normal, const in int4 boneIDs, const in float4 boneWeights, const in float4x4 BoneFinalTransforms[MAX_BONES], out float4 skinnedPosition, out float3 skinnedNormal)
 {
 	skinnedPosition = float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -27,3 +32,4 @@ void CalculateSkinnedPosition(const in float4 Pos, const in float3 Normal, const
 		}
 	}
 }
+

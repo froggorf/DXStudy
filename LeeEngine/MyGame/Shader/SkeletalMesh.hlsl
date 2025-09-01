@@ -11,10 +11,7 @@ SamplerState samLinear : register( s0 );
 Texture2D    gShadowMap : register(t1);
 SamplerState gShadowSampler : register(s1);
 
-cbuffer cbSkeletalMeshBoneFinalTransforms : register(b3)
-{
-	matrix gBoneFinalTransforms[MAX_BONES];
-}
+
 
 struct VS_INPUT
 {

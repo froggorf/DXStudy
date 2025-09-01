@@ -33,8 +33,10 @@ FScene::FScene()
 
 	LightBuffer = std::make_shared<FStructuredBuffer>();
 
-	M_LightShadow[static_cast<UINT>(ELightType::Directional)] = UMaterial::GetMaterialCache("M_DirShadow");
-	M_LightShadow[static_cast<UINT>(ELightType::Point)] = UMaterial::GetMaterialCache("M_PointShadow");
+	M_LightShadow[static_cast<UINT>(ELightType::Directional)][0] = UMaterial::GetMaterialCache("M_DirShadow_Static");
+	M_LightShadow[static_cast<UINT>(ELightType::Directional)][1] = UMaterial::GetMaterialCache("M_DirShadow_Skeletal");
+	M_LightShadow[static_cast<UINT>(ELightType::Point)][0] = UMaterial::GetMaterialCache("M_PointShadow_Static");
+	M_LightShadow[static_cast<UINT>(ELightType::Point)][1] = UMaterial::GetMaterialCache("M_PointShadow_Skeletal");
 
 	M_Widget = UMaterial::GetMaterialCache("M_Widget");
 	M_Widget->SetRasterizerType(ERasterizerType::RT_TwoSided);
@@ -557,22 +559,24 @@ void FScene::SetNiagaraEffectActivate_GameThread(std::vector<std::shared_ptr<FNi
 	ENQUEUE_RENDER_COMMAND(Lambda);
 }
 
-static void DrawShadowMapSceneProxies(const std::unordered_map<UINT, std::vector<FPrimitiveRenderData>>& SceneProxies)
+static void DrawShadowMapSceneProxies(ELightType Type, const std::unordered_map<UINT, std::vector<FPrimitiveRenderData>>& SceneProxies, const std::array<std::array<std::shared_ptr<UMaterialInterface>,2>,static_cast<UINT>(ELightType::Count)>& ShadowMaterials)
 {
 	for (const std::vector<FPrimitiveRenderData>& Proxies : SceneProxies | std::views::values)
 	{
 		for (const FPrimitiveRenderData& RenderData : Proxies)
 		{
+			int SkeletalMesh = static_cast<int>(RenderData.SceneProxy->IsSkeletalMesh());
+			ShadowMaterials[static_cast<int>(Type)][SkeletalMesh]->Binding();
 			RenderData.SceneProxy->Draw();
 		}
 	}
 }
 
-void FScene::DrawShadowMap()
+void FScene::DrawShadowMap(ELightType Type) const
 {
-	DrawShadowMapSceneProxies(DeferredSceneProxyRenderData);
-	DrawShadowMapSceneProxies(OpaqueSceneProxyRenderData);
-	DrawShadowMapSceneProxies(MaskedSceneProxyRenderData);
+	DrawShadowMapSceneProxies(Type, DeferredSceneProxyRenderData, M_LightShadow);
+	DrawShadowMapSceneProxies(Type, OpaqueSceneProxyRenderData, M_LightShadow);
+	DrawShadowMapSceneProxies(Type, MaskedSceneProxyRenderData, M_LightShadow);
 	//DrawShadowMapSceneProxies(TranslucentSceneProxyRenderData);
 }
 
@@ -731,15 +735,13 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 					if (SceneData->CurrentFrameLightInfo[i].LightType == static_cast<int>(ELightType::Directional))
 					{
 						ViewPort = D3D11_VIEWPORT{0,0,8192,8192,0,1};	
-						SceneData->M_LightShadow[static_cast<UINT>(ELightType::Directional)]->Binding();
 					}
 					else
 					{
 						ViewPort = D3D11_VIEWPORT{0,0,512,512,0,1};
-						SceneData->M_LightShadow[static_cast<UINT>(ELightType::Point)]->Binding();
 					}
 					GDirectXDevice->GetDeviceContext()->RSSetViewports(1, &ViewPort);
-					SceneData->DrawShadowMap();
+					SceneData->DrawShadowMap(static_cast<ELightType>(SceneData->CurrentFrameLightInfo[i].LightType));
 
 					
 

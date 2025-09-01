@@ -61,6 +61,7 @@ public:
 	bool DoFrustumCulling() const {return bDoFrustumCulling;}
 	void SetDoFrustumCulling(bool NewDoFrustumCulling){ bDoFrustumCulling = NewDoFrustumCulling;}
 
+	virtual bool IsSkeletalMesh() const {return false;}
 protected:
 	UINT PrimitiveID;
 	UINT MeshIndex;

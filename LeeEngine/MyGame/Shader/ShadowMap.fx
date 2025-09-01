@@ -2,6 +2,7 @@
 #define _SHADOWMAP
 
 #include "Global.fx"
+#include "AnimationHelpers.hlsl"
 
 cbuffer cbLightInfo : register( b7 )
 {
@@ -13,7 +14,10 @@ cbuffer cbLightInfo : register( b7 )
 
 struct VS_IN
 {
-	float3 Pos : POSITION;    
+	float3 Pos : POSITION;
+
+	int4   boneIDs : BONEIDS;
+	float4 boneWeights : BONEWEIGHTS;
 };
 
 struct VS_OUT
@@ -24,12 +28,30 @@ struct VS_OUT
 
 
 
-VS_OUT VS_ShadowMap(VS_IN Input)
+VS_OUT VS_ShadowMap_Static(VS_IN Input)
 {
 	VS_OUT output = (VS_OUT) 0.f;
 
 	output.Position = mul(mul(float4(Input.Pos, 1.f), World),LightVP);    
 	output.ProjPos = output.Position;
+
+	return output;
+}
+
+VS_OUT VS_ShadowMap_Skeletal(VS_IN Input)
+{
+	VS_OUT output = (VS_OUT)0;
+
+	// Pos, Normal 본의 가중치에 맞게 위치 조정
+	{
+		float4 skinnedPosition;
+		float3 skinnedNormal;
+
+		CalculateSkinnedPosition(float4(Input.Pos,1.0f), float4(1.0f,1.0f,1.0f,1.0f), Input.boneIDs, Input.boneWeights, gBoneFinalTransforms, skinnedPosition, skinnedNormal);
+
+		output.Position = mul(mul(skinnedPosition, World),LightVP);
+		output.ProjPos = output.Position;
+	}
 
 	return output;
 }
@@ -55,12 +77,30 @@ struct GS_OUTPUT
 	uint   RTIndex : SV_RenderTargetArrayIndex;
 };
 
-GS_INPUT VS_PointShadowMap(VS_IN Input)
+GS_INPUT VS_PointShadowMap_Static(VS_IN Input)
 {
 	GS_INPUT Output = (GS_INPUT) 0.0f;
 	Output.Pos = mul(float4(Input.Pos,1.0f), World);
 	return Output;
 }
+
+GS_INPUT VS_PointShadowMap_Skeletal(VS_IN Input)
+{
+	GS_INPUT output = (GS_INPUT)0;
+
+	// Pos, Normal 본의 가중치에 맞게 위치 조정
+	{
+		float4 skinnedPosition;
+		float3 skinnedNormal;
+
+		CalculateSkinnedPosition(float4(Input.Pos,1.0f), float4(1.0f,1.0f,1.0f,1.0f), Input.boneIDs, Input.boneWeights, gBoneFinalTransforms, skinnedPosition, skinnedNormal);
+
+		output.Pos = mul(skinnedPosition, World);
+	}
+
+	return output;
+}
+
 
 
 // 지오메트리 셰이더

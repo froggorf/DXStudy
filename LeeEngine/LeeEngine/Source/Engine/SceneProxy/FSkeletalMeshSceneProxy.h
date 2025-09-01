@@ -24,5 +24,7 @@ public:
 
 	void Draw() override;
 
+	bool IsSkeletalMesh() const override { return true; }
+
 	float GetBoundSphereRadius() const override { return RenderData->BoundSphereRadius; }
 };

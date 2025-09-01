@@ -165,7 +165,8 @@ public:
 
 	FPrimitiveRenderData DeferredMergeRenderData;
 
-	std::shared_ptr<UMaterialInterface> M_LightShadow[static_cast<UINT>(ELightType::Count)];
+	// 0901) StaticMesh / SkeletalMesh를 위해 [2] 로 이중배열로 변경
+	std::array<std::array<std::shared_ptr<UMaterialInterface>,2>,static_cast<UINT>(ELightType::Count)> M_LightShadow;
 
 	bool bIsFrameStart;
 	float LastUpdateTime=0;
@@ -311,7 +312,7 @@ public:
 	// 특정 씬 프록시의 이펙트를 Activate 시키는 함수
 	static void SetNiagaraEffectActivate_GameThread(std::vector<std::shared_ptr<class FNiagaraSceneProxy>>& TargetSceneProxies, bool bNewActivate);
 
-	void         DrawShadowMap();
+	void         DrawShadowMap(ELightType LightType) const;
 	static void  DrawScene_RenderThread(std::shared_ptr<FScene> SceneData);
 	virtual void SetDrawScenePipeline(const float* ClearColor);
 	virtual void SetRSViewport();
