@@ -259,14 +259,25 @@ void UMaterial::Binding()
 
 	ComPtr<ID3D11DeviceContext> DeviceContext = GDirectXDevice->GetDeviceContext();
 
+	FSystemParamConstantBuffer SystemBuffer;
 	for (int i = 0; i < Textures.size(); ++i)
 	{
-		DeviceContext->PSSetShaderResources(i, 1, Textures[i]->GetSRV().GetAddressOf());
+		if (Textures[i])
+		{
+			DeviceContext->PSSetShaderResources(i, 1, Textures[i]->GetSRV().GetAddressOf());
+			SystemBuffer.bTexBind[i] = 1;
+		}
 	}
 	for (int i = 0; i < TextureParams.size(); ++i)
 	{
-		DeviceContext->PSSetShaderResources(static_cast<UINT>(Textures.size() + i), 1, TextureParams[i]->GetSRV().GetAddressOf());
+		if (TextureParams[i])
+		{
+			DeviceContext->PSSetShaderResources(static_cast<UINT>(Textures.size() + i), 1, TextureParams[i]->GetSRV().GetAddressOf());
+			SystemBuffer.bTexBind[Textures.size()+i] = 1;
+		}
+		
 	}
+	GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_SystemParam, &SystemBuffer, sizeof(SystemBuffer));
 
 	MapAndBindParameterConstantBuffer();
 }

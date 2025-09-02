@@ -177,25 +177,28 @@ struct SkeletalMeshBoneTransformConstantBuffer
 
 struct FSystemParamConstantBuffer
 {
-	XMFLOAT4 Float4_1;
-	XMFLOAT4 Float4_2;
-	XMFLOAT4 Float4_3;
-	XMFLOAT4 Float4_4;
+	int bTexBind[16] = {0, };
 
-	int Bool_1;
-	int Bool_2;
-	int Bool_3;
-	int Bool_4;
+	XMFLOAT4 Float4_1 = {0, 0,0, 0};
+	XMFLOAT4 Float4_2 = {0, 0,0, 0};
+	XMFLOAT4 Float4_3 = {0, 0,0, 0};
+	XMFLOAT4 Float4_4 = {0, 0,0, 0};
 
-	int Int_1;
-	int Int_2;
-	int Int_3;
-	int Int_4;
+	int Bool_1 = 0;
+	int Bool_2 = 0;
+	int Bool_3 = 0;
+	int Bool_4 = 0;
 
-	float Float_1;
-	float Float_2;
-	float Float_3;
-	float Float_4;
+	int Int_1 = 0;
+	int Int_2 = 0;
+	int Int_3 = 0;
+	int Int_4 = 0;
+
+	float Float_1 = 0.0f;
+	float Float_2 = 0.0f;
+	float Float_3 = 0.0f;
+	float Float_4 = 0.0f;
+
 };
 
 struct FLightInfoConstantBuffer
