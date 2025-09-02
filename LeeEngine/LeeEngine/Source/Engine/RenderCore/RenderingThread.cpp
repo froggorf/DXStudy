@@ -807,9 +807,9 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 					ocb.World              = XMMatrixTranspose(world);
 					GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_PerObject, &ocb, sizeof(ocb));
 
-					FDebugColor ColorBuffer;
-					ColorBuffer.DebugColor = DebugData.DebugColor;
-					GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_DebugDraw, &ColorBuffer, sizeof(ColorBuffer));
+					FSystemParamConstantBuffer ColorBuffer;
+					ColorBuffer.Float4_1 = DebugData.DebugColor;
+					GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_SystemParam, &ColorBuffer, sizeof(ColorBuffer));
 
 
 					DebugData.ShapeComp->DebugDraw_RenderThread();

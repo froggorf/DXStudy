@@ -1,4 +1,4 @@
-﻿#include "CoreMinimal.h"
+#include "CoreMinimal.h"
 #include "ULineComponent.h"
 
 ULineComponent::ULineComponent(bool bIsHit, const XMFLOAT3& Start, const XMFLOAT3& End, const XMFLOAT3& HitLocation, const XMFLOAT3& InTraceColor, const XMFLOAT3& InTraceHitColor)
@@ -25,9 +25,9 @@ void ULineComponent::DebugDraw_RenderThread() const
     
 	// NotHitLine
     {
-        FDebugColor ColorBuffer;
-        ColorBuffer.DebugColor = XMFLOAT4{TraceColor.x,TraceColor.y,TraceColor.z, 1.0f};
-        GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_DebugDraw, &ColorBuffer, sizeof(ColorBuffer));
+        FSystemParamConstantBuffer ColorBuffer;
+        ColorBuffer.Float4_1 = XMFLOAT4{TraceColor.x,TraceColor.y,TraceColor.z, 1.0f};
+        GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_SystemParam, &ColorBuffer, sizeof(ColorBuffer));
 
         DeviceContext->IASetVertexBuffers(0, 1, NonHitLineVertexBuffer.GetAddressOf(), &stride, &offset);
         DeviceContext->Draw(2, 0);    
@@ -35,9 +35,9 @@ void ULineComponent::DebugDraw_RenderThread() const
 
     // HitLine
     if (bIsHit){
-        FDebugColor ColorBuffer;
-        ColorBuffer.DebugColor = XMFLOAT4{TraceHitColor.x,TraceHitColor.y,TraceHitColor.z, 1.0f};
-        GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_DebugDraw, &ColorBuffer, sizeof(ColorBuffer));
+        FSystemParamConstantBuffer ColorBuffer;
+        ColorBuffer.Float4_1 = XMFLOAT4{TraceHitColor.x,TraceHitColor.y,TraceHitColor.z, 1.0f};
+        GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_SystemParam, &ColorBuffer, sizeof(ColorBuffer));
 
         DeviceContext->IASetVertexBuffers(0, 1, HitLineVertexBuffer.GetAddressOf(), &stride, &offset);
         DeviceContext->Draw(2, 0);    
@@ -49,9 +49,9 @@ void ULineComponent::DebugDraw_RenderThread() const
     // HitBox
     if (bIsHit)
     {
-        FDebugColor ColorBuffer;
-        ColorBuffer.DebugColor = XMFLOAT4{TraceColor.x,TraceColor.y,TraceColor.z, 1.0f};
-        GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_DebugDraw, &ColorBuffer, sizeof(ColorBuffer));
+        FSystemParamConstantBuffer ColorBuffer;
+        ColorBuffer.Float4_1 = XMFLOAT4{TraceColor.x,TraceColor.y,TraceColor.z, 1.0f};
+        GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_SystemParam, &ColorBuffer, sizeof(ColorBuffer));
         DeviceContext->IASetVertexBuffers(0, 1, HitLocationBoxVertexBuffer.GetAddressOf(), &stride, &offset);
         DeviceContext->Draw(36, 0);
     }

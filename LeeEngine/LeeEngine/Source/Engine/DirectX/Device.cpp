@@ -719,9 +719,12 @@ void FDirectXDevice::CreateConstantBuffers()
 	m_d3dDeviceContext->VSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_SkeletalData), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_SkeletalData)].GetAddressOf());
 
 	// FDebugColor
-	bufferDesc.ByteWidth = sizeof(FDebugColor);
-	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ConstantBuffers[static_cast<UINT>( EConstantBufferType::CBT_DebugDraw)].GetAddressOf()));
-	m_d3dDeviceContext->PSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_DebugDraw), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_DebugDraw)].GetAddressOf());
+	bufferDesc.ByteWidth = sizeof(FSystemParamConstantBuffer);
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ConstantBuffers[static_cast<UINT>( EConstantBufferType::CBT_SystemParam)].GetAddressOf()));
+	m_d3dDeviceContext->VSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_SystemParam), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_SystemParam)].GetAddressOf());
+	m_d3dDeviceContext->CSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_SystemParam), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_SystemParam)].GetAddressOf());
+	m_d3dDeviceContext->GSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_SystemParam), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_SystemParam)].GetAddressOf());
+	m_d3dDeviceContext->PSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_SystemParam), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_SystemParam)].GetAddressOf());
 
 	// LightIndex
 	bufferDesc.ByteWidth = sizeof(FLightInfoConstantBuffer);

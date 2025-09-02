@@ -18,12 +18,9 @@ VS_OUTPUT VS(float4 Pos : POSITION, float3 Normal : NORMAL, float2 TexCoord : TE
 	return output;
 }
 
-cbuffer DebugColor : register(b6)
-{
-	float4 DebugColor;
-}
-
+#define DebugColor Float4_1
 float4 PS(VS_OUTPUT input) : SV_Target
 {
+
 	return float4(DebugColor.r,DebugColor.g,DebugColor.b,DebugColor.a);
 }

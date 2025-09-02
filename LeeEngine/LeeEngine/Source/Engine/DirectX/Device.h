@@ -19,7 +19,7 @@ enum class EConstantBufferType
 	CBT_SkeletalData,
 	CBT_UserParam,
 	CBT_ComputeShader,
-	CBT_DebugDraw,
+	CBT_SystemParam,
 	CBT_LightIndex,
 	CBT_Count
 };
