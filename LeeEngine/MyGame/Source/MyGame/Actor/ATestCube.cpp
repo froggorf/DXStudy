@@ -151,9 +151,9 @@ void ATestCube::BeginPlay()
 
 	if (APlayerController* PC = GEngine->GetWorld()->GetPlayerController())
 	{
-		std::shared_ptr<UMyTestWidget> MyTestWidget = std::make_shared<UMyTestWidget>();
-		MyTestWidget->NativeConstruct();
-		PC->CreateWidget("TestWidget", MyTestWidget);
+		//std::shared_ptr<UMyTestWidget> MyTestWidget = std::make_shared<UMyTestWidget>();
+		//MyTestWidget->NativeConstruct();
+		//PC->CreateWidget("TestWidget", MyTestWidget);
 	}
 
 	TestCube2->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::Physics);

@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="백준 선수과목 2번째 풀이 골드5.cpp">
+    <ClCompile Include="백준 평범한 배낭 다시풀기-3.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
