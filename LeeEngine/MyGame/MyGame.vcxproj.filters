@@ -44,6 +44,9 @@
     <Filter Include="Source\MyGame\Widget">
       <UniqueIdentifier>{880a53e3-e44f-4f73-bd4f-89cd464df370}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader\PBR">
+      <UniqueIdentifier>{1626fc95-ca56-42df-937a-4e56b6d7f83a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -148,6 +151,18 @@
     </None>
     <None Include="Shader\Widget.fx">
       <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\PBR\PBRHelpers.fx">
+      <Filter>Shader\PBR</Filter>
+    </None>
+    <None Include="Shader\PBR\PBRLightHelper.fx">
+      <Filter>Shader\PBR</Filter>
+    </None>
+    <None Include="Shader\PBR\PBR.fx">
+      <Filter>Shader\PBR</Filter>
+    </None>
+    <None Include="Shader\PBR\PS_PBR.fx">
+      <Filter>Shader\PBR</Filter>
     </None>
   </ItemGroup>
 </Project>

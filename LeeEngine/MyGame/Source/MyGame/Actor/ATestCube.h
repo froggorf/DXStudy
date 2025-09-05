@@ -31,6 +31,8 @@ class ATestCube : public AActor
 	static dtNavMesh* MyDtNavMesh;
 	static dtNavMeshQuery* MyDtNavQuery;
 protected:
+	std::shared_ptr<UStaticMeshComponent> SM_Well_PBR;
+
 	std::shared_ptr<ULightComponent> Light1;
 	std::shared_ptr<ULightComponent> Light2;
 	std::shared_ptr<ULightComponent> Light3;

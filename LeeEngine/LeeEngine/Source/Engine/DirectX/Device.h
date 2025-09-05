@@ -169,6 +169,7 @@ private:
 	// 파이프라인
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_SamplerState;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_SamplerState2;
+	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_CubeSampler;
 
 
 	int*            m_ClientWidth;

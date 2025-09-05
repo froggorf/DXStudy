@@ -15,7 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="백준 회장뽑기 골드5.cpp">
+    <ClCompile Include="백준 최소비용 구하기 골드5.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ttt.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

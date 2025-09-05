@@ -86,48 +86,6 @@ bool MyGame::Init()
 }
 
 
-//void AnimationApp::InitForShadowMap()
-//{
-//
-//#if defined(DEBUG) || defined(_DEBUG)
-//	DebuggingSRV::InitializeDebuggingSRV(GDirectXDevice->GetDevice());
-//#endif
-//
-//	m_ShadowBias = 0.001f;
-//
-//	m_ShadowMap = std::make_unique<ShadowMap>(GDirectXDevice->GetDevice(), 2048,2048);
-//
-//	// 그림자맵 렌더링을 위한 VS/PS 추가
-//	{
-//		ComPtr<ID3DBlob> pVSBlob = nullptr;
-//		HR(CompileShaderFromFile(L"Shader/BuildShadowMap.hlsl", "VS_StaticMesh_ShadowMap", "vs_4_0", pVSBlob.GetAddressOf()));
-//		HR(GDirectXDevice->GetDevice()->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, m_ShadowMapVertexShader.GetAddressOf()));
-//
-//		D3D11_INPUT_ELEMENT_DESC inputLayout[] =
-//		{
-//			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-//			{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA,0},
-//			{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,0,24,D3D11_INPUT_PER_VERTEX_DATA, 0}
-//
-//		};
-//		UINT numElements = ARRAYSIZE(inputLayout);
-//
-//		HR(GDirectXDevice->GetDevice()->CreateInputLayout(inputLayout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), m_InputLayout.GetAddressOf()));
-//		GDirectXDevice->GetDeviceContext()->IASetInputLayout(m_InputLayout.Get());
-//
-//		ComPtr<ID3DBlob> pPSBlob = nullptr;
-//		HR(CompileShaderFromFile(L"Shader/BuildShadowMap.hlsl", "PS", "ps_4_0", pPSBlob.GetAddressOf()));
-//
-//		HR(GDirectXDevice->GetDevice()->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, m_ShadowMapPixelShader.GetAddressOf()));
-//
-//
-//		// 스켈레탈 메시를 위한 세이더 추가
-//		pVSBlob->Release();		
-//		HR(CompileShaderFromFile(L"Shader/BuildShadowMap.hlsl", "VS_SkeletalMesh_ShadowMap", "vs_4_0", pVSBlob.GetAddressOf()));
-//		HR(GDirectXDevice->GetDevice()->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, m_ShadowMapSkeletalMeshVertexShader.GetAddressOf()));
-//	}
-//	
-//}
 
 void MyGame::OnResize()
 {

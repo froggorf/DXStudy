@@ -18,6 +18,12 @@ void FVertexShader::CompileVertexShader(const std::string& FilePath, const std::
 	std::string  TempDirectoryPath = GEngine->GetDirectoryPath();
 	auto         TempShaderPath    = std::wstring(TempDirectoryPath.begin(), TempDirectoryPath.end());
 	std::wstring ShaderFilePath    = TempShaderPath + std::wstring{FilePath.begin(), FilePath.end()};
+
+	if (FuncName == "VS")
+	{
+		int a = 0;
+	}
+
 	HR(CompileShaderFromFile(ShaderFilePath.c_str(), FuncName.c_str(), "vs_4_0", VSBlob.GetAddressOf()));
 	if (VSBlob == nullptr)
 	{
@@ -47,7 +53,10 @@ void FPixelShader::CompilePixelShader(const std::string& FilePath, const std::st
 	std::wstring ShaderFilePath    = TempShaderPath + std::wstring{FilePath.begin(), FilePath.end()};
 
 	HR(CompileShaderFromFile(ShaderFilePath.c_str(), FuncName.c_str(), "ps_4_0", PSBlob.GetAddressOf()));
-
+	if (PSBlob==nullptr)
+	{
+		assert(0&&"PSBlob nullptr");
+	}
 	HR(GDirectXDevice->GetDevice()->CreatePixelShader(PSBlob->GetBufferPointer(), PSBlob->GetBufferSize(), nullptr, PixelShader.GetAddressOf()));
 	if (PSBlob == nullptr)
 	{

@@ -20,6 +20,12 @@ dtNavMeshQuery* ATestCube::MyDtNavQuery;
 
 ATestCube::ATestCube()
 {
+	SM_Well_PBR = std::make_shared<UStaticMeshComponent>();
+	SM_Well_PBR->SetupAttachment(GetRootComponent());
+	AssetManager::GetAsyncAssetCache("SM_Well_PBR",[this](std::shared_ptr<UObject> Object)
+		{
+			SM_Well_PBR->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
+		});
 	//DecalTest1 = std::make_shared<UDecalComponent>();
 	//DecalTest1->SetupAttachment(GetRootComponent());
 	//const std::shared_ptr<UMaterialInterface>& DecalMaterial = UMaterial::GetMaterialCache("M_Decal");

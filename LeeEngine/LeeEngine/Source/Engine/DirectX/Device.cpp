@@ -589,6 +589,26 @@ void FDirectXDevice::InitSamplerState()
 	m_d3dDeviceContext->GSSetSamplers(1, 1, m_SamplerState2.GetAddressOf());
 	m_d3dDeviceContext->PSSetSamplers(1, 1, m_SamplerState2.GetAddressOf());
 	m_d3dDeviceContext->CSSetSamplers(1, 1, m_SamplerState2.GetAddressOf());
+
+	// 큐브텍스쳐 샘플링
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;  
+	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;                
+	sampDesc.MinLOD = 0;
+	sampDesc.MipLODBias = 0.0f;
+	sampDesc.MaxAnisotropy = 1;
+	sampDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	m_d3dDevice->CreateSamplerState(&sampDesc, m_CubeSampler.GetAddressOf());
+	m_d3dDeviceContext->VSSetSamplers(1, 1, m_CubeSampler.GetAddressOf());
+	m_d3dDeviceContext->HSSetSamplers(1, 1, m_CubeSampler.GetAddressOf());
+	m_d3dDeviceContext->DSSetSamplers(1, 1, m_CubeSampler.GetAddressOf());
+	m_d3dDeviceContext->GSSetSamplers(1, 1, m_CubeSampler.GetAddressOf());
+	m_d3dDeviceContext->PSSetSamplers(1, 1, m_CubeSampler.GetAddressOf());
+	m_d3dDeviceContext->CSSetSamplers(1, 1, m_CubeSampler.GetAddressOf());
+
+
 }
 
 #ifdef WITH_EDITOR
