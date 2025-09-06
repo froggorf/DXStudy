@@ -391,9 +391,7 @@ void FScene::SetMaterialScalarParam_RenderThread(UINT PrimitiveID, UINT MeshInde
 	// Opaque
 	for (const auto& RenderData : OpaqueSceneProxyRenderData)
 	{
-		auto TargetRenderData = std::ranges::find_if(RenderData.second,
-													[PrimitiveID, MeshIndex](const FPrimitiveRenderData& A)
-													{
+		auto TargetRenderData = std::ranges::find_if(RenderData.second,[PrimitiveID, MeshIndex](const FPrimitiveRenderData& A){
 														return A.PrimitiveID == PrimitiveID && A.MeshIndex == MeshIndex;
 													});
 

@@ -4,6 +4,7 @@
 // 이윤석
 
 #pragma once
+#include "Engine/Class/Light/ULightComponent.h"
 #include "Engine/Components/UStaticMeshComponent.h"
 #include "Engine/GameFramework/AActor.h"
 
@@ -20,7 +21,7 @@ public:
 private:
 	void CalculateLocation();
 
-
+	std::shared_ptr<ULightComponent> DirectionalLight;
 	std::shared_ptr<UStaticMeshComponent> SM_SkyBox;
 	
 };

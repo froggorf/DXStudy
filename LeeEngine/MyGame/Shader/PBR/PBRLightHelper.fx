@@ -152,35 +152,19 @@ float3 CalcPBRLight(float3 worldPos, float3 N, float3 V, float3 albedo,
 float3 CalcAmbientPBR(float3 N, float3 V, float3 albedo, 
 	float metallic, float roughness, float3 F0, float ao)
 {
-	// TODO : 바꿔야함
-	//// Fresnel for ambient
-	//float3 F_ambient = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
-	//float3 kS_ambient = F_ambient;
-	//float3 kD_ambient = 1.0 - kS_ambient;
-	//kD_ambient *= 1.0 - metallic;
-
-	//// Sample environment map
-	//float3 R = reflect(-V, N);
-	//float3 irradiance = EnvironmentMap.Sample(CubeSampler, N).rgb;
-	//float3 prefilteredColor = EnvironmentMap.SampleLevel(CubeSampler, R, roughness * 4.0).rgb;
-
-	//float3 diffuse = irradiance * albedo;
-	//return (kD_ambient * diffuse + prefilteredColor * F_ambient) * ao;
-
-
-
-	// Environment Map이 없을 때 간단한 ambient
+	// Fresnel for ambient
 	float3 F_ambient = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
 	float3 kS_ambient = F_ambient;
 	float3 kD_ambient = 1.0 - kS_ambient;
 	kD_ambient *= 1.0 - metallic;
 
-	// 기본 ambient 값 사용
-	float3 ambient = float3(0.03, 0.03, 0.03);
-	float3 diffuse = ambient * albedo;
+	// Sample environment map
+	float3 R = reflect(-V, N);
+	float3 irradiance = EnvironmentMap.Sample(CubeSampler, N).rgb;
+	float3 prefilteredColor = EnvironmentMap.SampleLevel(CubeSampler, R, roughness * 4.0).rgb;
 
-	return kD_ambient * diffuse * ao;
-
+	float3 diffuse = irradiance * albedo;
+	return (kD_ambient * diffuse + prefilteredColor * F_ambient) * ao;
 }
 
 #endif

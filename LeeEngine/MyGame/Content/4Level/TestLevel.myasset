@@ -1,26 +1,6 @@
 {
     "Actor": [
-        {
-            "Class": "ATestCube",
-            "Location": [
-                0.0,
-                0.0,
-                0.0
-            ],
-            "Name": "ATestCube1",
-            "Rotation": [
-                0.0,
-                0.0,
-                0.0,
-	  1.0
-            ],
-            "Scale": [
-                1.0,
-                1.0,
-                1.0
-            ]
-        },
- {
+       {
             "Class": "ASkyBox",
             "Location": [
                 0.0,
@@ -49,27 +29,6 @@
                 0.0
             ],
             "Name": "ATestCube2",
-            "Rotation": [
-                0.0,
-                0.0,
-                0.0,
-	  1.0
-            ],
-            "Scale": [
-                1.0,
-                1.0,
-                1.0
-            ]
-        },
-
-{
-            "Class": "ATestPawn",
-            "Location": [
-                0.0,
-                0.0,
-                0.0
-            ],
-            "Name": "ATestPawn1",
             "Rotation": [
                 0.0,
                 0.0,

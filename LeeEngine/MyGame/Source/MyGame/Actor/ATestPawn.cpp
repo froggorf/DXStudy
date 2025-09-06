@@ -120,7 +120,7 @@ void ATestPawn::AttackStart(UShapeComponent* OverlappedComponent, AActor* OtherA
 {
 	if (ATestCube2* TestCube = dynamic_cast<ATestCube2*>(OtherActor))
 	{
-		TestCube->TestCompFunc();
+		
 		
 	}
 }

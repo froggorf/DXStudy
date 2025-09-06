@@ -58,18 +58,7 @@ ATestCube::ATestCube()
 	Light3->SetLightColor({0,3,3});
 	Light3->SetWorldLocation({100,0,-100});
 	
-	Light4 = std::make_shared<ULightComponent>();
-	Light4->SetupAttachment(GetRootComponent());
-	Light4->SetWorldLocation(XMFLOAT3{-3000, 6000,-3000});
-	Light4->SetLightType(ELightType::Directional);
-	XMVECTOR RotQuat = XMQuaternionRotationRollPitchYaw(
-		XMConvertToRadians(45.0f),
-		XMConvertToRadians(45.0f),
-		XMConvertToRadians(0.0f)
-	);
-	Light4->SetWorldRotation(RotQuat);
-	//Light4->SetRadius(150);
-	Light4->SetLightColor({1,1,1});
+	
 
 	const int ObjectCount = 5; // 오브젝트 개수
 	const float Radius = 300.0f; // 원의 반지름 (원하는 값으로)

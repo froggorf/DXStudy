@@ -36,7 +36,6 @@ protected:
 	std::shared_ptr<ULightComponent> Light1;
 	std::shared_ptr<ULightComponent> Light2;
 	std::shared_ptr<ULightComponent> Light3;
-	std::shared_ptr<ULightComponent> Light4;
 
 	std::shared_ptr<UDecalComponent> DecalTest1;
 

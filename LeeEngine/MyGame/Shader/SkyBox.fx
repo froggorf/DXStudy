@@ -4,7 +4,7 @@
 #include "Global.fx"
 #include "TransformHelpers.hlsl"
 
-TextureCube  CubeTexture : register( t0 );
+TextureCube EnvironmentMap  : register(t50);
 SamplerState samLinear : register( s0 );
 
 struct VS_INPUT
@@ -48,6 +48,6 @@ VS_OUTPUT VS(VS_INPUT Input)
 float4 PS(VS_OUTPUT input) : SV_Target
 {
 	float3 UV = normalize(input.LocalPos);
-	float4 ObjectColor = CubeTexture.Sample(samLinear, UV);
+	float4 ObjectColor = EnvironmentMap.Sample(samLinear, UV);
 	return ObjectColor;
 }

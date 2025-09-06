@@ -1,7 +1,8 @@
-﻿// 05.24
+// 05.24
 // 비동기 에셋 로드를 확인하기 위해 만든 테스트용 큐브액터 2
 
 #pragma once
+#include "../Component/PBRTestComponent.h"
 #include "../Component/UTestComponent.h"
 #include "Engine/Components/USkeletalMeshComponent.h"
 #include "Engine/GameFramework/AActor.h"
@@ -15,13 +16,15 @@ class ATestCube2 : public AActor
 
 	ATestCube2();
 
+	void Register() override;
 	void BeginPlay() override;
 	void Tick(float DeltaSeconds) override;
-	void TestCompFunc();
-protected:
 
+protected:
+	std::shared_ptr<UStaticMeshComponent> PBRTestSphere[10][10];
+	std::shared_ptr<UPBRTestComponent> PBRTestComp;
+	
 private:
-	std::shared_ptr<UCapsuleComponent> CapsuleComponent;
-	std::shared_ptr<UStaticMeshComponent> TestComp;
+
 
 };

@@ -1,0 +1,6 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_PBRTestSphere",
+    "ModelData": "/Content/Resource/Model/Sphere.obj",
+    "Material" : [ "MI_PBRTestSphere" ]
+}

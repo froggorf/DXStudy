@@ -21,6 +21,20 @@ ASkyBox::ASkyBox()
 	//SM_SkyBox->SetRelativeScale3D({10000,10000,10000});
 	SM_SkyBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SM_SkyBox->SetDoFrustumCulling(false);
+
+	FScene::SetSkyBoxTexture_GameThread("T_SkyBox");
+
+	DirectionalLight= std::make_shared<ULightComponent>();
+	DirectionalLight->SetupAttachment(GetRootComponent());
+	DirectionalLight->SetWorldLocation(XMFLOAT3{-3000, 6000,-3000});
+	DirectionalLight->SetLightType(ELightType::Directional);
+	XMVECTOR RotQuat = XMQuaternionRotationRollPitchYaw(
+		XMConvertToRadians(45.0f),
+		XMConvertToRadians(45.0f),
+		XMConvertToRadians(0.0f)
+	);
+	DirectionalLight->SetWorldRotation(RotQuat);
+	DirectionalLight->SetLightColor({1,1,1});
 }
 
 void ASkyBox::Tick(float DeltaSeconds)

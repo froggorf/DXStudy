@@ -4,5 +4,6 @@ C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\ATestCube.cpp;C:\Project
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\ATestCube2.cpp;C:\Project\DXStudy\LeeEngine\Executable\ATestCube2.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\ATestPawn.cpp;C:\Project\DXStudy\LeeEngine\Executable\ATestPawn.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\AnimInstance\UMyAnimInstance.cpp;C:\Project\DXStudy\LeeEngine\Executable\UMyAnimInstance.obj
+C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\PBRTestComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\PBRTestComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\UTestComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\UTestComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Widget\UMyTestWidget.cpp;C:\Project\DXStudy\LeeEngine\Executable\UMyTestWidget.obj

@@ -419,6 +419,7 @@ void UMaterialInstance::BindingMaterialInstanceUserParam() const
 	{
 		HR(GDirectXDevice->GetDeviceContext()->Map(ParentMaterial->ParamConstantBuffer.Get(), 0, D3D11_MAP:: D3D11_MAP_WRITE_DISCARD, 0, &cbMapSub));
 
+		// FLOAT
 		for (const auto& FloatParam : ParentMaterial->DefaultParams.FloatParams)
 		{
 			auto OverrideParam = std::ranges::find_if(OverrideParams.FloatParams,
@@ -437,6 +438,8 @@ void UMaterialInstance::BindingMaterialInstanceUserParam() const
 				memcpy(static_cast<char*>(cbMapSub.pData) + FloatParam.Offset, (&FloatParam.Value), FloatParam.Size);
 			}
 		}
+
+		// INT
 		for (const auto& IntParam : ParentMaterial->DefaultParams.IntParams)
 		{
 			auto OverrideParam = std::ranges::find_if(OverrideParams.IntParams,

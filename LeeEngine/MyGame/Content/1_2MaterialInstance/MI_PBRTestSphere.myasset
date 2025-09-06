@@ -1,0 +1,14 @@
+{
+    "Class": "UMaterialInstance",
+    "Name": "MI_PBRTestSphere",
+    "ParentMaterial" : "M_PBRTestSphere",
+    "OverrideParams" : [
+	{"Name": "Albedo_R", 	"Type" : "float", "Value" : 1.0},
+	{"Name": "Albedo_G", 	"Type" : "float", "Value" : 0.0},
+	{"Name": "Albedo_B",	"Type" : "float", "Value" : 0.0},
+	{"Name": "Metallic", 	"Type" : "float", "Value" : 1.0},
+	{"Name": "Roughness", 	"Type" : "float", "Value" : 1.0},
+	{"Name": "AO", 		"Type" : "float", "Value" : 1.0}
+
+    ]
+}

@@ -9,7 +9,6 @@
 	"FilePath" : "/Shader/SkyBox.fx",
 	"Func": "PS"
     },
-    "TextureParams" : [ "T_SkyBox" ],
     "BlendMode": "Opaque"
 	
 }

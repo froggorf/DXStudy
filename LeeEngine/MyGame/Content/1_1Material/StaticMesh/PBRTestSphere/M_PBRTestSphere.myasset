@@ -1,0 +1,24 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_PBRTestSphere",
+    "VertexShader" : {
+	"FilePath" : "/Shader/PBR/PBR.fx",
+	"Func" : "VS"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/PBR/PS_PBR.fx",
+	"Func": "PBR_PS_Test"
+    },
+    "TotalSize" : 32,
+    "Params" : [
+	{"Name": "Albedo_R", "Type" : "float", "Offset" : 0, "DefaultValue" : 1.0},
+	{"Name": "Albedo_G", "Type" : "float", "Offset" : 4, "DefaultValue" : 0.0},
+	{"Name": "Albedo_B", "Type" : "float", "Offset" : 8, "DefaultValue" : 0.0},
+	{"Name": "Metallic", "Type" : "float", "Offset" : 12, "DefaultValue" : 1.0},
+	{"Name": "Roughness", "Type" : "float", "Offset" : 16, "DefaultValue" : 1.0},
+	{"Name": "AO", "Type" : "float", "Offset" : 20, "DefaultValue" : 1.0}
+    ],
+    "BlendMode": "Opaque",
+    "TwoSided" : 0
+	
+}
