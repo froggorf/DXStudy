@@ -1,5 +1,7 @@
-#include "LightHelper.hlsl"
+#ifndef __GLOBAL_FX__
+#define __GLOBAL_FX__
 
+#define PI 3.141592
 cbuffer cbPerFrame : register(b0)
 {
 	row_major matrix gView;
@@ -52,3 +54,4 @@ cbuffer SystemParam : register(b6)
 }
 
 
+#endif

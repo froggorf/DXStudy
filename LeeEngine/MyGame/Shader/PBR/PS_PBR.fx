@@ -1,3 +1,5 @@
+#ifndef __PS_PBR_FX__
+#define __PS_PBR_FX__
 
 #include "PBRLightHelper.fx"
 
@@ -108,4 +110,8 @@ float4 PBR_PS_Well(PBR_PS_INPUT input) : SV_TARGET
 	color = pow(color, 1.0 / 2.2);
 	
 	return float4(color, 1.0);
+
+
 }
+
+#endif

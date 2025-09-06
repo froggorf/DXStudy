@@ -3,6 +3,7 @@
 
 #include "Global.fx"
 #include "AnimationHelpers.hlsl"
+#include "LightHelper.hlsl"
 
 cbuffer cbLightInfo : register( b7 )
 {

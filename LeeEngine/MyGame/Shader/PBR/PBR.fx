@@ -1,6 +1,8 @@
+#ifndef __PBR_FX__
+#define __PBR_FX__
+
 #include "../Global.fx"
-#include "../TransformHelpers.hlsl"
-#include "PBRHelpers.fx"
+
 struct VS_INPUT
 {
 	float4 Pos : POSITION;
@@ -11,12 +13,24 @@ struct VS_INPUT
 	float3 Binormal : BINORMAL;
 };
 
+struct PBR_PS_INPUT
+{
+	float4 PosScreen : SV_POSITION;
+	float3 WorldPos : POSITION1;
+	float2 TexCoord : TEXCOORD;
+	float3 ViewPosition : POSITION;
+	float3 ViewTangent : TANGENT;
+	float3 ViewNormal : NORMAL;
+	float3 ViewBinormal : BINORMAL;
+};
+
 PBR_PS_INPUT VS(VS_INPUT Input)
 {
 	PBR_PS_INPUT output = (PBR_PS_INPUT)0;
 
 	output.WorldPos = mul(Input.Pos, World);
-	output.PosScreen = CalculateScreenPosition(Input.Pos, World, gView, gProjection);
+	
+	output.PosScreen = mul(mul(Input.Pos, gMatWV), gProjection);
 	output.TexCoord = Input.TexCoord;
 
 	output.ViewPosition = mul(float4(Input.Pos.xyz, 1.f), gMatWV);
@@ -27,3 +41,5 @@ PBR_PS_INPUT VS(VS_INPUT Input)
 
 	return output;
 }
+
+#endif

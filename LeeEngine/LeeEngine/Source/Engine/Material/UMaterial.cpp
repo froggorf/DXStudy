@@ -19,11 +19,7 @@ void FVertexShader::CompileVertexShader(const std::string& FilePath, const std::
 	auto         TempShaderPath    = std::wstring(TempDirectoryPath.begin(), TempDirectoryPath.end());
 	std::wstring ShaderFilePath    = TempShaderPath + std::wstring{FilePath.begin(), FilePath.end()};
 
-	if (FuncName == "VS")
-	{
-		int a = 0;
-	}
-
+	
 	HR(CompileShaderFromFile(ShaderFilePath.c_str(), FuncName.c_str(), "vs_4_0", VSBlob.GetAddressOf()));
 	if (VSBlob == nullptr)
 	{

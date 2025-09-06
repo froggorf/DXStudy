@@ -46,8 +46,7 @@ public:
 				std::shared_ptr<UMaterialInterface> MeshMaterial = UMaterialInterface::GetMaterialCache(MaterialName);
 				if (!MeshMaterial)
 				{
-					// 잘못된 머테리얼 이름
-					assert(0);
+					assert(0 && "잘못된 머테리얼 이름");
 				}
 				Materials.emplace_back(MeshMaterial);
 			}

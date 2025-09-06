@@ -2,6 +2,7 @@
 #define _LIGHT
 
 #include "Global.fx"
+#include "LightHelper.hlsl"
 
 
 SamplerState samLinear : register( s0 );
