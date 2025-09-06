@@ -102,7 +102,7 @@ float3 CalcBRDF(float3 N, float3 V, float3 L, float3 albedo,
 	return (kD * albedo / PI + specular) * radiance * NdotL;
 }
 
-float3 CalcPBRLight(float3 worldPos, float3 N, float3 V, float3 albedo, 
+float3 CalcPBRLight(float3 viewPos, float3 N, float3 V, float3 albedo, 
 	float metallic, float roughness, float3 F0, int lightIndex)
 {
 	FLightInfo info = g_LightBuffer[lightIndex];
@@ -113,14 +113,22 @@ float3 CalcPBRLight(float3 worldPos, float3 N, float3 V, float3 albedo,
 	// Directional Light
 	if (0 == info.LightType)
 	{
-		L = normalize(-info.WorldDir);
+		// World Dir을 View Space로 변환
+		L = normalize(mul(float4(normalize(info.WorldDir), 0.f), gView).xyz);
+		L = -L; // 광원에서 표면으로 향하는 방향
 		radiance = info.LightColor;
 	}
 	// Point Light
 	else if (1 == info.LightType)
 	{
-		L = normalize(info.WorldPos - worldPos);
-		float distance = length(info.WorldPos - worldPos);
+		// 광원 위치를 View Space로 변환
+		float3 lightViewPos = mul(float4(info.WorldPos, 1.f), gView).xyz;
+
+		// 광원에서 표면으로 향하는 방향벡터
+		L = normalize(lightViewPos - viewPos);
+
+		// 거리 계산 및 감쇄
+		float distance = length(lightViewPos - viewPos);
 		float attenuation = saturate(1.0 - (distance / info.Radius));
 		attenuation *= attenuation; 
 		radiance = info.LightColor * attenuation;
@@ -128,20 +136,23 @@ float3 CalcPBRLight(float3 worldPos, float3 N, float3 V, float3 albedo,
 	// Spot Light
 	else if (2 == info.LightType)
 	{
-		//L = normalize(info.WorldPos - worldPos);
-		//float distance = length(info.WorldPos - worldPos);
-
+		//// 광원 위치를 View Space로 변환
+		//float3 lightViewPos = mul(float4(info.WorldPos, 1.f), gView).xyz;
+		//
+		//L = normalize(lightViewPos - viewPos);
+		//float distance = length(lightViewPos - viewPos);
+		//
 		//// 거리 감쇄
 		//float attenuation = saturate(1.0 - (distance / info.Radius));
 		//attenuation *= attenuation;
-
-		//// 스팟라이트 각도 감쇄
-		//float3 spotDir = normalize(info.WorldDir);
-		//float theta = dot(L, -spotDir);
+		//
+		//// 스팟라이트 방향을 View Space로 변환
+		//float3 spotViewDir = normalize(mul(float4(info.WorldDir, 0.f), gView).xyz);
+		//float theta = dot(-L, spotViewDir); // L은 표면으로 향하는 방향이므로 -L 사용
 		//float epsilon = info.InnerCone - info.OuterCone;
 		//float intensity = saturate((theta - info.OuterCone) / epsilon);
-
-		//radiance = info.LightColor * info.LightIntensity * attenuation * intensity;
+		//
+		//radiance = info.LightColor * attenuation * intensity;
 	}
 
 	// Cook-Torrance BRDF 계산
