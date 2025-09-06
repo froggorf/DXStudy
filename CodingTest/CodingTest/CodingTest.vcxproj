@@ -19,8 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ttt.cpp" />
-    <ClCompile Include="백준 최소비용 구하기 골드5.cpp" />
+    <ClCompile Include="백준 맥주 마시면서 걸어가기 골드5.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
