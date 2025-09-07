@@ -131,19 +131,17 @@ float4 PBR_PS_Test(PBR_PS_INPUT input) : SV_TARGET
     float roughness = max(ObjectRoughness, 0.01);
     float ao = 1.0;
 
-    // Get normal from normal map
+    // 노말맵 계산
     float3 N = GetNormalFromMap(input);
-    
-    // Camera position and view direction
+    // View Direction
     float3 V = normalize(-input.ViewPosition);
     
-    // Calculate reflectance at normal incidence
+    // 반사 계산
     float3 F0 = float3(0.04, 0.04, 0.04);
     F0 = lerp(F0, albedo, metallic);
     
-    // Direct lighting calculation
+    // 라이트 계산
     float3 Lo = float3(0.0, 0.0, 0.0);
-    
     for (int i = 0; i < gLightCount; ++i)
     {
         Lo += CalcPBRLight(input.ViewPosition, N, V, albedo, metallic, roughness, F0, i);
@@ -152,10 +150,10 @@ float4 PBR_PS_Test(PBR_PS_INPUT input) : SV_TARGET
     // Ambient lighting (IBL)
     float3 ambient = CalcAmbientPBR(N, V, albedo, metallic, roughness, F0, ao);
 
-    // 🔥 간단한 조명 합성
+    // 조명 합성
     float3 color = ambient + Lo;
 
-    // 🔥 기본 톤맵핑 및 감마 보정
+    // 기본 톤맵핑 및 감마 보정
     color = color / (color + float3(1.0, 1.0, 1.0));
     color = pow(color, 1.0 / 2.2);
 
