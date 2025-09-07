@@ -97,8 +97,7 @@ float3 CalcBRDF(float3 N, float3 V, float3 L, float3 albedo,
 	kD *= 1.0 - metallic;
 
 	float3 numerator = NDF * G * F;
-	// 🔥 여기서 NdotL 제거!
-	float denominator = 4.0 * NdotV + 0.0001;
+	float denominator = 4.0 * NdotV  * NdotL + 0.0001;
 	float3 specular = numerator / denominator;
 
 	// 최종에서 NdotL 한 번만 적용
@@ -172,15 +171,15 @@ float3 CalcAmbientPBR(float3 N, float3 V, float3 albedo,
 	float3 worldR = reflect(-worldV, worldN);
 
 	// Environment map sampling
-	float3 irradiance = EnvironmentMap.Sample(CubeSampler, worldN).rgb;
 	float mipLevel = roughness * roughness * 6.0;
 	float3 prefilteredColor = EnvironmentMap.SampleLevel(CubeSampler, worldR, mipLevel).rgb;
 
-	// 🔥 metallic에 따른 색상 블렌딩 (색상 유지!)
-	float3 nonMetalColor = albedo * 0.8; // 비금속: 원래 색상 유지
+	// metallic에 따른 색상 블렌딩
+	float3 nonMetalColor = albedo * 0.5; // 비금속: 원래 색상 유지
 	float3 metalColor = prefilteredColor * albedo; // 금속: 환경맵 반사
 
 	float3 result = lerp(nonMetalColor, metalColor, metallic);
+	
 
 	return result * 0.4; // 전체 강도 조절
 }
