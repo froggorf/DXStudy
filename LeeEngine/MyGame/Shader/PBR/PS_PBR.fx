@@ -149,18 +149,17 @@ float4 PBR_PS_Test(PBR_PS_INPUT input) : SV_TARGET
         Lo += CalcPBRLight(input.ViewPosition, N, V, albedo, metallic, roughness, F0, i);
     }
     
-	// Ambient lighting (IBL)
-	float3 ambient = CalcAmbientPBR(N, V, albedo, metallic, roughness, F0, ao);
+    // Ambient lighting (IBL)
+    float3 ambient = CalcAmbientPBR(N, V, albedo, metallic, roughness, F0, ao);
 
-	// 🔥 조명 합성 - metallic에 따라 IBL 강도 조절
-	float iblStrength = lerp(0.2, 0.8, metallic); // metallic=0일 때 20%만
-	float3 color = ambient * iblStrength + Lo * 1.0;
+    // 🔥 간단한 조명 합성
+    float3 color = ambient + Lo;
 
-	// 톤맵핑 및 감마 보정
-	color = color / (color + float3(1.0, 1.0, 1.0));
-	color = pow(color, 1.0 / 2.2);
+    // 🔥 기본 톤맵핑 및 감마 보정
+    color = color / (color + float3(1.0, 1.0, 1.0));
+    color = pow(color, 1.0 / 2.2);
 
-	return float4(color, 1.0);
+    return float4(color, 1.0);
 }
 
 

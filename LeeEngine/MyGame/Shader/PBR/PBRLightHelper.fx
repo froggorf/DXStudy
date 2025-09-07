@@ -168,28 +168,18 @@ float3 CalcAmbientPBR(float3 N, float3 V, float3 albedo,
 	float3 worldV = normalize(mul(V, (float3x3)gViewInv));
 	float3 worldR = reflect(-worldV, worldN);
 
-	float NdotV = max(dot(N, V), 0.0);
-	float3 F_ambient = FresnelSchlickRoughness(NdotV, F0, roughness);
-
-	float3 kS = F_ambient;
-	float3 kD = (1.0 - kS) * (1.0 - metallic);
-
 	// Environment map sampling
 	float3 irradiance = EnvironmentMap.Sample(CubeSampler, worldN).rgb;
 	float mipLevel = roughness * roughness * 6.0;
 	float3 prefilteredColor = EnvironmentMap.SampleLevel(CubeSampler, worldR, mipLevel).rgb;
 
-	float3 diffuse = irradiance * albedo;
-	float3 specular = prefilteredColor * kS;
+	// 🔥 metallic에 따른 색상 블렌딩 (색상 유지!)
+	float3 nonMetalColor = albedo * 0.8; // 비금속: 원래 색상 유지
+	float3 metalColor = prefilteredColor * albedo; // 금속: 환경맵 반사
 
-	// 🔥 극단적 해결책: metallic < 0.5일 때 IBL 대폭 감소
-	float iblMask = smoothstep(0.0, 0.5, metallic);
-	float3 ambient = (kD * diffuse + specular * iblMask) * ao;
+	float3 result = lerp(nonMetalColor, metalColor, metallic);
 
-	// 🔥 Non-metallic일 때 전체 IBL을 거의 끔
-	float overallIBL = lerp(0.1, 1.0, metallic);
-
-	return ambient * overallIBL * 0.3;
+	return result * 0.4; // 전체 강도 조절
 }
 
 float3 ACESFilm(float3 x)
