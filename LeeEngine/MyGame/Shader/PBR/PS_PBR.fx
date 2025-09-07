@@ -117,6 +117,7 @@ cbuffer cbTest : register(b4)
 	float AlbedoR;
 	float AlbedoG;
 	float AlbedoB;
+	float ObjectSpecular;
 	float ObjectMetallic;
 	float ObjectRoughness;
 	float ObjectAO;
@@ -129,6 +130,8 @@ float4 PBR_PS_Test(PBR_PS_INPUT input) : SV_TARGET
 	float3 albedo = float3(AlbedoR, AlbedoG, AlbedoB);
     float metallic = ObjectMetallic;
     float roughness = max(ObjectRoughness, 0.01);
+	roughness = pow(roughness, 2.2);
+	//roughness = roughness * roughness;
     float ao = 1.0;
 
     // 노말맵 계산
@@ -153,9 +156,8 @@ float4 PBR_PS_Test(PBR_PS_INPUT input) : SV_TARGET
     // 조명 합성
     float3 color = ambient + Lo;
 
-    // 기본 톤맵핑 및 감마 보정
-    color = color / (color + float3(1.0, 1.0, 1.0));
-    color = pow(color, 1.0 / 2.2);
+	// 또는 ACES 사용
+	color = ACESFilm(color * 1.5); // 강도 증가
 
     return float4(color, 1.0);
 }

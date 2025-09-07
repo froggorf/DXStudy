@@ -21,7 +21,7 @@ float DistributionGGX(float3 N, float3 H, float roughness)
 	float denom = (NdotH2 * (a2 - 1.0) + 1.0);
 	denom = PI * denom * denom;
 
-	return num / denom;
+	return num / max(denom, 0.00001);
 }
 
 // Geometry Function (Smith's method)
@@ -83,6 +83,7 @@ float3 CalcBRDF(float3 N, float3 V, float3 L, float3 albedo,
 {
 	float3 H = normalize(V + L);
 	float NdotL = max(dot(N, L), 0.0);
+	float NdotV = max(dot(N, V), 0.0);
 
 	if (NdotL <= 0.0) return float3(0, 0, 0);
 
@@ -96,9 +97,11 @@ float3 CalcBRDF(float3 N, float3 V, float3 L, float3 albedo,
 	kD *= 1.0 - metallic;
 
 	float3 numerator = NDF * G * F;
-	float denominator = 4.0 * max(dot(N, V), 0.0) * NdotL + 0.0001;
+	// 🔥 여기서 NdotL 제거!
+	float denominator = 4.0 * NdotV + 0.0001;
 	float3 specular = numerator / denominator;
 
+	// 최종에서 NdotL 한 번만 적용
 	return (kD * albedo / PI + specular) * radiance * NdotL;
 }
 
