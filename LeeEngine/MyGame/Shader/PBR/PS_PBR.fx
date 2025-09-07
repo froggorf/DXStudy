@@ -126,39 +126,40 @@ cbuffer cbTest : register(b4)
 
 float4 PBR_PS_Test(PBR_PS_INPUT input) : SV_TARGET
 {
-	float3 albedo = float3(AlbedoR,AlbedoG,AlbedoB);
-	float metallic = ObjectMetallic;
-	float roughness = ObjectRoughness;
-	float ao = ObjectAO;
-	
-	// Get normal from normal map
-	float3 N = GetNormalFromMap(input);
-	
-	// Camera position and view direction
-	float3 CameraPosition = gViewInv[3].xyz;
-	float3 V = normalize(CameraPosition - input.WorldPos);
-	
-	// Calculate reflectance at normal incidence
-	float3 F0 = float3(0.04, 0.04, 0.04);
-	F0 = lerp(F0, albedo, metallic);
-	
-	// Direct lighting calculation (여러 라이트 지원)
-	float3 Lo = float3(0.0, 0.0, 0.0);
-	
-	for (int i = 0; i < gLightCount; ++i)
-	{
-		Lo += CalcPBRLight(input.WorldPos, N, V, albedo, metallic, roughness, F0, i);
-	}
-	
+	float3 albedo = float3(AlbedoR, AlbedoG, AlbedoB);
+    float metallic = ObjectMetallic;
+    float roughness = max(ObjectRoughness, 0.01);
+    float ao = 1.0;
+
+    // Get normal from normal map
+    float3 N = GetNormalFromMap(input);
+    
+    // Camera position and view direction
+    float3 V = normalize(-input.ViewPosition);
+    
+    // Calculate reflectance at normal incidence
+    float3 F0 = float3(0.04, 0.04, 0.04);
+    F0 = lerp(F0, albedo, metallic);
+    
+    // Direct lighting calculation
+    float3 Lo = float3(0.0, 0.0, 0.0);
+    
+    for (int i = 0; i < gLightCount; ++i)
+    {
+        Lo += CalcPBRLight(input.ViewPosition, N, V, albedo, metallic, roughness, F0, i);
+    }
+    
 	// Ambient lighting (IBL)
 	float3 ambient = CalcAmbientPBR(N, V, albedo, metallic, roughness, F0, ao);
-	
-	float3 color = ambient + Lo;
-	
-	// HDR tonemapping & Gamma correction
+
+	// 🔥 조명 합성 - metallic에 따라 IBL 강도 조절
+	float iblStrength = lerp(0.2, 0.8, metallic); // metallic=0일 때 20%만
+	float3 color = ambient * iblStrength + Lo * 1.0;
+
+	// 톤맵핑 및 감마 보정
 	color = color / (color + float3(1.0, 1.0, 1.0));
 	color = pow(color, 1.0 / 2.2);
-	
+
 	return float4(color, 1.0);
 }
 

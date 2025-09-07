@@ -65,7 +65,7 @@ float3 GetNormalFromMap(PBR_PS_INPUT input)
 	int bNormalTexBind = bTexBind_0_3.g;
 	if (!bNormalTexBind)
 	{
-		return input.ViewNormal;
+		return normalize(input.ViewNormal);
 	}
 
 	float3 tangentNormal = NormalTexture.Sample(DefaultSampler, input.TexCoord).xyz * 2.0 - 1.0;
@@ -163,19 +163,43 @@ float3 CalcPBRLight(float3 viewPos, float3 N, float3 V, float3 albedo,
 float3 CalcAmbientPBR(float3 N, float3 V, float3 albedo, 
 	float metallic, float roughness, float3 F0, float ao)
 {
-	// Fresnel for ambient
-	float3 F_ambient = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
-	float3 kS_ambient = F_ambient;
-	float3 kD_ambient = 1.0 - kS_ambient;
-	kD_ambient *= 1.0 - metallic;
+	// View Space -> World Space 변환
+	float3 worldN = normalize(mul(N, (float3x3)gViewInv));
+	float3 worldV = normalize(mul(V, (float3x3)gViewInv));
+	float3 worldR = reflect(-worldV, worldN);
 
-	// Sample environment map
-	float3 R = reflect(-V, N);
-	float3 irradiance = EnvironmentMap.Sample(CubeSampler, N).rgb;
-	float3 prefilteredColor = EnvironmentMap.SampleLevel(CubeSampler, R, roughness * 4.0).rgb;
+	float NdotV = max(dot(N, V), 0.0);
+	float3 F_ambient = FresnelSchlickRoughness(NdotV, F0, roughness);
+
+	float3 kS = F_ambient;
+	float3 kD = (1.0 - kS) * (1.0 - metallic);
+
+	// Environment map sampling
+	float3 irradiance = EnvironmentMap.Sample(CubeSampler, worldN).rgb;
+	float mipLevel = roughness * roughness * 6.0;
+	float3 prefilteredColor = EnvironmentMap.SampleLevel(CubeSampler, worldR, mipLevel).rgb;
 
 	float3 diffuse = irradiance * albedo;
-	return (kD_ambient * diffuse + prefilteredColor * F_ambient) * ao;
+	float3 specular = prefilteredColor * kS;
+
+	// 🔥 극단적 해결책: metallic < 0.5일 때 IBL 대폭 감소
+	float iblMask = smoothstep(0.0, 0.5, metallic);
+	float3 ambient = (kD * diffuse + specular * iblMask) * ao;
+
+	// 🔥 Non-metallic일 때 전체 IBL을 거의 끔
+	float overallIBL = lerp(0.1, 1.0, metallic);
+
+	return ambient * overallIBL * 0.3;
+}
+
+float3 ACESFilm(float3 x)
+{
+	float a = 2.51f;
+	float b = 0.03f;
+	float c = 2.43f;
+	float d = 0.59f;
+	float e = 0.14f;
+	return saturate((x*(a*x+b))/(x*(c*x+d)+e));
 }
 
 #endif
