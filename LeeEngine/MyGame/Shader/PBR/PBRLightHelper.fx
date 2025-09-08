@@ -12,25 +12,25 @@
 // Normal Distribution Function (GGX/Trowbridge-Reitz)
 float DistributionGGX(float3 N, float3 H, float roughness)
 {
-	float a = roughness * roughness;
-	float a2 = a * a;
-	float NdotH = max(dot(N, H), 0.0);
-	float NdotH2 = NdotH * NdotH;
+	float a      = roughness*roughness;
+	float a2     = a*a;
+	float NdotH  = max(dot(N, H), 0.0);
+	float NdotH2 = NdotH*NdotH;
 
-	float num = a2;
+	float num   = a2;
 	float denom = (NdotH2 * (a2 - 1.0) + 1.0);
 	denom = PI * denom * denom;
 
-	return num / max(denom, 0.00001);
+	return num / denom;
 }
 
 // Geometry Function (Smith's method)
 float GeometrySchlickGGX(float NdotV, float roughness)
 {
 	float r = (roughness + 1.0);
-	float k = (r * r) / 8.0;
+	float k = (r*r) / 8.0;
 
-	float num = NdotV;
+	float num   = NdotV;
 	float denom = NdotV * (1.0 - k) + k;
 
 	return num / denom;
@@ -40,8 +40,8 @@ float GeometrySmith(float3 N, float3 V, float3 L, float roughness)
 {
 	float NdotV = max(dot(N, V), 0.0);
 	float NdotL = max(dot(N, L), 0.0);
-	float ggx2 = GeometrySchlickGGX(NdotV, roughness);
-	float ggx1 = GeometrySchlickGGX(NdotL, roughness);
+	float ggx2  = GeometrySchlickGGX(NdotV, roughness);
+	float ggx1  = GeometrySchlickGGX(NdotL, roughness);
 
 	return ggx1 * ggx2;
 }
@@ -49,14 +49,12 @@ float GeometrySmith(float3 N, float3 V, float3 L, float roughness)
 // Fresnel Equation (Schlick's approximation)
 float3 FresnelSchlick(float cosTheta, float3 F0)
 {
-	return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+	return F0 + (1.0 - F0) * pow(max(1.0 - cosTheta, 0.0), 5.0);
 }
-
-// Fresnel with roughness for IBL
 float3 FresnelSchlickRoughness(float cosTheta, float3 F0, float roughness)
 {
-	return F0 + (max(float3(1.0 - roughness, 1.0 - roughness, 1.0 - roughness), F0) - F0) * 
-		pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+	float3 r = max(float3(1.0 - roughness, 1.0 - roughness, 1.0 - roughness), F0);
+	return F0 + (r - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
 // Get Normal from Normal Map
@@ -97,10 +95,9 @@ float3 CalcBRDF(float3 N, float3 V, float3 L, float3 albedo,
 	kD *= 1.0 - metallic;
 
 	float3 numerator = NDF * G * F;
-	float denominator = 4.0 * NdotV  * NdotL + 0.0001;
-	float3 specular = numerator / denominator;
+	float denominator = 4.0 * NdotV * NdotL;
+	float3 specular = numerator / max(denominator,0.001);
 
-	// 최종에서 NdotL 한 번만 적용
 	return (kD * albedo / PI + specular) * radiance * NdotL;
 }
 
@@ -175,23 +172,74 @@ float3 CalcAmbientPBR(float3 N, float3 V, float3 albedo,
 	float3 prefilteredColor = EnvironmentMap.SampleLevel(CubeSampler, worldR, mipLevel).rgb;
 
 	// metallic에 따른 색상 블렌딩
-	float3 nonMetalColor = albedo * 0.5; // 비금속: 원래 색상 유지
+	float3 nonMetalColor = albedo*0.8; // 비금속: 원래 색상 유지
 	float3 metalColor = prefilteredColor * albedo; // 금속: 환경맵 반사
 
 	float3 result = lerp(nonMetalColor, metalColor, metallic);
 	
 
-	return result * 0.4; // 전체 강도 조절
+	return result; 
 }
 
-float3 ACESFilm(float3 x)
+float3 CalcColor(float3 N, float3 V, float3 L, float3 albedo, 
+	float metallic, float roughness, float3 F0, float3 radiance, float ao)
 {
-	float a = 2.51f;
-	float b = 0.03f;
-	float c = 2.43f;
-	float d = 0.59f;
-	float e = 0.14f;
-	return saturate((x*(a*x+b))/(x*(c*x+d)+e));
+	// View Space -> World Space 변환
+	float3 worldN = normalize(mul(N, (float3x3)gViewInv));
+	float3 worldV = normalize(mul(V, (float3x3)gViewInv));
+	float3 worldR = reflect(-worldV, worldN);
+
+
+	float3 F = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
+
+	float3 kS = F;
+	float3 kD = 1.0 - kS;
+	kD *= 1.0 - metallic;	  
+
+	const int MAX_REFLECTION_LOD = 4.0;
+	float3 irradiance = EnvironmentMap.SampleLevel(CubeSampler,worldR,roughness * MAX_REFLECTION_LOD).rgb;
+	float3 diffuse    = irradiance * albedo;
+
+	float3 prefilteredColor = EnvironmentMap.SampleLevel(CubeSampler, worldR,  roughness * MAX_REFLECTION_LOD).rgb;   
+	float2 envBRDF  = BRDF_LUT.Sample(DefaultSampler, float2(max(dot(N,V),0.0), roughness)).rg;
+	float3 specular = prefilteredColor * (F * envBRDF.x + envBRDF.y);
+
+	float3 ambient = (kD * diffuse + specular) * ao; 
+
+	return ambient;
+
 }
+
+
+float3 CalcAmbientPBR_UE(float3 N, float3 V, float3 albedo, 
+	float metallic, float roughness, float3 F0, float ao)
+{
+	// World space 변환
+	float3 worldN = normalize(mul(N, (float3x3)gViewInv));
+	float3 worldV = normalize(mul(V, (float3x3)gViewInv));
+	float3 worldR = reflect(-worldV, worldN);
+
+	// Fresnel 계산
+	float3 F = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
+
+	// Energy conservation
+	float3 kS = F;
+	float3 kD = 1.0 - kS;
+	kD *= 1.0 - metallic;
+
+	// Diffuse IBL (irradiance)
+	float3 irradiance = EnvironmentMap.SampleLevel(CubeSampler, worldN, 0).rgb;
+	float3 diffuse = irradiance * albedo;
+
+	// Specular IBL (prefiltered)
+	const float MAX_REFLECTION_LOD = 4.0;
+	float3 prefilteredColor = EnvironmentMap.SampleLevel(CubeSampler, worldR, roughness * MAX_REFLECTION_LOD).rgb;
+	float2 envBRDF = BRDF_LUT.Sample(DefaultSampler, float2(max(dot(N, V), 0.0), roughness)).rg;
+	float3 specular = prefilteredColor * (F * envBRDF.x + envBRDF.y);
+
+	// Final ambient
+	return (kD * diffuse + specular) * ao;
+}
+
 
 #endif

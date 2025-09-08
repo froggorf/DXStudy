@@ -66,6 +66,8 @@ void UEngine::InitEngine()
 
 	LoadDefaultMap();
 
+	SystemSettings();
+
 	CurrentWorld->Init();
 	Sleep(100);
 #ifndef WITH_EDITOR
@@ -674,4 +676,10 @@ void UEngine::LoadAllObjectsFromFile()
 	}
 
 	//MY_LOG("Load", EDebugLogLevel::DLL_Warning, "Load All Objects From File Success");
+}
+
+void UEngine::SystemSettings()
+{
+	const std::shared_ptr<UTexture>& T_BRDF_LUT = UTexture::GetTextureCache("T_BRDF_LUT");
+	GDirectXDevice->GetDeviceContext()->PSSetShaderResources(51,1, T_BRDF_LUT->GetSRV().GetAddressOf());
 }

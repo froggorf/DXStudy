@@ -910,6 +910,20 @@ DirectX::XMMATRIX FScene::GetProjectionMatrix()
 	return ViewMatrices.GetProjectionMatrix();
 }
 
+void FScene::SetSkyBoxTexture_RenderThread(const std::string& NewEnvironmentTextureName)
+{
+	if (GDirectXDevice)
+	{
+		const std::shared_ptr<UTexture>& Texture = UTexture::GetTextureCache(NewEnvironmentTextureName);
+		const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& DeviceContext = GDirectXDevice->GetDeviceContext();
+		if (Texture)
+		{
+			DeviceContext->PSSetShaderResources(50,1, Texture->GetSRV().GetAddressOf());		
+		}
+		
+	}
+}
+
 void FScene::SetFrameLightInfo(const std::vector<FLightInfo>& LightInfo)
 {
 	

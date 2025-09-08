@@ -27,6 +27,8 @@ class UTexture : public UObject
 
 	static std::shared_ptr<UTexture> GetTextureCache(const std::string& TextureName);
 	int Create(Microsoft::WRL::ComPtr<ID3D11Texture2D> Tex2D);
+
+	const D3D11_TEXTURE2D_DESC& GetDesc() const {return Desc; }
 private:
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> Texture2D;
 	// SRV / RTV / DSV / UAV

@@ -27,6 +27,7 @@ class UEngine : public UObject
 
 	~UEngine() override;
 
+	
 	virtual void               InitEngine();
 	void                       PostLoad() override;
 	virtual void               LoadDataFromDefaultEngineIni();
@@ -98,6 +99,8 @@ private:
 	void InitImGui();
 	// =================================
 	void LoadAllObjectsFromFile();
+
+	void SystemSettings();
 
 public:
 	std::atomic<bool> bGameStart = false;

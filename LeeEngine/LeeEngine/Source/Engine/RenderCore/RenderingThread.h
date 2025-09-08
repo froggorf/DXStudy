@@ -341,14 +341,7 @@ public:
 			SceneData->SetSkyBoxTexture_RenderThread(NewEnvironmentTextureName);
 		})
 	}
-	void SetSkyBoxTexture_RenderThread(const std::string& NewEnvironmentTextureName)
-	{
-		if (GDirectXDevice)
-		{
-			const std::shared_ptr<UTexture>& Texture = UTexture::GetTextureCache(NewEnvironmentTextureName);
-			GDirectXDevice->GetDeviceContext()->PSSetShaderResources(50,1, Texture->GetSRV().GetAddressOf());	
-		}
-	}
+	void SetSkyBoxTexture_RenderThread(const std::string& NewEnvironmentTextureName);
 
 #if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
 	static void DrawDebugData_GameThread(const FDebugRenderData& RenderData)

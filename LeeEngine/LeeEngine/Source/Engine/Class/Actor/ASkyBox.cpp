@@ -4,6 +4,11 @@
 #include "Engine/UEngine.h"
 #include "Engine/World/UWorld.h"
 
+/*
+ Note: SkyBox 이미지 구하는법
+ https://mstone8370.tistory.com/28
+ 텍스쳐 -> 스카이박스 -> .dds
+ */
 
 ASkyBox::ASkyBox()
 {
@@ -22,7 +27,7 @@ ASkyBox::ASkyBox()
 	SM_SkyBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SM_SkyBox->SetDoFrustumCulling(false);
 
-	FScene::SetSkyBoxTexture_GameThread("T_SkyBox");
+	FScene::SetSkyBoxTexture_GameThread("T_Skybox_Forest");
 
 	DirectionalLight= std::make_shared<ULightComponent>();
 	DirectionalLight->SetupAttachment(GetRootComponent());
@@ -45,9 +50,4 @@ void ASkyBox::Tick(float DeltaSeconds)
 void ASkyBox::Tick_Editor(float DeltaSeconds)
 {
 	AActor::Tick_Editor(DeltaSeconds);
-}
-
-void ASkyBox::CalculateLocation()
-{
-	
 }

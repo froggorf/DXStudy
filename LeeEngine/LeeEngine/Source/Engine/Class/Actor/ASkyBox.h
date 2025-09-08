@@ -19,7 +19,6 @@ public:
 	void Tick_Editor(float DeltaSeconds) override;
 #endif
 private:
-	void CalculateLocation();
 
 	std::shared_ptr<ULightComponent> DirectionalLight;
 	std::shared_ptr<UStaticMeshComponent> SM_SkyBox;

@@ -11,9 +11,9 @@ ATestCube2::ATestCube2()
 	PBRTestComp = std::make_shared<UPBRTestComponent>();
 	PBRTestComp->SetupAttachment(GetRootComponent());
 	
-	for (int i = 0; i < 5; ++i)
+	for (int i = 0; i < 6; ++i)
 	{
-		for (int j = 0;  j < 5; ++j)
+		for (int j = 0;  j < 6; ++j)
 		{
 			PBRTestSphere[i][j] = std::make_shared<UStaticMeshComponent>();
 			PBRTestSphere[i][j]->SetupAttachment(GetRootComponent());
@@ -37,9 +37,9 @@ void ATestCube2::Register()
 
 	PBRTestComp->OnRChange.Add([this](float Value)
 	{
-			for (int i = 0; i < 5; ++i)
+			for (int i = 0; i < 6; ++i)
 			{
-				for (int j = 0; j < 5; ++j)
+				for (int j = 0; j < 6; ++j)
 				{
 					PBRTestSphere[i][j]->SetScalarParam(0,"Albedo_R", Value);
 				}
@@ -47,9 +47,9 @@ void ATestCube2::Register()
 	});
 	PBRTestComp->OnBChange.Add([this](float Value)
 		{
-			for (int i = 0; i < 5; ++i)
+			for (int i = 0; i < 6; ++i)
 			{
-				for (int j = 0; j < 5; ++j)
+				for (int j = 0; j < 6; ++j)
 				{
 					PBRTestSphere[i][j]->SetScalarParam(0,"Albedo_B", Value);
 				}
@@ -57,9 +57,9 @@ void ATestCube2::Register()
 		});
 	PBRTestComp->OnGChange.Add([this](float Value)
 		{
-			for (int i = 0; i < 5; ++i)
+			for (int i = 0; i < 6; ++i)
 			{
-				for (int j = 0; j < 5; ++j)
+				for (int j = 0; j < 6; ++j)
 				{
 					PBRTestSphere[i][j]->SetScalarParam(0,"Albedo_G", Value);
 				}
@@ -67,12 +67,14 @@ void ATestCube2::Register()
 		});
 	PBRTestComp->OnButtonDelegate.Add([this]()
 	{
-			for (int i = 0; i < 5; ++i)
+			for (int i = 0; i < 6; ++i)
 			{
-				for (int j = 0; j < 5; ++j)
+				for (int j = 0; j < 6; ++j)
 				{
-					PBRTestSphere[i][j]->SetScalarParam(0,"Metallic", i * 0.4f);
-					PBRTestSphere[i][j]->SetScalarParam(0,"Roughness", j * 0.4f);
+					float NewMetallic = i * 0.2f;
+					PBRTestSphere[i][j]->SetScalarParam(0,"Metallic", NewMetallic);
+					float NewRoughness = j * 0.2f;
+					PBRTestSphere[i][j]->SetScalarParam(0,"Roughness", NewRoughness);
 				}
 			}	
 	});

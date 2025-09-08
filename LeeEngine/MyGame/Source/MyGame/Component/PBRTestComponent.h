@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/Components/USceneComponent.h"
 #include "Engine/Misc/Delegate.h"
+#include "Engine/RenderCore/RenderingThread.h"
 
 class UPBRTestComponent : public USceneComponent
 {
@@ -36,5 +37,19 @@ inline void UPBRTestComponent::DrawDetailPanel(UINT ComponentDepth)
 	if (ImGui::Button("PBR"))
 	{
 		OnButtonDelegate.Broadcast();
+	}
+
+	ImGui::Text("Skybox Change");
+	if (ImGui::Button("Dawn"))
+	{
+		FScene::SetSkyBoxTexture_GameThread("T_SkyDawn");
+	}
+	if (ImGui::Button("Forest"))
+	{
+		FScene::SetSkyBoxTexture_GameThread("T_Skybox_Forest");
+	}
+	if (ImGui::Button("Day"))
+	{
+		FScene::SetSkyBoxTexture_GameThread("T_SkyBox");
 	}
 }

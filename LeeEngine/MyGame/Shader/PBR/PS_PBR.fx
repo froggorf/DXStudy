@@ -129,14 +129,11 @@ float4 PBR_PS_Test(PBR_PS_INPUT input) : SV_TARGET
 {
 	float3 albedo = float3(AlbedoR, AlbedoG, AlbedoB);
     float metallic = ObjectMetallic;
-    float roughness = max(ObjectRoughness, 0.01);
-	roughness = pow(roughness, 2.2);
-	//roughness = roughness * roughness;
+    float roughness = max(ObjectRoughness, 0.001);
     float ao = 1.0;
 
-    // 노말맵 계산
+    // 노말맵 계산 & ViewDir
     float3 N = GetNormalFromMap(input);
-    // View Direction
     float3 V = normalize(-input.ViewPosition);
     
     // 반사 계산
@@ -156,8 +153,9 @@ float4 PBR_PS_Test(PBR_PS_INPUT input) : SV_TARGET
     // 조명 합성
     float3 color = ambient + Lo;
 
-	// 또는 ACES 사용
-	color = ACESFilm(color * 1.5); // 강도 증가
+	// 톤매핑
+	color = color / (color + float3(1.0,1.0,1.0));
+	color = pow(color, float3(1.0,1.0,1.0)/ float3(2.2,2.2,2.2));
 
     return float4(color, 1.0);
 }

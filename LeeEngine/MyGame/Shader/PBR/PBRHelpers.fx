@@ -20,6 +20,7 @@ Texture2D MetallicTexture   : register(t2);
 Texture2D RoughnessTexture  : register(t3);
 Texture2D AOTexture         : register(t4);
 TextureCube EnvironmentMap  : register(t50);
+Texture2D BRDF_LUT			: register(t51);
 
 // Sampler
 SamplerState DefaultSampler : register( s0 );

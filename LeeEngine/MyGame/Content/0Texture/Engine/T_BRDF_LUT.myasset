@@ -1,0 +1,5 @@
+{
+    "Class": "UTexture",
+    "Name": "T_BRDF_LUT",
+    "FilePath" : "/Content/Resource/Texture/Engine/BRDF_LUT.png"
+}
