@@ -918,6 +918,10 @@ void FScene::SetSkyBoxTexture_RenderThread(const std::string& NewEnvironmentText
 		const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& DeviceContext = GDirectXDevice->GetDeviceContext();
 		if (Texture)
 		{
+			if (Texture->GetDesc().MipLevels == 1)
+			{
+				DeviceContext->GenerateMips(Texture->GetSRV().Get());
+			}
 			DeviceContext->PSSetShaderResources(50,1, Texture->GetSRV().GetAddressOf());		
 		}
 		

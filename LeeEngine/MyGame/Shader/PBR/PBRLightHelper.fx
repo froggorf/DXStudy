@@ -96,7 +96,7 @@ float3 CalcBRDF(float3 N, float3 V, float3 L, float3 albedo,
 
 	float3 numerator = NDF * G * F;
 	float denominator = 4.0 * NdotV * NdotL;
-	float3 specular = numerator / max(denominator,0.001);
+	float3 specular = metallic < 0.001f ? 0.0f : numerator / max(denominator,0.001);
 
 	return (kD * albedo / PI + specular) * radiance * NdotL;
 }
@@ -181,65 +181,44 @@ float3 CalcAmbientPBR(float3 N, float3 V, float3 albedo,
 	return result; 
 }
 
-float3 CalcColor(float3 N, float3 V, float3 L, float3 albedo, 
-	float metallic, float roughness, float3 F0, float3 radiance, float ao)
+float3 FastDiffuseIrradiance(float3 Normal)
 {
 	// View Space -> World Space 변환
-	float3 worldN = normalize(mul(N, (float3x3)gViewInv));
-	float3 worldV = normalize(mul(V, (float3x3)gViewInv));
-	float3 worldR = reflect(-worldV, worldN);
+	float3 worldN = normalize(mul(Normal, (float3x3)gViewInv));
 
+	// 탄젠트 공간 구성
+	float3 up = abs(worldN.z) < 0.999 ? float3(0, 0, 1) : float3(1, 0, 0);
+	float3 right = normalize(cross(up, worldN));
+	up = normalize(cross(worldN, right));
 
-	float3 F = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
+	const int SAMPLE_COUNT = 256;
+	float3 totalIrradiance = float3(0, 0, 0);
 
-	float3 kS = F;
-	float3 kD = 1.0 - kS;
-	kD *= 1.0 - metallic;	  
+	for (int i = 0; i < SAMPLE_COUNT; ++i)
+	{
+		// ✅ 올바른 반구 샘플링
+		float u1 = float(i) / float(SAMPLE_COUNT);
+		float u2 = frac(float(i) * 0.618033988749895); // 골든 레이시오로 균등 분포
 
-	const int MAX_REFLECTION_LOD = 4.0;
-	float3 irradiance = EnvironmentMap.SampleLevel(CubeSampler,worldR,roughness * MAX_REFLECTION_LOD).rgb;
-	float3 diffuse    = irradiance * albedo;
+		float cosTheta = sqrt(u1);                    // 코사인 가중
+		float sinTheta = sqrt(1.0 - u1);
+		float phi = 2.0 * PI * u2;
 
-	float3 prefilteredColor = EnvironmentMap.SampleLevel(CubeSampler, worldR,  roughness * MAX_REFLECTION_LOD).rgb;   
-	float2 envBRDF  = BRDF_LUT.Sample(DefaultSampler, float2(max(dot(N,V),0.0), roughness)).rg;
-	float3 specular = prefilteredColor * (F * envBRDF.x + envBRDF.y);
+		float3 sampleVec = float3(
+			sinTheta * cos(phi),
+			sinTheta * sin(phi),
+			cosTheta
+		);
 
-	float3 ambient = (kD * diffuse + specular) * ao; 
+		// 월드 공간으로 변환
+		sampleVec = sampleVec.x * right + sampleVec.y * up + sampleVec.z * worldN;
 
-	return ambient;
+		// 샘플링 및 누적 (코사인 가중치 이미 적용됨)
+		totalIrradiance += EnvironmentMap.SampleLevel(CubeSampler, sampleVec, 0).rgb;
+	}
 
+	// ✅ 올바른 정규화 (π는 이미 코사인 가중에 포함됨)
+	return totalIrradiance / float(SAMPLE_COUNT);
 }
-
-
-float3 CalcAmbientPBR_UE(float3 N, float3 V, float3 albedo, 
-	float metallic, float roughness, float3 F0, float ao)
-{
-	// World space 변환
-	float3 worldN = normalize(mul(N, (float3x3)gViewInv));
-	float3 worldV = normalize(mul(V, (float3x3)gViewInv));
-	float3 worldR = reflect(-worldV, worldN);
-
-	// Fresnel 계산
-	float3 F = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
-
-	// Energy conservation
-	float3 kS = F;
-	float3 kD = 1.0 - kS;
-	kD *= 1.0 - metallic;
-
-	// Diffuse IBL (irradiance)
-	float3 irradiance = EnvironmentMap.SampleLevel(CubeSampler, worldN, 0).rgb;
-	float3 diffuse = irradiance * albedo;
-
-	// Specular IBL (prefiltered)
-	const float MAX_REFLECTION_LOD = 4.0;
-	float3 prefilteredColor = EnvironmentMap.SampleLevel(CubeSampler, worldR, roughness * MAX_REFLECTION_LOD).rgb;
-	float2 envBRDF = BRDF_LUT.Sample(DefaultSampler, float2(max(dot(N, V), 0.0), roughness)).rg;
-	float3 specular = prefilteredColor * (F * envBRDF.x + envBRDF.y);
-
-	// Final ambient
-	return (kD * diffuse + specular) * ao;
-}
-
 
 #endif
