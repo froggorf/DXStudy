@@ -88,10 +88,8 @@ void FStaticMeshSceneProxy::Draw()
 	UINT offset = 0;
 	DeviceContext->IASetVertexBuffers(0, 1, RenderData->VertexBuffer[MeshIndex].GetAddressOf(), &stride, &offset);
 	DeviceContext->IASetIndexBuffer(RenderData->IndexBuffer[MeshIndex].Get(), DXGI_FORMAT_R32_UINT, 0);
-
-	D3D11_BUFFER_DESC indexBufferDesc;
-	RenderData->IndexBuffer[MeshIndex]->GetDesc(&indexBufferDesc);
-	UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
-	DeviceContext->DrawIndexed(indexSize, 0, 0);
+	
+	UINT IndexCount = static_cast<UINT>(RenderData->IndexData[MeshIndex].size());
+	DeviceContext->DrawIndexed(IndexCount, 0, 0);
 	
 }

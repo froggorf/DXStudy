@@ -499,8 +499,8 @@ void AssetManager::ProcessScene(const aiScene* scene, std::vector<std::vector<My
 		ProcessMesh(mesh, vertices, indices, bISUEcoord);
 
 		// 결과를 전체 리스트에 추가
-		allVertices.push_back(vertices);
-		allIndices.push_back(indices);
+		allVertices.emplace_back(vertices);
+		allIndices.emplace_back(indices);
 	}
 }
 
@@ -560,18 +560,32 @@ void AssetManager::ProcessMesh(aiMesh* mesh, std::vector<MyVertexData>& vertices
 			
 		}
 
-		vertices.push_back(vertex);
+		vertices.emplace_back(vertex);
 	}
 
-	// 2. 인덱스 데이터 추출
-	for (unsigned int i = 0; i < mesh->mNumFaces; i++)
+	for (UINT i = 0; i < mesh->mNumFaces; i++)
 	{
 		aiFace face = mesh->mFaces[i];
-		for (unsigned int j = 0; j < face.mNumIndices; j++)
+		for (UINT j = 0; j < face.mNumIndices; j++)
 		{
-			indices.push_back(face.mIndices[j]);
+			UINT index = face.mIndices[j];
+			indices.emplace_back(index);
 		}
 	}
+
+
+	/*
+	 for (UINT i = 0; i < mesh->mNumFaces; i++)
+	{
+		aiFace face = mesh->mFaces[i];
+		for (UINT j = 0; j < face.mNumIndices; j++)
+		{
+			UINT index = face.mIndices[j];
+			indices.emplace_back(index);
+		}
+	}
+
+	 */
 }
 
 void AssetManager::SetVertexBoneData(MyVertexData& vertexData, int boneID, float weight)
