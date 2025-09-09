@@ -47,11 +47,11 @@ float4 PBR_PS_Well(PBR_PS_INPUT input) : SV_TARGET
 	int AlbedoTexBind = bTexBind_0_3.x;
 	float3 DefaultAlbedo = float3(1.0f, 0.0f, 1.0f);
 	float3 albedo = AlbedoTexBind ? AlbedoTexture.Sample(DefaultSampler, input.TexCoord).rgb : DefaultAlbedo;
-	
+	albedo *= 0.2f;
 	float DefaultMetallic = 0.5f;
 	int MetallicTexBind = bTexBind_0_3.z;
 	float metallic = MetallicTexBind ? MetallicTexture.Sample(DefaultSampler, input.TexCoord).g : DefaultMetallic;
-	
+
 	float DefaultRoughness = 0.5f;
 	float roughness = MetallicTexBind ? MetallicTexture.Sample(DefaultSampler, input.TexCoord).b : DefaultRoughness;
 

@@ -64,4 +64,12 @@ float3 ACESFilm(float3 x)
 	return saturate((x * (a * x + b)) / (x * (c * x + d) + e));
 }
 
+float3 HDRToGamma(float3 color)
+{
+	// HDR -> LDR
+	color = color / (color + float3(1,1,1));
+	//감마보정
+	return pow(max(color, 0.0), 1.0 / 2.2);
+}
+
 #endif
