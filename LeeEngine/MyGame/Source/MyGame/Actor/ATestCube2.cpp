@@ -8,6 +8,30 @@ ATestCube2::ATestCube2()
 {
 	if (!GDirectXDevice) return;
 
+	/*SM_Well = std::make_shared<UStaticMeshComponent>();
+	SM_Well->SetupAttachment(GetRootComponent());
+	AssetManager::GetAsyncAssetCache("SM_Well_PBR",[this](std::shared_ptr<UObject> Object)
+		{
+			SM_Well->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
+		});
+	SM_Well->SetRelativeLocation({0,500,0});*/
+
+	SM_Barrel1 = std::make_shared<UStaticMeshComponent>();
+	SM_Barrel1->SetupAttachment(GetRootComponent());
+	AssetManager::GetAsyncAssetCache("SM_Barrel1",[this](std::shared_ptr<UObject> Object)
+		{
+			SM_Barrel1->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
+		});
+	SM_Barrel1->SetRelativeLocation({300,500,0});
+
+	/*SM_Barrel2 = std::make_shared<UStaticMeshComponent>();
+	SM_Barrel2->SetupAttachment(GetRootComponent());
+	AssetManager::GetAsyncAssetCache("SM_Barrel2",[this](std::shared_ptr<UObject> Object)
+		{
+			SM_Barrel2->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
+		});
+	SM_Barrel2->SetRelativeLocation({600,500,0});
+
 	PBRTestComp = std::make_shared<UPBRTestComponent>();
 	PBRTestComp->SetupAttachment(GetRootComponent());
 	
@@ -27,7 +51,8 @@ ATestCube2::ATestCube2()
 			PBRTestSphere[i][j]->SetRelativeScale3D({Size,Size,Size});
 			
 		}
-	}
+	}*/
+
 	
 }
 
@@ -35,7 +60,7 @@ void ATestCube2::Register()
 {
 	AActor::Register();
 
-	PBRTestComp->OnRChange.Add([this](float Value)
+	/*PBRTestComp->OnRChange.Add([this](float Value)
 	{
 			for (int i = 0; i < 6; ++i)
 			{
@@ -77,7 +102,7 @@ void ATestCube2::Register()
 					PBRTestSphere[i][j]->SetScalarParam(0,"Roughness", NewRoughness);
 				}
 			}	
-	});
+	});*/
 	
 }
 

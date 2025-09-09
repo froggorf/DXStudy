@@ -1,0 +1,6 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_Barrel2",
+    "ModelData": "/Content/Resource/Model/PBRTest/Barrel02_UECOORD.FBX",
+    "Material" : [ "MI_Well_PBR_Barrel" ]
+}

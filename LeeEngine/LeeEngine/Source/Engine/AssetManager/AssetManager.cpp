@@ -22,10 +22,11 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
 		std::cerr << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
+
 		return;
 	}
 
-	ProcessScene(scene, AllVertices, AllIndices);
+	ProcessScene(scene, AllVertices, AllIndices, path.contains("UECOORD"));
 
 	// BoundSphereLength 계산
 	aiVector3D MinBound = aiVector3D{FLT_MAX, FLT_MAX, FLT_MAX};
@@ -92,7 +93,7 @@ void AssetManager::LoadModelData(const std::string& path, const ComPtr<ID3D11Dev
 	std::vector<std::vector<MyVertexData>> allVertices;
 	std::vector<std::vector<UINT>>         allIndices;
 
-	ProcessScene(scene, allVertices, allIndices);
+	ProcessScene(scene, allVertices, allIndices,path.contains("UECOORD"));
 
 	// 결과 출력
 
@@ -143,7 +144,7 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const ComPtr<I
 	std::vector<std::vector<MyVertexData>> allVertices;
 	std::vector<std::vector<UINT>>         allIndices;
 
-	ProcessScene(scene, allVertices, allIndices);
+	ProcessScene(scene, allVertices, allIndices, path.contains("UECOORD"));
 
 	// BoundSphereLength 계산
 	aiVector3D MinBound = aiVector3D{FLT_MAX, FLT_MAX, FLT_MAX};
@@ -303,6 +304,10 @@ void AssetManager::LoadTexture(class UTexture* Texture, const nlohmann::json& As
 	else // png, jpg, jpeg, bmp
 		LoadFromWICFile(WFilePath.c_str(), WIC_FLAGS_NONE, nullptr, image);
 
+	if (!image.GetImages())
+	{
+		assert(nullptr && "No Valid Path");
+	}
 	CreateShaderResourceView(GDirectXDevice->GetDevice().Get(), image.GetImages(), image.GetImageCount(), image.GetMetadata(), Texture->SRView.GetAddressOf());
 	Texture->SRView->GetResource((ID3D11Resource**)Texture->Texture2D.GetAddressOf());
 	Texture->Texture2D->GetDesc(&Texture->Desc);
@@ -480,7 +485,7 @@ UObject* AssetManager::ReadMyAsset(const std::string& FilePath)
 	return Object.get();
 }
 
-void AssetManager::ProcessScene(const aiScene* scene, std::vector<std::vector<MyVertexData>>& allVertices, std::vector<std::vector<UINT>>& allIndices)
+void AssetManager::ProcessScene(const aiScene* scene, std::vector<std::vector<MyVertexData>>& allVertices, std::vector<std::vector<UINT>>& allIndices, bool bISUEcoord)
 {
 	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
 	{
@@ -491,7 +496,7 @@ void AssetManager::ProcessScene(const aiScene* scene, std::vector<std::vector<My
 		std::vector<UINT>         indices;
 
 		// 메쉬 데이터 처리
-		ProcessMesh(mesh, vertices, indices);
+		ProcessMesh(mesh, vertices, indices, bISUEcoord);
 
 		// 결과를 전체 리스트에 추가
 		allVertices.push_back(vertices);
@@ -499,7 +504,7 @@ void AssetManager::ProcessScene(const aiScene* scene, std::vector<std::vector<My
 	}
 }
 
-void AssetManager::ProcessMesh(aiMesh* mesh, std::vector<MyVertexData>& vertices, std::vector<UINT>& indices)
+void AssetManager::ProcessMesh(aiMesh* mesh, std::vector<MyVertexData>& vertices, std::vector<UINT>& indices, bool bIsUECoord)
 {
 	// 1. 버텍스 데이터 추출
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++)
@@ -540,6 +545,19 @@ void AssetManager::ProcessMesh(aiMesh* mesh, std::vector<MyVertexData>& vertices
 		{
 			vertex.TexCoords.x = 0.0f;
 			vertex.TexCoords.y = 0.0f;
+		}
+
+		// UE Coord -> Lee Coord
+		if (bIsUECoord)
+		{
+			XMVECTOR UECoordToLeeCoord = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(90.0f),XMConvertToRadians(0.0f),XMConvertToRadians(0.0f));
+
+			XMStoreFloat3(&vertex.Pos, XMVector3Rotate(XMLoadFloat3(&vertex.Pos), UECoordToLeeCoord));
+			XMStoreFloat3(&vertex.Normal, XMVector3Rotate(XMLoadFloat3(&vertex.Normal), UECoordToLeeCoord));
+			XMStoreFloat3(&vertex.Tangent, XMVector3Rotate(XMLoadFloat3(&vertex.Tangent), UECoordToLeeCoord));
+			XMStoreFloat3(&vertex.Bitangent, XMVector3Rotate(XMLoadFloat3(&vertex.Bitangent), UECoordToLeeCoord));
+
+			
 		}
 
 		vertices.push_back(vertex);

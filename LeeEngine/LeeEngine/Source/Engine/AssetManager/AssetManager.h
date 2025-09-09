@@ -50,10 +50,10 @@ public:
 
 private:
 	// 파일 데이터로 얻은 aiScene 클래스로부터 메쉬 정보 얻는 함수
-	static void ProcessScene(const aiScene* scene, std::vector<std::vector<MyVertexData>>& allVertices, std::vector<std::vector<UINT>>& allIndices);
+	static void ProcessScene(const aiScene* scene, std::vector<std::vector<MyVertexData>>& allVertices, std::vector<std::vector<UINT>>& allIndices, bool bIsUECoord = false);
 
 	// 메쉬 정보를 분석하여 VertexType에 맞게 정보 수집
-	static void ProcessMesh(aiMesh* mesh, std::vector<MyVertexData>& vertices, std::vector<UINT>& indices);
+	static void ProcessMesh(aiMesh* mesh, std::vector<MyVertexData>& vertices, std::vector<UINT>& indices, bool bIsUECoord);
 
 	// SkeletalMesh 모델의 버텍스 데이터 내 본 데이터를 설정하는 함수
 	static void SetVertexBoneData(MyVertexData& vertexData, int boneID, float weight);

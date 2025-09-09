@@ -359,6 +359,24 @@ void UMaterialInstance::LoadDataFromFileData(const nlohmann::json& AssetData)
 			}
 		}
 	}
+
+	OverrideTextures = std::vector<std::shared_ptr<UTexture>>(ParentMaterial->TextureParams.size(), nullptr);
+	if (AssetData.contains("OverrideTexture"))
+	{
+		const nlohmann::basic_json<>& OverrideTexData = AssetData["OverrideTexture"];
+		for (const nlohmann::basic_json<>& Data : OverrideTexData)
+		{
+			int Index = Data["Index"];
+			const std::string& TexName = Data["Tex"];
+			if (Index >= OverrideTextures.size())
+			{
+				const std::string& MatName = AssetData["Name"];
+				MY_LOG("Error", EDebugLogLevel::DLL_Warning, "Invalid Index - OverrideTextures" + MatName);
+				continue;
+			}
+			OverrideTextures[Index] = UTexture::GetTextureCache(TexName);
+		}
+	}
 }
 
 void UMaterialInstance::Binding()
@@ -404,10 +422,6 @@ void UMaterialInstance::SetScalarParam(const std::string& Name, float NewValue)
 
 void UMaterialInstance::SetTextureParam(UINT TextureSlot, std::shared_ptr<UTexture> NewTexture)
 {
-	if (OverrideTextures.size() == 0)
-	{
-		OverrideTextures.resize(ParentMaterial->TextureParams.size());
-	}
 	OverrideTextures[TextureSlot] = NewTexture;
 }
 
@@ -466,7 +480,9 @@ void UMaterialInstance::BindingMaterialInstanceUserParam() const
 	ComPtr<ID3D11DeviceContext> DeviceContext = GDirectXDevice->GetDeviceContext();
 	for (int i = 0; i < ParentMaterial->TextureParams.size(); ++i)
 	{
-		if (OverrideTextures.size() > i && OverrideTextures[i])
+		// 09.09 방식이 잘못 되어있다는 것을 깨달음
+		
+		if (OverrideTextures[i])
 		{
 			DeviceContext->PSSetShaderResources(static_cast<UINT>(ParentMaterial->Textures.size() + i), 1, OverrideTextures[i]->GetSRV().GetAddressOf());
 		}
@@ -474,6 +490,16 @@ void UMaterialInstance::BindingMaterialInstanceUserParam() const
 		{
 			DeviceContext->PSSetShaderResources(static_cast<UINT>(ParentMaterial->Textures.size() + i), 1, ParentMaterial->TextureParams[i]->GetSRV().GetAddressOf());
 		}
+
+		// Legacy Code
+		//if (OverrideTextures.size() > i && OverrideTextures[i])
+		//{
+		//	DeviceContext->PSSetShaderResources(static_cast<UINT>(ParentMaterial->Textures.size() + i), 1, OverrideTextures[i]->GetSRV().GetAddressOf());
+		//}
+		//else
+		//{
+		//	DeviceContext->PSSetShaderResources(static_cast<UINT>(ParentMaterial->Textures.size() + i), 1, ParentMaterial->TextureParams[i]->GetSRV().GetAddressOf());
+		//}
 	}
 }
 

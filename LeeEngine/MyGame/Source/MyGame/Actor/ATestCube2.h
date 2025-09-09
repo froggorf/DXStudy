@@ -23,7 +23,10 @@ class ATestCube2 : public AActor
 protected:
 	std::shared_ptr<UStaticMeshComponent> PBRTestSphere[10][10];
 	std::shared_ptr<UPBRTestComponent> PBRTestComp;
-	
+
+	std::shared_ptr<UStaticMeshComponent> SM_Well;
+	std::shared_ptr<UStaticMeshComponent> SM_Barrel1;
+	std::shared_ptr<UStaticMeshComponent> SM_Barrel2;
 private:
 
 

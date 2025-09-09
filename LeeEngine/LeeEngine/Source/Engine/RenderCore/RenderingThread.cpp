@@ -572,6 +572,7 @@ static void DrawShadowMapSceneProxies(ELightType Type, const std::unordered_map<
 
 void FScene::DrawShadowMap(ELightType Type) const
 {
+	GDirectXDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	DrawShadowMapSceneProxies(Type, DeferredSceneProxyRenderData, M_LightShadow);
 	DrawShadowMapSceneProxies(Type, OpaqueSceneProxyRenderData, M_LightShadow);
 	DrawShadowMapSceneProxies(Type, MaskedSceneProxyRenderData, M_LightShadow);
@@ -582,6 +583,7 @@ void FScene::DrawShadowMap(ELightType Type) const
 
 static void DrawSceneProxies(const std::shared_ptr<FScene>& SceneData, const std::unordered_map<UINT, std::vector<FPrimitiveRenderData>>& RenderDataSceneProxies)
 {
+	GDirectXDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	for (const auto& SceneProxies : RenderDataSceneProxies | std::views::values)
 	{
 		bool bIsBinding = false;
@@ -714,7 +716,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(0,1, PositionTexture->GetSRV().GetAddressOf());
 				const std::shared_ptr<UTexture>& NormalTexture = UTexture::GetTextureCache("NormalTargetTex");
 				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(1,1, NormalTexture->GetSRV().GetAddressOf());
-
+				
 				int LightSize = static_cast<int>(SceneData->CurrentFrameLightInfo.size());
 				for (int i = 0; i < LightSize; ++i)
 				{
@@ -776,7 +778,6 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 
 			// 포워드 렌더링 진행
 			{
-				
 				GDirectXDevice->SetDSState(EDepthStencilStateType::DST_LESS);
 				DrawSceneProxies(SceneData, SceneData->OpaqueSceneProxyRenderData);
 				GDirectXDevice->SetBSState(EBlendStateType::BST_AlphaBlend);

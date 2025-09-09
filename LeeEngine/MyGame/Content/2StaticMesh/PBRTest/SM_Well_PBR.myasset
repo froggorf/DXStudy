@@ -1,6 +1,6 @@
 {
     "Class": "UStaticMesh",
     "Name": "SM_Well_PBR",
-    "ModelData": "/Content/Resource/Model/SM_Well.FBX",
+    "ModelData": "/Content/Resource/Model/SM_Well_UECOORD.FBX",
     "Material" : [ "M_Well_PBR" ]
 }

@@ -14,6 +14,7 @@ class FStaticMeshRenderData
 public:
 	FStaticMeshRenderData(const nlohmann::json& StaticMeshFilePathData)
 	{
+
 		if(StaticMeshFilePathData["Name"].contains("Async"))
 		{
 			int a = 0;
@@ -29,6 +30,7 @@ public:
 		Materials.clear();
 
 		AssetManager::LoadModelData(StaticMeshFilePathData["ModelData"], GDirectXDevice->GetDevice(), VertexData,IndexData, VertexBuffer, IndexBuffer,BoundSphereRadius);
+		const std::string& Name = StaticMeshFilePathData["ModelData"];
 		MeshCount = static_cast<UINT>(VertexBuffer.size());
 
 		// 머테리얼

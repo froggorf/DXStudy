@@ -283,6 +283,7 @@ class UMaterialInstance : public UMaterialInterface
 	{
 		auto NewInstance            = std::make_shared<UMaterialInstance>();
 		NewInstance->OverrideParams = OverrideParams;
+		NewInstance->OverrideTextures = OverrideTextures;
 		NewInstance->ParentMaterial = ParentMaterial;
 		return NewInstance;
 	}

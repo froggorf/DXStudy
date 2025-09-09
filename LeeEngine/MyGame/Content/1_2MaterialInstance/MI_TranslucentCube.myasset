@@ -1,9 +1,10 @@
 {
     "Class": "UMaterialInstance",
-    "Name": "MI_TranslucentCube",
-    "ParentMaterial" : "M_TranslucentCube",
-    "OverrideParams" : [
-        {"Name" : "WaterSpeedX",  "Type" : "float", "Value" : 0.0},
-        {"Name" : "WaterSpeedY", "Type" : "float", "Value" : 0.0}
+    "Name": "MI_Well_PBR_Barrel",
+    "ParentMaterial" : "M_Well_PBR",
+    "OverrideTexture" :
+    [
+	{ "Index" : 0, "Tex": "T_Barrel_Albedo"},
+	{ "Index" : 1, "Tex": "T_Barrel_Metallic"}
     ]
 }

@@ -249,6 +249,7 @@ float3 MyPBR(PBR_PS_INPUT input, float3 albedo, float metallic, float ObjectSpec
 	// Diffuse IBL
 	float3 irradiance = FastDiffuseIrradiance(N);
 	float3 diffuse = irradiance * albedo;
+
 	// Specular IBL  
 	float3 R = reflect(-V, N);
 	float3 worldR = normalize(mul(R, (float3x3)gViewInv));
@@ -264,3 +265,6 @@ float3 MyPBR(PBR_PS_INPUT input, float3 albedo, float metallic, float ObjectSpec
 	return color;
 }
 #endif
+//
+//float3 diffuse = lerp(float3(0,0,0), albedo, 1-metallic);
+//float3 ambient = (kD * diffuse + specular) * ao;
