@@ -53,5 +53,15 @@ cbuffer SystemParam : register(b6)
 	float Float_4;
 }
 
+// 톤매핑 함수 - ACES Film
+float3 ACESFilm(float3 x)
+{
+	float a = 2.51;
+	float b = 0.03;
+	float c = 2.43;
+	float d = 0.59;
+	float e = 0.14;
+	return saturate((x * (a * x + b)) / (x * (c * x + d) + e));
+}
 
 #endif

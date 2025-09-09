@@ -10,6 +10,8 @@
 // =======================
 
 // Normal Distribution Function (GGX/Trowbridge-Reitz)
+// 미세면의 분포를 계산하는 함수
+
 float DistributionGGX(float3 N, float3 H, float roughness)
 {
 	float a      = roughness*roughness;
@@ -36,6 +38,7 @@ float GeometrySchlickGGX(float NdotV, float roughness)
 	return num / denom;
 }
 
+// 미세면의 그림자를 계산하는 함수
 float GeometrySmith(float3 N, float3 V, float3 L, float roughness)
 {
 	float NdotV = max(dot(N, V), 0.0);
@@ -47,10 +50,12 @@ float GeometrySmith(float3 N, float3 V, float3 L, float roughness)
 }
 
 // Fresnel Equation (Schlick's approximation)
+// 각도에 따른 반사율을 계산
 float3 FresnelSchlick(float cosTheta, float3 F0)
 {
 	return F0 + (1.0 - F0) * pow(max(1.0 - cosTheta, 0.0), 5.0);
 }
+// 얘는 거칠기까지 포함해서 계산
 float3 FresnelSchlickRoughness(float cosTheta, float3 F0, float roughness)
 {
 	float3 r = max(float3(1.0 - roughness, 1.0 - roughness, 1.0 - roughness), F0);
@@ -191,7 +196,7 @@ float3 FastDiffuseIrradiance(float3 Normal)
 	float3 right = normalize(cross(up, worldN));
 	up = normalize(cross(worldN, right));
 
-	const int SAMPLE_COUNT = 256;
+	const int SAMPLE_COUNT = 32;
 	float3 totalIrradiance = float3(0, 0, 0);
 
 	for (int i = 0; i < SAMPLE_COUNT; ++i)
@@ -221,4 +226,41 @@ float3 FastDiffuseIrradiance(float3 Normal)
 	return totalIrradiance / float(SAMPLE_COUNT);
 }
 
+
+float3 MyPBR(PBR_PS_INPUT input, float3 albedo, float metallic, float ObjectSpecular, float roughness, float ao)
+{
+	float3 N = GetNormalFromMap(input);
+	float3 V = normalize(-input.ViewPosition);
+
+	const float DefaultSpecular = 0.04 * ObjectSpecular;
+	float3 SpecularFact = lerp(albedo, float3(DefaultSpecular,DefaultSpecular,DefaultSpecular), metallic);
+	float3 F0 = lerp(float3(DefaultSpecular, DefaultSpecular, DefaultSpecular), albedo, metallic);
+
+	// 다이렉트 라이팅
+	float3 Lo = float3(0.0, 0.0, 0.0);
+	for (int i = 0; i < gLightCount; ++i)
+	{
+		Lo += CalcPBRLight(input.ViewPosition, N, V, albedo, metallic, roughness, SpecularFact, i);
+	}
+
+	// 🔥 IBL 계산 (통합 버전)
+	float3 kS = FresnelSchlick(max(dot(N, V), 0.0), F0);
+	float3 kD = 1.0 - kS;
+	// Diffuse IBL
+	float3 irradiance = FastDiffuseIrradiance(N);
+	float3 diffuse = irradiance * albedo;
+	// Specular IBL  
+	float3 R = reflect(-V, N);
+	float3 worldR = normalize(mul(R, (float3x3)gViewInv));
+	float3 EnvironmentColor = EnvironmentMap.SampleLevel(CubeSampler, worldR, roughness * 15).rgb * albedo;
+	float3 prefilteredColor = lerp(albedo, EnvironmentColor ,metallic*1.1);
+	float3 specular = prefilteredColor * lerp(kS,F0, metallic * 1.5);
+
+	float3 ambient = (kD * diffuse  + specular) * ao;
+	float3 color = ambient + Lo;
+
+	color = ACESFilm(color);
+
+	return color;
+}
 #endif

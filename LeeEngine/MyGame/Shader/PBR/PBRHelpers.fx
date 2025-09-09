@@ -17,8 +17,9 @@ struct PBR_PS_INPUT
 Texture2D AlbedoTexture     : register(t0);
 Texture2D NormalTexture     : register(t1);
 Texture2D MetallicTexture   : register(t2);
-Texture2D RoughnessTexture  : register(t3);
-Texture2D AOTexture         : register(t4);
+Texture2D SpecularTexture	: register(t3);
+Texture2D RoughnessTexture  : register(t4);
+Texture2D AOTexture         : register(t5);
 TextureCube EnvironmentMap  : register(t50);
 Texture2D BRDF_LUT			: register(t51);
 
