@@ -90,14 +90,14 @@ float3 CalcBRDF(float3 N, float3 V, float3 L, float3 albedo,
 	float NdotV = max(dot(N, V), 0.0);
 	
 
-	//radiance *= 15;
-	//// grazing angle에서 스페큘러 강화
-	//float grazingBoost = 1;
-	//if (metallic > 0.5) // 메탈릭 표면일 때만
-	//{
-	//	float grazingAngle = 1.0 - NdotV; 
-	//	grazingBoost = 1.0 + grazingAngle * grazingAngle * 4.0; // 최대 5배까지 강화
-	//}
+	// grazing angle에서 스페큘러 강화
+	float grazingBoost = 1;
+	// TODO: if 안쓰게 바꾸기
+	if (metallic > 0.5) // 메탈릭 표면일 때만
+	{
+		float grazingAngle = 1.0 - NdotV; 
+		grazingBoost = 1.0 + grazingAngle * grazingAngle * 4.0; // 최대 5배까지 강화
+	}
 
 	if (NdotL <= 0.0) return float3(0, 0, 0);
 
@@ -114,10 +114,11 @@ float3 CalcBRDF(float3 N, float3 V, float3 L, float3 albedo,
 	float3 numerator = NDF * G * F;
 	float denominator = 4.0 * NdotV * NdotL;
 	float3 specular = metallic < 0.01f? 0.0f : numerator / max(denominator,0.001);
+	specular *= grazingBoost;
 
 	float3 Diffuse = kD * albedo / PI;
 	
-	//specular *= grazingBoost;
+	
 	return (Diffuse + specular) * radiance * NdotL;
 }
 

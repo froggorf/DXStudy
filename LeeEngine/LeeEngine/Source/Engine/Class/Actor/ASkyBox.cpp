@@ -39,7 +39,7 @@ ASkyBox::ASkyBox()
 		XMConvertToRadians(0.0f)
 	);
 	DirectionalLight->SetWorldRotation(RotQuat);
-	DirectionalLight->SetLightColor({1,1,1});
+	DirectionalLight->SetLightColor({30,30,30});
 }
 
 void ASkyBox::Tick(float DeltaSeconds)
