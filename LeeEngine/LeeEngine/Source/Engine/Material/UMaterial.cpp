@@ -243,7 +243,7 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 		size_t TextureParamSize = TextureParamData.size();
 		for (int i = 0; i < TextureParamSize; ++i)
 		{
-			std::string TextureName = TextureParamData[i];
+			const std::string& TextureName = TextureParamData[i];
 			TextureParams.emplace_back(UTexture::GetTextureCache(TextureName));
 		}
 	}
@@ -309,6 +309,7 @@ void UMaterial::MapAndBindParameterConstantBuffer() const
 
 	GDirectXDevice->GetDeviceContext()->Unmap(ParamConstantBuffer.Get(), 0);
 
+	GDirectXDevice->GetDeviceContext()->VSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_UserParam), 1, ParamConstantBuffer.GetAddressOf());
 	GDirectXDevice->GetDeviceContext()->PSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_UserParam), 1, ParamConstantBuffer.GetAddressOf());
 }
 
@@ -478,6 +479,7 @@ void UMaterialInstance::BindingMaterialInstanceUserParam() const
 
 	// 텍스쳐
 	ComPtr<ID3D11DeviceContext> DeviceContext = GDirectXDevice->GetDeviceContext();
+	FSystemParamConstantBuffer SystemBuffer;
 	for (int i = 0; i < ParentMaterial->TextureParams.size(); ++i)
 	{
 		// 09.09 방식이 잘못 되어있다는 것을 깨달음
@@ -485,21 +487,24 @@ void UMaterialInstance::BindingMaterialInstanceUserParam() const
 		if (OverrideTextures[i])
 		{
 			DeviceContext->PSSetShaderResources(static_cast<UINT>(ParentMaterial->Textures.size() + i), 1, OverrideTextures[i]->GetSRV().GetAddressOf());
+			SystemBuffer.bTexBind[ParentMaterial->Textures.size() + i] = 1;
 		}
 		else
 		{
-			DeviceContext->PSSetShaderResources(static_cast<UINT>(ParentMaterial->Textures.size() + i), 1, ParentMaterial->TextureParams[i]->GetSRV().GetAddressOf());
+			if (ParentMaterial->TextureParams[i])
+			{
+				DeviceContext->PSSetShaderResources(static_cast<UINT>(i), 1, ParentMaterial->TextureParams[i]->GetSRV().GetAddressOf());
+				SystemBuffer.bTexBind[ParentMaterial->Textures.size() + i] = 1;
+			}
+			else
+			{
+				ID3D11ShaderResourceView* NullSRV = nullptr;
+				DeviceContext->PSSetShaderResources(static_cast<UINT>(ParentMaterial->Textures.size() +  i), 1, &NullSRV);
+				SystemBuffer.bTexBind[ParentMaterial->Textures.size() + i] = 0;
+			}
+			
 		}
-
-		// Legacy Code
-		//if (OverrideTextures.size() > i && OverrideTextures[i])
-		//{
-		//	DeviceContext->PSSetShaderResources(static_cast<UINT>(ParentMaterial->Textures.size() + i), 1, OverrideTextures[i]->GetSRV().GetAddressOf());
-		//}
-		//else
-		//{
-		//	DeviceContext->PSSetShaderResources(static_cast<UINT>(ParentMaterial->Textures.size() + i), 1, ParentMaterial->TextureParams[i]->GetSRV().GetAddressOf());
-		//}
+		GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_SystemParam, &SystemBuffer, sizeof(SystemBuffer));
 	}
 }
 

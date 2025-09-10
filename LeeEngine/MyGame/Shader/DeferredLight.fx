@@ -83,8 +83,6 @@ PS_OUT PS_DirLight(VS_OUT Input)
 			output.Diffuse *= 0.1f;
 			output.Specular *= 0.1f;
 		}
-
-
 	}
 
 	output.Diffuse.a = 1.0f;

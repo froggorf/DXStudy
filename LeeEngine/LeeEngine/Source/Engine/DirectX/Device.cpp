@@ -180,24 +180,24 @@ void FDirectXDevice::InitMultiRenderTarget()
 #endif
 		std::shared_ptr<UTexture> RenderTargetTextures[5] =
 		{
-
 			AssetManager::CreateTexture("ColorTargetTex", DeferredResolution.x,DeferredResolution.y
 				, DXGI_FORMAT_R8G8B8A8_UNORM
 				, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
 
-				AssetManager::CreateTexture("NormalTargetTex", DeferredResolution.x,DeferredResolution.y
-					, DXGI_FORMAT_R32G32B32A32_FLOAT
-					, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+			AssetManager::CreateTexture("NormalTargetTex", DeferredResolution.x,DeferredResolution.y
+				, DXGI_FORMAT_R32G32B32A32_FLOAT
+				, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
 
-				AssetManager::CreateTexture("PositionTargetTex", DeferredResolution.x,DeferredResolution.y
-					, DXGI_FORMAT_R32G32B32A32_FLOAT
-					, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+			AssetManager::CreateTexture("PositionTargetTex", DeferredResolution.x,DeferredResolution.y
+				, DXGI_FORMAT_R32G32B32A32_FLOAT
+				, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
 
-				AssetManager::CreateTexture("EmissiveTargetTex", DeferredResolution.x,DeferredResolution.y
-					, DXGI_FORMAT_R32G32B32A32_FLOAT
-					, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+			AssetManager::CreateTexture("EmissiveTargetTex", DeferredResolution.x,DeferredResolution.y
+				, DXGI_FORMAT_R32G32B32A32_FLOAT
+				, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
 
-				AssetManager::CreateTexture("CustomTargetTex", DeferredResolution.x,DeferredResolution.y
+			// r -> Metallic / g -> Specular / b -> Metallic / a -> AO
+			AssetManager::CreateTexture("PBRTargetTex", DeferredResolution.x,DeferredResolution.y
 					, DXGI_FORMAT_R32G32B32A32_FLOAT
 					, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
 		};
@@ -208,7 +208,7 @@ void FDirectXDevice::InitMultiRenderTarget()
 			XMFLOAT4(0.f, 0.f, 0.f, 1.f),
 			XMFLOAT4(0.f, 0.f, 0.f, 1.f),
 			XMFLOAT4(0.f, 0.f, 0.f, 1.f),
-			XMFLOAT4(0.f, 0.f, 0.f, 1.f),
+			XMFLOAT4(0.f, 0.0f, 0.f, 1.f),
 		};
 
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred] = std::make_shared<FMultiRenderTarget>();

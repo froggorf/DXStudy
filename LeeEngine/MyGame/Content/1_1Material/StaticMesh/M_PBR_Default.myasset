@@ -1,0 +1,16 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_PBR_Default",
+    "VertexShader" : {
+	"FilePath" : "/Shader/PBR/PBR.fx",
+	"Func" : "VS"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/PBR/PS_PBR.fx",
+	"Func": "PBR_PS_Default"
+    },
+    "TextureParams" : [ "", "", "", "", "", "" ],
+    "BlendMode": "Opaque",
+    "TwoSided" : 0
+	
+}

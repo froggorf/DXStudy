@@ -17,7 +17,7 @@ ATestCube2::ATestCube2()
 			{
 				SM_Chair->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
 			});
-		SM_Chair->SetRelativeLocation({-500,500,0});
+		SM_Chair->SetRelativeLocation({-300,500,0});
 	}
 
 	{
@@ -27,8 +27,20 @@ ATestCube2::ATestCube2()
 			{
 				SM_Couch->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
 			});
-		SM_Couch->SetRelativeLocation({-500,500,-250});
+		SM_Couch->SetRelativeLocation({-300,500,-250});
 	}
+
+	{
+		Ground= std::make_shared<UStaticMeshComponent>();
+		Ground->SetupAttachment(GetRootComponent());
+		AssetManager::GetAsyncAssetCache("SM_Brick",[this](std::shared_ptr<UObject> Object)
+			{
+				Ground->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
+			});
+		Ground->SetRelativeLocation({0,490,0});
+		Ground->SetRelativeScale3D({500,10,500});
+	}
+
 	SM_Well = std::make_shared<UStaticMeshComponent>();
 	SM_Well->SetupAttachment(GetRootComponent());
 	AssetManager::GetAsyncAssetCache("SM_Well_PBR",[this](std::shared_ptr<UObject> Object)
@@ -51,7 +63,7 @@ ATestCube2::ATestCube2()
 		{
 			SM_Barrel2->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
 		});
-	SM_Barrel2->SetRelativeLocation({600,500,0});
+	SM_Barrel2->SetRelativeLocation({0,500,100});
 
 	
 	for (int i = 0; i < 6; ++i)

@@ -30,6 +30,8 @@ protected:
 
 	std::shared_ptr<UStaticMeshComponent> SM_Chair;
 	std::shared_ptr<UStaticMeshComponent> SM_Couch;
+
+	std::shared_ptr<UStaticMeshComponent> Ground;
 private:
 
 

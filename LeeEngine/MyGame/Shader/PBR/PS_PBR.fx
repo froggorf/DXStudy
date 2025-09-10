@@ -18,18 +18,17 @@ float4 PBR_PS_Default(PBR_PS_INPUT input) : SV_TARGET
 	int AlbedoTexBind = bTexBind_0_3.x;
 	float3 DefaultAlbedo = float3(1.0f, 0.0f, 1.0f);
 	float3 albedo = AlbedoTexBind ? AlbedoTexture.Sample(DefaultSampler, input.TexCoord).rgb : DefaultAlbedo;
-	
-	float DefaultMetallic = 0.5f;
+	float DefaultMetallic = 0.2f;
 	int MetallicTexBind = bTexBind_0_3.z;
 	float metallic = MetallicTexBind ? MetallicTexture.Sample(DefaultSampler, input.TexCoord).r : DefaultMetallic;
-	
-	float DefaultRoughness = 0.5f;
-	int RoughnessTexBind = bTexBind_0_3.w;
-	float roughness = RoughnessTexBind ? RoughnessTexture.Sample(DefaultSampler, input.TexCoord).r : DefaultRoughness;
 
 	float DefaultSpecular = 0.5f;
-	int SpecularTexBind = bTexBind_4_7.x;
-	float specular = SpecularTexBind ? SpecularTexture.Sample(DefaultSampler, input.TexCoord) : DefaultSpecular;
+	int SpecularTexBind = bTexBind_0_3.w;
+	float specular = SpecularTexBind ? SpecularTexture.Sample(DefaultSampler, input.TexCoord).r : DefaultSpecular;
+
+	float DefaultRoughness = 0.5f;
+	int RoughnessTexBind = bTexBind_4_7.x;
+	float roughness = RoughnessTexBind ? RoughnessTexture.Sample(DefaultSampler, input.TexCoord).r : DefaultRoughness;
 
 	float DefaultAO = 1.0f;
 	int AOTexBind = bTexBind_4_7.y;
@@ -47,7 +46,6 @@ float4 PBR_PS_Well(PBR_PS_INPUT input) : SV_TARGET
 	int AlbedoTexBind = bTexBind_0_3.x;
 	float3 DefaultAlbedo = float3(1.0f, 0.0f, 1.0f);
 	float3 albedo = AlbedoTexBind ? AlbedoTexture.Sample(DefaultSampler, input.TexCoord).rgb : DefaultAlbedo;
-	albedo *= 0.2f;
 	float DefaultMetallic = 0.5f;
 	int MetallicTexBind = bTexBind_0_3.z;
 	float metallic = MetallicTexBind ? MetallicTexture.Sample(DefaultSampler, input.TexCoord).g : DefaultMetallic;
@@ -83,14 +81,23 @@ cbuffer cbTest : register(b4)
 
 float4 PBR_PS_Test(PBR_PS_INPUT input) : SV_TARGET
 {
-    float3 albedo = float3(AlbedoR, AlbedoG, AlbedoB);
-    float metallic = ObjectMetallic;
-    float roughness = max(ObjectRoughness, 0.001);
+	
+	
+	float3 color = MyPBR(input, float3(AlbedoR,AlbedoG,AlbedoB), ObjectMetallic, ObjectSpecular, ObjectRoughness, ObjectAO);
+	
+	return float4(color, 1.0);
+}
+
+float4 PBR_PS_Brick(PBR_PS_INPUT input) : SV_TARGET
+{
+	float3 albedo = float3(AlbedoR, AlbedoG, AlbedoB);
+	float metallic = ObjectMetallic;
+	float roughness = max(ObjectRoughness, 0.001);
 	float specular = ObjectSpecular;
 	float ao = ObjectAO;
-    float3 color = MyPBR(input, albedo, metallic, specular, roughness, ao);
+	float3 color = MyPBR(input, albedo, metallic, specular, roughness, ao);
 
-    return float4(color, 1.0);
+	return float4(color, 1.0);
 }
 
 float4 PBR_PS_UE_Chair(PBR_PS_INPUT input) : SV_TARGET

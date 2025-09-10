@@ -276,8 +276,7 @@ float3 MyPBR(PBR_PS_INPUT input, float3 albedo, float metallic, float ObjectSpec
 
 	// 기본적으로 Ambient의 색상은 낮추고, 빛에의해 밝아지는 세기를 좀 더 키워주도록 변경 (0.4f)
 	// 근데 메탈릭은 값이 더 크게 1에 가깝게 되도록 하는게 맞는것같음.
-	
-	float3 ambient = (kD * diffuse  + specular) * ao * (0.4f + lerp(0.0f,0.6f,metallic));
+	float3 ambient = (kD * diffuse  + specular) * ao * (0.04f + lerp(0.0f,0.6f,metallic));
 	float3 color = Lo +  ambient;
 
 	color = ACESFilm(color);
