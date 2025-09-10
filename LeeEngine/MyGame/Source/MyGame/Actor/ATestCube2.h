@@ -27,6 +27,9 @@ protected:
 	std::shared_ptr<UStaticMeshComponent> SM_Well;
 	std::shared_ptr<UStaticMeshComponent> SM_Barrel1;
 	std::shared_ptr<UStaticMeshComponent> SM_Barrel2;
+
+	std::shared_ptr<UStaticMeshComponent> SM_Chair;
+	std::shared_ptr<UStaticMeshComponent> SM_Couch;
 private:
 
 

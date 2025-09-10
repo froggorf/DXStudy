@@ -1,0 +1,6 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_UE_Chair",
+    "ModelData": "/Content/Resource/Model/Chair_UECOORD.FBX",
+    "Material" : [ "M_UE_Chair" ]
+}

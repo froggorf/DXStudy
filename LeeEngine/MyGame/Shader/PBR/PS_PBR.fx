@@ -93,5 +93,29 @@ float4 PBR_PS_Test(PBR_PS_INPUT input) : SV_TARGET
     return float4(color, 1.0);
 }
 
+float4 PBR_PS_UE_Chair(PBR_PS_INPUT input) : SV_TARGET
+{
+	float3 MetallicTexVal = AlbedoTexture.Sample(DefaultSampler, input.TexCoord);
+	float3 NormalTexVal = MetallicTexture.Sample(DefaultSampler, input.TexCoord);
+
+	const float4 ColorBase = float4(0.12f, 0.103f, 0.0918f,1);
+	const float4 ColorSeats = float4(0.9741f, 0.3378f, 0.0344f,1);
+	const float4 ColorMetal = float4(0.914, 0.865, 0.719,1);
+	float3 albedo = (lerp(lerp(ColorBase, ColorSeats, MetallicTexVal.b), ColorMetal, MetallicTexVal.g) * MetallicTexVal.r).rgb;
+
+	
+	float metallic = lerp(0.0f,1.0f, MetallicTexVal.g);
+
+	const float RoughnessBase = 0.5f;
+	const float RoughnessSeats = 0.2f;
+	const float RoughnessMetal = 0.4f;
+	float roughness = lerp(lerp(RoughnessBase, RoughnessSeats, MetallicTexVal.b),RoughnessMetal,MetallicTexVal.g);
+	float specular = 0.5;
+	float ao = ObjectAO;
+
+	float3 color = MyPBR(input, albedo, metallic, specular, roughness, ao);
+	
+	return float4(color, 1.0);
+}
 
 #endif

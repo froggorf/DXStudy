@@ -8,6 +8,27 @@ ATestCube2::ATestCube2()
 {
 	if (!GDirectXDevice) return;
 
+	PBRTestComp = std::make_shared<UPBRTestComponent>();
+	PBRTestComp->SetupAttachment(GetRootComponent());
+	{
+		SM_Chair = std::make_shared<UStaticMeshComponent>();
+		SM_Chair->SetupAttachment(GetRootComponent());
+		AssetManager::GetAsyncAssetCache("SM_UE_Chair",[this](std::shared_ptr<UObject> Object)
+			{
+				SM_Chair->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
+			});
+		SM_Chair->SetRelativeLocation({-500,500,0});
+	}
+
+	{
+		SM_Couch = std::make_shared<UStaticMeshComponent>();
+		SM_Couch->SetupAttachment(GetRootComponent());
+		AssetManager::GetAsyncAssetCache("SM_UE_Couch",[this](std::shared_ptr<UObject> Object)
+			{
+				SM_Couch->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
+			});
+		SM_Couch->SetRelativeLocation({-500,500,-250});
+	}
 	SM_Well = std::make_shared<UStaticMeshComponent>();
 	SM_Well->SetupAttachment(GetRootComponent());
 	AssetManager::GetAsyncAssetCache("SM_Well_PBR",[this](std::shared_ptr<UObject> Object)
@@ -32,8 +53,6 @@ ATestCube2::ATestCube2()
 		});
 	SM_Barrel2->SetRelativeLocation({600,500,0});
 
-	PBRTestComp = std::make_shared<UPBRTestComponent>();
-	PBRTestComp->SetupAttachment(GetRootComponent());
 	
 	for (int i = 0; i < 6; ++i)
 	{

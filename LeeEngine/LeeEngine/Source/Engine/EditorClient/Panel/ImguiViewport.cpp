@@ -115,10 +115,6 @@ void FImguiLevelViewport::Draw()
 			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), ViewPortSize);	
 		}	
 		
-		
-	
-
-
 
 		// SelectActor ImGuizmo
 		ImGuizmo::Enable(true);
@@ -130,8 +126,6 @@ void FImguiLevelViewport::Draw()
 
 		DrawImguizmoSelectedActor(GDirectXDevice->GetAspectRatio());
 		ImGui::PopClipRect();
-
-		
 
 		// 키 입력 처리
 		if (ImGui::IsWindowFocused())
