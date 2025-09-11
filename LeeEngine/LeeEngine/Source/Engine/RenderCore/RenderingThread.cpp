@@ -716,7 +716,12 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(0,1, PositionTexture->GetSRV().GetAddressOf());
 				const std::shared_ptr<UTexture>& NormalTexture = UTexture::GetTextureCache("NormalTargetTex");
 				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(1,1, NormalTexture->GetSRV().GetAddressOf());
-				
+
+				// PBR을 위해서 렌더 텍스쳐를 추가로 바인딩
+				const std::shared_ptr<UTexture>& PBRTexture = UTexture::GetTextureCache("PBRTargetTex");
+				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(3,1, NormalTexture->GetSRV().GetAddressOf());
+
+
 				int LightSize = static_cast<int>(SceneData->CurrentFrameLightInfo.size());
 				for (int i = 0; i < LightSize; ++i)
 				{
@@ -772,7 +777,12 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(1,1,DiffuseTexture->GetSRV().GetAddressOf());
 				const std::shared_ptr<UTexture>& SpecularTexture = UTexture::GetTextureCache("SpecularTargetTex");
 				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(2,1,SpecularTexture->GetSRV().GetAddressOf());
-
+				const std::shared_ptr<UTexture>& PositionTexture = UTexture::GetTextureCache("PositionTargetTex");
+				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(3,1, PositionTexture->GetSRV().GetAddressOf());
+				const std::shared_ptr<UTexture>& NormalTexture = UTexture::GetTextureCache("NormalTargetTex");
+				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(4,1, NormalTexture->GetSRV().GetAddressOf());
+				const std::shared_ptr<UTexture>& PBRTexture = UTexture::GetTextureCache("PBRTargetTex");
+				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(5,1, PBRTexture->GetSRV().GetAddressOf());
 				SceneData->DeferredMergeRenderData.SceneProxy->Draw();
 			}
 

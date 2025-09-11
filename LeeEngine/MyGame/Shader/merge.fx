@@ -1,9 +1,14 @@
 #include "Global.fx"
 #include "TransformHelpers.hlsl"
+#include "PBRLightHelper.fx"
 
-Texture2D    txColorTexture : register( t0 );
-Texture2D    txDiffuseTexture : register( t1 );
-Texture2D    txSpecularTexture : register( t2 );
+Texture2D    ColorTexture : register( t0 );
+Texture2D    LightDiffuseTexture : register( t1 );
+Texture2D    LightSpecularTexture : register( t2 );
+Texture2D    ViewPosTexture : register( t3 );
+Texture2D    ViewNormalTexture : register( t4 );
+Texture2D    PBRTexture : register( t5 );
+
 SamplerState samLinear : register( s0 );
 
 struct VS_IN
@@ -36,13 +41,34 @@ float4 PS_Merge(VS_OUT _in) : SV_Target
 {
     float4 OutColor = (float4) 0.f;
 
-	float4 Color = txColorTexture.Sample(samLinear, _in.vUV);
-	float4 Diffuse = txDiffuseTexture.Sample(samLinear, _in.vUV);
-	float4 Specular = txSpecularTexture.Sample(samLinear, _in.vUV);
+	float4 Albedo = ColorTexture.Sample(samLinear, _in.vUV);
+	float4 Diffuse = LightDiffuseTexture.Sample(samLinear, _in.vUV);
+	float4 Specular = LightSpecularTexture.Sample(samLinear, _in.vUV);
+	float3 N = ViewNormalTexture.Sample(samLinear, _in.vUV);
+	float3 V = ViewPosTexture.Sample(samLinear, _in.vUV);
+	float4 PBRData = PBRTexture.Sample(samLinear, _in.vUV);
 
-	OutColor.rgb = Color.rgb * Diffuse.rgb + Specular.rgb;
+	
+	
+	
+
+	float ObjectMetallic = PBRData.r;
+	float ObjectSpecular = PBRData.g;
+	float ObjectRoughness = PBRData.b;
+	float ObjectAO = PBRData.a;
+
+	// PBR 로 변경한 이후, IBL 을 해당 코드에서 처리,
+	const float DefaultSpecular = 0.04 *  ObjectSpecular;
+	float3 F0 = lerp(float3(DefaultSpecular, DefaultSpecular, DefaultSpecular), Albedo, ObjectMetallic);
+	float3 ambient = IBLAmbient(normalize(N), normalize(-V), F0, Albedo, ObjectMetallic, ObjectRoughness, ObjectAO);
+
+	// 빛 먼저 적용시키고,
+	OutColor.rgb = Albedo.rgb * Diffuse.rgb + Albedo.rgb* Specular.rgb;
+	
+	// IBL Ambient 를 적용시킨다
+	OutColor.rgb = OutColor.rgb + ambient;
+	OutColor.rgb = ACESFilm(OutColor.rgb);
 	// 08.20 백버퍼를 B8G8R8A8_UNORM 으로 바꾸니 알파값이 중요해져서 해당 코드를 추가
 	OutColor.a = 1.0f;
-    
     return OutColor;
 }

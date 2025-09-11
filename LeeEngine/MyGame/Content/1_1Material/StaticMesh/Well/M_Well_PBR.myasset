@@ -10,7 +10,7 @@
 	"Func": "PBR_PS_Well"
     },
     "TextureParams" : [ "T_Well_Albedo", "T_Well_Normal", "T_Well_Metallic_Roughness" ],
-    "BlendMode": "Opaque",
+    "BlendMode": "Deferred",
     "TwoSided" : 0
 	
 }

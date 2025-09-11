@@ -10,6 +10,7 @@ SamplerState samLinear : register( s0 );
 
 Texture2D    POSITION_TARGET : register( t0 );
 Texture2D    NORMAL_TARGET : register( t1 );
+Texture2D    PBR_TARGET : register( t3 );
 Texture2D    SHADOW_MAP : register( t2 );
 TextureCube<float> PointShadowMap : register(t2);
 
@@ -64,11 +65,25 @@ PS_OUT PS_DirLight(VS_OUT Input)
 
 	float3 ViewNormal = NORMAL_TARGET.Sample(samLinear, Input.UV).xyz;
 
-	CalcLight(gView, ViewPos.xyz, ViewNormal, gLightIndex, output.Diffuse.xyz, output.Specular.xyz);
+	// 0911 기존 라이트 계산을 PBR 로 변경
+	//CalcLight(gView, ViewPos.xyz, ViewNormal, gLightIndex, output.Diffuse.xyz, output.Specular.xyz);
 
-	//output.Specular.xyz *= ViewPos.w;
+	float4 PBRData = PBR_TARGET.Sample(samLinear, Input.UV);
+	float Metallic = PBRData.r;
+	float Specular = PBRData.g;
+	float Roughness = PBRData.b;
+	float AO = PBRData.a;
 
-	// 그림자 테스트
+	// 라이팅
+	{
+		const float DefaultSpecular = 0.04 * Specular;
+		float3 F0 = lerp(float3(DefaultSpecular, DefaultSpecular, DefaultSpecular), float3(1,1,1), Metallic);
+		CalcPBRLightContribution(ViewPos.xyz, ViewNormal, normalize(-ViewPos.xyz), 
+			Metallic, Roughness, F0, gLightIndex, output.Diffuse.xyz, output.Specular.xyz);
+	}
+	
+
+	// 그림자
 	{
 		float3 WorldPos = mul(float4(ViewPos.xyz, 1.f), gViewInv).xyz;
 
@@ -92,47 +107,6 @@ PS_OUT PS_DirLight(VS_OUT Input)
 	return output;
 }
 
-PS_OUT PS_PBR_DirLight(VS_OUT Input)
-{
-	PS_OUT output = (PS_OUT) 0.f;
-
-	// Position Target 에서 호출된 픽셀 자리에 해당하는 곳에 기록된 물체의 좌표를 확인한다.
-	float4 ViewPos = POSITION_TARGET.Sample(samLinear, Input.UV);
-
-	if (ViewPos.x == 0.f && ViewPos.y == 0.f && ViewPos.z == 0.f)
-	{
-		discard;
-	}
-
-	float3 ViewNormal = NORMAL_TARGET.Sample(samLinear, Input.UV).xyz;
-
-	CalcLight(gView, ViewPos.xyz, ViewNormal, gLightIndex, output.Diffuse.xyz, output.Specular.xyz);
-
-	//output.Specular.xyz *= ViewPos.w;
-
-	// 그림자 테스트
-	{
-		float3 WorldPos = mul(float4(ViewPos.xyz, 1.f), gViewInv).xyz;
-
-		float4 ShadowMapPos = mul(float4(WorldPos, 1.f), LightVP);
-		ShadowMapPos.xyz /= ShadowMapPos.w;
-
-		float2 ShadowMapUV = float2((ShadowMapPos.x / 2.f) + 0.5f, 1.f - ((ShadowMapPos.y / 2.f) + 0.5f));
-
-		float fDepth = SHADOW_MAP.Sample(samLinear, ShadowMapUV).x;
-
-		if (fDepth + 0.001f < ShadowMapPos.z)
-		{
-			output.Diffuse *= 0.1f;
-			output.Specular *= 0.1f;
-		}
-	}
-
-	output.Diffuse.a = 1.0f;
-	output.Specular.a = 1.0f;
-
-	return output;
-}
 
 
 //////////////////////
@@ -170,8 +144,19 @@ PS_OUT PS_PointLight(VS_OUT Input)
 	float3 vViewNormal = NORMAL_TARGET.Sample(samLinear, ScreenUV).xyz;
 
 
-	CalcLight(gView, vViewPos.xyz, vViewNormal, gLightIndex, output.Diffuse.xyz, output.Specular.xyz);
-	//output.vSpecular.xyz *= vViewPos.w;   
+	float4 PBRData = PBR_TARGET.Sample(samLinear, Input.UV);
+	float Metallic = PBRData.r;
+	float Specular = PBRData.g;
+	float Roughness = PBRData.b;
+	float AO = PBRData.a;
+
+	// 라이팅
+	{
+		const float DefaultSpecular = 0.04 * Specular;
+		float3 F0 = lerp(float3(DefaultSpecular, DefaultSpecular, DefaultSpecular), float3(1,1,1), Metallic);
+		CalcPBRLightContribution(vViewPos.xyz, vViewNormal, normalize(-vViewPos.xyz), 
+			Metallic, Roughness, F0, gLightIndex, output.Diffuse.xyz, output.Specular.xyz);
+	}
 
 	// 그림자 테스트
 	{

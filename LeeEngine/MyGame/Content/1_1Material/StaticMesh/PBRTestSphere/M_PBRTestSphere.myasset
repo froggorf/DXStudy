@@ -19,7 +19,7 @@
 	{"Name": "Roughness", "Type" : "float", "Offset" : 20, "DefaultValue" : 1.0},
 	{"Name": "AO", "Type" : "float", "Offset" : 24, "DefaultValue" : 1.0}
     ],
-    "BlendMode": "Opaque",
+    "BlendMode": "Deferred",
     "TwoSided" : 0
 	
 }

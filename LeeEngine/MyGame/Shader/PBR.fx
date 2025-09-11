@@ -31,7 +31,6 @@ PBR_PS_INPUT VS(VS_INPUT Input)
 	output.TexCoord = Input.TexCoord;
 
 	output.ViewPosition = mul(float4(Input.Pos.xyz, 1.f), gMatWV);
-
 	output.ViewTangent = normalize(mul(float4(Input.Tangent, 0.f), gMatWV)).xyz;
 	output.ViewNormal = normalize(mul(float4(Input.Normal, 0.f), gMatWV)).xyz;
 	output.ViewBinormal = normalize(mul(float4(Input.Binormal, 0.f), gMatWV)).xyz;

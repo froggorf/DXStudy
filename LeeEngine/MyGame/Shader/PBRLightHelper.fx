@@ -122,14 +122,8 @@ float3 CalcBRDF(float3 N, float3 V, float3 L, float3 albedo,
 	return (Diffuse + specular) * radiance * NdotL;
 }
 
-float3 CalcPBRLight(float3 viewPos, float3 N, float3 V, float3 albedo, 
-	float metallic, float roughness, float3 F0, int lightIndex)
+void GetLightRadiance(in FLightInfo info, in float3 viewPos, out float3 L, out float3 radiance)
 {
-	FLightInfo info = g_LightBuffer[lightIndex];
-
-	float3 L = float3(0, 0, 0);
-	float3 radiance = float3(0, 0, 0);
-
 	// Directional Light
 	if (0 == info.LightType)
 	{
@@ -174,11 +168,80 @@ float3 CalcPBRLight(float3 viewPos, float3 N, float3 V, float3 albedo,
 		//
 		//radiance = info.LightColor * attenuation * intensity;
 	}
+}
+
+float3 CalcPBRLight(float3 viewPos, float3 N, float3 V, float3 albedo, 
+	float metallic, float roughness, float3 F0, int lightIndex)
+{
+	FLightInfo info = g_LightBuffer[lightIndex];
+
+	float3 L = float3(0, 0, 0);
+	float3 radiance = float3(0, 0, 0);
+
+	GetLightRadiance(info, viewPos, L, radiance);
 
 	// Cook-Torrance BRDF 계산
 	return CalcBRDF(N, V, L, albedo, metallic, roughness, F0, radiance);
 }
 
+// 빛의 기여도만 계산하는 함수
+void CalcLightContribution(float3 N, float3 V, float3 L, 
+	float metallic, float roughness, float3 F0, float3 radiance,
+	out float3 Diffuse, out float3 Specular)
+{
+	roughness = max(roughness, 0.01);
+	float3 H = normalize(V + L);
+	float NdotL = max(dot(N, L), 0.0);
+	float NdotV = max(dot(N, V), 0.0);
+
+	if (NdotL <= 0.0)
+	{
+		Diffuse = float3(0,0,0);
+		Specular = float3(0,0,0);
+		return;
+	}
+
+	// Cook-Torrance BRDF (albedo 제외)
+	float NDF = DistributionGGX(N, H, roughness);
+	float G = GeometrySmith(N, V, L, roughness);
+	float3 F = FresnelSchlick(max(dot(H, V), 0.0), F0);
+
+	float3 kS = F;
+	float3 kD = float3(1,1,1) - kS;
+	kD *= 1.0 - metallic;
+
+	// Specular 기여도 (albedo 없음)
+	float3 numerator = NDF * G * F;
+	float denominator = 4.0 * NdotV * NdotL;
+	float3 specular = metallic < 0.01f ? 0.0f : numerator / max(denominator, 0.001);
+
+	// grazing angle boost
+	if (metallic > 0.5) {
+		float grazingAngle = 1.0 - NdotV;
+		float grazingBoost = 1.0 + grazingAngle * grazingAngle * 4.0;
+		specular *= grazingBoost;
+	}
+
+	// Diffuse 기여도 (albedo 제외, 단순히 kD만)
+	float3 diffuseContribution = kD / PI;
+
+	Diffuse = diffuseContribution * radiance * NdotL;
+	Specular = specular * radiance * NdotL;
+}
+// Deferred Light 에서 라이트가 얼만큼의 영향을 주는지 계산하는 함수
+void CalcPBRLightContribution(float3 viewPos, float3 N, float3 V, 
+	float metallic, float roughness, float3 F0, int lightIndex
+	, out float3 Diffuse, out float3 Specular)
+{
+	FLightInfo info = g_LightBuffer[lightIndex];
+
+	float3 L = float3(0, 0, 0);
+	float3 radiance = float3(0, 0, 0);
+
+	GetLightRadiance(info, viewPos, L, radiance);
+
+	CalcLightContribution(N, V, L, metallic, roughness, F0, radiance, Diffuse, Specular);
+}
 
 float3 CalcAmbientPBR(float3 N, float3 V, float3 albedo, 
 	float metallic, float roughness, float3 F0, float ao)
@@ -241,23 +304,8 @@ float3 FastDiffuseIrradiance(float3 Normal)
 	return totalIrradiance / float(SAMPLE_COUNT);
 }
 
-
-float3 MyPBR(PBR_PS_INPUT input, float3 albedo, float metallic, float ObjectSpecular, float roughness, float ao)
+float3 IBLAmbient(float3 N, float3 V, float3 F0, float3 albedo, float metallic, float roughness, float ao)
 {
-	float3 N = GetNormalFromMap(input);
-	float3 V = normalize(-input.ViewPosition);
-
-	const float DefaultSpecular = 0.04;// * ObjectSpecular;
-	float3 F0 = lerp(float3(DefaultSpecular, DefaultSpecular, DefaultSpecular), albedo, metallic);
-
-	// 다이렉트 라이팅
-	float3 Lo = float3(0.0, 0.0, 0.0);
-	for (int i = 0; i < gLightCount; ++i)
-	{
-		Lo += CalcPBRLight(input.ViewPosition, N, V, albedo, metallic, roughness, F0, i);
-	}
-
-
 	// 🔥 IBL 계산 (통합 버전)
 	float3 kS = FresnelSchlick(max(dot(N, V), 0.0), F0);
 	float3 kD = 1.0 - kS;
@@ -276,10 +324,33 @@ float3 MyPBR(PBR_PS_INPUT input, float3 albedo, float metallic, float ObjectSpec
 
 	// 기본적으로 Ambient의 색상은 낮추고, 빛에의해 밝아지는 세기를 좀 더 키워주도록 변경 (0.4f)
 	// 근데 메탈릭은 값이 더 크게 1에 가깝게 되도록 하는게 맞는것같음.
-	float3 ambient = (kD * diffuse  + specular) * ao * (0.08f + lerp(0.0f,0.6f,metallic));
+	float3 ambient = (kD * diffuse  + specular) * ao * (0.08f + lerp(0.0f,0.92f,metallic));
+	return ambient;
+}
+
+// Forward Rendering 전용
+float3 MyPBR(PBR_PS_INPUT input, float3 albedo, float metallic, float ObjectSpecular, float roughness, float ao)
+{
+	float3 N = GetNormalFromMap(input);
+	float3 V = normalize(-input.ViewPosition);
+
+	const float DefaultSpecular = 0.04 * ObjectSpecular;
+	float3 F0 = lerp(float3(DefaultSpecular, DefaultSpecular, DefaultSpecular), albedo, metallic);
+
+	// 다이렉트 라이팅
+	float3 Lo = float3(0.0, 0.0, 0.0);
+	for (int i = 0; i < gLightCount; ++i)
+	{
+		Lo += CalcPBRLight(input.ViewPosition, N, V, albedo, metallic, roughness, F0, i);
+	}
+
+	float3 ambient = IBLAmbient(N,V,F0,albedo,metallic,roughness,ao);
+
 	float3 color = Lo +  ambient;
 
 	color = ACESFilm(color);
+
+	return color;
 
 	return color;
 }

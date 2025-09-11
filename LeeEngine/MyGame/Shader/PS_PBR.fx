@@ -12,7 +12,7 @@
  TextureCube EnvironmentMap  : register(t5);
 */
 
-struct Deffered_PS_OUT
+struct Deferred_PS_OUT
 {
 	float4 Color       : SV_Target;
 	float4 Normal      : SV_Target1;
@@ -22,45 +22,13 @@ struct Deffered_PS_OUT
 	float4 PBRData      : SV_Target4;
 };
 
-Deffered_PS_OUT PS_PBR_Deferred_Default(PBR_PS_INPUT Input)
-{
-	Deffered_PS_OUT output = (Deffered_PS_OUT) 0.f;
 
-	int AlbedoTexBind = bTexBind_0_3.x;
-	float4 DefaultAlbedo = float4(1.0f, 0.0f, 1.0f,1.0f);
-	float4 albedo = AlbedoTexBind ? AlbedoTexture.Sample(DefaultSampler, Input.TexCoord).rgba : DefaultAlbedo;
-	float DefaultMetallic = 0.2f;
-	int MetallicTexBind = bTexBind_0_3.z;
-	float metallic = MetallicTexBind ? MetallicTexture.Sample(DefaultSampler, Input.TexCoord).r : DefaultMetallic;
-
-	float DefaultSpecular = 0.5f;
-	int SpecularTexBind = bTexBind_0_3.w;
-	float specular = SpecularTexBind ? SpecularTexture.Sample(DefaultSampler, Input.TexCoord).r : DefaultSpecular;
-
-	float DefaultRoughness = 0.5f;
-	int RoughnessTexBind = bTexBind_4_7.x;
-	float roughness = RoughnessTexBind ? RoughnessTexture.Sample(DefaultSampler, Input.TexCoord).r : DefaultRoughness;
-
-	float DefaultAO = 1.0f;
-	int AOTexBind = bTexBind_4_7.y;
-	float ao = AOTexBind ? AOTexture.Sample(DefaultSampler, Input.TexCoord).r : DefaultAO;
-
-	output.Color = albedo;
-	output.PBRData = float4(metallic, specular, roughness, ao);
-	output.Normal = float4(Input.ViewNormal, 1.f);    
-	output.Position = float4(Input.ViewPosition, 1.f);
-	output.Emissive = float4(0.f, 0.f, 0.f, 1.f);
-
-	return output;
-}
-
-
-float4 PBR_PS_Default(PBR_PS_INPUT input) : SV_TARGET
+Deferred_PS_OUT PBR_PS_Default(PBR_PS_INPUT input) : SV_TARGET
 {
 	// Sample textures (기존 코드 그대로)
 	int AlbedoTexBind = bTexBind_0_3.x;
-	float3 DefaultAlbedo = float3(1.0f, 0.0f, 1.0f);
-	float3 albedo = AlbedoTexBind ? AlbedoTexture.Sample(DefaultSampler, input.TexCoord).rgb : DefaultAlbedo;
+	float4 DefaultAlbedo = float4(1.0f, 0.0f, 1.0f, 1.0f);
+	float4 albedo = AlbedoTexBind ? AlbedoTexture.Sample(DefaultSampler, input.TexCoord).rgba : DefaultAlbedo;
 	float DefaultMetallic = 0.2f;
 	int MetallicTexBind = bTexBind_0_3.z;
 	float metallic = MetallicTexBind ? MetallicTexture.Sample(DefaultSampler, input.TexCoord).r : DefaultMetallic;
@@ -77,18 +45,25 @@ float4 PBR_PS_Default(PBR_PS_INPUT input) : SV_TARGET
 	int AOTexBind = bTexBind_4_7.y;
 	float ao = AOTexBind ? AOTexture.Sample(DefaultSampler, input.TexCoord).r : DefaultAO;
 
-	float3 color = MyPBR(input, albedo, metallic, specular, roughness, ao);
-	return float4(color,1.0f);
+	Deferred_PS_OUT output = (Deferred_PS_OUT) 0.f;
 
+	output.Color = albedo;
+	output.PBRData = float4(metallic, specular, roughness, ao);
+	float3 N = GetNormalFromMap(input);
+	output.Normal = float4(N, 1.f);    
+	output.Position = float4(input.ViewPosition, 1.f);
+	output.Emissive = float4(0.f, 0.f, 0.f, 1.f);
+
+	return output;
 }
 
 
-float4 PBR_PS_Well(PBR_PS_INPUT input) : SV_TARGET
+Deferred_PS_OUT PBR_PS_Well(PBR_PS_INPUT input) : SV_TARGET
 {
 	// Sample textures (기존 코드 그대로)
 	int AlbedoTexBind = bTexBind_0_3.x;
-	float3 DefaultAlbedo = float3(1.0f, 0.0f, 1.0f);
-	float3 albedo = AlbedoTexBind ? AlbedoTexture.Sample(DefaultSampler, input.TexCoord).rgb : DefaultAlbedo;
+	float4 DefaultAlbedo = float4(1.0f, 0.0f, 1.0f, 1.0f);
+	float4 albedo = AlbedoTexBind ? AlbedoTexture.Sample(DefaultSampler, input.TexCoord).rgba : DefaultAlbedo;
 	float DefaultMetallic = 0.5f;
 	int MetallicTexBind = bTexBind_0_3.z;
 	float metallic = MetallicTexBind ? MetallicTexture.Sample(DefaultSampler, input.TexCoord).g : DefaultMetallic;
@@ -104,9 +79,16 @@ float4 PBR_PS_Well(PBR_PS_INPUT input) : SV_TARGET
 	int AOTexBind = bTexBind_4_7.y;
 	float ao = AOTexBind ? AOTexture.Sample(DefaultSampler, input.TexCoord).r : DefaultAO;
 
-	float3 color = MyPBR(input, albedo, metallic, specular, roughness, ao);
+	Deferred_PS_OUT output = (Deferred_PS_OUT) 0.f;
 
-	return float4(color, 1.0);
+	output.Color = albedo;
+	output.PBRData = float4(metallic, specular, roughness, ao);
+	float3 N = GetNormalFromMap(input);
+	output.Normal = float4(N, 1.f);    
+	output.Position = float4(input.ViewPosition, 1.f);
+	output.Emissive = float4(0.f, 0.f, 0.f, 1.f);
+
+	return output;
 }
 
 cbuffer cbTest : register(b4)
@@ -122,28 +104,41 @@ cbuffer cbTest : register(b4)
 	float4 pad2;
 }
 
-float4 PBR_PS_Test(PBR_PS_INPUT input) : SV_TARGET
+Deferred_PS_OUT PBR_PS_Test(PBR_PS_INPUT input) : SV_TARGET
 {
-	
-	
-	float3 color = MyPBR(input, float3(AlbedoR,AlbedoG,AlbedoB), ObjectMetallic, ObjectSpecular, ObjectRoughness, ObjectAO);
-	
-	return float4(color, 1.0);
+	Deferred_PS_OUT output = (Deferred_PS_OUT) 0.f;
+
+	output.Color = float4(AlbedoR, AlbedoG, AlbedoB, 1.0f);
+	output.PBRData = float4(ObjectMetallic, ObjectSpecular, ObjectRoughness, ObjectAO);
+	float3 N = GetNormalFromMap(input);
+	output.Normal = float4(N, 1.f);    
+	output.Position = float4(input.ViewPosition, 1.f);
+	output.Emissive = float4(0.f, 0.f, 0.f, 1.f);
+
+	return output;
 }
 
-float4 PBR_PS_Brick(PBR_PS_INPUT input) : SV_TARGET
+Deferred_PS_OUT PBR_PS_Brick(PBR_PS_INPUT input) : SV_TARGET
 {
-	float3 albedo = float3(AlbedoR, AlbedoG, AlbedoB);
+	float4 albedo = float4(AlbedoR, AlbedoG, AlbedoB, 1.0f);
 	float metallic = ObjectMetallic;
 	float roughness = max(ObjectRoughness, 0.001);
 	float specular = ObjectSpecular;
 	float ao = ObjectAO;
-	float3 color = MyPBR(input, albedo, metallic, specular, roughness, ao);
 
-	return float4(color, 1.0);
+	Deferred_PS_OUT output = (Deferred_PS_OUT) 0.f;
+
+	output.Color = albedo;
+	output.PBRData = float4(metallic,specular,roughness,ao);
+	float3 N = GetNormalFromMap(input);
+	output.Normal = float4(N, 1.f);    
+	output.Position = float4(input.ViewPosition, 1.f);
+	output.Emissive = float4(0.f, 0.f, 0.f, 1.f);
+
+	return output;
 }
 
-float4 PBR_PS_UE_Chair(PBR_PS_INPUT input) : SV_TARGET
+Deferred_PS_OUT PBR_PS_UE_Chair(PBR_PS_INPUT input) : SV_TARGET
 {
 	float3 MetallicTexVal = AlbedoTexture.Sample(DefaultSampler, input.TexCoord);
 	float3 NormalTexVal = MetallicTexture.Sample(DefaultSampler, input.TexCoord);
@@ -163,9 +158,17 @@ float4 PBR_PS_UE_Chair(PBR_PS_INPUT input) : SV_TARGET
 	float specular = 0.5;
 	float ao = ObjectAO;
 
-	float3 color = MyPBR(input, albedo, metallic, specular, roughness, ao);
-	
-	return float4(color, 1.0);
+
+	Deferred_PS_OUT output = (Deferred_PS_OUT) 0.f;
+
+	output.Color = float4(albedo,1.0f);
+	output.PBRData = float4(metallic, specular, roughness, ao);
+	float3 N = GetNormalFromMap(input);
+	output.Normal = float4(N, 1.f);    
+	output.Position = float4(input.ViewPosition, 1.f);
+	output.Emissive = float4(0.f, 0.f, 0.f, 1.f);
+
+	return output;
 }
 
 #endif

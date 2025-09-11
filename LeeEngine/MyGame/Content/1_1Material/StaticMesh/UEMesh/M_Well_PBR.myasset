@@ -10,7 +10,7 @@
 	"Func": "PBR_PS_UE_Chair"
     },
     "TextureParams" : [ "T_Chair_M", "T_Chair_N" ],
-    "BlendMode": "Opaque",
+    "BlendMode": "Deferred",
     "TwoSided" : 0
 	
 }

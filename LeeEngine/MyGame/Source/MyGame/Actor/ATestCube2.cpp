@@ -63,7 +63,8 @@ ATestCube2::ATestCube2()
 		{
 			SM_Barrel2->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
 		});
-	SM_Barrel2->SetRelativeLocation({0,500,100});
+	SM_Barrel2->SetRelativeLocation({300,500,300});
+	SM_Barrel2->SetRelativeRotation(XMFLOAT3{0,180,0});
 
 	
 	for (int i = 0; i < 6; ++i)

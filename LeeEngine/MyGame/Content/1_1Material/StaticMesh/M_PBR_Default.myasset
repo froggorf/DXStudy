@@ -10,7 +10,7 @@
 	"Func": "PBR_PS_Default"
     },
     "TextureParams" : [ "", "", "", "", "", "" ],
-    "BlendMode": "Opaque",
+    "BlendMode": "Deferred",
     "TwoSided" : 0
 	
 }
