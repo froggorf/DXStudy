@@ -1,7 +1,7 @@
 #ifndef __PBR_FX__
 #define __PBR_FX__
 
-#include "../Global.fx"
+#include "Global.fx"
 
 struct VS_INPUT
 {
@@ -16,7 +16,6 @@ struct VS_INPUT
 struct PBR_PS_INPUT
 {
 	float4 PosScreen : SV_POSITION;
-	float3 WorldPos : POSITION1;
 	float2 TexCoord : TEXCOORD;
 	float3 ViewPosition : POSITION;
 	float3 ViewTangent : TANGENT;
@@ -27,8 +26,6 @@ struct PBR_PS_INPUT
 PBR_PS_INPUT VS(VS_INPUT Input)
 {
 	PBR_PS_INPUT output = (PBR_PS_INPUT)0;
-
-	output.WorldPos = mul(Input.Pos, World);
 	
 	output.PosScreen = mul(mul(Input.Pos, gMatWV), gProjection);
 	output.TexCoord = Input.TexCoord;

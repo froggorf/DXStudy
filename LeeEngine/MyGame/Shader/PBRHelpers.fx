@@ -1,12 +1,9 @@
 #ifndef __PBRHELPER_FX__
 #define __PBRHELPER_FX__
 
-#include "../Global.fx"
-
 struct PBR_PS_INPUT
 {
 	float4 PosScreen : SV_POSITION;
-	float3 WorldPos : POSITION1;
 	float2 TexCoord : TEXCOORD;
 	float3 ViewPosition : POSITION;
 	float3 ViewTangent : TANGENT;

@@ -33,7 +33,8 @@ struct PS_OUT
     float4 Normal      : SV_Target1;
     float4 Position    : SV_Target2;
     float4 Emissive    : SV_Target3;
-    float4 Custom      : SV_Target4;
+	// metallic, specular, roughness, AO
+    float4 PBRData      : SV_Target4;
 };
 
 VS_OUTPUT VS_Std3D_Deferred(VS_INPUT Input)
@@ -44,9 +45,8 @@ VS_OUTPUT VS_Std3D_Deferred(VS_INPUT Input)
 	output.PosScreen = CalculateScreenPosition(Input.Pos, World, gView, gProjection);
 	output.Tex = Input.TexCoord;
 
-	// 정점의 데이터를 ViewSpace 로 이동시킨다.
+	// ViewSpace
 	output.ViewPosition = mul(float4(Input.Pos.xyz, 1.f), gMatWV);
-
 	output.ViewTangent = normalize(mul(float4(Input.Tangent, 0.f), gMatWV)).xyz;
 	output.ViewNormal = normalize(mul(float4(Input.Normal, 0.f), gMatWV)).xyz;
 	output.ViewBinormal = normalize(mul(float4(Input.Binormal, 0.f), gMatWV)).xyz;
@@ -63,7 +63,7 @@ PS_OUT PS_Std3D_Deferred(VS_OUTPUT Input)
     output.Normal = float4(Input.ViewNormal, 1.f);    
     output.Position = float4(Input.ViewPosition, 1.f);
     output.Emissive = float4(0.f, 0.f, 0.f, 1.f);
-    output.Custom = float4(0.f, 0.f, 0.f, 1.f);
+    output.PBRData = float4(0.f, 0.f, 0.f, 1.f);
            
     return output;
 }

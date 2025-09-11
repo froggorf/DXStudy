@@ -3,6 +3,7 @@
 
 #include "Global.fx"
 #include "LightHelper.hlsl"
+#include "PBRLightHelper.fx"
 
 
 SamplerState samLinear : register( s0 );
@@ -78,6 +79,48 @@ PS_OUT PS_DirLight(VS_OUT Input)
 
 		float fDepth = SHADOW_MAP.Sample(samLinear, ShadowMapUV).x;
 		
+		if (fDepth + 0.001f < ShadowMapPos.z)
+		{
+			output.Diffuse *= 0.1f;
+			output.Specular *= 0.1f;
+		}
+	}
+
+	output.Diffuse.a = 1.0f;
+	output.Specular.a = 1.0f;
+
+	return output;
+}
+
+PS_OUT PS_PBR_DirLight(VS_OUT Input)
+{
+	PS_OUT output = (PS_OUT) 0.f;
+
+	// Position Target 에서 호출된 픽셀 자리에 해당하는 곳에 기록된 물체의 좌표를 확인한다.
+	float4 ViewPos = POSITION_TARGET.Sample(samLinear, Input.UV);
+
+	if (ViewPos.x == 0.f && ViewPos.y == 0.f && ViewPos.z == 0.f)
+	{
+		discard;
+	}
+
+	float3 ViewNormal = NORMAL_TARGET.Sample(samLinear, Input.UV).xyz;
+
+	CalcLight(gView, ViewPos.xyz, ViewNormal, gLightIndex, output.Diffuse.xyz, output.Specular.xyz);
+
+	//output.Specular.xyz *= ViewPos.w;
+
+	// 그림자 테스트
+	{
+		float3 WorldPos = mul(float4(ViewPos.xyz, 1.f), gViewInv).xyz;
+
+		float4 ShadowMapPos = mul(float4(WorldPos, 1.f), LightVP);
+		ShadowMapPos.xyz /= ShadowMapPos.w;
+
+		float2 ShadowMapUV = float2((ShadowMapPos.x / 2.f) + 0.5f, 1.f - ((ShadowMapPos.y / 2.f) + 0.5f));
+
+		float fDepth = SHADOW_MAP.Sample(samLinear, ShadowMapUV).x;
+
 		if (fDepth + 0.001f < ShadowMapPos.z)
 		{
 			output.Diffuse *= 0.1f;

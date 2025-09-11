@@ -158,16 +158,16 @@
     <None Include="Shader\Widget.fx">
       <Filter>Shader</Filter>
     </None>
-    <None Include="Shader\PBR\PBRHelpers.fx">
+    <None Include="Shader\PBR.fx">
       <Filter>Shader\PBR</Filter>
     </None>
-    <None Include="Shader\PBR\PBRLightHelper.fx">
+    <None Include="Shader\PBRHelpers.fx">
       <Filter>Shader\PBR</Filter>
     </None>
-    <None Include="Shader\PBR\PBR.fx">
+    <None Include="Shader\PBRLightHelper.fx">
       <Filter>Shader\PBR</Filter>
     </None>
-    <None Include="Shader\PBR\PS_PBR.fx">
+    <None Include="Shader\PS_PBR.fx">
       <Filter>Shader\PBR</Filter>
     </None>
   </ItemGroup>

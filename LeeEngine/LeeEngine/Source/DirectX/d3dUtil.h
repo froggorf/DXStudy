@@ -98,6 +98,9 @@ inline HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoin
 	{
 		if (pErrorBlob)
 		{
+			char* errorMsg = (char*)pErrorBlob->GetBufferPointer();
+			OutputDebugStringA(errorMsg);
+			MessageBoxA(nullptr, errorMsg, "Shader Compile Error", MB_OK);
 			OutputDebugStringA(reinterpret_cast<const char*>(pErrorBlob->GetBufferPointer()));
 			pErrorBlob->Release();
 		}

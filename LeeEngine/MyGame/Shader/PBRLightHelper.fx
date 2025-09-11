@@ -1,8 +1,8 @@
 #ifndef __PBR_LIGHTHELPER_FX__
 #define __PBR_LIGHTHELPER_FX__
 
-#include "../Global.fx"
-#include "../LightHelper.hlsl"
+#include "Global.fx"
+#include "LightHelper.hlsl"
 #include "PBRHelpers.fx"
 
 // =======================

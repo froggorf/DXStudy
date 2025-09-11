@@ -12,6 +12,49 @@
  TextureCube EnvironmentMap  : register(t5);
 */
 
+struct Deffered_PS_OUT
+{
+	float4 Color       : SV_Target;
+	float4 Normal      : SV_Target1;
+	float4 Position    : SV_Target2;
+	float4 Emissive    : SV_Target3;
+	// metallic, specular, roughness, AO
+	float4 PBRData      : SV_Target4;
+};
+
+Deffered_PS_OUT PS_PBR_Deferred_Default(PBR_PS_INPUT Input)
+{
+	Deffered_PS_OUT output = (Deffered_PS_OUT) 0.f;
+
+	int AlbedoTexBind = bTexBind_0_3.x;
+	float4 DefaultAlbedo = float4(1.0f, 0.0f, 1.0f,1.0f);
+	float4 albedo = AlbedoTexBind ? AlbedoTexture.Sample(DefaultSampler, Input.TexCoord).rgba : DefaultAlbedo;
+	float DefaultMetallic = 0.2f;
+	int MetallicTexBind = bTexBind_0_3.z;
+	float metallic = MetallicTexBind ? MetallicTexture.Sample(DefaultSampler, Input.TexCoord).r : DefaultMetallic;
+
+	float DefaultSpecular = 0.5f;
+	int SpecularTexBind = bTexBind_0_3.w;
+	float specular = SpecularTexBind ? SpecularTexture.Sample(DefaultSampler, Input.TexCoord).r : DefaultSpecular;
+
+	float DefaultRoughness = 0.5f;
+	int RoughnessTexBind = bTexBind_4_7.x;
+	float roughness = RoughnessTexBind ? RoughnessTexture.Sample(DefaultSampler, Input.TexCoord).r : DefaultRoughness;
+
+	float DefaultAO = 1.0f;
+	int AOTexBind = bTexBind_4_7.y;
+	float ao = AOTexBind ? AOTexture.Sample(DefaultSampler, Input.TexCoord).r : DefaultAO;
+
+	output.Color = albedo;
+	output.PBRData = float4(metallic, specular, roughness, ao);
+	output.Normal = float4(Input.ViewNormal, 1.f);    
+	output.Position = float4(Input.ViewPosition, 1.f);
+	output.Emissive = float4(0.f, 0.f, 0.f, 1.f);
+
+	return output;
+}
+
+
 float4 PBR_PS_Default(PBR_PS_INPUT input) : SV_TARGET
 {
 	// Sample textures (기존 코드 그대로)

@@ -132,16 +132,16 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shader\PBR\PBR.fx">
+    <None Include="Shader\PBR.fx">
       <FileType>Document</FileType>
     </None>
-    <None Include="Shader\PBR\PBRHelpers.fx">
+    <None Include="Shader\PBRHelpers.fx">
       <FileType>Document</FileType>
     </None>
-    <None Include="Shader\PBR\PBRLightHelper.fx">
+    <None Include="Shader\PBRLightHelper.fx">
       <FileType>Document</FileType>
     </None>
-    <None Include="Shader\PBR\PS_PBR.fx">
+    <None Include="Shader\PS_PBR.fx">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
