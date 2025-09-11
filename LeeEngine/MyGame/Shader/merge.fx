@@ -63,10 +63,13 @@ float4 PS_Merge(VS_OUT _in) : SV_Target
 	float3 ambient = IBLAmbient(normalize(N), normalize(-V), F0, Albedo, ObjectMetallic, ObjectRoughness, ObjectAO);
 
 	// 빛 먼저 적용시키고,
-	OutColor.rgb = Albedo.rgb * Diffuse.rgb + Albedo.rgb* Specular.rgb;
-	
+
+	// 09.11 Diffuse에 대해서 DeferredRendering에서는 metallic 에 대해서 마지막에 처리해줘야함
+	float3 FinalDiffuse = Albedo.rgb * Diffuse.rgb * (1.0 - ObjectMetallic);
+	float3 FinalSpecular = lerp(Albedo.rgb * Specular.rgb, Specular.rgb, ObjectMetallic);
 	// IBL Ambient 를 적용시킨다
-	OutColor.rgb = OutColor.rgb + ambient;
+	OutColor.rgb = FinalDiffuse + FinalSpecular + ambient;
+
 	OutColor.rgb = ACESFilm(OutColor.rgb);
 	// 08.20 백버퍼를 B8G8R8A8_UNORM 으로 바꾸니 알파값이 중요해져서 해당 코드를 추가
 	OutColor.a = 1.0f;

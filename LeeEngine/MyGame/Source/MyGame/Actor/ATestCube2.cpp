@@ -73,7 +73,7 @@ ATestCube2::ATestCube2()
 		{
 			PBRTestSphere[i][j] = std::make_shared<UStaticMeshComponent>();
 			PBRTestSphere[i][j]->SetupAttachment(GetRootComponent());
-			PBRTestSphere[i][j]->SetRelativeLocation({-500.0f + 200*i, 100.0f, -500.0f + 200 * j});
+			PBRTestSphere[i][j]->SetRelativeLocation({-500.0f + 200*i, 100.0f, 1500.0f + 200 * j});
 			AssetManager::GetAsyncAssetCache("SM_PBRTestSphere",[this, i,j](std::shared_ptr<UObject> Object)
 				{
 					PBRTestSphere[i][j]->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));

@@ -88,16 +88,6 @@ float3 CalcBRDF(float3 N, float3 V, float3 L, float3 albedo,
 	float3 H = normalize(V + L);
 	float NdotL = max(dot(N, L), 0.0);
 	float NdotV = max(dot(N, V), 0.0);
-	
-
-	// grazing angle에서 스페큘러 강화
-	float grazingBoost = 1;
-	// TODO: if 안쓰게 바꾸기
-	if (metallic > 0.5) // 메탈릭 표면일 때만
-	{
-		float grazingAngle = 1.0 - NdotV; 
-		grazingBoost = 1.0 + grazingAngle * grazingAngle * 4.0; // 최대 5배까지 강화
-	}
 
 	if (NdotL <= 0.0) return float3(0, 0, 0);
 
@@ -110,14 +100,11 @@ float3 CalcBRDF(float3 N, float3 V, float3 L, float3 albedo,
 	float3 kD = float3(1,1,1) - kS;
 	kD *= 1.0 - metallic;
 
-
 	float3 numerator = NDF * G * F;
 	float denominator = 4.0 * NdotV * NdotL;
 	float3 specular = metallic < 0.01f? 0.0f : numerator / max(denominator,0.001);
-	specular *= grazingBoost;
 
 	float3 Diffuse = kD * albedo / PI;
-	
 	
 	return (Diffuse + specular) * radiance * NdotL;
 }
@@ -214,13 +201,6 @@ void CalcLightContribution(float3 N, float3 V, float3 L,
 	float3 numerator = NDF * G * F;
 	float denominator = 4.0 * NdotV * NdotL;
 	float3 specular = metallic < 0.01f ? 0.0f : numerator / max(denominator, 0.001);
-
-	// grazing angle boost
-	if (metallic > 0.5) {
-		float grazingAngle = 1.0 - NdotV;
-		float grazingBoost = 1.0 + grazingAngle * grazingAngle * 4.0;
-		specular *= grazingBoost;
-	}
 
 	// Diffuse 기여도 (albedo 제외, 단순히 kD만)
 	float3 diffuseContribution = kD / PI;
@@ -324,7 +304,7 @@ float3 IBLAmbient(float3 N, float3 V, float3 F0, float3 albedo, float metallic, 
 
 	// 기본적으로 Ambient의 색상은 낮추고, 빛에의해 밝아지는 세기를 좀 더 키워주도록 변경 (0.4f)
 	// 근데 메탈릭은 값이 더 크게 1에 가깝게 되도록 하는게 맞는것같음.
-	float3 ambient = (kD * diffuse  + specular) * ao * (0.08f + lerp(0.0f,0.92f,metallic));
+	float3 ambient = (kD * diffuse  + specular) * ao * (0.16f + lerp(0.0f,0.84f,metallic));
 	return ambient;
 }
 
@@ -349,8 +329,6 @@ float3 MyPBR(PBR_PS_INPUT input, float3 albedo, float metallic, float ObjectSpec
 	float3 color = Lo +  ambient;
 
 	color = ACESFilm(color);
-
-	return color;
 
 	return color;
 }
