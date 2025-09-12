@@ -80,6 +80,7 @@ PS_OUT PS_DirLight(VS_OUT Input)
 		float3 F0 = lerp(float3(DefaultSpecular, DefaultSpecular, DefaultSpecular), float3(1,1,1), Metallic);
 		CalcPBRLightContribution(ViewPos.xyz, ViewNormal, normalize(-ViewPos.xyz), 
 			Metallic, Roughness, F0, gLightIndex, output.Diffuse.xyz, output.Specular.xyz);
+		
 	}
 	
 

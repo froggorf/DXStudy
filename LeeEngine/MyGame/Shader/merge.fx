@@ -63,8 +63,6 @@ float4 PS_Merge(VS_OUT _in) : SV_Target
 	float3 ambient = IBLAmbient(normalize(N), normalize(-V), F0, Albedo, ObjectMetallic, ObjectRoughness, ObjectAO);
 
 	// 빛 먼저 적용시키고,
-
-	// 09.11 Diffuse에 대해서 DeferredRendering에서는 metallic 에 대해서 마지막에 처리해줘야함
 	float3 FinalDiffuse = Albedo.rgb * Diffuse.rgb * (1.0 - ObjectMetallic);
 	float3 FinalSpecular = lerp(Albedo.rgb * Specular.rgb, Specular.rgb, ObjectMetallic);
 	// IBL Ambient 를 적용시킨다

@@ -73,12 +73,13 @@ float3 GetNormalFromMap(PBR_PS_INPUT input)
 
 	float3 tangentNormal = NormalTexture.Sample(DefaultSampler, input.TexCoord).xyz * 2.0 - 1.0;
 
-	float3 N = normalize(input.ViewNormal);
-	float3 T = normalize(input.ViewTangent);
-	float3 B = normalize(input.ViewBinormal);
-	float3x3 TBN = float3x3(T, B, N);
-
-	return normalize(mul(tangentNormal, TBN));
+	float3x3 matRot = 
+	{
+		input.ViewTangent,
+		input.ViewBinormal,
+		input.ViewNormal
+	};
+	return normalize(mul(tangentNormal, matRot));
 }
 
 float3 CalcBRDF(float3 N, float3 V, float3 L, float3 albedo, 
