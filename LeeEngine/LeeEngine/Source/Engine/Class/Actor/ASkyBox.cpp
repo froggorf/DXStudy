@@ -48,7 +48,9 @@ void ASkyBox::Tick(float DeltaSeconds)
 	AActor::Tick(DeltaSeconds);
 }
 
+#ifdef WITH_EDITOR
 void ASkyBox::Tick_Editor(float DeltaSeconds)
 {
 	AActor::Tick_Editor(DeltaSeconds);
 }
+#endif

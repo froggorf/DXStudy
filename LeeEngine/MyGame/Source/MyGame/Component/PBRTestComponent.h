@@ -16,6 +16,7 @@ class UPBRTestComponent : public USceneComponent
 #endif
 };
 
+#ifdef WITH_EDITOR
 inline void UPBRTestComponent::DrawDetailPanel(UINT ComponentDepth)
 {
 	USceneComponent::DrawDetailPanel(ComponentDepth);
@@ -53,3 +54,4 @@ inline void UPBRTestComponent::DrawDetailPanel(UINT ComponentDepth)
 		FScene::SetSkyBoxTexture_GameThread("T_SkyBox");
 	}
 }
+#endif

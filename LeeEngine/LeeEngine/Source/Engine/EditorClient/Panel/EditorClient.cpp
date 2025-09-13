@@ -1,4 +1,5 @@
 #include "CoreMinimal.h"
+#ifdef WITH_EDITOR
 #include "EditorClient.h"
 
 #include "ImguiDebugConsole.h"
@@ -76,3 +77,4 @@ void FEditorClient::Draw()
 		
 	}
 }
+#endif

@@ -4,7 +4,7 @@
 // 이윤석
 
 #pragma once
-#include <any>
+#ifdef WITH_EDITOR
 #include <functional>
 
 #include "ImguiPanel.h"
@@ -32,3 +32,4 @@ public:
 protected:
 	std::vector<std::unique_ptr<FImguiPanel>> ImguiPanels;
 };
+#endif
