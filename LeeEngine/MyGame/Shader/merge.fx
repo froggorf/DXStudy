@@ -65,7 +65,9 @@ float4 PS_Merge(VS_OUT _in) : SV_Target
 	// IBL Ambient 를 적용시킨다
 	OutColor.rgb = FinalDiffuse + FinalSpecular + ambient;
 
-	OutColor.rgb = ACESFilm(OutColor.rgb);
+	// 09.14 톤매핑을 포스트 프로세스에서 진행하면서 해당 코드를 지움
+	//OutColor.rgb = ACESFilm(OutColor.rgb);
+
 	// 08.20 백버퍼를 B8G8R8A8_UNORM 으로 바꾸니 알파값이 중요해져서 해당 코드를 추가
 	OutColor.a = 1.0f;
     return OutColor;

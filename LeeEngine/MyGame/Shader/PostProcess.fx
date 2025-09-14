@@ -31,6 +31,8 @@ float4 PS_PostProcess(VS_OUT Input) : SV_TARGET
 	float2 ScreenUV = Input.Position / gResolution;
 
 	float4 Color = float4(SceneTexture.Sample(DefaultSampler, ScreenUV).rgb, 1.0f);
+	Color.rgb = ACESFilm(Color.rgb);
+	Color.a = 1.0f;
 	return Color;
 }
 
