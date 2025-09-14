@@ -39,6 +39,7 @@ VS_OUT VS_Merge(VS_IN _in)
 
 float4 PS_Merge(VS_OUT _in) : SV_Target
 {
+	
     float4 OutColor = (float4) 0.f;
 
 	float4 Albedo = ColorTexture.Sample(samLinear, _in.vUV);
@@ -47,10 +48,6 @@ float4 PS_Merge(VS_OUT _in) : SV_Target
 	float3 N = ViewNormalTexture.Sample(samLinear, _in.vUV);
 	float3 V = ViewPosTexture.Sample(samLinear, _in.vUV);
 	float4 PBRData = PBRTexture.Sample(samLinear, _in.vUV);
-
-	
-	
-	
 
 	float ObjectMetallic = PBRData.r;
 	float ObjectSpecular = PBRData.g;
