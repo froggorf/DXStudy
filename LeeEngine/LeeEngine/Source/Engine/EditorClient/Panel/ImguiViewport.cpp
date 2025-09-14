@@ -27,6 +27,13 @@ void FImguiLevelViewport::Draw()
 	// Actor
 	if (ImGui::Begin("Place Actors", nullptr))
 	{
+		ImGui::Text("ERT_HDR");
+		if (const std::shared_ptr<UTexture>& RenderTexture = UTexture::GetTextureCache("ERT_HDR"))
+		{
+			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {200,200});
+		}
+
+
 		ImGui::Text("PBRTargetTex");
 		if (const std::shared_ptr<UTexture>& RenderTexture = UTexture::GetTextureCache("PBRTargetTex"))
 		{

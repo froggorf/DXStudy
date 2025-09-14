@@ -23,7 +23,6 @@ ASkyBox::ASkyBox()
 	{
 		SM_SkyBox->SetStaticMesh(std::static_pointer_cast<UStaticMesh>(LoadedStaticMesh));
 	});
-	//SM_SkyBox->SetRelativeScale3D({10000,10000,10000});
 	SM_SkyBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SM_SkyBox->SetDoFrustumCulling(false);
 
@@ -43,14 +42,3 @@ ASkyBox::ASkyBox()
 	DirectionalLight->SetLightColor({Radiance,Radiance,Radiance});
 }
 
-void ASkyBox::Tick(float DeltaSeconds)
-{
-	AActor::Tick(DeltaSeconds);
-}
-
-#ifdef WITH_EDITOR
-void ASkyBox::Tick_Editor(float DeltaSeconds)
-{
-	AActor::Tick_Editor(DeltaSeconds);
-}
-#endif

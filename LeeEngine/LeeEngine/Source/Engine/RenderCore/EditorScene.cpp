@@ -37,13 +37,14 @@ void FEditorScene::InitSceneData_GameThread()
 void FEditorScene::SetDrawScenePipeline_HDR_MiddleStep()
 {
 	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor_HDR)->OMSet();
-	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor_HDR)->ClearRenderTarget();	
+	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor_HDR)->ClearRenderTarget();
 }
 
 void FEditorScene::SetDrawScenePipeline()
 {
 	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor_Main)->OMSet();
-	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor_Main)->ClearRenderTarget();	
+	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor_Main)->ClearRenderTarget();
+	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor_Main)->ClearDepthStencilTarget();
 }
 
 void FEditorScene::SetRSViewport()

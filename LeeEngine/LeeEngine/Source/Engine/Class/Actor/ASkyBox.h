@@ -13,11 +13,6 @@ class ASkyBox : public AActor
 	MY_GENERATE_BODY(ASkyBox)
 public:
 	ASkyBox();
-	void Tick(float DeltaSeconds) override;
-
-#ifdef WITH_EDITOR
-	void Tick_Editor(float DeltaSeconds) override;
-#endif
 private:
 
 	std::shared_ptr<ULightComponent> DirectionalLight;

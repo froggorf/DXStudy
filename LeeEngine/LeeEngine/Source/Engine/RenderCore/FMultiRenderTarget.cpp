@@ -1,4 +1,4 @@
-﻿#include "CoreMinimal.h"
+#include "CoreMinimal.h"
 #include "FMultiRenderTarget.h"
 
 void FMultiRenderTarget::Create(std::shared_ptr<UTexture>* InRTTex, UINT InRTCount, std::shared_ptr<UTexture> InDSTex)

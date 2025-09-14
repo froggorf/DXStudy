@@ -229,9 +229,9 @@ void FDirectXDevice::InitMultiRenderTarget()
 
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred] = std::make_shared<FMultiRenderTarget>();
 #ifdef WITH_EDITOR
-		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred]->Create(RenderTargetTextures, 5, GetMultiRenderTarget(EMultiRenderTargetType::Editor_Main)->GetDepthStencilTexture());
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred]->Create(RenderTargetTextures, 5, GetMultiRenderTarget(EMultiRenderTargetType::Editor_HDR)->GetDepthStencilTexture());
 #else
-		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred]->Create(RenderTargetTextures, 5, GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->GetDepthStencilTexture());
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred]->Create(RenderTargetTextures, 5, GetMultiRenderTarget(EMultiRenderTargetType::SwapChain_HDR)->GetDepthStencilTexture());
 #endif
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred]->SetClearColor(ClearColor, 5);
 	}
@@ -255,9 +255,9 @@ void FDirectXDevice::InitMultiRenderTarget()
 
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::Decal]= std::make_shared<FMultiRenderTarget>();
 #ifdef WITH_EDITOR
-		MultiRenderTargets[(UINT)EMultiRenderTargetType::Decal]->Create(RenderTextures, 2, GetMultiRenderTarget(EMultiRenderTargetType::Editor_Main)->GetDepthStencilTexture());
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::Decal]->Create(RenderTextures, 2, GetMultiRenderTarget(EMultiRenderTargetType::Editor_HDR)->GetDepthStencilTexture());
 #else
-		MultiRenderTargets[(UINT)EMultiRenderTargetType::Decal]->Create(RenderTextures, 2, GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->GetDepthStencilTexture());
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::Decal]->Create(RenderTextures, 2, GetMultiRenderTarget(EMultiRenderTargetType::SwapChain_HDR)->GetDepthStencilTexture());
 #endif
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::Decal]->SetClearColor(ClearColor, 2);
 	}
@@ -295,9 +295,9 @@ void FDirectXDevice::InitMultiRenderTarget()
 
 		MultiRenderTargets[static_cast<UINT>(EMultiRenderTargetType::Light)] = std::make_shared<FMultiRenderTarget>();
 #ifdef WITH_EDITOR
-		MultiRenderTargets[(UINT)EMultiRenderTargetType::Light]->Create(RenderTargets, 2, GetMultiRenderTarget(EMultiRenderTargetType::Editor_Main)->GetDepthStencilTexture());
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::Light]->Create(RenderTargets, 2, GetMultiRenderTarget(EMultiRenderTargetType::Editor_HDR)->GetDepthStencilTexture());
 #else
-		MultiRenderTargets[(UINT)EMultiRenderTargetType::Light]->Create(RenderTargets, 2, GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->GetDepthStencilTexture());
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::Light]->Create(RenderTargets, 2, GetMultiRenderTarget(EMultiRenderTargetType::SwapChain_HDR)->GetDepthStencilTexture());
 #endif
 		MultiRenderTargets[static_cast<UINT>(EMultiRenderTargetType::Light)]->SetClearColor(ClearColor, 2);
 	}
