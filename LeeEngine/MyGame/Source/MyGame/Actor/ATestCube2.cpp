@@ -85,11 +85,13 @@ ATestCube2::ATestCube2()
 		}
 	}
 
+
 	
 }
 
 void ATestCube2::Register()
 {
+	FScene::AddPostProcess_GameThread(FPostProcessRenderData{0, "ToneMap", UMaterial::GetMaterialCache("M_PostProcessTest")});
 	AActor::Register();
 
 	PBRTestComp->OnRChange.Add([this](float Value)

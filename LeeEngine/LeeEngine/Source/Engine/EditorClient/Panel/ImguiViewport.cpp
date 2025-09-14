@@ -115,7 +115,7 @@ void FImguiLevelViewport::Draw()
 			bResizeEditorRenderTargetAtEndFrame = true;
 		}
 
-		if (const std::shared_ptr<UTexture>& RenderTexture = GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor)->GetRenderTargetTexture(0))
+		if (const std::shared_ptr<UTexture>& RenderTexture = GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor_Main)->GetRenderTargetTexture(0))
 		{
 			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), ViewPortSize);	
 		}	

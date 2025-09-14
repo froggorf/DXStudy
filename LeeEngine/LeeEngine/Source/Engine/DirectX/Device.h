@@ -135,6 +135,7 @@ public:
 	void SetDSState(EDepthStencilStateType InDSType, UINT StencilRef = 0);
 	void SetBSState(EBlendStateType InBSType);
 	std::shared_ptr<FMultiRenderTarget> GetMultiRenderTarget(EMultiRenderTargetType	Type) { return MultiRenderTargets[(UINT)Type]; }
+	const std::shared_ptr<UTexture>& GetHDRRenderTargetTexture();
 private:
 	ERasterizerType        CurrentRSType = ERasterizerType::RT_Count;
 	EDepthStencilStateType CurrentDSType = EDepthStencilStateType::DST_COUNT;
@@ -165,7 +166,9 @@ private:
 
 
 	std::shared_ptr<FMultiRenderTarget>				MultiRenderTargets[static_cast<UINT>(EMultiRenderTargetType::Count)];
-	
+	std::shared_ptr<UTexture>						T_PostProcess;
+
+
 	// 파이프라인
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_SamplerState;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_SamplerState2;

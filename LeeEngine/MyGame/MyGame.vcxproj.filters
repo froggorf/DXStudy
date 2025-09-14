@@ -47,6 +47,9 @@
     <Filter Include="Shader\PBR">
       <UniqueIdentifier>{1626fc95-ca56-42df-937a-4e56b6d7f83a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader\PostProcess">
+      <UniqueIdentifier>{77f4535e-6154-4826-8a84-059af45c7ba8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -169,6 +172,9 @@
     </None>
     <None Include="Shader\PS_PBR.fx">
       <Filter>Shader\PBR</Filter>
+    </None>
+    <None Include="Shader\PostProcess.fx">
+      <Filter>Shader\PostProcess</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -42,7 +42,7 @@ bool FDirect2DDevice::Initialize(const Microsoft::WRL::ComPtr<ID3D11Device>& D3D
 
 	ComPtr<ID3D11Texture2D> pBackBuffer;
 #ifdef WITH_EDITOR
-	pBackBuffer = GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor)->GetRenderTargetTexture(0)->GetTexture();
+	pBackBuffer = GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor_Main)->GetRenderTargetTexture(0)->GetTexture();
 #else
 	pBackBuffer = GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->GetRenderTargetTexture(0)->GetTexture();
 #endif

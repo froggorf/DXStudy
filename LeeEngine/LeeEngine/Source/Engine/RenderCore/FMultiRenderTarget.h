@@ -11,8 +11,10 @@ enum class EMultiRenderTargetType
     Deferred,
     Decal,
     Light,
-    Editor,
-    SwapChain,	
+	Editor_HDR,
+    SwapChain_HDR,
+    Editor_Main,
+    SwapChain_Main,	
     Count,
 };
 

@@ -110,6 +110,21 @@ struct FPrimitiveRenderData
 	std::shared_ptr<UMaterialInterface>   MaterialInterface = nullptr;
 };
 
+struct FPostProcessRenderData
+{
+	UINT Priority = 0;
+	std::string Name = "";
+	std::shared_ptr<UMaterialInterface> MaterialInterface;
+	bool operator<(const FPostProcessRenderData& Other) const
+	{
+		if (Priority != Other.Priority)
+		{
+			return Priority < Other.Priority;
+		}
+		return Name < Other.Name;
+	}
+};
+
 #if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
 struct FDebugRenderData
 {
@@ -138,6 +153,9 @@ public:
 	std::unordered_map<UINT, std::vector<FPrimitiveRenderData>> OpaqueSceneProxyRenderData;
 	std::unordered_map<UINT, std::vector<FPrimitiveRenderData>> MaskedSceneProxyRenderData;
 	std::unordered_map<UINT, std::vector<FPrimitiveRenderData>> TranslucentSceneProxyRenderData;
+
+	std::set<FPostProcessRenderData> PostProcessData;
+	std::shared_ptr<FPrimitiveSceneProxy> PostProcessStaticMeshSceneProxy;
 
 #if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
 	std::vector<FDebugRenderData> DebugRenderData;
@@ -314,7 +332,8 @@ public:
 
 	void         DrawShadowMap(ELightType LightType) const;
 	static void  DrawScene_RenderThread(std::shared_ptr<FScene> SceneData);
-	virtual void SetDrawScenePipeline(const float* ClearColor);
+	virtual void SetDrawScenePipeline_HDR_MiddleStep();
+	virtual void SetDrawScenePipeline();
 	virtual void SetRSViewport();
 
 	virtual void AfterDrawSceneAction(const std::shared_ptr<FScene> SceneData){}
@@ -364,7 +383,36 @@ public:
 	// 현재 프레임의 WidgetRenderData를 설정
 	void SetFrameWidgetRenderData(const std::vector<FWidgetRenderData>& WidgetRenderData);
 
+	// PostProcess 추가
+	static void AddPostProcess_GameThread(const FPostProcessRenderData& NewPostProcess)
+	{
+		ENQUEUE_RENDER_COMMAND([NewPostProcess](std::shared_ptr<FScene>& Scene)
+			{
+				Scene->AddPostProcess_RenderThread(NewPostProcess);
+			})
+	}
+	// PostProcess 삭제
+	static void RemovePostProcess_GameThread(const std::string& Name)
+	{
+		ENQUEUE_RENDER_COMMAND([Name](std::shared_ptr<FScene>& Scene)
+			{
+				Scene->RemovePostProcess_RenderThread(Name);
+			})
+	}
 private:
+	void AddPostProcess_RenderThread(const FPostProcessRenderData& NewPostProcess)
+	{
+		PostProcessData.emplace(NewPostProcess);
+	}
+	void RemovePostProcess_RenderThread(const std::string& Name)
+	{
+		auto Iter = std::ranges::find_if(PostProcessData, [&Name](const FPostProcessRenderData& Data){return Data.Name == Name;});
+		if (Iter != PostProcessData.end())
+		{
+			PostProcessData.erase(Iter);
+		}
+	}
+
 	static void EndRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData);
 };
 

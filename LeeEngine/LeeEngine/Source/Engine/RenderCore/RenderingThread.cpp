@@ -43,6 +43,8 @@ FScene::FScene()
 	M_Widget->SetDepthStencilState(EDepthStencilStateType::DST_NO_TEST_NO_WRITE);
 	// 동일한 메쉬를 사용하므로 재사용
 	WidgetStaticMeshSceneProxy = DeferredMergeRenderData.SceneProxy;
+	// 동일한 메쉬를 사용하므로 재사용
+	PostProcessStaticMeshSceneProxy = WidgetStaticMeshSceneProxy;
 }
 
 void FScene::BeginRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData, UINT GameThreadFrameCount)
@@ -608,6 +610,9 @@ static void DrawSceneProxies(const std::shared_ptr<FScene>& SceneData, const std
 
 void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 {
+	if (!GDirectXDevice) return;
+	const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& DeviceContext = GDirectXDevice->GetDeviceContext();
+
 	//RenderFPS 측정
 	{
 		using clock        = std::chrono::high_resolution_clock;
@@ -684,10 +689,15 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				}
 			}
 
-			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->ClearRenderTarget();	
-			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->ClearDepthStencilTarget();
+			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain_Main)->ClearRenderTarget();	
+			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain_Main)->ClearDepthStencilTarget();
+
+			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain_HDR)->ClearRenderTarget();
+			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain_HDR)->ClearDepthStencilTarget();
+
 			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->ClearRenderTarget();
 			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->ClearDepthStencilTarget();
+
 			GDirectXDevice->SetDSState(EDepthStencilStateType::DST_LESS);
 			SceneData->SetRSViewport();
 
@@ -713,13 +723,13 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Light)->ClearRenderTarget();
 
 				const std::shared_ptr<UTexture>& PositionTexture = UTexture::GetTextureCache("PositionTargetTex");
-				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(0,1, PositionTexture->GetSRV().GetAddressOf());
+				DeviceContext->PSSetShaderResources(0,1, PositionTexture->GetSRV().GetAddressOf());
 				const std::shared_ptr<UTexture>& NormalTexture = UTexture::GetTextureCache("NormalTargetTex");
-				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(1,1, NormalTexture->GetSRV().GetAddressOf());
+				DeviceContext->PSSetShaderResources(1,1, NormalTexture->GetSRV().GetAddressOf());
 
 				// PBR을 위해서 렌더 텍스쳐를 추가로 바인딩
 				const std::shared_ptr<UTexture>& PBRTexture = UTexture::GetTextureCache("PBRTargetTex");
-				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(3,1, NormalTexture->GetSRV().GetAddressOf());
+				DeviceContext->PSSetShaderResources(3,1, NormalTexture->GetSRV().GetAddressOf());
 
 
 				int LightSize = static_cast<int>(SceneData->CurrentFrameLightInfo.size());
@@ -745,7 +755,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 					{
 						ViewPort = D3D11_VIEWPORT{0,0,512,512,0,1};
 					}
-					GDirectXDevice->GetDeviceContext()->RSSetViewports(1, &ViewPort);
+					DeviceContext->RSSetViewports(1, &ViewPort);
 					SceneData->DrawShadowMap(static_cast<ELightType>(SceneData->CurrentFrameLightInfo[i].LightType));
 
 					
@@ -755,7 +765,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 					SceneData->SetRSViewport();
 					// 그린 그림자 맵을 바인딩 한 다음에
 					const std::shared_ptr<UTexture>& ShadowMap = SceneData->CurrentFrameLightInfo[i].ShadowMultiRenderTarget->GetRenderTargetTexture(0);
-					GDirectXDevice->GetDeviceContext()->PSSetShaderResources(2,1, ShadowMap->GetSRV().GetAddressOf());
+					DeviceContext->PSSetShaderResources(2,1, ShadowMap->GetSRV().GetAddressOf());
 
 					SceneData->CurrentFrameLightInfo[i].Render();
 				}
@@ -767,22 +777,21 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 
 			// Deferred로 그린 gbuffer 텍스쳐를 렌더타겟에 머지
 			{
-				// SwapChain MRT로 OMSet
-				constexpr float ClearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
-				SceneData->SetDrawScenePipeline(ClearColor);
+				// 09.14 HDR 렌더타겟을 사용하기 위해 HDR 렌더타겟으로 먼저 그리기
+				SceneData->SetDrawScenePipeline_HDR_MiddleStep();
 				SceneData->DeferredMergeRenderData.MaterialInterface->Binding();
 				const std::shared_ptr<UTexture>& ColorTexture = UTexture::GetTextureCache("ColorTargetTex");
-				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(0,1,ColorTexture->GetSRV().GetAddressOf());
+				DeviceContext->PSSetShaderResources(0,1,ColorTexture->GetSRV().GetAddressOf());
 				const std::shared_ptr<UTexture>& DiffuseTexture = UTexture::GetTextureCache("DiffuseTargetTex");
-				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(1,1,DiffuseTexture->GetSRV().GetAddressOf());
+				DeviceContext->PSSetShaderResources(1,1,DiffuseTexture->GetSRV().GetAddressOf());
 				const std::shared_ptr<UTexture>& SpecularTexture = UTexture::GetTextureCache("SpecularTargetTex");
-				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(2,1,SpecularTexture->GetSRV().GetAddressOf());
+				DeviceContext->PSSetShaderResources(2,1,SpecularTexture->GetSRV().GetAddressOf());
 				const std::shared_ptr<UTexture>& PositionTexture = UTexture::GetTextureCache("PositionTargetTex");
-				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(3,1, PositionTexture->GetSRV().GetAddressOf());
+				DeviceContext->PSSetShaderResources(3,1, PositionTexture->GetSRV().GetAddressOf());
 				const std::shared_ptr<UTexture>& NormalTexture = UTexture::GetTextureCache("NormalTargetTex");
-				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(4,1, NormalTexture->GetSRV().GetAddressOf());
+				DeviceContext->PSSetShaderResources(4,1, NormalTexture->GetSRV().GetAddressOf());
 				const std::shared_ptr<UTexture>& PBRTexture = UTexture::GetTextureCache("PBRTargetTex");
-				GDirectXDevice->GetDeviceContext()->PSSetShaderResources(5,1, PBRTexture->GetSRV().GetAddressOf());
+				DeviceContext->PSSetShaderResources(5,1, PBRTexture->GetSRV().GetAddressOf());
 				SceneData->DeferredMergeRenderData.SceneProxy->Draw();
 			}
 
@@ -831,9 +840,20 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				}); 
 			}
 #endif
+		}
 
+		// PostProcessing
+		{
+			// 출력용 (LDR) 렌더타겟에 OMSet 후에
+			SceneData->SetDrawScenePipeline();
+			const std::shared_ptr<UTexture>& HDRTexture = GDirectXDevice->GetHDRRenderTargetTexture();
+			DeviceContext->PSSetShaderResources(0,1, HDRTexture->GetSRV().GetAddressOf());
 
-			
+			for (const FPostProcessRenderData& Data : SceneData->PostProcessData)
+			{
+				Data.MaterialInterface->Binding();
+				SceneData->PostProcessStaticMeshSceneProxy->Draw();
+			}
 		}
 
 		// Draw UI
@@ -901,9 +921,14 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 	EndRenderFrame_RenderThread(SceneData);
 }
 
-void FScene::SetDrawScenePipeline(const float* ClearColor)
+void FScene::SetDrawScenePipeline_HDR_MiddleStep()
 {
-	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->OMSet();
+	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain_HDR)->OMSet();
+}
+
+void FScene::SetDrawScenePipeline()
+{
+	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain_Main)->OMSet();
 }
 void FScene::SetRSViewport()
 {

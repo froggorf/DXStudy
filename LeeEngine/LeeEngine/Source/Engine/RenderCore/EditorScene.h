@@ -53,7 +53,8 @@ public:
 	}
 
 	// ==================== ImGui ====================
-	void SetDrawScenePipeline(const float* ClearColor) override;
+	void SetDrawScenePipeline_HDR_MiddleStep() override;
+	void SetDrawScenePipeline() override;
 	void SetRSViewport() override;
 	void AfterDrawSceneAction(std::shared_ptr<FScene> SceneData) override;
 

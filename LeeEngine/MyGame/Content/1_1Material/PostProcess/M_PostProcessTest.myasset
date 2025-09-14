@@ -1,0 +1,15 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_PostProcessTest",
+    "VertexShader" : {
+	"FilePath" : "/Shader/PostProcess.fx",
+	"Func" : "VS_PostProcess"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/PostProcess.fx",
+	"Func": "PS_PostProcess"
+    },
+    "BlendMode": "PP",
+    "TwoSided" : 1
+	
+}

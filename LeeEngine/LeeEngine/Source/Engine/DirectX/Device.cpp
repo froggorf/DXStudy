@@ -135,8 +135,6 @@ void FDirectXDevice::InitMultiRenderTarget()
 	// SwapChain MRT
 	// =============
 	{
-		// 1. RenderTargetTexture 생성
-		//  - SwapChain 이 만들어질때 생성된 Texture2D 의 주소값을 받아옴
 		ComPtr<ID3D11Texture2D> pTex2D = nullptr;
 		GetSwapChain()->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)pTex2D.GetAddressOf());
 
@@ -151,9 +149,27 @@ void FDirectXDevice::InitMultiRenderTarget()
 
 		XMFLOAT4 ClearColor = XMFLOAT4(0.f, 0.f, 0.f, 1.f);
 
-		MultiRenderTargets[(UINT)EMultiRenderTargetType::SwapChain] = std::make_shared<FMultiRenderTarget>();
-		MultiRenderTargets[(UINT)EMultiRenderTargetType::SwapChain]->Create(&RTTex, 1, pDSTex);
-		MultiRenderTargets[(UINT)EMultiRenderTargetType::SwapChain]->SetClearColor(&ClearColor, 1);
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::SwapChain_Main] = std::make_shared<FMultiRenderTarget>();
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::SwapChain_Main]->Create(&RTTex, 1, pDSTex);
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::SwapChain_Main]->SetClearColor(&ClearColor, 1);
+
+		std::shared_ptr<UTexture> RTTex_HDR = AssetManager::CreateTexture("RTT_HDR",(UINT)RenderResolution.x,(UINT)RenderResolution.y,DXGI_FORMAT_R16G16B16A16_FLOAT,
+			D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
+
+		// 2. DepthStencilTexture 생성
+		std::shared_ptr<UTexture> pDSTex_HDR = AssetManager::CreateTexture("DST_HDR", (UINT)RenderResolution.x, (UINT)RenderResolution.y
+			, DXGI_FORMAT_D24_UNORM_S8_UINT
+			, D3D11_BIND_DEPTH_STENCIL
+			, D3D11_USAGE_DEFAULT);
+
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::SwapChain_HDR] = std::make_shared<FMultiRenderTarget>();
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::SwapChain_HDR]->Create(&RTTex_HDR, 1, pDSTex_HDR);
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::SwapChain_HDR]->SetClearColor(&ClearColor, 1);
+
+#ifndef WITH_EDITOR
+		T_PostProcess = AssetManager::CreateTexture("PP_HDR",(UINT)RenderResolution.x,(UINT)RenderResolution.y,DXGI_FORMAT_R16G16B16A16_FLOAT,
+			D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
+#endif
 	}
 
 #ifdef WITH_EDITOR
@@ -213,7 +229,7 @@ void FDirectXDevice::InitMultiRenderTarget()
 
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred] = std::make_shared<FMultiRenderTarget>();
 #ifdef WITH_EDITOR
-		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred]->Create(RenderTargetTextures, 5, GetMultiRenderTarget(EMultiRenderTargetType::Editor)->GetDepthStencilTexture());
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred]->Create(RenderTargetTextures, 5, GetMultiRenderTarget(EMultiRenderTargetType::Editor_Main)->GetDepthStencilTexture());
 #else
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred]->Create(RenderTargetTextures, 5, GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->GetDepthStencilTexture());
 #endif
@@ -239,7 +255,7 @@ void FDirectXDevice::InitMultiRenderTarget()
 
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::Decal]= std::make_shared<FMultiRenderTarget>();
 #ifdef WITH_EDITOR
-		MultiRenderTargets[(UINT)EMultiRenderTargetType::Decal]->Create(RenderTextures, 2, GetMultiRenderTarget(EMultiRenderTargetType::Editor)->GetDepthStencilTexture());
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::Decal]->Create(RenderTextures, 2, GetMultiRenderTarget(EMultiRenderTargetType::Editor_Main)->GetDepthStencilTexture());
 #else
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::Decal]->Create(RenderTextures, 2, GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->GetDepthStencilTexture());
 #endif
@@ -279,7 +295,7 @@ void FDirectXDevice::InitMultiRenderTarget()
 
 		MultiRenderTargets[static_cast<UINT>(EMultiRenderTargetType::Light)] = std::make_shared<FMultiRenderTarget>();
 #ifdef WITH_EDITOR
-		MultiRenderTargets[(UINT)EMultiRenderTargetType::Light]->Create(RenderTargets, 2, GetMultiRenderTarget(EMultiRenderTargetType::Editor)->GetDepthStencilTexture());
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::Light]->Create(RenderTargets, 2, GetMultiRenderTarget(EMultiRenderTargetType::Editor_Main)->GetDepthStencilTexture());
 #else
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::Light]->Create(RenderTargets, 2, GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->GetDepthStencilTexture());
 #endif
@@ -394,6 +410,15 @@ void FDirectXDevice::SetBSState(EBlendStateType InBSType)
 		m_d3dDeviceContext->OMSetBlendState(m_BSState[static_cast<UINT>(InBSType)].Get(), nullptr, 0xffffffff);
 		CurrentBSType = InBSType;
 	}
+}
+
+const std::shared_ptr<UTexture>& FDirectXDevice::GetHDRRenderTargetTexture()
+{
+#ifdef WITH_EDITOR
+	return GetMultiRenderTarget(EMultiRenderTargetType::Editor_HDR)->GetRenderTargetTexture(0);
+#else
+	return GetMultiRenderTarget(EMultiRenderTargetType::SwapChain_HDR)->GetRenderTargetTexture(0);
+#endif
 }
 
 void FDirectXDevice::CreateRasterizerState()
@@ -625,9 +650,26 @@ void FDirectXDevice::CreateEditorMRT()
 
 	XMFLOAT4 ClearColor = XMFLOAT4(0.f, 0.f, 0.f, 1.f);
 
-	MultiRenderTargets[(UINT)EMultiRenderTargetType::Editor] = std::make_shared<FMultiRenderTarget>();
-	MultiRenderTargets[(UINT)EMultiRenderTargetType::Editor]->Create(&RTTex, 1, pDSTex);
-	MultiRenderTargets[(UINT)EMultiRenderTargetType::Editor]->SetClearColor(&ClearColor, 1);
+	MultiRenderTargets[(UINT)EMultiRenderTargetType::Editor_Main] = std::make_shared<FMultiRenderTarget>();
+	MultiRenderTargets[(UINT)EMultiRenderTargetType::Editor_Main]->Create(&RTTex, 1, pDSTex);
+	MultiRenderTargets[(UINT)EMultiRenderTargetType::Editor_Main]->SetClearColor(&ClearColor, 1);
+
+
+	std::shared_ptr<UTexture> RTTex_HDR = AssetManager::CreateTexture("ERT_HDR",(UINT)EditorViewportSize.x,(UINT)EditorViewportSize.y,DXGI_FORMAT_R16G16B16A16_FLOAT,
+		D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
+
+	// 2. DepthStencilTexture 생성
+	std::shared_ptr<UTexture> pDSTex_HDR = AssetManager::CreateTexture("EDST_HDR", (UINT)EditorViewportSize.x, (UINT)EditorViewportSize.y
+		, DXGI_FORMAT_D24_UNORM_S8_UINT
+		, D3D11_BIND_DEPTH_STENCIL
+		, D3D11_USAGE_DEFAULT);
+
+	MultiRenderTargets[(UINT)EMultiRenderTargetType::Editor_HDR] = std::make_shared<FMultiRenderTarget>();
+	MultiRenderTargets[(UINT)EMultiRenderTargetType::Editor_HDR]->Create(&RTTex_HDR, 1, pDSTex_HDR);
+	MultiRenderTargets[(UINT)EMultiRenderTargetType::Editor_HDR]->SetClearColor(&ClearColor, 1);
+
+	T_PostProcess = AssetManager::CreateTexture("PP_HDR",(UINT)EditorViewportSize.x,(UINT)EditorViewportSize.y,DXGI_FORMAT_R16G16B16A16_FLOAT,
+		D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
 }
 #endif
 

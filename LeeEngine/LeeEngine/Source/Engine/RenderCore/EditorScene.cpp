@@ -34,14 +34,16 @@ void FEditorScene::InitSceneData_GameThread()
 	})
 }
 
-void FEditorScene::SetDrawScenePipeline(const float* ClearColor)
+void FEditorScene::SetDrawScenePipeline_HDR_MiddleStep()
 {
-	//FScene::SetDrawScenePipeline(ClearColor);
-	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor)->OMSet();
-	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor)->ClearRenderTarget();
-	//GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor)->ClearDepthStencilTarget();
+	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor_HDR)->OMSet();
+	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor_HDR)->ClearRenderTarget();	
+}
 
-	
+void FEditorScene::SetDrawScenePipeline()
+{
+	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor_Main)->OMSet();
+	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor_Main)->ClearRenderTarget();	
 }
 
 void FEditorScene::SetRSViewport()
