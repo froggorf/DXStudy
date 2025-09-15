@@ -152,6 +152,7 @@ void FDirectXDevice::InitMultiRenderTarget()
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::SwapChain_Main] = std::make_shared<FMultiRenderTarget>();
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::SwapChain_Main]->Create(&RTTex, 1, pDSTex);
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::SwapChain_Main]->SetClearColor(&ClearColor, 1);
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::SwapChain_Main]->SetViewport(D3D11_VIEWPORT{0,0,RenderResolution.x,RenderResolution.y,0.0f,1.0f});
 
 		std::shared_ptr<UTexture> RTTex_HDR = AssetManager::CreateTexture("RTT_HDR",(UINT)RenderResolution.x,(UINT)RenderResolution.y,DXGI_FORMAT_R16G16B16A16_FLOAT,
 			D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
@@ -165,6 +166,7 @@ void FDirectXDevice::InitMultiRenderTarget()
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::SwapChain_HDR] = std::make_shared<FMultiRenderTarget>();
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::SwapChain_HDR]->Create(&RTTex_HDR, 1, pDSTex_HDR);
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::SwapChain_HDR]->SetClearColor(&ClearColor, 1);
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::SwapChain_HDR]->SetViewport(D3D11_VIEWPORT{0,0,RenderResolution.x,RenderResolution.y,0.0f,1.0f});
 
 #ifndef WITH_EDITOR
 		T_PostProcess = AssetManager::CreateTexture("PP_HDR",(UINT)RenderResolution.x,(UINT)RenderResolution.y,DXGI_FORMAT_R16G16B16A16_FLOAT,
@@ -183,20 +185,16 @@ void FDirectXDevice::InitMultiRenderTarget()
 #endif
 
 
+	XMFLOAT2 DeferredResolution = {};
+#ifdef WITH_EDITOR
+	DeferredResolution = {EditorViewportSize.x, EditorViewportSize.y};
+#else
+	DeferredResolution = {RenderResolution.x,RenderResolution.y};
+#endif
 	// =============
 	// Deferred MRT
 	// =============
 	{
-		XMFLOAT2 DeferredResolution = {};
-#ifdef WITH_EDITOR
-		DeferredResolution = {EditorViewportSize.x, EditorViewportSize.y};
-#else
-		DeferredResolution = {RenderResolution.x,RenderResolution.y};
-		
-#endif
-		XMFLOAT2 EmissiveTexResolution;
-		EmissiveTexResolution.x = max(1,DeferredResolution.x/4);
-		EmissiveTexResolution.y = max(1,DeferredResolution.y/4);
 		
 		std::shared_ptr<UTexture> RenderTargetTextures[5] =
 		{
@@ -238,7 +236,32 @@ void FDirectXDevice::InitMultiRenderTarget()
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred]->Create(RenderTargetTextures, 5, GetMultiRenderTarget(EMultiRenderTargetType::SwapChain_HDR)->GetDepthStencilTexture());
 #endif
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred]->SetClearColor(ClearColor, 5);
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred]->SetViewport(D3D11_VIEWPORT{0,0,DeferredResolution.x,DeferredResolution.y,0.0f,1.0f});
 	}
+
+	// Emissive Down Sampling
+	{
+		XMFLOAT2 EmissiveDownResolution;
+		EmissiveDownResolution.x = max(1, DeferredResolution.x/4);
+		EmissiveDownResolution.y = max(1, DeferredResolution.y/4);
+
+		std::shared_ptr<UTexture> EmissiveDownSamplingTexture[1] =  {AssetManager::CreateTexture("EDownSamTex", EmissiveDownResolution.x,EmissiveDownResolution.y
+			, DXGI_FORMAT_R32G32B32A32_FLOAT
+			, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE)};
+		std::shared_ptr<UTexture> pDSTex_EmissiveDownSampling = AssetManager::CreateTexture("EDownSamTex_DST", (UINT)EmissiveDownResolution.x, (UINT)EmissiveDownResolution.y
+			, DXGI_FORMAT_D24_UNORM_S8_UINT
+			, D3D11_BIND_DEPTH_STENCIL
+			, D3D11_USAGE_DEFAULT);
+		XMFLOAT4 ClearColor[1] =
+		{
+			XMFLOAT4(0.f, 0.f, 0.f, 1.f),
+		};
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::EmissiveDownSampling] = std::make_shared<FMultiRenderTarget>();
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::EmissiveDownSampling]->Create(EmissiveDownSamplingTexture, 1, pDSTex_EmissiveDownSampling);
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::EmissiveDownSampling]->SetClearColor(ClearColor, 1);
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::EmissiveDownSampling]->SetViewport(D3D11_VIEWPORT{0,0,EmissiveDownResolution.x,EmissiveDownResolution.y,0.0f,1.0f});
+	}
+
 
 	// =========
 	// Decal MRT
@@ -264,6 +287,7 @@ void FDirectXDevice::InitMultiRenderTarget()
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::Decal]->Create(RenderTextures, 2, GetMultiRenderTarget(EMultiRenderTargetType::SwapChain_HDR)->GetDepthStencilTexture());
 #endif
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::Decal]->SetClearColor(ClearColor, 2);
+		MultiRenderTargets[(UINT)EMultiRenderTargetType::Decal]->SetViewport(D3D11_VIEWPORT{0,0,DeferredResolution.x,DeferredResolution.y,0.0f,1.0f});
 	}
 
 
@@ -304,6 +328,7 @@ void FDirectXDevice::InitMultiRenderTarget()
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::Light]->Create(RenderTargets, 2, GetMultiRenderTarget(EMultiRenderTargetType::SwapChain_HDR)->GetDepthStencilTexture());
 #endif
 		MultiRenderTargets[static_cast<UINT>(EMultiRenderTargetType::Light)]->SetClearColor(ClearColor, 2);
+		MultiRenderTargets[static_cast<UINT>(EMultiRenderTargetType::Light)]->SetViewport({0.0f,0.0f,Resolution.x,Resolution.y,0.0f,1.0f});
 	}
 
 	Direct2DDevice->Initialize(m_d3dDevice);
@@ -657,6 +682,7 @@ void FDirectXDevice::CreateEditorMRT()
 	MultiRenderTargets[(UINT)EMultiRenderTargetType::Editor_Main] = std::make_shared<FMultiRenderTarget>();
 	MultiRenderTargets[(UINT)EMultiRenderTargetType::Editor_Main]->Create(&RTTex, 1, pDSTex);
 	MultiRenderTargets[(UINT)EMultiRenderTargetType::Editor_Main]->SetClearColor(&ClearColor, 1);
+	MultiRenderTargets[(UINT)EMultiRenderTargetType::Editor_Main]->SetViewport(D3D11_VIEWPORT{0,0,EditorViewportSize.x,EditorViewportSize.y,0.0f,1.0f});
 
 
 	std::shared_ptr<UTexture> RTTex_HDR = AssetManager::CreateTexture("ERT_HDR",(UINT)EditorViewportSize.x,(UINT)EditorViewportSize.y,DXGI_FORMAT_R16G16B16A16_FLOAT,
@@ -671,6 +697,7 @@ void FDirectXDevice::CreateEditorMRT()
 	MultiRenderTargets[(UINT)EMultiRenderTargetType::Editor_HDR] = std::make_shared<FMultiRenderTarget>();
 	MultiRenderTargets[(UINT)EMultiRenderTargetType::Editor_HDR]->Create(&RTTex_HDR, 1, pDSTex_HDR);
 	MultiRenderTargets[(UINT)EMultiRenderTargetType::Editor_HDR]->SetClearColor(&ClearColor, 1);
+	MultiRenderTargets[(UINT)EMultiRenderTargetType::Editor_HDR]->SetViewport(D3D11_VIEWPORT{0,0,EditorViewportSize.x,EditorViewportSize.y,0.0f,1.0f});
 
 	T_PostProcess = AssetManager::CreateTexture("PP_HDR",(UINT)EditorViewportSize.x,(UINT)EditorViewportSize.y,DXGI_FORMAT_R16G16B16A16_FLOAT,
 		D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);

@@ -33,6 +33,8 @@ void FMultiRenderTarget::OMSet()
 		GDirectXDevice->GetDeviceContext()->OMSetRenderTargets(RenderTargetCount, RTV, DepthStencilTexture->GetDSV().Get());
 	else
 		GDirectXDevice->GetDeviceContext()->OMSetRenderTargets(RenderTargetCount, RTV, nullptr);
+
+	GDirectXDevice->GetDeviceContext()->RSSetViewports(1, &Viewport);
 }
 
 void FMultiRenderTarget::ClearRenderTarget()

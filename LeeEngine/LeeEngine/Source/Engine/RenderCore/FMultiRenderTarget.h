@@ -35,6 +35,8 @@ public:
     void OMSet();
     void ClearRenderTarget();
     void ClearDepthStencilTarget();
+    void SetViewport(const D3D11_VIEWPORT& NewViewport) {Viewport = NewViewport;}
+    const D3D11_VIEWPORT& GetViewport() const {return Viewport;}
 
     std::shared_ptr<UTexture> GetRenderTargetTexture(UINT Idx) {  assert(Idx < 8); return RenderTarget[Idx]; }
     std::shared_ptr<UTexture> GetDepthStencilTexture() { return DepthStencilTexture; }

@@ -47,6 +47,7 @@ void ULightComponent::SetLightType(ELightType Type)
 		ShadowMRT->Create(&RenderTexture, 1, DepthTexture);
 		XMFLOAT4 ClearColor = {0,0,0,1};
 		ShadowMRT->SetClearColor(&ClearColor,1);
+		ShadowMRT->SetViewport({0,0,8192,8192,0.0f,1.0f});
 		
 		// 카메라 최대시야를 널널하게 설정
 		ShadowCameraComp->SetFar(10000.f);
@@ -73,6 +74,7 @@ void ULightComponent::SetLightType(ELightType Type)
 		ShadowMRT->Create(&CubeRT,1,CubeDS);
 		XMFLOAT4 ClearColor = {0,0,0,1};
 		ShadowMRT->SetClearColor(&ClearColor,1);
+		ShadowMRT->SetViewport({0,0,512,512,0.0f,1.0f});
 	}
 	break;
 	case ELightType::Spot:

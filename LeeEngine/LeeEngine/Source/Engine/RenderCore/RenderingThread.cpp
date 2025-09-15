@@ -745,17 +745,6 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 					SceneData->CurrentFrameLightInfo[i].ShadowMultiRenderTarget->OMSet();
 					SceneData->CurrentFrameLightInfo[i].ShadowMultiRenderTarget->ClearRenderTarget();
 					SceneData->CurrentFrameLightInfo[i].ShadowMultiRenderTarget->ClearDepthStencilTarget();
-					// 하드코딩
-					D3D11_VIEWPORT ViewPort;
-					if (SceneData->CurrentFrameLightInfo[i].LightType == static_cast<int>(ELightType::Directional))
-					{
-						ViewPort = D3D11_VIEWPORT{0,0,8192,8192,0,1};	
-					}
-					else
-					{
-						ViewPort = D3D11_VIEWPORT{0,0,512,512,0,1};
-					}
-					DeviceContext->RSSetViewports(1, &ViewPort);
 					SceneData->DrawShadowMap(static_cast<ELightType>(SceneData->CurrentFrameLightInfo[i].LightType));
 
 					
@@ -860,7 +849,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 
 				// 해당 포스트 프로세스에 맞는 렌더타겟을 바인딩 하고,
 				GDirectXDevice->GetMultiRenderTarget(Data.OutRenderType)->ClearRenderTarget();
-				GDirectXDevice->GetMultiRenderTarget(Data.OutRenderType)->ClearDepthStencilTarget();
+				GDirectXDevice->GetMultiRenderTarget(Data.OutRenderType)->ClearDepthStencilTarget();	
 				GDirectXDevice->GetMultiRenderTarget(Data.OutRenderType)->OMSet();
 
 				// 머테리얼 바인딩 후에

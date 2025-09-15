@@ -23,6 +23,12 @@ float3 GaussianBlur(float2 uv, float2 pixelSize)
 	return color;
 }
 
+float4 PS_MakeEmissiveDownSampling(VS_OUT Input) : SV_TARGET
+{
+	float2 ScreenUV = Input.Position.xy / (gResolution.xy/4);
+	return float4(EmissiveTexture.Sample(DefaultSampler,ScreenUV).rgb,1.0f);
+}
+
 
 float4 PS_Bloom(VS_OUT Input) : SV_TARGET
 {
@@ -36,7 +42,7 @@ float4 PS_Bloom(VS_OUT Input) : SV_TARGET
 	float2 pixelSize = 1.0 / Dimension;
 	float3 blur = GaussianBlur(ScreenUV, pixelSize);
 
-	const float bloomIntensity = 0.35f;
+	const float bloomIntensity = 0.08f;
 	blur *= bloomIntensity;
 	// 3. 합성
 	float3 finalColor = sceneColor + blur;
