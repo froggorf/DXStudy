@@ -9,6 +9,7 @@
 enum class EMultiRenderTargetType
 {
     Deferred,
+    EmissiveDownSampling,
     Decal,
     Light,
 	Editor_HDR,

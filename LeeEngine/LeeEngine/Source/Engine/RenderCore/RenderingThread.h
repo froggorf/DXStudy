@@ -112,9 +112,20 @@ struct FPrimitiveRenderData
 
 struct FPostProcessRenderData
 {
+	FPostProcessRenderData(UINT P, const std::string& N, const std::shared_ptr<UMaterialInterface>& M, EMultiRenderTargetType RT) : Priority(P), Name(N), MaterialInterface(M), OutRenderType(RT) {}
 	UINT Priority = 0;
 	std::string Name = "";
 	std::shared_ptr<UMaterialInterface> MaterialInterface;
+	// 결과물이 나오는 멀티렌더타겟의 타입
+	EMultiRenderTargetType OutRenderType;
+
+	void SetSRVNames(const std::vector<std::string>& NewSRVs)
+	{
+		SRVNames.clear();
+		SRVNames =  NewSRVs;
+		SRVTextures.clear();
+		SRVTextures.resize(SRVNames.size());
+	}
 	bool operator<(const FPostProcessRenderData& Other) const
 	{
 		if (Priority != Other.Priority)
@@ -123,6 +134,13 @@ struct FPostProcessRenderData
 		}
 		return Name < Other.Name;
 	}
+
+	const std::vector<std::string>& GetSRVNames() const {return SRVNames;}
+	// 수정 가능함
+	std::vector<std::weak_ptr<UTexture>>& GetSRVTextures() {return SRVTextures;}
+private:
+	std::vector<std::string> SRVNames;
+	std::vector<std::weak_ptr<UTexture>> SRVTextures;
 };
 
 #if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)

@@ -176,5 +176,8 @@
     <None Include="Shader\PostProcess.fx">
       <Filter>Shader\PostProcess</Filter>
     </None>
+    <None Include="Shader\Bloom.fx">
+      <Filter>Shader\PostProcess</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -136,6 +136,7 @@ public:
 	void SetBSState(EBlendStateType InBSType);
 	std::shared_ptr<FMultiRenderTarget> GetMultiRenderTarget(EMultiRenderTargetType	Type) { return MultiRenderTargets[(UINT)Type]; }
 	const std::shared_ptr<UTexture>& GetHDRRenderTargetTexture();
+	std::shared_ptr<UTexture>& GetPostProcessTexture() {return T_PostProcess;};
 private:
 	ERasterizerType        CurrentRSType = ERasterizerType::RT_Count;
 	EDepthStencilStateType CurrentDSType = EDepthStencilStateType::DST_COUNT;

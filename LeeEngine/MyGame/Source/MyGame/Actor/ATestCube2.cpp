@@ -91,7 +91,19 @@ ATestCube2::ATestCube2()
 
 void ATestCube2::Register()
 {
-	FScene::AddPostProcess_GameThread(FPostProcessRenderData{0, "ToneMap", UMaterial::GetMaterialCache("M_PostProcessTest")});
+#ifdef WITH_EDITOR
+	FPostProcessRenderData BloomPP = FPostProcessRenderData{0, "Bloom", UMaterial::GetMaterialCache("M_Bloom"), EMultiRenderTargetType::Editor_Main};
+#else
+	FPostProcessRenderData BloomPP = FPostProcessRenderData{0, "Bloom", UMaterial::GetMaterialCache("M_Bloom"), EMultiRenderTargetType::SwapChain_HDR};
+#endif
+	BloomPP.SetSRVNames({"EmissiveTargetTex"});
+	FScene::AddPostProcess_GameThread(BloomPP);
+
+#ifdef WITH_EDITOR
+	//FScene::AddPostProcess_GameThread(FPostProcessRenderData{100, "ToneMap", UMaterial::GetMaterialCache("M_PostProcessTest"), EMultiRenderTargetType::Editor_Main});
+#else
+	FScene::AddPostProcess_GameThread(FPostProcessRenderData{100, "ToneMap", UMaterial::GetMaterialCache("M_PostProcessTest"), EMultiRenderTargetType::SwapChain_Main});
+#endif
 	AActor::Register();
 
 	PBRTestComp->OnRChange.Add([this](float Value)

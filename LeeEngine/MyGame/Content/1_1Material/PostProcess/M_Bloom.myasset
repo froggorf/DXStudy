@@ -1,0 +1,15 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_Bloom",
+    "VertexShader" : {
+	"FilePath" : "/Shader/PostProcess.fx",
+	"Func" : "VS_PostProcess"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/Bloom.fx",
+	"Func": "PS_Bloom"
+    },
+    "BlendMode": "PP",
+    "TwoSided" : 1
+	
+}

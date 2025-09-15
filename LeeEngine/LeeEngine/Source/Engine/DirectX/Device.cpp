@@ -194,6 +194,10 @@ void FDirectXDevice::InitMultiRenderTarget()
 		DeferredResolution = {RenderResolution.x,RenderResolution.y};
 		
 #endif
+		XMFLOAT2 EmissiveTexResolution;
+		EmissiveTexResolution.x = max(1,DeferredResolution.x/4);
+		EmissiveTexResolution.y = max(1,DeferredResolution.y/4);
+		
 		std::shared_ptr<UTexture> RenderTargetTextures[5] =
 		{
 			AssetManager::CreateTexture("ColorTargetTex", DeferredResolution.x,DeferredResolution.y
@@ -208,7 +212,7 @@ void FDirectXDevice::InitMultiRenderTarget()
 				, DXGI_FORMAT_R32G32B32A32_FLOAT
 				, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
 
-			AssetManager::CreateTexture("EmissiveTargetTex", DeferredResolution.x,DeferredResolution.y
+			AssetManager::CreateTexture("EmissiveTargetTex", DeferredResolution.x, DeferredResolution.y
 				, DXGI_FORMAT_R32G32B32A32_FLOAT
 				, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
 
@@ -626,12 +630,12 @@ void FDirectXDevice::InitSamplerState()
 	sampDesc.MaxAnisotropy = 1;
 	sampDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
 	m_d3dDevice->CreateSamplerState(&sampDesc, m_CubeSampler.GetAddressOf());
-	m_d3dDeviceContext->VSSetSamplers(1, 1, m_CubeSampler.GetAddressOf());
-	m_d3dDeviceContext->HSSetSamplers(1, 1, m_CubeSampler.GetAddressOf());
-	m_d3dDeviceContext->DSSetSamplers(1, 1, m_CubeSampler.GetAddressOf());
-	m_d3dDeviceContext->GSSetSamplers(1, 1, m_CubeSampler.GetAddressOf());
-	m_d3dDeviceContext->PSSetSamplers(1, 1, m_CubeSampler.GetAddressOf());
-	m_d3dDeviceContext->CSSetSamplers(1, 1, m_CubeSampler.GetAddressOf());
+	m_d3dDeviceContext->VSSetSamplers(2, 1, m_CubeSampler.GetAddressOf());
+	m_d3dDeviceContext->HSSetSamplers(2, 1, m_CubeSampler.GetAddressOf());
+	m_d3dDeviceContext->DSSetSamplers(2, 1, m_CubeSampler.GetAddressOf());
+	m_d3dDeviceContext->GSSetSamplers(2, 1, m_CubeSampler.GetAddressOf());
+	m_d3dDeviceContext->PSSetSamplers(2, 1, m_CubeSampler.GetAddressOf());
+	m_d3dDeviceContext->CSSetSamplers(2, 1, m_CubeSampler.GetAddressOf());
 
 
 }

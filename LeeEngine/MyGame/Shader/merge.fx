@@ -8,8 +8,9 @@ Texture2D    LightSpecularTexture : register( t2 );
 Texture2D    ViewPosTexture : register( t3 );
 Texture2D    ViewNormalTexture : register( t4 );
 Texture2D    PBRTexture : register( t5 );
+Texture2D	 EmissiveTexture : register(t6);
 
-SamplerState samLinear : register( s0 );
+//SamplerState samLinear : register( s0 );
 
 struct VS_IN
 {
@@ -27,10 +28,6 @@ VS_OUT VS_Merge(VS_IN _in)
 {
     VS_OUT output = (VS_OUT) 0.f;
     
-    // (Vx, Vy, Vz, 1.f) x matProj ==> (PX*Vz, PY*Vz, PZ*Vz, Vz)
-    
-    // RectMesh 가 -0.5 ~ 0.5 범위에 정점이 있기 때문에, 
-    // -1 ~ 1 범위로 확장해서 전체 픽셀에 대해서 픽셀 쉐이더가 호출되도록 함
     output.vPosition = float4(_in.vPos * 2.f, 1.f);
     output.vUV = _in.vUV;
     
@@ -39,15 +36,14 @@ VS_OUT VS_Merge(VS_IN _in)
 
 float4 PS_Merge(VS_OUT _in) : SV_Target
 {
-	
     float4 OutColor = (float4) 0.f;
 
-	float4 Albedo = ColorTexture.Sample(samLinear, _in.vUV);
-	float4 Diffuse = LightDiffuseTexture.Sample(samLinear, _in.vUV);
-	float4 Specular = LightSpecularTexture.Sample(samLinear, _in.vUV);
-	float3 N = ViewNormalTexture.Sample(samLinear, _in.vUV);
-	float3 V = ViewPosTexture.Sample(samLinear, _in.vUV);
-	float4 PBRData = PBRTexture.Sample(samLinear, _in.vUV);
+	float4 Albedo = ColorTexture.Sample(DefaultSampler, _in.vUV);
+	float4 Diffuse = LightDiffuseTexture.Sample(DefaultSampler, _in.vUV);
+	float4 Specular = LightSpecularTexture.Sample(DefaultSampler, _in.vUV);
+	float3 N = ViewNormalTexture.Sample(DefaultSampler, _in.vUV);
+	float3 V = ViewPosTexture.Sample(DefaultSampler, _in.vUV);
+	float4 PBRData = PBRTexture.Sample(DefaultSampler, _in.vUV);
 
 	float ObjectMetallic = PBRData.r;
 	float ObjectSpecular = PBRData.g;
@@ -62,8 +58,9 @@ float4 PS_Merge(VS_OUT _in) : SV_Target
 	// 빛 먼저 적용시키고,
 	float3 FinalDiffuse = Albedo.rgb * Diffuse.rgb * (1.0 - ObjectMetallic);
 	float3 FinalSpecular = lerp(Albedo.rgb * Specular.rgb, Specular.rgb, ObjectMetallic);
+	float3 EmissiveColor = EmissiveTexture.Sample(DefaultSampler, _in.vUV);
 	// IBL Ambient 를 적용시킨다
-	OutColor.rgb = FinalDiffuse + FinalSpecular + ambient;
+	OutColor.rgb = FinalDiffuse + FinalSpecular + ambient + EmissiveColor;
 
 	// 09.14 톤매핑을 포스트 프로세스에서 진행하면서 해당 코드를 지움
 	//OutColor.rgb = ACESFilm(OutColor.rgb);

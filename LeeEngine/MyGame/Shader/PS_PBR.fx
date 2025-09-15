@@ -86,7 +86,7 @@ Deferred_PS_OUT PBR_PS_Well(PBR_PS_INPUT input) : SV_TARGET
 	float3 N = GetNormalFromMap(input);
 	output.Normal = float4(N, 1.f);    
 	output.Position = float4(input.ViewPosition, 1.f);
-	output.Emissive = float4(0.f, 0.f, 0.f, 1.f);
+	output.Emissive = float4(0,15,15,1);
 
 	return output;
 }

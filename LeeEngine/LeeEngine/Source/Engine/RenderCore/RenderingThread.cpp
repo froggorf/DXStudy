@@ -780,18 +780,21 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				// 09.14 HDR 렌더타겟을 사용하기 위해 HDR 렌더타겟으로 먼저 그리기
 				SceneData->SetDrawScenePipeline_HDR_MiddleStep();
 				SceneData->DeferredMergeRenderData.MaterialInterface->Binding();
-				const std::shared_ptr<UTexture>& ColorTexture = UTexture::GetTextureCache("ColorTargetTex");
+				
+				const std::shared_ptr<UTexture>& ColorTexture =  GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->GetRenderTargetTexture(0);;
 				DeviceContext->PSSetShaderResources(0,1,ColorTexture->GetSRV().GetAddressOf());
 				const std::shared_ptr<UTexture>& DiffuseTexture = UTexture::GetTextureCache("DiffuseTargetTex");
 				DeviceContext->PSSetShaderResources(1,1,DiffuseTexture->GetSRV().GetAddressOf());
 				const std::shared_ptr<UTexture>& SpecularTexture = UTexture::GetTextureCache("SpecularTargetTex");
 				DeviceContext->PSSetShaderResources(2,1,SpecularTexture->GetSRV().GetAddressOf());
-				const std::shared_ptr<UTexture>& PositionTexture = UTexture::GetTextureCache("PositionTargetTex");
+				const std::shared_ptr<UTexture>& PositionTexture =  GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->GetRenderTargetTexture(2);;
 				DeviceContext->PSSetShaderResources(3,1, PositionTexture->GetSRV().GetAddressOf());
-				const std::shared_ptr<UTexture>& NormalTexture = UTexture::GetTextureCache("NormalTargetTex");
+				const std::shared_ptr<UTexture>& NormalTexture =  GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->GetRenderTargetTexture(1);;
 				DeviceContext->PSSetShaderResources(4,1, NormalTexture->GetSRV().GetAddressOf());
-				const std::shared_ptr<UTexture>& PBRTexture = UTexture::GetTextureCache("PBRTargetTex");
+				const std::shared_ptr<UTexture>& PBRTexture =  GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->GetRenderTargetTexture(4);;
 				DeviceContext->PSSetShaderResources(5,1, PBRTexture->GetSRV().GetAddressOf());
+				const std::shared_ptr<UTexture>& EmissiveTexture = GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->GetRenderTargetTexture(3);
+				DeviceContext->PSSetShaderResources(6,1, EmissiveTexture->GetSRV().GetAddressOf());
 				SceneData->DeferredMergeRenderData.SceneProxy->Draw();
 			}
 
@@ -844,18 +847,55 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 
 		// PostProcessing
 		{
-			// 출력용 (LDR) 렌더타겟에 OMSet 후에
-			SceneData->SetDrawScenePipeline();
-			const std::shared_ptr<UTexture>& HDRTexture = GDirectXDevice->GetHDRRenderTargetTexture();
-			DeviceContext->PSSetShaderResources(0,1, HDRTexture->GetSRV().GetAddressOf());
-
 			for (const FPostProcessRenderData& Data : SceneData->PostProcessData)
 			{
+				// HDR 에다가 출력하는 경우라면, SRV 와 렌더타겟을 동시에 바인딩하지 못하기떄문에,
+				// CopyResource를 통해 리소스를 복사하고 그 리소스를 바인딩해줘야함
+				// 또한 HDR/Main 에 출력을 하기때문에 이전에 바인딩한 PostProcessTexture는 이전 리소스의 복사본을 들고있기떄문에 매번 포스트프로세스마다 결과가 누적될 수 있도록
+				// 계속해서 새로 바인딩 해줘야함
+				const std::shared_ptr<UTexture>& HDRTexture = GDirectXDevice->GetHDRRenderTargetTexture();
+				const std::shared_ptr<UTexture>& PPTexture = GDirectXDevice->GetPostProcessTexture();;
+				DeviceContext->CopyResource(PPTexture->GetTexture().Get(), HDRTexture->GetTexture().Get());
+				DeviceContext->PSSetShaderResources(0,1, PPTexture->GetSRV().GetAddressOf());
+
+				// 해당 포스트 프로세스에 맞는 렌더타겟을 바인딩 하고,
+				GDirectXDevice->GetMultiRenderTarget(Data.OutRenderType)->ClearRenderTarget();
+				GDirectXDevice->GetMultiRenderTarget(Data.OutRenderType)->ClearDepthStencilTarget();
+				GDirectXDevice->GetMultiRenderTarget(Data.OutRenderType)->OMSet();
+
+				// 머테리얼 바인딩 후에
 				Data.MaterialInterface->Binding();
+
+				// 계속해서 리소스를 찾는것에 대한 부담을 줄이기 위해서 이런 방안을 선택햇으나, set 이 const_iter 인 점에서 문제가 발생
+				//const std::vector<std::string>& SRVNames = Data.GetSRVNames();
+				//std::vector<std::weak_ptr<UTexture>>& SRVTextures = Data.GetSRVTextures();
+				//for (size_t i = 0; i < SRVNames.size(); ++i)
+				//{
+				//	// 이전 텍스쳐 데이터가 소실되었거나(재생성 되었거나) 새로 할당되기 전이라면
+				//	if (SRVTextures[i].expired())
+				//	{
+				//		SRVTextures[i] = UTexture::GetTextureCache(SRVNames[i]);
+				//	}
+				//	DeviceContext->PSSetShaderResources(1+i, 1, SRVTextures[i].lock()->GetSRV().GetAddressOf());
+				//}
+
+				//일단은 테스트 기능 확인을 위해서 단순히 코딩
+				// 중복을 제어하는 코드를 넣으면 좋아보임
+				const std::vector<std::string>& SRVNames = Data.GetSRVNames();
+				for (size_t i = 0; i < SRVNames.size(); ++i)
+				{
+					const std::shared_ptr<UTexture>& SRV = UTexture::GetTextureCache(SRVNames[i]);
+					if (SRV)
+					{
+						DeviceContext->PSSetShaderResources(1+i, 1, SRV->GetSRV().GetAddressOf());
+					}
+				}
+				
 				SceneData->PostProcessStaticMeshSceneProxy->Draw();
 			}
 		}
 
+		SceneData->SetDrawScenePipeline();
 		// Draw UI
 		{
 			// 머테리얼 바인딩
