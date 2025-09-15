@@ -93,26 +93,26 @@ void ATestCube2::Register()
 {
 	// EmissiveDownSampling
 	{
-		FPostProcessRenderData EmissiveDownSample = FPostProcessRenderData{0, "EDownSample", UMaterial::GetMaterialCache("M_EmissiveDownSampling"), EMultiRenderTargetType::EmissiveDownSampling};
-		EmissiveDownSample.SetSRVNames({"EmissiveTargetTex"});
-		FScene::AddPostProcess_GameThread(EmissiveDownSample);
+		//FPostProcessRenderData EmissiveDownSample = FPostProcessRenderData{0, "EDownSample", UMaterial::GetMaterialCache("M_EmissiveDownSampling"), EMultiRenderTargetType::EmissiveDownSampling};
+		//EmissiveDownSample.SetSRVNames({"EmissiveTargetTex"});
+		//FScene::AddPostProcess_GameThread(EmissiveDownSample);
 	}
 	
 
-	// Bloom
-	{
-#ifdef WITH_EDITOR
-		FPostProcessRenderData BloomPP = FPostProcessRenderData{1, "Bloom", UMaterial::GetMaterialCache("M_Bloom"), EMultiRenderTargetType::Editor_Main};
-#else
-		FPostProcessRenderData BloomPP = FPostProcessRenderData{1, "Bloom", UMaterial::GetMaterialCache("M_Bloom"), EMultiRenderTargetType::SwapChain_HDR};
-#endif
-		BloomPP.SetSRVNames({"EDownSamTex"});
-		FScene::AddPostProcess_GameThread(BloomPP);
-	}
+//	// Bloom
+//	{
+//#ifdef WITH_EDITOR
+//		FPostProcessRenderData BloomPP = FPostProcessRenderData{1, "Bloom", UMaterial::GetMaterialCache("M_Bloom"), EMultiRenderTargetType::Editor_Main};
+//#else
+//		FPostProcessRenderData BloomPP = FPostProcessRenderData{1, "Bloom", UMaterial::GetMaterialCache("M_Bloom"), EMultiRenderTargetType::SwapChain_HDR};
+//#endif
+//		BloomPP.SetSRVNames({"EmissiveTargetTex"});
+//		FScene::AddPostProcess_GameThread(BloomPP);
+//	}
 
 
 #ifdef WITH_EDITOR
-	//FScene::AddPostProcess_GameThread(FPostProcessRenderData{100, "ToneMap", UMaterial::GetMaterialCache("M_PostProcessTest"), EMultiRenderTargetType::Editor_Main});
+	FScene::AddPostProcess_GameThread(FPostProcessRenderData{100, "ToneMap", UMaterial::GetMaterialCache("M_PostProcessTest"), EMultiRenderTargetType::Editor_Main});
 #else
 	FScene::AddPostProcess_GameThread(FPostProcessRenderData{100, "ToneMap", UMaterial::GetMaterialCache("M_PostProcessTest"), EMultiRenderTargetType::SwapChain_Main});
 #endif

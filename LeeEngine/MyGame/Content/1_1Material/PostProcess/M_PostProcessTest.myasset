@@ -10,6 +10,6 @@
 	"Func": "PS_PostProcess"
     },
     "BlendMode": "PP",
-    "TwoSided" : 1
+    "TwoSided" : 0
 	
 }
