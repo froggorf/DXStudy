@@ -6,16 +6,21 @@
 #pragma once
 #include "Engine/Class/UTexture.h"
 
+static constexpr UINT BloomCount = 5;
 enum class EMultiRenderTargetType
 {
     Deferred,
-    EmissiveDownSampling,
     Decal,
     Light,
 	Editor_HDR,
     SwapChain_HDR,
     Editor_Main,
-    SwapChain_Main,	
+    SwapChain_Main,
+    Bloom_Blur_0,
+    Bloom_Blur_1,
+    Bloom_Blur_2,
+    Bloom_Blur_3,
+    Bloom_Blur_4,
     Count,
 };
 

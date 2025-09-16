@@ -27,11 +27,47 @@ void FImguiLevelViewport::Draw()
 	// Actor
 	if (ImGui::Begin("Place Actors", nullptr))
 	{
-		ImGui::Text("EDownSamTex");
-		if (const std::shared_ptr<UTexture>& RenderTexture = GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::EmissiveDownSampling)->GetRenderTargetTexture(0))
+		ImGui::Text("Blur_RT0");
+		if (const std::shared_ptr<FMultiRenderTarget>& BLoomMRT = GDirectXDevice->GetBloomMRT(0))
 		{
-			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {200,200});
+			if (const std::shared_ptr<UTexture>& RenderTexture = BLoomMRT->GetRenderTargetTexture(0))
+			{
+				ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {480,270});
+			}		
 		}
+		ImGui::Text("Blur_RT1");
+		if (const std::shared_ptr<FMultiRenderTarget>& BLoomMRT = GDirectXDevice->GetBloomMRT(1))
+		{
+			if (const std::shared_ptr<UTexture>& RenderTexture = BLoomMRT->GetRenderTargetTexture(0))
+			{
+				ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {480,270});
+			}		
+		}
+		ImGui::Text("Blur_RT2");
+		if (const std::shared_ptr<FMultiRenderTarget>& BLoomMRT = GDirectXDevice->GetBloomMRT(2))
+		{
+			if (const std::shared_ptr<UTexture>& RenderTexture = BLoomMRT->GetRenderTargetTexture(0))
+			{
+				ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {480,270});
+			}		
+		}
+		ImGui::Text("Blur_RT3");
+		if (const std::shared_ptr<FMultiRenderTarget>& BLoomMRT = GDirectXDevice->GetBloomMRT(3))
+		{
+			if (const std::shared_ptr<UTexture>& RenderTexture = BLoomMRT->GetRenderTargetTexture(0))
+			{
+				ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {480,270});
+			}		
+		}
+		ImGui::Text("Blur_RT4");
+		if (const std::shared_ptr<FMultiRenderTarget>& BLoomMRT = GDirectXDevice->GetBloomMRT(4))
+		{
+			if (const std::shared_ptr<UTexture>& RenderTexture = BLoomMRT->GetRenderTargetTexture(0))
+			{
+				ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {480,270});
+			}		
+		}
+
 
 		ImGui::Text("ERT_HDR");
 		if (const std::shared_ptr<UTexture>& RenderTexture = GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor_HDR)->GetRenderTargetTexture(0))

@@ -239,27 +239,49 @@ void FDirectXDevice::InitMultiRenderTarget()
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred]->SetViewport(D3D11_VIEWPORT{0,0,DeferredResolution.x,DeferredResolution.y,0.0f,1.0f});
 	}
 
-	// Emissive Down Sampling
-	{
-		XMFLOAT2 EmissiveDownResolution;
-		EmissiveDownResolution.x = max(1, DeferredResolution.x/4);
-		EmissiveDownResolution.y = max(1, DeferredResolution.y/4);
 
-		std::shared_ptr<UTexture> EmissiveDownSamplingTexture[1] =  {AssetManager::CreateTexture("EDownSamTex", EmissiveDownResolution.x,EmissiveDownResolution.y
-			, DXGI_FORMAT_R32G32B32A32_FLOAT
-			, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE)};
-		std::shared_ptr<UTexture> pDSTex_EmissiveDownSampling = AssetManager::CreateTexture("EDownSamTex_DST", (UINT)EmissiveDownResolution.x, (UINT)EmissiveDownResolution.y
-			, DXGI_FORMAT_D24_UNORM_S8_UINT
-			, D3D11_BIND_DEPTH_STENCIL
-			, D3D11_USAGE_DEFAULT);
+
+	// Emissive Blur Bloom MRT
+	{
 		XMFLOAT4 ClearColor[1] =
 		{
-			XMFLOAT4(0.f, 0.f, 0.f, 1.f),
+			XMFLOAT4(0.f, 0.f, 0.f, 1.f)
 		};
-		MultiRenderTargets[(UINT)EMultiRenderTargetType::EmissiveDownSampling] = std::make_shared<FMultiRenderTarget>();
-		MultiRenderTargets[(UINT)EMultiRenderTargetType::EmissiveDownSampling]->Create(EmissiveDownSamplingTexture, 1, pDSTex_EmissiveDownSampling);
-		MultiRenderTargets[(UINT)EMultiRenderTargetType::EmissiveDownSampling]->SetClearColor(ClearColor, 1);
-		MultiRenderTargets[(UINT)EMultiRenderTargetType::EmissiveDownSampling]->SetViewport(D3D11_VIEWPORT{0,0,EmissiveDownResolution.x,EmissiveDownResolution.y,0.0f,1.0f});
+
+		XMFLOAT2 BlurResolution = DeferredResolution;
+		// DeferredResolution이 1920, 1080라고 할때,
+		// BlurResolution은 {960, 540} , {480, 270}, {240, 135}, {120, 68}, {60, 34} 의 크기를 가지는 렌더타겟
+		for (UINT i = 0; i < BloomCount; ++i)
+		{
+			UINT MRTIndex = static_cast<UINT>(EMultiRenderTargetType::Bloom_Blur_0) + i;
+
+			BlurResolution.x /= 2;
+			BlurResolution.y /= 2;
+			// 텍스쳐 크기가 2 이하면 더이상 생성하지 않고 넘어가기
+			if (max(BlurResolution.x,BlurResolution.y) < 2)
+			{
+				// 기존에 정보를 제거해줘야 정상작동
+				MultiRenderTargets[MRTIndex] = nullptr;
+				continue;
+			}
+			std::string RTName = "Blur_RT" + std::to_string(i);
+			std::shared_ptr<UTexture> RTBlur[1] = {
+				AssetManager::CreateTexture(RTName,(UINT)BlurResolution.x,(UINT)BlurResolution.y,
+											DXGI_FORMAT_R16G16B16A16_FLOAT,
+											D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE)
+			};
+
+			std::string DSTName = "Blur_DST" + std::to_string(i);
+			const std::shared_ptr<UTexture>& DSBlur = AssetManager::CreateTexture(DSTName, (UINT)BlurResolution.x, (UINT)BlurResolution.y
+				, DXGI_FORMAT_D24_UNORM_S8_UINT
+				, D3D11_BIND_DEPTH_STENCIL
+				, D3D11_USAGE_DEFAULT);
+
+			MultiRenderTargets[MRTIndex] = std::make_shared<FMultiRenderTarget>();
+			MultiRenderTargets[MRTIndex]->Create(RTBlur, 1, DSBlur);
+			MultiRenderTargets[MRTIndex]->SetClearColor(ClearColor, 1);
+			MultiRenderTargets[MRTIndex]->SetViewport(D3D11_VIEWPORT{0,0,BlurResolution.x,BlurResolution.y,0.0f,1.0f});
+		}
 	}
 
 
@@ -825,6 +847,11 @@ void FDirectXDevice::CreateConstantBuffers()
 	m_d3dDeviceContext->VSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_LightIndex), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_LightIndex)].GetAddressOf());
 	m_d3dDeviceContext->GSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_LightIndex), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_LightIndex)].GetAddressOf());
 	m_d3dDeviceContext->PSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_LightIndex), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_LightIndex)].GetAddressOf());
+
+	// BloomBlur
+	bufferDesc.ByteWidth = sizeof(FBloomDataConstantBuffer);
+	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ConstantBuffers[static_cast<UINT>( EConstantBufferType::CBT_BloomBlur)].GetAddressOf()));
+	m_d3dDeviceContext->PSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_BloomBlur), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_BloomBlur)].GetAddressOf());
 }
 
 void FDirectXDevice::MapConstantBuffer(EConstantBufferType Type, void* Data, size_t Size) const

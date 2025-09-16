@@ -212,6 +212,12 @@ struct FLightInfoConstantBuffer
 	XMFLOAT3 Pad;
 };
 
+struct FBloomDataConstantBuffer
+{
+	XMFLOAT2 TexelSize;
+	XMFLOAT2 Pad;
+};
+
 struct ShadowLightMatrixConstantBuffer
 {
 	XMMATRIX LightView;

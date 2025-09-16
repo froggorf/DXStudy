@@ -91,28 +91,72 @@ ATestCube2::ATestCube2()
 
 void ATestCube2::Register()
 {
-	// EmissiveDownSampling
+	// Emissive Down/Up Sampling
 	{
-		//FPostProcessRenderData EmissiveDownSample = FPostProcessRenderData{0, "EDownSample", UMaterial::GetMaterialCache("M_EmissiveDownSampling"), EMultiRenderTargetType::EmissiveDownSampling};
-		//EmissiveDownSample.SetSRVNames({"EmissiveTargetTex"});
-		//FScene::AddPostProcess_GameThread(EmissiveDownSample);
+
+		const std::shared_ptr<UMaterialInterface>& DownSamplingMat = UMaterial::GetMaterialCache("M_BlurDownSam");
+		for (UINT i = 0; i < BloomCount; ++i)
+		{
+			EMultiRenderTargetType OutRenderType = static_cast<EMultiRenderTargetType>(static_cast<UINT>(EMultiRenderTargetType::Bloom_Blur_0) + i);
+			FPostProcessRenderData DownSampling = FPostProcessRenderData{static_cast<UINT>(i), "EBlur_Down", DownSamplingMat, OutRenderType};
+			if (i == 0)
+			{
+				// 0번째에게는 EmissiveTargetTex를 텍스쳐로
+				DownSampling.SetSRVNames({"EmissiveTargetTex"});
+				DownSampling.SetFuncBeforeRendering({
+					[]()
+					{
+						const std::shared_ptr<FMultiRenderTarget>& DeferredMRT = GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred);
+						if (!DeferredMRT) return;
+
+						const std::shared_ptr<UTexture>& RT = DeferredMRT->GetRenderTargetTexture(0);
+						const D3D11_TEXTURE2D_DESC& Desc = RT->GetDesc();
+						FBloomDataConstantBuffer BindingData;
+						BindingData.TexelSize = XMFLOAT2{static_cast<float>(Desc.Width), static_cast<float>(Desc.Height)};
+						GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_BloomBlur, &BindingData, sizeof(BindingData));
+					}
+				});
+			}
+			else
+			{
+				// 이 외에는 이전 결과물의 텍스쳐를
+				DownSampling.SetSRVNames({ "Blur_RT" + std::to_string(i-1) });
+				DownSampling.SetFuncBeforeRendering({
+					[i]()
+					{
+						// 현재 MRT가 존재하지 않다면 그냥 리턴
+						if (nullptr == GDirectXDevice->GetBloomMRT(i)) return;
+
+						//해당 MRT가 존재하면 이전 MRT 는 반드시 존재
+						const std::shared_ptr<FMultiRenderTarget>& LastDownSamplingMRT = GDirectXDevice->GetBloomMRT(i-1);
+						const std::shared_ptr<UTexture>& RT = LastDownSamplingMRT->GetRenderTargetTexture(0);
+						const D3D11_TEXTURE2D_DESC& Desc =RT->GetDesc();
+						FBloomDataConstantBuffer BindingData;
+						BindingData.TexelSize = XMFLOAT2{static_cast<float>(Desc.Width), static_cast<float>(Desc.Height)};
+						GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_BloomBlur, &BindingData, sizeof(BindingData));
+					}
+					});
+				
+			}
+			FScene::AddPostProcess_GameThread(DownSampling);
+		}
 	}
 	
 
-//	// Bloom
+	// Bloom
 //	{
 //#ifdef WITH_EDITOR
-//		FPostProcessRenderData BloomPP = FPostProcessRenderData{1, "Bloom", UMaterial::GetMaterialCache("M_Bloom"), EMultiRenderTargetType::Editor_Main};
+//		FPostProcessRenderData BloomPP = FPostProcessRenderData{6, "Bloom", UMaterial::GetMaterialCache("M_Bloom"), EMultiRenderTargetType::Editor_Main};
 //#else
 //		FPostProcessRenderData BloomPP = FPostProcessRenderData{1, "Bloom", UMaterial::GetMaterialCache("M_Bloom"), EMultiRenderTargetType::SwapChain_HDR};
 //#endif
-//		BloomPP.SetSRVNames({"EmissiveTargetTex"});
+//		BloomPP.SetSRVNames({"EBlur_Hor"});
 //		FScene::AddPostProcess_GameThread(BloomPP);
 //	}
 
 
 #ifdef WITH_EDITOR
-	FScene::AddPostProcess_GameThread(FPostProcessRenderData{100, "ToneMap", UMaterial::GetMaterialCache("M_PostProcessTest"), EMultiRenderTargetType::Editor_Main});
+	//FScene::AddPostProcess_GameThread(FPostProcessRenderData{100, "ToneMap", UMaterial::GetMaterialCache("M_PostProcessTest"), EMultiRenderTargetType::Editor_Main});
 #else
 	FScene::AddPostProcess_GameThread(FPostProcessRenderData{100, "ToneMap", UMaterial::GetMaterialCache("M_PostProcessTest"), EMultiRenderTargetType::SwapChain_Main});
 #endif

@@ -838,6 +838,22 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 		{
 			for (const FPostProcessRenderData& Data : SceneData->PostProcessData)
 			{
+				// 렌더타겟이 존재하지 않다면 진행하지 않음
+				if (nullptr == GDirectXDevice->GetMultiRenderTarget(Data.OutRenderType))
+				{
+					continue;
+				}
+
+				// 렌더링을 진행하기 전 바인딩한 함수가 있다면 실행
+				const std::vector<std::function<void()>>& BeforeRendering = Data.GetFuncBeforeRendering();
+				for (const std::function<void()>& Func : BeforeRendering)
+				{
+					if (Func)
+					{
+						Func();
+					}
+				}
+
 				// HDR 에다가 출력하는 경우라면, SRV 와 렌더타겟을 동시에 바인딩하지 못하기떄문에,
 				// CopyResource를 통해 리소스를 복사하고 그 리소스를 바인딩해줘야함
 				// 또한 HDR/Main 에 출력을 하기때문에 이전에 바인딩한 PostProcessTexture는 이전 리소스의 복사본을 들고있기떄문에 매번 포스트프로세스마다 결과가 누적될 수 있도록
@@ -879,7 +895,9 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 						DeviceContext->PSSetShaderResources(1+i, 1, SRV->GetSRV().GetAddressOf());
 					}
 				}
+
 				
+
 				SceneData->PostProcessStaticMeshSceneProxy->Draw();
 			}
 		}

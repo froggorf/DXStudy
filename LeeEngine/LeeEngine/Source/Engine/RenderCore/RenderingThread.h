@@ -119,6 +119,12 @@ struct FPostProcessRenderData
 	// 결과물이 나오는 멀티렌더타겟의 타입
 	EMultiRenderTargetType OutRenderType;
 
+	void SetFuncBeforeRendering(const std::vector<std::function<void()>>& NewFuncs)
+	{
+		FuncBeforeRendering.clear();
+		FuncBeforeRendering = NewFuncs;
+	}
+
 	void SetSRVNames(const std::vector<std::string>& NewSRVs)
 	{
 		SRVNames.clear();
@@ -138,9 +144,11 @@ struct FPostProcessRenderData
 	const std::vector<std::string>& GetSRVNames() const {return SRVNames;}
 	// 수정 가능함
 	std::vector<std::weak_ptr<UTexture>>& GetSRVTextures() {return SRVTextures;}
+	const std::vector<std::function<void()>>& GetFuncBeforeRendering() const {return FuncBeforeRendering;}
 private:
 	std::vector<std::string> SRVNames;
 	std::vector<std::weak_ptr<UTexture>> SRVTextures;
+	std::vector<std::function<void()>> FuncBeforeRendering;
 };
 
 #if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
