@@ -258,10 +258,11 @@ void FDirectXDevice::InitMultiRenderTarget()
 			BlurResolution.x /= 2;
 			BlurResolution.y /= 2;
 			// 텍스쳐 크기가 2 이하면 더이상 생성하지 않고 넘어가기
-			if (max(BlurResolution.x,BlurResolution.y) < 2)
+			if (std::min(BlurResolution.x,BlurResolution.y) < 2)
 			{
 				// 기존에 정보를 제거해줘야 정상작동
 				MultiRenderTargets[MRTIndex] = nullptr;
+				T_BloomPostProcess[i] = nullptr;
 				continue;
 			}
 			std::string RTName = "Blur_RT" + std::to_string(i);
@@ -277,6 +278,14 @@ void FDirectXDevice::InitMultiRenderTarget()
 				, D3D11_BIND_DEPTH_STENCIL
 				, D3D11_USAGE_DEFAULT);
 
+			RTName += "PP";
+			T_BloomPostProcess[i] = AssetManager::CreateTexture(RTName,(UINT)BlurResolution.x,(UINT)BlurResolution.y,
+															DXGI_FORMAT_R16G16B16A16_FLOAT,
+															D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
+			if (nullptr == T_BloomPostProcess[i]->GetTexture())
+			{
+				int a =0 ;
+			}
 			MultiRenderTargets[MRTIndex] = std::make_shared<FMultiRenderTarget>();
 			MultiRenderTargets[MRTIndex]->Create(RTBlur, 1, DSBlur);
 			MultiRenderTargets[MRTIndex]->SetClearColor(ClearColor, 1);

@@ -27,45 +27,17 @@ void FImguiLevelViewport::Draw()
 	// Actor
 	if (ImGui::Begin("Place Actors", nullptr))
 	{
-		ImGui::Text("Blur_RT0");
-		if (const std::shared_ptr<FMultiRenderTarget>& BLoomMRT = GDirectXDevice->GetBloomMRT(0))
+		for (UINT i = 0; i < BloomCount; ++i)
 		{
-			if (const std::shared_ptr<UTexture>& RenderTexture = BLoomMRT->GetRenderTargetTexture(0))
+			std::string Name = "Blur_RT" + std::to_string(i);
+			ImGui::Text(Name.data());
+			if (const std::shared_ptr<FMultiRenderTarget>& BLoomMRT = GDirectXDevice->GetBloomMRT(i))
 			{
-				ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {480,270});
-			}		
-		}
-		ImGui::Text("Blur_RT1");
-		if (const std::shared_ptr<FMultiRenderTarget>& BLoomMRT = GDirectXDevice->GetBloomMRT(1))
-		{
-			if (const std::shared_ptr<UTexture>& RenderTexture = BLoomMRT->GetRenderTargetTexture(0))
-			{
-				ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {480,270});
-			}		
-		}
-		ImGui::Text("Blur_RT2");
-		if (const std::shared_ptr<FMultiRenderTarget>& BLoomMRT = GDirectXDevice->GetBloomMRT(2))
-		{
-			if (const std::shared_ptr<UTexture>& RenderTexture = BLoomMRT->GetRenderTargetTexture(0))
-			{
-				ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {480,270});
-			}		
-		}
-		ImGui::Text("Blur_RT3");
-		if (const std::shared_ptr<FMultiRenderTarget>& BLoomMRT = GDirectXDevice->GetBloomMRT(3))
-		{
-			if (const std::shared_ptr<UTexture>& RenderTexture = BLoomMRT->GetRenderTargetTexture(0))
-			{
-				ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {480,270});
-			}		
-		}
-		ImGui::Text("Blur_RT4");
-		if (const std::shared_ptr<FMultiRenderTarget>& BLoomMRT = GDirectXDevice->GetBloomMRT(4))
-		{
-			if (const std::shared_ptr<UTexture>& RenderTexture = BLoomMRT->GetRenderTargetTexture(0))
-			{
-				ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {480,270});
-			}		
+				if (const std::shared_ptr<UTexture>& RenderTexture = BLoomMRT->GetRenderTargetTexture(0))
+				{
+					ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {480,270});
+				}		
+			}	
 		}
 
 

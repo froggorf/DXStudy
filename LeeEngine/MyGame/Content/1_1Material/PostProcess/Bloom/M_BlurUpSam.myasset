@@ -1,13 +1,13 @@
 {
     "Class": "UMaterial",
-    "Name": "M_EBlur_Hor",
+    "Name": "M_BlurUpSam",
     "VertexShader" : {
 	"FilePath" : "/Shader/PostProcess.fx",
 	"Func" : "VS_PostProcess"
     },
     "PixelShader" : {
 	"FilePath" : "/Shader/Bloom.fx",
-	"Func": "PS_EBlur_Hor"
+	"Func": "PS_Blur_UpSampling"
     },
     "BlendMode": "PP",
     "TwoSided" : 0

@@ -6,7 +6,7 @@
 #pragma once
 #include "Engine/Class/UTexture.h"
 
-static constexpr UINT BloomCount = 5;
+static constexpr UINT BloomCount = 6;
 enum class EMultiRenderTargetType
 {
     Deferred,
@@ -21,6 +21,7 @@ enum class EMultiRenderTargetType
     Bloom_Blur_2,
     Bloom_Blur_3,
     Bloom_Blur_4,
+    Bloom_Blur_5,
     Count,
 };
 

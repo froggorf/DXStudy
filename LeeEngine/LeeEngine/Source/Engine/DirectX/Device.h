@@ -137,6 +137,7 @@ public:
 	void SetBSState(EBlendStateType InBSType);
 	const std::shared_ptr<FMultiRenderTarget>& GetMultiRenderTarget(EMultiRenderTargetType	Type) { return MultiRenderTargets[(UINT)Type]; }
 	const std::shared_ptr<FMultiRenderTarget>& GetBloomMRT(UINT Index) { assert(Index < BloomCount); return MultiRenderTargets[static_cast<UINT>(EMultiRenderTargetType::Bloom_Blur_0) + Index];}
+	const std::shared_ptr<UTexture>& GetBloomPPTexture(UINT Index) { assert(Index < BloomCount); return T_BloomPostProcess[Index];}
 	const std::shared_ptr<UTexture>& GetHDRRenderTargetTexture();
 	std::shared_ptr<UTexture>& GetPostProcessTexture() {return T_PostProcess;};
 private:
@@ -169,7 +170,7 @@ private:
 
 
 	std::shared_ptr<FMultiRenderTarget>				MultiRenderTargets[static_cast<UINT>(EMultiRenderTargetType::Count)];
-
+	std::shared_ptr<UTexture>						T_BloomPostProcess[BloomCount];
 	
 	//std::shared_ptr<FMultiRenderTarget>				BloomMRT[BloomCount];
 

@@ -838,6 +838,10 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 		{
 			for (const FPostProcessRenderData& Data : SceneData->PostProcessData)
 			{
+				if (Data.Priority == 7)
+				{
+					int a = 0;
+				}
 				// 렌더타겟이 존재하지 않다면 진행하지 않음
 				if (nullptr == GDirectXDevice->GetMultiRenderTarget(Data.OutRenderType))
 				{
@@ -889,10 +893,15 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				const std::vector<std::string>& SRVNames = Data.GetSRVNames();
 				for (size_t i = 0; i < SRVNames.size(); ++i)
 				{
-					const std::shared_ptr<UTexture>& SRV = UTexture::GetTextureCache(SRVNames[i]);
-					if (SRV)
+					if (const std::shared_ptr<UTexture>& SRV = UTexture::GetTextureCache(SRVNames[i]))
 					{
 						DeviceContext->PSSetShaderResources(1+i, 1, SRV->GetSRV().GetAddressOf());
+					}
+					else
+					{
+						// Bloom 의 경우 업샘플링 시 이전 렌더타겟이 존재하지 않는다면 결과가 정상적으로 받아져야하므로 null SRV 를 건네줌
+						ID3D11ShaderResourceView* NullSRV = nullptr;
+						DeviceContext->PSSetShaderResources(1+i, 1, &NullSRV);
 					}
 				}
 
