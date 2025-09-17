@@ -11,7 +11,8 @@ Texture2D	   LastDownSamplingTexture : register(t2);
 cbuffer cbTextureResolution : register(b8)
 {
 	float2 TexSize;
-	float2 Pad;
+	float BloomIntensity;
+	float Pad;
 }
 
 float4 PS_Blur_DownSampling(VS_OUT Input) : SV_TARGET
@@ -49,6 +50,7 @@ float4 PS_Bloom(VS_OUT Input) : SV_TARGET
 {
 	float3 SceneColor = SceneTexture.Sample(DefaultSampler, Input.UV).rgb;
 	float3 BloomColor = EmissiveTexture.Sample(DefaultSampler,Input.UV).rgb;
+	BloomColor *= BloomIntensity;
 	return float4(SceneColor + BloomColor, 1.0f);
 }
 

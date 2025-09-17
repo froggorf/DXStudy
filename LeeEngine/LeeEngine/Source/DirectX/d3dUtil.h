@@ -215,7 +215,8 @@ struct FLightInfoConstantBuffer
 struct FBloomDataConstantBuffer
 {
 	XMFLOAT2 TexelSize;
-	XMFLOAT2 Pad;
+	float BloomIntensity;
+	float Pad;
 };
 
 struct ShadowLightMatrixConstantBuffer

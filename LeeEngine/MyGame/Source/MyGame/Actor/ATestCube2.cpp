@@ -198,11 +198,22 @@ void ATestCube2::Register()
 	// Bloom
 	{
 #ifdef WITH_EDITOR
-		FPostProcessRenderData BloomPP = FPostProcessRenderData{20, "Bloom", UMaterial::GetMaterialCache("M_Bloom"), EMultiRenderTargetType::Editor_HDR};
+		FPostProcessRenderData BloomPP = 
+				FPostProcessRenderData{20, "Bloom",
+									UMaterial::GetMaterialCache("M_Bloom"),
+									EMultiRenderTargetType::Editor_HDR};
 #else
 		FPostProcessRenderData BloomPP = FPostProcessRenderData{1, "Bloom", UMaterial::GetMaterialCache("M_Bloom"), EMultiRenderTargetType::SwapChain_HDR};
 #endif
 		BloomPP.SetSRVNames({"Blur_RT0"});
+		BloomPP.SetFuncBeforeRendering({
+			[]()
+			{
+				FBloomDataConstantBuffer BindingData;
+				BindingData.BloomIntensity = 0.25f;
+				GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_BloomBlur, &BindingData, sizeof(BindingData));
+			}
+		});
 		FScene::AddPostProcess_GameThread(BloomPP);
 	}
 

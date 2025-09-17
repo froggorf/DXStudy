@@ -834,14 +834,36 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 #endif
 		}
 
+		
+
 		// PostProcessing
 		{
+			// SRV 의 expired를 먼저 체크 한 뒤에 렌더링 진행
+			std::vector<FPostProcessRenderData> RemoveData;
 			for (const FPostProcessRenderData& Data : SceneData->PostProcessData)
 			{
-				if (Data.Priority == 7)
+				const std::vector<std::weak_ptr<UTexture>>& SRVTextures = Data.GetSRVTextures();
+				for (const std::weak_ptr<UTexture>& SRV : SRVTextures)
 				{
-					int a = 0;
+					if (SRV.expired())
+					{
+						RemoveData.push_back(Data);
+						break;
+					}
 				}
+			}
+
+			// 데이터 삭제 및 추가
+			for (const FPostProcessRenderData& Data : RemoveData)
+			{
+				SceneData->RemovePostProcess_RenderThread(Data.Priority, Data.Name);
+				SceneData->AddPostProcess_RenderThread(Data);
+			}
+			
+
+			// 렌더링 진행
+			for (const FPostProcessRenderData& Data : SceneData->PostProcessData)
+			{
 				// 렌더타겟이 존재하지 않다면 진행하지 않음
 				if (nullptr == GDirectXDevice->GetMultiRenderTarget(Data.OutRenderType))
 				{
@@ -860,8 +882,8 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 
 				// HDR 에다가 출력하는 경우라면, SRV 와 렌더타겟을 동시에 바인딩하지 못하기떄문에,
 				// CopyResource를 통해 리소스를 복사하고 그 리소스를 바인딩해줘야함
-				// 또한 HDR/Main 에 출력을 하기때문에 이전에 바인딩한 PostProcessTexture는 이전 리소스의 복사본을 들고있기떄문에 매번 포스트프로세스마다 결과가 누적될 수 있도록
-				// 계속해서 새로 바인딩 해줘야함
+				// 또한 HDR/Main 에 출력을 하기때문에 이전에 바인딩한 PostProcessTexture는 이전 리소스의 복사본을 들고있기떄문에
+				// 매번 포스트프로세스마다 결과가 누적될 수 있도록 계속해서 새로 바인딩 해줘야함
 				const std::shared_ptr<UTexture>& HDRTexture = GDirectXDevice->GetHDRRenderTargetTexture();
 				const std::shared_ptr<UTexture>& PPTexture = GDirectXDevice->GetPostProcessTexture();;
 				DeviceContext->CopyResource(PPTexture->GetTexture().Get(), HDRTexture->GetTexture().Get());
@@ -875,37 +897,23 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				// 머테리얼 바인딩 후에
 				Data.MaterialInterface->Binding();
 
-				// 계속해서 리소스를 찾는것에 대한 부담을 줄이기 위해서 이런 방안을 선택햇으나, set 이 const_iter 인 점에서 문제가 발생
-				//const std::vector<std::string>& SRVNames = Data.GetSRVNames();
-				//std::vector<std::weak_ptr<UTexture>>& SRVTextures = Data.GetSRVTextures();
-				//for (size_t i = 0; i < SRVNames.size(); ++i)
-				//{
-				//	// 이전 텍스쳐 데이터가 소실되었거나(재생성 되었거나) 새로 할당되기 전이라면
-				//	if (SRVTextures[i].expired())
-				//	{
-				//		SRVTextures[i] = UTexture::GetTextureCache(SRVNames[i]);
-				//	}
-				//	DeviceContext->PSSetShaderResources(1+i, 1, SRVTextures[i].lock()->GetSRV().GetAddressOf());
-				//}
-
-				//일단은 테스트 기능 확인을 위해서 단순히 코딩
-				// 중복을 제어하는 코드를 넣으면 좋아보임
-				const std::vector<std::string>& SRVNames = Data.GetSRVNames();
-				for (size_t i = 0; i < SRVNames.size(); ++i)
+				const std::vector<std::weak_ptr<UTexture>>& SRVTextures = Data.GetSRVTextures();
+				for (size_t i = 0; i < SRVTextures.size(); ++i)
 				{
-					if (const std::shared_ptr<UTexture>& SRV = UTexture::GetTextureCache(SRVNames[i]))
+					std::shared_ptr<UTexture> SRVTexture = SRVTextures[i].lock();
+					if (nullptr == SRVTexture)
 					{
-						DeviceContext->PSSetShaderResources(1+i, 1, SRV->GetSRV().GetAddressOf());
-					}
-					else
-					{
-						// Bloom 의 경우 업샘플링 시 이전 렌더타겟이 존재하지 않는다면 결과가 정상적으로 받아져야하므로 null SRV 를 건네줌
+						// 잘못된 텍스쳐 이름이 적용된 상태
+						MY_LOG("Warning", EDebugLogLevel::DLL_Warning, 
+								"Wrong texture name applied: " + std::to_string(Data.Priority) + Data.Name);
 						ID3D11ShaderResourceView* NullSRV = nullptr;
 						DeviceContext->PSSetShaderResources(1+i, 1, &NullSRV);
 					}
+					else
+					{
+						DeviceContext->PSSetShaderResources(1+i, 1, SRVTexture->GetSRV().GetAddressOf());
+					}
 				}
-
-				
 
 				SceneData->PostProcessStaticMeshSceneProxy->Draw();
 			}

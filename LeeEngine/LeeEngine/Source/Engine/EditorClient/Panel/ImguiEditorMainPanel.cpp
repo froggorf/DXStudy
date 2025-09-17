@@ -1,4 +1,4 @@
-﻿#include "CoreMinimal.h"
+#include "CoreMinimal.h"
 
 #include "Engine/Physics/UShapeComponent.h"
 #include "Engine/World/UWorld.h"

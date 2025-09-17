@@ -119,6 +119,27 @@ struct FPostProcessRenderData
 	// 결과물이 나오는 멀티렌더타겟의 타입
 	EMultiRenderTargetType OutRenderType;
 
+	FPostProcessRenderData(const FPostProcessRenderData& Other)
+	{
+		Priority = Other.Priority;
+		Name =  Other.Name;
+		MaterialInterface = Other.MaterialInterface;
+		OutRenderType = Other.OutRenderType;
+		FuncBeforeRendering = Other.FuncBeforeRendering;
+		SetSRVNames(Other.SRVNames);
+	}
+	FPostProcessRenderData& operator=(const FPostProcessRenderData& Other)
+	{
+		Priority = Other.Priority;
+		Name =  Other.Name;
+		MaterialInterface = Other.MaterialInterface;
+		OutRenderType = Other.OutRenderType;
+		FuncBeforeRendering = Other.FuncBeforeRendering;
+		SetSRVNames(Other.SRVNames);
+
+		return *this;
+	}
+
 	void SetFuncBeforeRendering(const std::vector<std::function<void()>>& NewFuncs)
 	{
 		FuncBeforeRendering.clear();
@@ -131,6 +152,10 @@ struct FPostProcessRenderData
 		SRVNames =  NewSRVs;
 		SRVTextures.clear();
 		SRVTextures.resize(SRVNames.size());
+		for (size_t i = 0; i < SRVNames.size(); ++i)
+		{
+			SRVTextures[i] = UTexture::GetTextureCache(SRVNames[i]);
+		}
 	}
 	bool operator<(const FPostProcessRenderData& Other) const
 	{
@@ -142,8 +167,7 @@ struct FPostProcessRenderData
 	}
 
 	const std::vector<std::string>& GetSRVNames() const {return SRVNames;}
-	// 수정 가능함
-	std::vector<std::weak_ptr<UTexture>>& GetSRVTextures() {return SRVTextures;}
+	const std::vector<std::weak_ptr<UTexture>>& GetSRVTextures() const {return SRVTextures;}
 	const std::vector<std::function<void()>>& GetFuncBeforeRendering() const {return FuncBeforeRendering;}
 private:
 	std::vector<std::string> SRVNames;
@@ -418,21 +442,27 @@ public:
 			})
 	}
 	// PostProcess 삭제
-	static void RemovePostProcess_GameThread(const std::string& Name)
+	static void RemovePostProcess_GameThread(UINT Priority, const std::string& Name)
 	{
-		ENQUEUE_RENDER_COMMAND([Name](std::shared_ptr<FScene>& Scene)
+		std::function<void(std::shared_ptr<FScene>&)> Func = [Priority, Name](std::shared_ptr<FScene>& Scene)
 			{
-				Scene->RemovePostProcess_RenderThread(Name);
-			})
+				Scene->RemovePostProcess_RenderThread(Priority, Name);
+			};
+		FRenderCommandPipe::Enqueue(Func);
 	}
 private:
 	void AddPostProcess_RenderThread(const FPostProcessRenderData& NewPostProcess)
 	{
-		PostProcessData.emplace(NewPostProcess);
+		PostProcessData.insert(NewPostProcess);
 	}
-	void RemovePostProcess_RenderThread(const std::string& Name)
+	void RemovePostProcess_RenderThread(UINT Priority, const std::string& Name)
 	{
-		auto Iter = std::ranges::find_if(PostProcessData, [&Name](const FPostProcessRenderData& Data){return Data.Name == Name;});
+		auto Iter = 
+			std::ranges::find_if(PostProcessData, 
+			[Priority, &Name](const FPostProcessRenderData& Data)
+			{
+				return Data.Priority == Priority && Data.Name == Name;
+			});
 		if (Iter != PostProcessData.end())
 		{
 			PostProcessData.erase(Iter);
