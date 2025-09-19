@@ -33,7 +33,7 @@ float4 PS_Blur_UpSampling(VS_OUT Input) : SV_TARGET
 {
 	float2 TexelSize = 1.0f / TexSize;
 
-	// { -TexelSize.x, -TexelSize.y, TexelSize.x, TexelSize.y }
+	// { -TexelSize.x/2, -TexelSize.y/2, TexelSize.x/2, TexelSize.y/2 }
 	float4 o = TexelSize.xyxy * float2(-0.5f, 0.5f).xxyy;
 	float3 s =
 	EmissiveTexture.Sample(ClampSampler, Input.UV + o.xy).rgb +
@@ -49,7 +49,8 @@ float4 PS_Blur_UpSampling(VS_OUT Input) : SV_TARGET
 float4 PS_Bloom(VS_OUT Input) : SV_TARGET
 {
 	float3 SceneColor = SceneTexture.Sample(DefaultSampler, Input.UV).rgb;
-	float3 BloomColor = EmissiveTexture.Sample(DefaultSampler,Input.UV).rgb;
+	float3 BloomColor = EmissiveTexture.Sample(ClampSampler,Input.UV).rgb;
+	
 	BloomColor *= BloomIntensity;
 	return float4(SceneColor + BloomColor, 1.0f);
 }

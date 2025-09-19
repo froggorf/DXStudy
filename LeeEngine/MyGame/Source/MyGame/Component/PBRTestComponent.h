@@ -11,6 +11,8 @@ class UPBRTestComponent : public USceneComponent
 	Delegate<float> OnRChange;
 	Delegate<float> OnGChange;
 	Delegate<float> OnBChange;
+
+	Delegate<float> BloomIntensityChange;
 #ifdef WITH_EDITOR
 	void DrawDetailPanel(UINT ComponentDepth) override;
 #endif
@@ -52,6 +54,12 @@ inline void UPBRTestComponent::DrawDetailPanel(UINT ComponentDepth)
 	if (ImGui::Button("Day"))
 	{
 		FScene::SetSkyBoxTexture_GameThread("T_SkyBox");
+	}
+
+	static float BloomIntensity = 0.25f;
+	if (ImGui::SliderFloat("BloomIntensity", &BloomIntensity, 0.0f, 10.0f, "%.1f"))
+	{
+		BloomIntensityChange.Broadcast(BloomIntensity);
 	}
 }
 #endif

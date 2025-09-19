@@ -125,9 +125,6 @@ void ATestCube2::Register()
 					DownSampling.SetFuncBeforeRendering({
 						[i]()
 						{
-							// 현재 MRT가 존재하지 않다면 그냥 리턴
-							if (nullptr == GDirectXDevice->GetBloomMRT(i)) return;
-
 							//해당 MRT가 존재하면 이전 MRT 는 반드시 존재
 							const std::shared_ptr<FMultiRenderTarget>& LastDownSamplingMRT = GDirectXDevice->GetBloomMRT(i-1);
 							const std::shared_ptr<UTexture>& RT = LastDownSamplingMRT->GetRenderTargetTexture(0);
@@ -165,25 +162,11 @@ void ATestCube2::Register()
 						const std::shared_ptr<FMultiRenderTarget>& BloomMRT = GDirectXDevice->GetBloomMRT(i);
 						std::shared_ptr<UTexture> LastRT = BloomMRT->GetRenderTargetTexture(0);
 						std::shared_ptr<UTexture> T_BloomPP = GDirectXDevice->GetBloomPPTexture(i);
-						// 이상하게 T_BloomPP는 존재하는데 GetTexture가 존재하지 않는 현상이 있음.. 이럴땐 그냥 return 으로 진행..
-						if (nullptr == T_BloomPP->GetTexture())
-						{
-							return;
-						}
+						
 						GDirectXDevice->GetDeviceContext()->CopyResource(T_BloomPP->GetTexture().Get(), LastRT->GetTexture().Get());
 						GDirectXDevice->GetDeviceContext()->PSSetShaderResources(2,1, T_BloomPP->GetSRV().GetAddressOf());
 
-						// 이전 다운샘플링 MRT 가 존재하지 않는다면, 현재 텍스쳐를 그대로 갖고올 수 있도록 하게 하기 위해서
-						// 이전 EmissiveTexture에 대해서는 nullptr를 바인딩하게 해줘야함, 하지만 텍스쳐 자체가 nullptr 이기때문에
-						// nullptr가 바인딩되므로 그냥 리턴해주면 됨
-						if (nullptr == GDirectXDevice->GetBloomMRT(i+1))
-						{
-							return;
-						}
-
-						const std::shared_ptr<FMultiRenderTarget>& LastDownSamplingMRT = GDirectXDevice->GetBloomMRT(i+1);
-						const std::shared_ptr<UTexture>& RT = LastDownSamplingMRT->GetRenderTargetTexture(0);
-						const D3D11_TEXTURE2D_DESC& Desc =RT->GetDesc();
+						const D3D11_TEXTURE2D_DESC& Desc = LastRT->GetDesc();
 						FBloomDataConstantBuffer BindingData;
 						BindingData.TexelSize = XMFLOAT2{static_cast<float>(Desc.Width), static_cast<float>(Desc.Height)};
 						GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_BloomBlur, &BindingData, sizeof(BindingData));
@@ -210,11 +193,30 @@ void ATestCube2::Register()
 			[]()
 			{
 				FBloomDataConstantBuffer BindingData;
-				BindingData.BloomIntensity = 0.25f;
+				BindingData.BloomIntensity = 10.f;
 				GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_BloomBlur, &BindingData, sizeof(BindingData));
 			}
 		});
 		FScene::AddPostProcess_GameThread(BloomPP);
+
+		PBRTestComp->BloomIntensityChange.Add([this](float BloomIntensity)
+			{
+				// 지워주고서
+				FScene::RemovePostProcess_GameThread(20, "Bloom");
+
+				// 새로 추가
+				FPostProcessRenderData BloomPP = FPostProcessRenderData{20, "Bloom", UMaterial::GetMaterialCache("M_Bloom"), EMultiRenderTargetType::Editor_HDR};
+				BloomPP.SetSRVNames({"Blur_RT0"});
+				BloomPP.SetFuncBeforeRendering({
+					[BloomIntensity]()
+					{
+						FBloomDataConstantBuffer BindingData;
+						BindingData.BloomIntensity = BloomIntensity;
+						GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_BloomBlur, &BindingData, sizeof(BindingData));
+					}
+					});
+				FScene::AddPostProcess_GameThread(BloomPP);
+			});
 	}
 
 
@@ -268,6 +270,7 @@ void ATestCube2::Register()
 				}
 			}	
 	});
+
 	
 }
 
