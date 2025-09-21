@@ -729,7 +729,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 
 				// PBR을 위해서 렌더 텍스쳐를 추가로 바인딩
 				const std::shared_ptr<UTexture>& PBRTexture = UTexture::GetTextureCache("PBRTargetTex");
-				DeviceContext->PSSetShaderResources(3,1, NormalTexture->GetSRV().GetAddressOf());
+				DeviceContext->PSSetShaderResources(3,1, PBRTexture->GetSRV().GetAddressOf());
 
 
 				int LightSize = static_cast<int>(SceneData->CurrentFrameLightInfo.size());
