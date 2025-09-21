@@ -1,4 +1,4 @@
-﻿#include "CoreMinimal.h"
+#include "CoreMinimal.h"
 #include "UConvexComponent.h"
 
 #include "UPhysicsEngine.h"
@@ -6,7 +6,7 @@
 
 UConvexComponent::UConvexComponent()
 {
-	Rename("ConvexComponent" + PrimitiveID);
+	Rename("ConvexComponent" + std::to_string(PrimitiveID));
 }
 
 void UConvexComponent::SetStaticMesh(const std::shared_ptr<UStaticMesh>& InStaticMesh)

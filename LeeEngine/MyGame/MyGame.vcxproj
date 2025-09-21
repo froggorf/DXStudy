@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Source\MyGame\Actor\AFPSTest.cpp" />
     <ClCompile Include="Source\MyGame\Actor\ATestActor2.cpp" />
     <ClCompile Include="Source\MyGame\Actor\ATestCube.cpp" />
     <ClCompile Include="Source\MyGame\Actor\ATestCube2.cpp" />
@@ -30,6 +31,7 @@
     <ClCompile Include="Source\MyGame\Widget\UMyTestWidget.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\MyGame\Actor\AFPSTest.h" />
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h" />
     <ClInclude Include="Source\MyGame\Actor\ATestCube.h" />
     <ClInclude Include="Source\MyGame\Actor\ATestCube2.h" />

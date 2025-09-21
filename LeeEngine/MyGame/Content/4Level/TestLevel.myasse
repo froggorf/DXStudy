@@ -1,13 +1,13 @@
 {
     "Actor": [
-    {
-            "Class": "ATestCube",
+       {
+            "Class": "ASkyBox",
             "Location": [
                 0.0,
-                29.0,
+                0.0,
                 0.0
             ],
-            "Name": "ATestCube1",
+            "Name": "SkyBox",
             "Rotation": [
                 0.0,
                 0.0,
@@ -21,13 +21,33 @@
             ]
         },
 {
-            "Class": "ATestCube",
+            "Class": "ATestPawn",
             "Location": [
                 0.0,
-                -29.0,
+                0.0,
                 0.0
             ],
-            "Name": "WOW",
+            "Name": "Pawn",
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0,
+	  1.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+  {
+            "Class": "ATestCube2",
+            "Location": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Name": "ATestCube2",
             "Rotation": [
                 0.0,
                 0.0,
@@ -40,8 +60,8 @@
                 1.0
             ]
         }
-	
+
     ],
     "Class": "ULevel",
-    "Name": "Test2Level"
+    "Name": "TestLevel"
 }

@@ -21,33 +21,13 @@
             ]
         },
 {
-            "Class": "ATestPawn",
+            "Class": "AFPSTest",
             "Location": [
                 0.0,
                 0.0,
                 0.0
             ],
-            "Name": "Pawn",
-            "Rotation": [
-                0.0,
-                0.0,
-                0.0,
-	  1.0
-            ],
-            "Scale": [
-                1.0,
-                1.0,
-                1.0
-            ]
-        },
-  {
-            "Class": "ATestCube2",
-            "Location": [
-                0.0,
-                0.0,
-                0.0
-            ],
-            "Name": "ATestCube2",
+            "Name": "DeferedTest",
             "Rotation": [
                 0.0,
                 0.0,
@@ -60,8 +40,8 @@
                 1.0
             ]
         }
-
     ],
+
     "Class": "ULevel",
     "Name": "TestLevel"
 }

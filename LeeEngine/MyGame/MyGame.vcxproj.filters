@@ -79,6 +79,9 @@
     <ClCompile Include="Source\MyGame\Component\PBRTestComponent.cpp">
       <Filter>Source\MyGame\Component</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Actor\AFPSTest.cpp">
+      <Filter>Source\MyGame\Actor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -104,6 +107,9 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Component\PBRTestComponent.h">
       <Filter>Source\MyGame\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Actor\AFPSTest.h">
+      <Filter>Source\MyGame\Actor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

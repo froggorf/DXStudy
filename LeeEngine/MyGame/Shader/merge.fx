@@ -61,7 +61,6 @@ float4 PS_Merge(VS_OUT _in) : SV_Target
 	float3 EmissiveColor = EmissiveTexture.Sample(DefaultSampler, _in.vUV);
 	// IBL Ambient 를 적용시킨다
 	OutColor.rgb = FinalDiffuse + FinalSpecular + ambient + EmissiveColor;
-
 	// 09.14 톤매핑을 포스트 프로세스에서 진행하면서 해당 코드를 지움
 	//OutColor.rgb = ACESFilm(OutColor.rgb);
 

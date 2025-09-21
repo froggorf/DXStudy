@@ -13,6 +13,7 @@ class ASkyBox : public AActor
 	MY_GENERATE_BODY(ASkyBox)
 public:
 	ASkyBox();
+	void Register() override;
 private:
 
 	std::shared_ptr<ULightComponent> DirectionalLight;

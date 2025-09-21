@@ -3,7 +3,7 @@
 
 UBoxComponent::UBoxComponent()
 {
-    Rename("BoxComponent"+PrimitiveID);
+    Rename("BoxComponent"+std::to_string(PrimitiveID));
 
     SetCollisionEnabled(ECollisionEnabled::QueryOnly);
     for (size_t i = 0; i < CollisionResponse.size(); ++i)

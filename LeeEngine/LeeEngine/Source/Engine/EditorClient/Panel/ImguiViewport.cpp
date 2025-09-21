@@ -27,61 +27,40 @@ void FImguiLevelViewport::Draw()
 	// Actor
 	if (ImGui::Begin("Place Actors", nullptr))
 	{
-		for (UINT i = 0; i < BloomCount; ++i)
-		{
-			std::string Name = "Blur_RT" + std::to_string(i);
-			ImGui::Text(Name.data());
-			if (const std::shared_ptr<FMultiRenderTarget>& BLoomMRT = GDirectXDevice->GetBloomMRT(i))
-			{
-				if (const std::shared_ptr<UTexture>& RenderTexture = BLoomMRT->GetRenderTargetTexture(0))
-				{
-					ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {480,270});
-				}		
-			}	
-		}
-
-
 		ImGui::Text("ERT_HDR");
 		if (const std::shared_ptr<UTexture>& RenderTexture = GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor_HDR)->GetRenderTargetTexture(0))
 		{
-			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {200,200});
+			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {300,200});
 		}
-
 
 		ImGui::Text("PBRTargetTex");
 		if (const std::shared_ptr<UTexture>& RenderTexture = GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->GetRenderTargetTexture(4))
 		{
-			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {200,200});
-		}
-
-		ImGui::Text("DiffuseTargetTex");
-		if (const std::shared_ptr<UTexture>& RenderTexture = UTexture::GetTextureCache("DiffuseTargetTex"))
-		{
-			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {200,200});
+			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {300,200});
 		}
 
 		ImGui::Text("ColorTargetTex");
 		if (const std::shared_ptr<UTexture>& RenderTexture =  GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->GetRenderTargetTexture(0))
 		{
-			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {200,200});
+			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {300,200});
 		}
 
 		ImGui::Text("NormalTargetTex");
 		if (const std::shared_ptr<UTexture>& RenderTexture =  GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->GetRenderTargetTexture(1))
 		{
-			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {200,200});
+			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {300,200});
 		}
 
 		ImGui::Text("PositionTargetTex");
 		if (const std::shared_ptr<UTexture>& RenderTexture = GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->GetRenderTargetTexture(2))
 		{
-			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {200,200});
+			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {300,200});
 		}
 
 		ImGui::Text("EmissiveTargetTex");
 		if (const std::shared_ptr<UTexture>& RenderTexture = GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->GetRenderTargetTexture(3))
 		{
-			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {200,200});
+			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {300,200});
 		}
 
 		ImGui::End();

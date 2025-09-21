@@ -72,15 +72,13 @@ PS_OUT PS_DirLight(VS_OUT Input)
 	float Metallic = PBRData.r;
 	float Specular = PBRData.g;
 	float Roughness = PBRData.b;
-	float AO = PBRData.a;
-
 	// 라이팅
 	{
 		const float DefaultSpecular = 0.04 * Specular;
 		float3 F0 = lerp(float3(DefaultSpecular, DefaultSpecular, DefaultSpecular), float3(1,1,1), Metallic);
+
 		CalcPBRLightContribution(ViewPos.xyz, ViewNormal, normalize(-ViewPos.xyz), 
 			Metallic, Roughness, F0, gLightIndex, output.Diffuse.xyz, output.Specular.xyz);
-		
 	}
 	
 

@@ -38,7 +38,28 @@ ASkyBox::ASkyBox()
 		XMConvertToRadians(0.0f)
 	);
 	DirectionalLight->SetWorldRotation(RotQuat);
-	constexpr float Radiance = 1.5f;
+	constexpr float Radiance = 0.1f;
 	DirectionalLight->SetLightColor({Radiance,Radiance,Radiance});
+
+
+	if (!GDirectXDevice) return;
+
+	
+				
+		
+
+
+	
+}
+
+void ASkyBox::Register()
+{
+	AActor::Register();
+
+#ifdef WITH_EDITOR
+	FScene::AddPostProcess_GameThread(FPostProcessRenderData{100, "ToneMap", UMaterial::GetMaterialCache("M_PostProcessTest"), EMultiRenderTargetType::Editor_Main});
+#else
+	FScene::AddPostProcess_GameThread(FPostProcessRenderData{100, "ToneMap", UMaterial::GetMaterialCache("M_PostProcessTest"), EMultiRenderTargetType::SwapChain_Main});
+#endif
 }
 

@@ -32,7 +32,7 @@ void FCameraFrustum::CalculateFace(const XMMATRIX& ViewInvMat, const XMMATRIX& P
 		WorldPos[i] = XMVector3TransformCoord(XMLoadFloat3(&ProjPos[i]), InvMat);
 	}
 
-	// 월드공간상의 카메라 시야범위를 6개의 평면으로 만든다.
+	// 월드공간상의 6개의 평면 제작
 	Face[static_cast<UINT>(EFrustumFace::Near)]  = XMPlaneFromPoints(WorldPos[0], WorldPos[1], WorldPos[2]); // Near
 	Face[static_cast<UINT>(EFrustumFace::Far)]   = XMPlaneFromPoints(WorldPos[5], WorldPos[4], WorldPos[7]); // Far
 	Face[static_cast<UINT>(EFrustumFace::Left)]  = XMPlaneFromPoints(WorldPos[4], WorldPos[0], WorldPos[7]); // Left

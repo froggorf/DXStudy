@@ -105,7 +105,7 @@ void ULightComponent::Tick_Editor(float DeltaSeconds)
 	if (bActive)
 	{
 		AddLightInfo();
-		GEngine->GetWorld()->DrawDebugBox(GetWorldLocation(), {GetRadius(),GetRadius(),GetRadius()}, GetLightColor(), {0,0,0,1}, DeltaSeconds);
+		//GEngine->GetWorld()->DrawDebugBox(GetWorldLocation(), {GetRadius(),GetRadius(),GetRadius()}, GetLightColor(), {0,0,0,1}, DeltaSeconds);
 	}
 }
 
