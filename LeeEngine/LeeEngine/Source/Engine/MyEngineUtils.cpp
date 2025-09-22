@@ -1,4 +1,4 @@
-﻿#include "CoreMinimal.h"
+#include "CoreMinimal.h"
 #include "MyEngineUtils.h"
 
 #include "Animation/UAnimSequence.h"
@@ -96,41 +96,11 @@ XMMATRIX LinearMatrixLerp(const XMMATRIX& AMatrix, const XMMATRIX& BMatrix, floa
 
 XMMATRIX MyMatrixLerpForAnimation(const XMMATRIX& AMatrix, const XMMATRIX& BMatrix, float Value)
 {
-	/*XMVECTOR V1 = XMVectorLerp(AMatrix.r[0], BMatrix.r[0], Value);
+	XMVECTOR V1 = XMVectorLerp(AMatrix.r[0], BMatrix.r[0], Value);
 	XMVECTOR V2 = XMVectorLerp(AMatrix.r[1], BMatrix.r[1], Value);
 	XMVECTOR V3 = XMVectorLerp(AMatrix.r[2], BMatrix.r[2], Value);
 	XMVECTOR V4 = XMVectorLerp(AMatrix.r[3], BMatrix.r[3], Value);
 
 	XMMATRIX Out = XMMATRIX{V1, V2, V3, V4};
-	return Out;*/
-
-	//if (Value < 0.2f)
-	//{	
-	//	return AMatrix;
-	//}
-	//else if (Value > 0.8f)
-	//{
-	//	return BMatrix;
-	//}
-
-
-	XMVECTOR OriginScale, OriginRot, OriginLoc;
-	XMVECTOR MontageScale, MontageRot, MontageLoc;
-
-	bool ok1 = XMMatrixDecompose(&OriginScale, &OriginRot, &OriginLoc, AMatrix);
-	bool ok2 = XMMatrixDecompose(&MontageScale, &MontageRot, &MontageLoc, BMatrix);
-
-	XMVECTOR BlendedLoc   = XMVectorLerp(OriginLoc, MontageLoc, Value);
-	XMVECTOR BlendedScale = XMVectorLerp(OriginScale, MontageScale, Value);
-
-	float dot = XMVectorGetX(XMQuaternionDot(OriginRot, MontageRot));
-	if (dot < 0.0f)
-	{
-		MontageRot = XMVectorNegate(MontageRot);
-	}
-	XMVECTOR BlendedRot = XMQuaternionSlerp(OriginRot, MontageRot, Value);
-
-	XMMATRIX BlendedMatrix = XMMatrixScalingFromVector(BlendedScale) * XMMatrixRotationQuaternion(BlendedRot) * XMMatrixTranslationFromVector(BlendedLoc);
-
-	return BlendedMatrix;
+	return Out;
 }

@@ -1,4 +1,4 @@
-﻿#include "CoreMinimal.h"
+#include "CoreMinimal.h"
 #include "USpringArmComponent.h"
 
 #include "ACharacter.h"
@@ -31,12 +31,14 @@ void USpringArmComponent::TickComponent(float DeltaSeconds)
 	FHitResult Result;
 	bool bHitOwner = false;
 	XMFLOAT3 StartLocation = Transform.GetTranslation();
+	int BreakCount = 0;
 	while (true)
 	{
 		if (gPhysicsEngine->LineTraceSingleByChannel(StartLocation, Offset, Channel, Result))
 		{
 			if (Result.HitActor == GetOwner())
 			{
+				if (BreakCount++ > 100'000) break;
 				XMFLOAT3 GapDirection;
 				float Gap = 0.2f;
 				XMStoreFloat3(&GapDirection, XMVectorScale(XMVectorSubtract(XMLoadFloat3(&Offset), XMLoadFloat3(&StartLocation)), Gap));

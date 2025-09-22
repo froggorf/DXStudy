@@ -92,20 +92,22 @@ void APlayerController::OnPossess(ACharacter* CharacterToPossess)
 	}
 }
 
+
 void APlayerController::HandleRootMotion(const XMMATRIX& Root)
 {
 	if (Character && Character->GetCharacterMovement())
 	{
 		static float LastRootMotionTime = -1.0f;
 		static XMMATRIX PrevRootMatrix = XMMatrixIdentity();
-		// 1초 이상 적용 안됐었다면
-		if (LastRootMotionTime + 1.0f <= GEngine->GetTimeSeconds())
+		// 0.1초 이상 적용 안됐었다면
+		if (LastRootMotionTime + 0.1f <= GEngine->GetTimeSeconds())
 		{
 			LastRootMotionTime = GEngine->GetTimeSeconds();
 			PrevRootMatrix = XMMatrixIdentity();
 		}
 
 		XMMATRIX DeltaMatrix = XMMatrixMultiply(Root, XMMatrixInverse(nullptr, PrevRootMatrix));
+
 
 		// 위치
 		XMVECTOR Pos = XMVectorSet(DeltaMatrix.r[3].m128_f32[0],DeltaMatrix.r[3].m128_f32[1],-DeltaMatrix.r[3].m128_f32[2],0.0f);
@@ -126,13 +128,9 @@ void APlayerController::HandleRootMotion(const XMMATRIX& Root)
 		Character->GetCharacterMovement()->PxCharacterController->move(PxDelta,0.01f, GEngine->GetDeltaSeconds(), Character->GetCharacterMovement()->Filters);
 		XMFLOAT3 End = Character->GetActorLocation();
 		std::shared_ptr<ULineComponent> LineComp = std::make_shared<ULineComponent>(false,Start,End,End);	
-		FDebugRenderData Data;
-		Data.Transform = LineComp->GetComponentTransform();
-		Data.RemainTime = 5.0f;
-		Data.ShapeComp = LineComp;
-		FScene::DrawDebugData_GameThread(Data);
 
 		PrevRootMatrix = Root;
+		LastRootMotionTime = GEngine->GetTimeSeconds();
 	}
 }
 

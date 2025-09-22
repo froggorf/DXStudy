@@ -44,7 +44,10 @@ void UAnimSequence::GetBoneTransform(float CurrentAnimTime, std::vector<XMMATRIX
 
 	*bPlayRootMotion = bEnableRootMotion;
 
+	// 09.23) 재생 속도 비율을 적용시켜줌
+	CurrentAnimTime *= RateScale;
 	CurrentAnimTime = fmod(CurrentAnimTime, Duration);
+
 	std::vector<XMMATRIX> GlobalTransform(BoneHierarchy.size(), XMMatrixIdentity());
 
 	// 계층별로 작업이 일어나야하므로 싱글쓰레드에서 진행
@@ -89,6 +92,12 @@ void UAnimSequence::LoadDataFromFileData(const nlohmann::json& AssetData)
 	{
 		int Val = AssetData["RootMotion"];
 		bEnableRootMotion = Val;
+	}
+
+	if (AssetData.contains("Rate"))
+	{
+		float Val = AssetData["Rate"];
+		RateScale = Val;
 	}
 
 	PrecomputeAnimationData(GetAnimationSkeleton()->GetName());

@@ -173,17 +173,16 @@ void FAnimMontageInstance::Play()
 	}
 
 	const std::vector<std::shared_ptr<UAnimSequence>> AnimSegments        = Montage->AnimTrack.AnimSegments;
-	float                                             AnimSegmentPosition = Position;
 
 	for (const auto& Anim : AnimSegments)
 	{
-		if (AnimSegmentPosition >= Anim->GetDuration())
+		if (Position >= Anim->GetDuration())
 		{
-			AnimSegmentPosition -= Anim->GetDuration();
+			Position -= Anim->GetDuration();
 			continue;
 		}
 
-		Anim->GetBoneTransform(AnimSegmentPosition, MontageBones, &bPlayRootMotion);
+		Anim->GetBoneTransform(Position, MontageBones, &bPlayRootMotion);
 	}
 	Notifies.clear();
 	Montage->GetAnimNotifies(Position, Notifies);

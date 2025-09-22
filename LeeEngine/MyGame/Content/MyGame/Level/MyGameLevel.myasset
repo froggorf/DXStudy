@@ -24,7 +24,7 @@
             "Class": "AMyGameCharacterBase",
             "Location": [
                 0.0,
-                0.0,
+                700.0,
                 0.0
             ],
             "Name": "MyCharacter",

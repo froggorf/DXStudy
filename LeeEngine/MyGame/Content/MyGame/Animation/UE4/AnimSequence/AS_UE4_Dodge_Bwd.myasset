@@ -3,5 +3,6 @@
     "Name": "AS_UE4_Dodge_Bwd",
     "Skeleton": "SK_Manny_UE4",
     "AnimationDataPath": "/Content/Resource/MyGame/Animation/UE4/Dodge/Dodge_Bwd.FBX",
-    "RootMotion": 1
+    "RootMotion": 1,
+    "Rate" : 0.6
 }

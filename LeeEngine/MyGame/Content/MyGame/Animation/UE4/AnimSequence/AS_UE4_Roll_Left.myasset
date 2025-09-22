@@ -1,7 +1,0 @@
-{
-    "Class": "UAnimSequence",
-    "Name": "AS_UE4_Roll_Left",
-    "Skeleton": "SK_Manny_UE4",
-    "AnimationDataPath": "/Content/Resource/MyGame/Animation/UE4/Roll/Roll_Left.FBX",
-    "RootMotion": 1
-}

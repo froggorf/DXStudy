@@ -13,7 +13,7 @@ AMyGameCharacterBase::AMyGameCharacterBase()
 		CharacterMovement->bOrientRotationToMovement = true;
 		CharacterMovement->Acceleration = 4096.0f;
 		CharacterMovement->RotationRate = XMFLOAT3{0.0f, 1500.0f, 0.0f};
-		CharacterMovement->MaxWalkSpeed = 600.0f;
+		CharacterMovement->MaxWalkSpeed = 600;
 		CharacterMovement->Braking = 4096;
 	}
 
@@ -40,14 +40,6 @@ AMyGameCharacterBase::AMyGameCharacterBase()
 				{
 					AM_Dodge[static_cast<int>(EDodgeDirection::Backward)] = std::dynamic_pointer_cast<UAnimMontage>(Object);
 				});
-			AssetManager::GetAsyncAssetCache("AM_UE4_Dodge_Left", [this](std::shared_ptr<UObject> Object)
-				{
-					AM_Dodge[static_cast<int>(EDodgeDirection::Left)] = std::dynamic_pointer_cast<UAnimMontage>(Object);
-				});
-			AssetManager::GetAsyncAssetCache("AM_UE4_Dodge_Right", [this](std::shared_ptr<UObject> Object)
-				{
-					AM_Dodge[static_cast<int>(EDodgeDirection::Right)] = std::dynamic_pointer_cast<UAnimMontage>(Object);
-				});		
 		}
 
 		// Roll
@@ -59,14 +51,6 @@ AMyGameCharacterBase::AMyGameCharacterBase()
 			AssetManager::GetAsyncAssetCache("AM_UE4_Roll_Bwd", [this](std::shared_ptr<UObject> Object)
 				{
 					AM_Roll[static_cast<int>(EDodgeDirection::Backward)] = std::dynamic_pointer_cast<UAnimMontage>(Object);
-				});
-			AssetManager::GetAsyncAssetCache("AM_UE4_Roll_Left", [this](std::shared_ptr<UObject> Object)
-				{
-					AM_Roll[static_cast<int>(EDodgeDirection::Left)] = std::dynamic_pointer_cast<UAnimMontage>(Object);
-				});
-			AssetManager::GetAsyncAssetCache("AM_UE4_Roll_Right", [this](std::shared_ptr<UObject> Object)
-				{
-					AM_Roll[static_cast<int>(EDodgeDirection::Right)] = std::dynamic_pointer_cast<UAnimMontage>(Object);
 				});
 		}
 	}
@@ -166,9 +150,16 @@ void AMyGameCharacterBase::Dodge()
 		// 방향을 구하고
 		if (UCharacterMovementComponent* MovementComp = GetCharacterMovement())
 		{
-			XMFLOAT3 Vel = MovementComp->Velocity;
-			MY_LOG("log", EDebugLogLevel::DLL_Warning, XMFLOAT3_TO_TEXT(Vel));
-			AnimInstance->Montage_Play(AM_Dodge[static_cast<int>(EDodgeDirection::Forward)]);
+			if (ImGui::IsKeyDown(ImGuiKey::ImGuiKey_W) || ImGui::IsKeyDown(ImGuiKey_A) || ImGui::IsKeyDown(ImGuiKey_D))
+			{
+				AnimInstance->Montage_Play(AM_Dodge[static_cast<int>(EDodgeDirection::Forward)]);
+			}
+			else
+			{
+				AnimInstance->Montage_Play(AM_Dodge[static_cast<int>(EDodgeDirection::Backward)]);
+			}
+
+			
 		}
 	}
 }
