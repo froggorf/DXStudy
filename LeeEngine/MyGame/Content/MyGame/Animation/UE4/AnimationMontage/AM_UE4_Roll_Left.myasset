@@ -14,5 +14,8 @@
 	"SlotName": "DefaultSlot",
 	"AnimTrack" : [
 		{"AnimName" : "AS_UE4_Roll_Left"}
+	],
+	"Sections" : [
+		{ "SectionName" : "Roll", "StartTime" : 0.0 }
 	]
 }

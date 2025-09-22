@@ -1,4 +1,4 @@
-﻿// https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
+// https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
 #include "CoreMinimal.h"
 #include "UAnimSequence.h"
 

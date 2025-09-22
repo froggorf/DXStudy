@@ -6,6 +6,8 @@
 
 AMyGameCharacterBase::AMyGameCharacterBase()
 {
+	if (!GDirectXDevice) return;
+
 	if (UCharacterMovementComponent* CharacterMovement = GetCharacterMovement())
 	{
 		CharacterMovement->bOrientRotationToMovement = true;
@@ -158,7 +160,17 @@ void AMyGameCharacterBase::MouseRotateEnd()
 
 void AMyGameCharacterBase::Dodge()
 {
-	
+	if (std::shared_ptr<UAnimInstance> AnimInstance = GetAnimInstance())
+	{
+		int a = 0;
+		// 방향을 구하고
+		if (UCharacterMovementComponent* MovementComp = GetCharacterMovement())
+		{
+			XMFLOAT3 Vel = MovementComp->Velocity;
+			MY_LOG("log", EDebugLogLevel::DLL_Warning, XMFLOAT3_TO_TEXT(Vel));
+			AnimInstance->Montage_Play(AM_Dodge[static_cast<int>(EDodgeDirection::Forward)]);
+		}
+	}
 }
 
 void AMyGameCharacterBase::SetWalk()

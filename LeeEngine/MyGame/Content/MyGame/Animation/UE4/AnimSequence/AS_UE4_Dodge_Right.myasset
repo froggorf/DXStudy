@@ -2,6 +2,6 @@
     "Class": "UAnimSequence",
     "Name": "AS_UE4_Dodge_Right",
     "Skeleton": "SK_Manny_UE4",
-    "AnimationDataPath": "/Content/Resource/MyGame/Animation/UE4/Dodge/Dodge_Right_UECOORD.FBX",
+    "AnimationDataPath": "/Content/Resource/MyGame/Animation/UE4/Dodge/Dodge_Right.FBX",
     "RootMotion": 1
 }

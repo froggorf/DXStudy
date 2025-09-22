@@ -2,6 +2,6 @@
     "Class": "UAnimSequence",
     "Name": "AS_UE4_Walk",
     "Skeleton": "SK_Manny_UE4",
-    "AnimationDataPath": "/Content/Resource/MyGame/Animation/UE4/Locomotion/Walk_UECOORD.FBX",
+    "AnimationDataPath": "/Content/Resource/MyGame/Animation/UE4/Locomotion/Walk.FBX",
     "RootMotion": 0
 }

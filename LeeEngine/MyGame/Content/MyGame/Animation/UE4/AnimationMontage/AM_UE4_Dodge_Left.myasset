@@ -14,5 +14,8 @@
 	"SlotName": "DefaultSlot",
 	"AnimTrack" : [
 		{"AnimName" : "AS_UE4_Dodge_Left"}
+	],
+	"Sections" : [
+		{ "SectionName" : "Dodge", "StartTime" : 0.0 }
 	]
 }

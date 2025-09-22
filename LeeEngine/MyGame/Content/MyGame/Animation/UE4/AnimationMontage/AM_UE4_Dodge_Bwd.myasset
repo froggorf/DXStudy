@@ -8,11 +8,14 @@
 	},
 	"BlendOut" : {
 		"CurveName" : "CustomCurve",
-		"BlendTime" : 0.15
+		"BlendTime" : 0.1
 	},
 
 	"SlotName": "DefaultSlot",
 	"AnimTrack" : [
 		{"AnimName" : "AS_UE4_Dodge_Bwd"}
+	],
+	"Sections" : [
+		{ "SectionName" : "Dodge", "StartTime" : 0.0 }
 	]
 }
