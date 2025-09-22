@@ -4,6 +4,7 @@
 
 #include "Bone.h"
 #include "Engine/UEngine.h"
+#include "Engine/RenderCore/EditorScene.h"
 
 UAnimSequence::UAnimSequence(const UAnimSequence& Other)
 {

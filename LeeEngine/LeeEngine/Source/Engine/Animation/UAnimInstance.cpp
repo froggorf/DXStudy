@@ -99,7 +99,7 @@ void UAnimInstance::Tick(float DeltaSeconds)
 				{
 					PC->HandleRootMotion(FinalBoneMatrices[0]);	
 				}
-				
+
 				FinalBoneMatrices[0] = XMMatrixIdentity();	
 			}	
 		}
@@ -250,7 +250,7 @@ void UAnimInstance::PlayMontage(const std::string& SlotName, std::vector<XMMATRI
 				OriginMatrices = MontageMatrices;
 			}
 
-			if (EndTime - BlendOutBlendTime - 0.3f <= MontageInstance->CurrentPlayTime && MontageInstance->CurrentPlayTime < EndTime)
+			if (EndTime - BlendOutBlendTime <= MontageInstance->CurrentPlayTime && MontageInstance->CurrentPlayTime < EndTime)
 			{
 				bBlendOut = true;
 			}

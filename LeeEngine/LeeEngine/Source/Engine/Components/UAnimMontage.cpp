@@ -176,14 +176,20 @@ void FAnimMontageInstance::Play()
 
 	for (const auto& Anim : AnimSegments)
 	{
+		
 		if (Position >= Anim->GetDuration())
 		{
 			Position -= Anim->GetDuration();
 			continue;
 		}
+		else
+		{
+			Anim->GetBoneTransform(Position, MontageBones, &bPlayRootMotion);
+		}
 
-		Anim->GetBoneTransform(Position, MontageBones, &bPlayRootMotion);
+		
 	}
+	
 	Notifies.clear();
 	Montage->GetAnimNotifies(Position, Notifies);
 }

@@ -100,14 +100,14 @@ void APlayerController::HandleRootMotion(const XMMATRIX& Root)
 		static float LastRootMotionTime = -1.0f;
 		static XMMATRIX PrevRootMatrix = XMMatrixIdentity();
 		// 0.1초 이상 적용 안됐었다면
-		if (LastRootMotionTime + 0.1f <= GEngine->GetTimeSeconds())
+		if (LastRootMotionTime + 0.2f <= GEngine->GetTimeSeconds())
 		{
 			LastRootMotionTime = GEngine->GetTimeSeconds();
 			PrevRootMatrix = XMMatrixIdentity();
 		}
-
+		
 		XMMATRIX DeltaMatrix = XMMatrixMultiply(Root, XMMatrixInverse(nullptr, PrevRootMatrix));
-
+		MY_LOG("Delta", EDebugLogLevel::DLL_Warning, XMFLOAT3_TO_TEXT(XMFLOAT3{DeltaMatrix.r[3].m128_f32[0],DeltaMatrix.r[3].m128_f32[1],DeltaMatrix.r[3].m128_f32[2]}));
 
 		// 위치
 		XMVECTOR Pos = XMVectorSet(DeltaMatrix.r[3].m128_f32[0],DeltaMatrix.r[3].m128_f32[1],-DeltaMatrix.r[3].m128_f32[2],0.0f);
@@ -122,7 +122,7 @@ void APlayerController::HandleRootMotion(const XMMATRIX& Root)
 		XMStoreFloat4(&RootRotation, Quat);
 
 		physx::PxVec3 PxDelta(RootPosition.x,RootPosition.y,-RootPosition.z);
-
+		
 		// TODO 모듈화하기
 		XMFLOAT3 Start = Character->GetActorLocation();
 		Character->GetCharacterMovement()->PxCharacterController->move(PxDelta,0.01f, GEngine->GetDeltaSeconds(), Character->GetCharacterMovement()->Filters);

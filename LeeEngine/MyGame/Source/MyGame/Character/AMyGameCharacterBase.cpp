@@ -146,17 +146,16 @@ void AMyGameCharacterBase::Dodge()
 {
 	if (std::shared_ptr<UAnimInstance> AnimInstance = GetAnimInstance())
 	{
-		int a = 0;
 		// 방향을 구하고
 		if (UCharacterMovementComponent* MovementComp = GetCharacterMovement())
 		{
 			if (ImGui::IsKeyDown(ImGuiKey::ImGuiKey_W) || ImGui::IsKeyDown(ImGuiKey_A) || ImGui::IsKeyDown(ImGuiKey_D))
 			{
-				AnimInstance->Montage_Play(AM_Dodge[static_cast<int>(EDodgeDirection::Forward)]);
+				AnimInstance->Montage_Play(AM_Roll[static_cast<int>(EDodgeDirection::Forward)]);
 			}
 			else
 			{
-				AnimInstance->Montage_Play(AM_Dodge[static_cast<int>(EDodgeDirection::Backward)]);
+				AnimInstance->Montage_Play(AM_Roll[static_cast<int>(EDodgeDirection::Backward)]);
 			}
 
 			
