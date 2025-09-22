@@ -50,6 +50,9 @@
     <Filter Include="Shader\PostProcess">
       <UniqueIdentifier>{77f4535e-6154-4826-8a84-059af45c7ba8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\Character">
+      <UniqueIdentifier>{82218869-dafc-48fe-b743-8f3c753a4583}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -82,6 +85,12 @@
     <ClCompile Include="Source\MyGame\Actor\AFPSTest.cpp">
       <Filter>Source\MyGame\Actor</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Character\AMyGameCharacterBase.cpp">
+      <Filter>Source\MyGame\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\AnimInstance\UMyGameAniminstanceBase.cpp">
+      <Filter>Source\MyGame\AnimInstance</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -110,6 +119,12 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Actor\AFPSTest.h">
       <Filter>Source\MyGame\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Character\AMyGameCharacterBase.h">
+      <Filter>Source\MyGame\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\AnimInstance\UMyGameAniminstanceBase.h">
+      <Filter>Source\MyGame\AnimInstance</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

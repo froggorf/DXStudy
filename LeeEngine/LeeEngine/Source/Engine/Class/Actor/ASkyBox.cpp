@@ -26,7 +26,7 @@ ASkyBox::ASkyBox()
 	SM_SkyBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SM_SkyBox->SetDoFrustumCulling(false);
 
-	FScene::SetSkyBoxTexture_GameThread("T_Skybox_Forest");
+	FScene::SetSkyBoxTexture_GameThread("T_SkyBox");
 
 	DirectionalLight= std::make_shared<ULightComponent>();
 	DirectionalLight->SetupAttachment(GetRootComponent());

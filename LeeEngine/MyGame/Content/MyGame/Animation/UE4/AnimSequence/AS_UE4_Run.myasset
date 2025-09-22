@@ -1,0 +1,7 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_UE4_Run",
+    "Skeleton": "SK_Manny_UE4",
+    "AnimationDataPath": "/Content/Resource/MyGame/Animation/UE4/Run_UECOORD.FBX",
+    "RootMotion": 0
+}

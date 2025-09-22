@@ -1,0 +1,7 @@
+{
+    "Class": "USkeletalMesh",
+    "Name": "SK_Manny_UE4",
+    "ModelData": "/Content/Resource/MyGame/Character/MannyUE4_UECOORD.FBX",
+    "DefaultPoseAnimData" : "/Content/Resource/MyGame/Animation/UE4/TPose_UECOORD.FBX",
+    "Material" : [ "M_LowPoly" ]
+}

@@ -1,0 +1,18 @@
+{
+	"Class": "UAnimMontage",
+	"Name": "AM_UE4_Dodge_Right",
+	"Skeleton": "SK_Manny_UE4",
+	"BlendIn" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.1
+	},
+	"BlendOut" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.15
+	},
+
+	"SlotName": "DefaultSlot",
+	"AnimTrack" : [
+		{"AnimName" : "AS_UE4_Dodge_Right"}
+	]
+}
