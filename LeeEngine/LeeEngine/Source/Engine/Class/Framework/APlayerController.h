@@ -29,7 +29,7 @@ public:
 
 	void OnPossess(ACharacter* CharacterToPossess);
 
-	void HandleRootMotion(const XMMATRIX& Root);
+	void HandleRootMotion(const XMMATRIX& Root, std::vector<XMMATRIX>& FinalBoneMatrices);
 
 	std::shared_ptr<APlayerCameraManager> GetCameraManager() const
 	{

@@ -92,47 +92,102 @@ void APlayerController::OnPossess(ACharacter* CharacterToPossess)
 	}
 }
 
-
-void APlayerController::HandleRootMotion(const XMMATRIX& Root)
+void APlayerController::HandleRootMotion(const XMMATRIX& Root, std::vector<XMMATRIX>& FinalBoneMatrices)
 {
-	if (Character && Character->GetCharacterMovement())
-	{
-		static float LastRootMotionTime = -1.0f;
-		static XMMATRIX PrevRootMatrix = XMMatrixIdentity();
-		// 0.1초 이상 적용 안됐었다면
-		if (LastRootMotionTime + 0.2f <= GEngine->GetTimeSeconds())
-		{
-			LastRootMotionTime = GEngine->GetTimeSeconds();
-			PrevRootMatrix = XMMatrixIdentity();
-		}
+
+    if (!Character || !Character->GetCharacterMovement())
+        return;
+
+    static XMMATRIX PreviousRootMatrix = XMMatrixIdentity();
+    static float LastUpdateTime = GEngine->GetTimeSeconds();
+
+    if (LastUpdateTime + 0.1f < GEngine->GetTimeSeconds())
+    {
+        PreviousRootMatrix = Root;
+		LastUpdateTime = GEngine->GetTimeSeconds();
+    }
+    XMMATRIX DeltaMatrix = XMMatrixMultiply(XMMatrixInverse(nullptr, PreviousRootMatrix), Root);
+
+    XMFLOAT3 RawDelta = {
+        DeltaMatrix.r[3].m128_f32[0], 
+        DeltaMatrix.r[3].m128_f32[1], 
+        DeltaMatrix.r[3].m128_f32[2]
+    };
+
+    XMVECTOR DeltaPos = XMVectorSet(RawDelta.x, RawDelta.y, -RawDelta.z, 0.0f);
+
+    XMFLOAT3 ConvertedDelta;
+    XMStoreFloat3(&ConvertedDelta, DeltaPos);
+
+    XMFLOAT4 ActorRotation = Character->GetActorRotation();
+    XMVECTOR ActorQuat = XMLoadFloat4(&ActorRotation);
+    XMVECTOR WorldDelta = XMVector3Rotate(DeltaPos, ActorQuat);
+
+    XMFLOAT3 WorldDeltaPos;
+    XMStoreFloat3(&WorldDeltaPos, WorldDelta);
+
+	// 이동 적용
+    if (Character->GetCharacterMovement()->PxCharacterController)
+    {
+        physx::PxVec3 PxDelta(WorldDeltaPos.x, WorldDeltaPos.y, -WorldDeltaPos.z);
+        Character->GetCharacterMovement()->PxCharacterController->move(
+            PxDelta, 
+            0.01f, 
+            GEngine->GetDeltaSeconds(), 
+            Character->GetCharacterMovement()->Filters
+        );
+    }
+
+	// 회전 적용 (애니메이션에다가만 적용
+    {
 		
-		XMMATRIX DeltaMatrix = XMMatrixMultiply(Root, XMMatrixInverse(nullptr, PrevRootMatrix));
-		MY_LOG("Delta", EDebugLogLevel::DLL_Warning, XMFLOAT3_TO_TEXT(XMFLOAT3{DeltaMatrix.r[3].m128_f32[0],DeltaMatrix.r[3].m128_f32[1],DeltaMatrix.r[3].m128_f32[2]}));
+    }
 
-		// 위치
-		XMVECTOR Pos = XMVectorSet(DeltaMatrix.r[3].m128_f32[0],DeltaMatrix.r[3].m128_f32[1],-DeltaMatrix.r[3].m128_f32[2],0.0f);
-		XMFLOAT4 ActorRotate = Character->GetActorRotation();
-		Pos = XMVector3Rotate(Pos,  XMLoadFloat4(&ActorRotate));
-		XMFLOAT3 RootPosition;
-		XMStoreFloat3(&RootPosition, Pos);
 
-		// 회전
-		XMVECTOR Quat = XMQuaternionRotationMatrix(DeltaMatrix);
-		XMFLOAT4 RootRotation;
-		XMStoreFloat4(&RootRotation, Quat);
-
-		physx::PxVec3 PxDelta(RootPosition.x,RootPosition.y,-RootPosition.z);
-		
-		// TODO 모듈화하기
-		XMFLOAT3 Start = Character->GetActorLocation();
-		Character->GetCharacterMovement()->PxCharacterController->move(PxDelta,0.01f, GEngine->GetDeltaSeconds(), Character->GetCharacterMovement()->Filters);
-		XMFLOAT3 End = Character->GetActorLocation();
-		std::shared_ptr<ULineComponent> LineComp = std::make_shared<ULineComponent>(false,Start,End,End);	
-
-		PrevRootMatrix = Root;
-		LastRootMotionTime = GEngine->GetTimeSeconds();
-	}
+    PreviousRootMatrix = Root;
+	LastUpdateTime = GEngine->GetTimeSeconds();
 }
+
+//void APlayerController::HandleRootMotion(const XMMATRIX& Root)
+//{
+//	if (Character && Character->GetCharacterMovement())
+//	{
+//		static float LastRootMotionTime = -1.0f;
+//		static XMMATRIX PrevRootMatrix = XMMatrixIdentity();
+//		// 0.1초 이상 적용 안됐었다면
+//		if (LastRootMotionTime + 0.1f <= GEngine->GetTimeSeconds())
+//		{
+//			LastRootMotionTime = GEngine->GetTimeSeconds();
+//			PrevRootMatrix = XMMatrixIdentity();
+//		}
+//		
+//		XMMATRIX DeltaMatrix = XMMatrixMultiply(Root, XMMatrixInverse(nullptr, PrevRootMatrix));
+//		MY_LOG("Delta", EDebugLogLevel::DLL_Warning, XMFLOAT3_TO_TEXT(XMFLOAT3{DeltaMatrix.r[3].m128_f32[0],DeltaMatrix.r[3].m128_f32[1],DeltaMatrix.r[3].m128_f32[2]}));
+//
+//		// 위치
+//		XMVECTOR Pos = XMVectorSet(DeltaMatrix.r[3].m128_f32[0],DeltaMatrix.r[3].m128_f32[1],-DeltaMatrix.r[3].m128_f32[2],0.0f);
+//		XMFLOAT4 ActorRotate = Character->GetActorRotation();
+//		Pos = XMVector3Rotate(Pos,  XMLoadFloat4(&ActorRotate));
+//		XMFLOAT3 RootPosition;
+//		XMStoreFloat3(&RootPosition, Pos);
+//
+//		// 회전
+//		XMVECTOR Quat = XMQuaternionRotationMatrix(DeltaMatrix);
+//		XMFLOAT4 RootRotation;
+//		XMStoreFloat4(&RootRotation, Quat);
+//
+//		physx::PxVec3 PxDelta(RootPosition.x,RootPosition.y,-RootPosition.z);
+//		
+//		// TODO 모듈화하기
+//		XMFLOAT3 Start = Character->GetActorLocation();
+//		Character->GetCharacterMovement()->PxCharacterController->move(PxDelta,0.01f, GEngine->GetDeltaSeconds(), Character->GetCharacterMovement()->Filters);
+//		XMFLOAT3 End = Character->GetActorLocation();
+//		std::shared_ptr<ULineComponent> LineComp = std::make_shared<ULineComponent>(false,Start,End,End);	
+//
+//		PrevRootMatrix = Root;
+//		LastRootMotionTime = GEngine->GetTimeSeconds();
+//	}
+//}
 
 void APlayerController::CreateWidget(const std::string& Name, const std::shared_ptr<UUserWidget>& NewWidget)
 {

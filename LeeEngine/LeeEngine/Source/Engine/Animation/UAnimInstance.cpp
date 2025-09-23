@@ -85,9 +85,17 @@ void UAnimInstance::Tick(float DeltaSeconds)
 			
 			if (bPlayRootMotion)
 			{
+				XMMATRIX RootMatrixWithNoRotation = FinalBoneMatrices[0];
+				RootMatrixWithNoRotation.r[0] = XMVectorSet(1, 0, 0, 0); // X축
+				RootMatrixWithNoRotation.r[1] = XMVectorSet(0, 1, 0, 0); // Y축  
+				RootMatrixWithNoRotation.r[2] = XMVectorSet(0, 0, 1, 0); // Z축
+				XMMATRIX RootNoRotInv = XMMatrixInverse(nullptr, RootMatrixWithNoRotation);
+				
 				for (size_t i = 1 ; i < MAX_BONES; ++i)
 				{
-					FinalBoneMatrices[i] = XMMatrixMultiply(FinalBoneMatrices[i], XMMatrixInverse(nullptr, FinalBoneMatrices[0])); 
+					
+					//FinalBoneMatrices[i] = XMMatrixMultiply(FinalBoneMatrices[i], XMMatrixInverse(nullptr, FinalBoneMatrices[0]));
+					FinalBoneMatrices[i] = XMMatrixMultiply(FinalBoneMatrices[i], RootNoRotInv); 
 				}
 
 				if (bPlayerCharacter)
@@ -97,7 +105,7 @@ void UAnimInstance::Tick(float DeltaSeconds)
 
 				if (!bBlendOut)
 				{
-					PC->HandleRootMotion(FinalBoneMatrices[0]);	
+					PC->HandleRootMotion(FinalBoneMatrices[0], FinalBoneMatrices);	
 				}
 
 				FinalBoneMatrices[0] = XMMatrixIdentity();	
