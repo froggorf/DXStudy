@@ -12,6 +12,11 @@
 class FStaticMeshRenderData
 {
 public:
+	FStaticMeshRenderData(const std::vector<std::vector<MyVertexData>>& VD)
+	{
+		VertexData = VD;
+	}
+
 	FStaticMeshRenderData(const nlohmann::json& StaticMeshFilePathData)
 	{
 

@@ -93,6 +93,7 @@ std::shared_ptr<UShapeComponent> UPrimitiveComponent::CreateBodyInstance()
 void UPrimitiveComponent::SetCollisionObjectType(ECollisionChannel Channel)
 {
 	TempCollisionChannel = Channel;
+	
 	if (BodyInstance)
 	{
 		BodyInstance->SetObjectType(Channel);

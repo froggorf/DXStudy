@@ -86,6 +86,7 @@ class ACharacter : public AActor
 
 public:
 	ACharacter();
+	void Register() override;
 	void BeginPlay() override;
 	void Tick(float DeltaSeconds) override;
 
@@ -118,6 +119,7 @@ protected:
 	std::shared_ptr<USpringArmComponent> SpringArm;
 
 	std::shared_ptr<UCapsuleComponent> CapsuleComp;
+	std::shared_ptr<UStaticMeshComponent> QueryCheckCapsuleComp;
 
 	std::shared_ptr<USkeletalMeshComponent> SkeletalMeshComponent;
 

@@ -28,7 +28,10 @@ class UStaticMeshComponent : public UMeshComponent
 	void AddForce(const XMFLOAT3& Force);
 
 	std::shared_ptr<UShapeComponent> CreateBodyInstance() override;
+
+	void SetVisibility(bool NewVisible){bVisibility = NewVisible;}
 private:
 	std::shared_ptr<UStaticMesh> StaticMesh;
+	bool bVisibility = true;
 
 };

@@ -22,6 +22,8 @@ void AFPSTest::Register()
 void AFPSTest::BeginPlay()
 {
 	AActor::BeginPlay();
+	SM_Attacker->SetCollisionObjectType(ECollisionChannel::Camera);
+	
 }
 
 void AFPSTest::Tick(float DeltaSeconds)
@@ -33,7 +35,12 @@ void AFPSTest::Tick(float DeltaSeconds)
 		XMFLOAT3 Start = {100, 100, 100};
 		XMFLOAT3 End = {100,100,-500};
 		FHitResult HitResult;
-		bool bHit = gPhysicsEngine->LineTraceSingleByChannel(Start, End, {ECollisionChannel::Pawn}, HitResult, 0.3f);
+
+		std::vector<ECollisionChannel> Channel;
+		Channel.reserve(static_cast<UINT>(ECollisionChannel::Count));
+		Channel.emplace_back(ECollisionChannel::Pawn);
+
+		bool bHit = gPhysicsEngine->LineTraceSingleByChannel(Start, End, Channel, HitResult, 0.3f);
 		if (bHit)
 		{
 			int a = 0;

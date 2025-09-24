@@ -376,6 +376,7 @@ void UPhysicsEngine::CreateScene()
 	SceneDesc.gravity = physx::PxVec3(0.0f,-9.8f*7.5f, 0.0f);
 	SceneDesc.cpuDispatcher = physx::PxDefaultCpuDispatcherCreate(2);
 	SceneDesc.filterShader = MyFilterShader;
+	
 	if (!CallbackInstance)
 	{
 		CallbackInstance = std::make_unique<FPhysicsEventCallback>();

@@ -1,4 +1,4 @@
-﻿#include "CoreMinimal.h"
+#include "CoreMinimal.h"
 #include "UShapeComponent.h"
 
 #include "UPhysicsEngine.h"
@@ -7,6 +7,7 @@ UShapeComponent::UShapeComponent()
 {
 	SetCollisionEnabled(ECollisionEnabled::Physics);
 }
+
 
 void UShapeComponent::Register()
 {
@@ -52,7 +53,6 @@ void UShapeComponent::ResetPhysics()
 
 	gPhysicsEngine->UnRegisterActor(RigidActor);
 	RegisterPhysics();
-	UpdatePhysicsFilterData();
 }
 
 void UShapeComponent::TickComponent(float DeltaSeconds)
@@ -215,9 +215,6 @@ void UShapeComponent::SetCollisionEnabled(ECollisionEnabled NewType)
 	{
 		return;
 	}
-
-	ResetPhysics();
-	
 
 	physx::PxU32 ShapeCount = RigidActor->getNbShapes();
 	std::vector<physx::PxShape*> Shapes(ShapeCount);

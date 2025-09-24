@@ -63,6 +63,9 @@ void AMyGameCharacterBase::BeginPlay()
 	GEngine->GetWorld()->GetPlayerController()->OnPossess(this);
 
 	ACharacter::BeginPlay();
+
+	CapsuleComp->SetCollisionObjectType(ECollisionChannel::Pawn);
+	CapsuleComp->SetObjectType(ECollisionChannel::Pawn);
 }
 
 void AMyGameCharacterBase::BindKeyInputs()

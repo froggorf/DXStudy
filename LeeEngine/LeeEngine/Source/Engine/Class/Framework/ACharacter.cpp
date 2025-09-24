@@ -175,6 +175,13 @@ ACharacter::ACharacter()
 	SetRootComponent(CapsuleComp);
 	CapsuleComp->SetWorldLocation({0,HalfHeight,0});
 
+	QueryCheckCapsuleComp = std::make_shared<UStaticMeshComponent>();
+	QueryCheckCapsuleComp->SetVisibility(false);
+	
+	QueryCheckCapsuleComp->SetupAttachment(GetRootComponent());
+	
+
+
 	SkeletalMeshComponent = std::make_shared<USkeletalMeshComponent>();
 	SkeletalMeshComponent->SetupAttachment(GetRootComponent());
 
@@ -189,21 +196,34 @@ ACharacter::ACharacter()
 	
 }
 
+void ACharacter::Register()
+{
+	// 디버깅 테스트용
+	AActor::Register();
+
+	QueryCheckCapsuleComp->SetStaticMesh((CapsuleComp->MakeStaticMesh()));
+	QueryCheckCapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	QueryCheckCapsuleComp->GetBodyInstance()->SetSimulatePhysics(false);
+	QueryCheckCapsuleComp->SetCollisionObjectType(ECollisionChannel::Pawn);
+	QueryCheckCapsuleComp->GetBodyInstance()->SetObjectType(ECollisionChannel::Pawn);
+	QueryCheckCapsuleComp->GetBodyInstance()->SetDebugDraw(true);
+}
+
 void ACharacter::BeginPlay()
 {
 	AActor::BeginPlay();
 
 	BindKeyInputs();
 
-	CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	CapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	CapsuleComp->SetCollisionObjectType(ECollisionChannel::Pawn);
 	CapsuleComp->SetObjectType(ECollisionChannel::Pawn);
 	CapsuleComp->SetSimulatePhysics(true);
 	CapsuleComp->SetKinematicRigidBody(true);
-	for (UINT i = 0; i < static_cast<UINT>(ECollisionChannel::Count); ++i)
-	{
-		CapsuleComp->SetResponseToChannel(static_cast<ECollisionChannel>(i), ECollisionResponse::Overlap);	
-	}
 
+
+	
 	GEngine->GetWorld()->GetCameraManager()->SetTargetCamera(CameraComp);
 }
 

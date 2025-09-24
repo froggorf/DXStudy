@@ -21,8 +21,6 @@ UStaticMeshComponent::UStaticMeshComponent()
 void UStaticMeshComponent::Register()
 {
 	UMeshComponent::Register();
-
-	SetStaticMesh(StaticMesh);
 }
 
 std::vector<std::shared_ptr<FPrimitiveSceneProxy>> UStaticMeshComponent::CreateSceneProxy()
@@ -31,6 +29,8 @@ std::vector<std::shared_ptr<FPrimitiveSceneProxy>> UStaticMeshComponent::CreateS
 	{
 		return {};
 	}
+
+	if (!bVisibility) {return {};}
 
 	std::vector<std::shared_ptr<FPrimitiveSceneProxy>> SceneProxies;
 

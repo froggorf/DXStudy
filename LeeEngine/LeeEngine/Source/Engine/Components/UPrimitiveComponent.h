@@ -72,7 +72,7 @@ protected:
 
 	// 생성자에서 ObjectChannel 이나 Response를 바꿀경우에 BodyInstance가 생성되기 이전이라서 적용이 안되기때문에
 	// 임시변수에 값을 저장해놓고 생성시 적용하는 방식으로 구현
-	ECollisionChannel TempCollisionChannel;
+	ECollisionChannel TempCollisionChannel = ECollisionChannel::Visibility;
 	std::array<ECollisionResponse, static_cast<UINT>(ECollisionChannel::Count)> TempCollisionResponse = {};
 
 	bool bDoFrustumCulling = true;

@@ -4,12 +4,6 @@
 UCapsuleComponent::UCapsuleComponent()
 {
     Rename("CapsuleComponent"+PrimitiveID);
-
-    SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-    for (size_t i = 0; i < CollisionResponse.size(); ++i)
-    {
-        CollisionResponse[i] = ECollisionResponse::Overlap;
-    }
 }
 
 physx::PxRigidActor* UCapsuleComponent::CreateRigidActor()
@@ -99,4 +93,8 @@ void UCapsuleComponent::CreateVertexBuffer()
     GDirectXDevice->GetDevice()->CreateBuffer(&bd, &InitData, CapsuleMeshVertexBuffer.GetAddressOf());
 
     CapsuleMeshVertexCount = static_cast<UINT>(VertexData.size());
+
+    std::vector<std::vector<MyVertexData>> VD;
+    VD.emplace_back(VertexData);
+    CapsuleStaticMesh = std::make_shared<UStaticMesh>(VD);
 }
