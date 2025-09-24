@@ -5,7 +5,7 @@ AFPSTest::AFPSTest()
 {
 	SM_Attacker = std::make_shared<UStaticMeshComponent>();
 	SM_Attacker->SetupAttachment(GetRootComponent());
-	SM_Attacker->SetRelativeLocation({100,200,100});
+	SM_Attacker->SetRelativeLocation({100,100,100});
 	SM_Attacker->SetRelativeScale3D({10,10,10});
 	AssetManager::GetAsyncAssetCache("SM_DeferredSphere",[this](std::shared_ptr<UObject> Object)
 		{
@@ -30,13 +30,15 @@ void AFPSTest::Tick(float DeltaSeconds)
 	CurTime += DeltaSeconds;
 	if (CurTime >= ShotDelay)
 	{
-		XMFLOAT3 Start = {100, 200, 100};
-		XMFLOAT3 End = {100,200,-500};
+		XMFLOAT3 Start = {100, 100, 100};
+		XMFLOAT3 End = {100,100,-500};
 		FHitResult HitResult;
 		bool bHit = gPhysicsEngine->LineTraceSingleByChannel(Start, End, {ECollisionChannel::Pawn}, HitResult, 0.3f);
 		if (bHit)
 		{
-			HitResult.HitActor->TakeDamage(100, {"TestShot"}, this);
+			int a = 0;
+			MY_LOG("LOG", EDebugLogLevel::DLL_Warning, "bHit");
+			//HitResult.HitActor->TakeDamage(100, {"TestShot"}, this);
 		}
 		CurTime -= ShotDelay;
 	}

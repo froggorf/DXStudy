@@ -1,4 +1,4 @@
-﻿#include "CoreMinimal.h"
+#include "CoreMinimal.h"
 #include "UPhysicsEngine.h"
 
 #include "ULineComponent.h"
