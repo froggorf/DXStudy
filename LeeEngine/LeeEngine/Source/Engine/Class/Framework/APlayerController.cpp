@@ -98,6 +98,8 @@ void APlayerController::HandleRootMotion(const XMMATRIX& Root, std::vector<XMMAT
     if (!Character || !Character->GetCharacterMovement())
         return;
 
+
+	
     static XMMATRIX PreviousRootMatrix = XMMatrixIdentity();
     static float LastUpdateTime = GEngine->GetTimeSeconds();
 
@@ -115,7 +117,6 @@ void APlayerController::HandleRootMotion(const XMMATRIX& Root, std::vector<XMMAT
     };
 
     XMVECTOR DeltaPos = XMVectorSet(RawDelta.x, RawDelta.y, -RawDelta.z, 0.0f);
-
     XMFLOAT3 ConvertedDelta;
     XMStoreFloat3(&ConvertedDelta, DeltaPos);
 
@@ -125,7 +126,9 @@ void APlayerController::HandleRootMotion(const XMMATRIX& Root, std::vector<XMMAT
 
     XMFLOAT3 WorldDeltaPos;
     XMStoreFloat3(&WorldDeltaPos, WorldDelta);
+	WorldDeltaPos.y = 0;
 
+	MY_LOG("LOG",EDebugLogLevel::DLL_Warning, XMFLOAT3_TO_TEXT(WorldDeltaPos));
 	// 이동 적용
     if (Character->GetCharacterMovement()->PxCharacterController)
     {

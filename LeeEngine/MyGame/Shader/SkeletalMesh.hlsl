@@ -27,11 +27,14 @@ struct VS_INPUT
 struct VS_OUTPUT
 {
 	float4 PosScreen : SV_POSITION;
-	float3 PosWorld : POSITION;
-	float4 PosLightSpace : POSITION1;
-	float3 NormalW : TEXCOORD1;
 	float2 Tex : TEXCOORD;
-	float  Depth : TEXCOORD2;
+
+	float3 ViewPos : POSITION;
+
+	float3 ViewTangent : TANGENT;
+	float3 ViewNormal : NORMAL;  
+	float3 ViewBinormal : BINORMAL;
+
 };
 
 //--------------------------------------------------------------------------------------
@@ -52,22 +55,15 @@ VS_OUTPUT VS(VS_INPUT input)
 		input.Normal = skinnedNormal;
 	}
 
-	// output.PosWorld ( // 픽셀 셰이더 내에서 라이팅을 위해 )
-	{
-		output.PosWorld = mul(input.Pos, World).xyz;
-	}
+	output.PosScreen = CalculateScreenPosition(input.Pos, World, gView, gProjection);
+	
 
-	// PosScreen
-	{
-		output.PosScreen = CalculateScreenPosition(input.Pos, World, gView, gProjection);
-		output.Depth     = output.PosScreen.z;
-	}
+	output.ViewPos = mul(float4(input.Pos.xyz, 1.f), gMatWV);
 
-	// 노말벡터를 월드좌표계로
-	{
-		output.NormalW = mul(input.Normal, (float3x3)WorldInvTranspose);
-		output.NormalW = normalize(output.NormalW);
-	}
+	output.ViewTangent = normalize(mul(float4(input.Tangent, 0.f), gMatWV)).xyz;
+	output.ViewNormal = normalize(mul(float4(input.Normal, 0.f), gMatWV)).xyz;
+	output.ViewBinormal = normalize(mul(float4(input.Binormal, 0.f), gMatWV)).xyz;
+	
 
 	// light source에서 버텍스로의 position
 	//output.PosLightSpace = CalculateScreenPosition(input.Pos, World, gLightView, gLightProj);

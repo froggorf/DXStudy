@@ -78,6 +78,14 @@ void UAnimSequence::GetBoneTransform(float CurrentAnimTime, std::vector<XMMATRIX
 	}
 }
 
+void UAnimSequence::GetBoneTransform_NoRateScale(float CurrentAnimTime, std::vector<XMMATRIX>& FinalBoneMatrices, bool* bPlayRootMotion)
+{
+	float LastRateScale = RateScale;
+	RateScale = 1.0f;
+	GetBoneTransform(CurrentAnimTime, FinalBoneMatrices, bPlayRootMotion);
+	RateScale = LastRateScale;
+}
+
 void UAnimSequence::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
 	UAnimCompositeBase::LoadDataFromFileData(AssetData);
