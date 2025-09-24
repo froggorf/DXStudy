@@ -12,9 +12,12 @@ class AFPSTest : public AActor
 	MY_GENERATE_BODY(AFPSTest)
 	
 	AFPSTest();
+	void Register() override;
+	void BeginPlay() override;
+	void Tick(float DeltaSeconds) override;
 public:
-	std::shared_ptr<UStaticMeshComponent> SM_Box;
+	std::shared_ptr<UStaticMeshComponent> SM_Attacker;
 
-	std::shared_ptr<ULightComponent> Light[100][100];
-
+	float ShotDelay = 0.5f;
+	float CurTime = 0.0f;
 };
