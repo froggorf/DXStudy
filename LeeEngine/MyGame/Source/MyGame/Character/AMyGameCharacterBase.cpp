@@ -157,30 +157,28 @@ void AMyGameCharacterBase::MouseRotateEnd()
 
 void AMyGameCharacterBase::Dodge()
 {
-	if (std::shared_ptr<UAnimInstance> AnimInstance = GetAnimInstance())
+	std::shared_ptr<UAnimInstance> AnimInstance = GetAnimInstance();
+	UCharacterMovementComponent* MovementComp = GetCharacterMovement();
+	if (!AnimInstance || !MovementComp)
 	{
-		// 방향을 구하고
-		if (UCharacterMovementComponent* MovementComp = GetCharacterMovement())
-		{
-			bIsDodging = true;
-			Delegate<> OnDodgeEnd;
-			OnDodgeEnd.Add(this, &AMyGameCharacterBase::DodgeEnd);
+		return;
+	}
 
-			// TODO: 수정하기
-			if (ImGui::IsKeyDown(ImGuiKey::ImGuiKey_W) || ImGui::IsKeyDown(ImGuiKey_A) || ImGui::IsKeyDown(ImGuiKey_D))
-			{
-				bIsBackDodge = false;
-				
-				AnimInstance->Montage_Play(AM_Dodge[static_cast<int>(EDodgeDirection::Forward)], 0, OnDodgeEnd);
-			}
-			else
-			{
-				bIsBackDodge = true;
-				AnimInstance->Montage_Play(AM_Dodge[static_cast<int>(EDodgeDirection::Backward)],0, OnDodgeEnd);
-			}
+	bIsDodging = true;
+	Delegate<> OnDodgeEnd;
+	OnDodgeEnd.Add(this, &AMyGameCharacterBase::DodgeEnd);
 
-			
-		}
+	// TODO: 수정하기
+	if (ImGui::IsKeyDown(ImGuiKey::ImGuiKey_W) || ImGui::IsKeyDown(ImGuiKey_A) || ImGui::IsKeyDown(ImGuiKey_D))
+	{
+		bIsBackDodge = false;
+
+		AnimInstance->Montage_Play(AM_Dodge[static_cast<int>(EDodgeDirection::Forward)], 0, OnDodgeEnd);
+	}
+	else
+	{
+		bIsBackDodge = true;
+		AnimInstance->Montage_Play(AM_Dodge[static_cast<int>(EDodgeDirection::Backward)],0, OnDodgeEnd);
 	}
 }
 

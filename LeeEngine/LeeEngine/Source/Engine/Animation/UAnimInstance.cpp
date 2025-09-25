@@ -149,6 +149,16 @@ void UAnimInstance::Montage_Play(std::shared_ptr<UAnimMontage> MontageToPlay, fl
 		}
 	}
 
+	auto LastMontageSameSlot = std::find_if(MontageInstances.begin(), MontageInstances.end(), [MontageToPlay](const std::shared_ptr<FAnimMontageInstance>& MontageInstance)
+	{
+		return MontageInstance->Montage->SlotName == MontageToPlay->SlotName;
+	});
+	if (LastMontageSameSlot != MontageInstances.end())
+	{
+		MontageInstances.erase(LastMontageSameSlot);	
+	}
+	
+
 	auto NewInstance     = std::make_shared<FAnimMontageInstance>(this);
 	NewInstance->Montage = MontageToPlay;
 	NewInstance->SetPosition(std::clamp(InTimeToStartMontageAt, 0.0f, MontageToPlay->GetPlayLength()));
