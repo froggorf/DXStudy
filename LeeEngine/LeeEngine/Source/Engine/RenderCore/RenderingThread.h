@@ -3,9 +3,8 @@
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
 #pragma once
-#include "Engine/MyEngineUtils.h"
+#include "CoreMinimal.h"
 #include "Engine/SceneView.h"
-#include "Engine/UEditorEngine.h"
 #include "Engine/Class/Light/Light.h"
 #include "Engine/Components/USceneComponent.h"
 #include "Engine/SceneProxy/FPrimitiveSceneProxy.h"

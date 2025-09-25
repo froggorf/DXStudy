@@ -1,7 +1,7 @@
 #include "CoreMinimal.h"
-
-#include "Engine/RenderCore/ImGUIActionTask.h"
 #ifdef WITH_EDITOR
+#include "Engine/UEditorEngine.h"
+#include "Engine/RenderCore/ImGUIActionTask.h"
 #include "ImguiViewport.h"
 
 #include "ImguiActorDetail.h"

@@ -4,12 +4,37 @@
 // 이윤석
 
 #pragma once
-#include <memory>
-#include <unordered_set>
+#include "CoreMinimal.h"
 #include "Engine/UObject/UObject.h"
 #include "Engine/Components/UActorComponent.h"
+#include "Engine/Physics/UPhysicsEngine.h"
+
 
 class USceneComponent;
+
+struct FDamageEvent
+{
+	std::string DamageType;
+};
+
+struct FPointDamage
+{
+	FHitResult HitInfo;
+	XMFLOAT3 ShotDirection;
+};
+
+struct FRadialDamage
+{
+	XMFLOAT3 WorldOrigin;
+	float BaseDamage;
+	float MinimumDamage;
+	float InnerRadius;
+	float OuterRadius;
+	float DamageFallOff;
+	std::vector<FHitResult> ComponentHits;
+
+};
+
 
 class AActor : public UObject, public std::enable_shared_from_this<AActor>
 {
@@ -53,6 +78,8 @@ class AActor : public UObject, public std::enable_shared_from_this<AActor>
 	{
 		return OwnedComponents;
 	}
+
+	virtual float TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AActor* DamageCauser){ return DamageAmount;}
 
 protected:
 	// 월드 내에서 Transform (Loc, Rot, Scale) 의 정보를 다루는 컴퍼넌트

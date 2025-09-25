@@ -101,6 +101,13 @@ void AMyGameCharacterBase::BindKeyInputs()
 	}
 }
 
+float AMyGameCharacterBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AActor* DamageCauser)
+{
+
+	MY_LOG(GetName(), EDebugLogLevel::DLL_Warning, "TakeDamage - "+std::to_string(DamageAmount) + " by -"+DamageCauser->GetName());
+	return DamageAmount;
+}
+
 //void ATestPawn::Backstep()
 //{
 //	if (SkeletalMeshComponent)

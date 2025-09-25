@@ -20,6 +20,8 @@ class AMyGameCharacterBase : public ACharacter
 
 	void BindKeyInputs() override;
 
+	float TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AActor* DamageCauser) override;
+
 	void Tick(float DeltaSeconds) override;
 	//void Backstep();
 	void Move(float X, float Y);

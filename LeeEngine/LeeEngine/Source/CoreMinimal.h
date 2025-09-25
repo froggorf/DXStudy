@@ -1,4 +1,4 @@
-﻿// Pre Compiled Header
+// Pre Compiled Header
 #pragma once
 
 // 기본 Windows 헤더
@@ -42,7 +42,6 @@
 // ImGui & ImGuiGizmo
 #include "backends/imgui_impl_win32.h"
 #include <backends/imgui_impl_dx11.h>
-#include <backends/imgui_impl_win32.h>
 #include "imgui_internal.h"
 #include "imgui.h"
 #include "ImGuizmo.h"

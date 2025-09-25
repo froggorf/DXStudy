@@ -1,9 +1,9 @@
 #include "CoreMinimal.h"
-
+#ifdef WITH_EDITOR
+#include "Engine/MyEngineUtils.h"
+#include "Engine/UEditorEngine.h"
 #include "Engine/Physics/UShapeComponent.h"
 #include "Engine/World/UWorld.h"
-
-#ifdef WITH_EDITOR
 #include "Engine/RenderCore/ImGUIActionTask.h"
 #include "ImguiEditorMainPanel.h"
 

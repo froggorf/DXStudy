@@ -12,6 +12,7 @@ AFPSTest::AFPSTest()
 			SM_Attacker->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
 		});
 
+	ShotDelay = 0.05f;
 }
 
 void AFPSTest::Register()
@@ -39,13 +40,11 @@ void AFPSTest::Tick(float DeltaSeconds)
 		std::vector<ECollisionChannel> Channel;
 		Channel.reserve(static_cast<UINT>(ECollisionChannel::Count));
 		Channel.emplace_back(ECollisionChannel::Pawn);
-
-		bool bHit = gPhysicsEngine->LineTraceSingleByChannel(Start, End, Channel, HitResult, 0.3f);
+		
+		bool bHit = gPhysicsEngine->LineTraceSingleByChannel(Start, End, Channel, HitResult, 0.05f);
 		if (bHit)
 		{
-			int a = 0;
-			MY_LOG("LOG", EDebugLogLevel::DLL_Warning, "bHit");
-			//HitResult.HitActor->TakeDamage(100, {"TestShot"}, this);
+			HitResult.HitActor->TakeDamage(100, {"TestShot"}, this);
 		}
 		CurTime -= ShotDelay;
 	}

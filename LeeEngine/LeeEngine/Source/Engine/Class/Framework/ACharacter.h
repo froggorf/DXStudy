@@ -4,6 +4,7 @@
 // 이윤석
 
 #pragma once
+#include "CoreMinimal.h"
 #include "USpringArmComponent.h"
 #include "Engine/Components/USkeletalMeshComponent.h"
 #include "Engine/Components/UStaticMeshComponent.h"
