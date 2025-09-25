@@ -293,7 +293,7 @@ void ACharacter::HandleRootMotion(const XMMATRIX& Root)
 		DeltaMatrix.r[3].m128_f32[1], 
 		DeltaMatrix.r[3].m128_f32[2]
 	};
-	//MY_LOG("Delta",EDebugLogLevel::DLL_Warning, XMFLOAT3_TO_TEXT(RawDelta));
+	MY_LOG("Delta",EDebugLogLevel::DLL_Warning, XMFLOAT3_TO_TEXT(RawDelta));
 	XMVECTOR DeltaPos = XMVectorSet(RawDelta.x, RawDelta.y, -RawDelta.z, 0.0f);
 
 	XMFLOAT3 ConvertedDelta;

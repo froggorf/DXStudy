@@ -152,8 +152,7 @@ void FAnimMontageInstance::Play()
 {
 	bIsPlaying = true;
 
-	// 30프레임에 한번 업데이트
-	CurrentPlayTime += static_cast<float>(1) / 30;
+	
 
 	// 현재 섹션 끝났을 때
 	if (Position >= CurPlayingEndPosition)
@@ -174,6 +173,7 @@ void FAnimMontageInstance::Play()
 
 	const std::vector<std::shared_ptr<UAnimSequence>> AnimSegments        = Montage->AnimTrack.AnimSegments;
 
+	constexpr float PlayTimePerTick = 1.0f/30;
 	for (const auto& Anim : AnimSegments)
 	{
 		
@@ -184,13 +184,13 @@ void FAnimMontageInstance::Play()
 		}
 		else
 		{
+			CurrentPlayTime = std::min(CurrentPlayTime + PlayTimePerTick * Anim->GetRateScale(), Anim->GetDuration());
 			Position += 1 * Anim->GetRateScale();
 			if (Position >= Anim->GetDuration())
 			{
 				break;
 			}
 			Anim->GetBoneTransform_NoRateScale(Position, MontageBones, &bPlayRootMotion);
-			MY_LOG("RootMotion",EDebugLogLevel::DLL_Warning, XMVECTOR_TO_TEXT(MontageBones[0].r[3]));
 		}
 
 		
