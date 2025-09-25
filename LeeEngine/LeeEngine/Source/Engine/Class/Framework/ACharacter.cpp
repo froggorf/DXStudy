@@ -206,7 +206,6 @@ void ACharacter::Register()
 	QueryCheckCapsuleComp->GetBodyInstance()->SetSimulatePhysics(false);
 	QueryCheckCapsuleComp->SetCollisionObjectType(ECollisionChannel::Pawn);
 	QueryCheckCapsuleComp->GetBodyInstance()->SetObjectType(ECollisionChannel::Pawn);
-	QueryCheckCapsuleComp->GetBodyInstance()->SetDebugDraw(true);
 }
 
 void ACharacter::BeginPlay()
@@ -271,5 +270,56 @@ void ACharacter::SetControlRotation(const XMFLOAT4& NewRot)
 {
 	ControlRotation = NewRot;
 
+}
+
+void ACharacter::HandleRootMotion(const XMMATRIX& Root)
+{
+	UCharacterMovementComponent* MovementComp = GetCharacterMovement();
+	if (!MovementComp)
+		return;
+
+	if (LastPlayingAnimMontage != CurPlayingAnimMontage || LastUpdateTime + 0.25f < GEngine->GetTimeSeconds())
+	{
+		MY_LOG("New ANimMontage",EDebugLogLevel::DLL_Error, "~~~~~~~~~~~~~~");
+		LastPlayingAnimMontage = CurPlayingAnimMontage;
+		PreviousRootMatrix = Root;
+		LastUpdateTime = GEngine->GetTimeSeconds();
+	}
+
+	XMMATRIX DeltaMatrix = XMMatrixMultiply(XMMatrixInverse(nullptr, PreviousRootMatrix), Root);
+
+	XMFLOAT3 RawDelta = {
+		DeltaMatrix.r[3].m128_f32[0], 
+		DeltaMatrix.r[3].m128_f32[1], 
+		DeltaMatrix.r[3].m128_f32[2]
+	};
+	//MY_LOG("Delta",EDebugLogLevel::DLL_Warning, XMFLOAT3_TO_TEXT(RawDelta));
+	XMVECTOR DeltaPos = XMVectorSet(RawDelta.x, RawDelta.y, -RawDelta.z, 0.0f);
+
+	XMFLOAT3 ConvertedDelta;
+	XMStoreFloat3(&ConvertedDelta, DeltaPos);
+
+	XMFLOAT4 ActorRotation = GetActorRotation();
+	XMVECTOR ActorQuat = XMLoadFloat4(&ActorRotation);
+	XMVECTOR WorldDelta = XMVector3Rotate(DeltaPos, ActorQuat);
+
+	XMFLOAT3 WorldDeltaPos;
+	XMStoreFloat3(&WorldDeltaPos, WorldDelta);
+	WorldDeltaPos.y = 0;
+
+	// 이동 적용
+	if (MovementComp->PxCharacterController)
+	{
+		physx::PxVec3 PxDelta(WorldDeltaPos.x, WorldDeltaPos.y, -WorldDeltaPos.z);
+		MovementComp->PxCharacterController->move(
+			PxDelta, 
+			0.01f, 
+			GEngine->GetDeltaSeconds(), 
+			MovementComp->Filters
+		);
+	}
+
+	PreviousRootMatrix = Root;
+	LastUpdateTime = GEngine->GetTimeSeconds();
 }
 

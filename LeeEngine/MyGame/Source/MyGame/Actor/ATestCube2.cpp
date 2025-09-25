@@ -8,6 +8,18 @@ ATestCube2::ATestCube2()
 {
 	if (!GDirectXDevice) return;
 
+
+	{
+		Ground= std::make_shared<UStaticMeshComponent>();
+		Ground->SetupAttachment(GetRootComponent());
+		AssetManager::GetAsyncAssetCache("SM_Brick",[this](std::shared_ptr<UObject> Object)
+			{
+				Ground->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
+			});
+		Ground->SetRelativeLocation({0,0,0});
+		Ground->SetRelativeScale3D({5000,20,5000});
+	}
+
 	{
 		SM_Chair = std::make_shared<UStaticMeshComponent>();
 		SM_Chair->SetupAttachment(GetRootComponent());
@@ -28,16 +40,6 @@ ATestCube2::ATestCube2()
 		SM_Couch->SetRelativeLocation({-300,0,-250});
 	}
 
-	{
-		Ground= std::make_shared<UStaticMeshComponent>();
-		Ground->SetupAttachment(GetRootComponent());
-		AssetManager::GetAsyncAssetCache("SM_Brick",[this](std::shared_ptr<UObject> Object)
-			{
-				Ground->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
-			});
-		Ground->SetRelativeLocation({0,0,0});
-		Ground->SetRelativeScale3D({5000,10,5000});
-	}
 
 	
 
@@ -55,10 +57,7 @@ void ATestCube2::Register()
 void ATestCube2::BeginPlay()
 {
 	AActor::BeginPlay();
-	
-	Ground->SetCollisionResponseToChannel(ECollisionChannel::Pawn, ECollisionResponse::Block);
-	
-	
+
 }
 
 void ATestCube2::Tick(float DeltaSeconds)

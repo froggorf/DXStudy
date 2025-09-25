@@ -106,6 +106,10 @@ public:
 
 
 	const std::shared_ptr<UAnimInstance>& GetAnimInstance() const {return GetSkeletalMeshComponent()->GetAnimInstance();}
+
+	void HandleRootMotion(const XMMATRIX& Root);
+
+	void SetCurPlayingAnimMontage(const std::string& NewPlayingAnimMontage){CurPlayingAnimMontage = NewPlayingAnimMontage;}
 protected:
 	virtual void BindKeyInputs() {}
 private:
@@ -130,4 +134,9 @@ private:
 	float HalfHeight;
 
 	std::weak_ptr<UCharacterMovementComponent> CharacterMovement;
+
+	XMMATRIX PreviousRootMatrix;
+	float LastUpdateTime = -0.5f;
+	std::string LastPlayingAnimMontage;
+	std::string CurPlayingAnimMontage;
 };

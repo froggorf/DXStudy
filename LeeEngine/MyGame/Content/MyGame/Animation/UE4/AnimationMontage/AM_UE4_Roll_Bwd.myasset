@@ -4,11 +4,11 @@
 	"Skeleton": "SK_Manny_UE4",
 	"BlendIn" : {
 		"CurveName" : "CustomCurve",
-		"BlendTime" : 0.1
+		"BlendTime" : 0.3
 	},
 	"BlendOut" : {
 		"CurveName" : "CustomCurve",
-		"BlendTime" : 0.15
+		"BlendTime" : 0.3
 	},
 
 	"SlotName": "DefaultSlot",

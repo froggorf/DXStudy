@@ -17,6 +17,8 @@ UAnimInstance::UAnimInstance()
 
 void UAnimInstance::BeginPlay()
 {
+	OwnerCharacter = dynamic_cast<ACharacter*>(GetSkeletalMeshComponent()->GetOwner());
+
 	UObject::BeginPlay();
 
 	NativeInitializeAnimation();
@@ -86,15 +88,13 @@ void UAnimInstance::Tick(float DeltaSeconds)
 			if (bPlayRootMotion)
 			{
 				XMMATRIX RootMatrixWithNoRotation = FinalBoneMatrices[0];
-				RootMatrixWithNoRotation.r[0] = XMVectorSet(1, 0, 0, 0); // X축
-				RootMatrixWithNoRotation.r[1] = XMVectorSet(0, 1, 0, 0); // Y축  
-				RootMatrixWithNoRotation.r[2] = XMVectorSet(0, 0, 1, 0); // Z축
+				RootMatrixWithNoRotation.r[0] = XMVectorSet(1, 0, 0, 0);
+				RootMatrixWithNoRotation.r[1] = XMVectorSet(0, 1, 0, 0);  
+				RootMatrixWithNoRotation.r[2] = XMVectorSet(0, 0, 1, 0);
 				XMMATRIX RootNoRotInv = XMMatrixInverse(nullptr, RootMatrixWithNoRotation);
 				
 				for (size_t i = 1 ; i < MAX_BONES; ++i)
 				{
-					
-					//FinalBoneMatrices[i] = XMMatrixMultiply(FinalBoneMatrices[i], XMMatrixInverse(nullptr, FinalBoneMatrices[0]));
 					FinalBoneMatrices[i] = XMMatrixMultiply(FinalBoneMatrices[i], RootNoRotInv); 
 				}
 
@@ -105,7 +105,7 @@ void UAnimInstance::Tick(float DeltaSeconds)
 
 				if (!bBlendOut)
 				{
-					PC->HandleRootMotion(FinalBoneMatrices[0], FinalBoneMatrices);	
+					OwnerCharacter->HandleRootMotion(FinalBoneMatrices[0]);
 				}
 
 				FinalBoneMatrices[0] = XMMatrixIdentity();	
@@ -155,6 +155,7 @@ void UAnimInstance::Montage_Play(std::shared_ptr<UAnimMontage> MontageToPlay, fl
 	});
 	if (LastMontageSameSlot != MontageInstances.end())
 	{
+		MY_LOG("LOG",EDebugLogLevel::DLL_Display, "Erase Last "+(*LastMontageSameSlot)->Montage->SlotName + " Slot");
 		MontageInstances.erase(LastMontageSameSlot);	
 	}
 	
@@ -231,6 +232,8 @@ void UAnimInstance::PlayMontage(const std::string& SlotName, std::vector<XMMATRI
 	{
 		if (MontageInstance->Montage->SlotName == SlotName)
 		{
+			OwnerCharacter->SetCurPlayingAnimMontage(MontageInstance->Montage->GetName());
+
 			MontageMatrices = MontageInstance->MontageBones;
 			// 몽타쥬가 RootMotion 애니메이션을 재생중인지를 변수로 캐싱
 			bPlayRootMotion = MontageInstance->bPlayRootMotion;

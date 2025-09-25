@@ -190,7 +190,7 @@ void FAnimMontageInstance::Play()
 				break;
 			}
 			Anim->GetBoneTransform_NoRateScale(Position, MontageBones, &bPlayRootMotion);
-			
+			MY_LOG("RootMotion",EDebugLogLevel::DLL_Warning, XMVECTOR_TO_TEXT(MontageBones[0].r[3]));
 		}
 
 		

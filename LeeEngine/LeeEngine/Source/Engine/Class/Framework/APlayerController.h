@@ -6,6 +6,7 @@
 #pragma once
 #include "UPlayerInput.h"
 #include "Engine/Class/Camera/APlayerCameraManager.h"
+#include "Engine/Components/UAnimMontage.h"
 #include "Engine/GameFramework/AActor.h"
 
 class ACharacter;
@@ -29,7 +30,7 @@ public:
 
 	void OnPossess(ACharacter* CharacterToPossess);
 
-	void HandleRootMotion(const XMMATRIX& Root, std::vector<XMMATRIX>& FinalBoneMatrices);
+	
 
 	std::shared_ptr<APlayerCameraManager> GetCameraManager() const
 	{
@@ -61,6 +62,7 @@ public:
 	void CreateWidget(const std::string& Name, const std::shared_ptr<UUserWidget>& NewWidget);
 	// 해당 위젯에서 Input을 소모했는지를 bool값으로 반환
 	bool WidgetHandleInput(const FInputEvent& InputEvent);
+
 private:
 	ACharacter* Character;
 	std::weak_ptr<APlayerCameraManager> CameraManager;
@@ -72,4 +74,6 @@ private:
 	bool bPlayRootMotion;
 
 	std::map<std::string, std::shared_ptr<UUserWidget>> UserWidgets;
+
+	std::shared_ptr<UAnimMontage> CurPlayingAnimMontage;
 };

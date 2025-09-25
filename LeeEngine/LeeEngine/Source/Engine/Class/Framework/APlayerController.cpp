@@ -92,64 +92,6 @@ void APlayerController::OnPossess(ACharacter* CharacterToPossess)
 	}
 }
 
-void APlayerController::HandleRootMotion(const XMMATRIX& Root, std::vector<XMMATRIX>& FinalBoneMatrices)
-{
-
-    if (!Character || !Character->GetCharacterMovement())
-        return;
-
-
-	
-    static XMMATRIX PreviousRootMatrix = XMMatrixIdentity();
-    static float LastUpdateTime = GEngine->GetTimeSeconds();
-
-    if (LastUpdateTime + 0.1f < GEngine->GetTimeSeconds())
-    {
-        PreviousRootMatrix = Root;
-		LastUpdateTime = GEngine->GetTimeSeconds();
-    }
-    XMMATRIX DeltaMatrix = XMMatrixMultiply(XMMatrixInverse(nullptr, PreviousRootMatrix), Root);
-
-    XMFLOAT3 RawDelta = {
-        DeltaMatrix.r[3].m128_f32[0], 
-        DeltaMatrix.r[3].m128_f32[1], 
-        DeltaMatrix.r[3].m128_f32[2]
-    };
-
-    XMVECTOR DeltaPos = XMVectorSet(RawDelta.x, RawDelta.y, -RawDelta.z, 0.0f);
-    XMFLOAT3 ConvertedDelta;
-    XMStoreFloat3(&ConvertedDelta, DeltaPos);
-
-    XMFLOAT4 ActorRotation = Character->GetActorRotation();
-    XMVECTOR ActorQuat = XMLoadFloat4(&ActorRotation);
-    XMVECTOR WorldDelta = XMVector3Rotate(DeltaPos, ActorQuat);
-
-    XMFLOAT3 WorldDeltaPos;
-    XMStoreFloat3(&WorldDeltaPos, WorldDelta);
-	WorldDeltaPos.y = 0;
-
-	// 이동 적용
-    if (Character->GetCharacterMovement()->PxCharacterController)
-    {
-        physx::PxVec3 PxDelta(WorldDeltaPos.x, WorldDeltaPos.y, -WorldDeltaPos.z);
-        Character->GetCharacterMovement()->PxCharacterController->move(
-            PxDelta, 
-            0.01f, 
-            GEngine->GetDeltaSeconds(), 
-            Character->GetCharacterMovement()->Filters
-        );
-    }
-
-	// 회전 적용 (애니메이션에다가만 적용
-    {
-		
-    }
-
-
-    PreviousRootMatrix = Root;
-	LastUpdateTime = GEngine->GetTimeSeconds();
-}
-
 //void APlayerController::HandleRootMotion(const XMMATRIX& Root)
 //{
 //	if (Character && Character->GetCharacterMovement())

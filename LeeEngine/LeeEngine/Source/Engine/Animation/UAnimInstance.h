@@ -71,6 +71,7 @@ protected:
 
 	// 현재 재생중인 AnimMontage Instances
 	std::vector<std::shared_ptr<FAnimMontageInstance>> MontageInstances;
+
 protected:
 	// 이전프레임의 AnimMatrices
 	// 스켈레탈 메시의 SocketTransform 계산시 사용
@@ -90,5 +91,7 @@ protected:
 
 private:
 	USkeletalMeshComponent* CurrentSkeletalMeshComponent;
+
+	class ACharacter* OwnerCharacter = nullptr;
 
 };

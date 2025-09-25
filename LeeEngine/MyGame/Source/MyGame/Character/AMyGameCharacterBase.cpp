@@ -108,7 +108,7 @@ float AMyGameCharacterBase::TakeDamage(float DamageAmount, const FDamageEvent& D
 		if (std::shared_ptr<UAnimInstance> AnimInstance = GetAnimInstance())
 		{
 			bIsDodging = false;
-			SetTickRate(0.3f);
+			//SetTickRate(1.0);
 			const std::shared_ptr<UAnimMontage>& RollMontage = bIsBackDodge ? AM_Roll[static_cast<int>(EDodgeDirection::Backward)] : AM_Roll[static_cast<int>(EDodgeDirection::Forward)];
 
 			Delegate OnRollEnd;
@@ -119,9 +119,6 @@ float AMyGameCharacterBase::TakeDamage(float DamageAmount, const FDamageEvent& D
 		return DamageAmount;
 	}
 
-
-
-	MY_LOG(GetName(), EDebugLogLevel::DLL_Warning, "TakeDamage - "+std::to_string(DamageAmount) + " by -"+DamageCauser->GetName());
 	return DamageAmount;
 }
 
