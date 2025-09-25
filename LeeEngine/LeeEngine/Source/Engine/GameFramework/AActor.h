@@ -80,7 +80,8 @@ class AActor : public UObject, public std::enable_shared_from_this<AActor>
 	}
 
 	virtual float TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AActor* DamageCauser){ return DamageAmount;}
-
+	void SetTickRate(float NewTickRate) {TickRate = NewTickRate;}
+	float GetTickRate() const {return TickRate;}
 protected:
 	// 월드 내에서 Transform (Loc, Rot, Scale) 의 정보를 다루는 컴퍼넌트
 	// 모든 다른 컴퍼넌트는 해당 컴퍼넌트에 부착해야함
@@ -88,6 +89,7 @@ protected:
 
 	unsigned int ActorID = 0;
 
+	float TickRate = 1.0f;
 private:
 	// 액터가 소유중인 모든 액터 컴퍼넌트를 관리하는 컨테이너
 	// 언리얼엔진의 경우 많은 수의 컴퍼넌트를 가질 수 있으므로 TSet을 사용

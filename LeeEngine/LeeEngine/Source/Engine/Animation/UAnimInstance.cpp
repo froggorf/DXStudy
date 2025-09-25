@@ -132,7 +132,7 @@ AActor* UAnimInstance::TryGetPawnOwner() const
 	return nullptr;
 }
 
-void UAnimInstance::Montage_Play(std::shared_ptr<UAnimMontage> MontageToPlay, float InTimeToStartMontageAt)
+void UAnimInstance::Montage_Play(std::shared_ptr<UAnimMontage> MontageToPlay, float InTimeToStartMontageAt, const Delegate<>& OnMontageEnd, const Delegate<>& OnMontageBlendingInStart, const Delegate<>& OnMontageBlendOutStart)
 {
 	if (!MontageToPlay || MontageToPlay->GetPlayLength() <= 0.0f)
 	{
@@ -153,6 +153,9 @@ void UAnimInstance::Montage_Play(std::shared_ptr<UAnimMontage> MontageToPlay, fl
 	NewInstance->Montage = MontageToPlay;
 	NewInstance->SetPosition(std::clamp(InTimeToStartMontageAt, 0.0f, MontageToPlay->GetPlayLength()));
 	NewInstance->CurrentPlayTime = 0.0f;
+	NewInstance->OnMontageEnded = OnMontageEnd;
+	NewInstance->OnMontageBlendInStart = OnMontageBlendingInStart;
+	NewInstance->OnMontageBlendedOutStart = OnMontageBlendOutStart;
 	MontageInstances.emplace_back(NewInstance);
 }
 

@@ -166,6 +166,7 @@ void FAnimMontageInstance::Play()
 		}
 		else
 		{
+			OnMontageEnded.Broadcast();
 			bIsPlaying = false;
 			return;
 		}

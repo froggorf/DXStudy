@@ -128,7 +128,6 @@ void APlayerController::HandleRootMotion(const XMMATRIX& Root, std::vector<XMMAT
     XMStoreFloat3(&WorldDeltaPos, WorldDelta);
 	WorldDeltaPos.y = 0;
 
-	MY_LOG("LOG",EDebugLogLevel::DLL_Warning, XMFLOAT3_TO_TEXT(WorldDeltaPos));
 	// 이동 적용
     if (Character->GetCharacterMovement()->PxCharacterController)
     {

@@ -56,7 +56,7 @@ void ATestCube2::BeginPlay()
 {
 	AActor::BeginPlay();
 	
-
+	Ground->SetCollisionResponseToChannel(ECollisionChannel::Pawn, ECollisionResponse::Block);
 	
 	
 }

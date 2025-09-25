@@ -103,24 +103,27 @@ void AMyGameCharacterBase::BindKeyInputs()
 
 float AMyGameCharacterBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AActor* DamageCauser)
 {
+	if (bIsDodging)
+	{
+		if (std::shared_ptr<UAnimInstance> AnimInstance = GetAnimInstance())
+		{
+			bIsDodging = false;
+			SetTickRate(0.3f);
+			const std::shared_ptr<UAnimMontage>& RollMontage = bIsBackDodge ? AM_Roll[static_cast<int>(EDodgeDirection::Backward)] : AM_Roll[static_cast<int>(EDodgeDirection::Forward)];
+
+			Delegate OnRollEnd;
+			OnRollEnd.Add(this, &AMyGameCharacterBase::RollEnd);
+			AnimInstance->Montage_Play(RollMontage, 0, OnRollEnd);
+		}
+
+		return DamageAmount;
+	}
+
+
 
 	MY_LOG(GetName(), EDebugLogLevel::DLL_Warning, "TakeDamage - "+std::to_string(DamageAmount) + " by -"+DamageCauser->GetName());
 	return DamageAmount;
 }
-
-//void ATestPawn::Backstep()
-//{
-//	if (SkeletalMeshComponent)
-//	{
-//		if (const std::shared_ptr<UAnimInstance>& AnimInstance = SkeletalMeshComponent->GetAnimInstance())
-//		{
-//			if (AM_Smash)
-//			{
-//				AnimInstance->Montage_Play(AM_Smash, 0.0f);
-//			}
-//		}
-//	}
-//}
 
 void AMyGameCharacterBase::Move(float X, float Y)
 {
@@ -159,18 +162,38 @@ void AMyGameCharacterBase::Dodge()
 		// 방향을 구하고
 		if (UCharacterMovementComponent* MovementComp = GetCharacterMovement())
 		{
+			bIsDodging = true;
+			Delegate<> OnDodgeEnd;
+			OnDodgeEnd.Add(this, &AMyGameCharacterBase::DodgeEnd);
+
+			// TODO: 수정하기
 			if (ImGui::IsKeyDown(ImGuiKey::ImGuiKey_W) || ImGui::IsKeyDown(ImGuiKey_A) || ImGui::IsKeyDown(ImGuiKey_D))
 			{
-				AnimInstance->Montage_Play(AM_Dodge[static_cast<int>(EDodgeDirection::Forward)]);
+				bIsBackDodge = false;
+				
+				AnimInstance->Montage_Play(AM_Dodge[static_cast<int>(EDodgeDirection::Forward)], 0, OnDodgeEnd);
 			}
 			else
 			{
-				AnimInstance->Montage_Play(AM_Dodge[static_cast<int>(EDodgeDirection::Backward)]);
+				bIsBackDodge = true;
+				AnimInstance->Montage_Play(AM_Dodge[static_cast<int>(EDodgeDirection::Backward)],0, OnDodgeEnd);
 			}
 
 			
 		}
 	}
+}
+
+void AMyGameCharacterBase::DodgeEnd()
+{
+	MY_LOG("Log",EDebugLogLevel::DLL_Warning, "Dodge End");
+	bIsDodging = false;
+}
+
+void AMyGameCharacterBase::RollEnd()
+{
+	SetTickRate(1.0f);
+	MY_LOG("Log",EDebugLogLevel::DLL_Warning, "Roll End");
 }
 
 void AMyGameCharacterBase::SetWalk()

@@ -50,7 +50,7 @@ class UAnimInstance : public UObject
 
 	class AActor* TryGetPawnOwner() const;
 
-	void Montage_Play(std::shared_ptr<UAnimMontage> MontageToPlay, float InTimeToStartMontageAt = 0.0f);
+	void Montage_Play(std::shared_ptr<UAnimMontage> MontageToPlay, float InTimeToStartMontageAt = 0.0f, const Delegate<>& OnMontageEnd = Delegate<>(), const Delegate<>& OnMontageBlendingInStart = Delegate<>(), const Delegate<>& OnMontageBlendOutStart = Delegate<>());
 	const std::array<XMMATRIX,MAX_BONES>& GetLastFrameAnimMatrices() const {return LastFrameAnimMatrices;}
 protected:
 	// 현재 애님 인스턴스의 리소스가 모두 정상적으로 존재하는지 체크하는 함수

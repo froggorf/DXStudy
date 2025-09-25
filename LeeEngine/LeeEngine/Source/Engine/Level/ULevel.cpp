@@ -80,7 +80,7 @@ void ULevel::TickLevel(float DeltaSeconds)
 {
 	for (const auto& Actor : Actors)
 	{
-		Actor->Tick(DeltaSeconds);
+		Actor->Tick(DeltaSeconds * Actor->GetTickRate());
 	}
 }
 

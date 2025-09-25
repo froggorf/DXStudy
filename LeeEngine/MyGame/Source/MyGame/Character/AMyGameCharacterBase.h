@@ -29,6 +29,8 @@ class AMyGameCharacterBase : public ACharacter
 	void MouseRotateStart();
 	void MouseRotateEnd();
 	void Dodge();
+	void DodgeEnd();
+	void RollEnd();
 	void SetWalk();
 	void SetRun();
 	void WheelUp();
@@ -40,5 +42,8 @@ protected:
 	std::shared_ptr<UAnimMontage> AM_Roll[static_cast<int>(EDodgeDirection::Count)];
 private:
 	bool bRightButtonPressed = false;
+
+	bool bIsBackDodge = false;
+	bool bIsDodging = false;
 
 };
