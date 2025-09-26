@@ -7,6 +7,14 @@ template<typename... Args>
 class Delegate
 {
 public:
+	Delegate() = default;
+	
+	template<typename T>
+	Delegate(T* Obj, void (T::*Func)(Args...))
+	{
+		Add(Obj, Func);
+	}
+
 	template<typename T>
 	void Add(T* Obj, void (T::*Func)(Args...))
 	{

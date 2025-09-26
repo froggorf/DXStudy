@@ -20,31 +20,19 @@ struct FTimerHandle
 	}
 };
 
-struct FTimerDataBase
+struct FTimerData
 {
-	virtual ~FTimerDataBase() = default;
+	FTimerData() = default;
+	virtual ~FTimerData() = default;
 
 	float RepeatTime = 1.0f;
 	bool bRepeat = false;
 
 	float CurTime = 1.0f;
 
-	virtual void ExecuteDelegate(){}
+	Delegate<> Delegate;
 };
 
-template<typename... Arg>
-struct FTimerData : FTimerDataBase
-{
-	FTimerData(const Delegate<Arg>& InDelegate) : Delegate(InDelegate) {}
-	~FTimerData() override = default;
-
-	void ExecuteDelegate() override
-	{
-		Delegate.Broadcast();
-	}
-
-	Delegate<Arg> Delegate;
-};
 
 class FTimerManager
 {
@@ -55,17 +43,17 @@ public:
 		for (auto& Timer : Timers)
 		{
 			const FTimerHandle& TimerHandle = Timer.first;
-			const std::shared_ptr<FTimerDataBase>& TimerData = Timer.second;
-			TimerData->CurTime -= DeltaSeconds;
-			if (TimerData->CurTime > 0.0f)
+			FTimerData& TimerData = Timer.second;
+			TimerData.CurTime -= DeltaSeconds;
+			if (TimerData.CurTime > 0.0f)
 			{
 				continue;
 			}
 			
-			TimerData->ExecuteDelegate();
-			if (TimerData->bRepeat)
+			TimerData.Delegate.Broadcast();
+			if (TimerData.bRepeat)
 			{
-				TimerData->CurTime += TimerData->RepeatTime;
+				TimerData.CurTime += TimerData.RepeatTime;
 			}
 			else
 			{
@@ -79,14 +67,14 @@ public:
 		}
 	}
 
-	template<typename... Args>
-	void SetTimer(const FTimerHandle& TimerHandle, Delegate<Args> Delegate, float DelayTime, bool bRepeat = false, float RepeatTime = 1.0f)
+	void SetTimer(const FTimerHandle& TimerHandle, const Delegate<>& TimerDelegate, float DelayTime, bool bRepeat = false, float RepeatTime = 1.0f)
 	{
-		std::shared_ptr<FTimerDataBase> TimerData = std::make_shared<FTimerData<Args>>(Delegate);
-		TimerData->CurTime = DelayTime;
-		TimerData->bRepeat = bRepeat;
-		TimerData->RepeatTime = RepeatTime;
-		Timers[TimerHandle] = TimerData;
+		FTimerData TimerData;
+		TimerData.Delegate = TimerDelegate;
+		TimerData.CurTime = DelayTime;
+		TimerData.bRepeat = bRepeat;
+		TimerData.RepeatTime = RepeatTime;
+		Timers.emplace(TimerHandle, TimerData);
 	}
 
 	void ClearTimer(const FTimerHandle& DeleteTimerHandle)
@@ -99,5 +87,5 @@ public:
 	}
 protected:
 private:
-	std::map<FTimerHandle, std::shared_ptr<FTimerDataBase>> Timers;
+	std::map<FTimerHandle, FTimerData> Timers;
 };

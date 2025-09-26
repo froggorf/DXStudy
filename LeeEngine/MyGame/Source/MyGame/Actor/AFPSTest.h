@@ -15,9 +15,15 @@ class AFPSTest : public AActor
 	void Register() override;
 	void BeginPlay() override;
 	void Tick(float DeltaSeconds) override;
+
+	void Timer_Repeat();
+	void Timer_OneTime();
 public:
 	std::shared_ptr<UStaticMeshComponent> SM_Attacker;
 
 	float ShotDelay = 0.5f;
 	float CurTime = 0.0f;
+
+	FTimerHandle TestHandle_Repeat;
+	FTimerHandle TestHandle_OneTime;
 };

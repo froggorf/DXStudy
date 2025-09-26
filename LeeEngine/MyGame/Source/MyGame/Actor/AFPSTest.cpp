@@ -20,11 +20,24 @@ void AFPSTest::Register()
 	AActor::Register();
 }
 
+void AFPSTest::Timer_Repeat()
+{
+	static int a = 0;
+	
+	MY_LOG("Timer",EDebugLogLevel::DLL_Display, "Repeat -> " +  std::to_string(a++));
+}
+void AFPSTest::Timer_OneTime()
+{
+	MY_LOG("Timer",EDebugLogLevel::DLL_Display, "OneTime");
+}
+
 void AFPSTest::BeginPlay()
 {
 	AActor::BeginPlay();
 	SM_Attacker->SetCollisionObjectType(ECollisionChannel::Camera);
-	
+
+	GEngine->GetTimerManager()->SetTimer(TestHandle_OneTime, {this, &AFPSTest::Timer_OneTime}, 5.0f);
+	GEngine->GetTimerManager()->SetTimer(TestHandle_Repeat, {this, &AFPSTest::Timer_Repeat}, 0.0f, true, 0.5f);
 }
 
 void AFPSTest::Tick(float DeltaSeconds)
