@@ -106,6 +106,9 @@
     <Filter Include="Source\Engine\Widget">
       <UniqueIdentifier>{72688d92-7841-4a9c-9b74-46da373678a6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Engine\Timer">
+      <UniqueIdentifier>{2a1be6b4-c83c-4187-a51d-b97e23b71e43}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\DirectX\ShadowMap.cpp">
@@ -483,6 +486,9 @@
     <ClCompile Include="Source\Engine\DirectX\FDirect2DDevice.cpp">
       <Filter>Source\Engine\DirectX</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Timer\FTimerManager.cpp">
+      <Filter>Source\Engine\Timer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DirectX\ShadowMap.h">
@@ -859,6 +865,9 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\DirectX\FDirect2DDevice.h">
       <Filter>Source\Engine\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Timer\FTimerManager.h">
+      <Filter>Source\Engine\Timer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

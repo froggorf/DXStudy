@@ -98,6 +98,7 @@
     <ClCompile Include="Source\Engine\SceneProxy\FSkeletalMeshSceneProxy.cpp" />
     <ClCompile Include="Source\Engine\SceneProxy\FStaticMeshSceneProxy.cpp" />
     <ClCompile Include="Source\Engine\SceneView.cpp" />
+    <ClCompile Include="Source\Engine\Timer\FTimerManager.cpp" />
     <ClCompile Include="Source\Engine\UEditorEngine.cpp" />
     <ClCompile Include="Source\Engine\UEngine.cpp" />
     <ClCompile Include="Source\Engine\UObject\UObject.cpp" />
@@ -261,6 +262,7 @@
     <ClInclude Include="Source\Engine\SceneProxy\FSkeletalMeshSceneProxy.h" />
     <ClInclude Include="Source\Engine\SceneProxy\FStaticMeshSceneProxy.h" />
     <ClInclude Include="Source\Engine\SceneView.h" />
+    <ClInclude Include="Source\Engine\Timer\FTimerManager.h" />
     <ClInclude Include="Source\Engine\UEditorEngine.h" />
     <ClInclude Include="Source\Engine\UEngine.h" />
     <ClInclude Include="Source\Engine\UObject\UObject.h" />

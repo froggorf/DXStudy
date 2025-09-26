@@ -11,6 +11,7 @@
 #include "Animation/UAnimSequence.h"
 #include "DirectX/d3dApp.h"
 #include "Engine/UObject/UObject.h"
+#include "Timer/FTimerManager.h"
 
 class USceneComponent;
 
@@ -58,6 +59,8 @@ class UEngine : public UObject
 	{
 		return CurrentWorld;
 	}
+
+	const std::shared_ptr<FTimerManager>& GetTimerManager() const {return TimerManager;}
 
 	const std::string& GetDirectoryPath() const
 	{
@@ -128,4 +131,6 @@ private:
 	std::unordered_map<UINT, std::shared_ptr<USceneComponent>> ComponentsTransformDirty;
 	std::string                                                CurrentDirectory;
 	std::string                                                EngineDirectory;
+
+	std::shared_ptr<FTimerManager> TimerManager;
 };

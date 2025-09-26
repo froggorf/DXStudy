@@ -110,12 +110,6 @@ void UEngine::LoadDataFromDefaultEngineIni()
 void UEngine::LoadDefaultMap()
 {
 	ChangeLevelByName(GetDefaultMapName());
-	//AssetManager::GetAsyncAssetCache(GetDefaultMapName(), [this](std::shared_ptr<UObject> DefaultLevel)
-	//{
-	//	// 레벨 정보를 생성자를 통해서 인스턴스를 만드는 방식
-	//	std::shared_ptr<ULevel> DefaultLevelInstance = std::make_shared<ULevel>(std::dynamic_pointer_cast<ULevel>(DefaultLevel).get());
-	//	CurrentWorld->SetPersistentLevel(DefaultLevelInstance);
-	//});
 }
 
 const std::string& UEngine::GetDefaultMapName()
@@ -149,6 +143,8 @@ void UEngine::ChangeLevelByName(const std::string& str)
 
 	if (ChangeLevel)
 	{
+		// 레벨이 변경될 때 마다 타이머 매니저가 초기화되어야하므로 ChangeLevel 내에서 적용
+		TimerManager = std::make_shared<FTimerManager>();
 		CurrentWorld->SetPersistentLevel(ChangeLevel);	
 	}
 	
@@ -177,6 +173,7 @@ void UEngine::GameStart()
 void UEngine::Tick(float DeltaSeconds)
 {
 	this->DeltaSeconds = DeltaSeconds;
+
 #ifdef WITH_EDITOR
 	std::shared_ptr<FImGUITask> Task;
 	while (FImGuizmoCommandPipe::Dequeue(Task))
@@ -197,6 +194,12 @@ void UEngine::Tick(float DeltaSeconds)
 	if (bGameStart)
 	{
 		TimeSeconds += DeltaSeconds;
+
+		if (TimerManager)
+		{
+			TimerManager->Tick(DeltaSeconds);
+		}
+
 		if (CurrentWorld)
 		{
 			CurrentWorld->TickWorld(DeltaSeconds);
