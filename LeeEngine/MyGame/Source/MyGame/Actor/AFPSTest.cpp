@@ -36,8 +36,8 @@ void AFPSTest::BeginPlay()
 	AActor::BeginPlay();
 	SM_Attacker->SetCollisionObjectType(ECollisionChannel::Camera);
 
-	GEngine->GetTimerManager()->SetTimer(TestHandle_OneTime, {this, &AFPSTest::Timer_OneTime}, 5.0f);
-	GEngine->GetTimerManager()->SetTimer(TestHandle_Repeat, {this, &AFPSTest::Timer_Repeat}, 0.0f, true, 0.5f);
+	//GEngine->GetTimerManager()->SetTimer(TestHandle_OneTime, {this, &AFPSTest::Timer_OneTime}, 5.0f);
+	//GEngine->GetTimerManager()->SetTimer(TestHandle_Repeat, {this, &AFPSTest::Timer_Repeat}, 0.0f, true, 0.5f);
 }
 
 void AFPSTest::Tick(float DeltaSeconds)
