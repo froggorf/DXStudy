@@ -108,12 +108,7 @@ float AMyGameCharacterBase::TakeDamage(float DamageAmount, const FDamageEvent& D
 		if (std::shared_ptr<UAnimInstance> AnimInstance = GetAnimInstance())
 		{
 			bIsDodging = false;
-			//SetTickRate(1.0);
-			const std::shared_ptr<UAnimMontage>& RollMontage = bIsBackDodge ? AM_Roll[static_cast<int>(EDodgeDirection::Backward)] : AM_Roll[static_cast<int>(EDodgeDirection::Forward)];
-
-			Delegate OnRollEnd;
-			OnRollEnd.Add(this, &AMyGameCharacterBase::RollEnd);
-			AnimInstance->Montage_Play(RollMontage, 0, OnRollEnd);
+			SetTickRate(0.2f);
 		}
 
 		return DamageAmount;
@@ -182,6 +177,7 @@ void AMyGameCharacterBase::Dodge()
 void AMyGameCharacterBase::DodgeEnd()
 {
 	MY_LOG("Log",EDebugLogLevel::DLL_Warning, "Dodge End");
+	SetTickRate(1.0f);
 	bIsDodging = false;
 }
 
