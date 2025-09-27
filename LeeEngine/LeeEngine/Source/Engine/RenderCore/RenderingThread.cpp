@@ -19,7 +19,7 @@ FScene::FScene()
 {
 	DeferredMergeRenderData.MaterialInterface = UMaterial::GetMaterialCache("M_DeferredMergeRect");
 	DeferredMergeRenderData.MaterialInterface->SetRasterizerType(ERasterizerType::RT_TwoSided);
-	DeferredMergeRenderData.MaterialInterface->SetDepthStencilState(EDepthStencilStateType::DST_NO_TEST_NO_WRITE);
+	DeferredMergeRenderData.MaterialInterface->SetDepthStencilState(EDepthStencilStateType::NO_TEST_NO_WRITE);
 	DeferredMergeRenderData.MaterialInterface->SetBlendStateType(EBlendStateType::BST_Default);
 	std::static_pointer_cast<UMaterial>(DeferredMergeRenderData.MaterialInterface)->SetTexture(0, UTexture::GetTextureCache("DiffuseTargetTex")); 
 	
@@ -40,7 +40,7 @@ FScene::FScene()
 
 	M_Widget = UMaterial::GetMaterialCache("M_Widget");
 	M_Widget->SetRasterizerType(ERasterizerType::RT_TwoSided);
-	M_Widget->SetDepthStencilState(EDepthStencilStateType::DST_NO_TEST_NO_WRITE);
+	M_Widget->SetDepthStencilState(EDepthStencilStateType::NO_TEST_NO_WRITE);
 	// 동일한 메쉬를 사용하므로 재사용
 	WidgetStaticMeshSceneProxy = DeferredMergeRenderData.SceneProxy;
 	// 동일한 메쉬를 사용하므로 재사용
@@ -698,7 +698,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->ClearRenderTarget();
 			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->ClearDepthStencilTarget();
 
-			GDirectXDevice->SetDSState(EDepthStencilStateType::DST_LESS);
+			GDirectXDevice->SetDSState(EDepthStencilStateType::LESS);
 			SceneData->SetRSViewport();
 
 			// Deferred 렌더링
@@ -789,7 +789,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 
 			// 포워드 렌더링 진행
 			{
-				GDirectXDevice->SetDSState(EDepthStencilStateType::DST_LESS);
+				GDirectXDevice->SetDSState(EDepthStencilStateType::LESS);
 				DrawSceneProxies(SceneData, SceneData->OpaqueSceneProxyRenderData);
 				GDirectXDevice->SetBSState(EBlendStateType::BST_AlphaBlend);
 				DrawSceneProxies(SceneData, SceneData->MaskedSceneProxyRenderData);

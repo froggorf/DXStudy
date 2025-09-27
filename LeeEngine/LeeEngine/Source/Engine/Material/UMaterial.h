@@ -195,7 +195,7 @@ class UMaterialInterface : public UObject
 	EBlendMode      BlendMode = EBlendMode::BM_Opaque;
 	ERasterizerType RasterizerType = ERasterizerType::RT_CullBack;
 	EBlendStateType BlendStateType = EBlendStateType::BST_Default;
-	EDepthStencilStateType DepthStencilState = EDepthStencilStateType::DST_LESS;
+	EDepthStencilStateType DepthStencilState = EDepthStencilStateType::LESS;
 };
 
 class UMaterial : public UMaterialInterface

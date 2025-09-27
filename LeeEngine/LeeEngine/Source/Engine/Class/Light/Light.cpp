@@ -21,7 +21,7 @@ void FLightInfo::InitLight()
 		}
 		LightVolumeMesh[static_cast<UINT>(ELightType::Directional)] = std::make_shared<FStaticMeshSceneProxy>(0,0,DirectionalRectMesh);
 		LightMaterial[static_cast<UINT>(ELightType::Directional)] = UMaterial::GetMaterialCache("M_DirLight");
-		LightMaterial[static_cast<UINT>(ELightType::Directional)]->SetDepthStencilState(EDepthStencilStateType::DST_NO_TEST_NO_WRITE);
+		LightMaterial[static_cast<UINT>(ELightType::Directional)]->SetDepthStencilState(EDepthStencilStateType::NO_TEST_NO_WRITE);
 		LightMaterial[static_cast<UINT>(ELightType::Directional)]->SetBlendStateType(EBlendStateType::BST_One_One);
 	}
 

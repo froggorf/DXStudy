@@ -1,4 +1,4 @@
-﻿#include "CoreMinimal.h"
+#include "CoreMinimal.h"
 #include "FNiagaraEmitter.h"
 #include "Engine/Mesh/UStaticMesh.h"
 #include "Engine/SceneProxy/FNiagaraSceneProxy.h"
@@ -192,7 +192,7 @@ void FNiagaraRendererBillboardSprites::Render()
 
 	FNiagaraRendererProperty::Render();
 
-	GDirectXDevice->SetDSState(EDepthStencilStateType::DST_NO_WRITE);
+	GDirectXDevice->SetDSState(EDepthStencilStateType::NO_WRITE);
 	GDirectXDevice->SetBSState(EBlendStateType::BST_AlphaBlend);
 	auto DeviceContext = GDirectXDevice->GetDeviceContext();
 
@@ -211,7 +211,7 @@ void FNiagaraRendererBillboardSprites::Render()
 	UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
 	DeviceContext->DrawIndexedInstanced(1,MaxParticleCount, 0, 0, 0);
 
-	GDirectXDevice->SetDSState(EDepthStencilStateType::DST_LESS);
+	GDirectXDevice->SetDSState(EDepthStencilStateType::LESS);
 	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
@@ -223,7 +223,7 @@ void FNiagaraRendererMeshes::Render()
 	}
 
 	FNiagaraRendererProperty::Render();
-	GDirectXDevice->SetDSState(EDepthStencilStateType::DST_NO_WRITE);
+	GDirectXDevice->SetDSState(EDepthStencilStateType::NO_WRITE);
 	GDirectXDevice->SetBSState(EBlendStateType::BST_AlphaBlend);
 
 	auto DeviceContext = GDirectXDevice->GetDeviceContext();
@@ -244,7 +244,7 @@ void FNiagaraRendererMeshes::Render()
 		DeviceContext->DrawIndexedInstanced(indexSize,MaxParticleCount, 0, 0, 0);
 	}
 
-	GDirectXDevice->SetDSState(EDepthStencilStateType::DST_LESS);
+	GDirectXDevice->SetDSState(EDepthStencilStateType::LESS);
 }
 
 void FNiagaraRendererMeshes::LoadDataFromFile(const nlohmann::basic_json<>& Data)
@@ -517,7 +517,7 @@ void FNiagaraRibbonEmitter::Render() const
 		return;
 	}
 
-	GDirectXDevice->SetDSState(EDepthStencilStateType::DST_NO_WRITE);
+	GDirectXDevice->SetDSState(EDepthStencilStateType::NO_WRITE);
 	GDirectXDevice->SetBSState(EBlendStateType::BST_AlphaBlend);
 
 	auto DeviceContext = GDirectXDevice->GetDeviceContext();
@@ -538,7 +538,7 @@ void FNiagaraRibbonEmitter::Render() const
 
 	DeviceContext->Draw(CurVertexCount, 0);
 
-	GDirectXDevice->SetDSState(EDepthStencilStateType::DST_LESS);
+	GDirectXDevice->SetDSState(EDepthStencilStateType::LESS);
 }
 
 void FNiagaraRibbonEmitter::LoadDataFromFile(const nlohmann::basic_json<>& Data)

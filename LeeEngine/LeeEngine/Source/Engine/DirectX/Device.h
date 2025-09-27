@@ -46,16 +46,18 @@ enum class EBlendStateType
 
 enum class EDepthStencilStateType
 {
-	DST_LESS,       // Less, Depth Write
-	DST_LESS_EQUAL, // LessEqual, Depth Write
-	DST_NO_WRITE,   // Less, No write
-	DST_NO_TEST_NO_WRITE,
+	LESS,       // Less, Depth Write
+	LESS_EQUAL, // LessEqual, Depth Write
+	NO_WRITE,   // Less, No write
+	NO_TEST_NO_WRITE,
 
 	// 라이팅 등 볼륨메쉬 체크용
 	VOLUME_CHECK,
 	STENCIL_EQUAL,
 
-	DST_COUNT
+	// 흑백 처리 등에서 스텐실을 남기는 용도
+	SET_STENCIL,
+	COUNT
 };
 
 // 언리얼엔진의 경우 RHI 를 통해 렌더링을 진행하지만 (// 언리얼엔진의 경우 GDynamicRHI 로 관리, GDynamicRHI->RHICreateBuffer(*this, BufferDesc, ResourceState, CreateInfo);)
@@ -142,12 +144,13 @@ public:
 	std::shared_ptr<UTexture>& GetPostProcessTexture() {return T_PostProcess;};
 private:
 	ERasterizerType        CurrentRSType = ERasterizerType::RT_Count;
-	EDepthStencilStateType CurrentDSType = EDepthStencilStateType::DST_COUNT;
+	EDepthStencilStateType CurrentDSType = EDepthStencilStateType::COUNT;
+	UINT				   CurrentDSStencilRef = 0;
 	EBlendStateType        CurrentBSType = EBlendStateType::BST_Count;
 
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState>   m_RSState[static_cast<UINT>(ERasterizerType::RT_Count)];
 	Microsoft::WRL::ComPtr<ID3D11BlendState>        m_BSState[static_cast<UINT>(EBlendStateType::BST_Count)];
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_DSState[static_cast<UINT>(EDepthStencilStateType::DST_COUNT)];
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_DSState[static_cast<UINT>(EDepthStencilStateType::COUNT)];
 	void                                            CreateRasterizerState();
 	void                                            CreateBlendState();
 	void                                            CreateDepthStencilState();
