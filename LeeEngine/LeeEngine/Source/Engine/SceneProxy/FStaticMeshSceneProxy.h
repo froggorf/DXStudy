@@ -15,12 +15,15 @@ class FStaticMeshSceneProxy : public FPrimitiveSceneProxy
 public:
 	FStaticMeshSceneProxy(UINT InPrimitiveID, UINT InMeshIndex, const std::shared_ptr<UStaticMesh>& StaticMesh);
 	~FStaticMeshSceneProxy() override;
-
-	FStaticMeshRenderData* RenderData;
 	
 	void SetNewRenderData(const std::shared_ptr<UStaticMesh>& NewStaticMesh);
 
 	void Draw() override;
 
 	float GetBoundSphereRadius() const override { return RenderData->BoundSphereRadius; }
+
+
+
+	FStaticMeshRenderData* RenderData;
+
 };

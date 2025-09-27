@@ -19,7 +19,10 @@ void FPrimitiveSceneProxy::Draw()
 	ocb.MatWV				= XMMatrixMultiply(world,FRenderCommandExecutor::CurrentSceneData->GetViewMatrix());
 
 	GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_PerObject, &ocb, sizeof(ocb));
-	
+
+	// 흑백은 0으로 세팅, 채색은 1로 세팅
+	UINT StencilRef = bIsMonochromeObject? 0 : 1;
+	GDirectXDevice->SetDSState(EDepthStencilStateType::SET_STENCIL, StencilRef);
 }
 
 bool FPrimitiveSceneProxy::IsSphereInCameraFrustum(const FCameraFrustum* Frustum)

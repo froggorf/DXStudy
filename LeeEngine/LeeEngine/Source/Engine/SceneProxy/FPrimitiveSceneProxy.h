@@ -62,6 +62,9 @@ public:
 	void SetDoFrustumCulling(bool NewDoFrustumCulling){ bDoFrustumCulling = NewDoFrustumCulling;}
 
 	virtual bool IsSkeletalMesh() const {return false;}
+
+	void SetIsMonochrome(bool NewMonochrome) {bIsMonochromeObject = NewMonochrome;}
+
 protected:
 	UINT PrimitiveID;
 	UINT MeshIndex;
@@ -71,4 +74,7 @@ protected:
 	FTransform ComponentToWorld;
 
 	bool bDoFrustumCulling = true;
+
+	// 오브젝트가 흑백으로 렌더링 될 상황에, 흑백으로 렌더링 할 것인지에 대한 함수
+	bool bIsMonochromeObject = true;
 };

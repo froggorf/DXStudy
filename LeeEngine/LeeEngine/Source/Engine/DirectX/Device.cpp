@@ -853,7 +853,7 @@ void FDirectXDevice::CreateConstantBuffers()
 	m_d3dDeviceContext->GSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_PerFrame), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_PerFrame)].GetAddressOf());
 	m_d3dDeviceContext->CSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_PerFrame), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_PerFrame)].GetAddressOf());
 
-	// ObjectConstantBuffer
+	// ObjectObjectConstantBuffer
 	bufferDesc.ByteWidth = sizeof(ObjConstantBuffer);
 	HR(GDirectXDevice->GetDevice()->CreateBuffer(&bufferDesc, nullptr, ConstantBuffers[static_cast<UINT>( EConstantBufferType::CBT_PerObject)].GetAddressOf()));
 	m_d3dDeviceContext->VSSetConstantBuffers(static_cast<UINT>(EConstantBufferType::CBT_PerObject), 1, ConstantBuffers[static_cast<UINT>(EConstantBufferType::CBT_PerObject)].GetAddressOf());

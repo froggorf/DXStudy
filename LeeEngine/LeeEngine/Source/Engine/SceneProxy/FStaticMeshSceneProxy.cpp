@@ -80,9 +80,9 @@ void FStaticMeshSceneProxy::Draw()
 		return;
 	}
 
-	FPrimitiveSceneProxy::Draw();
-
 	ID3D11DeviceContext* DeviceContext = GDirectXDevice->GetDeviceContext().Get();
+
+	FPrimitiveSceneProxy::Draw();
 
 	UINT stride = sizeof(MyVertexData);
 	UINT offset = 0;
