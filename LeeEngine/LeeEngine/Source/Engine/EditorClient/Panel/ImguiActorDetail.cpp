@@ -5,9 +5,7 @@
 
 #include "CoreMinimal.h"
 #include "ImguiActorDetail.h"
-
 #include "Engine/GameFramework/AActor.h"
-#include "Engine/Physics/UConvexComponent.h"
 #ifdef WITH_EDITOR
 FImguiActorDetail::FImguiActorDetail(FScene* Scene, class FImguiLevelViewport* Owner)
 	: FImguiPanel(Scene)
@@ -102,6 +100,27 @@ void FImguiActorDetail::SelectActorFromWorldOutliner(const std::shared_ptr<AActo
 	CurrentSelectedComponentIndex = 0;
 	CurrentSelectedActor          = NewSelectedActor;
 	FindComponentsAndNamesFromActor(CurrentSelectedActor->GetRootComponent(), 0);
+}
+
+std::shared_ptr<USceneComponent> FImguiActorDetail::GetCurrentSelectedComponent() const
+{
+	if (CurrentSelectedComponentIndex < 0 || CurrentSelectedComponentIndex >= SelectActorSceneComponents.size())
+	{
+		return nullptr;
+	}
+
+	return SelectActorSceneComponents[CurrentSelectedComponentIndex];
+}
+
+std::shared_ptr<UActorComponent> FImguiActorDetail::GetCurrentSelectedActorComponent() const
+{
+	if (CurrentSelectedComponentIndex < SelectActorSceneComponents.size() || CurrentSelectedComponentIndex >= SelectActorSceneComponents.size() + SelectActorActorComponents.size())
+	{
+
+		return nullptr;
+	}
+
+	return SelectActorActorComponents[CurrentSelectedComponentIndex - SelectActorSceneComponents.size()];
 }
 
 void FImguiActorDetail::FindComponentsAndNamesFromActor(const std::shared_ptr<USceneComponent>& TargetComponent, int CurrentHierarchyDepth)

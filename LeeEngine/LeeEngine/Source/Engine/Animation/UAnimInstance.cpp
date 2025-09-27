@@ -1,12 +1,7 @@
 #include "CoreMinimal.h"
 // https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
 #include "UAnimInstance.h"
-
-#include "UAnimSequence.h"
 #include "Engine/Class/Framework/ACharacter.h"
-#include "Engine/Class/Framework/APlayerController.h"
-#include "Engine/Components/USkeletalMeshComponent.h"
-#include "Engine/RenderCore/renderingthread.h"
 #include "Engine/World/UWorld.h"
 
 UAnimInstance::UAnimInstance()

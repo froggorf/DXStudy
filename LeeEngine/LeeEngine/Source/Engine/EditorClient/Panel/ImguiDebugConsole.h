@@ -6,7 +6,6 @@
 #pragma once
 
 #include "ImguiPanel.h"
-#include "Engine/MyEngineUtils.h"
 #include "Engine/RenderCore/EditorScene.h"
 
 enum class EDebugConsoleCommandType
@@ -17,13 +16,9 @@ enum class EDebugConsoleCommandType
 
 struct FImguiDebugConsoleCommandData : FImguiPanelCommandData
 {
-	FImguiDebugConsoleCommandData()
-	{
-	};
+	FImguiDebugConsoleCommandData()= default;
 
-	~FImguiDebugConsoleCommandData() override
-	{
-	};
+	~FImguiDebugConsoleCommandData() override= default;
 
 	DebugText                DebugText;
 	EDebugConsoleCommandType CommandType;

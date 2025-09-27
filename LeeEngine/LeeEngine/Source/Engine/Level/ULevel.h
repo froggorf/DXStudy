@@ -6,7 +6,6 @@
 #pragma once
 #include "Engine/UObject/UObject.h"
 #include "Engine/MyEngineUtils.h"
-#include "Engine/World/UWorld.h"
 class AActor;
 class UWorld;
 

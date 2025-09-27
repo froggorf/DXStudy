@@ -39,9 +39,7 @@ class FEditorScene : public FScene
 public:
 	FEditorScene();
 
-	~FEditorScene() override
-	{
-	}
+	~FEditorScene() override = default;
 
 	static void InitSceneData_GameThread();
 

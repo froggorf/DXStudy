@@ -7,9 +7,6 @@
 
 #include "Engine/GameFramework/AActor.h"
 
-#include "Engine/UEditorEngine.h"
-#include "Engine/RenderCore/EditorScene.h"
-
 static int LevelCount = 0;
 
 ULevel::ULevel()

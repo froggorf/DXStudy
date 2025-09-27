@@ -4,10 +4,6 @@
 // 이윤석
 #include "CoreMinimal.h"
 #include "UStaticMeshComponent.h"
-
-#include "Engine/Mesh/UStaticMesh.h"
-#include "Engine/Physics/UConvexComponent.h"
-#include "Engine/RenderCore/EditorScene.h"
 #include "Engine/SceneProxy/FStaticMeshSceneProxy.h"
 
 UStaticMeshComponent::UStaticMeshComponent()

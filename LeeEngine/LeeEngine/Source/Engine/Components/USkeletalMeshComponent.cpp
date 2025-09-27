@@ -1,14 +1,11 @@
-﻿// 03.24
+// 03.24
 // 언리얼 엔진 5 코드를 분석하며 자체엔진으로 작성중인 코드입니다.
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
 #include "CoreMinimal.h"
 #include "USkeletalMeshComponent.h"
-
-#include "Engine/Mesh/USkeletalMesh.h"
 #include "Engine/Physics/UShapeComponent.h"
 #include "Engine/SceneProxy/FSkeletalMeshSceneProxy.h"
-#include "Engine/RenderCore/EditorScene.h"
 
 USkeletalMeshComponent::USkeletalMeshComponent()
 {
@@ -107,7 +104,7 @@ FTransform USkeletalMeshComponent::GetSocketTransform(const std::string& InSocke
 			return GetComponentTransform();
 		}
 		XMVECTOR OutLoc, OutRot, OutScale;
-		int BoneIdx = std::distance(BoneHierarchy.begin(), TargetSocket);
+		int BoneIdx = static_cast<int>(std::distance(BoneHierarchy.begin(), TargetSocket));
 		// 누적 행렬 계산
 		FTransform AnimTransform;
 		if (XMMatrixDecompose(&OutScale, &OutRot, &OutLoc, AnimInstance->GetLastFrameAnimMatrices()[BoneIdx]))

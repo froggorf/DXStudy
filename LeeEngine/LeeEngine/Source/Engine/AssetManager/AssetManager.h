@@ -1,9 +1,7 @@
 // assimp 라이브러리와 텍스쳐 로드 라이브러리를 활용하여
 // 모델, 텍스쳐 등의 오브젝트 (에셋)을 관리하는 매니저 클래스
 #pragma once
-#include <concurrent_unordered_map.h>
-#include <concurrent_vector.h>
-#include "DirectX/d3dUtil.h"
+#include "CoreMinimal.h"
 #include "Engine/RenderCore/EditorScene.h"
 class UObject;
 struct aiScene;
@@ -38,9 +36,9 @@ public:
 	static void LoadTexture(class UTexture* Texture, const nlohmann::json& AssetData);
 
 	// UINT BindFlag -> D3D11_BIND_FLAG
-	static std::shared_ptr<UTexture> CreateTexture(const std::string& Name, UINT Width, UINT Height, DXGI_FORMAT PixelFormat, UINT BindFlag, D3D11_USAGE Usage = D3D11_USAGE_DEFAULT);
+	static std::shared_ptr<UTexture> CreateTexture(const std::string& Name, float Width, float Height, DXGI_FORMAT PixelFormat, UINT BindFlag, D3D11_USAGE Usage = D3D11_USAGE_DEFAULT);
 	// UINT BindFlag -> D3D11_BIND_FLAG
-	static std::shared_ptr<UTexture> CreateCubeTexture(const std::string& Name, UINT Width, UINT Height, DXGI_FORMAT PixelFormat, UINT BindFlag, D3D11_USAGE = D3D11_USAGE_DEFAULT);
+	static std::shared_ptr<UTexture> CreateCubeTexture(const std::string& Name, float Width, float Height, DXGI_FORMAT PixelFormat, UINT BindFlag, D3D11_USAGE = D3D11_USAGE_DEFAULT);
 
 	// myasset 파일 읽기
 	// myasset을 통해 읽은 UObject 데이터를 unique_ptr를 통해 관리하고 반환
@@ -61,16 +59,7 @@ private:
 	static void ExtractBoneWeightForVertices(std::vector<MyVertexData>& vVertexData, aiMesh* mesh, std::map<std::string, BoneInfo>& modelBoneInfoMap);
 
 public:
-	static std::shared_ptr<UObject> GetAssetCacheByName(const std::string& AssetName)
-	{
-		const std::unordered_map<std::string, std::shared_ptr<UObject>>& Map    = GetAssetCacheMap();
-		auto                                                             Target = Map.find(AssetName);
-		if (Target != Map.end())
-		{
-			return Target->second;
-		}
-		return nullptr;
-	}
+	static std::shared_ptr<UObject> GetAssetCacheByName(const std::string& AssetName);
 
 
 	// 에셋을 비동기로 로드하는 함수

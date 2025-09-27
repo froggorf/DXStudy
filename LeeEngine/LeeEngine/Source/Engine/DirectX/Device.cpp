@@ -4,12 +4,7 @@
 // 이윤석
 
 #include "CoreMinimal.h"
-#include "Device.h"
-#include "Engine/UEngine.h"
 #include "Engine/AssetManager/AssetManager.h"
-#include "Engine/RenderCore/EditorScene.h"
-#include "Engine/RenderCore/FMultiRenderTarget.h"
-#include "Engine/RenderCore/RenderingThread.h"
 
 using namespace Microsoft::WRL;
 
@@ -142,7 +137,7 @@ void FDirectXDevice::InitMultiRenderTarget()
 		RTTex->Create(pTex2D);
 
 		// 2. DepthStencilTexture 생성
-		std::shared_ptr<UTexture> pDSTex = AssetManager::CreateTexture("DepthStencilTexture", (UINT)RenderResolution.x, (UINT)RenderResolution.y
+		std::shared_ptr<UTexture> pDSTex = AssetManager::CreateTexture("DepthStencilTexture", RenderResolution.x, RenderResolution.y
 																			, DXGI_FORMAT_D24_UNORM_S8_UINT
 																			, D3D11_BIND_DEPTH_STENCIL
 																			, D3D11_USAGE_DEFAULT);
@@ -154,11 +149,11 @@ void FDirectXDevice::InitMultiRenderTarget()
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::SwapChain_Main]->SetClearColor(&ClearColor, 1);
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::SwapChain_Main]->SetViewport(D3D11_VIEWPORT{0,0,RenderResolution.x,RenderResolution.y,0.0f,1.0f});
 
-		std::shared_ptr<UTexture> RTTex_HDR = AssetManager::CreateTexture("RTT_HDR",(UINT)RenderResolution.x,(UINT)RenderResolution.y,DXGI_FORMAT_R16G16B16A16_FLOAT,
+		std::shared_ptr<UTexture> RTTex_HDR = AssetManager::CreateTexture("RTT_HDR",RenderResolution.x,RenderResolution.y,DXGI_FORMAT_R16G16B16A16_FLOAT,
 			D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
 
 		// 2. DepthStencilTexture 생성
-		std::shared_ptr<UTexture> pDSTex_HDR = AssetManager::CreateTexture("DST_HDR", (UINT)RenderResolution.x, (UINT)RenderResolution.y
+		std::shared_ptr<UTexture> pDSTex_HDR = AssetManager::CreateTexture("DST_HDR", RenderResolution.x, RenderResolution.y
 			, DXGI_FORMAT_D24_UNORM_S8_UINT
 			, D3D11_BIND_DEPTH_STENCIL
 			, D3D11_USAGE_DEFAULT);
@@ -224,19 +219,21 @@ void FDirectXDevice::InitMultiRenderTarget()
 		{
 			XMFLOAT4(0.f, 0.f, 0.f, 1.f),
 			XMFLOAT4(0.f, 0.f, 0.f, 1.f),
-			XMFLOAT4(0.f, 0.f, 0.f, 1.f),
+			//XMFLOAT4(0.f, 0.f, 0.f, 1.f),
+			// 09.28 포지션 타겟 텍스쳐를 초기엔 똥값을 넣어놓도록 수정
+			XMFLOAT4(-100000.0f, -100000.0f, -100000.0f, 1.f),
 			XMFLOAT4(0.f, 0.f, 0.f, 1.f),
 			XMFLOAT4(0.f, 0.0f, 0.f, 1.f),
 		};
 
-		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred] = std::make_shared<FMultiRenderTarget>();
+		MultiRenderTargets[static_cast<UINT>(EMultiRenderTargetType::Deferred)] = std::make_shared<FMultiRenderTarget>();
 #ifdef WITH_EDITOR
-		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred]->Create(RenderTargetTextures, 5, GetMultiRenderTarget(EMultiRenderTargetType::Editor_HDR)->GetDepthStencilTexture());
+		MultiRenderTargets[static_cast<UINT>(EMultiRenderTargetType::Deferred)]->Create(RenderTargetTextures, 5, GetMultiRenderTarget(EMultiRenderTargetType::Editor_HDR)->GetDepthStencilTexture());
 #else
 		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred]->Create(RenderTargetTextures, 5, GetMultiRenderTarget(EMultiRenderTargetType::SwapChain_HDR)->GetDepthStencilTexture());
 #endif
-		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred]->SetClearColor(ClearColor, 5);
-		MultiRenderTargets[(UINT)EMultiRenderTargetType::Deferred]->SetViewport(D3D11_VIEWPORT{0,0,DeferredResolution.x,DeferredResolution.y,0.0f,1.0f});
+		MultiRenderTargets[static_cast<UINT>(EMultiRenderTargetType::Deferred)]->SetClearColor(ClearColor, 5);
+		MultiRenderTargets[static_cast<UINT>(EMultiRenderTargetType::Deferred)]->SetViewport(D3D11_VIEWPORT{0,0,DeferredResolution.x,DeferredResolution.y,0.0f,1.0f});
 	}
 
 
@@ -267,25 +264,22 @@ void FDirectXDevice::InitMultiRenderTarget()
 			}
 			std::string RTName = "Blur_RT" + std::to_string(i);
 			std::shared_ptr<UTexture> RTBlur[1] = {
-				AssetManager::CreateTexture(RTName,(UINT)BlurResolution.x,(UINT)BlurResolution.y,
+				AssetManager::CreateTexture(RTName,BlurResolution.x,BlurResolution.y,
 											DXGI_FORMAT_R16G16B16A16_FLOAT,
 											D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE)
 			};
 
 			std::string DSTName = "Blur_DST" + std::to_string(i);
-			const std::shared_ptr<UTexture>& DSBlur = AssetManager::CreateTexture(DSTName, (UINT)BlurResolution.x, (UINT)BlurResolution.y
+			const std::shared_ptr<UTexture>& DSBlur = AssetManager::CreateTexture(DSTName, BlurResolution.x, BlurResolution.y
 				, DXGI_FORMAT_D24_UNORM_S8_UINT
 				, D3D11_BIND_DEPTH_STENCIL
 				, D3D11_USAGE_DEFAULT);
 
 			RTName += "PP";
-			T_BloomPostProcess[i] = AssetManager::CreateTexture(RTName,(UINT)BlurResolution.x,(UINT)BlurResolution.y,
+			T_BloomPostProcess[i] = AssetManager::CreateTexture(RTName,BlurResolution.x,BlurResolution.y,
 															DXGI_FORMAT_R16G16B16A16_FLOAT,
 															D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
-			if (nullptr == T_BloomPostProcess[i]->GetTexture())
-			{
-				int a =0 ;
-			}
+			
 			MultiRenderTargets[MRTIndex] = std::make_shared<FMultiRenderTarget>();
 			MultiRenderTargets[MRTIndex]->Create(RTBlur, 1, DSBlur);
 			MultiRenderTargets[MRTIndex]->SetClearColor(ClearColor, 1);
@@ -476,7 +470,7 @@ void FDirectXDevice::SetBSState(EBlendStateType InBSType)
 	}
 }
 
-const std::shared_ptr<UTexture>& FDirectXDevice::GetHDRRenderTargetTexture()
+std::shared_ptr<UTexture> FDirectXDevice::GetHDRRenderTargetTexture()
 {
 #ifdef WITH_EDITOR
 	return GetMultiRenderTarget(EMultiRenderTargetType::Editor_HDR)->GetRenderTargetTexture(0);
@@ -598,6 +592,7 @@ void FDirectXDevice::CreateDepthStencilState()
 
 	// NO_TEST_NO_WRITE
 	Desc.DepthEnable = false;
+	Desc.StencilEnable = false;
 	HR(m_d3dDevice->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(EDepthStencilStateType:: NO_TEST_NO_WRITE)].GetAddressOf()));
 
 	// VOLUE_CHECK
@@ -635,6 +630,7 @@ void FDirectXDevice::CreateDepthStencilState()
 		Desc.StencilEnable = true;
 		Desc.StencilReadMask = 0xff;
 		Desc.StencilWriteMask = 0xff;
+
 		Desc.BackFace.StencilFunc = D3D11_COMPARISON_LESS; // 특정 전달값과 Stencil 값이 일치할 경우 통과
 		Desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_ZERO;// VolumeMesh 내부영역에 대해서 처리를 한 이후에 다시 Stencil 값을 0로 클리어
 		Desc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_ZERO;
@@ -642,7 +638,7 @@ void FDirectXDevice::CreateDepthStencilState()
 
 		Desc.FrontFace = Desc.BackFace;
 
-		GDirectXDevice->GetDevice()->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(EDepthStencilStateType::STENCIL_EQUAL)].GetAddressOf());
+		GDirectXDevice->GetDevice()->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(EDepthStencilStateType::VOLUME_STENCIL_EQUAL)].GetAddressOf());
 	}
 
 	// 흑백처리 등에서 사용할 SET_STENCIL
@@ -655,18 +651,42 @@ void FDirectXDevice::CreateDepthStencilState()
 
 		// 스텐실
 		DSDesc.StencilEnable = TRUE;
-		DSDesc.StencilReadMask = 0xFF;
-		DSDesc.StencilWriteMask = 0xFF;
+		DSDesc.StencilReadMask = 0xff;
+		DSDesc.StencilWriteMask = 0xff;
 
 		// 스텐실 설정 (성공 시 값 대체)
-		DSDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-		DSDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
-		DSDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
 		DSDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+		DSDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
+		DSDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+		
+		DSDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
 
 		DSDesc.BackFace = DSDesc.FrontFace;
 
-		GDirectXDevice->GetDevice()->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(EDepthStencilStateType::SET_STENCIL)].GetAddressOf());
+		GDirectXDevice->GetDevice()->CreateDepthStencilState(&DSDesc, m_DSState[static_cast<UINT>(EDepthStencilStateType::SET_STENCIL)].GetAddressOf());
+	}
+
+	// Monochrome 을 적용하는 포스트 프로세스에서 사용할 DSS,
+	// 스텐실 값이 동일한 픽셀만 렌더링을 진행
+	{
+		D3D11_DEPTH_STENCIL_DESC DSDesc = {};
+		// 뎁스
+		DSDesc.DepthEnable = true;
+		DSDesc.DepthFunc = D3D11_COMPARISON_ALWAYS;
+
+		// 스텐실
+		DSDesc.StencilEnable = TRUE;
+		DSDesc.StencilReadMask = 0xff;
+		DSDesc.StencilWriteMask = 0xff;
+
+		DSDesc.BackFace.StencilFunc = D3D11_COMPARISON_EQUAL; // 스텐실 값이 StencilRef와 같을 때만 통과
+		DSDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP; // 포스트 프로세스에서는 값 변경하지 않음
+		DSDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+		DSDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+
+		DSDesc.FrontFace = DSDesc.BackFace;
+
+		GDirectXDevice->GetDevice()->CreateDepthStencilState(&DSDesc, m_DSState[static_cast<UINT>(EDepthStencilStateType::MYMono_STENCIL_EQUAL)].GetAddressOf());
 	}
 }
 
@@ -727,11 +747,11 @@ void FDirectXDevice::InitSamplerState()
 #ifdef WITH_EDITOR
 void FDirectXDevice::CreateEditorMRT()
 {
-	std::shared_ptr<UTexture> RTTex = AssetManager::CreateTexture("EditorRenderTexture",(UINT)EditorViewportSize.x,(UINT)EditorViewportSize.y,DXGI_FORMAT_B8G8R8A8_UNORM,
+	std::shared_ptr<UTexture> RTTex = AssetManager::CreateTexture("EditorRenderTexture",EditorViewportSize.x,EditorViewportSize.y,DXGI_FORMAT_B8G8R8A8_UNORM,
 	D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
 
 	// 2. DepthStencilTexture 생성
-	std::shared_ptr<UTexture> pDSTex = AssetManager::CreateTexture("EditorDepthStencilTexture", (UINT)EditorViewportSize.x, (UINT)EditorViewportSize.y
+	std::shared_ptr<UTexture> pDSTex = AssetManager::CreateTexture("EditorDepthStencilTexture", EditorViewportSize.x, EditorViewportSize.y
 		, DXGI_FORMAT_D24_UNORM_S8_UINT
 		, D3D11_BIND_DEPTH_STENCIL
 		, D3D11_USAGE_DEFAULT);
@@ -744,11 +764,11 @@ void FDirectXDevice::CreateEditorMRT()
 	MultiRenderTargets[(UINT)EMultiRenderTargetType::Editor_Main]->SetViewport(D3D11_VIEWPORT{0,0,EditorViewportSize.x,EditorViewportSize.y,0.0f,1.0f});
 
 
-	std::shared_ptr<UTexture> RTTex_HDR = AssetManager::CreateTexture("ERT_HDR",(UINT)EditorViewportSize.x,(UINT)EditorViewportSize.y,DXGI_FORMAT_R16G16B16A16_FLOAT,
+	std::shared_ptr<UTexture> RTTex_HDR = AssetManager::CreateTexture("ERT_HDR",EditorViewportSize.x,EditorViewportSize.y,DXGI_FORMAT_R16G16B16A16_FLOAT,
 		D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
 
 	// 2. DepthStencilTexture 생성
-	std::shared_ptr<UTexture> pDSTex_HDR = AssetManager::CreateTexture("EDST_HDR", (UINT)EditorViewportSize.x, (UINT)EditorViewportSize.y
+	std::shared_ptr<UTexture> pDSTex_HDR = AssetManager::CreateTexture("EDST_HDR", EditorViewportSize.x, EditorViewportSize.y
 		, DXGI_FORMAT_D24_UNORM_S8_UINT
 		, D3D11_BIND_DEPTH_STENCIL
 		, D3D11_USAGE_DEFAULT);
@@ -758,7 +778,7 @@ void FDirectXDevice::CreateEditorMRT()
 	MultiRenderTargets[(UINT)EMultiRenderTargetType::Editor_HDR]->SetClearColor(&ClearColor, 1);
 	MultiRenderTargets[(UINT)EMultiRenderTargetType::Editor_HDR]->SetViewport(D3D11_VIEWPORT{0,0,EditorViewportSize.x,EditorViewportSize.y,0.0f,1.0f});
 
-	T_PostProcess = AssetManager::CreateTexture("PP_HDR",(UINT)EditorViewportSize.x,(UINT)EditorViewportSize.y,DXGI_FORMAT_R16G16B16A16_FLOAT,
+	T_PostProcess = AssetManager::CreateTexture("PP_HDR",EditorViewportSize.x,EditorViewportSize.y,DXGI_FORMAT_R16G16B16A16_FLOAT,
 		D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
 }
 #endif

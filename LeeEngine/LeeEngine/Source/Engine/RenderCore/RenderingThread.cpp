@@ -3,8 +3,6 @@
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
 #include "CoreMinimal.h"
-
-#include "EditorScene.h"
 #include "renderingthread.h"
 #include "Engine/Physics/UShapeComponent.h"
 #include "Engine/SceneProxy/FNiagaraSceneProxy.h"
@@ -15,11 +13,81 @@
 
 std::shared_ptr<FScene> FRenderCommandExecutor::CurrentSceneData = nullptr;
 
+void FRenderCommandPipe::Enqueue(std::function<void(std::shared_ptr<class FScene>&)>& CommandLambda)
+{
+	// 다중 생성 기반 Queue
+	std::shared_ptr<FRenderTask> NewNode = std::make_shared<FRenderTask>();
+	NewNode->CommandLambda = CommandLambda;
+
+	GetRenderCommandPipe().push(NewNode);
+}
+
+bool FRenderCommandPipe::Dequeue(std::shared_ptr<FRenderTask>& Result)
+{
+	if (GetRenderCommandPipe().try_pop(Result))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+FPostProcessRenderData::FPostProcessRenderData(const FPostProcessRenderData& Other)
+{
+	Priority = Other.Priority;
+	Name =  Other.Name;
+	MaterialInterface = Other.MaterialInterface;
+	OutRenderType = Other.OutRenderType;
+	FuncBeforeRendering = Other.FuncBeforeRendering;
+	SetSRVNames(Other.SRVNames);
+	bClearRenderTexture = Other.bClearRenderTexture;
+	bClearDepthStencilTexture = Other.bClearDepthStencilTexture;
+}
+
+FPostProcessRenderData& FPostProcessRenderData::operator=(const FPostProcessRenderData& Other)
+{
+	Priority = Other.Priority;
+	Name =  Other.Name;
+	MaterialInterface = Other.MaterialInterface;
+	OutRenderType = Other.OutRenderType;
+	FuncBeforeRendering = Other.FuncBeforeRendering;
+	SetSRVNames(Other.SRVNames);
+	bClearRenderTexture = Other.bClearRenderTexture;
+	bClearDepthStencilTexture = Other.bClearDepthStencilTexture;
+	return *this;
+}
+
+void FPostProcessRenderData::SetFuncBeforeRendering(const std::vector<std::function<void()>>& NewFuncs)
+{
+	FuncBeforeRendering.clear();
+	FuncBeforeRendering = NewFuncs;
+}
+
+void FPostProcessRenderData::SetSRVNames(const std::vector<std::string>& NewSRVs)
+{
+	SRVNames.clear();
+	SRVNames =  NewSRVs;
+	SRVTextures.clear();
+	SRVTextures.resize(SRVNames.size());
+	for (size_t i = 0; i < SRVNames.size(); ++i)
+	{
+		SRVTextures[i] = UTexture::GetTextureCache(SRVNames[i]);
+	}
+}
+
+bool FPostProcessRenderData::operator<(const FPostProcessRenderData& Other) const
+{
+	if (Priority != Other.Priority)
+	{
+		return Priority < Other.Priority;
+	}
+	return Name < Other.Name;
+}
+
 FScene::FScene()
 {
 	DeferredMergeRenderData.MaterialInterface = UMaterial::GetMaterialCache("M_DeferredMergeRect");
 	DeferredMergeRenderData.MaterialInterface->SetRasterizerType(ERasterizerType::RT_TwoSided);
-	DeferredMergeRenderData.MaterialInterface->SetDepthStencilState(EDepthStencilStateType::NO_TEST_NO_WRITE);
 	DeferredMergeRenderData.MaterialInterface->SetBlendStateType(EBlendStateType::BST_Default);
 	std::static_pointer_cast<UMaterial>(DeferredMergeRenderData.MaterialInterface)->SetTexture(0, UTexture::GetTextureCache("DiffuseTargetTex")); 
 	
@@ -45,6 +113,23 @@ FScene::FScene()
 	WidgetStaticMeshSceneProxy = DeferredMergeRenderData.SceneProxy;
 	// 동일한 메쉬를 사용하므로 재사용
 	PostProcessStaticMeshSceneProxy = WidgetStaticMeshSceneProxy;
+}
+
+void FScene::ShutdownImgui()
+{
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
+}
+
+void FScene::ClearScene_GameThread()
+{
+	ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData) { SceneData = nullptr; })
+}
+
+void FScene::BeginRenderFrame_GameThread(UINT GameThreadFrameCount)
+{
+	ENQUEUE_RENDER_COMMAND([GameThreadFrameCount](std::shared_ptr<FScene>& SceneData) { BeginRenderFrame_RenderThread(SceneData, GameThreadFrameCount); })
 }
 
 void FScene::BeginRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData, UINT GameThreadFrameCount)
@@ -249,6 +334,55 @@ void FScene::BeginRenderFrame()
 	PendingNewTransformProxies.clear();
 }
 
+void FScene::EndRenderFrame_GameThread()
+{
+	ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData) { EndRenderFrame_RenderThread(SceneData); })
+}
+
+void FScene::AddPrimitive_GameThread(UINT PrimitiveID, std::shared_ptr<FPrimitiveSceneProxy>& SceneProxy, FTransform InitTransform)
+{
+	if (nullptr == SceneProxy)
+	{
+		return;
+	}
+	auto Lambda = [PrimitiveID, SceneProxy, InitTransform](std::shared_ptr<FScene>& SceneData)
+		{
+			SceneProxy->SetSceneProxyWorldTransform(InitTransform);
+			AddPrimitive_RenderThread(SceneData, PrimitiveID, SceneProxy);
+		};
+	ENQUEUE_RENDER_COMMAND(Lambda)
+}
+
+void FScene::AddPrimitive_RenderThread(const std::shared_ptr<FScene>& SceneData, UINT PrimitiveID, const std::shared_ptr<FPrimitiveSceneProxy>& NewProxy)
+{
+	if (!SceneData)
+	{
+		/*MY_LOG("SceneDataError", EDebugLogLevel::DLL_Error, "No SceneData");*/
+		return;
+	}
+	SceneData->PendingAddSceneProxies[PrimitiveID].emplace_back(NewProxy);
+}
+
+void FScene::KillPrimitive_GameThread(UINT PrimitiveID)
+{
+	ENQUEUE_RENDER_COMMAND([PrimitiveID](std::shared_ptr<FScene>& SceneData)
+		{
+			SceneData->PendingKillPrimitiveIDs.emplace_back(PrimitiveID);
+		});
+}
+
+void FScene::NewTransformToPrimitive_GameThread(UINT PrimitiveID, const FTransform& NewTransform)
+{
+	if (PrimitiveID > 0)
+	{
+		auto Lambda = [PrimitiveID, NewTransform](std::shared_ptr<FScene>& SceneData)
+			{
+				SceneData->PendingNewTransformProxies[PrimitiveID] = NewTransform;
+			};
+		ENQUEUE_RENDER_COMMAND(Lambda)
+	}
+}
+
 
 void FScene::UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std::vector<XMMATRIX>& FinalMatrices)
 {
@@ -388,6 +522,20 @@ void FScene::UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std:
 	}
 }
 
+void FScene::DrawScene_GameThread()
+{
+	ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData) { FScene::DrawScene_RenderThread(SceneData); })
+}
+
+void FScene::SetMaterialScalarParam_GameThread(UINT PrimitiveID, UINT MeshIndex, const std::string& ParamName, float Value)
+{
+	auto Lambda = [PrimitiveID,MeshIndex,ParamName,Value](std::shared_ptr<FScene>& SceneData)
+		{
+			SceneData->SetMaterialScalarParam_RenderThread(PrimitiveID, MeshIndex, ParamName, Value);
+		};
+	ENQUEUE_RENDER_COMMAND(Lambda);
+}
+
 void FScene::SetMaterialScalarParam_RenderThread(UINT PrimitiveID, UINT MeshIndex, const std::string& ParamName, float Value)
 {
 	// Opaque
@@ -464,6 +612,15 @@ void FScene::SetMaterialScalarParam_RenderThread(UINT PrimitiveID, UINT MeshInde
 			}
 		}
 	}
+}
+
+void FScene::SetTextureParam_GameThread(UINT PrimitiveID, UINT MeshIndex, UINT TextureSlot, std::shared_ptr<UTexture> Texture)
+{
+	auto Lambda = [PrimitiveID,MeshIndex,TextureSlot,Texture](std::shared_ptr<FScene>& SceneData)
+		{
+			SceneData->SetTextureParam_RenderThread(PrimitiveID, MeshIndex, TextureSlot, Texture);
+		};
+	ENQUEUE_RENDER_COMMAND(Lambda);
 }
 
 void FScene::SetTextureParam_RenderThread(UINT PrimitiveID, UINT MeshIndex, UINT TextureSlot, std::shared_ptr<UTexture> Texture)
@@ -601,10 +758,33 @@ static void DrawSceneProxies(const std::shared_ptr<FScene>& SceneData, const std
 				// 머테리얼 파라미터 설정 (Material::Binding 내에서 기본 디폴트값이 매핑되며,
 				// MaterialInstance에서 오버라이드 한 파라미터만 세팅됨
 				SceneProxy.MaterialInterface->BindingMaterialInstanceUserParam();
+
+				
+
+				SceneProxy.SceneProxy->SetDSStateWithMonochrome();
 				SceneProxy.SceneProxy->Draw();	
 			}
 			
 		}
+	}
+}
+
+static void ClearMRTsRTDSTAndSRVBindings()
+{
+	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain_Main)->ClearRenderTarget();	
+	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain_Main)->ClearDepthStencilTarget();
+
+	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain_HDR)->ClearRenderTarget();
+	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain_HDR)->ClearDepthStencilTarget();
+
+	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->ClearRenderTarget();
+	GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->ClearDepthStencilTarget();
+
+	const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& DC =  GDirectXDevice->GetDeviceContext();
+	for (int i =0 ; i < 12; ++i)
+	{
+		ID3D11ShaderResourceView* NullSRV = nullptr;
+		DC->PSSetShaderResources(i, 1, &NullSRV);
 	}
 }
 
@@ -662,7 +842,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 #else
 					fcb.Resolution = GDirectXDevice->GetResolution();
 #endif
-					fcb.LightCount = SceneData->CurrentFrameLightInfo.size();
+					fcb.LightCount = static_cast<int>(SceneData->CurrentFrameLightInfo.size());
 					GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_PerFrame, &fcb, sizeof(fcb));
 				}
 
@@ -689,18 +869,9 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				}
 			}
 
-			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain_Main)->ClearRenderTarget();	
-			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain_Main)->ClearDepthStencilTarget();
+			ClearMRTsRTDSTAndSRVBindings();
 
-			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain_HDR)->ClearRenderTarget();
-			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain_HDR)->ClearDepthStencilTarget();
-
-			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->ClearRenderTarget();
-			GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->ClearDepthStencilTarget();
-
-			GDirectXDevice->SetDSState(EDepthStencilStateType::LESS);
 			SceneData->SetRSViewport();
-
 			// Deferred 렌더링
 			{
 				GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->OMSet();
@@ -721,14 +892,12 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 
 				// Deferred 라이팅 렌더링
 				GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Light)->ClearRenderTarget();
-
-				const std::shared_ptr<UTexture>& PositionTexture = UTexture::GetTextureCache("PositionTargetTex");
+				const std::shared_ptr<UTexture>& PositionTexture =  GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->GetRenderTargetTexture(2);;
+				const std::shared_ptr<UTexture>& NormalTexture =  GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->GetRenderTargetTexture(1);;
+				const std::shared_ptr<UTexture>& PBRTexture =  GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->GetRenderTargetTexture(4);;
 				DeviceContext->PSSetShaderResources(0,1, PositionTexture->GetSRV().GetAddressOf());
-				const std::shared_ptr<UTexture>& NormalTexture = UTexture::GetTextureCache("NormalTargetTex");
 				DeviceContext->PSSetShaderResources(1,1, NormalTexture->GetSRV().GetAddressOf());
-
 				// PBR을 위해서 렌더 텍스쳐를 추가로 바인딩
-				const std::shared_ptr<UTexture>& PBRTexture = UTexture::GetTextureCache("PBRTargetTex");
 				DeviceContext->PSSetShaderResources(3,1, PBRTexture->GetSRV().GetAddressOf());
 
 
@@ -770,7 +939,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				SceneData->SetDrawScenePipeline_HDR_MiddleStep();
 				SceneData->DeferredMergeRenderData.MaterialInterface->Binding();
 				
-				const std::shared_ptr<UTexture>& ColorTexture =  GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->GetRenderTargetTexture(0);;
+				const std::shared_ptr<UTexture>& ColorTexture =  GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->GetRenderTargetTexture(0);
 				DeviceContext->PSSetShaderResources(0,1,ColorTexture->GetSRV().GetAddressOf());
 				const std::shared_ptr<UTexture>& DiffuseTexture = UTexture::GetTextureCache("DiffuseTargetTex");
 				DeviceContext->PSSetShaderResources(1,1,DiffuseTexture->GetSRV().GetAddressOf());
@@ -789,7 +958,6 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 
 			// 포워드 렌더링 진행
 			{
-				GDirectXDevice->SetDSState(EDepthStencilStateType::LESS);
 				DrawSceneProxies(SceneData, SceneData->OpaqueSceneProxyRenderData);
 				GDirectXDevice->SetBSState(EBlendStateType::BST_AlphaBlend);
 				DrawSceneProxies(SceneData, SceneData->MaskedSceneProxyRenderData);
@@ -890,8 +1058,14 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				DeviceContext->PSSetShaderResources(0,1, PPTexture->GetSRV().GetAddressOf());
 
 				// 해당 포스트 프로세스에 맞는 렌더타겟을 바인딩 하고,
-				GDirectXDevice->GetMultiRenderTarget(Data.OutRenderType)->ClearRenderTarget();
-				GDirectXDevice->GetMultiRenderTarget(Data.OutRenderType)->ClearDepthStencilTarget();	
+				if (Data.GetClearRenderTexture())
+				{
+					GDirectXDevice->GetMultiRenderTarget(Data.OutRenderType)->ClearRenderTarget();
+				}
+				if (Data.GetClearDepthStencilTexture())
+				{
+					GDirectXDevice->GetMultiRenderTarget(Data.OutRenderType)->ClearDepthStencilTarget();
+				}
 				GDirectXDevice->GetMultiRenderTarget(Data.OutRenderType)->OMSet();
 
 				// 머테리얼 바인딩 후에
@@ -907,11 +1081,11 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 						MY_LOG("Warning", EDebugLogLevel::DLL_Warning, 
 								"Wrong texture name applied: " + std::to_string(Data.Priority) + Data.Name);
 						ID3D11ShaderResourceView* NullSRV = nullptr;
-						DeviceContext->PSSetShaderResources(1+i, 1, &NullSRV);
+						DeviceContext->PSSetShaderResources(static_cast<UINT>(1+i), 1, &NullSRV);
 					}
 					else
 					{
-						DeviceContext->PSSetShaderResources(1+i, 1, SRVTexture->GetSRV().GetAddressOf());
+						DeviceContext->PSSetShaderResources(static_cast<UINT>(1+i), 1, SRVTexture->GetSRV().GetAddressOf());
 					}
 				}
 
@@ -1010,6 +1184,22 @@ DirectX::XMMATRIX FScene::GetProjectionMatrix()
 	return ViewMatrices.GetProjectionMatrix();
 }
 
+void FScene::UpdateViewMatrix_GameThread(const FViewMatrices& NewViewMatrices)
+{
+	ENQUEUE_RENDER_COMMAND([NewViewMatrices](std::shared_ptr<FScene>& SceneData)
+		{
+			SceneData->UpdateViewMatrix_RenderThread(NewViewMatrices);
+		})
+}
+
+void FScene::SetSkyBoxTexture_GameThread(const std::string& NewEnvironmentTextureName)
+{
+	ENQUEUE_RENDER_COMMAND([NewEnvironmentTextureName](std::shared_ptr<FScene>& SceneData)
+		{
+			SceneData->SetSkyBoxTexture_RenderThread(NewEnvironmentTextureName);
+		})
+}
+
 void FScene::SetSkyBoxTexture_RenderThread(const std::string& NewEnvironmentTextureName)
 {
 	if (GDirectXDevice)
@@ -1023,6 +1213,21 @@ void FScene::SetSkyBoxTexture_RenderThread(const std::string& NewEnvironmentText
 		
 	}
 }
+
+#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
+void FScene::DrawDebugData_GameThread(const FDebugRenderData& RenderData)
+{
+	ENQUEUE_RENDER_COMMAND([RenderData](std::shared_ptr<FScene>& Scene)
+		{
+			Scene->DrawDebugData_RenderThread(RenderData);
+		})
+}
+void FScene::DrawDebugData_RenderThread(const FDebugRenderData& InDebugRenderData)
+{
+	DebugRenderData.emplace_back(InDebugRenderData);
+}
+#endif
+
 
 void FScene::SetFrameLightInfo(const std::vector<FLightInfo>& LightInfo)
 {
@@ -1046,8 +1251,92 @@ void FScene::SetFrameWidgetRenderData(const std::vector<FWidgetRenderData>& Widg
 	std::ranges::copy(WidgetRenderData, CurrentFrameWidgetRenderData.begin());
 }
 
+void FScene::AddPostProcess_GameThread(const FPostProcessRenderData& NewPostProcess)
+{
+	ENQUEUE_RENDER_COMMAND([NewPostProcess](std::shared_ptr<FScene>& Scene)
+		{
+			Scene->AddPostProcess_RenderThread(NewPostProcess);
+		})
+}
+
+void FScene::RemovePostProcess_GameThread(UINT Priority, const std::string& Name)
+{
+	std::function<void(std::shared_ptr<FScene>&)> Func = [Priority, Name](std::shared_ptr<FScene>& Scene)
+		{
+			Scene->RemovePostProcess_RenderThread(Priority, Name);
+		};
+	FRenderCommandPipe::Enqueue(Func);
+}
+
+void FScene::SetComponentMonochrome_GameThread(UINT PrimitiveID, bool NewMonochrome)
+{
+	std::function<void(std::shared_ptr<FScene>&)> Func = [PrimitiveID, NewMonochrome](std::shared_ptr<FScene>& Scene)
+		{
+			Scene->SetComponentMonochrome_RenderThread(PrimitiveID, NewMonochrome);
+		};
+	FRenderCommandPipe::Enqueue(Func);
+}
+
+static void SetComponentMonochrome(const std::unordered_map<UINT, std::vector<FPrimitiveRenderData>>& Proxies, UINT PrimitiveID, bool NewMonochrome)
+{
+	for (auto Iter = Proxies.begin(); Iter != Proxies.end(); ++Iter)
+	{
+		for (auto PrimitiveIter = Iter->second.begin(); PrimitiveIter != Iter->second.end();)
+		{
+			PrimitiveIter = std::find_if(PrimitiveIter, Iter->second.end(), [PrimitiveID](const FPrimitiveRenderData& A) { return A.PrimitiveID == PrimitiveID; });
+			if (PrimitiveIter != Iter->second.end())
+			{
+				PrimitiveIter->SceneProxy->SetIsMonochrome(NewMonochrome);
+				++PrimitiveIter;
+			}
+		}
+	}
+}
+void FScene::SetComponentMonochrome_RenderThread(UINT PrimitiveID, bool NewMonochrome)
+{
+	SetComponentMonochrome(OpaqueSceneProxyRenderData, PrimitiveID, NewMonochrome);
+	SetComponentMonochrome(MaskedSceneProxyRenderData, PrimitiveID, NewMonochrome);
+	SetComponentMonochrome(TranslucentSceneProxyRenderData, PrimitiveID, NewMonochrome);
+	SetComponentMonochrome(DeferredSceneProxyRenderData, PrimitiveID, NewMonochrome);
+}
+
+
+void FScene::RemovePostProcess_RenderThread(UINT Priority, const std::string& Name)
+{
+	auto Iter = 
+		std::ranges::find_if(PostProcessData, 
+			[Priority, &Name](const FPostProcessRenderData& Data)
+			{
+				return Data.Priority == Priority && Data.Name == Name;
+			});
+	if (Iter != PostProcessData.end())
+	{
+		PostProcessData.erase(Iter);
+	}
+}
 
 void FScene::EndRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData)
 {
 	SceneData->bIsFrameStart = false;
+}
+
+void FRenderCommandExecutor::Execute()
+{
+	std::shared_ptr<FRenderTask> Task;
+	while (true)
+	{
+		if (bIsGameKill)
+		{
+			return;
+		}
+
+		if (FRenderCommandPipe::Dequeue(Task))
+		{
+			Task->CommandLambda(CurrentSceneData);
+		}
+		else
+		{
+			std::this_thread::yield();
+		}
+	}
 }

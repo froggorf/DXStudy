@@ -1,9 +1,7 @@
-﻿#include "CoreMinimal.h"
+#include "CoreMinimal.h"
 #include "UBlendSpace.h"
-
 #include "Engine/AssetManager/AssetManager.h"
 #include "Engine/Misc/QueuedThreadPool.h"
-#include "Engine/RenderCore/EditorScene.h"
 XMFLOAT2 UBlendSpace::Gap = {5.0f, 5.0f};
 // ========================================================================
 bool operator==(const XMFLOAT2& A, const XMFLOAT2& B)

@@ -24,7 +24,7 @@ class ATestCube : public AActor
 	void OnComponentBeginOverlapEvent(UShapeComponent* OverlappedComponent, AActor* OtherActor, UShapeComponent* OtherComp );
 
 	void ShowDebug();
-	void DoRecast();
+	//void DoRecast();
 
 	static rcPolyMesh* MyPolyMesh;
 	static rcPolyMeshDetail* MyPolyDetail;
@@ -63,5 +63,5 @@ private:
 	std::shared_ptr<UConvexComponent> RecastConvexMesh;
 
 
-	void CreateDetour();
+	//void CreateDetour();
 };

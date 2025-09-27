@@ -51,5 +51,5 @@ void FMultiRenderTarget::ClearDepthStencilTarget()
 	if (nullptr == DepthStencilTexture)
 		return;
 
-	GDirectXDevice->GetDeviceContext()->ClearDepthStencilView(DepthStencilTexture->GetDSV().Get(), D3D11_CLEAR_DEPTH, 1.f, 0);
+	GDirectXDevice->GetDeviceContext()->ClearDepthStencilView(DepthStencilTexture->GetDSV().Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
 }

@@ -8,6 +8,9 @@ ATestCube2::ATestCube2()
 {
 	if (!GDirectXDevice) return;
 
+	PBRTestComp = std::make_shared<UPBRTestComponent>();
+	PBRTestComp->SetupAttachment(GetRootComponent());
+	UPBRTestComponent::Instance = PBRTestComp.get();
 
 	{
 		Ground= std::make_shared<UStaticMeshComponent>();
@@ -16,7 +19,7 @@ ATestCube2::ATestCube2()
 			{
 				Ground->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
 			});
-		Ground->SetRelativeLocation({0,0,0});
+		Ground->SetRelativeLocation({0,-10,0});
 		Ground->SetRelativeScale3D({5000,20,5000});
 	}
 
@@ -27,7 +30,7 @@ ATestCube2::ATestCube2()
 			{
 				SM_Chair->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
 			});
-		SM_Chair->SetRelativeLocation({-300,0,0});
+		SM_Chair->SetRelativeLocation({-300,10,0});
 	}
 
 	{
@@ -37,11 +40,13 @@ ATestCube2::ATestCube2()
 			{
 				SM_Couch->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
 			});
-		SM_Couch->SetRelativeLocation({-300,0,-250});
+		SM_Couch->SetRelativeLocation({-300,10,-250});
+		SM_Couch->SetIsMonochromeObject(false);
 	}
 
 
-	
+	UPBRTestComponent::Instance->TargetComp[0] = SM_Chair;
+	UPBRTestComponent::Instance->TargetComp[1] = SM_Couch;
 
 	
 }
@@ -50,13 +55,13 @@ void ATestCube2::Register()
 {
 	AActor::Register();
 
-	
-	
 }
 
 void ATestCube2::BeginPlay()
 {
 	AActor::BeginPlay();
+
+	PBRTestComp->ObjectSelect(0);
 
 }
 

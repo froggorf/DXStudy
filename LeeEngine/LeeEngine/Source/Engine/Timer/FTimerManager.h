@@ -37,54 +37,11 @@ struct FTimerData
 class FTimerManager
 {
 public:
-	void Tick(float DeltaSeconds)
-	{
-		std::vector<FTimerHandle> RemoveHandles;
-		for (auto& Timer : Timers)
-		{
-			const FTimerHandle& TimerHandle = Timer.first;
-			FTimerData& TimerData = Timer.second;
-			TimerData.CurTime -= DeltaSeconds;
-			if (TimerData.CurTime > 0.0f)
-			{
-				continue;
-			}
-			
-			TimerData.Delegate.Broadcast();
-			if (TimerData.bRepeat)
-			{
-				TimerData.CurTime += TimerData.RepeatTime;
-			}
-			else
-			{
-				RemoveHandles.emplace_back(TimerHandle);
-			}
-		}
+	void Tick(float DeltaSeconds);
 
-		for (const FTimerHandle& RemoveHandle : RemoveHandles)
-		{
-			ClearTimer(RemoveHandle);
-		}
-	}
+	void SetTimer(const FTimerHandle& TimerHandle, const Delegate<>& TimerDelegate, float DelayTime, bool bRepeat = false, float RepeatTime = 1.0f);
 
-	void SetTimer(const FTimerHandle& TimerHandle, const Delegate<>& TimerDelegate, float DelayTime, bool bRepeat = false, float RepeatTime = 1.0f)
-	{
-		FTimerData TimerData;
-		TimerData.Delegate = TimerDelegate;
-		TimerData.CurTime = DelayTime;
-		TimerData.bRepeat = bRepeat;
-		TimerData.RepeatTime = RepeatTime;
-		Timers.emplace(TimerHandle, TimerData);
-	}
-
-	void ClearTimer(const FTimerHandle& DeleteTimerHandle)
-	{
-		auto DeleteIter = Timers.find(DeleteTimerHandle);
-		if (DeleteIter != Timers.end())
-		{
-			Timers.erase(DeleteIter);
-		}
-	}
+	void ClearTimer(const FTimerHandle& DeleteTimerHandle);
 protected:
 private:
 	std::map<FTimerHandle, FTimerData> Timers;

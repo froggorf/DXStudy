@@ -34,12 +34,7 @@ class USceneComponent : public UActorComponent, public std::enable_shared_from_t
 	void SetupAttachment(const std::shared_ptr<USceneComponent>& InParent, std::string_view InSocketName = "");
 
 	// Relative Transform 과 부모 변환행렬을 이용해 월드 Transform을 만들어내는 함수
-	void UpdateComponentToWorld() final
-	{
-		UpdateComponentToWorldWithParent(GetAttachParent(), GetAttachSocketName());
-
-		Make_Transform_Dirty()
-	}
+	void UpdateComponentToWorld() final;
 
 	XMFLOAT3 GetWorldLocation() const
 	{

@@ -24,9 +24,7 @@ class UAnimInstance : public UObject
 	MY_GENERATE_BODY(UAnimInstance)
 	UAnimInstance();
 
-	~UAnimInstance() override
-	{
-	};
+	~UAnimInstance() override = default;
 
 	void BeginPlay() override;
 

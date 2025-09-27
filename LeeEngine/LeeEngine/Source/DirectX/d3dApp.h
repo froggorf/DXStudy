@@ -1,11 +1,10 @@
-﻿// d3dApp.h by Frank Luna (C) 2011 All Rights Reserved.
+// d3dApp.h by Frank Luna (C) 2011 All Rights Reserved.
 // 25.01.13 루나책 코드를 이해하며 D3DX11를 D3D11로 옮긴 코드
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameTimer.h"
-#include "DebuggingSRV.h"
 
 class D3DApp
 {
@@ -21,11 +20,8 @@ public:
 
 	// 각 프로그램에 필요한 기능들 오버라이드
 	virtual bool Init();
-	//bool InitImGui();
 	virtual void OnResize();
 	virtual void UpdateScene(float dt) = 0;
-	//virtual void DrawImGui();
-	virtual void DrawScene() = 0;
 
 #ifdef WITH_EDITOR
 	void DrawTitleBar();

@@ -43,3 +43,19 @@ void UObject::SaveDataFromAssetToFile(nlohmann::json& Json)
 	Json["Name"]  = GetName();
 	Json["Class"] = GetClass();
 }
+
+std::unordered_map<std::string, std::unique_ptr<UObject>>& UObject::GetCDOMap()
+{
+	static std::unordered_map<std::string, std::unique_ptr<UObject>> ClassDefaultObjectMap;
+	return ClassDefaultObjectMap;
+}
+
+void UObject::AddClassDefaultObject(const std::string& ClassName, std::unique_ptr<UObject>&& DefaultObject)
+{
+	GetCDOMap()[ClassName] = std::move(DefaultObject);
+}
+
+const UObject* UObject::GetDefaultObject(const std::string& ClassName)
+{
+	return GetCDOMap()[ClassName].get();
+}

@@ -1,12 +1,9 @@
 #include "CoreMinimal.h"
 #ifdef WITH_EDITOR
 #include "EditorClient.h"
-
 #include "ImguiDebugConsole.h"
 #include "ImguiEditorMainPanel.h"
 #include "ImguiViewport.h"
-#include "Engine/RenderCore/EditorScene.h"
-#include "Engine/RenderCore/RenderingThread.h"
 
 FEditorClient::FEditorClient(FScene* SceneData)
 {

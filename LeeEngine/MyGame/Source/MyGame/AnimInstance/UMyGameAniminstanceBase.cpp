@@ -59,7 +59,6 @@ void UMyGameAnimInstanceBase::UpdateAnimation(float dt)
 
 		MoveVel.y = 0.0f;
 		float CurSpeed = XMVectorGetX(XMVector3Length(XMLoadFloat3(&MoveVel)));
-		MY_LOG("MoveVel", EDebugLogLevel::DLL_Warning, std::to_string(CurSpeed));
 		BS_Locomotion->GetAnimationBoneMatrices(XMFLOAT2{0.0f, CurSpeed }, CurrentTime, FinalBoneMatrices, FinalNotifies);      
 	}
 

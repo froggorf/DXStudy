@@ -6,7 +6,6 @@
 #pragma once
 
 #include "ImguiPanel.h"
-#include "Engine/MyEngineUtils.h"
 #include "Engine/SceneView.h"
 #include "Engine/RenderCore/EditorScene.h"
 
@@ -31,13 +30,9 @@ enum class ELevelViewportCommandType
 
 struct FImguiLevelViewportCommandData : FImguiPanelCommandData
 {
-	FImguiLevelViewportCommandData()
-	{
-	};
+	FImguiLevelViewportCommandData() = default;
 
-	~FImguiLevelViewportCommandData() override
-	{
-	};
+	~FImguiLevelViewportCommandData() override = default;
 
 	ELevelViewportCommandType CommandType;
 	std::shared_ptr<AActor>   NewPendingAddActor;

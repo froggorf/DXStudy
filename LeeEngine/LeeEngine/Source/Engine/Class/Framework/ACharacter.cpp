@@ -5,6 +5,19 @@
 #include "Engine/World/UWorld.h"
 
 
+physx::PxQueryHitType::Enum MyQueryFilterCallback::preFilter(const physx::PxFilterData&, const physx::PxShape*, const physx::PxRigidActor* actor, physx::PxHitFlags&)
+{
+	if (actor->userData)
+	{
+		if (IgnoreActor == static_cast<UShapeComponent*>(actor->userData)->GetOwner())
+		{
+			return physx::PxQueryHitType::eNONE; // 충돌 무시
+		}	
+	}
+
+	return physx::PxQueryHitType::eBLOCK;
+}
+
 UCharacterMovementComponent::UCharacterMovementComponent()
 {
 	GravityScale = 12.5f;

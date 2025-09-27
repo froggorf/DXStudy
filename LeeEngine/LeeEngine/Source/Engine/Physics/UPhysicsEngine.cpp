@@ -2,7 +2,6 @@
 #include "UPhysicsEngine.h"
 
 #include "ULineComponent.h"
-#include "UShapeComponent.h"
 
 std::unique_ptr<UPhysicsEngine> gPhysicsEngine = nullptr;
 

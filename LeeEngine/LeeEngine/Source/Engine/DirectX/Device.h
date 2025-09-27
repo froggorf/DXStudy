@@ -53,10 +53,12 @@ enum class EDepthStencilStateType
 
 	// 라이팅 등 볼륨메쉬 체크용
 	VOLUME_CHECK,
-	STENCIL_EQUAL,
+	VOLUME_STENCIL_EQUAL,
+
 
 	// 흑백 처리 등에서 스텐실을 남기는 용도
 	SET_STENCIL,
+	MYMono_STENCIL_EQUAL,
 	COUNT
 };
 
@@ -140,7 +142,7 @@ public:
 	const std::shared_ptr<FMultiRenderTarget>& GetMultiRenderTarget(EMultiRenderTargetType	Type) { return MultiRenderTargets[(UINT)Type]; }
 	const std::shared_ptr<FMultiRenderTarget>& GetBloomMRT(UINT Index) { assert(Index < BloomCount); return MultiRenderTargets[static_cast<UINT>(EMultiRenderTargetType::Bloom_Blur_0) + Index];}
 	const std::shared_ptr<UTexture>& GetBloomPPTexture(UINT Index) { assert(Index < BloomCount); return T_BloomPostProcess[Index];}
-	const std::shared_ptr<UTexture>& GetHDRRenderTargetTexture();
+	std::shared_ptr<UTexture> GetHDRRenderTargetTexture();
 	std::shared_ptr<UTexture>& GetPostProcessTexture() {return T_PostProcess;};
 private:
 	ERasterizerType        CurrentRSType = ERasterizerType::RT_Count;

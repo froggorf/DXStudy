@@ -218,6 +218,11 @@ struct FBloomDataConstantBuffer
 	float BloomIntensity;
 	float Pad;
 };
+struct FMonochromeDataConstantBuffer
+{
+	XMFLOAT3 CenterPos;
+	float Distance;
+};
 
 struct ShadowLightMatrixConstantBuffer
 {

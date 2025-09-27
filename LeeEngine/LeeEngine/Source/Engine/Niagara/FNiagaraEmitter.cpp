@@ -1,7 +1,5 @@
 #include "CoreMinimal.h"
 #include "FNiagaraEmitter.h"
-#include "Engine/Mesh/UStaticMesh.h"
-#include "Engine/SceneProxy/FNiagaraSceneProxy.h"
 
 using namespace Microsoft::WRL;
 
@@ -179,6 +177,17 @@ void FNiagaraRendererProperty::LoadDataFromFile(const nlohmann::basic_json<>& Da
 		// 새로 머테리얼인스턴스를 생성하는 방식으로 인해 실패
 		// 따라서 RenderData 내에 데이터를 넣고, 렌더링 시 바인딩 하는 방향으로 진행
 		SetParticleTextures(Data["OverrideTex"]);
+	}
+}
+
+FNiagaraRendererBillboardSprites::FNiagaraRendererBillboardSprites()
+{
+	MaterialInterface = UMaterial::GetMaterialCache("MI_NiagaraBillboardSprite");
+	StaticMesh        = UStaticMesh::GetStaticMesh("SM_Point");
+	if (!StaticMesh)
+	{
+		AssetManager::ReadMyAsset(AssetManager::GetAssetNameAndAssetPathMap()["SM_Point"]);	
+		StaticMesh = UStaticMesh::GetStaticMesh("SM_Point");
 	}
 }
 

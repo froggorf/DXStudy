@@ -1,4 +1,4 @@
-﻿#include "CoreMinimal.h"
+#include "CoreMinimal.h"
 #include "APlayerCameraManager.h"
 
 static UINT PlayerCameraManagerID = 0;

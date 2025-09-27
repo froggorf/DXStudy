@@ -1,9 +1,7 @@
 // https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
 #include "CoreMinimal.h"
 #include "UAnimSequence.h"
-
 #include "Bone.h"
-#include "Engine/UEngine.h"
 #include "Engine/RenderCore/EditorScene.h"
 
 UAnimSequence::UAnimSequence(const UAnimSequence& Other)
@@ -30,6 +28,15 @@ Bone* UAnimSequence::FindBone(const std::string& name)
 	}
 
 	return &(*iter);
+}
+
+std::shared_ptr<UAnimSequence> UAnimSequence::GetAnimationAsset(const std::string& AnimationName)
+{
+	if (std::shared_ptr<UAnimationAsset> Asset = UAnimationAsset::GetAnimationAsset(AnimationName))
+	{
+		return std::dynamic_pointer_cast<UAnimSequence>(Asset);
+	}
+	return nullptr;
 }
 
 void UAnimSequence::GetBoneTransform(float CurrentAnimTime, std::vector<XMMATRIX>& FinalBoneMatrices, bool* bPlayRootMotion)
@@ -229,6 +236,12 @@ void UAnimSequence::TraverseTreeHierarchy(const AssimpNodeData* NodeData, int Pa
 	{
 		TraverseTreeHierarchy(&NodeData->children[ChildIndex], CurrentIndex);
 	}
+}
+
+std::map<std::string, std::vector<FPrecomputedBoneData>>& UAnimSequence::GetSkeletonBoneHierarchyMap()
+{
+	static std::map<std::string, std::vector<FPrecomputedBoneData>> SkeletonBoneHierarchyMap;
+	return SkeletonBoneHierarchyMap;
 }
 
 void UAnimSequence::PrecomputeAnimationData(const std::string& Name)

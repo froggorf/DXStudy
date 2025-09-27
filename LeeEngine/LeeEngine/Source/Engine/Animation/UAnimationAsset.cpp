@@ -1,8 +1,6 @@
-﻿#include "CoreMinimal.h"
+#include "CoreMinimal.h"
 #include "UAnimationAsset.h"
-
 #include "Engine/AssetManager/AssetManager.h"
-#include "Engine/RenderCore/EditorScene.h"
 
 std::shared_ptr<UAnimationAsset> UAnimationAsset::GetAnimationAsset(const std::string& AnimationAssetName)
 {

@@ -1,9 +1,7 @@
 #include "CoreMinimal.h"
 #include "ChildWidget.h"
 
-#include "Engine/UEngine.h"
 #include "Engine/EditorClient/Panel/ImguiViewport.h"
-#include "Engine/RenderCore/EditorScene.h"
 #include "Engine/World/UWorld.h"
 
 void IPanelContainer::AddChild(const std::shared_ptr<FChildWidget>& NewChild)

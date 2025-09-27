@@ -32,14 +32,7 @@ public:
 
 	
 
-	std::shared_ptr<APlayerCameraManager> GetCameraManager() const
-	{
-		if (CameraManager.expired())
-		{
-			return nullptr;
-		}
-		return CameraManager.lock();
-	}
+	std::shared_ptr<APlayerCameraManager> GetCameraManager() const;
 
 	ACharacter* GetCharacter() const {return Character;}
 
@@ -48,21 +41,16 @@ public:
 	bool IsPlayRootMotion() const {return bPlayRootMotion;}
 	void SetPlayRootMotion(bool NewRootMotion) {bPlayRootMotion = NewRootMotion;}
 
-	const std::shared_ptr<UUserWidget>& GetWidget(const std::string& WidgetName)
-	{
-		auto Iter = UserWidgets.find(WidgetName);
-		if (Iter != UserWidgets.end())
-		{
-			return Iter->second;
-		}
-
-		return nullptr;
-	}
+	std::shared_ptr<UUserWidget> GetWidget(const std::string& WidgetName);
 
 	void CreateWidget(const std::string& Name, const std::shared_ptr<UUserWidget>& NewWidget);
 	// 해당 위젯에서 Input을 소모했는지를 bool값으로 반환
 	bool WidgetHandleInput(const FInputEvent& InputEvent);
 
+	void SetMonochromeCenterComp(const std::shared_ptr<USceneComponent>& TargetComp) { MonochromeCenterComp = TargetComp;}
+	XMFLOAT3 GetMonochromeCenterPos();
+	void SetMonochromeDistance(float NewDistance) {MonochromeDistance = NewDistance;}
+	float GetMonochromeDistance() const {return MonochromeDistance;}
 private:
 	ACharacter* Character;
 	std::weak_ptr<APlayerCameraManager> CameraManager;
@@ -76,4 +64,7 @@ private:
 	std::map<std::string, std::shared_ptr<UUserWidget>> UserWidgets;
 
 	std::shared_ptr<UAnimMontage> CurPlayingAnimMontage;
+
+	std::weak_ptr<USceneComponent> MonochromeCenterComp;
+	float MonochromeDistance = 0.0f;
 };

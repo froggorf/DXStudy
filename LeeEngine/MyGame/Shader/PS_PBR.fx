@@ -156,7 +156,7 @@ Deferred_PS_OUT PBR_PS_UE_Chair(PBR_PS_INPUT input) : SV_TARGET
 	const float RoughnessMetal = 0.4f;
 	float roughness = lerp(lerp(RoughnessBase, RoughnessSeats, MetallicTexVal.b),RoughnessMetal,MetallicTexVal.g);
 	float specular = 0.5;
-	float ao = ObjectAO;
+	float ao = 1.0f;
 
 
 	Deferred_PS_OUT output = (Deferred_PS_OUT) 0.f;

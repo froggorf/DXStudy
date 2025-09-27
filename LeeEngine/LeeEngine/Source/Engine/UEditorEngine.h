@@ -4,8 +4,8 @@
 // 이윤석
 
 #pragma once
-#ifdef WITH_EDITOR
 #include "UEngine.h"
+#ifdef WITH_EDITOR
 #include "RenderCore/RenderingThread.h"
 
 #include <atlImage.h>
@@ -20,15 +20,9 @@ class UEditorEngine : public UEngine
 {
 	MY_GENERATE_BODY(UEditorEngine)
 
-	UEditorEngine()
-		: UEngine(nullptr)
-	{
-	}
+	UEditorEngine() : UEngine(nullptr) {}
 
-	UEditorEngine(D3DApp* Application)
-		: UEngine(Application)
-	{
-	};
+	UEditorEngine(D3DApp* Application) : UEngine(Application) {}
 	~UEditorEngine() override;
 	void               InitEngine() override;
 	void               PostLoad() override;

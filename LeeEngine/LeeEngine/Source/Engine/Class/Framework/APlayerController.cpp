@@ -2,9 +2,6 @@
 #include "APlayerController.h"
 
 #include "ACharacter.h"
-#include "Engine/UEngine.h"
-#include "Engine/Physics/ULineComponent.h"
-#include "Engine/RenderCore/EditorScene.h"
 #include "Engine/Widget/UUserWidget.h"
 #include "Engine/World/UWorld.h"
 
@@ -92,46 +89,25 @@ void APlayerController::OnPossess(ACharacter* CharacterToPossess)
 	}
 }
 
-//void APlayerController::HandleRootMotion(const XMMATRIX& Root)
-//{
-//	if (Character && Character->GetCharacterMovement())
-//	{
-//		static float LastRootMotionTime = -1.0f;
-//		static XMMATRIX PrevRootMatrix = XMMatrixIdentity();
-//		// 0.1초 이상 적용 안됐었다면
-//		if (LastRootMotionTime + 0.1f <= GEngine->GetTimeSeconds())
-//		{
-//			LastRootMotionTime = GEngine->GetTimeSeconds();
-//			PrevRootMatrix = XMMatrixIdentity();
-//		}
-//		
-//		XMMATRIX DeltaMatrix = XMMatrixMultiply(Root, XMMatrixInverse(nullptr, PrevRootMatrix));
-//		MY_LOG("Delta", EDebugLogLevel::DLL_Warning, XMFLOAT3_TO_TEXT(XMFLOAT3{DeltaMatrix.r[3].m128_f32[0],DeltaMatrix.r[3].m128_f32[1],DeltaMatrix.r[3].m128_f32[2]}));
-//
-//		// 위치
-//		XMVECTOR Pos = XMVectorSet(DeltaMatrix.r[3].m128_f32[0],DeltaMatrix.r[3].m128_f32[1],-DeltaMatrix.r[3].m128_f32[2],0.0f);
-//		XMFLOAT4 ActorRotate = Character->GetActorRotation();
-//		Pos = XMVector3Rotate(Pos,  XMLoadFloat4(&ActorRotate));
-//		XMFLOAT3 RootPosition;
-//		XMStoreFloat3(&RootPosition, Pos);
-//
-//		// 회전
-//		XMVECTOR Quat = XMQuaternionRotationMatrix(DeltaMatrix);
-//		XMFLOAT4 RootRotation;
-//		XMStoreFloat4(&RootRotation, Quat);
-//
-//		physx::PxVec3 PxDelta(RootPosition.x,RootPosition.y,-RootPosition.z);
-//		
-//		// TODO 모듈화하기
-//		XMFLOAT3 Start = Character->GetActorLocation();
-//		Character->GetCharacterMovement()->PxCharacterController->move(PxDelta,0.01f, GEngine->GetDeltaSeconds(), Character->GetCharacterMovement()->Filters);
-//		XMFLOAT3 End = Character->GetActorLocation();
-//		std::shared_ptr<ULineComponent> LineComp = std::make_shared<ULineComponent>(false,Start,End,End);	
-//
-//		PrevRootMatrix = Root;
-//		LastRootMotionTime = GEngine->GetTimeSeconds();
-//	}
-//}
+std::shared_ptr<APlayerCameraManager> APlayerController::GetCameraManager() const
+{
+	if (CameraManager.expired())
+	{
+		return nullptr;
+	}
+	return CameraManager.lock();
+}
+
+std::shared_ptr<UUserWidget> APlayerController::GetWidget(const std::string& WidgetName)
+{
+	auto Iter = UserWidgets.find(WidgetName);
+	if (Iter != UserWidgets.end())
+	{
+		return Iter->second;
+	}
+
+	return nullptr;
+}
 
 void APlayerController::CreateWidget(const std::string& Name, const std::shared_ptr<UUserWidget>& NewWidget)
 {
@@ -169,5 +145,18 @@ bool APlayerController::WidgetHandleInput(const FInputEvent& InputEvent)
 	}
 
 	return false;
+}
+
+XMFLOAT3 APlayerController::GetMonochromeCenterPos()
+{
+	if (std::shared_ptr<USceneComponent> Comp = MonochromeCenterComp.lock())
+	{
+		return Comp->GetWorldLocation();
+	}
+	else
+	{
+		MonochromeDistance = 0.0f;
+		return {0,0,0};
+	}
 }
 

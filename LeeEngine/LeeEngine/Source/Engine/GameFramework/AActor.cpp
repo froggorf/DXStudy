@@ -5,13 +5,9 @@
 #include "CoreMinimal.h"
 #include "Engine/UObject/UObject.h"
 #include "AActor.h"
-
 #include "Engine/Components/USceneComponent.h"
-#include "Engine/RenderCore/EditorScene.h"
 
 unsigned int ActorIDCount = 0;
-
-//AActor::MakeCDO_ AActor::_initializer;
 
 AActor::AActor()
 {

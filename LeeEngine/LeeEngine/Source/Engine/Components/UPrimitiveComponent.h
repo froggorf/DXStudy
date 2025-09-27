@@ -65,6 +65,8 @@ class UPrimitiveComponent : public USceneComponent
 
 	// TODO: 08.13 현재는 초기 설정값만 적용되도록 했는데 추후에는 런타임 중에도 적용할 수 있도록 변경해야함
 	void SetDoFrustumCulling(bool NewDoFrustumCulling){bDoFrustumCulling = NewDoFrustumCulling;}
+
+	void SetIsMonochromeObject(bool NewMonochrome) {bIsMonochromeObject = NewMonochrome;}
 protected:
 	size_t RegisteredSceneProxyCount = 0;
 
@@ -76,4 +78,6 @@ protected:
 	std::array<ECollisionResponse, static_cast<UINT>(ECollisionChannel::Count)> TempCollisionResponse = {};
 
 	bool bDoFrustumCulling = true;
+
+	bool bIsMonochromeObject = true;
 };

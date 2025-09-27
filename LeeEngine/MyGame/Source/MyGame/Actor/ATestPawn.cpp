@@ -37,12 +37,16 @@ ATestPawn::ATestPawn()
 			SMSword->SetStaticMesh(std::static_pointer_cast<UStaticMesh>(Object));
 	});
 	SMSword->SetRelativeScale3D({0.2f,0.2f,0.2f});
-	SMSword->SetRelativeLocation({-9.898,5.167, 8.479});
-	SMSword->SetRelativeRotation(XMFLOAT4{0.765, 0.644, 0.017, 0.014});
+	SMSword->SetRelativeLocation({-9.898f,5.167f, 8.479f});
+	SMSword->SetRelativeRotation(XMFLOAT4{0.765f, 0.644f, 0.017f, 0.014f});
 
 	TestComp = std::dynamic_pointer_cast<UTestComponent>(CreateDefaultSubobject("TestActorComp", "UTestComponent"));
 }
 
+void ATestPawn::Register()
+{
+	ACharacter::Register();
+}
 
 
 void ATestPawn::BeginPlay()
@@ -318,7 +322,7 @@ void ATestPawn::Tick(float DeltaSeconds)
 			dtPolyRef startRef, endRef;
 			float nearestStart[3], nearestEnd[3];
 			dtQueryFilter filter;
-			filter.setIncludeFlags(0xffffffff);
+			filter.setIncludeFlags(static_cast<unsigned short>(0xffffffff));
 			filter.setExcludeFlags(0);
 			float extents[3] = {10,300,10};
 			ATestCube::MyDtNavQuery->findNearestPoly(startPos, extents, &filter, &startRef, nearestStart);

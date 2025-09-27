@@ -4,3 +4,22 @@
 // 이윤석
 #include "CoreMinimal.h"
 #include "ImGUIActionTask.h"
+
+void FImGuizmoCommandPipe::Enqueue(std::function<void()>& CommandLambda)
+{
+	// 다중 생성 기반 Queue
+	auto NewNode = std::make_shared<FImGUITask>();
+	NewNode->CommandLambda = CommandLambda;
+
+	GetImGuizmoCommandPipe().push(NewNode);
+}
+
+bool FImGuizmoCommandPipe::Dequeue(std::shared_ptr<FImGUITask>& Result)
+{
+	if (GetImGuizmoCommandPipe().try_pop(Result))
+	{
+		return true;
+	}
+
+	return false;
+}

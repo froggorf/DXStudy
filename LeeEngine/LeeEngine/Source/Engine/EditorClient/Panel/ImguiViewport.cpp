@@ -6,7 +6,6 @@
 
 #include "ImguiActorDetail.h"
 #include "ImguiWorldOutliner.h"
-#include "Engine/DirectX/Device.h"
 
 ImVec2 FImguiLevelViewport::PreviousViewPortSize = ImVec2(0.0f, 0.0f);
 XMFLOAT2 FImguiLevelViewport::LevelViewportPos = XMFLOAT2(0.0f,0.0f);

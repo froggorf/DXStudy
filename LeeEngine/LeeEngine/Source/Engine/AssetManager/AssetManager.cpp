@@ -1,6 +1,5 @@
 #include "CoreMinimal.h"
 #include "AssetManager.h"
-
 #include "Engine/Class/UTexture.h"
 #include "Engine/Misc/QueuedThreadPool.h"
 
@@ -317,7 +316,7 @@ void AssetManager::LoadTexture(class UTexture* Texture, const nlohmann::json& As
 	MY_LOG("TextureLoad", EDebugLogLevel::DLL_Display, "Texture Load Success");
 }
 
-std::shared_ptr<UTexture> AssetManager::CreateTexture(const std::string& Name, UINT Width, UINT Height, DXGI_FORMAT PixelFormat, UINT BindFlag, D3D11_USAGE Usage)
+std::shared_ptr<UTexture> AssetManager::CreateTexture(const std::string& Name, float Width, float Height, DXGI_FORMAT PixelFormat, UINT BindFlag, D3D11_USAGE Usage)
 {
 	if (!GDirectXDevice || !GDirectXDevice->GetDevice())
 	{
@@ -326,8 +325,8 @@ std::shared_ptr<UTexture> AssetManager::CreateTexture(const std::string& Name, U
 	auto Texture = std::make_shared<UTexture>();
 
 	Texture->Desc.Format             = PixelFormat;
-	Texture->Desc.Width              = Width;
-	Texture->Desc.Height             = Height;
+	Texture->Desc.Width              = static_cast<UINT>(Width);
+	Texture->Desc.Height             = static_cast<UINT>(Height);
 	Texture->Desc.ArraySize          = 1;
 	Texture->Desc.BindFlags          = BindFlag;
 	Texture->Desc.CPUAccessFlags     = 0;
@@ -374,7 +373,7 @@ std::shared_ptr<UTexture> AssetManager::CreateTexture(const std::string& Name, U
 	return Texture;
 }
 
-std::shared_ptr<UTexture> AssetManager::CreateCubeTexture(const std::string& Name, UINT Width, UINT Height, DXGI_FORMAT PixelFormat, UINT BindFlag, D3D11_USAGE Usage)
+std::shared_ptr<UTexture> AssetManager::CreateCubeTexture(const std::string& Name, float Width, float Height, DXGI_FORMAT PixelFormat, UINT BindFlag, D3D11_USAGE Usage)
 {
 	if (!GDirectXDevice || !GDirectXDevice->GetDevice())
 	{
@@ -383,8 +382,8 @@ std::shared_ptr<UTexture> AssetManager::CreateCubeTexture(const std::string& Nam
 	std::shared_ptr<UTexture> Texture = std::make_shared<UTexture>();
 
 	Texture->Desc.Format             = PixelFormat;
-	Texture->Desc.Width              = Width;
-	Texture->Desc.Height             = Height;
+	Texture->Desc.Width              = static_cast<UINT>(Width);
+	Texture->Desc.Height             = static_cast<UINT>(Height);
 	Texture->Desc.ArraySize          = 6;
 	Texture->Desc.BindFlags          = BindFlag;
 	Texture->Desc.CPUAccessFlags     = 0;
@@ -642,6 +641,17 @@ void AssetManager::ExtractBoneWeightForVertices(std::vector<MyVertexData>& vVert
 			SetVertexBoneData(vVertexData[vertexID], boneID, weight);
 		}
 	}
+}
+
+std::shared_ptr<UObject> AssetManager::GetAssetCacheByName(const std::string& AssetName)
+{
+	const std::unordered_map<std::string, std::shared_ptr<UObject>>& Map    = GetAssetCacheMap();
+	auto                                                             Target = Map.find(AssetName);
+	if (Target != Map.end())
+	{
+		return Target->second;
+	}
+	return nullptr;
 }
 
 void AssetManager::GetAsyncAssetCache(const std::string& AssetName, const AssetLoadedCallback& LoadedCallback)

@@ -1,6 +1,7 @@
 #include "CoreMinimal.h"
 #include "AMyGameCharacterBase.h"
 
+#include "../Component/PBRTestComponent.h"
 #include "Engine/World/UWorld.h"
 
 
@@ -54,8 +55,18 @@ AMyGameCharacterBase::AMyGameCharacterBase()
 				});
 		}
 	}
+
+	if (SkeletalMeshComponent)
+	{
+		SkeletalMeshComponent->SetIsMonochromeObject(false);
+	}
 }
 
+void AMyGameCharacterBase::Register()
+{
+	ACharacter::Register();
+	UPBRTestComponent::Instance->TargetComp[2] = SkeletalMeshComponent;
+}
 
 
 void AMyGameCharacterBase::BeginPlay()

@@ -1,4 +1,4 @@
-﻿// 05.24
+// 05.24
 // 비동기 에셋 로드를 확인하기 위해 만든 테스트용 큐브액터 2
 
 #pragma once
@@ -11,7 +11,8 @@ class ATestPawn : public ACharacter
 	MY_GENERATE_BODY(ATestPawn)
 	
 	ATestPawn();
-	
+
+	void Register() override;
 	void BeginPlay() override;
 
 	void BindKeyInputs() override;

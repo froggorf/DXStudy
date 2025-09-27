@@ -4,8 +4,6 @@
 // 이윤석
 
 #include "CoreMinimal.h"
-#include "USceneComponent.h"
-#include "Engine/UEditorEngine.h"
 #include "Engine/RenderCore/EditorScene.h"
 
 USceneComponent::USceneComponent()
@@ -84,6 +82,13 @@ void USceneComponent::SetupAttachment(const std::shared_ptr<USceneComponent>& In
 	}
 
 	UpdateComponentToWorld();
+}
+
+void USceneComponent::UpdateComponentToWorld()
+{
+	UpdateComponentToWorldWithParent(GetAttachParent(), GetAttachSocketName());
+
+	Make_Transform_Dirty()
 }
 
 void USceneComponent::SetRelativeLocation(const XMFLOAT3& NewRelLocation)

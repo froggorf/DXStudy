@@ -68,6 +68,7 @@ void UPrimitiveComponent::RegisterSceneProxies()
 	for (int i = 0; i < PrimitiveSceneProxies.size(); ++i)
 	{
 		PrimitiveSceneProxies[i]->SetDoFrustumCulling(bDoFrustumCulling);
+		PrimitiveSceneProxies[i]->SetIsMonochrome(bIsMonochromeObject);
 		FScene::AddPrimitive_GameThread(PrimitiveID, PrimitiveSceneProxies[i], GetComponentTransform());
 	}
 

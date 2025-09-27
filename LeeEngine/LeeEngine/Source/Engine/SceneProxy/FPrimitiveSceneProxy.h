@@ -28,6 +28,8 @@ public:
 	virtual      ~FPrimitiveSceneProxy() = default;
 	virtual void Draw();
 
+	void SetDSStateWithMonochrome();
+
 	UINT GetPrimitiveID() const
 	{
 		return PrimitiveID;

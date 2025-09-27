@@ -5,8 +5,6 @@
 
 #pragma once
 #include "ImguiPanel.h"
-#include "Engine/MyEngineUtils.h"
-#include "Engine/SceneView.h"
 #include "Engine/RenderCore/EditorScene.h"
 
 class FImguiWorldOutliner : public FImguiPanel
@@ -16,10 +14,7 @@ public:
 
 	void Draw() override;
 
-	void ExecuteCommand(const std::shared_ptr<FImguiPanelCommandData>& CommandData) override
-	{
-	}
-
+	void ExecuteCommand(const std::shared_ptr<FImguiPanelCommandData>& CommandData) override { } 
 	void InitLevelData();
 	void PendingAddWorldOutlinerActor(const std::shared_ptr<AActor>& NewActor);
 

@@ -1,37 +1,37 @@
 #include "CoreMinimal.h"
-#include "MyEngineUtils.h"
+FTransform::FTransform(XMFLOAT3 InTranslation, XMFLOAT4 InRotation, XMFLOAT3 InScale)
+{
+	Translation = InTranslation;
+	Rotation    = InRotation;
+	Scale3D     = InScale;
+}
 
-#include "Animation/UAnimSequence.h"
-#include "RenderCore/EditorScene.h"
+FTransform::FTransform(XMVECTOR InRotationQuat, XMFLOAT3 InTranslation, XMFLOAT3 InScale)
+{
+	Translation = InTranslation;
+	XMStoreFloat4(&Rotation, InRotationQuat);
+	Scale3D = InScale;
+}
+
+XMMATRIX FTransform::ToMatrixWithScale() const
+{
+	XMMATRIX OutMatrix = XMMatrixIdentity();
+	OutMatrix          = XMMatrixScaling(Scale3D.x, Scale3D.y, Scale3D.z) * ToMatrixNoScale();
+
+	return OutMatrix;
+}
+
+XMMATRIX FTransform::ToMatrixNoScale() const
+{
+	XMMATRIX OutMatrix = XMMatrixIdentity();
+
+	OutMatrix = XMMatrixRotationQuaternion(XMLoadFloat4(&Rotation)) * XMMatrixTranslation(Translation.x, Translation.y, Translation.z);
+
+	return OutMatrix;
+}
 
 FTransform FTransform::operator*(const FTransform& OtherTransform)
-
 {
-	//FTransform Result{};
-	//// scale
-	//DirectX::XMVECTOR ThisScale = DirectX::XMLoadFloat3(&Scale3D);
-	//DirectX::XMVECTOR OtherScale = DirectX::XMLoadFloat3(&OtherTransform.Scale3D);
-	//
-	//DirectX::XMStoreFloat3(&Result.Scale3D, DirectX::XMVectorMultiply(ThisScale, OtherScale));
-	//
-	//// rot
-	//DirectX::XMVECTOR ThisRotation = DirectX::XMLoadFloat4(&Rotation);
-	//DirectX::XMVECTOR OtherRotation = DirectX::XMLoadFloat4(&OtherTransform.Rotation);
-	//DirectX::XMVECTOR RetRotation = DirectX::XMQuaternionMultiply(OtherRotation,ThisRotation);
-	////DirectX::XMVector4Normalize(RetRotation);
-	//DirectX::XMStoreFloat4(&Result.Rotation, RetRotation);
-	//
-	//// Translation
-	//DirectX::XMVECTOR ThisTranslation = DirectX::XMLoadFloat3(&Translation);
-	//DirectX::XMVECTOR OtherTranslation = DirectX::XMLoadFloat3(&OtherTransform.Translation);
-	//
-	//DirectX::XMVECTOR ScaledOtherTranslation = DirectX::XMVectorMultiply(ThisScale, OtherTranslation);
-	//DirectX::XMVECTOR RotatedOtherTranslation = DirectX::XMVector3Rotate(ScaledOtherTranslation, ThisRotation);
-	//
-	//DirectX::XMStoreFloat3(&Result.Translation, DirectX::XMVectorAdd(ThisTranslation, RotatedOtherTranslation));
-
-	//return Result;
-
 	XMMATRIX ResultMatrix = XMMatrixMultiply(OtherTransform.ToMatrixWithScale(), ToMatrixWithScale());
 	XMVECTOR ResultScale, ResultRotQuat, ResultTranslate;
 	XMMatrixDecompose(&ResultScale, &ResultRotQuat, &ResultTranslate, ResultMatrix);
@@ -41,6 +41,15 @@ FTransform FTransform::operator*(const FTransform& OtherTransform)
 	XMStoreFloat3(&RetScale, ResultScale);
 
 	return FTransform{ResultRotQuat, RetTranslation, RetScale};
+}
+
+XMFLOAT3 FTransform::InverseTransformPosition(const XMFLOAT3& WorldTranslation) const
+{
+	XMVECTOR WorldTranslationVec = XMLoadFloat3(&WorldTranslation);
+	XMFLOAT3 RetVal;
+	XMStoreFloat3(&RetVal, XMVector3Transform(WorldTranslationVec, XMMatrixInverse(nullptr, ToMatrixWithScale())));
+
+	return RetVal;
 }
 
 XMFLOAT3 FTransform::CalculateEulerRotationFromQuaternion(const XMVECTOR& Quaternion)

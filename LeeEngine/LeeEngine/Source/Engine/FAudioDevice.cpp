@@ -1,9 +1,7 @@
 #include "CoreMinimal.h"
 #include "FAudioDevice.h"
-
 #include "UEngine.h"
 #include "AssetManager/AssetManager.h"
-#include "RenderCore/EditorScene.h"
 
 std::shared_ptr<FAudioDevice> GAudioDevice = nullptr;
 
@@ -119,6 +117,26 @@ void FAudioDevice::PlaySound2D(const std::shared_ptr<USoundBase>& SoundBase)
 void FAudioDevice::GameKill()
 {
 	FAudioThread::bIsGameRunning = false;
+}
+
+void FAudioThread::Execute()
+{
+	std::function<void()> ExecuteFunc;
+	while (true)
+	{
+		if (!bIsGameRunning)
+		{
+			break;
+		}
+		if (ExecuteQueue.try_pop(ExecuteFunc))
+		{
+			ExecuteFunc();
+		}
+		else
+		{
+			std::this_thread::yield();
+		}
+	}
 }
 
 // =========================

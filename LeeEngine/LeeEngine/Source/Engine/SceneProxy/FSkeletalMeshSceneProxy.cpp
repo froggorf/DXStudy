@@ -5,8 +5,6 @@
 #include "CoreMinimal.h"
 #include "FSkeletalMeshSceneProxy.h"
 
-#include "Engine/UEditorEngine.h"
-#include "Engine/Mesh/USkeletalMesh.h"
 #include "Engine/RenderCore/EditorScene.h"
 
 FSkeletalMeshSceneProxy::FSkeletalMeshSceneProxy(UINT PrimitiveID, UINT InMeshIndex, const std::shared_ptr<USkeletalMesh>& InSkeletalMesh)

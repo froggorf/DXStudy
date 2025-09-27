@@ -111,13 +111,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\DirectX\ShadowMap.cpp">
-      <Filter>Source\DirectX</Filter>
-    </ClCompile>
     <ClCompile Include="Source\DirectX\d3dApp.cpp">
-      <Filter>Source\DirectX</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DirectX\DebuggingSRV.cpp">
       <Filter>Source\DirectX</Filter>
     </ClCompile>
     <ClCompile Include="Source\DirectX\GameTimer.cpp">
@@ -235,9 +229,6 @@
       <Filter>Source\Engine\EditorClient\Panel</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Mesh\USkeletalMesh.cpp">
-      <Filter>Source\Engine\Mesh</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\Mesh\USkinnedAsset.cpp">
       <Filter>Source\Engine\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\SceneProxy\FSkeletalMeshSceneProxy.cpp">
@@ -489,18 +480,15 @@
     <ClCompile Include="Source\Engine\Timer\FTimerManager.cpp">
       <Filter>Source\Engine\Timer</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Mesh\StaticMeshResources.cpp">
+      <Filter>Source\Engine\Mesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\DirectX\ShadowMap.h">
-      <Filter>Source\DirectX</Filter>
-    </ClInclude>
     <ClInclude Include="Source\DirectX\d3dApp.h">
       <Filter>Source\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="Source\DirectX\d3dUtil.h">
-      <Filter>Source\DirectX</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DirectX\DebuggingSRV.h">
       <Filter>Source\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="Source\DirectX\GameTimer.h">
@@ -639,9 +627,6 @@
       <Filter>Source\Engine\EditorClient\Panel</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Mesh\USkeletalMesh.h">
-      <Filter>Source\Engine\Mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Engine\Mesh\USkinnedAsset.h">
       <Filter>Source\Engine\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\SceneProxy\FSkeletalMeshSceneProxy.h">

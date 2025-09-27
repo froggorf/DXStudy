@@ -2,7 +2,6 @@
 #include "UAnimMontage.h"
 
 #include "Engine/AssetManager/AssetManager.h"
-#include "Engine/RenderCore/EditorScene.h"
 
 float FAnimTrack::GetLength() const
 {
@@ -14,6 +13,15 @@ float FAnimTrack::GetLength() const
 	return TotalLength;
 }
 
+std::shared_ptr<UAnimMontage> UAnimMontage::GetAnimationAsset(const std::string& AnimationName)
+{
+	if (std::shared_ptr<UAnimationAsset> FindAsset = UAnimationAsset::GetAnimationAsset(AnimationName))
+	{
+		return std::dynamic_pointer_cast<UAnimMontage>(FindAsset);
+	}
+	return nullptr;
+}
+
 void UAnimMontage::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
 	UAnimCompositeBase::LoadDataFromFileData(AssetData);
@@ -22,7 +30,7 @@ void UAnimMontage::LoadDataFromFileData(const nlohmann::json& AssetData)
 	if (AssetData.contains("AnimTrack"))
 	{
 		auto AnimSequencesData = AssetData["AnimTrack"];
-		int AnimTrackSize = AnimSequencesData.size();
+		int AnimTrackSize = static_cast<int>(AnimSequencesData.size());
 		std::atomic<int> CurrentLoadedAnimCount = 0;
 		for (const auto& SequenceData : AnimSequencesData)
 		{

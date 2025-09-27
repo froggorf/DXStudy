@@ -1,13 +1,8 @@
 #pragma once
 
 #include <memory>
-#include <string>
-#include <vector>
-#include <set>
-
 #include <iostream>
 
-#include "DirectX/d3dUtil.h"
 
 // 디버그 레벨
 // DEBUG(0) - 모든 콘솔 문구 출력
@@ -57,19 +52,9 @@ struct FTransform
 {
 	FTransform() = default;
 
-	FTransform(XMFLOAT3 InTranslation, XMFLOAT4 InRotation, XMFLOAT3 InScale)
-	{
-		Translation = InTranslation;
-		Rotation    = InRotation;
-		Scale3D     = InScale;
-	}
+	FTransform(XMFLOAT3 InTranslation, XMFLOAT4 InRotation, XMFLOAT3 InScale);
 
-	FTransform(XMVECTOR InRotationQuat, XMFLOAT3 InTranslation, XMFLOAT3 InScale)
-	{
-		Translation = InTranslation;
-		XMStoreFloat4(&Rotation, InRotationQuat);
-		Scale3D = InScale;
-	}
+	FTransform(XMVECTOR InRotationQuat, XMFLOAT3 InTranslation, XMFLOAT3 InScale);
 
 	// 쿼터니언
 	XMFLOAT4 Rotation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -100,34 +85,14 @@ struct FTransform
 		return Scale3D;
 	}
 
-	XMMATRIX ToMatrixWithScale() const
-	{
-		XMMATRIX OutMatrix = XMMatrixIdentity();
-		OutMatrix          = XMMatrixScaling(Scale3D.x, Scale3D.y, Scale3D.z) * ToMatrixNoScale();
+	XMMATRIX ToMatrixWithScale() const;
 
-		return OutMatrix;
-	}
-
-	XMMATRIX ToMatrixNoScale() const
-	{
-		XMMATRIX OutMatrix = XMMatrixIdentity();
-
-		OutMatrix = XMMatrixRotationQuaternion(XMLoadFloat4(&Rotation)) * XMMatrixTranslation(Translation.x, Translation.y, Translation.z);
-
-		return OutMatrix;
-	}
+	XMMATRIX ToMatrixNoScale() const;
 
 	FTransform operator*(const FTransform& OtherTransform);
 
 	// 월드 좌표 -> 로컬좌표 위치
-	XMFLOAT3 InverseTransformPosition(const XMFLOAT3& WorldTranslation) const
-	{
-		XMVECTOR WorldTranslationVec = XMLoadFloat3(&WorldTranslation);
-		XMFLOAT3 RetVal;
-		XMStoreFloat3(&RetVal, XMVector3Transform(WorldTranslationVec, XMMatrixInverse(nullptr, ToMatrixWithScale())));
-
-		return RetVal;
-	}
+	XMFLOAT3 InverseTransformPosition(const XMFLOAT3& WorldTranslation) const;
 
 	static XMFLOAT3 CalculateEulerRotationFromQuaternion(const XMVECTOR& Quaternion);
 };

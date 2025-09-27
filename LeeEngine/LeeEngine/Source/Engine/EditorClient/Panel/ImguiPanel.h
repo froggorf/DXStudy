@@ -6,7 +6,6 @@
 #pragma once
 
 //#include "EditorClient.h"
-#include "Engine/MyEngineUtils.h"
 
 class FScene;
 
@@ -25,9 +24,7 @@ struct FImguiPanelCommandData
 {
 	FImguiPanelCommandData() = default;
 
-	virtual ~FImguiPanelCommandData()
-	{
-	};
+	virtual ~FImguiPanelCommandData() = default;
 
 	enum class EImguiPanelType PanelType;
 
@@ -55,9 +52,7 @@ class FImguiPanel
 public:
 	FImguiPanel(FScene* SceneData);
 
-	virtual ~FImguiPanel()
-	{
-	}
+	virtual ~FImguiPanel() = default;
 
 	virtual void Draw() = 0;
 	virtual void ExecuteCommand(const std::shared_ptr<FImguiPanelCommandData>& CommandData) = 0;

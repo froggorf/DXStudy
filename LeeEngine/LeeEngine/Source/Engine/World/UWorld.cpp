@@ -4,15 +4,9 @@
 // 이윤석
 #include "CoreMinimal.h"
 #include "UWorld.h"
-
-#include "Engine/AssetManager/AssetManager.h"
 #include "Engine/UEditorEngine.h"
-#include "Engine/UEngine.h"
 #include "Engine/Class/Framework/APlayerController.h"
 #include "Engine/Physics/UBoxComponent.h"
-#include "Engine/Physics/UPhysicsEngine.h"
-#include "Engine/RenderCore/EditorScene.h"
-#include "Engine/RenderCore/RenderingThread.h"
 #include "Engine/SceneProxy/FNiagaraSceneProxy.h"
 
 UWorld::UWorld()
@@ -136,6 +130,11 @@ void UWorld::Tick()
 {
 }
 
+std::shared_ptr<ULevel> UWorld::GetPersistentLevel() const
+{
+	return PersistentLevel;
+}
+
 void UWorld::SetPersistentLevel(const std::shared_ptr<ULevel>& NewLevel)
 {
 	gPhysicsEngine->ResetScene();
@@ -163,7 +162,38 @@ void UWorld::AddLevel(const std::shared_ptr<ULevel>& NewLevel)
 	Levels.emplace(NewLevel);
 }
 
+void UWorld::AddToBeTickedNiagaraSceneProxy(const std::shared_ptr<FNiagaraSceneProxy>& NewNiagaraSceneProxy)
+{
+	ToBeTickedNiagaraSceneProxies.emplace_back(NewNiagaraSceneProxy);
+}
+
+void UWorld::AddCurrentFrameLightInfo(const FLightInfo& NewLightInfo)
+{
+	CurrentFrameLightInfo.emplace_back(NewLightInfo);
+}
+
+void UWorld::AddCurrentFrameDecalInfo(const FDecalInfo& NewDecalInfo)
+{
+	CurrentFrameDecalInfo.emplace_back(NewDecalInfo);
+}
+
+void UWorld::AddCurrentFrameWidgetRenderData(const FWidgetRenderData& NewWidgetRenderData)
+{
+	CurrentFrameWidgetRenderData.emplace_back(NewWidgetRenderData);
+}
+
+
+APlayerCameraManager* UWorld::GetCameraManager() const
+{
+	if (!PlayerController.expired())
+	{
+		return PlayerController.lock().get()->GetCameraManager().get();
+	}
+	return nullptr;
+}
 #if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
+
+
 void UWorld::DrawDebugBox(const XMFLOAT3& Center, const XMFLOAT3& Extent, const XMFLOAT3& LineColor, XMVECTOR Rotate, const float DebugDrawTime) const
 {
 	std::shared_ptr<UBoxComponent> BoxComp = std::make_shared<UBoxComponent>();

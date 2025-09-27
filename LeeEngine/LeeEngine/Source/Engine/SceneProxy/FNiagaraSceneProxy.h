@@ -6,7 +6,6 @@
 #pragma once
 
 #include "FPrimitiveSceneProxy.h"
-#include "Engine/MyEngineUtils.h"
 #include "Engine/Niagara/FNiagaraEmitter.h"
 
 class FNiagaraSceneProxy : public FPrimitiveSceneProxy

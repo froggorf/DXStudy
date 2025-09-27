@@ -10,6 +10,10 @@
 	"Func": "PS_Blur_UpSampling"
     },
     "BlendMode": "PP",
-    "TwoSided" : 0
+    "TwoSided" : 0,
+    "Stencil" : {
+        "DSState" : 3,
+	"Ref" : 0
+    }
 	
 }

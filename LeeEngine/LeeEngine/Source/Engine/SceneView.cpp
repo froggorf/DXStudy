@@ -6,8 +6,6 @@
 #include "CoreMinimal.h"
 #include "SceneView.h"
 
-#include "RenderCore/EditorScene.h"
-
 FCameraFrustum::FCameraFrustum()
 {
 	ProjPos[0] = XMFLOAT3(-1.f, 1.f, 0.f);
@@ -60,6 +58,14 @@ bool FCameraFrustum::IsSphereInside(const XMFLOAT3 WorldCenter, float SphereRadi
 	}
 
 	return true;
+}
+
+FViewMatrices::FViewMatrices()
+{
+	ViewMatrix       = XMMatrixLookToLH(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
+	ProjectionMatrix = XMMatrixIdentity();
+	ViewOrigin       = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	CameraRotQuat    = XMQuaternionRotationRollPitchYaw(0.0f, 0.0f, 0.0f);
 }
 
 void FViewMatrices::UpdateViewMatrix(const XMFLOAT3 ViewLocation, const XMVECTOR& ViewRotation)

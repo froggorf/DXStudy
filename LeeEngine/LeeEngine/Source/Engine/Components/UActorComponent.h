@@ -13,9 +13,7 @@ class UActorComponent : public UObject
 	MY_GENERATE_BODY(UActorComponent)
 	UActorComponent();
 
-	virtual void UpdateComponentToWorld()
-	{
-	}
+	virtual void UpdateComponentToWorld() {}
 
 	virtual void TickComponent(float DeltaSeconds);
 

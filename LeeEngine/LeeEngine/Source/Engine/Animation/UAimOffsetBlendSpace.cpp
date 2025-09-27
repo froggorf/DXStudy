@@ -6,6 +6,15 @@ UAimOffsetBlendSpace::UAimOffsetBlendSpace()
 {
 }
 
+std::shared_ptr<UAimOffsetBlendSpace> UAimOffsetBlendSpace::GetAnimationAsset(const std::string& AnimationName)
+{
+	if (std::shared_ptr<UAnimationAsset> FindAsset = UAnimationAsset::GetAnimationAsset(AnimationName))
+	{
+		return std::dynamic_pointer_cast<UAimOffsetBlendSpace>(FindAsset);
+	}
+	return nullptr;
+}
+
 void UAimOffsetBlendSpace::GetAnimationBoneMatrices(const XMFLOAT2& AnimValue, float CurrentAnimTime, std::vector<XMMATRIX>& OutMatrices, std::vector<FAnimNotifyEvent>& OutActiveNotifies)
 {
 	std::vector<XMMATRIX> AO_Matrices(MAX_BONES, XMMatrixIdentity());

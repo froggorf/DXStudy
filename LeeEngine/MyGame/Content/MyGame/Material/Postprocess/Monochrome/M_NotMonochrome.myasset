@@ -1,0 +1,18 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_NotMonochrome",
+    "VertexShader" : {
+	"FilePath" : "/Shader/PostProcess.fx",
+	"Func" : "VS_PostProcess"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/Monochrome.fx",
+	"Func": "PS_NotMonochrome"
+    },
+    "BlendMode": "PP",
+    "TwoSided" : 0,
+    "Stencil" : {
+        "DSState" : 7,
+	"Ref" : 1
+    }
+}

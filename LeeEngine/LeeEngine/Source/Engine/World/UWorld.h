@@ -35,10 +35,7 @@ class UWorld : public UObject, public std::enable_shared_from_this<UWorld>
 	void Tick_Editor(float DeltaSeconds);
 	void Tick();
 
-	std::shared_ptr<ULevel> GetPersistentLevel() const
-	{
-		return PersistentLevel;
-	}
+	std::shared_ptr<ULevel> GetPersistentLevel() const;
 
 	void SetPersistentLevel(const std::shared_ptr<ULevel>& NewLevel);
 
@@ -47,35 +44,15 @@ class UWorld : public UObject, public std::enable_shared_from_this<UWorld>
 	void AddLevel(const std::shared_ptr<ULevel>& NewLevel);
 	void RemoveLevel(const std::shared_ptr<ULevel>& Level);
 
-	void AddToBeTickedNiagaraSceneProxy(const std::shared_ptr<FNiagaraSceneProxy>& NewNiagaraSceneProxy)
-	{
-		ToBeTickedNiagaraSceneProxies.emplace_back(NewNiagaraSceneProxy);
-	}
+	void AddToBeTickedNiagaraSceneProxy(const std::shared_ptr<FNiagaraSceneProxy>& NewNiagaraSceneProxy);
 
-	void AddCurrentFrameLightInfo(const FLightInfo& NewLightInfo)
-	{
-		CurrentFrameLightInfo.emplace_back(NewLightInfo);
-	}
+	void AddCurrentFrameLightInfo(const FLightInfo& NewLightInfo);
 
-	void AddCurrentFrameDecalInfo(const FDecalInfo& NewDecalInfo)
-	{
-		CurrentFrameDecalInfo.emplace_back(NewDecalInfo);
-	}
-
-	void AddCurrentFrameWidgetRenderData(const FWidgetRenderData& NewWidgetRenderData)
-	{
-		CurrentFrameWidgetRenderData.emplace_back(NewWidgetRenderData);
-	}
+	void AddCurrentFrameDecalInfo(const FDecalInfo& NewDecalInfo);
+	void AddCurrentFrameWidgetRenderData(const FWidgetRenderData& NewWidgetRenderData);
 
 	APlayerController* GetPlayerController() const {return PlayerController.lock().get();}
-	APlayerCameraManager* GetCameraManager() const
-	{
-		if (!PlayerController.expired())
-		{
-			return PlayerController.lock().get()->GetCameraManager().get();
-		}
-		return nullptr;
-	}
+	APlayerCameraManager* GetCameraManager() const;
 
 #if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
 	void DrawDebugBox(const XMFLOAT3& Center, const XMFLOAT3& Extent, const XMFLOAT3& LineColor = XMFLOAT3{1,0,0}, XMVECTOR Rotate = XMVectorSet(0,0,0,1), const float DebugDrawTime = 5.0f) const;

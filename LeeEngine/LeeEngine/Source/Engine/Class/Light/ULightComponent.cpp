@@ -1,7 +1,5 @@
 #include "CoreMinimal.h"
 #include "ULightComponent.h"
-
-#include "Engine/Physics/UCapsuleComponent.h"
 #include "Engine/World/UWorld.h"
 
 

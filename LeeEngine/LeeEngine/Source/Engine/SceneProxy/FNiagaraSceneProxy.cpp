@@ -1,9 +1,6 @@
 #include "CoreMinimal.h"
 #include "FNiagaraSceneProxy.h"
 
-#include <stdbool.h>
-
-#include "Engine/Mesh/UStaticMesh.h"
 
 FNiagaraSceneProxy::FNiagaraSceneProxy(UINT InPrimitiveID, std::shared_ptr<FNiagaraEmitter> InEmitter)
 	: FPrimitiveSceneProxy(InPrimitiveID)

@@ -1,7 +1,7 @@
-﻿// https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
+// https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
 
 #pragma once
-#include <DirectXMath.h>
+#include "CoreMinimal.h"
 
 struct aiNodeAnim;
 

@@ -66,14 +66,7 @@ class UAnimSequence : public UAnimCompositeBase
 		return BoneInfoMap;
 	}
 
-	static std::shared_ptr<UAnimSequence> GetAnimationAsset(const std::string& AnimationName)
-	{
-		if (std::shared_ptr<UAnimationAsset> Asset = UAnimationAsset::GetAnimationAsset(AnimationName))
-		{
-			return std::dynamic_pointer_cast<UAnimSequence>(Asset);
-		}
-		return nullptr;
-	}
+	static std::shared_ptr<UAnimSequence> GetAnimationAsset(const std::string& AnimationName);
 
 	// 특정 애니메이션 시간의 본 Matrices를 반환받는 함수
 	// bPlayRootMotion은 UAnimInstance::bPlayRootMotion을 넣어줘야 정상적으로 루트모션이 적용됨
@@ -93,11 +86,7 @@ private:
 	void TraverseTreeHierarchy(const AssimpNodeData* NodeData, int ParentIndex);
 
 public:
-	static std::map<std::string, std::vector<FPrecomputedBoneData>>& GetSkeletonBoneHierarchyMap()
-	{
-		static std::map<std::string, std::vector<FPrecomputedBoneData>> SkeletonBoneHierarchyMap;
-		return SkeletonBoneHierarchyMap;
-	}
+	static std::map<std::string, std::vector<FPrecomputedBoneData>>& GetSkeletonBoneHierarchyMap();
 
 private:
 	float                           Duration;

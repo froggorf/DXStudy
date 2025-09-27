@@ -2,7 +2,7 @@
 #include "Engine/AssetManager/AssetManager.h"
 #include "USkeletalMesh.h"
 
-#include "Engine/Class/UTexture.h"
+#include "Engine/Animation/UAnimSequence.h"
 
 FSkeletalMeshRenderData::FSkeletalMeshRenderData(const nlohmann::json& SkeletalMeshFilePathData)
 {

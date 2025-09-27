@@ -1,11 +1,8 @@
 // d3dApp.cpp by Frank Luna (C) 2011 All Rights Reserved.
 // 25.01.13 루나책 코드를 이해하며 D3DX11를 D3D11로 옮긴 코드
 #include "CoreMinimal.h"
-#include "d3dApp.h"
-#include "Engine/MyEngineUtils.h"
 #include "Engine/UEditorEngine.h"
 #include "Engine/Physics/UPhysicsEngine.h"
-#include "Engine/RenderCore/EditorScene.h"
 
 namespace
 {
@@ -90,7 +87,6 @@ int D3DApp::Run()
 			{
 				CalculateFrameStats();
 				UpdateScene(m_Timer.DeltaTime());
-				DrawScene();
 			}
 			else
 			{

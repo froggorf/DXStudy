@@ -5,8 +5,6 @@
 
 #pragma once
 #ifdef WITH_EDITOR
-#include <functional>
-
 #include "ImguiPanel.h"
 #include "Engine/MyEngineUtils.h"
 

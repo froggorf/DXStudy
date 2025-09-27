@@ -4,11 +4,7 @@
 // 이윤석
 
 #pragma once
-
-#include <functional>
-#include <thread>
-
-#include "Animation/UAnimSequence.h"
+#include "CoreMinimal.h"
 #include "DirectX/d3dApp.h"
 #include "Engine/UObject/UObject.h"
 #include "Timer/FTimerManager.h"

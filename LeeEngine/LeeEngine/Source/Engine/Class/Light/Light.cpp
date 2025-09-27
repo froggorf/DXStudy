@@ -70,7 +70,7 @@ void FLightInfo::Render()
 			LightMaterial[LightType]->Binding();
 			GDirectXDevice->SetRSState(ERasterizerType::RT_CullFront); // 카메라가 광원 내부로 진입할 경우 대비
 			GDirectXDevice->SetBSState(EBlendStateType::BST_One_One); // 빛이 누적되어야 하기 때문
-			GDirectXDevice->SetDSState(EDepthStencilStateType::STENCIL_EQUAL, 0);
+			GDirectXDevice->SetDSState(EDepthStencilStateType::VOLUME_STENCIL_EQUAL, 0);
 			LightVolumeMesh[LightType]->Draw();
 		}
 		

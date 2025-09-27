@@ -5,7 +5,6 @@
 
 #pragma once
 #include "FPrimitiveSceneProxy.h"
-#include "Engine/Material/UMaterial.h"
 #include "Engine/Mesh/StaticMeshResources.h"
 
 class UStaticMesh;

@@ -1,11 +1,9 @@
-﻿// 02.13
+// 02.13
 // 언리얼 엔진 5 코드를 분석하며 자체엔진으로 작성중인 코드입니다.
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
 
 #pragma once
-#include "Engine/MyEngineUtils.h"
-
 #include "nlohmann/json.hpp"
 
 #define GENERATE_UOBJECT_DERIVED_CLASS(CLASS)\
@@ -92,22 +90,12 @@ private:
 	bool bIsRegister = false;
 
 	// Class Default Object 보관
-	static std::unordered_map<std::string, std::unique_ptr<UObject>>& GetCDOMap()
-	{
-		static std::unordered_map<std::string, std::unique_ptr<UObject>> ClassDefaultObjectMap;
-		return ClassDefaultObjectMap;
-	}
+	static std::unordered_map<std::string, std::unique_ptr<UObject>>& GetCDOMap();
 
 public:
-	static void AddClassDefaultObject(const std::string& ClassName, std::unique_ptr<UObject>&& DefaultObject)
-	{
-		GetCDOMap()[ClassName] = std::move(DefaultObject);
-	}
+	static void AddClassDefaultObject(const std::string& ClassName, std::unique_ptr<UObject>&& DefaultObject);
 
-	static const UObject* GetDefaultObject(const std::string& ClassName)
-	{
-		return GetCDOMap()[ClassName].get();
-	}
+	static const UObject* GetDefaultObject(const std::string& ClassName);
 };
 
 //std::unordered_map<std::string, std::unique_ptr<UObject>> UObject::ClassDefaultObject;

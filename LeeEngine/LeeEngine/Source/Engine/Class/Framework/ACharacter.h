@@ -24,18 +24,7 @@ public:
 		const physx::PxFilterData& /*filterData*/,
 		const physx::PxShape* /*shape*/,
 		const physx::PxRigidActor* actor,
-		physx::PxHitFlags& /*queryFlags*/) override
-	{
-		if (actor->userData)
-		{
-			if (IgnoreActor == static_cast<UShapeComponent*>(actor->userData)->GetOwner())
-			{
-				return physx::PxQueryHitType::eNONE; // 충돌 무시
-			}	
-		}
-
-		return physx::PxQueryHitType::eBLOCK;
-	}
+		physx::PxHitFlags& /*queryFlags*/) override;
 
 	physx::PxQueryHitType::Enum postFilter(const physx::PxFilterData& filterData, const physx::PxQueryHit& hit, const physx::PxShape* shape, const physx::PxRigidActor* actor) override
 	{
@@ -105,7 +94,7 @@ public:
 	std::shared_ptr<UCameraComponent> GetCameraComponent() const {return CameraComp;}
 
 
-	const std::shared_ptr<UAnimInstance>& GetAnimInstance() const {return GetSkeletalMeshComponent()->GetAnimInstance();}
+	std::shared_ptr<UAnimInstance> GetAnimInstance() const {return GetSkeletalMeshComponent()->GetAnimInstance();}
 
 	void HandleRootMotion(const XMMATRIX& Root);
 

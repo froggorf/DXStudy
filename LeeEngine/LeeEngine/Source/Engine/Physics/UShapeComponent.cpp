@@ -1,8 +1,6 @@
 #include "CoreMinimal.h"
 #include "UShapeComponent.h"
 
-#include "UPhysicsEngine.h"
-
 UShapeComponent::UShapeComponent()
 {
 	SetCollisionEnabled(ECollisionEnabled::Physics);

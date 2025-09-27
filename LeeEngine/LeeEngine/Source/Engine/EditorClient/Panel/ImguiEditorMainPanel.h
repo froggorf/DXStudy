@@ -6,7 +6,6 @@
 #pragma once
 
 #include "ImguiPanel.h"
-#include "Engine/MyEngineUtils.h"
 
 class FScene;
 
@@ -18,9 +17,7 @@ public:
 
 	void Draw() override;
 
-	void ExecuteCommand(const std::shared_ptr<FImguiPanelCommandData>& CommandData) override
-	{
-	};
+	void ExecuteCommand(const std::shared_ptr<FImguiPanelCommandData>& CommandData) override { }
 
 protected:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> PlayIcon;

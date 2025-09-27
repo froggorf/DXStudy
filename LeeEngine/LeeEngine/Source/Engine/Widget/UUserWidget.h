@@ -5,7 +5,6 @@
 
 #pragma once
 #include "ChildWidget.h"
-#include "Engine/Class/Framework/UPlayerInput.h"
 
 class APlayerController;
 
@@ -18,13 +17,7 @@ public:
 		OwnerWidget = std::make_shared<FCanvasWidget>();
 	}
 
-	virtual void Tick(float DeltaSeconds) 
-	{
-		if (OwnerWidget)
-		{
-			OwnerWidget->Tick(DeltaSeconds);
-		}
-	}
+	virtual void Tick(float DeltaSeconds) ;
 
 	virtual void NativeConstruct();
 

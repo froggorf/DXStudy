@@ -29,14 +29,7 @@ class UAnimMontage : public UAnimCompositeBase
 {
 	MY_GENERATE_BODY(UAnimMontage)
 
-	static std::shared_ptr<UAnimMontage> GetAnimationAsset(const std::string& AnimationName)
-	{
-		if (std::shared_ptr<UAnimationAsset> FindAsset = UAnimationAsset::GetAnimationAsset(AnimationName))
-		{
-			return std::dynamic_pointer_cast<UAnimMontage>(FindAsset);
-		}
-		return nullptr;
-	}
+	static std::shared_ptr<UAnimMontage> GetAnimationAsset(const std::string& AnimationName);
 
 	FAlphaBlend BlendIn;
 	FAlphaBlend BlendOut;

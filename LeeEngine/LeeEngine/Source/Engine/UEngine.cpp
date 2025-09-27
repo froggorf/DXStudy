@@ -4,17 +4,8 @@
 // 이윤석
 #include "CoreMinimal.h"
 #include "UEngine.h"
-
-#include <windowsx.h>
-
-#include "FAudioDevice.h"
-#include "Class/Framework/UPlayerInput.h"
-#include "Mesh/UStaticMesh.h"
-#include "RenderCore/RenderingThread.h"
 #include "World/UWorld.h"
 #include "Misc/QueuedThreadPool.h"
-#include "Physics/UPhysicsEngine.h"
-#include "RenderCore/EditorScene.h"
 #include "RenderCore/ImGUIActionTask.h"
 
 std::shared_ptr<UEngine> GEngine = nullptr;
@@ -443,16 +434,16 @@ void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_LBUTTONDOWN:
 	case WM_LBUTTONUP:
 		InputEvent.Key= EKeys::MouseLeft;
-		InputEvent.CurPosition.x = GET_X_LPARAM(lParam);
-		InputEvent.CurPosition.y = GET_Y_LPARAM(lParam);
+		InputEvent.CurPosition.x = static_cast<float>(GET_X_LPARAM(lParam));
+		InputEvent.CurPosition.y = static_cast<float>(GET_Y_LPARAM(lParam));
 		InputEvent.bKeyDown = (msg == WM_LBUTTONDOWN);
 		InputEvent.bIsKeyEvent = false;
 		break;
 	case WM_RBUTTONUP:
 	case WM_RBUTTONDOWN:
 		InputEvent.Key= EKeys::MouseRight;
-		InputEvent.CurPosition.x = GET_X_LPARAM(lParam);
-		InputEvent.CurPosition.y = GET_Y_LPARAM(lParam);
+		InputEvent.CurPosition.x = static_cast<float>(GET_X_LPARAM(lParam));
+		InputEvent.CurPosition.y = static_cast<float>(GET_Y_LPARAM(lParam));
 		InputEvent.bKeyDown = (msg == WM_RBUTTONDOWN);
 		InputEvent.bIsKeyEvent = false;
 		break;

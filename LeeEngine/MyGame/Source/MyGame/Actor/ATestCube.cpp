@@ -1,16 +1,8 @@
 #include <CoreMinimal.h>
 
 #include "ATestCube.h"
-
-#include "imgui_internal.h"
 #include "../Widget/UMyTestWidget.h"
-#include "Engine/UEditorEngine.h"
-#include "Engine/Components/UNiagaraComponent.h"
-#include "Engine/Components/USceneComponent.h"
 #include "Engine/Components/UStaticMeshComponent.h"
-#include "Engine/Mesh/UStaticMesh.h"
-#include "Engine/Physics/UPhysicsEngine.h"
-#include "Engine/World/UWorld.h"
 
 rcPolyMesh* ATestCube::MyPolyMesh;
 rcPolyMeshDetail* ATestCube::MyPolyDetail;
@@ -234,301 +226,301 @@ void ATestCube::ShowDebug()
 	FScene::DrawDebugData_GameThread(Data);
 }
 
-bool CreateRecastPolyMesh(const std::vector<float> verts, const std::vector<int> tris, int nverts, int ntris, rcPolyMesh* LastPolyMesh, rcPolyMeshDetail* LastPolyDetail, rcPolyMesh** OutPolyMesh, rcPolyMeshDetail** OutPolyDetail)
-{
-	// AABB 구하기
-	float bmin[3] = { verts[0], verts[1], verts[2] };
-	float bmax[3] = { verts[0], verts[1], verts[2] };
-	for (int i = 0; i < nverts; ++i)
-	{
-		float x = verts[i * 3 + 0];
-		float y = verts[i * 3 + 1];
-		float z = verts[i * 3 + 2];
-		if (x < bmin[0]) bmin[0] = x;
-		if (y < bmin[1]) bmin[1] = y;
-		if (z < bmin[2]) bmin[2] = z;
-		if (x > bmax[0]) bmax[0] = x;
-		if (y > bmax[1]) bmax[1] = y;
-		if (z > bmax[2]) bmax[2] = z;
-	}
-
-	rcConfig m_cfg;	
-	memset(&m_cfg, 0, sizeof(m_cfg));
-	float Gap = 100.0f;
-	m_cfg.cs = 0.3f*Gap;
-	m_cfg.ch = 0.2f*Gap;
-	m_cfg.walkableSlopeAngle = 45.0f;
-	m_cfg.walkableHeight = (int)ceilf(2.0*Gap / m_cfg.ch);
-	m_cfg.walkableClimb = (int)floorf(0.3*Gap / m_cfg.ch);
-	m_cfg.walkableRadius = (int)ceilf(0.3*Gap / m_cfg.cs);
-	m_cfg.maxEdgeLen = (int)(12 / m_cfg.cs);
-	m_cfg.maxSimplificationError = 1.3;
-	m_cfg.minRegionArea = (int)rcSqr(8);		// Note: area = size*size
-	m_cfg.mergeRegionArea = (int)rcSqr(20);	// Note: area = size*size
-	m_cfg.maxVertsPerPoly = (int)6;
-	m_cfg.detailSampleDist = m_cfg.cs * 6;
-	m_cfg.detailSampleMaxError = m_cfg.ch * 1;
-
-	m_cfg.bmin[0] = bmin[0]; m_cfg.bmin[1] = bmin[1]; m_cfg.bmin[2] = bmin[2];
-	m_cfg.bmax[0] = bmax[0]; m_cfg.bmax[1] = bmax[1]; m_cfg.bmax[2] = bmax[2];
-	rcCalcGridSize(m_cfg.bmin, m_cfg.bmax, m_cfg.cs, &m_cfg.width, &m_cfg.height);
-	// ========================================
-	// 3. rcContext 생성
-	// ========================================
-	rcContext* ctx = new rcContext();
-
-	//
-	// Step 2. Rasterize input polygon soup.
-	//
-	// Allocate voxel heightfield where we rasterize our input data to.
-	rcHeightfield* solid = rcAllocHeightfield();
-
-
-
-	if (!solid)
-	{
-		assert(nullptr&&"!solid");
-	}
-	if (!rcCreateHeightfield(ctx, *solid, m_cfg.width, m_cfg.height, m_cfg.bmin, m_cfg.bmax, m_cfg.cs, m_cfg.ch))
-	{
-		assert(nullptr&&"!rcCreateHeightfield");
-		return false;
-	}
-
-	// Allocate array that can hold triangle area types.
-	// If you have multiple meshes you need to process, allocate
-	// and array which can hold the max number of triangles you need to process.
-	unsigned char* triAreas = new unsigned char[ntris]; // 삼각형별 걷기 가능/불가능 정보
-
-	// Find triangles which are walkable based on their slope and rasterize them.
-	// If your input data is multiple meshes, you can transform them here, calculate
-	// the are type for each of the meshes and rasterize them.
-	memset(triAreas, 0, ntris*sizeof(unsigned char));
-	rcMarkWalkableTriangles(ctx, m_cfg.walkableSlopeAngle, verts.data(), nverts, tris.data(), ntris, triAreas);
-	if (!rcRasterizeTriangles(ctx, verts.data(), nverts, tris.data(), triAreas, ntris, *solid, m_cfg.walkableClimb))
-	{
-		assert(nullptr && "!rcRasterizeTriangles");
-		return false;
-	}
-
-	//
-	// Step 3. Filter walkable surfaces.
-	//
-
-	// Once all geometry is rasterized, we do initial pass of filtering to
-	// remove unwanted overhangs caused by the conservative rasterization
-	// as well as filter spans where the character cannot possibly stand.
-	rcFilterLowHangingWalkableObstacles(ctx, m_cfg.walkableClimb, *solid);
-	rcFilterLedgeSpans(ctx, m_cfg.walkableHeight, m_cfg.walkableClimb, *solid);
-	rcFilterWalkableLowHeightSpans(ctx, m_cfg.walkableHeight, *solid);
-
-
-	//
-	// Step 4. Partition walkable surface to simple regions.
-	//
-
-	// Compact the heightfield so that it is faster to handle from now on.
-	// This will result more cache coherent data as well as the neighbours
-	// between walkable cells will be calculated.
-	rcCompactHeightfield* chf = rcAllocCompactHeightfield();
-	if (!rcBuildCompactHeightfield(ctx, m_cfg.walkableHeight, m_cfg.walkableClimb, *solid, *chf))
-	{
-		assert(nullptr && "!rcBuildCompactHeightField");
-		return false;
-	}
-
-	// Erode the walkable area by agent radius.
-	if (!rcErodeWalkableArea(ctx, m_cfg.walkableRadius, *chf))
-	{
-		assert(nullptr && "!rcErodeWalkableArea");
-		return false;
-	}
-
-	// ========================================
-	// 8. 거리 필드 & 지역 분할
-	// ========================================
-	if (!rcBuildDistanceField(ctx, *chf)) {
-		assert(nullptr && "!rcBuildDistanceField");
-		return false;
-	}
-	if (!rcBuildRegions(ctx, *chf, 0, m_cfg.minRegionArea, m_cfg.mergeRegionArea)) {
-		assert(nullptr && "!rcBuildRegions");
-		return false;
-	}
-
-	// ========================================
-	// 9. 윤곽선(Contour) 생성
-	// ========================================
-	rcContourSet* cset = rcAllocContourSet();
-	if (!rcBuildContours(ctx, *chf, m_cfg.maxSimplificationError, m_cfg.maxEdgeLen, *cset))
-	{
-		assert(nullptr && "!rcBuildContours");
-		return false;
-	}
-
-	// ========================================
-	// 10. 폴리곤 메시 생성
-	// ========================================
-	rcPolyMesh* pmesh = rcAllocPolyMesh();
-	if (!rcBuildPolyMesh(ctx, *cset, m_cfg.maxVertsPerPoly, *pmesh))
-	{
-		assert(nullptr && "!rcBuildPolyMesh");
-		return false;
-	}
-
-	// ========================================
-	// 11. 디테일 메시 생성
-	// ========================================
-	rcPolyMeshDetail* dmesh = rcAllocPolyMeshDetail();
-	if (!rcBuildPolyMeshDetail(ctx, *pmesh, *chf, m_cfg.detailSampleDist, m_cfg.detailSampleMaxError, *dmesh))
-	{
-		assert(nullptr && "!rcBuildPolyMeshDetail");
-		return false;
-	}
-
-
-	if(LastPolyMesh)
-	{
-		std::vector<rcPolyMesh*> PolyMeshes { LastPolyMesh, pmesh };
-		rcPolyMesh* mergedMesh = rcAllocPolyMesh();
-		if (!rcMergePolyMeshes(ctx, PolyMeshes.data(), PolyMeshes.size(), *mergedMesh))
-		{
-			assert(nullptr && "!rcMergePolyMeshes");
-			return false;
-		}
-		rcFreePolyMesh(pmesh); // 이전 pmesh는 더 이상 필요 없음
-		pmesh = mergedMesh;
-
-		rcFreePolyMeshDetail(dmesh);
-		dmesh = rcAllocPolyMeshDetail();
-		if(!rcBuildPolyMeshDetail(ctx, *pmesh, *chf, m_cfg.detailSampleDist, m_cfg.detailSampleMaxError, *dmesh))
-		{
-			assert(nullptr && "!rcBuildPolyMeshDetail");
-			return false;
-		}
-	}
-
-	*OutPolyMesh = pmesh;
-	*OutPolyDetail =dmesh;
-	return true;
-}
-
-void ATestCube::DoRecast()
-{
-	rcPolyMesh* CurPolyMesh = nullptr;
-	rcPolyMeshDetail* CurPolyDetail = nullptr;
-
-	std::vector<float> verts;
-	std::vector<int> tris;
-
-	int vertexOffset = 0;
-
-
-	int nverts = verts.size() / 3;
-	int ntris = tris.size() / 3;
-
-
-	CreateRecastPolyMesh(verts, tris,  verts.size()/3, tris.size()/3, nullptr, nullptr, &CurPolyMesh, &CurPolyDetail);
-
-	
-	RecastConvexMesh = std::make_shared<UConvexComponent>();
-	RecastConvexMesh->CreateVertexBufferForNavMesh(CurPolyDetail);
-
-	ShowDebug();
-
-	// ========================================
-	// 12. Detour 데이터로 변환 (선택)
-	// ========================================
-	// Detour를 사용한다면 pmesh, dmesh 내용을 Detour NavMesh로 변환
-
-	MyPolyMesh = CurPolyMesh;
-	MyPolyDetail = CurPolyDetail;
-
-	CreateDetour();
-
-	// ========================================
-	// 13. 메모리 해제
-	// ========================================
-	/*delete[] triAreas;
-	rcFreeHeightField(solid);
-	rcFreeCompactHeightfield(chf);
-	rcFreeContourSet(cset);
-	rcFreePolyMesh(pmesh);
-	rcFreePolyMeshDetail(dmesh);
-	delete ctx;*/
-}
-
-void ATestCube::CreateDetour(){
-
-	dtNavMeshCreateParams params = {};
-	memset(&params, 0, sizeof(params));
-
-	// rcPolyMesh에서 정보 복사
-	params.verts = MyPolyMesh->verts;
-	params.vertCount = MyPolyMesh->nverts;
-	params.polys = MyPolyMesh->polys;
-	params.polyAreas = MyPolyMesh->areas;
-	unsigned short* polyFlags = new unsigned short[params.polyCount];
-	for (int i = 0; i < params.polyCount; ++i)
-	{
-		// 모든 폴리곤을 "걷기 가능"으로 세팅
-		polyFlags[i] = 0x01;
-	}
-	params.polyFlags = polyFlags;
-	params.polyCount = MyPolyMesh->npolys;
-	params.nvp = MyPolyMesh->nvp;
-
-	// rcPolyMeshDetail에서 정보 복사
-	params.detailMeshes = MyPolyDetail->meshes;
-	params.detailVerts = MyPolyDetail->verts;
-	params.detailVertsCount = MyPolyDetail->nverts;
-	params.detailTris = MyPolyDetail->tris;
-	params.detailTriCount = MyPolyDetail->ntris;
-
-	float Gap = MyPolyMesh->ch/0.2f;
-	// 기타 옵션
-	params.walkableHeight = (int)ceilf(2.0*Gap / MyPolyMesh->ch);
-	params.walkableClimb = (int)ceilf(0.3*Gap / MyPolyMesh->ch);
-	params.walkableRadius = (int)floorf(0.3*Gap / MyPolyMesh->cs);
-	params.tileX = 0;
-	params.tileY = 0;
-	params.tileLayer = 0;
-	params.bmin[0] = MyPolyMesh->bmin[0];
-	params.bmin[1] = MyPolyMesh->bmin[1];
-	params.bmin[2] = MyPolyMesh->bmin[2];
-	params.bmax[0] = MyPolyMesh->bmax[0];
-	params.bmax[1] = MyPolyMesh->bmax[1];
-	params.bmax[2] = MyPolyMesh->bmax[2];
-	params.cs = MyPolyMesh->cs;
-	params.ch = MyPolyMesh->ch;
-	params.buildBvTree = false; // BV트리 사용 여부
-	
-
-	unsigned char* navData = nullptr;
-	int navDataSize = 0;
-
-	if (!dtCreateNavMeshData(&params, &navData, &navDataSize))
-	{
-		assert(nullptr&& "!dtCreateNavMeshData");
-		return;
-	}
-
-	dtNavMesh* navMesh = dtAllocNavMesh();
-	if (!navMesh)
-	{
-		assert(nullptr&& "!dtCreateNavMeshData");
-		return;
-	}
-
-	dtStatus status = navMesh->init(navData, navDataSize, DT_TILE_FREE_DATA);
-	if (dtStatusFailed(status))
-	{
-		dtFree(navMesh);
-		assert(nullptr&& "!dtCreateNavMeshData");
-		return;
-	}
-
-	MyDtNavMesh = navMesh;
-	MyDtNavQuery = dtAllocNavMeshQuery();
-	MyDtNavQuery->init(MyDtNavMesh, 4096*4);
-}
+//bool CreateRecastPolyMesh(const std::vector<float> verts, const std::vector<int> tris, int nverts, int ntris, rcPolyMesh* LastPolyMesh, rcPolyMeshDetail* LastPolyDetail, rcPolyMesh** OutPolyMesh, rcPolyMeshDetail** OutPolyDetail)
+//{
+//	// AABB 구하기
+//	float bmin[3] = { verts[0], verts[1], verts[2] };
+//	float bmax[3] = { verts[0], verts[1], verts[2] };
+//	for (int i = 0; i < nverts; ++i)
+//	{
+//		float x = verts[i * 3 + 0];
+//		float y = verts[i * 3 + 1];
+//		float z = verts[i * 3 + 2];
+//		if (x < bmin[0]) bmin[0] = x;
+//		if (y < bmin[1]) bmin[1] = y;
+//		if (z < bmin[2]) bmin[2] = z;
+//		if (x > bmax[0]) bmax[0] = x;
+//		if (y > bmax[1]) bmax[1] = y;
+//		if (z > bmax[2]) bmax[2] = z;
+//	}
+//
+//	rcConfig m_cfg;	
+//	memset(&m_cfg, 0, sizeof(m_cfg));
+//	float Gap = 100.0f;
+//	m_cfg.cs = 0.3f*Gap;
+//	m_cfg.ch = 0.2f*Gap;
+//	m_cfg.walkableSlopeAngle = 45.0f;
+//	m_cfg.walkableHeight = (int)ceilf(2.0*Gap / m_cfg.ch);
+//	m_cfg.walkableClimb = (int)floorf(0.3*Gap / m_cfg.ch);
+//	m_cfg.walkableRadius = (int)ceilf(0.3*Gap / m_cfg.cs);
+//	m_cfg.maxEdgeLen = (int)(12 / m_cfg.cs);
+//	m_cfg.maxSimplificationError = 1.3;
+//	m_cfg.minRegionArea = (int)rcSqr(8);		// Note: area = size*size
+//	m_cfg.mergeRegionArea = (int)rcSqr(20);	// Note: area = size*size
+//	m_cfg.maxVertsPerPoly = (int)6;
+//	m_cfg.detailSampleDist = m_cfg.cs * 6;
+//	m_cfg.detailSampleMaxError = m_cfg.ch * 1;
+//
+//	m_cfg.bmin[0] = bmin[0]; m_cfg.bmin[1] = bmin[1]; m_cfg.bmin[2] = bmin[2];
+//	m_cfg.bmax[0] = bmax[0]; m_cfg.bmax[1] = bmax[1]; m_cfg.bmax[2] = bmax[2];
+//	rcCalcGridSize(m_cfg.bmin, m_cfg.bmax, m_cfg.cs, &m_cfg.width, &m_cfg.height);
+//	// ========================================
+//	// 3. rcContext 생성
+//	// ========================================
+//	rcContext* ctx = new rcContext();
+//
+//	//
+//	// Step 2. Rasterize input polygon soup.
+//	//
+//	// Allocate voxel heightfield where we rasterize our input data to.
+//	rcHeightfield* solid = rcAllocHeightfield();
+//
+//
+//
+//	if (!solid)
+//	{
+//		assert(nullptr&&"!solid");
+//	}
+//	if (!rcCreateHeightfield(ctx, *solid, m_cfg.width, m_cfg.height, m_cfg.bmin, m_cfg.bmax, m_cfg.cs, m_cfg.ch))
+//	{
+//		assert(nullptr&&"!rcCreateHeightfield");
+//		return false;
+//	}
+//
+//	// Allocate array that can hold triangle area types.
+//	// If you have multiple meshes you need to process, allocate
+//	// and array which can hold the max number of triangles you need to process.
+//	unsigned char* triAreas = new unsigned char[ntris]; // 삼각형별 걷기 가능/불가능 정보
+//
+//	// Find triangles which are walkable based on their slope and rasterize them.
+//	// If your input data is multiple meshes, you can transform them here, calculate
+//	// the are type for each of the meshes and rasterize them.
+//	memset(triAreas, 0, ntris*sizeof(unsigned char));
+//	rcMarkWalkableTriangles(ctx, m_cfg.walkableSlopeAngle, verts.data(), nverts, tris.data(), ntris, triAreas);
+//	if (!rcRasterizeTriangles(ctx, verts.data(), nverts, tris.data(), triAreas, ntris, *solid, m_cfg.walkableClimb))
+//	{
+//		assert(nullptr && "!rcRasterizeTriangles");
+//		return false;
+//	}
+//
+//	//
+//	// Step 3. Filter walkable surfaces.
+//	//
+//
+//	// Once all geometry is rasterized, we do initial pass of filtering to
+//	// remove unwanted overhangs caused by the conservative rasterization
+//	// as well as filter spans where the character cannot possibly stand.
+//	rcFilterLowHangingWalkableObstacles(ctx, m_cfg.walkableClimb, *solid);
+//	rcFilterLedgeSpans(ctx, m_cfg.walkableHeight, m_cfg.walkableClimb, *solid);
+//	rcFilterWalkableLowHeightSpans(ctx, m_cfg.walkableHeight, *solid);
+//
+//
+//	//
+//	// Step 4. Partition walkable surface to simple regions.
+//	//
+//
+//	// Compact the heightfield so that it is faster to handle from now on.
+//	// This will result more cache coherent data as well as the neighbours
+//	// between walkable cells will be calculated.
+//	rcCompactHeightfield* chf = rcAllocCompactHeightfield();
+//	if (!rcBuildCompactHeightfield(ctx, m_cfg.walkableHeight, m_cfg.walkableClimb, *solid, *chf))
+//	{
+//		assert(nullptr && "!rcBuildCompactHeightField");
+//		return false;
+//	}
+//
+//	// Erode the walkable area by agent radius.
+//	if (!rcErodeWalkableArea(ctx, m_cfg.walkableRadius, *chf))
+//	{
+//		assert(nullptr && "!rcErodeWalkableArea");
+//		return false;
+//	}
+//
+//	// ========================================
+//	// 8. 거리 필드 & 지역 분할
+//	// ========================================
+//	if (!rcBuildDistanceField(ctx, *chf)) {
+//		assert(nullptr && "!rcBuildDistanceField");
+//		return false;
+//	}
+//	if (!rcBuildRegions(ctx, *chf, 0, m_cfg.minRegionArea, m_cfg.mergeRegionArea)) {
+//		assert(nullptr && "!rcBuildRegions");
+//		return false;
+//	}
+//
+//	// ========================================
+//	// 9. 윤곽선(Contour) 생성
+//	// ========================================
+//	rcContourSet* cset = rcAllocContourSet();
+//	if (!rcBuildContours(ctx, *chf, m_cfg.maxSimplificationError, m_cfg.maxEdgeLen, *cset))
+//	{
+//		assert(nullptr && "!rcBuildContours");
+//		return false;
+//	}
+//
+//	// ========================================
+//	// 10. 폴리곤 메시 생성
+//	// ========================================
+//	rcPolyMesh* pmesh = rcAllocPolyMesh();
+//	if (!rcBuildPolyMesh(ctx, *cset, m_cfg.maxVertsPerPoly, *pmesh))
+//	{
+//		assert(nullptr && "!rcBuildPolyMesh");
+//		return false;
+//	}
+//
+//	// ========================================
+//	// 11. 디테일 메시 생성
+//	// ========================================
+//	rcPolyMeshDetail* dmesh = rcAllocPolyMeshDetail();
+//	if (!rcBuildPolyMeshDetail(ctx, *pmesh, *chf, m_cfg.detailSampleDist, m_cfg.detailSampleMaxError, *dmesh))
+//	{
+//		assert(nullptr && "!rcBuildPolyMeshDetail");
+//		return false;
+//	}
+//
+//
+//	if(LastPolyMesh)
+//	{
+//		std::vector<rcPolyMesh*> PolyMeshes { LastPolyMesh, pmesh };
+//		rcPolyMesh* mergedMesh = rcAllocPolyMesh();
+//		if (!rcMergePolyMeshes(ctx, PolyMeshes.data(), PolyMeshes.size(), *mergedMesh))
+//		{
+//			assert(nullptr && "!rcMergePolyMeshes");
+//			return false;
+//		}
+//		rcFreePolyMesh(pmesh); // 이전 pmesh는 더 이상 필요 없음
+//		pmesh = mergedMesh;
+//
+//		rcFreePolyMeshDetail(dmesh);
+//		dmesh = rcAllocPolyMeshDetail();
+//		if(!rcBuildPolyMeshDetail(ctx, *pmesh, *chf, m_cfg.detailSampleDist, m_cfg.detailSampleMaxError, *dmesh))
+//		{
+//			assert(nullptr && "!rcBuildPolyMeshDetail");
+//			return false;
+//		}
+//	}
+//
+//	*OutPolyMesh = pmesh;
+//	*OutPolyDetail =dmesh;
+//	return true;
+//}
+//
+//void ATestCube::DoRecast()
+//{
+//	rcPolyMesh* CurPolyMesh = nullptr;
+//	rcPolyMeshDetail* CurPolyDetail = nullptr;
+//
+//	std::vector<float> verts;
+//	std::vector<int> tris;
+//
+//	int vertexOffset = 0;
+//
+//
+//	int nverts = verts.size() / 3;
+//	int ntris = tris.size() / 3;
+//
+//
+//	CreateRecastPolyMesh(verts, tris,  verts.size()/3, tris.size()/3, nullptr, nullptr, &CurPolyMesh, &CurPolyDetail);
+//
+//	
+//	RecastConvexMesh = std::make_shared<UConvexComponent>();
+//	RecastConvexMesh->CreateVertexBufferForNavMesh(CurPolyDetail);
+//
+//	ShowDebug();
+//
+//	// ========================================
+//	// 12. Detour 데이터로 변환 (선택)
+//	// ========================================
+//	// Detour를 사용한다면 pmesh, dmesh 내용을 Detour NavMesh로 변환
+//
+//	MyPolyMesh = CurPolyMesh;
+//	MyPolyDetail = CurPolyDetail;
+//
+//	CreateDetour();
+//
+//	// ========================================
+//	// 13. 메모리 해제
+//	// ========================================
+//	/*delete[] triAreas;
+//	rcFreeHeightField(solid);
+//	rcFreeCompactHeightfield(chf);
+//	rcFreeContourSet(cset);
+//	rcFreePolyMesh(pmesh);
+//	rcFreePolyMeshDetail(dmesh);
+//	delete ctx;*/
+//}
+//
+//void ATestCube::CreateDetour(){
+//
+//	dtNavMeshCreateParams params = {};
+//	memset(&params, 0, sizeof(params));
+//
+//	// rcPolyMesh에서 정보 복사
+//	params.verts = MyPolyMesh->verts;
+//	params.vertCount = MyPolyMesh->nverts;
+//	params.polys = MyPolyMesh->polys;
+//	params.polyAreas = MyPolyMesh->areas;
+//	unsigned short* polyFlags = new unsigned short[params.polyCount];
+//	for (int i = 0; i < params.polyCount; ++i)
+//	{
+//		// 모든 폴리곤을 "걷기 가능"으로 세팅
+//		polyFlags[i] = 0x01;
+//	}
+//	params.polyFlags = polyFlags;
+//	params.polyCount = MyPolyMesh->npolys;
+//	params.nvp = MyPolyMesh->nvp;
+//
+//	// rcPolyMeshDetail에서 정보 복사
+//	params.detailMeshes = MyPolyDetail->meshes;
+//	params.detailVerts = MyPolyDetail->verts;
+//	params.detailVertsCount = MyPolyDetail->nverts;
+//	params.detailTris = MyPolyDetail->tris;
+//	params.detailTriCount = MyPolyDetail->ntris;
+//
+//	float Gap = MyPolyMesh->ch/0.2f;
+//	// 기타 옵션
+//	params.walkableHeight = (int)ceilf(2.0*Gap / MyPolyMesh->ch);
+//	params.walkableClimb = (int)ceilf(0.3*Gap / MyPolyMesh->ch);
+//	params.walkableRadius = (int)floorf(0.3*Gap / MyPolyMesh->cs);
+//	params.tileX = 0;
+//	params.tileY = 0;
+//	params.tileLayer = 0;
+//	params.bmin[0] = MyPolyMesh->bmin[0];
+//	params.bmin[1] = MyPolyMesh->bmin[1];
+//	params.bmin[2] = MyPolyMesh->bmin[2];
+//	params.bmax[0] = MyPolyMesh->bmax[0];
+//	params.bmax[1] = MyPolyMesh->bmax[1];
+//	params.bmax[2] = MyPolyMesh->bmax[2];
+//	params.cs = MyPolyMesh->cs;
+//	params.ch = MyPolyMesh->ch;
+//	params.buildBvTree = false; // BV트리 사용 여부
+//	
+//
+//	unsigned char* navData = nullptr;
+//	int navDataSize = 0;
+//
+//	if (!dtCreateNavMeshData(&params, &navData, &navDataSize))
+//	{
+//		assert(nullptr&& "!dtCreateNavMeshData");
+//		return;
+//	}
+//
+//	dtNavMesh* navMesh = dtAllocNavMesh();
+//	if (!navMesh)
+//	{
+//		assert(nullptr&& "!dtCreateNavMeshData");
+//		return;
+//	}
+//
+//	dtStatus status = navMesh->init(navData, navDataSize, DT_TILE_FREE_DATA);
+//	if (dtStatusFailed(status))
+//	{
+//		dtFree(navMesh);
+//		assert(nullptr&& "!dtCreateNavMeshData");
+//		return;
+//	}
+//
+//	MyDtNavMesh = navMesh;
+//	MyDtNavQuery = dtAllocNavMeshQuery();
+//	MyDtNavQuery->init(MyDtNavMesh, 4096*4);
+//}

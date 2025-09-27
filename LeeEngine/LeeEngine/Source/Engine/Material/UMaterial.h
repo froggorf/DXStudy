@@ -4,8 +4,6 @@
 // 이윤석
 
 #pragma once
-
-#include "Engine/MyEngineUtils.h"
 #include "Engine/Class/UTexture.h"
 #include "Engine/UObject/UObject.h"
 
@@ -33,13 +31,9 @@ struct FMaterialParameterLayout
 class FShader
 {
 public:
-	FShader()
-	{
-	}
+	FShader() = default;
 
-	virtual ~FShader()
-	{
-	}
+	virtual ~FShader() = default;
 
 	void SetShaderID(UINT NewID);
 
@@ -48,15 +42,7 @@ public:
 		return ShaderID;
 	}
 
-	static std::shared_ptr<FShader> GetShader(const std::string& Name)
-	{
-		auto Shader = ShaderCache.find(Name);
-		if (Shader != ShaderCache.end())
-		{
-			return Shader->second;
-		}
-		return nullptr;
-	}
+	static std::shared_ptr<FShader> GetShader(const std::string& Name);
 
 	static void AddShaderCache(const std::string& Name, const std::shared_ptr<FShader>& NewShader)
 	{
@@ -80,13 +66,8 @@ public:
 class FVertexShader : public FGraphicsShader
 {
 public:
-	FVertexShader()
-	{
-	};
-
-	~FVertexShader() override
-	{
-	};
+	FVertexShader()= default;
+	~FVertexShader() override= default;
 
 	Microsoft::WRL::ComPtr<ID3DBlob>           VSBlob;
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> VertexShader;
@@ -98,13 +79,9 @@ public:
 class FPixelShader : public FGraphicsShader
 {
 public:
-	FPixelShader()
-	{
-	};
+	FPixelShader()= default;
 
-	~FPixelShader() override
-	{
-	}
+	~FPixelShader() override= default;
 
 	void CompilePixelShader(const std::string& FilePath, const std::string& FuncName);;
 
@@ -124,9 +101,7 @@ class UMaterialInterface : public UObject
 {
 	MY_GENERATE_BODY(UMaterialInterface)
 
-	UMaterialInterface()
-	{
-	};
+	UMaterialInterface()= default;
 	~UMaterialInterface() override = default;
 
 	virtual UINT GetMaterialID() const
@@ -190,12 +165,17 @@ class UMaterialInterface : public UObject
 	void SetBlendMode(EBlendMode InBlendMode) {BlendMode = InBlendMode;}
 	void SetRasterizerType(ERasterizerType InRasterizerType) {RasterizerType = InRasterizerType;}
 	void SetBlendStateType(EBlendStateType InBlendStateType) {BlendStateType = InBlendStateType;}
-	void SetDepthStencilState(EDepthStencilStateType InDepthStencilState) {DepthStencilState = InDepthStencilState;}
+	void SetDepthStencilState(EDepthStencilStateType InDepthStencilState, UINT NewStencilRef = 0)
+	{
+		DepthStencilState = InDepthStencilState;
+		StencilRef = NewStencilRef;
+	}
 
 	EBlendMode      BlendMode = EBlendMode::BM_Opaque;
 	ERasterizerType RasterizerType = ERasterizerType::RT_CullBack;
 	EBlendStateType BlendStateType = EBlendStateType::BST_Default;
 	EDepthStencilStateType DepthStencilState = EDepthStencilStateType::LESS;
+	UINT StencilRef = 0;
 };
 
 class UMaterial : public UMaterialInterface
@@ -462,13 +442,9 @@ public:
 class FGeometryShader : public FShader
 {
 public:
-	FGeometryShader()
-	{
-	};
+	FGeometryShader()= default;
 
-	~FGeometryShader() override
-	{
-	};
+	~FGeometryShader() override= default;
 	Microsoft::WRL::ComPtr<ID3DBlob>             GSBlob;
 	Microsoft::WRL::ComPtr<ID3D11GeometryShader> GeometryShader;
 	void                                         CompileGeometryShader(const std::string& FilePath, const std::string& FuncName);

@@ -5,10 +5,6 @@
 
 #pragma once
 #include "CoreMinimal.h"
-
-#include <concurrent_queue.h>
-
-#include "Engine/MyEngineUtils.h"
 #include "UObject/UObject.h"
 
 class USoundBase : public UObject
@@ -76,25 +72,7 @@ class FAudioThread
 public:
 	static std::atomic<bool> bIsGameRunning;
 
-	static void Execute()
-	{
-		std::function<void()> ExecuteFunc;
-		while (true)
-		{
-			if (!bIsGameRunning)
-			{
-				break;
-			}
-			if (ExecuteQueue.try_pop(ExecuteFunc))
-			{
-				ExecuteFunc();
-			}
-			else
-			{
-				std::this_thread::yield();
-			}
-		}
-	}
+	static void Execute();
 
 	static concurrency::concurrent_queue<std::function<void()>> ExecuteQueue;
 };

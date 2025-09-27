@@ -1,7 +1,5 @@
 #include "CoreMinimal.h"
 #include "UMaterial.h"
-#include "Engine/UEngine.h"
-#include "Engine/RenderCore/EditorScene.h"
 #include "Engine/SceneProxy/FNiagaraSceneProxy.h"
 
 using namespace Microsoft::WRL;
@@ -11,6 +9,16 @@ std::unordered_map<std::string, std::shared_ptr<FShader>> FShader::ShaderCache;
 void FShader::SetShaderID(UINT NewID)
 {
 	ShaderID = NewID;
+}
+
+std::shared_ptr<FShader> FShader::GetShader(const std::string& Name)
+{
+	auto Shader = ShaderCache.find(Name);
+	if (Shader != ShaderCache.end())
+	{
+		return Shader->second;
+	}
+	return nullptr;
 }
 
 void FVertexShader::CompileVertexShader(const std::string& FilePath, const std::string& FuncName)
@@ -246,6 +254,16 @@ void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 			TextureParams.emplace_back(UTexture::GetTextureCache(TextureName));
 		}
 	}
+
+	// 스텐실 데이터
+	if (AssetData.contains("Stencil"))
+	{
+		const nlohmann::basic_json<>& StencilData = AssetData["Stencil"];
+		UINT DepthStencilStateType = StencilData["DSState"];
+		UINT StencilRef = StencilData["Ref"];
+		SetDepthStencilState(static_cast<EDepthStencilStateType>(DepthStencilStateType), StencilRef);
+	}
+
 	MaterialID = MaterialIDCount++;
 }
 
@@ -258,7 +276,7 @@ void UMaterial::Binding()
 	GDirectXDevice->SetGeometryShader(GeometryShader.get());
 
 	GDirectXDevice->SetRSState(GetRSType());
-	GDirectXDevice->SetDSState(GetDepthStencilState());
+	GDirectXDevice->SetDSState(GetDepthStencilState(), StencilRef);
 	GDirectXDevice->SetBSState(GetBlendStateType());
 
 	ComPtr<ID3D11DeviceContext> DeviceContext = GDirectXDevice->GetDeviceContext();

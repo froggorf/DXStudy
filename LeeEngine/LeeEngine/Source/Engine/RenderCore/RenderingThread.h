@@ -27,15 +27,9 @@ struct FRenderTask
 	std::function<void(std::shared_ptr<class FScene>&)> CommandLambda;
 	FRenderTask*                                        Next;
 
-	FRenderTask()
-		: Next{nullptr}
-	{
-	}
+	FRenderTask() : Next{nullptr} {}
 
-	FRenderTask(const FRenderTask& Other)
-		: PrimitiveID{Other.PrimitiveID}, CommandLambda{Other.CommandLambda}, Next{Other.Next}
-	{
-	}
+	FRenderTask(const FRenderTask& Other) : PrimitiveID{Other.PrimitiveID}, CommandLambda{Other.CommandLambda}, Next{Other.Next} { }
 };
 
 class FRenderCommandPipe
@@ -51,44 +45,12 @@ class FRenderCommandPipe
 	//std::atomic<Node*> Tail;
 
 public:
-	static void Enqueue(std::function<void(std::shared_ptr<class FScene>&)>& CommandLambda)
-	{
-		// 다중 생성 기반 Queue
-		auto NewNode           = std::make_shared<FRenderTask>();
-		NewNode->CommandLambda = CommandLambda;
+	static void Enqueue(std::function<void(std::shared_ptr<class FScene>&)>& CommandLambda);
 
-		GetRenderCommandPipe().push(NewNode);
-		// MPSC Queue
-		//Node* NewNode = new Node();
-		//Node* PrevHead = RenderCommandPipe->Head.exchange(NewNode);
-		//PrevHead->Next= NewNode;
-	}
-
-	static bool Dequeue(std::shared_ptr<FRenderTask>& Result)
-	{
-		if (GetRenderCommandPipe().try_pop(Result))
-		{
-			return true;
-		}
-
-		return false;
-
-		// 단일 소비 기반 queue
-		//Node* PrevTail = Tail.load();
-		//Node* Next = PrevTail->Next;
-		//if (Next == nullptr)
-		//{
-		//	return false;
-		//}
-		//Result = *Next;
-		//Tail.store(Next);
-		//delete PrevTail;
-		//return true;
-	}
+	static bool Dequeue(std::shared_ptr<FRenderTask>& Result);
 
 private:
 	FRenderCommandPipe() = default;
-
 	~FRenderCommandPipe() = default;
 };
 
@@ -118,60 +80,27 @@ struct FPostProcessRenderData
 	// 결과물이 나오는 멀티렌더타겟의 타입
 	EMultiRenderTargetType OutRenderType;
 
-	FPostProcessRenderData(const FPostProcessRenderData& Other)
-	{
-		Priority = Other.Priority;
-		Name =  Other.Name;
-		MaterialInterface = Other.MaterialInterface;
-		OutRenderType = Other.OutRenderType;
-		FuncBeforeRendering = Other.FuncBeforeRendering;
-		SetSRVNames(Other.SRVNames);
-	}
-	FPostProcessRenderData& operator=(const FPostProcessRenderData& Other)
-	{
-		Priority = Other.Priority;
-		Name =  Other.Name;
-		MaterialInterface = Other.MaterialInterface;
-		OutRenderType = Other.OutRenderType;
-		FuncBeforeRendering = Other.FuncBeforeRendering;
-		SetSRVNames(Other.SRVNames);
+	FPostProcessRenderData(const FPostProcessRenderData& Other);
+	FPostProcessRenderData& operator=(const FPostProcessRenderData& Other);
 
-		return *this;
-	}
+	void SetFuncBeforeRendering(const std::vector<std::function<void()>>& NewFuncs);
 
-	void SetFuncBeforeRendering(const std::vector<std::function<void()>>& NewFuncs)
-	{
-		FuncBeforeRendering.clear();
-		FuncBeforeRendering = NewFuncs;
-	}
-
-	void SetSRVNames(const std::vector<std::string>& NewSRVs)
-	{
-		SRVNames.clear();
-		SRVNames =  NewSRVs;
-		SRVTextures.clear();
-		SRVTextures.resize(SRVNames.size());
-		for (size_t i = 0; i < SRVNames.size(); ++i)
-		{
-			SRVTextures[i] = UTexture::GetTextureCache(SRVNames[i]);
-		}
-	}
-	bool operator<(const FPostProcessRenderData& Other) const
-	{
-		if (Priority != Other.Priority)
-		{
-			return Priority < Other.Priority;
-		}
-		return Name < Other.Name;
-	}
+	void SetSRVNames(const std::vector<std::string>& NewSRVs);
+	bool operator<(const FPostProcessRenderData& Other) const;
 
 	const std::vector<std::string>& GetSRVNames() const {return SRVNames;}
 	const std::vector<std::weak_ptr<UTexture>>& GetSRVTextures() const {return SRVTextures;}
 	const std::vector<std::function<void()>>& GetFuncBeforeRendering() const {return FuncBeforeRendering;}
+	bool GetClearRenderTexture() const {return bClearRenderTexture;}
+	bool GetClearDepthStencilTexture() const {return bClearDepthStencilTexture;}
+	void SetClearRenderTexture(bool NewClear) {bClearRenderTexture = NewClear;}
+	void SetClearDepthStencilTexture(bool NewClear) {bClearDepthStencilTexture = NewClear;}
 private:
 	std::vector<std::string> SRVNames;
 	std::vector<std::weak_ptr<UTexture>> SRVTextures;
 	std::vector<std::function<void()>> FuncBeforeRendering;
+	bool bClearRenderTexture = true;
+	bool bClearDepthStencilTexture = true;
 };
 
 #if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
@@ -250,17 +179,9 @@ public:
 	}
 
 	// ImGUI 종료 함수
-	static void ShutdownImgui()
-	{
-		ImGui_ImplDX11_Shutdown();
-		ImGui_ImplWin32_Shutdown();
-		ImGui::DestroyContext();
-	}
+	static void ShutdownImgui();
 
-	static void ClearScene_GameThread()
-	{
-		ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData) { SceneData = nullptr; })
-	}
+	static void ClearScene_GameThread();
 
 	// 게임쓰레드 _ 씬 데이터를 레벨의 초기화에 맞춰 변경하는 함수
 #ifndef WITH_EDITOR
@@ -282,97 +203,37 @@ public:
 
 	// 렌더쓰레드 프레임 시작 알림 함수
 	// 게임쓰레드 시작 시 호출
-	static void BeginRenderFrame_GameThread(UINT GameThreadFrameCount)
-	{
-		ENQUEUE_RENDER_COMMAND([GameThreadFrameCount](std::shared_ptr<FScene>& SceneData) { BeginRenderFrame_RenderThread(SceneData, GameThreadFrameCount); })
-	}
+	static void BeginRenderFrame_GameThread(UINT GameThreadFrameCount);
 
 	static void  BeginRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData, UINT GameThreadFrameCount);
 
 	virtual void BeginRenderFrame();
 
 	// 렌더 쓰레드 프레임 종료 함수 (Draw에서 호출)
-	static void EndRenderFrame_GameThread()
-	{
-		ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData) { EndRenderFrame_RenderThread(SceneData); })
-	}
+	static void EndRenderFrame_GameThread();
 
 	// 새로운 UPrimitiveComponent 생성 후 register 시 렌더링 쓰레드에게 알리는 함수
-	static void AddPrimitive_GameThread(UINT PrimitiveID, std::shared_ptr<FPrimitiveSceneProxy>& SceneProxy, FTransform InitTransform)
-	{
-		if (nullptr == SceneProxy)
-		{
-			return;
-		}
-		auto Lambda = [PrimitiveID, SceneProxy, InitTransform](std::shared_ptr<FScene>& SceneData)
-		{
-			SceneProxy->SetSceneProxyWorldTransform(InitTransform);
-			AddPrimitive_RenderThread(SceneData, PrimitiveID, SceneProxy);
-		};
-		ENQUEUE_RENDER_COMMAND(Lambda)
-	}
+	static void AddPrimitive_GameThread(UINT PrimitiveID, std::shared_ptr<FPrimitiveSceneProxy>& SceneProxy, FTransform InitTransform);
 
-	static void AddPrimitive_RenderThread(const std::shared_ptr<FScene>& SceneData, UINT PrimitiveID, const std::shared_ptr<FPrimitiveSceneProxy>& NewProxy)
-	{
-		if (!SceneData)
-		{
-			/*MY_LOG("SceneDataError", EDebugLogLevel::DLL_Error, "No SceneData");*/
-			return;
-		}
-		SceneData->PendingAddSceneProxies[PrimitiveID].emplace_back(NewProxy);
-	}
+	static void AddPrimitive_RenderThread(const std::shared_ptr<FScene>& SceneData, UINT PrimitiveID, const std::shared_ptr<FPrimitiveSceneProxy>& NewProxy);
 
 	// 특정 프리미티브 ID의 씬 프록시를 제거해달라고 요청
-	static void KillPrimitive_GameThread(UINT PrimitiveID)
-	{
-		ENQUEUE_RENDER_COMMAND([PrimitiveID](std::shared_ptr<FScene>& SceneData)
-			{
-				SceneData->PendingKillPrimitiveIDs.emplace_back(PrimitiveID);
-			});
-	}
-	
+	static void KillPrimitive_GameThread(UINT PrimitiveID);
 
-	static void NewTransformToPrimitive_GameThread(UINT PrimitiveID, const FTransform& NewTransform)
-	{
-		if (PrimitiveID > 0)
-		{
-			auto Lambda = [PrimitiveID, NewTransform](std::shared_ptr<FScene>& SceneData)
-			{
-				SceneData->PendingNewTransformProxies[PrimitiveID] = NewTransform;
-			};
-			ENQUEUE_RENDER_COMMAND(Lambda)
-		}
-	}
+	static void NewTransformToPrimitive_GameThread(UINT PrimitiveID, const FTransform& NewTransform);
 
 	static void UpdateSkeletalMeshAnimation_GameThread(UINT PrimitiveID, const std::vector<XMMATRIX>& FinalMatrices);
 
 	// 게임쓰레드 호출_ 씬 렌더링 요청 함수
-	static void DrawScene_GameThread()
-	{
-		ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData) { FScene::DrawScene_RenderThread(SceneData); })
-	}
+	static void DrawScene_GameThread();
 
 	// 특정 ID의 머테리얼의 파라미터를 바꾸는 함수
-	static void SetMaterialScalarParam_GameThread(UINT PrimitiveID, UINT MeshIndex, const std::string& ParamName, float Value)
-	{
-		auto Lambda = [PrimitiveID,MeshIndex,ParamName,Value](std::shared_ptr<FScene>& SceneData)
-		{
-			SceneData->SetMaterialScalarParam_RenderThread(PrimitiveID, MeshIndex, ParamName, Value);
-		};
-		ENQUEUE_RENDER_COMMAND(Lambda);
-	}
+	static void SetMaterialScalarParam_GameThread(UINT PrimitiveID, UINT MeshIndex, const std::string& ParamName, float Value);
 
 	void SetMaterialScalarParam_RenderThread(UINT PrimitiveID, UINT MeshIndex, const std::string& ParamName, float Value);
 
 	// 특정 ID의 머테리얼의 텍스쳐 파라미터를 바꾸는 함수
-	static void SetTextureParam_GameThread(UINT PrimitiveID, UINT MeshIndex, UINT TextureSlot, std::shared_ptr<UTexture> Texture)
-	{
-		auto Lambda = [PrimitiveID,MeshIndex,TextureSlot,Texture](std::shared_ptr<FScene>& SceneData)
-		{
-			SceneData->SetTextureParam_RenderThread(PrimitiveID, MeshIndex, TextureSlot, Texture);
-		};
-		ENQUEUE_RENDER_COMMAND(Lambda);
-	}
+	static void SetTextureParam_GameThread(UINT PrimitiveID, UINT MeshIndex, UINT TextureSlot, std::shared_ptr<UTexture> Texture);
 
 	void SetTextureParam_RenderThread(UINT PrimitiveID, UINT MeshIndex, UINT TextureSlot, std::shared_ptr<UTexture> Texture);
 
@@ -390,39 +251,18 @@ public:
 	virtual XMMATRIX GetViewMatrix();
 	virtual XMMATRIX GetProjectionMatrix();
 
-	static void UpdateViewMatrix_GameThread(const FViewMatrices& NewViewMatrices)
-	{
-		ENQUEUE_RENDER_COMMAND([NewViewMatrices](std::shared_ptr<FScene>& SceneData)
-		{
-			SceneData->UpdateViewMatrix_RenderThread(NewViewMatrices);
-		})
-	}
+	static void UpdateViewMatrix_GameThread(const FViewMatrices& NewViewMatrices);
 	void UpdateViewMatrix_RenderThread(const FViewMatrices& NewViewMatrices)
 	{
 		ViewMatrices = NewViewMatrices;
 	}
 
-	static void SetSkyBoxTexture_GameThread(const std::string& NewEnvironmentTextureName)
-	{
-		ENQUEUE_RENDER_COMMAND([NewEnvironmentTextureName](std::shared_ptr<FScene>& SceneData)
-		{
-			SceneData->SetSkyBoxTexture_RenderThread(NewEnvironmentTextureName);
-		})
-	}
+	static void SetSkyBoxTexture_GameThread(const std::string& NewEnvironmentTextureName);
 	void SetSkyBoxTexture_RenderThread(const std::string& NewEnvironmentTextureName);
 
 #if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
-	static void DrawDebugData_GameThread(const FDebugRenderData& RenderData)
-	{
-		ENQUEUE_RENDER_COMMAND([RenderData](std::shared_ptr<FScene>& Scene)
-		{
-			Scene->DrawDebugData_RenderThread(RenderData);
-		})
-	}
-	void DrawDebugData_RenderThread(const FDebugRenderData& InDebugRenderData)
-	{
-		DebugRenderData.emplace_back(InDebugRenderData);
-	}
+	static void DrawDebugData_GameThread(const FDebugRenderData& RenderData);
+	void DrawDebugData_RenderThread(const FDebugRenderData& InDebugRenderData);
 #endif
 
 	// 현재 프레임의 LightInfo 를 설정
@@ -433,40 +273,18 @@ public:
 	void SetFrameWidgetRenderData(const std::vector<FWidgetRenderData>& WidgetRenderData);
 
 	// PostProcess 추가
-	static void AddPostProcess_GameThread(const FPostProcessRenderData& NewPostProcess)
-	{
-		ENQUEUE_RENDER_COMMAND([NewPostProcess](std::shared_ptr<FScene>& Scene)
-			{
-				Scene->AddPostProcess_RenderThread(NewPostProcess);
-			})
-	}
+	static void AddPostProcess_GameThread(const FPostProcessRenderData& NewPostProcess);
 	// PostProcess 삭제
-	static void RemovePostProcess_GameThread(UINT Priority, const std::string& Name)
-	{
-		std::function<void(std::shared_ptr<FScene>&)> Func = [Priority, Name](std::shared_ptr<FScene>& Scene)
-			{
-				Scene->RemovePostProcess_RenderThread(Priority, Name);
-			};
-		FRenderCommandPipe::Enqueue(Func);
-	}
+	static void RemovePostProcess_GameThread(UINT Priority, const std::string& Name);
+
+	static void SetComponentMonochrome_GameThread(UINT PrimitiveID, bool NewMonochrome);
+	void SetComponentMonochrome_RenderThread(UINT PrimitiveID, bool NewMonochrome);
 private:
 	void AddPostProcess_RenderThread(const FPostProcessRenderData& NewPostProcess)
 	{
 		PostProcessData.insert(NewPostProcess);
 	}
-	void RemovePostProcess_RenderThread(UINT Priority, const std::string& Name)
-	{
-		auto Iter = 
-			std::ranges::find_if(PostProcessData, 
-			[Priority, &Name](const FPostProcessRenderData& Data)
-			{
-				return Data.Priority == Priority && Data.Name == Name;
-			});
-		if (Iter != PostProcessData.end())
-		{
-			PostProcessData.erase(Iter);
-		}
-	}
+	void RemovePostProcess_RenderThread(UINT Priority, const std::string& Name);
 
 	static void EndRenderFrame_RenderThread(std::shared_ptr<FScene>& SceneData);
 };
@@ -476,26 +294,7 @@ private:
 class FRenderCommandExecutor
 {
 public:
-	static void Execute()
-	{
-		std::shared_ptr<FRenderTask> Task;
-		while (true)
-		{
-			if (bIsGameKill)
-			{
-				return;
-			}
-
-			if (FRenderCommandPipe::Dequeue(Task))
-			{
-				Task->CommandLambda(CurrentSceneData);
-			}
-			else
-			{
-				std::this_thread::yield();
-			}
-		}
-	}
+	static void Execute();
 
 	static std::shared_ptr<FScene> CurrentSceneData;
 };

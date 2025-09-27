@@ -5,6 +5,7 @@
 #include <crtdbg.h>
 #include <windows.h>
 #include <tchar.h>
+#include <windowsx.h>
 
 // DirectX 11 헤더
 #include <d3d11.h>
@@ -31,6 +32,11 @@
 #include <functional>
 #include <cassert>
 #include <threads.h>
+#include <concurrent_unordered_map.h>
+#include <concurrent_vector.h>
+#include <concurrent_queue.h>
+#include <concurrent_priority_queue.h>
+#include <mutex>
 
 // 게임 엔진 개발 관련 공통 헤더 (예: 유틸리티 함수)
 #include "DirectX/d3dUtil.h"		// DirectX 초기화 및 설정 관련 유틸리티

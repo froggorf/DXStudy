@@ -15,7 +15,7 @@ class AMyGameCharacterBase : public ACharacter
 	MY_GENERATE_BODY(AMyGameCharacterBase)
 	
 	AMyGameCharacterBase();
-	
+	void Register() override;
 	void BeginPlay() override;
 
 	void BindKeyInputs() override;
