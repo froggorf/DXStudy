@@ -36,14 +36,24 @@ class AMyGameCharacterBase : public ACharacter
 	void WheelUp();
 	void WheelDown();
 
+	
+
 protected:
 
 	std::shared_ptr<UAnimMontage> AM_Dodge[static_cast<int>(EDodgeDirection::Count)];
 	std::shared_ptr<UAnimMontage> AM_Roll[static_cast<int>(EDodgeDirection::Count)];
+
+	// 회피 중 공격 받을 시 AttackedWhileDodgeTriggerTime 이후에 실행될 델리게이트
+	float AttackedWhileDodgeTriggerTime = 0.1f;
+	void AttackedWhileDodge();
+	void AddMonochromePostprocess();
+	void RemoveMonochromePostprocess();
 private:
 	bool bRightButtonPressed = false;
 
 	bool bIsBackDodge = false;
 	bool bIsDodging = false;
 
+	FTimerHandle AttackedWhileDodgingHandle;
+	FTimerHandle RollingEndHandle;
 };

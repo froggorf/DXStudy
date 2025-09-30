@@ -19,8 +19,7 @@ AMyGameCharacterBase::AMyGameCharacterBase()
 	}
 
 	SpringArm->SetArmLength(250);
-	//SpringArm->SetRelativeLocation({0,50,-50.0f});
-
+	
 	AssetManager::GetAsyncAssetCache("SK_Manny_UE4",[this](std::shared_ptr<UObject> Object)
 		{
 			SkeletalMeshComponent->SetSkeletalMesh(std::static_pointer_cast<USkeletalMesh>(Object));
@@ -112,6 +111,80 @@ void AMyGameCharacterBase::BindKeyInputs()
 	}
 }
 
+void AMyGameCharacterBase::AttackedWhileDodge()
+{
+	SetTickRate(0.05f);
+	MY_LOG("TickRate", EDebugLogLevel::DLL_Warning, "Set TickRate To 0.1f")
+	GEngine->GetTimerManager()->SetTimer(RollingEndHandle, {this, &AMyGameCharacterBase::RollEnd} , 1.0f, false);
+	AddMonochromePostprocess();
+}
+
+void AMyGameCharacterBase::AddMonochromePostprocess()
+{
+
+#ifdef WITH_EDITOR
+	FPostProcessRenderData MonoPP = FPostProcessRenderData{0, "Monochrome",
+		UMaterial::GetMaterialCache("M_Monochrome"),
+		EMultiRenderTargetType::Editor_HDR};
+#else
+	FPostProcessRenderData MonoPP = FPostProcessRenderData{0, "Monochrome",
+		UMaterial::GetMaterialCache("M_Monochrome"),
+		EMultiRenderTargetType::SwapChain_HDR};
+#endif
+	MonoPP.SetClearDepthStencilTexture(false);
+	MonoPP.SetClearRenderTexture(false);
+	MonoPP.SetFuncBeforeRendering({[]()
+		{
+			// 거리 비례를 바인딩 해주기 위해서 해당 함수 적용
+			const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& DeviceContext = GDirectXDevice->GetDeviceContext();
+			const std::shared_ptr<UTexture>& ViewPositionTex = GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->GetRenderTargetTexture(2);
+			DeviceContext->PSSetShaderResources(11, 1, ViewPositionTex->GetSRV().GetAddressOf());
+
+			APlayerController* PC = GEngine->GetWorld()->GetPlayerController();
+
+
+			XMFLOAT3 Pos = PC->GetMonochromeCenterPos();
+			XMMATRIX ViewMat = FRenderCommandExecutor::CurrentSceneData->GetViewMatrix();
+
+			XMVECTOR WorldPos4 = XMVectorSet(Pos.x, Pos.y, Pos.z, 1.0f);
+			XMVECTOR ViewPosVec = XMVector4Transform(WorldPos4, ViewMat);
+			XMFLOAT4 ViewPos;
+			XMStoreFloat4(&ViewPos, ViewPosVec);
+
+			FMonochromeDataConstantBuffer Data;
+			Data.Distance = PC->GetMonochromeDistance();
+			Data.CenterPos = XMFLOAT3{ViewPos.x, ViewPos.y, ViewPos.z};
+
+
+			GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_BloomBlur, &Data, sizeof(Data));
+		}});
+	FScene::AddPostProcess_GameThread(MonoPP);
+
+
+#ifdef WITH_EDITOR
+	FPostProcessRenderData NonMonoPP = FPostProcessRenderData{1, "NotMonochrome",
+		UMaterial::GetMaterialCache("M_NotMonochrome"),
+		EMultiRenderTargetType::Editor_HDR};
+	NonMonoPP.SetClearRenderTexture(false);
+	NonMonoPP.SetClearDepthStencilTexture(false);
+	FScene::AddPostProcess_GameThread(NonMonoPP);
+#else
+	FPostProcessRenderData NonMonoPP = FPostProcessRenderData{1, "NotMonochrome",
+		UMaterial::GetMaterialCache("M_NotMonochrome"),
+		EMultiRenderTargetType::SwapChain_HDR};
+	NonMonoPP.SetClearRenderTexture(false);
+	NonMonoPP.SetClearDepthStencilTexture(false);
+	FScene::AddPostProcess_GameThread(NonMonoPP);
+#endif
+
+}
+
+void AMyGameCharacterBase::RemoveMonochromePostprocess()
+{
+	FScene::RemovePostProcess_GameThread(0, "Monochrome");
+	FScene::RemovePostProcess_GameThread(1, "NotMonochrome");
+}
+
 float AMyGameCharacterBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AActor* DamageCauser)
 {
 	if (bIsDodging)
@@ -119,11 +192,15 @@ float AMyGameCharacterBase::TakeDamage(float DamageAmount, const FDamageEvent& D
 		if (std::shared_ptr<UAnimInstance> AnimInstance = GetAnimInstance())
 		{
 			bIsDodging = false;
-			SetTickRate(0.2f);
+			GEngine->GetTimerManager()->SetTimer(AttackedWhileDodgingHandle, {this, &AMyGameCharacterBase::AttackedWhileDodge} , AttackedWhileDodgeTriggerTime, false);
+
+			const std::shared_ptr<UAnimMontage>& PlayedMontage = bIsBackDodge? AM_Roll[static_cast<int>(EDodgeDirection::Backward)] : AM_Roll[static_cast<int>(EDodgeDirection::Forward)];
+			GetAnimInstance()->Montage_Play(PlayedMontage);
 		}
 
 		return DamageAmount;
 	}
+	
 
 	return DamageAmount;
 }
@@ -188,13 +265,13 @@ void AMyGameCharacterBase::Dodge()
 void AMyGameCharacterBase::DodgeEnd()
 {
 	MY_LOG("Log",EDebugLogLevel::DLL_Warning, "Dodge End");
-	SetTickRate(1.0f);
 	bIsDodging = false;
 }
 
 void AMyGameCharacterBase::RollEnd()
 {
 	SetTickRate(1.0f);
+	RemoveMonochromePostprocess();
 	MY_LOG("Log",EDebugLogLevel::DLL_Warning, "Roll End");
 }
 
@@ -230,6 +307,8 @@ void AMyGameCharacterBase::WheelDown()
 		SpringArm->SetArmLength(SpringArm->TargetArmLength + 10.0f);
 	}
 }
+
+
 
 
 void AMyGameCharacterBase::Tick(float DeltaSeconds)
