@@ -88,7 +88,7 @@ class UEngine : public UObject
 	}
 
 	virtual void HandleInput(UINT msg, WPARAM wParam, LPARAM lParam);
-
+	void SetEngineTickRate(float NewTickRate){EngineTickRate = NewTickRate;}
 protected:
 	virtual void CreateRenderThread();
 	void         CreateAudioThread();
@@ -129,4 +129,6 @@ private:
 	std::string                                                EngineDirectory;
 
 	std::shared_ptr<FTimerManager> TimerManager;
+
+	float EngineTickRate = 1.0f;
 };

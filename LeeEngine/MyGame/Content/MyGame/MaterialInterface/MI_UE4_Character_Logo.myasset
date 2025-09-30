@@ -1,0 +1,9 @@
+{
+    "Class": "UMaterialInstance",
+    "Name": "MI_UE4_Logo",
+    "ParentMaterial" : "M_UE4_Character",
+    "OverrideTexture" :
+    [
+	{ "Index" : 1, "Tex": "T_UE_Logo_Normal"}
+    ]
+}

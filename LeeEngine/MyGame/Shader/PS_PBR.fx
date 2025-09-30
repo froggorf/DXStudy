@@ -171,4 +171,18 @@ Deferred_PS_OUT PBR_PS_UE_Chair(PBR_PS_INPUT input) : SV_TARGET
 	return output;
 }
 
+Deferred_PS_OUT PBR_PS_UE4_Character(PBR_PS_INPUT Input) : SV_TARGET
+{
+	Deferred_PS_OUT output = (Deferred_PS_OUT) 0.f;
+	float3 BodyColor = float3(0.451f, 0.404f, 0.361f);
+	
+	output.PBRData = float4(0.8f, 0.5f, 0.5f, 1.0f);
+	output.Color = float4(BodyColor, 1.0f);
+	float3 N = GetNormalFromMap(Input);
+	output.Normal = float4(N,1);
+	output.Position = float4(Input.ViewPosition, 1.0f);
+	output.Emissive = float4(0.0f,0.0f,0.0f,1.0f);
+
+	return output;
+}
 #endif

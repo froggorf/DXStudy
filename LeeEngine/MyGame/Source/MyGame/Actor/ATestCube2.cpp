@@ -10,6 +10,7 @@ ATestCube2::ATestCube2()
 
 	PBRTestComp = std::make_shared<UPBRTestComponent>();
 	PBRTestComp->SetupAttachment(GetRootComponent());
+	PBRTestComp->SetRelativeLocation({-100000.0f,-100000.0f,-100000.0f});
 	UPBRTestComponent::Instance = PBRTestComp.get();
 
 	{

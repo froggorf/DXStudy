@@ -48,11 +48,14 @@ VS_OUTPUT VS(VS_INPUT input)
 	{
 		float4 skinnedPosition;
 		float3 skinnedNormal;
-
-		CalculateSkinnedPosition(input.Pos, input.Normal, input.boneIDs, input.boneWeights, gBoneFinalTransforms, skinnedPosition, skinnedNormal);
+		float3 skinnedTangent;
+		float3 skinnedBinormal;
+		CalculateSkinnedPosition(input.Pos, input.Normal, input.Tangent, input.Binormal, input.boneIDs, input.boneWeights, gBoneFinalTransforms, skinnedPosition, skinnedNormal, skinnedTangent, skinnedBinormal);
 
 		input.Pos    = skinnedPosition;
 		input.Normal = skinnedNormal;
+		input.Tangent = skinnedTangent;
+		input.Binormal = skinnedBinormal;
 	}
 
 	output.PosScreen = CalculateScreenPosition(input.Pos, World, gView, gProjection);

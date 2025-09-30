@@ -14,6 +14,11 @@ FSkeletalMeshSceneProxy::FSkeletalMeshSceneProxy(UINT PrimitiveID, UINT InMeshIn
 	RenderData        = InSkeletalMesh->GetSkeletalMeshRenderData();
 	MaterialInterface = RenderData->MaterialInterfaces[MeshIndex];
 
+	if (!MaterialInterface)
+	{
+		assert(nullptr && "존재하지 않는 머테리얼");
+	}
+
 	BoneFinalMatrices.resize(MAX_BONES);
 	for (int BoneIndex = 0; BoneIndex < MAX_BONES; ++BoneIndex)
 	{

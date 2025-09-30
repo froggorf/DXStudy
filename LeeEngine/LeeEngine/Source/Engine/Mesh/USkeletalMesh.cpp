@@ -33,6 +33,11 @@ FSkeletalMeshRenderData::FSkeletalMeshRenderData(const nlohmann::json& SkeletalM
 			std::string                         MaterialName = MaterialData[count];
 			std::shared_ptr<UMaterialInterface> MeshMaterial = UMaterialInterface::GetMaterialCache(MaterialName);
 
+			if (!MeshMaterial)
+			{
+				assert(nullptr && "잘못된 머테리얼");
+			}
+
 			MaterialInterfaces.emplace_back(MeshMaterial);
 		}
 

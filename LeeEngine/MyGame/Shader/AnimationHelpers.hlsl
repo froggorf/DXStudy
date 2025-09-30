@@ -6,7 +6,7 @@ cbuffer cbSkeletalMeshBoneFinalTransforms : register(b3)
 	matrix gBoneFinalTransforms[MAX_BONES];
 }
 
-void CalculateSkinnedPosition(const in float4 Pos, const in float3 Normal, const in int4 boneIDs, const in float4 boneWeights, const in float4x4 BoneFinalTransforms[MAX_BONES], out float4 skinnedPosition, out float3 skinnedNormal)
+void CalculateSkinnedPosition(const in float4 Pos, const in float3 Normal, const in float3 Tangent, const in float3 Binormal, const in int4 boneIDs, const in float4 boneWeights, const in float4x4 BoneFinalTransforms[MAX_BONES], out float4 skinnedPosition, out float3 skinnedNormal, out float3 skinnedTangentNormal, out float3 skinnedTangentBinormal)
 {
 	skinnedPosition = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	skinnedNormal = float3(0.0f, 0.0f, 0.0f);
@@ -29,6 +29,11 @@ void CalculateSkinnedPosition(const in float4 Pos, const in float3 Normal, const
 			float3 localNormal = mul(Normal, BoneFinalTransforms[boneIDs[index]]);
 			skinnedNormal += localNormal * weight;
 
+			float3 localTangent = mul(Tangent, BoneFinalTransforms[boneIDs[index]]);
+			skinnedTangentNormal += localTangent * weight;
+
+			float3 localBinormal = mul(Binormal, BoneFinalTransforms[boneIDs[index]]);
+			skinnedTangentBinormal += localBinormal * weight;
 		}
 	}
 }

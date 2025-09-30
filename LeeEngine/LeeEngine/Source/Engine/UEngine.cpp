@@ -163,7 +163,7 @@ void UEngine::GameStart()
 
 void UEngine::Tick(float DeltaSeconds)
 {
-	this->DeltaSeconds = DeltaSeconds;
+	this->DeltaSeconds = DeltaSeconds * EngineTickRate;
 
 #ifdef WITH_EDITOR
 	std::shared_ptr<FImGUITask> Task;

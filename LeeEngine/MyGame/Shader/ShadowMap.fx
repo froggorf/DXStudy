@@ -47,8 +47,9 @@ VS_OUT VS_ShadowMap_Skeletal(VS_IN Input)
 	{
 		float4 skinnedPosition;
 		float3 skinnedNormal;
-
-		CalculateSkinnedPosition(float4(Input.Pos,1.0f), float4(1.0f,1.0f,1.0f,1.0f), Input.boneIDs, Input.boneWeights, gBoneFinalTransforms, skinnedPosition, skinnedNormal);
+		float3 skinnedTangent;
+		float3 skinnedBinormal;
+		CalculateSkinnedPosition(float4(Input.Pos,1.0f), float3(1.0f,1.0f,1.0f),float3(1.0f,1.0f,1.0f),float3(1.0f,1.0f,1.0f), Input.boneIDs, Input.boneWeights, gBoneFinalTransforms, skinnedPosition, skinnedNormal,skinnedTangent,skinnedBinormal);
 
 		output.Position = mul(mul(skinnedPosition, World),LightVP);
 		output.ProjPos = output.Position;
@@ -93,8 +94,9 @@ GS_INPUT VS_PointShadowMap_Skeletal(VS_IN Input)
 	{
 		float4 skinnedPosition;
 		float3 skinnedNormal;
-
-		CalculateSkinnedPosition(float4(Input.Pos,1.0f), float4(1.0f,1.0f,1.0f,1.0f), Input.boneIDs, Input.boneWeights, gBoneFinalTransforms, skinnedPosition, skinnedNormal);
+		float3 skinnedTangent;
+		float3 skinnedBinormal;
+		CalculateSkinnedPosition(float4(Input.Pos,1.0f), float3(1.0f,1.0f,1.0f), float3(1.0f,1.0f,1.0f),float3(1.0f,1.0f,1.0f),Input.boneIDs, Input.boneWeights, gBoneFinalTransforms, skinnedPosition, skinnedNormal,skinnedTangent, skinnedBinormal);
 
 		output.Pos = mul(skinnedPosition, World);
 	}
