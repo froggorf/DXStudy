@@ -28,11 +28,13 @@
     <ClCompile Include="Source\MyGame\AnimInstance\UMyAnimInstance.cpp" />
     <ClCompile Include="Source\MyGame\AnimInstance\UMyGameAniminstanceBase.cpp" />
     <ClCompile Include="Source\MyGame\Character\AMyGameCharacterBase.cpp" />
+    <ClCompile Include="Source\MyGame\Character\ASanhwaCharacter.cpp" />
     <ClCompile Include="Source\MyGame\Component\Combat\Melee\UMeleeBaseComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\Combat\Melee\USanhwaCombatComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\Combat\UCombatBaseComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\PBRTestComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\UTestComponent.cpp" />
+    <ClCompile Include="Source\MyGame\Interface\Dodge\IDodgeInterface.cpp" />
     <ClCompile Include="Source\MyGame\Widget\UMyTestWidget.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -44,11 +46,13 @@
     <ClInclude Include="Source\MyGame\AnimInstance\UMyAnimInstance.h" />
     <ClInclude Include="Source\MyGame\AnimInstance\UMyGameAniminstanceBase.h" />
     <ClInclude Include="Source\MyGame\Character\AMyGameCharacterBase.h" />
+    <ClInclude Include="Source\MyGame\Character\ASanhwaCharacter.h" />
     <ClInclude Include="Source\MyGame\Component\Combat\Melee\UMeleeBaseComponent.h" />
     <ClInclude Include="Source\MyGame\Component\Combat\Melee\USanhwaCombatComponent.h" />
     <ClInclude Include="Source\MyGame\Component\Combat\UCombatBaseComponent.h" />
     <ClInclude Include="Source\MyGame\Component\PBRTestComponent.h" />
     <ClInclude Include="Source\MyGame\Component\UTestComponent.h" />
+    <ClInclude Include="Source\MyGame\Interface\Dodge\IDodgeInterface.h" />
     <ClInclude Include="Source\MyGame\Widget\UMyTestWidget.h" />
   </ItemGroup>
   <ItemGroup>
@@ -225,7 +229,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)LeeEngine\Source\ThirdParty\RecastDetour\;$(SolutionDir)LeeEngine\Source\ThirdParty\PhysX\;$(SolutionDir)LeeEngine\Source\ThirdParty\FMOD\;$(SolutionDir)LeeEngine\Source\;$(SolutionDir)LeeEngine\Source\ThirdParty\DirectXTex\;$(SolutionDir)LeeEngine\Source\ThirdParty\Assimp\;$(SolutionDir)LeeEngine\Source\ThirdParty\nlohmannJson\;$(SolutionDir)LeeEngine\Source\ThirdParty\Imguizmo\;$(SolutionDir)LeeEngine\Source\ThirdParty\Imgui\;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Project\DXStudy\LeeEngine\MyGame\Source;$(SolutionDir)LeeEngine\Source\ThirdParty\RecastDetour\;$(SolutionDir)LeeEngine\Source\ThirdParty\PhysX\;$(SolutionDir)LeeEngine\Source\ThirdParty\FMOD\;$(SolutionDir)LeeEngine\Source\;$(SolutionDir)LeeEngine\Source\ThirdParty\DirectXTex\;$(SolutionDir)LeeEngine\Source\ThirdParty\Assimp\;$(SolutionDir)LeeEngine\Source\ThirdParty\nlohmannJson\;$(SolutionDir)LeeEngine\Source\ThirdParty\Imguizmo\;$(SolutionDir)LeeEngine\Source\ThirdParty\Imgui\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)LeeEngine\ThirdParty\PhysX\$(Configuration)\;$(SolutionDir)LeeEngine\ThirdParty\FMOD\lib\;$(SolutionDir)LeeEngine\ThirdParty\DirectXTex\lib\$(Configuration)\;$(SolutionDir)LeeEngine\ThirdParty\Assimp\lib\$(Configuration)\;$(SolutionDir)LeeEngine\Library\Lib\LeeEngine\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)MyGame\</OutDir>
     <TargetName>$(ProjectName)_D</TargetName>
@@ -233,7 +237,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LibraryPath>$(SolutionDir)LeeEngine\ThirdParty\FMOD\lib\;$(SolutionDir)LeeEngine\ThirdParty\PhysX\$(Configuration)\;$(SolutionDir)LeeEngine\ThirdParty\Assimp\lib\$(Configuration)\;$(SolutionDir)LeeEngine\ThirdParty\DirectXTex\lib\$(Configuration)\;$(SolutionDir)LeeEngine\Library\Lib\LeeEngine\$(Configuration)\;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)LeeEngine\Source\ThirdParty\RecastDetour\;$(SolutionDir)LeeEngine\Source\ThirdParty\PhysX\;$(SolutionDir)LeeEngine\Source\ThirdParty\FMOD\;$(SolutionDir)LeeEngine\Source\ThirdParty\Imgui\;$(SolutionDir)LeeEngine\Source\ThirdParty\Imguizmo\;$(SolutionDir)LeeEngine\Source\ThirdParty\nlohmannJson\;$(SolutionDir)LeeEngine\Source\ThirdParty\Assimp\;$(SolutionDir)LeeEngine\Source\ThirdParty\DirectXTex\;$(SolutionDir)LeeEngine\Source\;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Project\DXStudy\LeeEngine\MyGame\Source;$(SolutionDir)LeeEngine\Source\ThirdParty\RecastDetour\;$(SolutionDir)LeeEngine\Source\ThirdParty\PhysX\;$(SolutionDir)LeeEngine\Source\ThirdParty\FMOD\;$(SolutionDir)LeeEngine\Source\ThirdParty\Imgui\;$(SolutionDir)LeeEngine\Source\ThirdParty\Imguizmo\;$(SolutionDir)LeeEngine\Source\ThirdParty\nlohmannJson\;$(SolutionDir)LeeEngine\Source\ThirdParty\Assimp\;$(SolutionDir)LeeEngine\Source\ThirdParty\DirectXTex\;$(SolutionDir)LeeEngine\Source\;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)MyGame\</OutDir>
     <IntDir>$(SolutionDir)Executable\</IntDir>
     <TargetName>$(ProjectName)</TargetName>

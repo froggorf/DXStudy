@@ -59,6 +59,12 @@
     <Filter Include="Source\MyGame\Component\Combat\Melee">
       <UniqueIdentifier>{07c0ca08-8ecb-4bab-acff-a2d9daa49b28}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\Interface">
+      <UniqueIdentifier>{08254a3b-ad5f-4ced-a63c-4dcf2692b108}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\MyGame\Interface\Dodge">
+      <UniqueIdentifier>{08dfefcb-e226-48be-a47f-2bcefe178efd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -106,6 +112,12 @@
     <ClCompile Include="Source\MyGame\Component\Combat\Melee\USanhwaCombatComponent.cpp">
       <Filter>Source\MyGame\Component\Combat\Melee</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Character\ASanhwaCharacter.cpp">
+      <Filter>Source\MyGame\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\Interface\Dodge\IDodgeInterface.cpp">
+      <Filter>Source\MyGame\Interface\Dodge</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -149,6 +161,12 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Component\Combat\Melee\USanhwaCombatComponent.h">
       <Filter>Source\MyGame\Component\Combat\Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Character\ASanhwaCharacter.h">
+      <Filter>Source\MyGame\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Interface\Dodge\IDodgeInterface.h">
+      <Filter>Source\MyGame\Interface\Dodge</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
