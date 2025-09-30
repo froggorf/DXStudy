@@ -1,0 +1,8 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_UE5MF_Roll_Fwd",
+    "Skeleton": "SK_UE5MF",
+    "AnimationDataPath": "/Content/Resource/MyGame/Animation/UE5/Roll/Roll_Fwd.FBX",
+    "RootMotion": 1,
+    "Rate" : 2.0
+}

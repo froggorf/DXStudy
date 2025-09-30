@@ -1,0 +1,8 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_UE5MM_Dodge_Bwd",
+    "Skeleton": "SK_UE5MM",
+    "AnimationDataPath": "/Content/Resource/MyGame/Animation/UE5/Dodge/Dodge_Bwd.FBX",
+    "RootMotion": 1,
+    "Rate" : 2.0
+}

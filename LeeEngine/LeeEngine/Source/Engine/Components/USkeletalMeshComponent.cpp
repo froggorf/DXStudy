@@ -144,6 +144,7 @@ void USkeletalMeshComponent::SetAnimInstanceClass(const std::string& InAnimInsta
 		if (std::shared_ptr<UAnimInstance> NewAnimInstance = std::dynamic_pointer_cast<UAnimInstance>(AnimDefaultObject->CreateInstance()))
 		{
 			AnimInstance = NewAnimInstance;
+			AnimInstance->Register();
 			AnimInstance->SetSkeletalMeshComponent(this);
 			return;
 		}

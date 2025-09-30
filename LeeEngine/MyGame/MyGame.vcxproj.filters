@@ -65,6 +65,9 @@
     <Filter Include="Source\MyGame\Interface\Dodge">
       <UniqueIdentifier>{08dfefcb-e226-48be-a47f-2bcefe178efd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\AnimInstance\Sanhwa">
+      <UniqueIdentifier>{a10db656-f3c5-4860-ae8f-f96602f221cf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -118,6 +121,9 @@
     <ClCompile Include="Source\MyGame\Interface\Dodge\IDodgeInterface.cpp">
       <Filter>Source\MyGame\Interface\Dodge</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\AnimInstance\Sanhwa\USanhwaAnimInstance.cpp">
+      <Filter>Source\MyGame\AnimInstance\Sanhwa</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -167,6 +173,9 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Interface\Dodge\IDodgeInterface.h">
       <Filter>Source\MyGame\Interface\Dodge</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\AnimInstance\Sanhwa\USanhwaAnimInstance.h">
+      <Filter>Source\MyGame\AnimInstance\Sanhwa</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

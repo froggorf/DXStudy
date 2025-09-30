@@ -1,0 +1,7 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_UE5MM_Idle",
+    "Skeleton": "SK_UE5MM",
+    "AnimationDataPath": "/Content/Resource/MyGame/Animation/UE5/Locomotion/Idle.FBX",
+    "RootMotion": 0
+}

@@ -25,6 +25,7 @@
     <ClCompile Include="Source\MyGame\Actor\ATestCube.cpp" />
     <ClCompile Include="Source\MyGame\Actor\ATestCube2.cpp" />
     <ClCompile Include="Source\MyGame\Actor\ATestPawn.cpp" />
+    <ClCompile Include="Source\MyGame\AnimInstance\Sanhwa\USanhwaAnimInstance.cpp" />
     <ClCompile Include="Source\MyGame\AnimInstance\UMyAnimInstance.cpp" />
     <ClCompile Include="Source\MyGame\AnimInstance\UMyGameAniminstanceBase.cpp" />
     <ClCompile Include="Source\MyGame\Character\AMyGameCharacterBase.cpp" />
@@ -43,6 +44,7 @@
     <ClInclude Include="Source\MyGame\Actor\ATestCube.h" />
     <ClInclude Include="Source\MyGame\Actor\ATestCube2.h" />
     <ClInclude Include="Source\MyGame\Actor\ATestPawn.h" />
+    <ClInclude Include="Source\MyGame\AnimInstance\Sanhwa\USanhwaAnimInstance.h" />
     <ClInclude Include="Source\MyGame\AnimInstance\UMyAnimInstance.h" />
     <ClInclude Include="Source\MyGame\AnimInstance\UMyGameAniminstanceBase.h" />
     <ClInclude Include="Source\MyGame\Character\AMyGameCharacterBase.h" />

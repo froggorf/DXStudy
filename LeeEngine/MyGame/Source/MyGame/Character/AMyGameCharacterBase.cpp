@@ -21,11 +21,7 @@ AMyGameCharacterBase::AMyGameCharacterBase()
 
 	SpringArm->SetArmLength(250);
 	
-	AssetManager::GetAsyncAssetCache("SK_Manny_UE4",[this](std::shared_ptr<UObject> Object)
-		{
-			SkeletalMeshComponent->SetSkeletalMesh(std::static_pointer_cast<USkeletalMesh>(Object));
-		});
-	SkeletalMeshComponent->SetAnimInstanceClass("UMyGameAnimInstanceBase");
+
 	SkeletalMeshComponent->SetRelativeLocation({0,-85,0});
 	SkeletalMeshComponent->SetRelativeRotation(XMFLOAT3{0,180,0});
 
@@ -38,9 +34,20 @@ AMyGameCharacterBase::AMyGameCharacterBase()
 
 void AMyGameCharacterBase::Register()
 {
+	LoadCharacterData_OnRegister();
+
 	ACharacter::Register();
 
 	IDodgeInterface::LoadAnimMontages();
+}
+
+void AMyGameCharacterBase::LoadCharacterData_OnRegister()
+{
+	AssetManager::GetAsyncAssetCache(CharacterMeshName,[this](std::shared_ptr<UObject> Object)
+		{
+			SkeletalMeshComponent->SetSkeletalMesh(std::static_pointer_cast<USkeletalMesh>(Object));
+		});
+	SkeletalMeshComponent->SetAnimInstanceClass(AnimInstanceName);
 }
 
 

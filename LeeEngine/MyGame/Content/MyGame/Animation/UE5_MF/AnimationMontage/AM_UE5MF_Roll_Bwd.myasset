@@ -1,0 +1,21 @@
+{
+	"Class": "UAnimMontage",
+	"Name": "AM_UE5MF_Roll_Bwd",
+	"Skeleton": "SK_UE5MF",
+	"BlendIn" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.3
+	},
+	"BlendOut" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.3
+	},
+
+	"SlotName": "DefaultSlot",
+	"AnimTrack" : [
+		{"AnimName" : "AS_UE5MF_Roll_Bwd"}
+	],
+	"Sections" : [
+		{ "SectionName" : "Roll", "StartTime" : 0.0 }
+	]
+}

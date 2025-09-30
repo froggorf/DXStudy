@@ -1,0 +1,7 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_UE5MM_Run",
+    "Skeleton": "SK_UE5MM",
+    "AnimationDataPath": "/Content/Resource/MyGame/Animation/UE5/Locomotion/Run.FBX",
+    "RootMotion": 0
+}

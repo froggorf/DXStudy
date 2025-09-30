@@ -14,12 +14,17 @@ class UMyGameAnimInstanceBase : public UAnimInstance
 	UMyGameAnimInstanceBase();
 	~UMyGameAnimInstanceBase() override = default;
 
+	virtual void LoadData_OnRegister();
+	void Register() override;
 	void BeginPlay() override;
 	void NativeInitializeAnimation() override;
 	void NativeUpdateAnimation(float DeltaSeconds) override;
 	void UpdateAnimation(float dt) override;
 	
 	bool IsAllResourceOK() override;
+
+protected:
+	std::string BS_LocomotionName = "BS_UE4_Locomotion";
 
 private:
 	UCharacterMovementComponent* MovementComp;

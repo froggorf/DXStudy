@@ -11,6 +11,7 @@ class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
 	
 	AMyGameCharacterBase();
 	void Register() override;
+	virtual void LoadCharacterData_OnRegister();
 	void BeginPlay() override;
 
 	void BindKeyInputs() override;
@@ -40,7 +41,7 @@ protected:
 
 
 
-
-	
+	std::string CharacterMeshName = "SK_Manny_UE4";
+	std::string AnimInstanceName = "UMyGameAnimInstanceBase";
 	
 };

@@ -6,12 +6,22 @@
 
 UMyGameAnimInstanceBase::UMyGameAnimInstanceBase()
 {
-	AssetManager::GetAsyncAssetCache("BS_UE4_Locomotion", [this](std::shared_ptr<UObject> Object)
+}
+
+void UMyGameAnimInstanceBase::LoadData_OnRegister()
+{
+	AssetManager::GetAsyncAssetCache(BS_LocomotionName, [this](std::shared_ptr<UObject> Object)
 		{
 			BS_Locomotion = std::dynamic_pointer_cast<UBlendSpace>(Object);
 		});
+}
 
-	
+void UMyGameAnimInstanceBase::Register()
+{
+	UAnimInstance::Register();
+
+	LoadData_OnRegister();
+
 }
 
 void UMyGameAnimInstanceBase::BeginPlay()
