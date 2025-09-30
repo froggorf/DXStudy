@@ -19,8 +19,6 @@ class ATestCube2 : public AActor
 	void Tick(float DeltaSeconds) override;
 
 protected:
-	std::shared_ptr<UPBRTestComponent> PBRTestComp;
-
 	std::shared_ptr<UStaticMeshComponent> SM_Well;
 	std::shared_ptr<UStaticMeshComponent> SM_Barrel1;
 	std::shared_ptr<UStaticMeshComponent> SM_Barrel2;

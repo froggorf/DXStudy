@@ -7,10 +7,40 @@
 
 enum class EDodgeDirection
 {
-	Forward, Backward, Left, Right, Count
+	Forward, Backward, Count
 };
 
-class AMyGameCharacterBase : public ACharacter
+class IDodgeInterface
+{
+public:
+	void LoadAnimMontages();
+
+	virtual void Dodge() = 0;
+	virtual void DodgeEnd();
+	virtual void ChangeToRoll() = 0;
+	virtual void RollEnd();
+	virtual void AttackedWhileDodge() = 0;
+
+	void AddMonochromePostprocess();
+	void RemoveMonochromePostprocess();
+protected:
+	std::shared_ptr<UAnimMontage> AM_Dodge[static_cast<int>(EDodgeDirection::Count)];
+	std::shared_ptr<UAnimMontage> AM_Roll[static_cast<int>(EDodgeDirection::Count)];
+
+	std::string DodgeMontageName[static_cast<int>(EDodgeDirection::Count)] = {"AM_UE4_Dodge_Fwd", "AM_UE4_Dodge_Bwd"};
+	std::string RollMontageName[static_cast<int>(EDodgeDirection::Count)] = {"AM_UE4_Roll_Fwd", "AM_UE4_Roll_Bwd"};
+
+	bool bIsDodging = false;
+	bool bIsBackDodge = false;
+
+	FTimerHandle AttackedWhileDodgingHandle;
+	FTimerHandle RollingEndHandle;
+
+	// 회피 중 공격 받을 시 AttackedWhileDodgeTriggerTime 이후에 실행될 델리게이트
+	float AttackedWhileDodgeTriggerTime = 0.1f;
+};
+
+class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
 {
 	MY_GENERATE_BODY(AMyGameCharacterBase)
 	
@@ -23,37 +53,30 @@ class AMyGameCharacterBase : public ACharacter
 	float TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AActor* DamageCauser) override;
 
 	void Tick(float DeltaSeconds) override;
-	//void Backstep();
 	void Move(float X, float Y);
 	void Look(float X, float Y);
 	void MouseRotateStart();
 	void MouseRotateEnd();
-	void Dodge();
-	void DodgeEnd();
-	void RollEnd();
 	void SetWalk();
 	void SetRun();
 	void WheelUp();
 	void WheelDown();
 
 	
-
 protected:
 
-	std::shared_ptr<UAnimMontage> AM_Dodge[static_cast<int>(EDodgeDirection::Count)];
-	std::shared_ptr<UAnimMontage> AM_Roll[static_cast<int>(EDodgeDirection::Count)];
 
-	// 회피 중 공격 받을 시 AttackedWhileDodgeTriggerTime 이후에 실행될 델리게이트
-	float AttackedWhileDodgeTriggerTime = 0.1f;
-	void AttackedWhileDodge();
-	void AddMonochromePostprocess();
-	void RemoveMonochromePostprocess();
+
+	void Dodge() override;
+	void DodgeEnd() override;
+	void ChangeToRoll() override;
+	void RollEnd() override;
+	void AttackedWhileDodge() override;
 private:
 	bool bRightButtonPressed = false;
 
-	bool bIsBackDodge = false;
-	bool bIsDodging = false;
 
-	FTimerHandle AttackedWhileDodgingHandle;
-	FTimerHandle RollingEndHandle;
+
+	
+	
 };

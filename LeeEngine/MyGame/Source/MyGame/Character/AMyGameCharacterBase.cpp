@@ -1,126 +1,52 @@
 #include "CoreMinimal.h"
 #include "AMyGameCharacterBase.h"
 
-#include "../Component/PBRTestComponent.h"
 #include "Engine/World/UWorld.h"
 
 
-AMyGameCharacterBase::AMyGameCharacterBase()
+void IDodgeInterface::LoadAnimMontages()
 {
-	if (!GDirectXDevice) return;
-
-	if (UCharacterMovementComponent* CharacterMovement = GetCharacterMovement())
+	// Dodge
 	{
-		CharacterMovement->bOrientRotationToMovement = true;
-		CharacterMovement->Acceleration = 4096.0f;
-		CharacterMovement->RotationRate = XMFLOAT3{0.0f, 1500.0f, 0.0f};
-		CharacterMovement->MaxWalkSpeed = 600;
-		CharacterMovement->Braking = 4096;
+		AssetManager::GetAsyncAssetCache(DodgeMontageName[static_cast<int>(EDodgeDirection::Forward)], [this](std::shared_ptr<UObject> Object)
+			{
+				AM_Dodge[static_cast<int>(EDodgeDirection::Forward)] = std::dynamic_pointer_cast<UAnimMontage>(Object);
+			});
+		AssetManager::GetAsyncAssetCache(DodgeMontageName[static_cast<int>(EDodgeDirection::Backward)], [this](std::shared_ptr<UObject> Object)
+			{
+				AM_Dodge[static_cast<int>(EDodgeDirection::Backward)] = std::dynamic_pointer_cast<UAnimMontage>(Object);
+			});
 	}
 
-	SpringArm->SetArmLength(250);
+	// Roll
+	{
+		AssetManager::GetAsyncAssetCache(RollMontageName[static_cast<int>(EDodgeDirection::Forward)], [this](std::shared_ptr<UObject> Object)
+			{
+				AM_Roll[static_cast<int>(EDodgeDirection::Forward)] = std::dynamic_pointer_cast<UAnimMontage>(Object);
+			});
+		AssetManager::GetAsyncAssetCache(RollMontageName[static_cast<int>(EDodgeDirection::Backward)], [this](std::shared_ptr<UObject> Object)
+			{
+				AM_Roll[static_cast<int>(EDodgeDirection::Backward)] = std::dynamic_pointer_cast<UAnimMontage>(Object);
+			});
+	}
 	
-	AssetManager::GetAsyncAssetCache("SK_Manny_UE4",[this](std::shared_ptr<UObject> Object)
-		{
-			SkeletalMeshComponent->SetSkeletalMesh(std::static_pointer_cast<USkeletalMesh>(Object));
-		});
-	SkeletalMeshComponent->SetAnimInstanceClass("UMyGameAnimInstanceBase");
-	SkeletalMeshComponent->SetRelativeLocation({0,-85,0});
-	SkeletalMeshComponent->SetRelativeRotation(XMFLOAT3{0,180,0});
 
-	// AnimMontage
-	{
-		// Dodge
-		{
-			AssetManager::GetAsyncAssetCache("AM_UE4_Dodge_Fwd", [this](std::shared_ptr<UObject> Object)
-				{
-					AM_Dodge[static_cast<int>(EDodgeDirection::Forward)] = std::dynamic_pointer_cast<UAnimMontage>(Object);
-				});
-			AssetManager::GetAsyncAssetCache("AM_UE4_Dodge_Bwd", [this](std::shared_ptr<UObject> Object)
-				{
-					AM_Dodge[static_cast<int>(EDodgeDirection::Backward)] = std::dynamic_pointer_cast<UAnimMontage>(Object);
-				});
-		}
-
-		// Roll
-		{
-			AssetManager::GetAsyncAssetCache("AM_UE4_Roll_Fwd", [this](std::shared_ptr<UObject> Object)
-				{
-					AM_Roll[static_cast<int>(EDodgeDirection::Forward)] = std::dynamic_pointer_cast<UAnimMontage>(Object);
-				});
-			AssetManager::GetAsyncAssetCache("AM_UE4_Roll_Bwd", [this](std::shared_ptr<UObject> Object)
-				{
-					AM_Roll[static_cast<int>(EDodgeDirection::Backward)] = std::dynamic_pointer_cast<UAnimMontage>(Object);
-				});
-		}
-	}
-
-	if (SkeletalMeshComponent)
-	{
-		SkeletalMeshComponent->SetIsMonochromeObject(false);
-	}
 }
 
-void AMyGameCharacterBase::Register()
+void IDodgeInterface::DodgeEnd()
 {
-	ACharacter::Register();
+	MY_LOG("Log",EDebugLogLevel::DLL_Warning, "Dodge End");
+	bIsDodging = false;
 }
 
-
-void AMyGameCharacterBase::BeginPlay()
+void IDodgeInterface::RollEnd()
 {
-	GEngine->GetWorld()->GetPlayerController()->OnPossess(this);
-
-	ACharacter::BeginPlay();
-
-	CapsuleComp->SetCollisionObjectType(ECollisionChannel::Pawn);
-	CapsuleComp->SetObjectType(ECollisionChannel::Pawn);
+	RemoveMonochromePostprocess();
+	MY_LOG("Log",EDebugLogLevel::DLL_Warning, "Roll End");
 }
 
-void AMyGameCharacterBase::BindKeyInputs()
+void IDodgeInterface::AddMonochromePostprocess()
 {
-	if (Controller)
-	{
-		if (std::shared_ptr<UPlayerInput> InputSystem = Controller->GetPlayerInput())
-		{
-			// Walk / Run Toggle
-			//InputSystem->BindAction(EKeys::LShift, ETriggerEvent::Started, this, &AMyGameCharacterBase::SetWalk);
-			//InputSystem->BindAction(EKeys::LShift, ETriggerEvent::Released, this, &AMyGameCharacterBase::SetRun);
-			InputSystem->BindAction(EKeys::LShift, ETriggerEvent::Started, this, &AMyGameCharacterBase::Dodge);
-
-
-			// Locomotion
-			InputSystem->BindAxis2D(EKeys::W, ETriggerEvent::Trigger, 1, 0,this, &AMyGameCharacterBase::Move);
-			InputSystem->BindAxis2D(EKeys::S, ETriggerEvent::Trigger, -1, 0,this, &AMyGameCharacterBase::Move);
-			InputSystem->BindAxis2D(EKeys::D, ETriggerEvent::Trigger, 0, 1,this, &AMyGameCharacterBase::Move);
-			InputSystem->BindAxis2D(EKeys::A, ETriggerEvent::Trigger, 0, -1,this, &AMyGameCharacterBase::Move);
-
-			// Jump
-			InputSystem->BindAction<AMyGameCharacterBase>(EKeys::Space, ETriggerEvent::Started, this, &AMyGameCharacterBase::Jump);
-			// LookRotate
-			InputSystem->BindAxis2D(EKeys::MouseXY2DAxis, ETriggerEvent::Trigger, 0,0, this, &AMyGameCharacterBase::Look);
-			InputSystem->BindAction(EKeys::MouseRight, ETriggerEvent::Started, this, &AMyGameCharacterBase::MouseRotateStart);
-			InputSystem->BindAction(EKeys::MouseRight, ETriggerEvent::Released, this, &AMyGameCharacterBase::MouseRotateEnd);
-
-			// TargetArmLength Wheel
-			InputSystem->BindAction(EKeys::MouseWheelUp, Started, this, &AMyGameCharacterBase::WheelUp);
-			InputSystem->BindAction(EKeys::MouseWheelDown, Started, this, &AMyGameCharacterBase::WheelDown);
-		}
-		
-	}
-}
-
-void AMyGameCharacterBase::AttackedWhileDodge()
-{
-	SetTickRate(0.05f);
-	MY_LOG("TickRate", EDebugLogLevel::DLL_Warning, "Set TickRate To 0.1f")
-	GEngine->GetTimerManager()->SetTimer(RollingEndHandle, {this, &AMyGameCharacterBase::RollEnd} , 1.0f, false);
-	AddMonochromePostprocess();
-}
-
-void AMyGameCharacterBase::AddMonochromePostprocess()
-{
-
 #ifdef WITH_EDITOR
 	FPostProcessRenderData MonoPP = FPostProcessRenderData{0, "Monochrome",
 		UMaterial::GetMaterialCache("M_Monochrome"),
@@ -178,24 +104,111 @@ void AMyGameCharacterBase::AddMonochromePostprocess()
 
 }
 
-void AMyGameCharacterBase::RemoveMonochromePostprocess()
+void IDodgeInterface::RemoveMonochromePostprocess()
 {
 	FScene::RemovePostProcess_GameThread(0, "Monochrome");
 	FScene::RemovePostProcess_GameThread(1, "NotMonochrome");
 }
 
+
+
+AMyGameCharacterBase::AMyGameCharacterBase()
+{
+	if (!GDirectXDevice) return;
+
+	if (UCharacterMovementComponent* CharacterMovement = GetCharacterMovement())
+	{
+		CharacterMovement->bOrientRotationToMovement = true;
+		CharacterMovement->Acceleration = 4096.0f;
+		CharacterMovement->RotationRate = XMFLOAT3{0.0f, 1500.0f, 0.0f};
+		CharacterMovement->MaxWalkSpeed = 600;
+		CharacterMovement->Braking = 4096;
+	}
+
+	SpringArm->SetArmLength(250);
+	
+	AssetManager::GetAsyncAssetCache("SK_Manny_UE4",[this](std::shared_ptr<UObject> Object)
+		{
+			SkeletalMeshComponent->SetSkeletalMesh(std::static_pointer_cast<USkeletalMesh>(Object));
+		});
+	SkeletalMeshComponent->SetAnimInstanceClass("UMyGameAnimInstanceBase");
+	SkeletalMeshComponent->SetRelativeLocation({0,-85,0});
+	SkeletalMeshComponent->SetRelativeRotation(XMFLOAT3{0,180,0});
+
+
+	if (SkeletalMeshComponent)
+	{
+		SkeletalMeshComponent->SetIsMonochromeObject(false);
+	}
+}
+
+void AMyGameCharacterBase::Register()
+{
+	ACharacter::Register();
+
+	IDodgeInterface::LoadAnimMontages();
+}
+
+
+void AMyGameCharacterBase::BeginPlay()
+{
+	GEngine->GetWorld()->GetPlayerController()->OnPossess(this);
+
+	ACharacter::BeginPlay();
+
+	CapsuleComp->SetCollisionObjectType(ECollisionChannel::Pawn);
+	CapsuleComp->SetObjectType(ECollisionChannel::Pawn);
+}
+
+void AMyGameCharacterBase::BindKeyInputs()
+{
+	if (Controller)
+	{
+		if (std::shared_ptr<UPlayerInput> InputSystem = Controller->GetPlayerInput())
+		{
+			// Walk / Run Toggle
+			//InputSystem->BindAction(EKeys::LShift, ETriggerEvent::Started, this, &AMyGameCharacterBase::SetWalk);
+			//InputSystem->BindAction(EKeys::LShift, ETriggerEvent::Released, this, &AMyGameCharacterBase::SetRun);
+			InputSystem->BindAction(EKeys::LShift, ETriggerEvent::Started, this, &AMyGameCharacterBase::Dodge);
+
+
+			// Locomotion
+			InputSystem->BindAxis2D(EKeys::W, ETriggerEvent::Trigger, 1, 0,this, &AMyGameCharacterBase::Move);
+			InputSystem->BindAxis2D(EKeys::S, ETriggerEvent::Trigger, -1, 0,this, &AMyGameCharacterBase::Move);
+			InputSystem->BindAxis2D(EKeys::D, ETriggerEvent::Trigger, 0, 1,this, &AMyGameCharacterBase::Move);
+			InputSystem->BindAxis2D(EKeys::A, ETriggerEvent::Trigger, 0, -1,this, &AMyGameCharacterBase::Move);
+
+			// Jump
+			InputSystem->BindAction<AMyGameCharacterBase>(EKeys::Space, ETriggerEvent::Started, this, &AMyGameCharacterBase::Jump);
+			// LookRotate
+			InputSystem->BindAxis2D(EKeys::MouseXY2DAxis, ETriggerEvent::Trigger, 0,0, this, &AMyGameCharacterBase::Look);
+			InputSystem->BindAction(EKeys::MouseRight, ETriggerEvent::Started, this, &AMyGameCharacterBase::MouseRotateStart);
+			InputSystem->BindAction(EKeys::MouseRight, ETriggerEvent::Released, this, &AMyGameCharacterBase::MouseRotateEnd);
+
+			// TargetArmLength Wheel
+			InputSystem->BindAction(EKeys::MouseWheelUp, Started, this, &AMyGameCharacterBase::WheelUp);
+			InputSystem->BindAction(EKeys::MouseWheelDown, Started, this, &AMyGameCharacterBase::WheelDown);
+		}
+		
+	}
+}
+
+void AMyGameCharacterBase::AttackedWhileDodge()
+{
+	MY_LOG("TickRate", EDebugLogLevel::DLL_Warning, "Set TickRate To 0.1f")
+	SetTickRate(0.1f);
+	GEngine->GetTimerManager()->SetTimer(RollingEndHandle, {this, &AMyGameCharacterBase::RollEnd} , 1.0f, false);
+	AddMonochromePostprocess();
+}
+
+
+
 float AMyGameCharacterBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AActor* DamageCauser)
 {
 	if (bIsDodging)
 	{
-		if (std::shared_ptr<UAnimInstance> AnimInstance = GetAnimInstance())
-		{
-			bIsDodging = false;
-			GEngine->GetTimerManager()->SetTimer(AttackedWhileDodgingHandle, {this, &AMyGameCharacterBase::AttackedWhileDodge} , AttackedWhileDodgeTriggerTime, false);
-
-			const std::shared_ptr<UAnimMontage>& PlayedMontage = bIsBackDodge? AM_Roll[static_cast<int>(EDodgeDirection::Backward)] : AM_Roll[static_cast<int>(EDodgeDirection::Forward)];
-			GetAnimInstance()->Montage_Play(PlayedMontage);
-		}
+		ChangeToRoll();
+		
 
 		return DamageAmount;
 	}
@@ -263,15 +276,30 @@ void AMyGameCharacterBase::Dodge()
 
 void AMyGameCharacterBase::DodgeEnd()
 {
-	MY_LOG("Log",EDebugLogLevel::DLL_Warning, "Dodge End");
+	IDodgeInterface::DodgeEnd();
+}
+
+void AMyGameCharacterBase::ChangeToRoll()
+{
+	std::shared_ptr<UAnimInstance> AnimInstance = GetAnimInstance();
+	if (!AnimInstance)
+	{
+		return;
+	}
+	
 	bIsDodging = false;
+	GEngine->GetTimerManager()->SetTimer(AttackedWhileDodgingHandle, {this, &AMyGameCharacterBase::AttackedWhileDodge} , AttackedWhileDodgeTriggerTime, false);
+
+	const std::shared_ptr<UAnimMontage>& PlayedMontage = bIsBackDodge? AM_Roll[static_cast<int>(EDodgeDirection::Backward)] : AM_Roll[static_cast<int>(EDodgeDirection::Forward)];
+	GetAnimInstance()->Montage_Play(PlayedMontage);
+	
 }
 
 void AMyGameCharacterBase::RollEnd()
 {
+	IDodgeInterface::RollEnd();
+
 	SetTickRate(1.0f);
-	RemoveMonochromePostprocess();
-	MY_LOG("Log",EDebugLogLevel::DLL_Warning, "Roll End");
 }
 
 void AMyGameCharacterBase::SetWalk()
@@ -313,6 +341,4 @@ void AMyGameCharacterBase::WheelDown()
 void AMyGameCharacterBase::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
-
-	
 }
