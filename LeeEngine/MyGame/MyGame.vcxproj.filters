@@ -53,6 +53,12 @@
     <Filter Include="Source\MyGame\Character">
       <UniqueIdentifier>{82218869-dafc-48fe-b743-8f3c753a4583}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\Component\Combat">
+      <UniqueIdentifier>{aba56a54-d5ca-4233-a73f-9cf97aca55af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\MyGame\Component\Combat\Melee">
+      <UniqueIdentifier>{07c0ca08-8ecb-4bab-acff-a2d9daa49b28}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -91,6 +97,15 @@
     <ClCompile Include="Source\MyGame\AnimInstance\UMyGameAniminstanceBase.cpp">
       <Filter>Source\MyGame\AnimInstance</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Component\Combat\UCombatBaseComponent.cpp">
+      <Filter>Source\MyGame\Component\Combat</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\Component\Combat\Melee\UMeleeBaseComponent.cpp">
+      <Filter>Source\MyGame\Component\Combat\Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\Component\Combat\Melee\USanhwaCombatComponent.cpp">
+      <Filter>Source\MyGame\Component\Combat\Melee</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -125,6 +140,15 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\AnimInstance\UMyGameAniminstanceBase.h">
       <Filter>Source\MyGame\AnimInstance</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Component\Combat\UCombatBaseComponent.h">
+      <Filter>Source\MyGame\Component\Combat</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Component\Combat\Melee\UMeleeBaseComponent.h">
+      <Filter>Source\MyGame\Component\Combat\Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Component\Combat\Melee\USanhwaCombatComponent.h">
+      <Filter>Source\MyGame\Component\Combat\Melee</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

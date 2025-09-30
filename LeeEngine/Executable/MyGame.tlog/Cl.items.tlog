@@ -7,6 +7,9 @@ C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\ATestPawn.cpp;C:\Project
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\AnimInstance\UMyAnimInstance.cpp;C:\Project\DXStudy\LeeEngine\Executable\UMyAnimInstance.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\AnimInstance\UMyGameAniminstanceBase.cpp;C:\Project\DXStudy\LeeEngine\Executable\UMyGameAniminstanceBase.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Character\AMyGameCharacterBase.cpp;C:\Project\DXStudy\LeeEngine\Executable\AMyGameCharacterBase.obj
+C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\Melee\UMeleeBaseComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\UMeleeBaseComponent.obj
+C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\Melee\USanhwaCombatComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\USanhwaCombatComponent.obj
+C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\UCombatBaseComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\UCombatBaseComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\PBRTestComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\PBRTestComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\UTestComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\UTestComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Widget\UMyTestWidget.cpp;C:\Project\DXStudy\LeeEngine\Executable\UMyTestWidget.obj

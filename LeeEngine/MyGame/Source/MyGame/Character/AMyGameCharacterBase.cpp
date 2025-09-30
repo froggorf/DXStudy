@@ -64,7 +64,6 @@ AMyGameCharacterBase::AMyGameCharacterBase()
 void AMyGameCharacterBase::Register()
 {
 	ACharacter::Register();
-	UPBRTestComponent::Instance->TargetComp[2] = SkeletalMeshComponent;
 }
 
 

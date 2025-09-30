@@ -1,0 +1,20 @@
+// 03.29
+// 애니메이션을 위한 임시 액터 컴퍼넌트
+
+#pragma once
+#include "UMeleeBaseComponent.h"
+
+class USanhwaCombatComponent : public UMeleeBaseComponent
+{
+	MY_GENERATE_BODY(USanhwaCombatComponent)
+	USanhwaCombatComponent();
+
+public:
+	void Initialize() override;
+
+	void BasicAttack() override;
+	void StrongBasicAttack() override {};
+	void Skill() override {};
+	void Ultimate() override {};
+	void JumpAttack() override {};
+};

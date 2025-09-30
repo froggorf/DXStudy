@@ -28,6 +28,9 @@
     <ClCompile Include="Source\MyGame\AnimInstance\UMyAnimInstance.cpp" />
     <ClCompile Include="Source\MyGame\AnimInstance\UMyGameAniminstanceBase.cpp" />
     <ClCompile Include="Source\MyGame\Character\AMyGameCharacterBase.cpp" />
+    <ClCompile Include="Source\MyGame\Component\Combat\Melee\UMeleeBaseComponent.cpp" />
+    <ClCompile Include="Source\MyGame\Component\Combat\Melee\USanhwaCombatComponent.cpp" />
+    <ClCompile Include="Source\MyGame\Component\Combat\UCombatBaseComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\PBRTestComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\UTestComponent.cpp" />
     <ClCompile Include="Source\MyGame\Widget\UMyTestWidget.cpp" />
@@ -41,6 +44,9 @@
     <ClInclude Include="Source\MyGame\AnimInstance\UMyAnimInstance.h" />
     <ClInclude Include="Source\MyGame\AnimInstance\UMyGameAniminstanceBase.h" />
     <ClInclude Include="Source\MyGame\Character\AMyGameCharacterBase.h" />
+    <ClInclude Include="Source\MyGame\Component\Combat\Melee\UMeleeBaseComponent.h" />
+    <ClInclude Include="Source\MyGame\Component\Combat\Melee\USanhwaCombatComponent.h" />
+    <ClInclude Include="Source\MyGame\Component\Combat\UCombatBaseComponent.h" />
     <ClInclude Include="Source\MyGame\Component\PBRTestComponent.h" />
     <ClInclude Include="Source\MyGame\Component\UTestComponent.h" />
     <ClInclude Include="Source\MyGame\Widget\UMyTestWidget.h" />
