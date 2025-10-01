@@ -4,6 +4,7 @@
 #include "Engine/Components/UAnimMontage.h"
 #include "Engine/Misc/Delegate.h"
 
+class AMyGameCharacterBase;
 class UCharacterMovementComponent;
 
 
@@ -20,12 +21,17 @@ class UMyGameAnimInstanceBase : public UAnimInstance
 	void NativeInitializeAnimation() override;
 	void NativeUpdateAnimation(float DeltaSeconds) override;
 	void UpdateAnimation(float dt) override;
-	
+
+	void EndMotionWarping();
+	bool SetMotionWarping();
+
 	bool IsAllResourceOK() override;
 
 protected:
 	std::string BS_LocomotionName = "BS_UE4_Locomotion";
 
+protected:
+	AMyGameCharacterBase* MyGameCharacter = nullptr;
 private:
 	UCharacterMovementComponent* MovementComp;
 

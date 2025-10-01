@@ -6,6 +6,7 @@
 #include "MyGame/Component/Combat/UCombatBaseComponent.h"
 #include "MyGame/Component/Combat/Skill/NormalSkill/USkillBaseComponent.h"
 #include "MyGame/Component/Combat/Skill/Ultimate/UUltimateBaseComponent.h"
+#include "MyGame/Component/MotionWarping/UMotionWarpingComponent.h"
 #include "MyGame/Interface/Dodge/IDodgeInterface.h"
 
 class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
@@ -13,6 +14,8 @@ class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
 	MY_GENERATE_BODY(AMyGameCharacterBase)
 	
 	AMyGameCharacterBase();
+	~AMyGameCharacterBase() override = default;
+
 	void Register() override;
 	virtual void LoadCharacterData_OnRegister();
 	void BeginPlay() override;
@@ -44,11 +47,16 @@ protected:
 	void AttackedWhileDodge() override;
 
 protected:
+	// ================= 전투 관련 컴퍼넌트 =================
 	std::shared_ptr<UCombatBaseComponent> CombatComponent;
 	std::shared_ptr<USkillBaseComponent> SkillComponent;
 	std::shared_ptr<UUltimateBaseComponent> UltimateComponent;
 protected:
 	std::string CharacterMeshName = "SK_Manny_UE4";
 	std::string AnimInstanceName = "UMyGameAnimInstanceBase";
-	
+
+public:
+	const std::shared_ptr<UMotionWarpingComponent>& GetMotionWarpingComponent() const {return MotionWarpingComponent;}
+protected:
+	std::shared_ptr<UMotionWarpingComponent> MotionWarpingComponent;
 };

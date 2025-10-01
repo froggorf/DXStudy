@@ -41,7 +41,7 @@ class AActor : public UObject, public std::enable_shared_from_this<AActor>
 	MY_GENERATE_BODY(AActor)
 
 	AActor();
-
+	~AActor() override = default;
 	void Init() override;
 	void Register() override;
 	void BeginPlay() override;

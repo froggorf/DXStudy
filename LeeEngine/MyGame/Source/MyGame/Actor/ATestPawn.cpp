@@ -10,6 +10,10 @@
 
 ATestPawn::ATestPawn()
 {
+	if (!GDirectXDevice)
+	{
+		return;
+	}
 	if (UCharacterMovementComponent* CharacterMovement = GetCharacterMovement())
 	{
 		CharacterMovement->bOrientRotationToMovement = true;

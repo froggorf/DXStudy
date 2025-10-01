@@ -77,19 +77,21 @@ protected:
 
 	// Notify Map
 	// {노티파이 이름, 델리게이트}
-	std::unordered_map<std::string, Delegate<>> NotifyEvent;
+	std::map<std::string, Delegate<>> NotifyEvent;
 
 	std::vector<XMMATRIX>         FinalBoneMatrices;
 	std::vector<FAnimNotifyEvent> FinalNotifies;
 
 	bool bPlayRootMotion = false;
 	bool bBlendOut = false;
+	bool bUseMotionWarping = false;
 
 	AnimTransition LocomotionTransition;
 
+protected:
+	class ACharacter* OwnerCharacter = nullptr;
 private:
 	USkeletalMeshComponent* CurrentSkeletalMeshComponent;
 
-	class ACharacter* OwnerCharacter = nullptr;
 
 };

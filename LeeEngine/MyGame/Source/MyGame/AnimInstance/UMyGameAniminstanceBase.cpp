@@ -27,6 +27,8 @@ void UMyGameAnimInstanceBase::Register()
 void UMyGameAnimInstanceBase::BeginPlay()
 {
 	UAnimInstance::BeginPlay();
+
+	MyGameCharacter = dynamic_cast<AMyGameCharacterBase*>(OwnerCharacter);
 }
 
 void UMyGameAnimInstanceBase::NativeInitializeAnimation()
@@ -46,6 +48,34 @@ void UMyGameAnimInstanceBase::NativeUpdateAnimation(float DeltaSeconds)
 {
 	UAnimInstance::NativeUpdateAnimation(DeltaSeconds);
 
+}
+
+void UMyGameAnimInstanceBase::EndMotionWarping()
+{
+	bUseMotionWarping = false;
+
+	const std::shared_ptr<UMotionWarpingComponent>& MotionWarpingComp = MyGameCharacter->GetMotionWarpingComponent();
+	MotionWarpingComp->SetMotionWarping(false);
+}
+
+bool UMyGameAnimInstanceBase::SetMotionWarping()
+{
+	if (!OwnerCharacter)
+	{
+		return false;
+	}
+
+	const std::shared_ptr<UMotionWarpingComponent>& MotionWarpingComp = MyGameCharacter->GetMotionWarpingComponent();
+	if (!MotionWarpingComp)
+	{
+		return false;
+	}
+
+
+	MotionWarpingComp->SetMotionWarping(true);
+	bUseMotionWarping = true;
+
+	return true;
 }
 
 bool UMyGameAnimInstanceBase::IsAllResourceOK()

@@ -14,7 +14,9 @@ C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\Melee\USanhwa
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\Skill\NormalSkill\USkillBaseComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\USkillBaseComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\Skill\Ultimate\UUltimateBaseComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\UUltimateBaseComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\UCombatBaseComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\UCombatBaseComponent.obj
+C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\MotionWarping\UMotionWarpingComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\UMotionWarpingComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\PBRTestComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\PBRTestComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\UTestComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\UTestComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Interface\Dodge\IDodgeInterface.cpp;C:\Project\DXStudy\LeeEngine\Executable\IDodgeInterface.obj
+C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Notify\MyGameNotify.cpp;C:\Project\DXStudy\LeeEngine\Executable\MyGameNotify.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Widget\UMyTestWidget.cpp;C:\Project\DXStudy\LeeEngine\Executable\UMyTestWidget.obj

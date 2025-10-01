@@ -16,10 +16,17 @@ void UAnimSequenceBase::GetAnimNotifies(const float& CurrentTime, std::vector<FA
 		return;
 	}
 
+	
+
 	// 급격한 애니메이션 변화로 인한 AnimNotify 중복 호출 방어
-	if (LastUpdateTimeSeconds + 0.1f > GEngine->GetTimeSeconds())
+	if (LastUpdateTimeSeconds + 0.1f > GEngine->GetTimeSeconds() || (CurrentTime -1 < FLT_EPSILON))
 	{
 		float PreviousPosition = LastUpdateTime;
+		// 애니메이션 0프레임에 노티파이를 놓으면 인식하지 못하는 현상을 해결하기 위해 다음과 같이 조정
+		if (CurrentTime -1 < FLT_EPSILON)
+		{
+			PreviousPosition = 0;
+		}
 		float CurrentPosition  = CurrentTime;
 		for (const auto& NotifyEvent : Notifies)
 		{

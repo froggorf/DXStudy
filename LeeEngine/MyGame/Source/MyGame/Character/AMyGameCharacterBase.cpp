@@ -30,6 +30,8 @@ AMyGameCharacterBase::AMyGameCharacterBase()
 	{
 		SkeletalMeshComponent->SetIsMonochromeObject(false);
 	}
+
+	MotionWarpingComponent = std::static_pointer_cast<UMotionWarpingComponent>(CreateDefaultSubobject("MotionWarpingComp", "UMotionWarpingComponent"));
 }
 
 void AMyGameCharacterBase::Register()

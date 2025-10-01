@@ -77,6 +77,12 @@
     <Filter Include="Source\MyGame\Component\Combat\Skill\Ultimate">
       <UniqueIdentifier>{ca925fbe-3cbc-4b68-8a57-1876c805da52}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\Notifies">
+      <UniqueIdentifier>{1e3f826b-ddea-4a34-8dce-b5ece46fec13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\MyGame\Component\MotionWarping">
+      <UniqueIdentifier>{00006074-5154-4845-a04b-a59d99281038}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -139,6 +145,12 @@
     <ClCompile Include="Source\MyGame\Component\Combat\Skill\Ultimate\UUltimateBaseComponent.cpp">
       <Filter>Source\MyGame\Component\Combat\Skill\Ultimate</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Notify\MyGameNotify.cpp">
+      <Filter>Source\MyGame\Notifies</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\Component\MotionWarping\UMotionWarpingComponent.cpp">
+      <Filter>Source\MyGame\Component\MotionWarping</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -197,6 +209,12 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Component\Combat\Skill\Ultimate\UUltimateBaseComponent.h">
       <Filter>Source\MyGame\Component\Combat\Skill\Ultimate</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Notify\MyGameNotify.h">
+      <Filter>Source\MyGame\Notifies</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Component\MotionWarping\UMotionWarpingComponent.h">
+      <Filter>Source\MyGame\Component\MotionWarping</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -214,11 +214,8 @@ void ACharacter::Register()
 	// 디버깅 테스트용
 	AActor::Register();
 
-	QueryCheckCapsuleComp->SetStaticMesh((CapsuleComp->MakeStaticMesh()));
-	QueryCheckCapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	QueryCheckCapsuleComp->GetBodyInstance()->SetSimulatePhysics(false);
-	QueryCheckCapsuleComp->SetCollisionObjectType(ECollisionChannel::Pawn);
-	QueryCheckCapsuleComp->GetBodyInstance()->SetObjectType(ECollisionChannel::Pawn);
+
+
 }
 
 void ACharacter::BeginPlay()
@@ -234,6 +231,11 @@ void ACharacter::BeginPlay()
 	CapsuleComp->SetSimulatePhysics(true);
 	CapsuleComp->SetKinematicRigidBody(true);
 
+	QueryCheckCapsuleComp->SetStaticMesh((CapsuleComp->MakeStaticMesh()));
+	QueryCheckCapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	QueryCheckCapsuleComp->GetBodyInstance()->SetSimulatePhysics(false);
+	QueryCheckCapsuleComp->SetCollisionObjectType(ECollisionChannel::Pawn);
+	QueryCheckCapsuleComp->GetBodyInstance()->SetObjectType(ECollisionChannel::Pawn);
 
 	
 	GEngine->GetWorld()->GetCameraManager()->SetTargetCamera(CameraComp);

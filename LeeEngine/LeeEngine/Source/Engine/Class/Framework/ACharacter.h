@@ -76,6 +76,7 @@ class ACharacter : public AActor
 
 public:
 	ACharacter();
+	~ACharacter() override = default;
 	void Register() override;
 	void BeginPlay() override;
 	void Tick(float DeltaSeconds) override;

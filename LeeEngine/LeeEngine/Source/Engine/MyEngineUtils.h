@@ -123,3 +123,90 @@ inline float NormalizeAxis(float Angle)
 
 XMMATRIX LinearMatrixLerp(const XMMATRIX& AMatrix, const XMMATRIX& BMatrix, float Value);
 XMMATRIX MyMatrixLerpForAnimation(const XMMATRIX& AMatrix, const XMMATRIX& BMatrix, float Value);
+
+inline XMFLOAT3 operator+(const XMFLOAT3& A, const XMFLOAT3& B)
+{
+	XMFLOAT3 ReturnValue;
+	XMStoreFloat3(&ReturnValue, XMVectorAdd(XMLoadFloat3(&A), XMLoadFloat3(&B)));
+	return ReturnValue;
+}
+
+inline XMFLOAT2 operator+(const XMFLOAT2& A, const XMFLOAT2& B)
+{
+	XMFLOAT2 ReturnValue;
+	XMStoreFloat2(&ReturnValue, XMVectorAdd(XMLoadFloat2(&A), XMLoadFloat2(&B)));
+	return ReturnValue;
+}
+
+inline XMFLOAT4 operator+(const XMFLOAT4& A, const XMFLOAT4& B)
+{
+	XMFLOAT4 ReturnValue;
+	XMStoreFloat4(&ReturnValue, XMVectorAdd(XMLoadFloat4(&A), XMLoadFloat4(&B)));
+	return ReturnValue;
+}
+
+inline XMFLOAT4 operator-(const XMFLOAT4& A, const XMFLOAT4& B)
+{
+	XMFLOAT4 ReturnValue;
+	XMStoreFloat4(&ReturnValue, XMVectorSubtract(XMLoadFloat4(&A), XMLoadFloat4(&B)));
+	return ReturnValue;
+}
+
+inline XMFLOAT3 operator-(const XMFLOAT3& A, const XMFLOAT3& B)
+{
+	XMFLOAT3 ReturnValue;
+	XMStoreFloat3(&ReturnValue, XMVectorSubtract(XMLoadFloat3(&A), XMLoadFloat3(&B)));
+	return ReturnValue;
+}
+
+inline XMFLOAT2 operator-(const XMFLOAT2& A, const XMFLOAT2& B)
+{
+	XMFLOAT2 ReturnValue;
+	XMStoreFloat2(&ReturnValue, XMVectorSubtract(XMLoadFloat2(&A), XMLoadFloat2(&B)));
+	return ReturnValue;
+}
+
+
+
+inline XMFLOAT3 operator*(const XMFLOAT3& A, const XMFLOAT3& B)
+{
+	XMFLOAT3 ReturnValue;
+	XMStoreFloat3(&ReturnValue, XMVectorMultiply(XMLoadFloat3(&A), XMLoadFloat3(&B)));
+	return ReturnValue;
+}
+
+inline XMFLOAT2 operator*(const XMFLOAT2& A, const XMFLOAT2& B)
+{
+	XMFLOAT2 ReturnValue;
+	XMStoreFloat2(&ReturnValue, XMVectorMultiply(XMLoadFloat2(&A), XMLoadFloat2(&B)));
+	return ReturnValue;
+}
+
+inline XMFLOAT4 operator*(const XMFLOAT4& A, const XMFLOAT4& B)
+{
+	XMFLOAT4 ReturnValue;
+	XMStoreFloat4(&ReturnValue, XMVectorMultiply(XMLoadFloat4(&A), XMLoadFloat4(&B)));
+	return ReturnValue;
+}
+
+
+inline XMFLOAT3 operator*(const XMFLOAT3& A, float Val)
+{
+	XMFLOAT3 ReturnValue;
+	XMStoreFloat3(&ReturnValue, XMVectorScale(XMLoadFloat3(&A), Val));
+	return ReturnValue;
+}
+
+inline XMFLOAT2 operator*(const XMFLOAT2& A, float Val)
+{
+	XMFLOAT2 ReturnValue;
+	XMStoreFloat2(&ReturnValue, XMVectorScale(XMLoadFloat2(&A), Val));
+	return ReturnValue;
+}
+
+inline XMFLOAT4 operator*(const XMFLOAT4& A, float Val)
+{
+	XMFLOAT4 ReturnValue;
+	XMStoreFloat4(&ReturnValue, XMVectorScale(XMLoadFloat4(&A), Val));
+	return ReturnValue;
+}

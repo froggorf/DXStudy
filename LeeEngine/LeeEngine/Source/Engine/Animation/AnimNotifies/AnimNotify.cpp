@@ -1,4 +1,4 @@
-﻿#include "CoreMinimal.h"
+#include "CoreMinimal.h"
 #include "AnimNotify.h"
 
 void UAnimNotify::LoadDataFromFileData(const nlohmann::json& AssetData)
@@ -6,7 +6,7 @@ void UAnimNotify::LoadDataFromFileData(const nlohmann::json& AssetData)
 	UObject::LoadDataFromFileData(AssetData);
 }
 
-const std::string UAnimNotify::Notify()
+const std::string& UAnimNotify::Notify()
 {
 	return "";
 }
@@ -24,7 +24,7 @@ void UAnimNotify_PlaySound::LoadDataFromFileData(const nlohmann::json& AssetData
 	}
 }
 
-const std::string UAnimNotify_PlaySound::Notify()
+const std::string& UAnimNotify_PlaySound::Notify()
 {
 	if (SoundBase)
 	{
@@ -35,22 +35,3 @@ const std::string UAnimNotify_PlaySound::Notify()
 	return "PlaySound";
 }
 
-void UAnimNotify_AttackStart::LoadDataFromFileData(const nlohmann::json& AssetData)
-{
-	UAnimNotify::LoadDataFromFileData(AssetData);
-}
-
-const std::string UAnimNotify_AttackStart::Notify()
-{
-	return "AttackStart";
-}
-
-void UAnimNotify_AttackEnd::LoadDataFromFileData(const nlohmann::json& AssetData)
-{
-	UAnimNotify::LoadDataFromFileData(AssetData);
-}
-
-const std::string UAnimNotify_AttackEnd::Notify()
-{
-	return "AttackEnd";
-}

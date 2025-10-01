@@ -109,7 +109,7 @@ void UAnimInstance::Tick(float DeltaSeconds)
 					PC->SetPlayRootMotion(true);
 				}
 
-				if (!bBlendOut)
+				if (!bBlendOut && !bUseMotionWarping)
 				{
 					OwnerCharacter->HandleRootMotion(FinalBoneMatrices[0]);
 				}
@@ -168,6 +168,11 @@ void UAnimInstance::Montage_Play(std::shared_ptr<UAnimMontage> MontageToPlay, fl
 
 	auto NewInstance     = std::make_shared<FAnimMontageInstance>(this);
 	NewInstance->Montage = MontageToPlay;
+	for (const std::shared_ptr<UAnimSequence>& AS : NewInstance->Montage->AnimTrack.AnimSegments)
+	{
+		AS->LastUpdateTime = 0.0f;
+	}
+
 	NewInstance->SetPosition(std::clamp(InTimeToStartMontageAt, 0.0f, MontageToPlay->GetPlayLength()));
 	NewInstance->CurrentPlayTime = 0.0f;
 	NewInstance->OnMontageEnded = OnMontageEnd;
