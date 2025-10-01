@@ -184,7 +184,6 @@ void FAnimMontageInstance::Play()
 	constexpr float PlayTimePerTick = 1.0f/30;
 	for (const auto& Anim : AnimSegments)
 	{
-		
 		if (Position >= Anim->GetDuration())
 		{
 			Position -= Anim->GetDuration();

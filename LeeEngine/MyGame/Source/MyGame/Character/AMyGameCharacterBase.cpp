@@ -39,6 +39,19 @@ void AMyGameCharacterBase::Register()
 	ACharacter::Register();
 
 	IDodgeInterface::LoadAnimMontages();
+
+	if (CombatComponent)
+	{
+		CombatComponent->Initialize(this);
+	}
+	if (SkillComponent)
+	{
+		SkillComponent->Initialize(this);
+	}
+	if (UltimateComponent)
+	{
+		UltimateComponent->Initialize(this);
+	}
 }
 
 void AMyGameCharacterBase::LoadCharacterData_OnRegister()
@@ -67,18 +80,13 @@ void AMyGameCharacterBase::BindKeyInputs()
 	{
 		if (std::shared_ptr<UPlayerInput> InputSystem = Controller->GetPlayerInput())
 		{
-			// Walk / Run Toggle
-			//InputSystem->BindAction(EKeys::LShift, ETriggerEvent::Started, this, &AMyGameCharacterBase::SetWalk);
-			//InputSystem->BindAction(EKeys::LShift, ETriggerEvent::Released, this, &AMyGameCharacterBase::SetRun);
-			InputSystem->BindAction(EKeys::LShift, ETriggerEvent::Started, this, &AMyGameCharacterBase::Dodge);
-
-
 			// Locomotion
 			InputSystem->BindAxis2D(EKeys::W, ETriggerEvent::Trigger, 1, 0,this, &AMyGameCharacterBase::Move);
 			InputSystem->BindAxis2D(EKeys::S, ETriggerEvent::Trigger, -1, 0,this, &AMyGameCharacterBase::Move);
 			InputSystem->BindAxis2D(EKeys::D, ETriggerEvent::Trigger, 0, 1,this, &AMyGameCharacterBase::Move);
 			InputSystem->BindAxis2D(EKeys::A, ETriggerEvent::Trigger, 0, -1,this, &AMyGameCharacterBase::Move);
-
+			// Dodge
+			InputSystem->BindAction(EKeys::LShift, ETriggerEvent::Started, this, &AMyGameCharacterBase::Dodge);
 			// Jump
 			InputSystem->BindAction<AMyGameCharacterBase>(EKeys::Space, ETriggerEvent::Started, this, &AMyGameCharacterBase::Jump);
 			// LookRotate
@@ -89,6 +97,19 @@ void AMyGameCharacterBase::BindKeyInputs()
 			// TargetArmLength Wheel
 			InputSystem->BindAction(EKeys::MouseWheelUp, Started, this, &AMyGameCharacterBase::WheelUp);
 			InputSystem->BindAction(EKeys::MouseWheelDown, Started, this, &AMyGameCharacterBase::WheelDown);
+
+			if (CombatComponent)
+			{
+				CombatComponent->BindKeyInputs(InputSystem);
+			}
+			if (SkillComponent)
+			{
+				SkillComponent->BindKeyInputs(InputSystem);
+			}
+			if (UltimateComponent)
+			{
+				UltimateComponent->BindKeyInputs(InputSystem);
+			}
 		}
 		
 	}
@@ -108,8 +129,6 @@ float AMyGameCharacterBase::TakeDamage(float DamageAmount, const FDamageEvent& D
 	if (bIsDodging)
 	{
 		ChangeToRoll();
-		
-
 		return DamageAmount;
 	}
 	
@@ -234,7 +253,6 @@ void AMyGameCharacterBase::WheelDown()
 		SpringArm->SetArmLength(SpringArm->TargetArmLength + 10.0f);
 	}
 }
-
 
 
 

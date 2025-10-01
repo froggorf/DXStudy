@@ -37,11 +37,6 @@ void UPlayerInput::HandleInput(const FInputEvent& InputEvent)
 	{
 		if (!Touches[KeyIndex])
 		{
-			if (KeyIndex == static_cast<UINT>(EKeys::W))
-			{
-				int a= 0;
-			}
-
 			if (InputEvent.Key == EKeys::MouseWheelDown || InputEvent.Key == EKeys::MouseWheelUp)
 			{
 				// 휠 버튼에 대해서는 처리를 하지 말아야함

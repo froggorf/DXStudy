@@ -10,11 +10,9 @@ class USanhwaCombatComponent : public UMeleeBaseComponent
 	USanhwaCombatComponent();
 
 public:
-	void Initialize() override;
+	void Initialize(AMyGameCharacterBase* MyCharacter) override;
 
 	void BasicAttack() override;
 	void StrongBasicAttack() override {};
-	void Skill() override {};
-	void Ultimate() override {};
 	void JumpAttack() override {};
 };

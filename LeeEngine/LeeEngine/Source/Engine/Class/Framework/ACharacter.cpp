@@ -285,6 +285,18 @@ void ACharacter::SetControlRotation(const XMFLOAT4& NewRot)
 
 }
 
+std::shared_ptr<UAnimInstance> ACharacter::GetAnimInstance() const
+{ 
+	if (USkeletalMeshComponent* Mesh = GetSkeletalMeshComponent())
+	{
+		if (const std::shared_ptr<UAnimInstance>& AnimInstance = Mesh->GetAnimInstance())
+		{
+			return AnimInstance;
+		}
+	}
+	return nullptr;
+}
+
 void ACharacter::HandleRootMotion(const XMMATRIX& Root)
 {
 	UCharacterMovementComponent* MovementComp = GetCharacterMovement();

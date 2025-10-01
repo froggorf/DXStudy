@@ -3,6 +3,9 @@
 
 #pragma once
 #include "Engine/Class/Framework/ACharacter.h"
+#include "MyGame/Component/Combat/UCombatBaseComponent.h"
+#include "MyGame/Component/Combat/Skill/NormalSkill/USkillBaseComponent.h"
+#include "MyGame/Component/Combat/Skill/Ultimate/UUltimateBaseComponent.h"
 #include "MyGame/Interface/Dodge/IDodgeInterface.h"
 
 class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
@@ -28,6 +31,7 @@ class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
 	void WheelUp();
 	void WheelDown();
 
+
 private:
 	bool bRightButtonPressed = false;
 
@@ -39,8 +43,11 @@ protected:
 	void RollEnd() override;
 	void AttackedWhileDodge() override;
 
-
-
+protected:
+	std::shared_ptr<UCombatBaseComponent> CombatComponent;
+	std::shared_ptr<USkillBaseComponent> SkillComponent;
+	std::shared_ptr<UUltimateBaseComponent> UltimateComponent;
+protected:
 	std::string CharacterMeshName = "SK_Manny_UE4";
 	std::string AnimInstanceName = "UMyGameAnimInstanceBase";
 	

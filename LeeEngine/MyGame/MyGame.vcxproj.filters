@@ -68,6 +68,15 @@
     <Filter Include="Source\MyGame\AnimInstance\Sanhwa">
       <UniqueIdentifier>{a10db656-f3c5-4860-ae8f-f96602f221cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\Component\Combat\Skill">
+      <UniqueIdentifier>{b11c2279-527e-4e17-8df5-8bcbc6f8f487}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\MyGame\Component\Combat\Skill\NormalSkill">
+      <UniqueIdentifier>{2149b7d8-d9d4-4c00-a193-4176c0613812}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\MyGame\Component\Combat\Skill\Ultimate">
+      <UniqueIdentifier>{ca925fbe-3cbc-4b68-8a57-1876c805da52}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -124,6 +133,12 @@
     <ClCompile Include="Source\MyGame\AnimInstance\Sanhwa\USanhwaAnimInstance.cpp">
       <Filter>Source\MyGame\AnimInstance\Sanhwa</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Component\Combat\Skill\NormalSkill\USkillBaseComponent.cpp">
+      <Filter>Source\MyGame\Component\Combat\Skill\NormalSkill</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\Component\Combat\Skill\Ultimate\UUltimateBaseComponent.cpp">
+      <Filter>Source\MyGame\Component\Combat\Skill\Ultimate</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -176,6 +191,12 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\AnimInstance\Sanhwa\USanhwaAnimInstance.h">
       <Filter>Source\MyGame\AnimInstance\Sanhwa</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Component\Combat\Skill\NormalSkill\USkillBaseComponent.h">
+      <Filter>Source\MyGame\Component\Combat\Skill\NormalSkill</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Component\Combat\Skill\Ultimate\UUltimateBaseComponent.h">
+      <Filter>Source\MyGame\Component\Combat\Skill\Ultimate</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -50,7 +50,7 @@ void UMyGameAnimInstanceBase::NativeUpdateAnimation(float DeltaSeconds)
 
 bool UMyGameAnimInstanceBase::IsAllResourceOK()
 {
-	return GetSkeletalMeshComponent() && MovementComp && BS_Locomotion ;
+	return UAnimInstance::IsAllResourceOK() && MovementComp && BS_Locomotion ;
 }
 
 

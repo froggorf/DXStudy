@@ -6,7 +6,12 @@ UMeleeBaseComponent::UMeleeBaseComponent()
 	
 }
 
+void UMeleeBaseComponent::Initialize(AMyGameCharacterBase* MyCharacter)
+{
+	UCombatBaseComponent::Initialize(MyCharacter);
+}
+
 void UMeleeBaseComponent::BasicAttack()
 {
-
+	UCombatBaseComponent::BasicAttack();
 }

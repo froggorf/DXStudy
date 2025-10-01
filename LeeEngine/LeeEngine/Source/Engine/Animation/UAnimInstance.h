@@ -52,7 +52,7 @@ class UAnimInstance : public UObject
 	const std::array<XMMATRIX,MAX_BONES>& GetLastFrameAnimMatrices() const {return LastFrameAnimMatrices;}
 protected:
 	// 현재 애님 인스턴스의 리소스가 모두 정상적으로 존재하는지 체크하는 함수
-	virtual bool IsAllResourceOK() {return true;}
+	virtual bool IsAllResourceOK();
 
 	// 애니메이션 레이어 블렌딩
 	void LayeredBlendPerBone(const std::vector<XMMATRIX>& BasePose, const std::vector<XMMATRIX>& BlendPose, const std::string& TargetBoneName, float BlendWeights, std::vector<XMMATRIX>& OutMatrices);

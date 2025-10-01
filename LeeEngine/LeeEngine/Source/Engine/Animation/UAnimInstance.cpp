@@ -33,11 +33,22 @@ void UAnimInstance::UpdateAnimation(float dt)
 	{
 		MontageInstances[i]->Play();
 
+		
+
 		// 몽타쥬 재생 종료됨
 		if (!MontageInstances[i]->bIsPlaying)
 		{
-			MontageInstances.erase(MontageInstances.begin() + i);
-			--i;
+			// 가끔 애니메이션 종료시 바로 애니메이션을 재생시킬 경우 지워지는 경우가 존재하여 해당 코드로 제어
+			if (MontageInstances[i]->CurrentPlayTime == 0.0f)
+			{
+				 MontageInstances[i]->bIsPlaying = true;
+			}
+			else
+			{
+				MontageInstances.erase(MontageInstances.begin() + i);
+				--i;
+			}
+			
 		}
 	}
 }
@@ -163,6 +174,12 @@ void UAnimInstance::Montage_Play(std::shared_ptr<UAnimMontage> MontageToPlay, fl
 	NewInstance->OnMontageBlendInStart = OnMontageBlendingInStart;
 	NewInstance->OnMontageBlendedOutStart = OnMontageBlendOutStart;
 	MontageInstances.emplace_back(NewInstance);
+}
+
+bool UAnimInstance::IsAllResourceOK()
+{
+	bool bIsGameStart = GEngine->bGameStart;
+	return GetSkeletalMeshComponent() && bIsGameStart;
 }
 
 void UAnimInstance::LayeredBlendPerBone(const std::vector<XMMATRIX>& BasePose, const std::vector<XMMATRIX>& BlendPose, const std::string& TargetBoneName, float BlendWeights, std::vector<XMMATRIX>& OutMatrices)

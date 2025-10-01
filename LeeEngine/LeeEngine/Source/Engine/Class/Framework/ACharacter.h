@@ -94,7 +94,7 @@ public:
 	std::shared_ptr<UCameraComponent> GetCameraComponent() const {return CameraComp;}
 
 
-	std::shared_ptr<UAnimInstance> GetAnimInstance() const {return GetSkeletalMeshComponent()->GetAnimInstance();}
+	std::shared_ptr<UAnimInstance> GetAnimInstance() const;
 
 	void HandleRootMotion(const XMMATRIX& Root);
 
