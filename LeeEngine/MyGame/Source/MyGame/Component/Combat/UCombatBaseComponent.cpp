@@ -10,6 +10,13 @@ UCombatBaseComponent::UCombatBaseComponent()
 	
 }
 
+void UCombatBaseComponent::BeginPlay()
+{
+	UActorComponent::BeginPlay();
+
+	SetFightMode(false);
+}
+
 void UCombatBaseComponent::Initialize(AMyGameCharacterBase* MyCharacter)
 {
 	OwnerCharacter = MyCharacter;
@@ -78,3 +85,29 @@ void UCombatBaseComponent::SetBasicAttackMontages(const std::vector<std::string>
 	
 }
 
+void UCombatBaseComponent::SetFightMode(bool NewMode)
+{
+	if (bIsFightMode == NewMode)
+	{
+		return;
+	}
+	bIsFightMode = NewMode;
+
+	const std::shared_ptr<FTimerManager>& TimerManager = GEngine->GetTimerManager();
+	//TimerManager->ClearTimer(FindEnemyHandle);
+
+	// 전투중일땐 0.25f마다 적을 찾고 평시 모드일땐 1.0f 마다 적을 찾음
+	const float RepeatTime = bIsFightMode ? EnemyFindTime_OnFight : EnemyFindTime_NoFight;
+	TimerManager->SetTimer(FindEnemyHandle,Delegate{ this, &UCombatBaseComponent::FindNearbyEnemy},0.5f,true,RepeatTime);
+}
+
+void UCombatBaseComponent::FindNearbyEnemy()
+{
+	XMFLOAT3 SpherePos = OwnerCharacter->GetActorLocation();
+	std::vector<AActor*> OverlapActors;
+	GPhysicsEngine->SphereOverlapComponents(SpherePos, EnemyFindRadius, {ECollisionChannel::Enemy}, {}, OverlapActors);
+	MY_LOG("LOG", EDebugLogLevel::DLL_Error, std::to_string(OverlapActors.size()));
+
+	SetFightMode(!OverlapActors.empty());
+
+}

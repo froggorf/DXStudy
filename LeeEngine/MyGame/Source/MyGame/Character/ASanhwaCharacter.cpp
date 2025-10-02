@@ -13,7 +13,7 @@ ASanhwaCharacter::ASanhwaCharacter()
 	RollMontageName[static_cast<int>(EDodgeDirection::Forward)] = "AM_UE5MM_Roll_Fwd";
 	RollMontageName[static_cast<int>(EDodgeDirection::Backward)] = "AM_UE5MM_Roll_Bwd";
 
-	CombatComponent = std::make_shared<USanhwaCombatComponent>();
+	CombatComponent = std::dynamic_pointer_cast<USanhwaCombatComponent>(CreateDefaultSubobject("SanhwaCombatComp", "USanhwaCombatComponent"));
 	// TODO : 산화의 타입으로 변경해주기
 	SkillComponent = std::make_shared<USkillBaseComponent>();
 	UltimateComponent = std::make_shared<UUltimateBaseComponent>();

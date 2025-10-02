@@ -34,7 +34,7 @@ void USpringArmComponent::TickComponent(float DeltaSeconds)
 	int BreakCount = 0;
 	while (true)
 	{
-		if (gPhysicsEngine->LineTraceSingleByChannel(StartLocation, Offset, Channel, Result))
+		if (GPhysicsEngine->LineTraceSingleByChannel(StartLocation, Offset, Channel, Result))
 		{
 			if (Result.HitActor == GetOwner())
 			{

@@ -118,7 +118,7 @@ bool D3DApp::Init()
 #else
 	GEngine = std::make_shared<UEngine>(this);//new UEngine(this);
 #endif
-	gPhysicsEngine = std::make_unique<UPhysicsEngine>();
+	GPhysicsEngine = std::make_unique<UPhysicsEngine>();
 
 	GEngine->InitEngine();
 

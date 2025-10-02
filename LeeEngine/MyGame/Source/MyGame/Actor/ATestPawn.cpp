@@ -275,7 +275,7 @@ void ATestPawn::PressLeftButton()
 				Channel[i] = static_cast<ECollisionChannel>(i);
 			}
 			FHitResult HitResult;
-			if (gPhysicsEngine->LineTraceSingleByChannel(Start,End, Channel, HitResult, 5))
+			if (GPhysicsEngine->LineTraceSingleByChannel(Start,End, Channel, HitResult, 5))
 			{
 				bMustFindPath = true;
 				ArriveLoc = HitResult.Location;

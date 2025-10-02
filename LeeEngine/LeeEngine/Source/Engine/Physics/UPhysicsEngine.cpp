@@ -3,7 +3,7 @@
 
 #include "ULineComponent.h"
 
-std::unique_ptr<UPhysicsEngine> gPhysicsEngine = nullptr;
+std::unique_ptr<UPhysicsEngine> GPhysicsEngine = nullptr;
 
 void FPhysicsEventCallback::onAdvance(const physx::PxRigidBody* const* bodyBuffer, const physx::PxTransform* poseBuffer, const physx::PxU32 count)
 {
@@ -435,18 +435,22 @@ void UPhysicsEngine::SphereOverlapComponents(const XMFLOAT3& SpherePos, float Sp
 	physx::PxSphereGeometry SphereGeom(SphereRadius);
 	physx::PxTransform SphereTransform({SpherePos.x, SpherePos.y, -SpherePos.z});
 	physx::PxQueryFilterData FilterData;
+	FilterData.flags = physx::PxQueryFlag::eSTATIC | physx::PxQueryFlag::eDYNAMIC | physx::PxQueryFlag::eNO_BLOCK;
 	for (size_t i = 0; i < ObjectTypes.size(); ++i)
 	{
 		FilterData.data.word0 |= (1 << static_cast<UINT>(ObjectTypes[i]));
 	}
 
-	physx::PxOverlapBuffer OverlapBuffer;
-	bool bAnyHit = PxScene->overlap(SphereGeom, SphereTransform, OverlapBuffer, FilterData);
-	if (bAnyHit)
+	std::unique_ptr<physx::PxOverlapHit[]> hitOv   = std::make_unique<physx::PxOverlapHit[]>(4096);
+	int howMany = physx::PxSceneQueryExt::overlapMultiple(
+		*PxScene, SphereGeom, SphereTransform, hitOv.get(), 4096,
+		FilterData
+	);
+	if (howMany > 0)
 	{
-		for (uint32_t i = 0; i < OverlapBuffer.getNbTouches(); ++i)
+		for (int i = 0; i < howMany; ++i)
 		{
-			const physx::PxOverlapHit& Hit = OverlapBuffer.getTouch(i);
+			const physx::PxOverlapHit& Hit = hitOv[i];
 			UShapeComponent* ShapeComp = static_cast<UShapeComponent*>(Hit.actor->userData);
 			if (!ShapeComp)
 			{

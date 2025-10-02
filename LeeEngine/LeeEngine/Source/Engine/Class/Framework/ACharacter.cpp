@@ -33,12 +33,12 @@ void UCharacterMovementComponent::BeginPlay()
 {
 	UActorComponent::BeginPlay();
 
-	Manager = PxCreateControllerManager(*gPhysicsEngine->GetScene());
+	Manager = PxCreateControllerManager(*GPhysicsEngine->GetScene());
 
 	desc.height = std::static_pointer_cast<UCapsuleComponent>(GetOwner()->GetRootComponent())->GetHalfHeight()*2;
 	desc.radius = std::static_pointer_cast<UCapsuleComponent>(GetOwner()->GetRootComponent())->GetRadius();
 	desc.position = physx::PxExtendedVec3(GetOwner()->GetActorLocation().x,GetOwner()->GetActorLocation().y,-GetOwner()->GetActorLocation().z);
-	desc.material = gPhysicsEngine->GetDefaultMaterial();
+	desc.material = GPhysicsEngine->GetDefaultMaterial();
 	desc.stepOffset = MaxStepHeight;
 	desc.slopeLimit = XMConvertToRadians(WalkableFloorAngle);
 
@@ -92,7 +92,7 @@ void UCharacterMovementComponent::TickComponent(float DeltaSeconds)
 
 	XMStoreFloat3(&Velocity, CurVel);
 
-	CurVelocityY -= 9.8f*gPhysicsEngine->GetSceneDefaultGravityScale()*DeltaSeconds*GravityScale;
+	CurVelocityY -= 9.8f*GPhysicsEngine->GetSceneDefaultGravityScale()*DeltaSeconds*GravityScale;
 	physx::PxVec3 MoveVel = {Velocity.x,Velocity.y,-Velocity.z};
 	MoveVel.y = CurVelocityY;
 	physx::PxControllerCollisionFlags MoveFlags = PxCharacterController->move(MoveVel * DeltaSeconds, 0.01f, DeltaSeconds, Filters);

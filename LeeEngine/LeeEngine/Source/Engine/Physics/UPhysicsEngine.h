@@ -130,4 +130,4 @@ private:
 	float DefaultGravityScale = 7.5f;
 };
 
-extern std::unique_ptr<UPhysicsEngine> gPhysicsEngine;
+extern std::unique_ptr<UPhysicsEngine> GPhysicsEngine;

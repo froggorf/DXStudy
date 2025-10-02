@@ -10,7 +10,7 @@ physx::PxRigidActor* UCapsuleComponent::CreateRigidActor()
 {
 	CreateVertexBuffer();
 
-	return gPhysicsEngine->CreateAndRegisterActor(GetComponentTransform(), gPhysicsEngine->CreateCapsuleShape(Radius,HalfHeight), Mass, bSimulatePhysics);
+	return GPhysicsEngine->CreateAndRegisterActor(GetComponentTransform(), GPhysicsEngine->CreateCapsuleShape(Radius,HalfHeight), Mass, bSimulatePhysics);
 }
 
 void UCapsuleComponent::DebugDraw_RenderThread() const

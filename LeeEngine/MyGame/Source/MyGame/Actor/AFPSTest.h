@@ -20,7 +20,6 @@ class AFPSTest : public AActor
 	void Timer_OneTime();
 public:
 	std::shared_ptr<UStaticMeshComponent> SM_Attacker;
-
 	float ShotDelay = 0.5f;
 	float CurTime = 0.0f;
 

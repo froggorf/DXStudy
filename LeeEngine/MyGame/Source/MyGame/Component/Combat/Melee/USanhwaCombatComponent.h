@@ -8,7 +8,7 @@ class USanhwaCombatComponent : public UMeleeBaseComponent
 {
 	MY_GENERATE_BODY(USanhwaCombatComponent)
 	USanhwaCombatComponent();
-
+	~USanhwaCombatComponent() override = default;
 public:
 	void Initialize(AMyGameCharacterBase* MyCharacter) override;
 

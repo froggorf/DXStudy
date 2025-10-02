@@ -4,6 +4,7 @@
 #pragma once
 #include "Engine/Components/UActorComponent.h"
 #include "Engine/Components/UAnimMontage.h"
+#include "Engine/Timer/FTimerManager.h"
 
 
 class AMyGameCharacterBase;
@@ -16,6 +17,8 @@ class UCombatBaseComponent : public UActorComponent
 	UCombatBaseComponent();
 
 public:
+	void BeginPlay() override;
+
 	// AMyGameCharacterBase 내에서 Register 에 호출됨
 	// 초기 세팅
 	virtual void Initialize(AMyGameCharacterBase* MyCharacter);
@@ -32,7 +35,18 @@ protected:
 protected:
 	AMyGameCharacterBase* OwnerCharacter = nullptr;
 
+public:
+	void SetFightMode(bool NewMode);
+	void FindNearbyEnemy();
+
 protected:
+	// 초기 세팅을 위해
+	bool bIsFightMode = true;
+	FTimerHandle FindEnemyHandle;
+	const float EnemyFindTime_OnFight = 0.25f;
+	const float EnemyFindTime_NoFight = 1.0f;
+	const float EnemyFindRadius = 50000.0f;
+
 	// ===================== Basic Attack =====================
 	// BasicAttackMontages.size() 가 기본공격의 콤보 수
 	std::vector<std::shared_ptr<UAnimMontage>> BasicAttackMontages;

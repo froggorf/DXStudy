@@ -194,7 +194,7 @@ void UEngine::Tick(float DeltaSeconds)
 		if (CurrentWorld)
 		{
 			CurrentWorld->TickWorld(DeltaSeconds);
-			gPhysicsEngine->TickPhysics(DeltaSeconds);
+			GPhysicsEngine->TickPhysics(DeltaSeconds);
 		}
 	}
 #ifdef WITH_EDITOR

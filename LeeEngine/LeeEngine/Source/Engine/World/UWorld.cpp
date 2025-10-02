@@ -137,7 +137,7 @@ std::shared_ptr<ULevel> UWorld::GetPersistentLevel() const
 
 void UWorld::SetPersistentLevel(const std::shared_ptr<ULevel>& NewLevel)
 {
-	gPhysicsEngine->ResetScene();
+	GPhysicsEngine->ResetScene();
 	PersistentLevel = nullptr;
 	PersistentLevel = NewLevel;
 	PersistentLevel->Register();

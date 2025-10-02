@@ -16,7 +16,7 @@ physx::PxRigidActor* UBoxComponent::CreateRigidActor()
 {
 	CreateVertexBuffer();
 
-	return gPhysicsEngine->CreateAndRegisterActor(GetComponentTransform(), gPhysicsEngine->CreateBoxShape(BoxExtent), Mass, bSimulatePhysics);
+	return GPhysicsEngine->CreateAndRegisterActor(GetComponentTransform(), GPhysicsEngine->CreateBoxShape(BoxExtent), Mass, bSimulatePhysics);
 }
 
 void UBoxComponent::DebugDraw_RenderThread() const

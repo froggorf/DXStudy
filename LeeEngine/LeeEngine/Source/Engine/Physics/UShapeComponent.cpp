@@ -33,11 +33,11 @@ void UShapeComponent::RegisterPhysics()
 
 void UShapeComponent::UnRegisterPhysics()
 {
-	if (gPhysicsEngine)
+	if (GPhysicsEngine)
 	{
 		if (RigidActor)
 		{
-			gPhysicsEngine->UnRegisterActor(RigidActor);
+			GPhysicsEngine->UnRegisterActor(RigidActor);
 		}
 	}
 }
@@ -49,7 +49,7 @@ void UShapeComponent::ResetPhysics()
 		return;
 	}
 
-	gPhysicsEngine->UnRegisterActor(RigidActor);
+	GPhysicsEngine->UnRegisterActor(RigidActor);
 	RegisterPhysics();
 }
 
