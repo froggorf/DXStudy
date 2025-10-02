@@ -227,4 +227,16 @@ namespace MyMath
 	{
 		return A*(1-T) + B*T;
 	}
+
+	inline float GetDistance(const XMFLOAT3& A, const XMFLOAT3& B)
+	{
+		float Distance = XMVectorGetX(XMVector3Length(XMVectorSubtract( XMLoadFloat3(&A), XMLoadFloat3(&B))));
+		return Distance;
+	}
+
+	inline float GetDistance2D(const XMFLOAT2& A, const XMFLOAT2& B)
+	{
+		float Distance = XMVectorGetX(XMVector2Length(XMVectorSubtract(XMLoadFloat2(&A), XMLoadFloat2(&B))));
+		return Distance;
+	}
 }
