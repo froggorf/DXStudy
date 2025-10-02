@@ -16,7 +16,7 @@ ULevel::ULevel()
 
 ULevel::ULevel(const ULevel* LevelInstance)
 {
-	OwningWorld = GEngine->GetWorld();
+	OwningWorld = GEngine->GetCurrentWorld();
 	Rename(LevelInstance->GetName());
 
 	nlohmann::basic_json<> ActorsData = LevelInstance->LevelData["Actor"];

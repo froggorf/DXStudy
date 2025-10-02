@@ -39,7 +39,7 @@ void FImguiEditorMainPanel::Draw()
 					ENQUEUE_IMGUI_COMMAND([]()
 					{
 						GEditorEngine->bGameStart = false;
-						GEngine->ChangeLevelByName(GEngine->GetWorld()->GetPersistentLevel()->GetName());
+						GEngine->ChangeLevelByName(GEngine->GetCurrentWorld()->GetPersistentLevel()->GetName());
 					})
 				}
 			}

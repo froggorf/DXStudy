@@ -84,6 +84,7 @@ public:
 	virtual void LoadDataFromFileData(const nlohmann::json& AssetData);
 	virtual void SaveDataFromAssetToFile(nlohmann::json& Json);
 
+	static std::shared_ptr<UWorld> GetWorld();
 private:
 	std::string NamePrivate;
 

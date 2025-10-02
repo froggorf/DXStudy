@@ -51,7 +51,7 @@ class UEngine : public UObject
 
 	void Tick(float DeltaSeconds);
 
-	const std::shared_ptr<UWorld>& GetWorld() const
+	const std::shared_ptr<UWorld>& GetCurrentWorld() const
 	{
 		return CurrentWorld;
 	}

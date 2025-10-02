@@ -82,7 +82,7 @@ void UAnimInstance::Tick(float DeltaSeconds)
 		FinalNotifies.clear();
 
 		/// 루트 모션 처리
-		if (APlayerController* PC = GEngine->GetWorld()->GetPlayerController())
+		if (APlayerController* PC = GEngine->GetCurrentWorld()->GetPlayerController())
 		{
 			// PlayerController에 의해 조종되는 캐릭터일 경우
 			bool bPlayerCharacter =  (PC->GetCharacter() && PC->GetCharacter()->GetSkeletalMeshComponent() == GetSkeletalMeshComponent());
@@ -264,7 +264,8 @@ void UAnimInstance::PlayMontage(const std::string& SlotName, std::vector<XMMATRI
 			float StartTime = StartTimeFrame / 30; // 30FPS
 			float EndTime   = EndTimeFrame / 30;
 			bBlendOut =false;
-			
+
+			// 블렌드 In
 			if (MontageInstance->CurrentPlayTime < BlendInBlendTime)
 			{
 				const FRichCurve& BlendInCurve   = MontageInstance->Montage->BlendIn.GetCurve()->GetRichCurve();
@@ -276,6 +277,7 @@ void UAnimInstance::PlayMontage(const std::string& SlotName, std::vector<XMMATRI
 				 	OriginMatrices[i] = MyMatrixLerpForAnimation(OriginMatrices[i],MontageMatrices[i], CurveValue);
 				}
 			}
+			// 블렌드 Out
 			else if (EndTime - BlendOutBlendTime <= MontageInstance->CurrentPlayTime /* && MontageInstance->CurrentPlayTime <= EndTime*/)
 			{
 				const FRichCurve& BlendOutCurve  = MontageInstance->Montage->BlendOut.GetCurve()->GetRichCurve();
@@ -286,7 +288,12 @@ void UAnimInstance::PlayMontage(const std::string& SlotName, std::vector<XMMATRI
 					OriginMatrices[i] = MyMatrixLerpForAnimation(OriginMatrices[i],MontageMatrices[i], CurveValue);
 				}	
 				bBlendOut = true;
-				
+
+				if (!MontageInstance->bIsBlendOutBroadcast)
+				{
+					MontageInstance->bIsBlendOutBroadcast = true;
+					MontageInstance->OnMontageBlendedOutStart.Broadcast();
+				}
 			}
 			else
 			{

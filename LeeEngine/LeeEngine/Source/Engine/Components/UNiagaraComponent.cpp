@@ -39,7 +39,7 @@ void UNiagaraComponent::TickComponent(float DeltaSeconds)
 	{
 		for (const auto& SceneProxy : SceneProxies)
 		{
-			GEngine->GetWorld()->AddToBeTickedNiagaraSceneProxy(SceneProxy);
+			GEngine->GetCurrentWorld()->AddToBeTickedNiagaraSceneProxy(SceneProxy);
 		}
 	}
 }

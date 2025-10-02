@@ -18,7 +18,7 @@ void APlayerController::BeginPlay()
 {
 	AActor::BeginPlay();
 
-	CameraManager = std::dynamic_pointer_cast<APlayerCameraManager>(GEngine->GetWorld()->GetPersistentLevel()->SpawnActor("APlayerCameraManager", {}));
+	CameraManager = std::dynamic_pointer_cast<APlayerCameraManager>(GetWorld()->GetPersistentLevel()->SpawnActor("APlayerCameraManager", {}));
 }
 
 void APlayerController::Tick(float DeltaSeconds)

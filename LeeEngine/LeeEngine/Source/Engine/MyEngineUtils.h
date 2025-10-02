@@ -210,3 +210,21 @@ inline XMFLOAT4 operator*(const XMFLOAT4& A, float Val)
 	XMStoreFloat4(&ReturnValue, XMVectorScale(XMLoadFloat4(&A), Val));
 	return ReturnValue;
 }
+
+namespace MyMath
+{
+	inline XMFLOAT3 Lerp(const XMFLOAT3& A, const XMFLOAT3& B, float T)
+	{
+		return A*(1-T) + B*T;
+	}
+
+	inline XMFLOAT4 Lerp(const XMFLOAT4& A, const XMFLOAT4& B, float T)
+	{
+		return A*(1-T) + B*T;
+	}
+
+	inline XMFLOAT2 Lerp(const XMFLOAT2& A, const XMFLOAT2& B, float T)
+	{
+		return A*(1-T) + B*T;
+	}
+}

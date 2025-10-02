@@ -5,7 +5,6 @@ AFPSTest::AFPSTest()
 {
 	SM_Attacker = std::make_shared<UStaticMeshComponent>();
 	SM_Attacker->SetupAttachment(GetRootComponent());
-	SM_Attacker->SetRelativeLocation({100,100,100});
 	SM_Attacker->SetRelativeScale3D({10,10,10});
 	AssetManager::GetAsyncAssetCache("SM_DeferredSphere",[this](std::shared_ptr<UObject> Object)
 		{
@@ -46,13 +45,13 @@ void AFPSTest::Tick(float DeltaSeconds)
 	CurTime += DeltaSeconds;
 	if (CurTime >= ShotDelay)
 	{
-		XMFLOAT3 Start = {100, 100, 100};
-		XMFLOAT3 End = {100,100,-500};
+		XMFLOAT3 Start = GetActorLocation();
+		XMFLOAT3 End = Start + XMFLOAT3{0,0,-600};
 		FHitResult HitResult;
 
 		std::vector<ECollisionChannel> Channel;
 		Channel.reserve(static_cast<UINT>(ECollisionChannel::Count));
-		Channel.emplace_back(ECollisionChannel::Pawn);
+		Channel.emplace_back(ECollisionChannel::Player);
 		
 		bool bHit = gPhysicsEngine->LineTraceSingleByChannel(Start, End, Channel, HitResult, 0.05f);
 		if (bHit)
@@ -60,5 +59,19 @@ void AFPSTest::Tick(float DeltaSeconds)
 			HitResult.HitActor->TakeDamage(100, {"TestShot"}, this);
 		}
 		CurTime -= ShotDelay;
+	}
+
+	MoveTime += DeltaSeconds;
+	if (0<=MoveTime && MoveTime <= 2.0f)
+	{
+		SetActorLocation(MyMath::Lerp({100,100,100}, {600,100,100}, MoveTime/2));
+	}
+	else if (2.0f <= MoveTime && MoveTime <= 4.0f)
+	{
+		SetActorLocation(MyMath::Lerp({600,100,100}, {100,100,100}, (MoveTime-2.0f)/2));
+	}
+	else
+	{
+		MoveTime = 0.0f;
 	}
 }

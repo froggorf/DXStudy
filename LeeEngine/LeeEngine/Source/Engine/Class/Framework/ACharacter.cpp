@@ -238,7 +238,7 @@ void ACharacter::BeginPlay()
 	QueryCheckCapsuleComp->GetBodyInstance()->SetObjectType(ECollisionChannel::Pawn);
 
 	
-	GEngine->GetWorld()->GetCameraManager()->SetTargetCamera(CameraComp);
+	GEngine->GetCurrentWorld()->GetCameraManager()->SetTargetCamera(CameraComp);
 }
 
 void ACharacter::Tick(float DeltaSeconds)

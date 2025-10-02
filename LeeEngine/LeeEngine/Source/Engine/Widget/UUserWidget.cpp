@@ -15,7 +15,7 @@ void UUserWidget::NativeConstruct()
 {
 	if (GEngine)
 	{
-		SetPlayerController(GEngine.get()->GetWorld().get()->GetPlayerController());
+		SetPlayerController(GEngine.get()->GetCurrentWorld().get()->GetPlayerController());
 	}
 }
 

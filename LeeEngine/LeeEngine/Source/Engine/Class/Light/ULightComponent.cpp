@@ -119,7 +119,7 @@ void ULightComponent::AddLightInfo()
 	const XMMATRIX& LightProj = ShadowCameraComp->GetViewMatrices().GetProjectionMatrix();
 	Info.LightVP = LightView * LightProj;
 	Info.ShadowMultiRenderTarget = ShadowMRT;
-	GEngine->GetWorld()->AddCurrentFrameLightInfo(Info);
+	GEngine->GetCurrentWorld()->AddCurrentFrameLightInfo(Info);
 }
 
 
@@ -142,7 +142,7 @@ void UDecalComponent::Tick_Editor(float DeltaSeconds)
 	{
 		AddDecalInfo();
 		const FTransform& CurrentTransform = GetComponentTransform();
-		GEngine->GetWorld()->DrawDebugBox(GetWorldLocation(), {CurrentTransform.GetScale3D().x/2,CurrentTransform.GetScale3D().y/2,CurrentTransform.GetScale3D().z/2}, XMFLOAT3{0.0f,1.0f,0.0f}, CurrentTransform.GetRotationQuat(), DeltaSeconds);
+		GEngine->GetCurrentWorld()->DrawDebugBox(GetWorldLocation(), {CurrentTransform.GetScale3D().x/2,CurrentTransform.GetScale3D().y/2,CurrentTransform.GetScale3D().z/2}, XMFLOAT3{0.0f,1.0f,0.0f}, CurrentTransform.GetRotationQuat(), DeltaSeconds);
 	}
 }
 
@@ -156,5 +156,5 @@ void UDecalComponent::AddDecalInfo()
 	DecalMaterial->SetBlendStateType(EBlendStateType::BST_Decal);
 	DecalMaterial->SetDepthStencilState(EDepthStencilStateType::NO_TEST_NO_WRITE);
 	DecalInfo.DecalMaterial = DecalMaterial;
-	GEngine->GetWorld()->AddCurrentFrameDecalInfo(DecalInfo);
+	GEngine->GetCurrentWorld()->AddCurrentFrameDecalInfo(DecalInfo);
 }

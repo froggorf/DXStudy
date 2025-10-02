@@ -68,12 +68,16 @@ void AMyGameCharacterBase::LoadCharacterData_OnRegister()
 
 void AMyGameCharacterBase::BeginPlay()
 {
-	GEngine->GetWorld()->GetPlayerController()->OnPossess(this);
+	GetWorld()->GetPlayerController()->OnPossess(this);
 
 	ACharacter::BeginPlay();
 
-	CapsuleComp->SetCollisionObjectType(ECollisionChannel::Pawn);
-	CapsuleComp->SetObjectType(ECollisionChannel::Pawn);
+
+	QueryCheckCapsuleComp->SetStaticMesh((CapsuleComp->MakeStaticMesh()));
+	QueryCheckCapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	QueryCheckCapsuleComp->GetBodyInstance()->SetSimulatePhysics(false);
+	QueryCheckCapsuleComp->SetCollisionObjectType(ECollisionChannel::Player);
+	QueryCheckCapsuleComp->GetBodyInstance()->SetObjectType(ECollisionChannel::Player);
 }
 
 void AMyGameCharacterBase::BindKeyInputs()

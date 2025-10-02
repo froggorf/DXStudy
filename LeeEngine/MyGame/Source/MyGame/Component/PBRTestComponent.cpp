@@ -25,7 +25,7 @@ void UPBRTestComponent::ObjectSelect(int index)
 	{
 		FScene::SetComponentMonochrome_GameThread(TargetComp[i]->GetPrimitiveID(), i!=index);
 	}
-	GEngine->GetWorld()->GetPlayerController()->SetMonochromeCenterComp(TargetComp[index]);
+	GEngine->GetCurrentWorld()->GetPlayerController()->SetMonochromeCenterComp(TargetComp[index]);
 }
 
 #ifdef WITH_EDITOR
@@ -48,7 +48,7 @@ void UPBRTestComponent::DrawDetailPanel(UINT ComponentDepth)
 	static float Distance = 0.0f;
 	if (ImGui::SliderFloat("Monochrome Distance", &Distance, 0.0f, 2000, "%.2f"))
 	{
-		GEngine->GetWorld()->GetPlayerController()->SetMonochromeDistance(Distance);
+		GEngine->GetCurrentWorld()->GetPlayerController()->SetMonochromeDistance(Distance);
 	}
 
 	ImGui::Text("TargetObject");

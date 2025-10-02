@@ -46,7 +46,7 @@ void USanhwaAnimInstance::BeginPlay()
 
 bool USanhwaAnimInstance::IsAllResourceOK()
 {
-	return UMyGameAnimInstanceBase::IsAllResourceOK();// && AS_Test[0] && AS_Test[1] && AS_Test[2]&& AS_Test[3]&& AS_Test[4];
+	return UMyGameAnimInstanceBase::IsAllResourceOK();
 }
 
 void USanhwaAnimInstance::MotionWarping_BasicAttack0()
@@ -94,16 +94,16 @@ void USanhwaAnimInstance::MotionWarping_BasicAttack2()
 
 void USanhwaAnimInstance::MotionWarping_BasicAttack3()
 {
-	//if (SetMotionWarping())
-	//{
-	//	if (const std::shared_ptr<UMotionWarpingComponent>& MotionWarpingComp = MyGameCharacter->GetMotionWarpingComponent())
-	//	{
-	//		XMFLOAT3 CurActorLocation = MyGameCharacter->GetActorLocation();
-	//		XMFLOAT3 ForwardVector = MyGameCharacter->GetActorForwardVector();
+	if (SetMotionWarping())
+	{
+		if (const std::shared_ptr<UMotionWarpingComponent>& MotionWarpingComp = MyGameCharacter->GetMotionWarpingComponent())
+		{
+			XMFLOAT3 CurActorLocation = MyGameCharacter->GetActorLocation();
+			XMFLOAT3 ForwardVector = MyGameCharacter->GetActorForwardVector();
 
-	//		MotionWarpingComp->SetTargetLocation(CurActorLocation + ForwardVector * 0, 0.5f);
-	//	}
-	//}
+			MotionWarpingComp->SetTargetLocation(CurActorLocation + ForwardVector * 80, 0.5f);
+		}
+	}
 }
 
 void USanhwaAnimInstance::MotionWarping_BasicAttack4()

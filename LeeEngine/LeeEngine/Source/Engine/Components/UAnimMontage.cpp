@@ -217,6 +217,8 @@ void FAnimMontageInstance::SetPosition(float InPosition)
 	{
 		Montage->GetSectionStartAndEndTime(SectionID, CurPlayingStartPosition, CurPlayingEndPosition);
 		NextSectionName = Montage->CompositeSections[SectionID].NextSectionName;
+		bIsBlendOutBroadcast = false;
+		bIsBlendInBroadcast = false;
 	}
 }
 

@@ -136,7 +136,7 @@ void ATestCube::BeginPlay()
 {
 	AActor::BeginPlay();
 
-	if (APlayerController* PC = GEngine->GetWorld()->GetPlayerController())
+	if (APlayerController* PC = GetWorld()->GetPlayerController())
 	{
 		//std::shared_ptr<UMyTestWidget> MyTestWidget = std::make_shared<UMyTestWidget>();
 		//MyTestWidget->NativeConstruct();

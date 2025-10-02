@@ -24,6 +24,8 @@ public:
 	float ShotDelay = 0.5f;
 	float CurTime = 0.0f;
 
+	float MoveTime = 0.0f;
+
 	FTimerHandle TestHandle_Repeat;
 	FTimerHandle TestHandle_OneTime;
 };

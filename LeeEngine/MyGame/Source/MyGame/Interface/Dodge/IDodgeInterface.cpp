@@ -65,7 +65,7 @@ void IDodgeInterface::AddMonochromePostprocess()
 			const std::shared_ptr<UTexture>& ViewPositionTex = GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->GetRenderTargetTexture(2);
 			DeviceContext->PSSetShaderResources(11, 1, ViewPositionTex->GetSRV().GetAddressOf());
 			
-			APlayerController* PC = GEngine->GetWorld()->GetPlayerController();
+			APlayerController* PC = GEngine->GetCurrentWorld()->GetPlayerController();
 
 
 			XMFLOAT3 Pos = PC->GetMonochromeCenterPos();

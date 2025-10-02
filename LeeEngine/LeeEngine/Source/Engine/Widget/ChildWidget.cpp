@@ -389,7 +389,7 @@ void FButtonWidget::Tick(float DeltaSeconds)
 		WidgetRenderData.Tint = Style[CurButtonType].Tint;
 		WidgetRenderData.ZOrder = GetZOrder();
 
-		GEngine->GetWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);	
+		GEngine->GetCurrentWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);	
 	}
 
 	// 모든것들이 이뤄진 후 자식들이 Tick 되면서 렌더링 큐에 넣어줘야함
@@ -517,7 +517,7 @@ void FImageWidget::Tick(float DeltaSeconds)
 	WidgetRenderData.Tint = GetColor();
 	WidgetRenderData.ZOrder = GetZOrder();
 
-	GEngine->GetWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
+	GEngine->GetCurrentWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
 }
 
 void FTextWidget::SetHorizontalAlignment(ETextHorizontalAlignment HorizontalAlignment)
@@ -591,7 +591,7 @@ void FTextWidget::Tick(float DeltaSeconds)
 	WidgetRenderData.TextHorizontalAlignment = TextHorizontalAlignment;
 	WidgetRenderData.TextVerticalAlignment= TextVerticalAlignment;
 
-	GEngine->GetWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
+	GEngine->GetCurrentWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
 }
 
 FProgressBarWidget::FProgressBarWidget()
@@ -624,7 +624,7 @@ void FProgressBarWidget::Tick(float DeltaSeconds)
 		WidgetRenderData.Tint = BackgroundBrush.Tint;
 		WidgetRenderData.ZOrder = GetZOrder();
 
-		GEngine->GetWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
+		GEngine->GetCurrentWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
 	}
 
 	// Fill 그리기
@@ -642,7 +642,7 @@ void FProgressBarWidget::Tick(float DeltaSeconds)
 		WidgetRenderData.Tint = FillBrush.Tint;
 		WidgetRenderData.ZOrder = GetZOrder();
 
-		GEngine->GetWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
+		GEngine->GetCurrentWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
 	}
 	
 }

@@ -55,7 +55,7 @@ void ATestPawn::Register()
 
 void ATestPawn::BeginPlay()
 {
-	GEngine->GetWorld()->GetPlayerController()->OnPossess(this);
+	GEngine->GetCurrentWorld()->GetPlayerController()->OnPossess(this);
 
 	ACharacter::BeginPlay();
 

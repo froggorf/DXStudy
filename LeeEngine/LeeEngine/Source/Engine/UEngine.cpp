@@ -149,7 +149,7 @@ void UEngine::GameStart()
 		MY_LOG("Error call", EDebugLogLevel::DLL_Error, "Already start game");
 		return;
 	}
-	if (!GetWorld() || !GetWorld()->GetPersistentLevel())
+	if (!GetCurrentWorld() || !GetCurrentWorld()->GetPersistentLevel())
 	{
 		MY_LOG("Error call", EDebugLogLevel::DLL_Error, "No valid PersistentLevel");
 		return;
@@ -158,7 +158,7 @@ void UEngine::GameStart()
 	bGameStart  = true;
 	TimeSeconds = 0;
 
-	GetWorld()->BeginPlay();
+	GetCurrentWorld()->BeginPlay();
 }
 
 void UEngine::Tick(float DeltaSeconds)
@@ -208,9 +208,9 @@ void UEngine::Tick(float DeltaSeconds)
 #endif
 
 	// 라이팅 적용
-	if (GetWorld())
+	if (GetCurrentWorld())
 	{
-		GetWorld()->TickLightAndDecal();
+		GetCurrentWorld()->TickLightAndDecal();
 	}
 
 	for (const auto& IDAndComponent : ComponentsTransformDirty)
@@ -493,9 +493,9 @@ void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 	
 
 	
-	if (GetWorld() && GetWorld()->GetPlayerController())
+	if (GetCurrentWorld() && GetCurrentWorld()->GetPlayerController())
 	{
-		APlayerController* PC = GetWorld()->GetPlayerController();
+		APlayerController* PC = GetCurrentWorld()->GetPlayerController();
 		PC->GetPlayerInput()->LastMousePosition = LastMousePosition;
 		PC->GetPlayerInput()->LastMouseDelta = LastMouseDelta;
 

@@ -79,9 +79,9 @@ void UEditorEngine::DrawEngineTitleBar()
 	CurrentLevelRect.top    = CurrentLevelRect.bottom / 2;
 	CurrentLevelRect.bottom = CurrentLevelRect.top + 30;
 	RoundRect(memDC, CurrentLevelRect.left, CurrentLevelRect.top, CurrentLevelRect.right, CurrentLevelRect.bottom * 2, 15, 15);
-	if (GetWorld() && GetWorld()->GetPersistentLevel())
+	if (GetCurrentWorld() && GetCurrentWorld()->GetPersistentLevel())
 	{
-		std::string PersistentLevelName = GetWorld()->GetPersistentLevel()->GetName();
+		std::string PersistentLevelName = GetCurrentWorld()->GetPersistentLevel()->GetName();
 		PersistentLevelName             = GEditorEngine->IsEditorModify(EEditorModificationType::EMT_Level) ? "* " + PersistentLevelName : PersistentLevelName;
 		DrawTextA(memDC, PersistentLevelName.c_str(), -1, &CurrentLevelRect,DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 	}
@@ -105,9 +105,9 @@ void UEditorEngine::SaveModifiedLevel()
 {
 	EditorModificationTypes[static_cast<UINT>(EEditorModificationType::EMT_Level)] = false;
 
-	if (GetWorld())
+	if (GetCurrentWorld())
 	{
-		if (std::shared_ptr<ULevel> PersistentLevel = GetWorld()->GetPersistentLevel())
+		if (std::shared_ptr<ULevel> PersistentLevel = GetCurrentWorld()->GetPersistentLevel())
 		{
 			std::string    LevelPath = GetDirectoryPath() + "/Content/Test.myasset";
 			nlohmann::json LevelData;

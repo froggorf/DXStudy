@@ -17,6 +17,8 @@ enum class ECollisionChannel
 	WorldStatic,
 	WorldDynamic,
 	Pawn,
+	Player,
+	Enemy,
 	Count
 };
 enum class ECollisionResponse
@@ -103,7 +105,7 @@ public:
 
 	// LineTrace
 	bool LineTraceSingleByChannel(const XMFLOAT3& Start, const XMFLOAT3& End, const std::vector<ECollisionChannel>& TraceChannel, FHitResult& HitResult, float DebugDrawTime = 0.0f, const XMFLOAT3& TraceColor = XMFLOAT3(1.0f,0.0f,0.0f), const XMFLOAT3& TraceHitColor = XMFLOAT3(0.0f,1.0f,0.0f)) const;
-
+	void SphereOverlapComponents(const XMFLOAT3& SpherePos, float SphereRadius, const std::vector<ECollisionChannel>& ObjectTypes, const std::vector<AActor*>& ActorsToIgnore, std::vector<AActor*>& OutActors);
 	physx::PxMaterial* GetDefaultMaterial() const {return DefaultMaterial;}
 
 	float GetSceneDefaultGravityScale() const {return DefaultGravityScale;}

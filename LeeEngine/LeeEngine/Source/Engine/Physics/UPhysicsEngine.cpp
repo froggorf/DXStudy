@@ -430,6 +430,43 @@ bool UPhysicsEngine::LineTraceSingleByChannel(const XMFLOAT3& Start, const XMFLO
 	
 }
 
+void UPhysicsEngine::SphereOverlapComponents(const XMFLOAT3& SpherePos, float SphereRadius, const std::vector<ECollisionChannel>& ObjectTypes, const std::vector<AActor*>& ActorsToIgnore, std::vector<AActor*>& OutActors)
+{
+	physx::PxSphereGeometry SphereGeom(SphereRadius);
+	physx::PxTransform SphereTransform({SpherePos.x, SpherePos.y, -SpherePos.z});
+	physx::PxQueryFilterData FilterData;
+	for (size_t i = 0; i < ObjectTypes.size(); ++i)
+	{
+		FilterData.data.word0 |= (1 << static_cast<UINT>(ObjectTypes[i]));
+	}
+
+	physx::PxOverlapBuffer OverlapBuffer;
+	bool bAnyHit = PxScene->overlap(SphereGeom, SphereTransform, OverlapBuffer, FilterData);
+	if (bAnyHit)
+	{
+		for (uint32_t i = 0; i < OverlapBuffer.getNbTouches(); ++i)
+		{
+			const physx::PxOverlapHit& Hit = OverlapBuffer.getTouch(i);
+			UShapeComponent* ShapeComp = static_cast<UShapeComponent*>(Hit.actor->userData);
+			if (!ShapeComp)
+			{
+				continue;
+			}
+
+			AActor* Actor = ShapeComp->GetOwner();
+
+			// IgnoreActor 체크
+			if (std::find(ActorsToIgnore.begin(), ActorsToIgnore.end(), Actor) != ActorsToIgnore.end())
+			{
+				continue;
+			}
+
+			OutActors.emplace_back(Actor);
+		}
+	}
+}
+
+
 physx::PxConvexMesh* UPhysicsEngine::CreateConvexMesh(const std::shared_ptr<UStaticMesh>& StaticMesh) const
 {
 	std::vector<physx::PxVec3> Vertices;

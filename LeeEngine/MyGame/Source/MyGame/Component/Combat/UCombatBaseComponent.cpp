@@ -19,7 +19,6 @@ void UCombatBaseComponent::BasicAttack()
 {
 	if (bIsBasicAttacking)
 	{
-		MY_LOG("-----------" , EDebugLogLevel::DLL_Warning, "time change");
 		LastBasicAttackClickedTime = GEngine->GetTimeSeconds();
 		return;
 	}
@@ -31,7 +30,6 @@ void UCombatBaseComponent::BasicAttack()
 		AnimInstance->Montage_Play(BasicAttackMontages[0], 0, {this, &UCombatBaseComponent::BasicAttackEnded});
 	}
 	bIsBasicAttacking = true;
-	MY_LOG("-----------" , EDebugLogLevel::DLL_Warning, "Do First");
 }
 
 void UCombatBaseComponent::BasicAttackEnded()
@@ -42,15 +40,13 @@ void UCombatBaseComponent::BasicAttackEnded()
 		CurrentBasicAttackCombo = (CurrentBasicAttackCombo + 1) % static_cast<UINT>(BasicAttackMontages.size());
 		if (const std::shared_ptr<UAnimInstance>& AnimInstance =  OwnerCharacter->GetAnimInstance())
 		{
-			AnimInstance->Montage_Play(BasicAttackMontages[CurrentBasicAttackCombo], 0, {this, &UCombatBaseComponent::BasicAttackEnded});
+			AnimInstance->Montage_Play(BasicAttackMontages[CurrentBasicAttackCombo], 0, Delegate<>{},Delegate<>{},{this, &UCombatBaseComponent::BasicAttackEnded});
 		}
-		MY_LOG("-----------" , EDebugLogLevel::DLL_Warning, std::to_string(CurrentBasicAttackCombo));
 	}
 	else
 	{
 		CurrentBasicAttackCombo = 0;
 		bIsBasicAttacking = false;
-		MY_LOG("-----------" , EDebugLogLevel::DLL_Warning, "Clear");
 	}
 }
 

@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "UObject.h"
 
+#include "Engine/UEngine.h"
+
 //std::unordered_map<std::string, std::unique_ptr<UObject>> UObject::ClassDefaultObject;
 
 UObject::UObject()
@@ -42,6 +44,15 @@ void UObject::SaveDataFromAssetToFile(nlohmann::json& Json)
 {
 	Json["Name"]  = GetName();
 	Json["Class"] = GetClass();
+}
+
+std::shared_ptr<UWorld> UObject::GetWorld()
+{
+	if (GEngine)
+	{
+		return GEngine->GetCurrentWorld();
+	}
+	return nullptr;
 }
 
 std::unordered_map<std::string, std::unique_ptr<UObject>>& UObject::GetCDOMap()
