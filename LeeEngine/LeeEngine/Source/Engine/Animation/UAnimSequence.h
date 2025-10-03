@@ -87,7 +87,8 @@ private:
 
 public:
 	static std::map<std::string, std::vector<FPrecomputedBoneData>>& GetSkeletonBoneHierarchyMap();
-
+	static std::map<std::string, float>& LoadedTime();
+	static float GetLoadedTime(const std::string& Name);
 private:
 	float                           Duration;
 	float                           TicksPerSecond;

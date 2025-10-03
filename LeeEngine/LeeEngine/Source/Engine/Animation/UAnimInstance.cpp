@@ -42,6 +42,7 @@ void UAnimInstance::UpdateAnimation(float dt)
 			if (MontageInstances[i]->CurrentPlayTime == 0.0f)
 			{
 				 MontageInstances[i]->bIsPlaying = true;
+				 MontageInstances[i]->Play();
 			}
 			else
 			{
@@ -55,15 +56,16 @@ void UAnimInstance::UpdateAnimation(float dt)
 
 void UAnimInstance::CalculateFinalBoneMatrices(std::vector<XMMATRIX>& FinalBoneMatrices)
 {
-	std::map<std::string,std::vector<FPrecomputedBoneData>>& BoneHierarchyMap = UAnimSequence::GetSkeletonBoneHierarchyMap();
-	auto BoneHierarchyIter = BoneHierarchyMap.find(GetSkeletalMeshComponent()->GetSkeletalMesh()->GetName());
-	if (BoneHierarchyIter == BoneHierarchyMap.end())
-	{
-		return;
-	}
+	CalculateBoneMatrices(BoneTransforms, FinalBoneMatrices);
+}
 
-	std::vector<XMMATRIX> GlobalTransforms(MAX_BONES, XMMatrixIdentity());
+void UAnimInstance::CalculateBoneMatrices(const std::vector<FBoneLocalTransform>& BoneTransforms, std::vector<XMMATRIX>& BoneMatrices)
+{
+	const std::string& MeshName = GetSkeletalMeshComponent()->GetSkeletalMesh()->GetName();
+
+	std::map<std::string,std::vector<FPrecomputedBoneData>>& BoneHierarchyMap = UAnimSequence::GetSkeletonBoneHierarchyMap();
 	std::vector<FPrecomputedBoneData>& BoneHierarchy = BoneHierarchyMap[GetSkeletalMeshComponent()->GetSkeletalMesh()->GetName()];
+	std::vector<XMMATRIX> GlobalTransforms(MAX_BONES, XMMatrixIdentity());
 	for (int HierarchyIndex = 0; HierarchyIndex < BoneHierarchy.size(); ++HierarchyIndex)
 	{
 		const FPrecomputedBoneData& BoneData = BoneHierarchy[HierarchyIndex];
@@ -83,7 +85,35 @@ void UAnimInstance::CalculateFinalBoneMatrices(std::vector<XMMATRIX>& FinalBoneM
 			GlobalTransforms[HierarchyIndex] = LocalMatrix;
 
 		if (BoneData.BoneInfo.id >= 0 && BoneData.BoneInfo.id < MAX_BONES)
-			FinalBoneMatrices[BoneData.BoneInfo.id] = XMMatrixMultiply(BoneData.BoneInfo.offset, GlobalTransforms[HierarchyIndex]);
+			BoneMatrices[BoneData.BoneInfo.id] = XMMatrixMultiply(BoneData.BoneInfo.offset, GlobalTransforms[HierarchyIndex]);
+	}
+}
+
+void UAnimInstance::DecomposeBoneMatricesToBoneLocalTransForms(const std::vector<XMMATRIX>& BoneMatrices, std::vector<FBoneLocalTransform>& BoneTransforms)
+{
+	std::map<std::string,std::vector<FPrecomputedBoneData>>& BoneHierarchyMap = UAnimSequence::GetSkeletonBoneHierarchyMap();
+	auto BoneHierarchyIter = BoneHierarchyMap.find(GetSkeletalMeshComponent()->GetSkeletalMesh()->GetName());
+	if (BoneHierarchyIter == BoneHierarchyMap.end())
+	{
+		return;
+	}
+
+	std::vector<FPrecomputedBoneData>& BoneHierarchy = BoneHierarchyMap[GetSkeletalMeshComponent()->GetSkeletalMesh()->GetName()];
+
+	// 글로벌 본 행렬을 먼저 계산했다고 가정
+	for (size_t i = 0; i < BoneHierarchy.size(); ++i)
+	{
+		XMMATRIX ParentGlobalMatrix = XMMatrixIdentity();
+		int ParentIndex = BoneHierarchy[i].ParentIndex;
+		if (ParentIndex >= 0)
+			ParentGlobalMatrix = BoneMatrices[ParentIndex];
+
+		// 부모 기준으로 로컬 행렬 추출
+		XMMATRIX LocalMatrix = XMMatrixMultiply(XMMatrixInverse(nullptr, ParentGlobalMatrix), BoneMatrices[i]);
+
+		// SRT 분해 (Scale, Rotation, Translation)
+		FBoneLocalTransform& Out = BoneTransforms[i];
+		XMMatrixDecompose(&Out.Scale, &Out.Rotation, &Out.Translation, LocalMatrix);
 	}
 }
 
@@ -96,6 +126,19 @@ void UAnimInstance::Tick(float DeltaSeconds)
 	static float TicksPerSecondTime = 1.0f / 30 * DefaultSpeed;
 	if (LatestUpdateTime + TicksPerSecondTime < CurrentTime)
 	{
+		if (!bIsAnimationLoaded)
+		{
+			const std::string& MeshName = GetSkeletalMeshComponent()->GetSkeletalMesh()->GetName();
+			if (GEngine->GetTimeSeconds() - 0.5f >= UAnimSequence::GetLoadedTime(MeshName))
+			{
+				bIsAnimationLoaded = true;
+			}
+			else
+			{
+				return;
+			}
+		}
+
 		bPlayRootMotion = false;
 		LatestUpdateTime = CurrentTime;
 
@@ -225,50 +268,44 @@ bool UAnimInstance::IsAllResourceOK()
 	return GetSkeletalMeshComponent() && bIsGameStart;
 }
 
-void UAnimInstance::LayeredBlendPerBone(const std::vector<FBoneLocalTransform>& BasePose, const std::vector<FBoneLocalTransform>& BlendPose, const std::string& TargetBoneName, float BlendWeights, std::vector<FBoneLocalTransform>& OutMatrices)
+void UAnimInstance::LayeredBlendPerBone(const std::vector<FBoneLocalTransform>& BasePoseBoneTransforms, const std::vector<FBoneLocalTransform>& BlendPoseBoneTransForms, const std::string& TargetBoneName, float BlendWeights, std::vector<FBoneLocalTransform>& OutBoneTransforms)
 {
 	std::map<std::string,std::vector<FPrecomputedBoneData>>& BoneHierarchyMap = UAnimSequence::GetSkeletonBoneHierarchyMap();
-	auto BoneHierarchyIter = BoneHierarchyMap.find(GetSkeletalMeshComponent()->GetSkeletalMesh()->GetName());
-	if (BoneHierarchyIter == BoneHierarchyMap.end())
+	auto BoneHierarchyMapIter = BoneHierarchyMap.find(GetSkeletalMeshComponent()->GetSkeletalMesh()->GetName());
+	if (BoneHierarchyMapIter == BoneHierarchyMap.end())
 	{
 		return;
 	}
-	
-	std::vector<FPrecomputedBoneData>& BoneHierarchy = BoneHierarchyIter->second;
+
+	std::vector<FPrecomputedBoneData>& BoneHierarchy = BoneHierarchyMap[GetSkeletalMeshComponent()->GetSkeletalMesh()->GetName()];
+
+	std::vector<XMMATRIX> BasePose(MAX_BONES, XMMatrixIdentity());
+	CalculateBoneMatrices(BasePoseBoneTransforms, BasePose);
+	std::vector<XMMATRIX> BlendPose(MAX_BONES, XMMatrixIdentity());
+	CalculateBoneMatrices(BlendPoseBoneTransForms, BlendPose);
 
 	// BlendPose의 TargetBone을 BasePose의 TargetBone 좌표계로 바꾸기 위한 행렬 계산
-	int TargetBoneIndex = -1;
+	XMMATRIX ToBaseAnimTargetBoneMatrix = XMMatrixIdentity();
 	for (int i = 0; i < BoneHierarchy.size(); ++i)
 	{
 		if (BoneHierarchy[i].BoneName == TargetBoneName)
 		{
-			TargetBoneIndex = BoneHierarchy[i].BoneInfo.id;
+			ToBaseAnimTargetBoneMatrix = XMMatrixInverse(nullptr, BlendPose[BoneHierarchy[i].BoneInfo.id]) * BasePose[BoneHierarchy[i].BoneInfo.id];
 			break;
 		}
 	}
 
-	FBoneLocalTransform ToBaseAnimTargetBoneTransform;
-	if (TargetBoneIndex >= 0)
-	{
-		// BlendPose[TargetBoneIndex]를 BasePose[TargetBoneIndex] 기준으로 변환
-		XMMATRIX BlendMatrix = FBoneLocalTransformToMatrix(BlendPose[TargetBoneIndex]);
-		XMMATRIX BaseMatrix  = FBoneLocalTransformToMatrix(BasePose[TargetBoneIndex]);
-		XMMATRIX ToBaseAnimTargetBoneMatrix = XMMatrixInverse(nullptr, BlendMatrix) * BaseMatrix;
-		ToBaseAnimTargetBoneTransform = MatrixToFBoneLocalTransform(ToBaseAnimTargetBoneMatrix);
-	}
-	else
-	{
-		ToBaseAnimTargetBoneTransform = FBoneLocalTransform(); // Identity
-	}
-
+	// 본의 계층을 돌면서 해당 본의 부모 중 TargetBoneName의 본이 있을 경우 블렌딩
+	std::vector<XMMATRIX> BlendMatrices(MAX_BONES, XMMatrixIdentity());
 	for (int i = 0; i < BoneHierarchy.size(); ++i)
 	{
-		bool bHasTargetParentBone = false;
-		int CurrentCheckParentIndex = BoneHierarchy[i].ParentIndex;
+		bool bHasTargetParentBone    = false;
+		int  CurrentCheckParentIndex = BoneHierarchy[i].ParentIndex;
 		while (true)
 		{
 			if (CurrentCheckParentIndex >= 0)
 			{
+				// 부모 중 타겟 본이 존재
 				if (BoneHierarchy[CurrentCheckParentIndex].BoneName == TargetBoneName)
 				{
 					bHasTargetParentBone = true;
@@ -280,22 +317,28 @@ void UAnimInstance::LayeredBlendPerBone(const std::vector<FBoneLocalTransform>& 
 			break;
 		}
 		int CurrentBoneIndex = BoneHierarchy[i].BoneInfo.id;
+		// 본의 계층을 돌면서 해당 본의 부모 중 TargetBoneName의 본이 있을 경우 블렌딩
+
 		if (0 <= CurrentBoneIndex && CurrentBoneIndex < MAX_BONES)
 		{
 			if (bHasTargetParentBone)
 			{
-				// BlendPose[CurrentBoneIndex]를 ToBaseAnimTargetBoneTransform 기준으로 변환
-				FBoneLocalTransform BlendedTransform = CombineLocalTransform(BlendPose[CurrentBoneIndex], ToBaseAnimTargetBoneTransform);
-				OutMatrices[CurrentBoneIndex] = Blend2BoneTransform(BasePose[CurrentBoneIndex], BlendedTransform, BlendWeights);
+				XMMATRIX BlendPoseMatrixWithBaseAnim = BlendPose[CurrentBoneIndex] * ToBaseAnimTargetBoneMatrix;
+				XMVECTOR V1 = XMVectorLerp(BasePose[CurrentBoneIndex].r[0], BlendPoseMatrixWithBaseAnim.r[0], BlendWeights);
+				XMVECTOR V2 = XMVectorLerp(BasePose[CurrentBoneIndex].r[1], BlendPoseMatrixWithBaseAnim.r[1], BlendWeights);
+				XMVECTOR V3 = XMVectorLerp(BasePose[CurrentBoneIndex].r[2], BlendPoseMatrixWithBaseAnim.r[2], BlendWeights);
+				XMVECTOR V4 = XMVectorLerp(BasePose[CurrentBoneIndex].r[3], BlendPoseMatrixWithBaseAnim.r[3], BlendWeights);
+				XMMATRIX Out = XMMATRIX{V1, V2, V3, V4};
 			}
 			else
 			{
-				OutMatrices[CurrentBoneIndex] = BasePose[CurrentBoneIndex];
+				BlendMatrices[CurrentBoneIndex] = BasePose[CurrentBoneIndex];
 			}
 		}
 	}
-}
+	DecomposeBoneMatricesToBoneLocalTransForms(BlendMatrices, OutBoneTransforms);
 
+}
 void UAnimInstance::PlayMontage(const std::string& SlotName, std::vector<FBoneLocalTransform>& OriginBoneTransforms, std::vector<FAnimNotifyEvent>& OriginNotifies)
 {
 	std::vector<FBoneLocalTransform> MontageBoneTransforms(MAX_BONES);

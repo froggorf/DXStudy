@@ -28,7 +28,12 @@ class UAnimInstance : public UObject
 	virtual void NativeUpdateAnimation(float DeltaSeconds);
 	// NativeUpdateAnimation으로 업데이트된 변수를 이용해 애니메이션 상태머신을 통해 애니메이션을 최종으로 판단하는 함수
 	virtual void UpdateAnimation(float dt);
+
+	// FBoneLocalTransform 에서 BoneMatrices(스키닝 행렬) 을 구하는 함수
 	void CalculateFinalBoneMatrices(std::vector<XMMATRIX>& FinalBoneMatrices);
+	void CalculateBoneMatrices(const std::vector<FBoneLocalTransform>& BoneTransforms, std::vector<XMMATRIX>& BoneMatrices);
+	// 스키닝 행렬에서 FBoneLocalTransform 을 구하는 함수
+	void DecomposeBoneMatricesToBoneLocalTransForms(const std::vector<XMMATRIX>& BoneMatrices, std::vector<FBoneLocalTransform>& BoneTransforms);
 	void         Tick(float DeltaSeconds);
 
 	void SetSkeletalMeshComponent(USkeletalMeshComponent* InOwner)
@@ -50,7 +55,7 @@ protected:
 	virtual bool IsAllResourceOK();
 
 	// 애니메이션 레이어 블렌딩
-	void LayeredBlendPerBone(const std::vector<FBoneLocalTransform>& BasePose, const std::vector<FBoneLocalTransform>& BlendPose, const std::string& TargetBoneName, float BlendWeights, std::vector<FBoneLocalTransform>& OutMatrices);
+	void LayeredBlendPerBone(const std::vector<FBoneLocalTransform>& BasePose, const std::vector<FBoneLocalTransform>& BlendPose, const std::string& TargetBoneName, float BlendWeights, std::vector<FBoneLocalTransform>& OutBoneTransforms);
 
 	void PlayMontage(const std::string& SlotName, std::vector<FBoneLocalTransform>& OriginBoneTransforms, std::vector<FAnimNotifyEvent>& OriginNotifies);
 
@@ -85,6 +90,6 @@ protected:
 	class ACharacter* OwnerCharacter = nullptr;
 private:
 	USkeletalMeshComponent* CurrentSkeletalMeshComponent;
-
+	bool bIsAnimationLoaded = false;
 
 };

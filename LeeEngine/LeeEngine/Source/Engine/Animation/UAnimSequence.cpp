@@ -228,6 +228,23 @@ std::map<std::string, std::vector<FPrecomputedBoneData>>& UAnimSequence::GetSkel
 	return SkeletonBoneHierarchyMap;
 }
 
+std::map<std::string, float>& UAnimSequence::LoadedTime()
+{
+	static std::map<std::string, float> LoadedSkeletonBoneHierarchyMap;
+	return LoadedSkeletonBoneHierarchyMap;
+}
+
+float UAnimSequence::GetLoadedTime(const std::string& Name)
+{
+	auto Iter = LoadedTime().find(Name);
+	if (Iter != LoadedTime().end())
+	{
+		return Iter->second;
+	}
+	return FLT_MAX;
+}
+
+
 void UAnimSequence::PrecomputeAnimationData(const std::string& Name)
 {
 	// 트리 구조의 계층을 벡터 구조로 변환
@@ -237,5 +254,6 @@ void UAnimSequence::PrecomputeAnimationData(const std::string& Name)
 	if (!GetSkeletonBoneHierarchyMap().contains(Name))
 	{
 		GetSkeletonBoneHierarchyMap()[Name] = BoneHierarchy;
+		LoadedTime()[Name] = GEngine->GetTimeSeconds();
 	}
 }

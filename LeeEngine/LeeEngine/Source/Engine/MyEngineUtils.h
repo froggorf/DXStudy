@@ -121,9 +121,6 @@ inline float NormalizeAxis(float Angle)
 	return Angle;
 }
 
-XMMATRIX LinearMatrixLerp(const XMMATRIX& AMatrix, const XMMATRIX& BMatrix, float Value);
-XMMATRIX MyMatrixLerpForAnimation(const XMMATRIX& AMatrix, const XMMATRIX& BMatrix, float Value);
-
 inline XMFLOAT3 operator+(const XMFLOAT3& A, const XMFLOAT3& B)
 {
 	XMFLOAT3 ReturnValue;

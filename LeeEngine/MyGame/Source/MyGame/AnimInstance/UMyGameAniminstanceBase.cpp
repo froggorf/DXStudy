@@ -128,8 +128,13 @@ void UMyGameAnimInstanceBase::UpdateAnimation(float dt)
 
 	// 몽타쥬 연결
 	{
-		std::string SlotName = "DefaultSlot";
-		PlayMontage(SlotName, BoneTransforms, FinalNotifies);
+		PlayMontage("DefaultSlot", BoneTransforms, FinalNotifies);
+
+		//std::vector<FBoneLocalTransform> MontageTransforms(MAX_BONES);
+		//std::string SlotName = "DefaultSlot";
+		//PlayMontage(SlotName, MontageTransforms, FinalNotifies);
+		//std::vector<FBoneLocalTransform> CurrentBoneTransforms = BoneTransforms;
+		//LayeredBlendPerBone(CurrentBoneTransforms, MontageTransforms, "spine_01", 1, BoneTransforms);
 	}
 }
 
