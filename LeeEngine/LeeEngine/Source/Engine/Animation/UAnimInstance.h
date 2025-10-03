@@ -11,13 +11,6 @@
 
 class USkeletalMeshComponent;
 
-struct AnimTransition
-{
-	bool bBlending =false;
-	float BlendTime = 0.0f;
-	float BlendDuration = 0.5f;
-	std::vector<XMMATRIX> PrevBoneMatrices = std::vector<XMMATRIX>(MAX_BONES);
-};
 
 class UAnimInstance : public UObject
 {
@@ -35,6 +28,7 @@ class UAnimInstance : public UObject
 	virtual void NativeUpdateAnimation(float DeltaSeconds);
 	// NativeUpdateAnimation으로 업데이트된 변수를 이용해 애니메이션 상태머신을 통해 애니메이션을 최종으로 판단하는 함수
 	virtual void UpdateAnimation(float dt);
+	void CalculateFinalBoneMatrices(std::vector<XMMATRIX>& FinalBoneMatrices);
 	void         Tick(float DeltaSeconds);
 
 	void SetSkeletalMeshComponent(USkeletalMeshComponent* InOwner)
@@ -56,9 +50,9 @@ protected:
 	virtual bool IsAllResourceOK();
 
 	// 애니메이션 레이어 블렌딩
-	void LayeredBlendPerBone(const std::vector<XMMATRIX>& BasePose, const std::vector<XMMATRIX>& BlendPose, const std::string& TargetBoneName, float BlendWeights, std::vector<XMMATRIX>& OutMatrices);
+	void LayeredBlendPerBone(const std::vector<FBoneLocalTransform>& BasePose, const std::vector<FBoneLocalTransform>& BlendPose, const std::string& TargetBoneName, float BlendWeights, std::vector<FBoneLocalTransform>& OutMatrices);
 
-	void PlayMontage(const std::string& SlotName, std::vector<XMMATRIX>& OriginMatrices, std::vector<FAnimNotifyEvent>& OriginNotifies);
+	void PlayMontage(const std::string& SlotName, std::vector<FBoneLocalTransform>& OriginBoneTransforms, std::vector<FAnimNotifyEvent>& OriginNotifies);
 
 	float DeltaTime;
 
@@ -80,14 +74,12 @@ protected:
 	// {노티파이 이름, 델리게이트}
 	std::map<std::string, Delegate<>> NotifyEvent;
 
-	std::vector<XMMATRIX>         FinalBoneMatrices;
+	std::vector<FBoneLocalTransform> BoneTransforms;
 	std::vector<FAnimNotifyEvent> FinalNotifies;
 
 	bool bPlayRootMotion = false;
 	bool bBlendOut = false;
 	bool bUseMotionWarping = false;
-
-	AnimTransition LocomotionTransition;
 
 protected:
 	class ACharacter* OwnerCharacter = nullptr;

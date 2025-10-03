@@ -3,8 +3,92 @@
 #include "CoreMinimal.h"
 #include "Bone.h"
 
-Bone::Bone(const std::string& name, int ID, const aiNodeAnim* channel)
-	: m_LocalTransform(XMMatrixIdentity()), m_Name(name), m_ID(ID)
+FBoneLocalTransform Blend2BoneTransform(const FBoneLocalTransform& A, const FBoneLocalTransform& B, float AWeight)
+{
+	FBoneLocalTransform BlendResult;
+	// Translation
+	BlendResult.Translation = XMVectorAdd(
+		XMVectorScale(A.Translation, AWeight),
+		XMVectorScale(B.Translation, 1-AWeight)
+	);
+	// Scale
+	BlendResult.Scale =XMVectorAdd(
+		XMVectorScale(A.Scale, AWeight),
+		XMVectorScale(B.Scale, 1-AWeight)
+	);
+
+	// Rotation
+	BlendResult.Rotation = XMQuaternionSlerp(A.Rotation, B.Rotation, AWeight);
+
+	return BlendResult;
+}
+
+FBoneLocalTransform Blend3BoneTransform(const FBoneLocalTransform& A, const FBoneLocalTransform& B, const FBoneLocalTransform& C, float AWeight, float BWeight, float CWeight)
+{
+	FBoneLocalTransform BlendResult;
+	// T
+	BlendResult.Translation = XMVectorAdd(
+		XMVectorAdd(
+			XMVectorScale(A.Translation, AWeight),
+			XMVectorScale(B.Translation, BWeight)
+		),
+		XMVectorScale(C.Translation, CWeight)
+	);
+
+	// S
+	BlendResult.Scale =	XMVectorAdd(
+		XMVectorAdd(
+			XMVectorScale(A.Scale, AWeight),
+			XMVectorScale(B.Scale, BWeight)
+		),
+		XMVectorScale(C.Scale, CWeight)
+	);
+
+	// R
+	XMVECTOR RotAB = XMQuaternionSlerp(A.Rotation, B.Rotation, BWeight / (AWeight + BWeight));
+	XMVECTOR BlendedRot = XMQuaternionSlerp(RotAB,C.Rotation, CWeight);
+
+	BlendResult.Rotation = BlendedRot;
+
+	return BlendResult;
+}
+
+// FBoneLocalTransform <-> XMMATRIX 변환
+XMMATRIX FBoneLocalTransformToMatrix(const FBoneLocalTransform& T)
+{
+	XMMATRIX S = XMMatrixScalingFromVector(T.Scale);
+	XMMATRIX R = XMMatrixRotationQuaternion(T.Rotation);
+	XMMATRIX Tr = XMMatrixTranslationFromVector(T.Translation);
+	return S * R * Tr;
+}
+
+FBoneLocalTransform MatrixToFBoneLocalTransform(const XMMATRIX& M)
+{
+	FBoneLocalTransform Result;
+	XMMatrixDecompose(&Result.Scale, &Result.Rotation, &Result.Translation, M);
+	return Result;
+}
+
+FBoneLocalTransform CombineLocalTransform(const FBoneLocalTransform& Parent, const FBoneLocalTransform& Child)
+{
+	FBoneLocalTransform Result;
+
+	// Scale
+	Result.Scale = XMVectorMultiply(Parent.Scale, Child.Scale);
+
+	// Rotation
+	Result.Rotation = XMQuaternionMultiply(Parent.Rotation, Child.Rotation);
+
+	// Translation
+	XMVECTOR ScaledChildTranslation = XMVectorMultiply(Child.Translation, Parent.Scale);
+	XMVECTOR RotatedChildTranslation = XMVector3Rotate(ScaledChildTranslation, Parent.Rotation);
+	Result.Translation = XMVectorAdd(Parent.Translation, RotatedChildTranslation);
+
+	return Result;
+}
+
+FBone::FBone(const std::string& name, int ID, const aiNodeAnim* channel)
+	:  m_Name(name), m_ID(ID)
 {
 	UINT numPosition = channel->mNumPositionKeys;
 	for (UINT positionIndex = 0; positionIndex < numPosition; ++positionIndex)
@@ -41,14 +125,14 @@ Bone::Bone(const std::string& name, int ID, const aiNodeAnim* channel)
 	}
 }
 
-void Bone::Update(float animationTime)
+void FBone::Update(float animationTime)
 {
 	m_LocalTransform.Translation = InterpolatePosition(animationTime);
 	m_LocalTransform.Rotation    = InterpolateRotation(animationTime);
 	m_LocalTransform.Scale       = InterpolateScale(animationTime);
 }
 
-int Bone::GetPositionIndex(float animationTime) const
+int FBone::GetPositionIndex(float animationTime) const
 {
 	for (int index = 0; index < m_KeyPositions.size() - 1; ++index)
 	{
@@ -60,7 +144,7 @@ int Bone::GetPositionIndex(float animationTime) const
 	return -1;
 }
 
-int Bone::GetRotationIndex(float animationTime) const
+int FBone::GetRotationIndex(float animationTime) const
 {
 	for (int index = 0; index < m_KeyRotations.size() - 1; ++index)
 	{
@@ -71,7 +155,7 @@ int Bone::GetRotationIndex(float animationTime) const
 	return -1;
 }
 
-int Bone::GetScaleIndex(float animationTime) const
+int FBone::GetScaleIndex(float animationTime) const
 {
 	for (int index = 0; index < m_KeyScales.size() - 1; ++index)
 	{
@@ -82,7 +166,7 @@ int Bone::GetScaleIndex(float animationTime) const
 	return -1;
 }
 
-float Bone::GetScaleFactor(float lastTimeStamp, float nextTimeStamp, float animationTime) const
+float FBone::GetScaleFactor(float lastTimeStamp, float nextTimeStamp, float animationTime) const
 {
 	float scaleFactor  = 0.0f;
 	float midWayLength = animationTime - lastTimeStamp;
@@ -91,7 +175,7 @@ float Bone::GetScaleFactor(float lastTimeStamp, float nextTimeStamp, float anima
 	return midWayLength / framesDiff;
 }
 
-XMVECTOR Bone::InterpolatePosition(float animationTime) const
+XMVECTOR FBone::InterpolatePosition(float animationTime) const
 {
 	if (1 == m_KeyPositions.size())
 	{
@@ -105,7 +189,7 @@ XMVECTOR Bone::InterpolatePosition(float animationTime) const
 	return vecPosition;
 }
 
-XMVECTOR Bone::InterpolateRotation(float animationTime) const
+XMVECTOR FBone::InterpolateRotation(float animationTime) const
 {
 	if (1 == m_KeyRotations.size())
 	{
@@ -119,7 +203,7 @@ XMVECTOR Bone::InterpolateRotation(float animationTime) const
 	return finalQuat;
 }
 
-XMVECTOR Bone::InterpolateScale(float animationTime) const
+XMVECTOR FBone::InterpolateScale(float animationTime) const
 {
 	if (1 == m_KeyScales.size())
 	{

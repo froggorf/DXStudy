@@ -25,15 +25,21 @@ struct KeyScale
 
 struct FBoneLocalTransform
 {
-	XMVECTOR Translation;
-	XMVECTOR Rotation;
-	XMVECTOR Scale;
+	XMVECTOR Translation = XMVectorSet(0,0,0,0);
+	XMVECTOR Rotation = XMVectorSet(0,0,0,1);
+	XMVECTOR Scale = XMVectorSet(1,1,1,0);
 };
 
-class Bone
+FBoneLocalTransform Blend2BoneTransform(const FBoneLocalTransform& A, const FBoneLocalTransform& B, float AWeight);
+FBoneLocalTransform Blend3BoneTransform(const FBoneLocalTransform& A, const FBoneLocalTransform& B, const FBoneLocalTransform& C, float AWeight, float BWeight, float CWeight);
+FBoneLocalTransform MatrixToFBoneLocalTransform(const XMMATRIX& M);
+XMMATRIX FBoneLocalTransformToMatrix(const FBoneLocalTransform& T);
+FBoneLocalTransform CombineLocalTransform(const FBoneLocalTransform& Parent, const FBoneLocalTransform& Child);
+
+class FBone
 {
 public:
-	Bone(const std::string& name, int ID, const aiNodeAnim* channel);
+	FBone(const std::string& name, int ID, const aiNodeAnim* channel);
 	void Update(float animationTime);
 
 	const FBoneLocalTransform& GetLocalTransform() const

@@ -21,7 +21,7 @@ struct AssimpNodeData
 struct FPrecomputedBoneData
 {
 	std::string BoneName;
-	Bone*       Bone;
+	FBone*       Bone;
 	int         ParentIndex;
 	BoneInfo    BoneInfo;
 	XMMATRIX	BoneTransform;
@@ -34,7 +34,7 @@ class UAnimSequence : public UAnimCompositeBase
 	UAnimSequence(const UAnimSequence& Other);
 	~UAnimSequence() override = default;
 
-	Bone* FindBone(const std::string& name);
+	FBone* FindBone(const std::string& name);
 
 	float GetLength() const
 	{
@@ -70,8 +70,8 @@ class UAnimSequence : public UAnimCompositeBase
 
 	// 특정 애니메이션 시간의 본 Matrices를 반환받는 함수
 	// bPlayRootMotion은 UAnimInstance::bPlayRootMotion을 넣어줘야 정상적으로 루트모션이 적용됨
-	void GetBoneTransform(float CurrentAnimTime, std::vector<XMMATRIX>& FinalBoneMatrices, bool* bPlayRootMotion);
-	void GetBoneTransform_NoRateScale(float CurrentAnimTime, std::vector<XMMATRIX>& FinalBoneMatrices, bool* bPlayRootMotion);
+	void GetBoneTransform(float CurrentAnimTime, std::vector<FBoneLocalTransform>& OutBoneLocals, bool* bPlayRootMotion);
+	void GetBoneTransform_NoRateScale(float CurrentAnimTime, std::vector<FBoneLocalTransform>& OutBoneLocals, bool* bPlayRootMotion);
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 	void ReadMyAssetFile(const std::string& FilePath, USkeletalMesh* SkeletalMesh);
@@ -92,14 +92,12 @@ private:
 	float                           Duration;
 	float                           TicksPerSecond;
 	float							RateScale = 1.0f;
-	std::vector<Bone>               Bones;
+	std::vector<FBone>               Bones;
 	AssimpNodeData                  RootNode;
 	std::map<std::string, BoneInfo> BoneInfoMap;
 
 	std::vector<FPrecomputedBoneData> BoneHierarchy;
 
-	std::vector<XMMATRIX> CachedFirstFrameBoneMatrices;
-	bool                  bIsCachedFirstFrameBoneMatrices;
 
 	bool bEnableRootMotion = false;
 };

@@ -65,7 +65,7 @@ struct FAnimMontageInstance
 	FAnimMontageInstance(UAnimInstance* InAnimInstance)
 		: AnimInstance(InAnimInstance), Position(0.0f)
 	{
-		MontageBones = std::vector<XMMATRIX>(MAX_BONES, XMMatrixIdentity());
+		MontageBones = std::vector<FBoneLocalTransform>(MAX_BONES);
 	}
 
 	void Play();
@@ -77,7 +77,7 @@ struct FAnimMontageInstance
 
 	void                          SetPosition(float InPosition);
 	void                          JumpToSectionName(const std::string& SectionName);
-	std::vector<XMMATRIX>         MontageBones;
+	std::vector<FBoneLocalTransform>         MontageBones;
 	std::vector<FAnimNotifyEvent> Notifies;
 
 	std::shared_ptr<UAnimMontage> Montage;

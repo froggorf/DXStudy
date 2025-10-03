@@ -120,7 +120,7 @@ void UMyGameAnimInstanceBase::UpdateAnimation(float dt)
 
 		MoveVel.y = 0.0f;
 		float CurSpeed = XMVectorGetX(XMVector3Length(XMLoadFloat3(&MoveVel)));
-		BS_Locomotion->GetAnimationBoneMatrices(XMFLOAT2{0.0f, CurSpeed }, CurrentTime, FinalBoneMatrices, FinalNotifies);      
+		BS_Locomotion->GetAnimationBoneTransforms(XMFLOAT2{0.0f, CurSpeed }, CurrentTime, BoneTransforms, FinalNotifies);      
 	}
 
 	// spine_01 을 기준으로 상체와 하체를 블렌딩
@@ -129,7 +129,7 @@ void UMyGameAnimInstanceBase::UpdateAnimation(float dt)
 	// 몽타쥬 연결
 	{
 		std::string SlotName = "DefaultSlot";
-		PlayMontage(SlotName, FinalBoneMatrices, FinalNotifies);
+		PlayMontage(SlotName, BoneTransforms, FinalNotifies);
 	}
 }
 

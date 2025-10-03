@@ -13,11 +13,11 @@ UAnimSequence::UAnimSequence(const UAnimSequence& Other)
 	BoneInfoMap    = Other.BoneInfoMap;
 }
 
-Bone* UAnimSequence::FindBone(const std::string& name)
+FBone* UAnimSequence::FindBone(const std::string& name)
 {
 	const auto iter = std::find_if(Bones.begin(),
 									Bones.end(),
-									[&](const Bone& bone)
+									[&](const FBone& bone)
 									{
 										return bone.GetBoneName() == name;
 									});
@@ -39,16 +39,8 @@ std::shared_ptr<UAnimSequence> UAnimSequence::GetAnimationAsset(const std::strin
 	return nullptr;
 }
 
-void UAnimSequence::GetBoneTransform(float CurrentAnimTime, std::vector<XMMATRIX>& FinalBoneMatrices, bool* bPlayRootMotion)
+void UAnimSequence::GetBoneTransform(float CurrentAnimTime, std::vector<FBoneLocalTransform>& OutBoneLocals, bool* bPlayRootMotion)
 {
-	if (CurrentAnimTime == 0.0f && bIsCachedFirstFrameBoneMatrices)
-	{
-		for (int i = 0; i < MAX_BONES; ++i)
-		{
-			FinalBoneMatrices[i] = CachedFirstFrameBoneMatrices[i];
-		}
-		return;
-	}
 
 	*bPlayRootMotion = bEnableRootMotion;
 
@@ -56,40 +48,32 @@ void UAnimSequence::GetBoneTransform(float CurrentAnimTime, std::vector<XMMATRIX
 	CurrentAnimTime *= RateScale;
 	CurrentAnimTime = fmod(CurrentAnimTime, Duration);
 
-	std::vector<XMMATRIX> GlobalTransform(BoneHierarchy.size(), XMMatrixIdentity());
-
-	// 계층별로 작업이 일어나야하므로 싱글쓰레드에서 진행
+	// 본 계층 순서대로
 	for (int HierarchyIndex = 0; HierarchyIndex < BoneHierarchy.size(); ++HierarchyIndex)
 	{
-		const FPrecomputedBoneData& BoneData       = BoneHierarchy[HierarchyIndex];
-		XMMATRIX                    LocalTransform = XMMatrixIdentity();
+		const FPrecomputedBoneData& BoneData = BoneHierarchy[HierarchyIndex];
+		FBoneLocalTransform LocalTransform;
 		if (BoneData.Bone)
 		{
 			BoneData.Bone->Update(CurrentAnimTime);
 			LocalTransform = BoneData.Bone->GetLocalTransform();
 		}
-
-		if (BoneData.ParentIndex >= 0)
-		{
-			GlobalTransform[HierarchyIndex] = XMMatrixMultiply(LocalTransform, GlobalTransform[BoneData.ParentIndex]);
-		}
 		else
 		{
-			GlobalTransform[HierarchyIndex] = LocalTransform;
+			// 기본값
+			LocalTransform.Translation = XMVectorZero();
+			LocalTransform.Rotation    = XMQuaternionIdentity();
+			LocalTransform.Scale       = XMVectorSet(1,1,1,0);
 		}
-
-		if (BoneData.BoneInfo.id >= 0 && BoneData.BoneInfo.id < MAX_BONES)
-		{
-			FinalBoneMatrices[BoneData.BoneInfo.id] = XMMatrixMultiply(BoneData.BoneInfo.offset, GlobalTransform[HierarchyIndex]);
-		}
+		OutBoneLocals[HierarchyIndex] = LocalTransform;
 	}
 }
 
-void UAnimSequence::GetBoneTransform_NoRateScale(float CurrentAnimTime, std::vector<XMMATRIX>& FinalBoneMatrices, bool* bPlayRootMotion)
+void UAnimSequence::GetBoneTransform_NoRateScale(float CurrentAnimTime, std::vector<FBoneLocalTransform>& OutBoneLocals, bool* bPlayRootMotion)
 {
 	float LastRateScale = RateScale;
 	RateScale = 1.0f;
-	GetBoneTransform(CurrentAnimTime, FinalBoneMatrices, bPlayRootMotion);
+	GetBoneTransform(CurrentAnimTime, OutBoneLocals, bPlayRootMotion);
 	RateScale = LastRateScale;
 }
 
@@ -161,7 +145,7 @@ void UAnimSequence::ReadMissingBones(const aiAnimation* animation, std::map<std:
 			++boneCount;
 			std::cout << "Missing Bone Added:" << boneName << std::endl;
 		}
-		Bones.push_back(Bone(boneName, modelBoneInfoMap[boneName].id, channel));
+		Bones.push_back(FBone(boneName, modelBoneInfoMap[boneName].id, channel));
 	}
 	BoneInfoMap = modelBoneInfoMap;
 }
@@ -254,10 +238,4 @@ void UAnimSequence::PrecomputeAnimationData(const std::string& Name)
 	{
 		GetSkeletonBoneHierarchyMap()[Name] = BoneHierarchy;
 	}
-
-	// 첫 프레임의 본 변환 행렬을 캐시
-	CachedFirstFrameBoneMatrices = std::vector<XMMATRIX>(MAX_BONES, XMMatrixIdentity());
-	bool Dummy;
-	GetBoneTransform(0.0f, CachedFirstFrameBoneMatrices, &Dummy);
-	bIsCachedFirstFrameBoneMatrices = true;
 }
