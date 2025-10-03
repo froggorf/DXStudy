@@ -123,13 +123,13 @@ void UAnimInstance::Tick(float DeltaSeconds)
 	static float DefaultSpeed = 30;
 	CurrentTime               = CurrentTime + DeltaSeconds * DefaultSpeed;
 
-	static float TicksPerSecondTime = 1.0f / 30 * DefaultSpeed;
+	static float TicksPerSecondTime = 1.0f / AnimTickFPS * DefaultSpeed;
 	if (LatestUpdateTime + TicksPerSecondTime < CurrentTime)
 	{
 		if (!bIsAnimationLoaded)
 		{
 			const std::string& MeshName = GetSkeletalMeshComponent()->GetSkeletalMesh()->GetName();
-			if (GEngine->GetTimeSeconds() - 0.5f >= UAnimSequence::GetLoadedTime(MeshName))
+			if (GEngine->GetTimeSeconds() - 1.0f >= UAnimSequence::GetLoadedTime(MeshName))
 			{
 				bIsAnimationLoaded = true;
 			}

@@ -34,7 +34,7 @@ void UCombatBaseComponent::BasicAttack()
 	// MontageEnd를 통해서 공격을 계속 진행
 	if (const std::shared_ptr<UAnimInstance>& AnimInstance =  OwnerCharacter->GetAnimInstance())
 	{
-		AnimInstance->Montage_Play(BasicAttackMontages[0], 0, {this, &UCombatBaseComponent::BasicAttackEnded});
+		AnimInstance->Montage_Play(BasicAttackMontages[0], 0, Delegate<>(), Delegate<>(), {this, &UCombatBaseComponent::BasicAttackEnded});
 	}
 	bIsBasicAttacking = true;
 }

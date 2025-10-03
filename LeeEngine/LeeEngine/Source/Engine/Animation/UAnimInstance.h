@@ -88,10 +88,13 @@ protected:
 	bool bBlendOut = false;
 	bool bUseMotionWarping = false;
 
+public:
+	static constexpr float AnimTickFPS = 60;
 protected:
 	class ACharacter* OwnerCharacter = nullptr;
 private:
 	USkeletalMeshComponent* CurrentSkeletalMeshComponent;
 	bool bIsAnimationLoaded = false;
+
 
 };

@@ -1,6 +1,7 @@
 #include "CoreMinimal.h"
 #include "UAnimMontage.h"
 
+#include "Engine/Animation/UAnimInstance.h"
 #include "Engine/AssetManager/AssetManager.h"
 
 float FAnimTrack::GetLength() const
@@ -183,7 +184,7 @@ void FAnimMontageInstance::Play()
 
 	const std::vector<std::shared_ptr<UAnimSequence>> AnimSegments        = Montage->AnimTrack.AnimSegments;
 
-	constexpr float PlayTimePerTick = 1.0f/30;
+	constexpr float PlayTimePerTick = 1.0f/UAnimInstance::AnimTickFPS;
 	for (const auto& Anim : AnimSegments)
 	{
 		if (Position >= Anim->GetDuration())
@@ -194,7 +195,7 @@ void FAnimMontageInstance::Play()
 		else
 		{
 			CurrentPlayTime = std::min(CurrentPlayTime + PlayTimePerTick * Anim->GetRateScale(), Anim->GetDuration());
-			Position += 1 * Anim->GetRateScale();
+			Position += 1.0f * (30.0f/UAnimInstance::AnimTickFPS) * Anim->GetRateScale();
 			if (Position >= Anim->GetDuration())
 			{
 				break;
