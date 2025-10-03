@@ -1,4 +1,4 @@
-﻿// https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
+// https://learnopengl.com/Guest-Articles/2020/Skeletal-Animation
 
 #include "CoreMinimal.h"
 #include "Bone.h"
@@ -43,10 +43,9 @@ Bone::Bone(const std::string& name, int ID, const aiNodeAnim* channel)
 
 void Bone::Update(float animationTime)
 {
-	XMMATRIX translation = InterpolatePosition(animationTime);
-	XMMATRIX rotation    = InterpolateRotation(animationTime);
-	XMMATRIX scale       = InterpolateScale(animationTime);
-	m_LocalTransform     = scale * rotation * translation;
+	m_LocalTransform.Translation = InterpolatePosition(animationTime);
+	m_LocalTransform.Rotation    = InterpolateRotation(animationTime);
+	m_LocalTransform.Scale       = InterpolateScale(animationTime);
 }
 
 int Bone::GetPositionIndex(float animationTime) const
@@ -92,47 +91,43 @@ float Bone::GetScaleFactor(float lastTimeStamp, float nextTimeStamp, float anima
 	return midWayLength / framesDiff;
 }
 
-XMMATRIX Bone::InterpolatePosition(float animationTime) const
+XMVECTOR Bone::InterpolatePosition(float animationTime) const
 {
 	if (1 == m_KeyPositions.size())
 	{
-		return XMMatrixTranslation(m_KeyPositions[0].position.x, m_KeyPositions[0].position.y, m_KeyPositions[0].position.z);
+		return XMVectorSet(m_KeyPositions[0].position.x, m_KeyPositions[0].position.y, m_KeyPositions[0].position.z,0.0f);
 	}
 
 	int      p0Index     = GetPositionIndex(animationTime);
 	int      p1Index     = (p0Index + 1) % m_KeyPositions.size();
 	float    scaleFactor = GetScaleFactor(m_KeyPositions[p0Index].timeStamp, m_KeyPositions[p1Index].timeStamp, animationTime);
-	XMFLOAT3 finalPosition{};
 	XMVECTOR vecPosition = XMVectorLerp(XMLoadFloat3(&m_KeyPositions[p0Index].position), XMLoadFloat3(&m_KeyPositions[p1Index].position), scaleFactor);
-	XMStoreFloat3(&finalPosition, vecPosition);
-	return XMMatrixTranslation(finalPosition.x, finalPosition.y, finalPosition.z);
+	return vecPosition;
 }
 
-XMMATRIX Bone::InterpolateRotation(float animationTime) const
+XMVECTOR Bone::InterpolateRotation(float animationTime) const
 {
 	if (1 == m_KeyRotations.size())
 	{
 		XMVECTOR quat = m_KeyRotations[0].orientationQuat;
-		return XMMatrixRotationQuaternion(quat);
+		return quat;
 	}
 	int      p0Index     = GetRotationIndex(animationTime);
 	int      p1Index     = (p0Index + 1) % m_KeyRotations.size();
 	float    scaleFactor = GetScaleFactor(m_KeyRotations[p0Index].timeStamp, m_KeyRotations[p1Index].timeStamp, animationTime);
 	XMVECTOR finalQuat   = XMQuaternionSlerp(m_KeyRotations[p0Index].orientationQuat, m_KeyRotations[p1Index].orientationQuat, scaleFactor);
-	return XMMatrixRotationQuaternion(finalQuat);
+	return finalQuat;
 }
 
-XMMATRIX Bone::InterpolateScale(float animationTime) const
+XMVECTOR Bone::InterpolateScale(float animationTime) const
 {
 	if (1 == m_KeyScales.size())
 	{
-		return XMMatrixScaling(m_KeyScales[0].scale.x, m_KeyScales[0].scale.y, m_KeyScales[0].scale.z);
+		return XMVectorSet(m_KeyScales[0].scale.x, m_KeyScales[0].scale.y, m_KeyScales[0].scale.z, 0.0f);
 	}
 	int      p0Index     = GetScaleIndex(animationTime);
 	int      p1Index     = (p0Index + 1) % m_KeyScales.size();
 	float    scaleFactor = GetScaleFactor(m_KeyScales[p0Index].timeStamp, m_KeyScales[p1Index].timeStamp, animationTime);
-	XMFLOAT3 finalScale{};
 	XMVECTOR vecScale = XMVectorLerp(XMLoadFloat3(&m_KeyScales[p0Index].scale), XMLoadFloat3(&m_KeyScales[p1Index].scale), scaleFactor);
-	XMStoreFloat3(&finalScale, vecScale);
-	return XMMatrixScaling(finalScale.x, finalScale.y, finalScale.z);
+	return vecScale;
 }
