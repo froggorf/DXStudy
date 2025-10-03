@@ -76,6 +76,7 @@ class UAnimSequence : public UAnimCompositeBase
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 	void ReadMyAssetFile(const std::string& FilePath, USkeletalMesh* SkeletalMesh);
 
+	void Traverse();
 	void PrecomputeAnimationData(const std::string& Name);
 private:
 	// 누락된 본 데이터 추가 및 모델의 boneInfoMap 업데이트

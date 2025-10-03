@@ -50,6 +50,8 @@ class UAnimInstance : public UObject
 
 	void Montage_Play(std::shared_ptr<UAnimMontage> MontageToPlay, float InTimeToStartMontageAt = 0.0f, const Delegate<>& OnMontageEnd = Delegate<>(), const Delegate<>& OnMontageBlendingInStart = Delegate<>(), const Delegate<>& OnMontageBlendOutStart = Delegate<>());
 	const std::array<XMMATRIX,MAX_BONES>& GetLastFrameAnimMatrices() const {return LastFrameAnimMatrices;}
+
+	std::vector<FBoneLocalTransform> GetInitialLocalBoneTransforms() const;
 protected:
 	// 현재 애님 인스턴스의 리소스가 모두 정상적으로 존재하는지 체크하는 함수
 	virtual bool IsAllResourceOK();

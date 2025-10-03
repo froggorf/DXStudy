@@ -122,6 +122,13 @@ void UAnimSequence::ReadMyAssetFile(const std::string& FilePath, USkeletalMesh* 
 	ReadMissingBones(animation, SkeletalMesh->GetSkeletalMeshRenderData()->ModelBoneInfoMap);
 }
 
+void UAnimSequence::Traverse()
+{
+	// 트리 구조의 계층을 벡터 구조로 변환
+	BoneHierarchy.clear();
+	TraverseTreeHierarchy(&RootNode, -1);
+}
+
 void UAnimSequence::ReadMissingBones(const aiAnimation* animation, std::map<std::string, BoneInfo>& modelBoneInfoMap)
 {
 	UINT channelSize = animation->mNumChannels;
@@ -248,8 +255,7 @@ float UAnimSequence::GetLoadedTime(const std::string& Name)
 void UAnimSequence::PrecomputeAnimationData(const std::string& Name)
 {
 	// 트리 구조의 계층을 벡터 구조로 변환
-	BoneHierarchy.clear();
-	TraverseTreeHierarchy(&RootNode, -1);
+	Traverse();
 
 	if (!GetSkeletonBoneHierarchyMap().contains(Name))
 	{

@@ -123,18 +123,15 @@ void UMyGameAnimInstanceBase::UpdateAnimation(float dt)
 		BS_Locomotion->GetAnimationBoneTransforms(XMFLOAT2{0.0f, CurSpeed }, CurrentTime, BoneTransforms, FinalNotifies);      
 	}
 
-	// spine_01 을 기준으로 상체와 하체를 블렌딩
-	//LayeredBlendPerBone(BS_IdleWalkRunMatrices, AS_Matrices, "spine_01", 1.0f, FinalBoneMatrices);
-
 	// 몽타쥬 연결
 	{
-		PlayMontage("DefaultSlot", BoneTransforms, FinalNotifies);
+		//PlayMontage("DefaultSlot", BoneTransforms, FinalNotifies);
 
-		//std::vector<FBoneLocalTransform> MontageTransforms(MAX_BONES);
-		//std::string SlotName = "DefaultSlot";
-		//PlayMontage(SlotName, MontageTransforms, FinalNotifies);
-		//std::vector<FBoneLocalTransform> CurrentBoneTransforms = BoneTransforms;
-		//LayeredBlendPerBone(CurrentBoneTransforms, MontageTransforms, "spine_01", 1, BoneTransforms);
+		std::vector<FBoneLocalTransform> MontageTransforms = GetInitialLocalBoneTransforms();
+		std::string SlotName = "DefaultSlot";
+		PlayMontage(SlotName, MontageTransforms, FinalNotifies);
+		std::vector<FBoneLocalTransform> CurrentBoneTransforms = BoneTransforms;
+		LayeredBlendPerBone(CurrentBoneTransforms, MontageTransforms, "spine_01", 1, BoneTransforms);
 	}
 }
 
