@@ -14,7 +14,7 @@ class UAnimNotify : public UObject
 	~UAnimNotify() override = default;
 
 	void         LoadDataFromFileData(const nlohmann::json& AssetData) override;
-	virtual const std::string& Notify();
+	virtual const std::string Notify();
 };
 
 class UAnimNotify_PlaySound : public UAnimNotify
@@ -24,8 +24,20 @@ class UAnimNotify_PlaySound : public UAnimNotify
 	~UAnimNotify_PlaySound() override = default;
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
-	const std::string& Notify() override;
+	const std::string Notify() override;
 
 protected:
 	std::shared_ptr<USoundBase> SoundBase;
+};
+
+
+class UAnimNotify_Event : public UAnimNotify
+{
+	MY_GENERATE_BODY(UAnimNotify_Event)
+
+	const std::string Notify() override;
+
+	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
+
+	std::string EventName = "";
 };

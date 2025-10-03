@@ -19,7 +19,13 @@
 		{ "SectionName" : "BasicAttack", "StartTime" : 0.0 }
 	],
     	"Notifies" : [
-		{ "NotifyClass" : "UAnimNotify_MotionWarpingStart", "TriggerTime" : 2, "WarpingName" : "SH_Attack4" },
-		{ "NotifyClass" : "UAnimNotify_MotionWarpingEnd", "TriggerTime" : 58 }
+		{ "NotifyClass" : "UAnimNotify_MotionWarpingStart", "TriggerTime" : 2, "WarpingName" : "SH_Attack4_Float" },
+		{ "NotifyClass" : "UAnimNotify_MotionWarpingEnd", "TriggerTime" : 20},
+	
+		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 6, "EventName": "Hide"},
+		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 13, "EventName" : "Show"},
+
+		{ "NotifyClass" : "UAnimNotify_MotionWarpingStart", "TriggerTime" : 22, "WarpingName" : "SH_Attack4_Attack" },
+		{ "NotifyClass" : "UAnimNotify_MotionWarpingEnd", "TriggerTime" : 58}
   	  ]
 }

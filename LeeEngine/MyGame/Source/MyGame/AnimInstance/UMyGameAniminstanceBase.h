@@ -17,11 +17,17 @@ class UMyGameAnimInstanceBase : public UAnimInstance
 
 	virtual void LoadData_OnRegister();
 	void Register() override;
-	void BeginPlay() override;
-	void NativeInitializeAnimation() override;
-	void NativeUpdateAnimation(float DeltaSeconds) override;
-	void UpdateAnimation(float dt) override;
 
+	void     SetAnimNotify_BeginPlay() override;
+	void     BeginPlay() override;
+	void     NativeInitializeAnimation() override;
+	void     NativeUpdateAnimation(float DeltaSeconds) override;
+	void     UpdateAnimation(float dt) override;
+
+	// BasicAttackComboIndex 번째 기본공격 몽타쥬를 기반으로 적용되며 (거리이동, 시간 등)
+	// 적이 없을 경우엔 IfNoEnemyWarpingDirectionUnitVector 방향으로 이동
+	void SetWarping_BasicAttack(size_t BasicAttackComboIndex, const XMFLOAT3& IfNoEnemyWarpingDirectionUnitVector);
+	XMFLOAT3 GetWarpingPositionToEnemy(const XMFLOAT3& CurActorLocation , XMFLOAT3& EnemyLocation , float MaxMoveDistance);
 	void EndMotionWarping();
 	bool SetMotionWarping();
 
@@ -34,6 +40,5 @@ protected:
 	AMyGameCharacterBase* MyGameCharacter = nullptr;
 private:
 	UCharacterMovementComponent* MovementComp;
-
 	std::shared_ptr<UBlendSpace> BS_Locomotion;
 };

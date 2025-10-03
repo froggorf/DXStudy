@@ -26,6 +26,7 @@ class UAnimInstance : public UObject
 
 	~UAnimInstance() override = default;
 
+	virtual void SetAnimNotify_BeginPlay() {}
 	void BeginPlay() override;
 
 	// AnimInstance가 생성될 때 호출되는 함수

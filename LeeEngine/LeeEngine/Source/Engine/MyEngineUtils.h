@@ -228,15 +228,39 @@ namespace MyMath
 		return A*(1-T) + B*T;
 	}
 
-	inline float GetDistance(const XMFLOAT3& A, const XMFLOAT3& B)
+	inline float GetDistance(const XMFLOAT3& From, const XMFLOAT3& To)
 	{
-		float Distance = XMVectorGetX(XMVector3Length(XMVectorSubtract( XMLoadFloat3(&A), XMLoadFloat3(&B))));
+		float Distance = XMVectorGetX(XMVector3Length(XMVectorSubtract( XMLoadFloat3(&From), XMLoadFloat3(&To))));
 		return Distance;
 	}
 
-	inline float GetDistance2D(const XMFLOAT2& A, const XMFLOAT2& B)
+	inline float GetDistance2D(const XMFLOAT2& From, const XMFLOAT2& To)
 	{
-		float Distance = XMVectorGetX(XMVector2Length(XMVectorSubtract(XMLoadFloat2(&A), XMLoadFloat2(&B))));
+		float Distance = XMVectorGetX(XMVector2Length(XMVectorSubtract(XMLoadFloat2(&From), XMLoadFloat2(&To))));
 		return Distance;
 	}
+
+	inline XMVECTOR GetUnitVector(const XMVECTOR& Vector)
+	{
+		float Length = XMVectorGetX(XMVector3Length(Vector));
+		if (Length < FLT_EPSILON)
+		{
+			return XMVectorZero();
+		}
+
+		return XMVectorScale(Vector, 1.0f / Length);
+	}
+
+	inline XMFLOAT3 GetDirectionUnitVector(const XMFLOAT3& From, const XMFLOAT3& To)
+	{
+		XMVECTOR FromVector = XMLoadFloat3(&From);
+		XMVECTOR ToVector = XMLoadFloat3(&To);
+
+		XMVECTOR DirectionVec = XMVectorSubtract(ToVector, FromVector);
+		XMFLOAT3 DirectionUnitVector;
+		XMStoreFloat3(&DirectionUnitVector, GetUnitVector(DirectionVec));
+		return DirectionUnitVector;
+	}
+
+	XMFLOAT4 GetRotationQuaternionToActor(const XMFLOAT3& From, const XMFLOAT3& To);
 }

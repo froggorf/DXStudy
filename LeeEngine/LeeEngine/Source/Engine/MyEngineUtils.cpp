@@ -1,4 +1,7 @@
 #include "CoreMinimal.h"
+
+#include "RenderCore/EditorScene.h"
+
 FTransform::FTransform(XMFLOAT3 InTranslation, XMFLOAT4 InRotation, XMFLOAT3 InScale)
 {
 	Translation = InTranslation;
@@ -112,4 +115,31 @@ XMMATRIX MyMatrixLerpForAnimation(const XMMATRIX& AMatrix, const XMMATRIX& BMatr
 
 	XMMATRIX Out = XMMATRIX{V1, V2, V3, V4};
 	return Out;
+}
+
+namespace MyMath
+{
+	XMFLOAT4 GetRotationQuaternionToActor(const XMFLOAT3& From, const XMFLOAT3& To)
+	{
+		XMVECTOR Position = XMLoadFloat3(&From);
+		XMVECTOR Target   = XMLoadFloat3(&To);
+
+		XMVECTOR Direction = XMVector3Normalize(XMVectorSubtract(Target, Position));
+		XMVECTOR Forward = XMVectorSet(0, 0, 1, 0);
+		XMVECTOR Axis = XMVector3Cross(Forward, Direction);
+		float Dot = XMVectorGetX(XMVector3Dot(Forward, Direction));
+		float Angle = acosf(Dot);
+
+		if (XMVector3Equal(Axis, XMVectorZero()))
+		{
+			Axis = XMVectorSet(0, 1, 0, 0);
+		}
+		
+		XMVECTOR Quaternion = XMQuaternionRotationAxis(Axis, Angle);
+
+		XMFLOAT4 ReturnQuaternion;
+		XMStoreFloat4(&ReturnQuaternion, Quaternion);
+		return ReturnQuaternion;
+	}
+
 }

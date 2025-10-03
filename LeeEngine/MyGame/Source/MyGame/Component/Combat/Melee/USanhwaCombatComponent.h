@@ -4,7 +4,7 @@
 #pragma once
 #include "UMeleeBaseComponent.h"
 
-class USanhwaCombatComponent : public UMeleeBaseComponent
+class USanhwaCombatComponent final : public UMeleeBaseComponent
 {
 	MY_GENERATE_BODY(USanhwaCombatComponent)
 	USanhwaCombatComponent();
@@ -15,4 +15,16 @@ public:
 	void BasicAttack() override;
 	void StrongBasicAttack() override {};
 	void JumpAttack() override {};
+
+	float GetAttack4_FloatingDistance() const {return Attack4_FloatingDistance;}
+	float GetAttack4_FloatMoveDistance() const {return Attack4_FloatMoveDistance; }
+	float GetAttack4_AttackMoveDistance() const {return Attack4_AttackMoveDistance; }
+	
+private:
+	// 기본공격 4의 떠오르는 높이
+	float Attack4_FloatingDistance = 500.0f;
+	// 기본공격 4의 떠오르는 중의 움직일 수 있는 거리
+	float Attack4_FloatMoveDistance = 300.0f;
+	// 기본공격 4의 공격 중의 움직일 수 있는 거리
+	float Attack4_AttackMoveDistance = 700.0f;
 };

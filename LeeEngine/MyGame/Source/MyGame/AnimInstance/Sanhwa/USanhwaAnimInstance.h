@@ -1,11 +1,13 @@
 #pragma once
 #include "MyGame/AnimInstance/UMyGameAniminstanceBase.h"
 
-class USanhwaAnimInstance : public UMyGameAnimInstanceBase
+class USanhwaAnimInstance final : public UMyGameAnimInstanceBase
 {
 	MY_GENERATE_BODY(USanhwaAnimInstance)
 
 	USanhwaAnimInstance();
+
+	void SetAnimNotify_BeginPlay() override;
 	void BeginPlay() override;
 	void UpdateAnimation(float dt) override;
 
@@ -15,7 +17,13 @@ class USanhwaAnimInstance : public UMyGameAnimInstanceBase
 	void MotionWarping_BasicAttack1();
 	void MotionWarping_BasicAttack2();
 	void MotionWarping_BasicAttack3();
-	void MotionWarping_BasicAttack4();
+	void MotionWarping_BasicAttack4_Float();
+	void MotionWarping_BasicAttack4_Attack();
+
+	void SetSkeletalMeshVisibility(bool NewVisibility);
 
 	std::shared_ptr<UAnimSequence> AS_Test[5];
+
+private:
+	XMFLOAT3 Attack4_AttackTargetPos;
 };

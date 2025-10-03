@@ -1,7 +1,7 @@
 #include "CoreMinimal.h"
 #include "MyGameNotify.h"
 
-const std::string& UAnimNotify_MotionWarpingStart::Notify()
+const std::string UAnimNotify_MotionWarpingStart::Notify()
 {
 	return WarpingName;
 }
@@ -13,7 +13,7 @@ void UAnimNotify_MotionWarpingStart::LoadDataFromFileData(const nlohmann::json& 
 	WarpingName = AssetData["WarpingName"];
 }
 
-const std::string& UAnimNotify_MotionWarpingEnd::Notify()
+const std::string UAnimNotify_MotionWarpingEnd::Notify()
 {
 	return "MotionWarpingEnd";
 }

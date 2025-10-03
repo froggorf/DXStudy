@@ -5,7 +5,9 @@
 
 USanhwaCombatComponent::USanhwaCombatComponent()
 {
-	
+	BasicAttackMoveDistance = {
+		200, 200, 200, -200, 500
+	};
 }
 
 void USanhwaCombatComponent::Initialize(AMyGameCharacterBase* MyCharacter)

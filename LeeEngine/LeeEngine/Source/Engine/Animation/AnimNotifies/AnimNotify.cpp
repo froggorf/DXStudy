@@ -6,7 +6,7 @@ void UAnimNotify::LoadDataFromFileData(const nlohmann::json& AssetData)
 	UObject::LoadDataFromFileData(AssetData);
 }
 
-const std::string& UAnimNotify::Notify()
+const std::string UAnimNotify::Notify()
 {
 	return "";
 }
@@ -24,7 +24,7 @@ void UAnimNotify_PlaySound::LoadDataFromFileData(const nlohmann::json& AssetData
 	}
 }
 
-const std::string& UAnimNotify_PlaySound::Notify()
+const std::string UAnimNotify_PlaySound::Notify()
 {
 	if (SoundBase)
 	{
@@ -33,5 +33,17 @@ const std::string& UAnimNotify_PlaySound::Notify()
 	}
 
 	return "PlaySound";
+}
+
+const std::string UAnimNotify_Event::Notify()
+{
+	return EventName;
+}
+
+void UAnimNotify_Event::LoadDataFromFileData(const nlohmann::json& AssetData)
+{
+	UAnimNotify::LoadDataFromFileData(AssetData);
+
+	EventName = AssetData["EventName"];
 }
 

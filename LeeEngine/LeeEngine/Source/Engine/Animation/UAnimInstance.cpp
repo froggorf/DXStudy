@@ -17,6 +17,8 @@ void UAnimInstance::BeginPlay()
 	UObject::BeginPlay();
 
 	NativeInitializeAnimation();
+
+	SetAnimNotify_BeginPlay();
 }
 
 void UAnimInstance::NativeInitializeAnimation()
@@ -71,7 +73,7 @@ void UAnimInstance::Tick(float DeltaSeconds)
 		// 노티파이 실행
 		for (int i = 0; i < FinalNotifies.size(); ++i)
 		{
-			const std::string NotifyName = FinalNotifies[i].Notify->Notify();
+			const std::string& NotifyName = FinalNotifies[i].Notify->Notify();
 
 			const auto& Notify = NotifyEvent.find(NotifyName);
 			if (Notify != NotifyEvent.end())

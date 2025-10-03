@@ -37,19 +37,21 @@ protected:
 
 public:
 	void SetFightMode(bool NewMode);
-	void FindNearbyEnemy();
+	bool FindNearbyEnemy(const XMFLOAT3& SpherePos , float EnemyFindRadius , const std::vector<AActor*>& IgnoreActors, std::vector<AActor*>& OverlapActors);
+	AActor* FindNearestEnemy(const XMFLOAT3& SpherePos , float EnemyFindRadius , const std::vector<AActor*>& IgnoreActors);
+	float GetBasicAttackMoveDistance(size_t Index);
 
+	const std::shared_ptr<UAnimMontage>& GetBasicAttackMontage(size_t Index);
 protected:
 	// 초기 세팅을 위해
 	bool bIsFightMode = true;
-	FTimerHandle FindEnemyHandle;
-	const float EnemyFindTime_OnFight = 0.25f;
-	const float EnemyFindTime_NoFight = 1.0f;
-	const float EnemyFindRadius = 50000.0f;
 
 	// ===================== Basic Attack =====================
 	// BasicAttackMontages.size() 가 기본공격의 콤보 수
 	std::vector<std::shared_ptr<UAnimMontage>> BasicAttackMontages;
+	// 근접 공격시 이동할 수 있는 거리
+	// 하위 캐릭터 클래스별로 조정해주어야함
+	std::vector<float> BasicAttackMoveDistance = {100,100,100,100,100};
 	// 선입력을 위해 키입력 시간을 저장
 	float LastBasicAttackClickedTime = -1.0f;
 	// 선입력 시간 : 0.5f

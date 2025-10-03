@@ -92,22 +92,59 @@ void UCombatBaseComponent::SetFightMode(bool NewMode)
 		return;
 	}
 	bIsFightMode = NewMode;
-
-	const std::shared_ptr<FTimerManager>& TimerManager = GEngine->GetTimerManager();
-	//TimerManager->ClearTimer(FindEnemyHandle);
-
-	// 전투중일땐 0.25f마다 적을 찾고 평시 모드일땐 1.0f 마다 적을 찾음
-	const float RepeatTime = bIsFightMode ? EnemyFindTime_OnFight : EnemyFindTime_NoFight;
-	TimerManager->SetTimer(FindEnemyHandle,Delegate{ this, &UCombatBaseComponent::FindNearbyEnemy},0.5f,true,RepeatTime);
 }
 
-void UCombatBaseComponent::FindNearbyEnemy()
+bool UCombatBaseComponent::FindNearbyEnemy(const XMFLOAT3& SpherePos, float EnemyFindRadius,const std::vector<AActor*>& IgnoreActors , std::vector<AActor*>& OverlapActors)
 {
-	XMFLOAT3 SpherePos = OwnerCharacter->GetActorLocation();
-	std::vector<AActor*> OverlapActors;
 	GPhysicsEngine->SphereOverlapComponents(SpherePos, EnemyFindRadius, {ECollisionChannel::Enemy}, {}, OverlapActors);
-	MY_LOG("LOG", EDebugLogLevel::DLL_Error, std::to_string(OverlapActors.size()));
 
-	SetFightMode(!OverlapActors.empty());
+	return OverlapActors.size() > 0;
+}
 
+AActor* UCombatBaseComponent::FindNearestEnemy(const XMFLOAT3& SpherePos, float EnemyFindRadius, const std::vector<AActor*>& IgnoreActors)
+{
+	std::vector<AActor*> OverlapEnemies;
+	if (FindNearbyEnemy(SpherePos, EnemyFindRadius, IgnoreActors, OverlapEnemies))
+	{
+		float MinDistance = FLT_MAX;
+		AActor* NearestEnemy = nullptr;
+
+		for (AActor* Enemy : OverlapEnemies)
+		{
+			float CurrentDistance = MyMath::GetDistance(SpherePos, Enemy->GetActorLocation());
+			if (MinDistance > CurrentDistance)
+			{
+				MinDistance = CurrentDistance;
+				NearestEnemy = Enemy;
+			}
+		}
+
+		return NearestEnemy;
+	}
+	else
+	{
+		return nullptr;
+	}
+
+}
+
+float UCombatBaseComponent::GetBasicAttackMoveDistance(size_t Index)
+{
+	if (Index < 0 || Index >= BasicAttackMoveDistance.size())
+	{
+		MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Error, "Wrong index");
+		return 100;
+	}
+
+	return BasicAttackMoveDistance[Index];
+}
+
+const std::shared_ptr<UAnimMontage>& UCombatBaseComponent::GetBasicAttackMontage(size_t Index)
+{
+	if (Index < 0 || Index >= BasicAttackMontages.size())
+	{
+		MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Error, "Wrong index");
+		Index = 0;
+	}
+	return BasicAttackMontages[Index];
 }

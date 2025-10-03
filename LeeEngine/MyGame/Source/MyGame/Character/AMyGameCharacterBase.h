@@ -34,6 +34,7 @@ class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
 	void WheelUp();
 	void WheelDown();
 
+	const std::shared_ptr<UCombatBaseComponent>& GetCombatComponent() const {return CombatComponent;}
 
 private:
 	bool bRightButtonPressed = false;

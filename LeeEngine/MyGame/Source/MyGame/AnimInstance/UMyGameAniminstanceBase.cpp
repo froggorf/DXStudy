@@ -24,6 +24,14 @@ void UMyGameAnimInstanceBase::Register()
 
 }
 
+void UMyGameAnimInstanceBase::SetAnimNotify_BeginPlay()
+{
+	UAnimInstance::SetAnimNotify_BeginPlay();
+
+	NotifyEvent["MotionWarpingEnd"] = Delegate<>{};
+	NotifyEvent["MotionWarpingEnd"].Add(static_cast<UMyGameAnimInstanceBase*>(this), &UMyGameAnimInstanceBase::EndMotionWarping);
+}
+
 void UMyGameAnimInstanceBase::BeginPlay()
 {
 	UAnimInstance::BeginPlay();
@@ -48,6 +56,19 @@ void UMyGameAnimInstanceBase::NativeUpdateAnimation(float DeltaSeconds)
 {
 	UAnimInstance::NativeUpdateAnimation(DeltaSeconds);
 
+}
+
+XMFLOAT3 UMyGameAnimInstanceBase::GetWarpingPositionToEnemy(const XMFLOAT3& CurActorLocation, XMFLOAT3& EnemyLocation, float MaxMoveDistance)
+{
+	// y좌표 이동을 제어하기위해
+	EnemyLocation.y = CurActorLocation.y;
+
+	float ToEnemyDistance = MyMath::GetDistance(CurActorLocation, EnemyLocation);
+	XMFLOAT3 ToEnemyVector = MyMath::GetDirectionUnitVector(CurActorLocation, EnemyLocation);
+
+	// 적군의 길이 30 -> 적의 위치까지 가려다가 충돌체크가 이상하게 되는 경우를 방지하기 위해 약간의 갭을 두고 이동
+	// std::min(max(ToEnemyDistance - 30, 0), MaxMoveDistance) -> 이동할 수 있는 거리와 적군 앞까지의 거리중 작은것을 선택
+	return CurActorLocation + ToEnemyVector * std::min(max(ToEnemyDistance - 30, 0), MaxMoveDistance);
 }
 
 void UMyGameAnimInstanceBase::EndMotionWarping()
@@ -110,5 +131,38 @@ void UMyGameAnimInstanceBase::UpdateAnimation(float dt)
 		std::string SlotName = "DefaultSlot";
 		PlayMontage(SlotName, FinalBoneMatrices, FinalNotifies);
 	}
+}
+
+void UMyGameAnimInstanceBase::SetWarping_BasicAttack(size_t BasicAttackComboIndex, const XMFLOAT3& IfNoEnemyWarpingDirectionUnitVector)
+{
+	if (!SetMotionWarping())
+	{
+		return;
+	}
+	const std::shared_ptr<UMotionWarpingComponent>& MotionWarpingComp = MyGameCharacter->GetMotionWarpingComponent();
+	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
+	if (!MotionWarpingComp || !CombatComp)
+	{
+		return;
+	}
+
+	XMFLOAT3 CurActorLocation = MyGameCharacter->GetActorLocation();
+	float MoveDistance = CombatComp->GetBasicAttackMoveDistance(BasicAttackComboIndex);
+	float MoveTime = CombatComp->GetBasicAttackMontage(BasicAttackComboIndex)->GetPlayLength();
+
+	XMFLOAT3 WarpingTargetPos;
+	if (const AActor* NearestEnemy = CombatComp->FindNearestEnemy(CurActorLocation, MoveDistance+100, {}))
+	{
+		XMFLOAT3 EnemyLocation = NearestEnemy->GetActorLocation();
+		WarpingTargetPos = GetWarpingPositionToEnemy(CurActorLocation, EnemyLocation, MoveDistance);
+		
+		MyGameCharacter->SetActorRotation(MyMath::GetRotationQuaternionToActor(CurActorLocation, EnemyLocation));
+	}
+	else
+	{
+		WarpingTargetPos = CurActorLocation + IfNoEnemyWarpingDirectionUnitVector * MoveDistance;
+	}
+
+	MotionWarpingComp->SetTargetLocation(WarpingTargetPos, MoveTime);
 }
 
