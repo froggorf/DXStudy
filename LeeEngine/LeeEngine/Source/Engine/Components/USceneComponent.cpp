@@ -73,12 +73,17 @@ void USceneComponent::SetupAttachment(const std::shared_ptr<USceneComponent>& In
 
 	SetAttachParent(InParent);
 	SetAttachSocketName(InSocketName);
-	const std::vector<std::shared_ptr<USceneComponent>>& ParentAttachChildren = InParent->AttachChildren;
-	std::shared_ptr<USceneComponent>                     thisPtr              = shared_from_this(); // std::enable_shared_from_this<USceneComponent>
-	if (std::find(AttachChildren.begin(), AttachChildren.end(), thisPtr) == AttachChildren.end())
+	std::vector<std::shared_ptr<USceneComponent>>& ParentAttachChildren = InParent->AttachChildren;
+	std::shared_ptr<USceneComponent> ThisPtr = shared_from_this();
+	if (!ThisPtr)
 	{
-		thisPtr->SetOwner(InParent->GetOwner());
-		InParent->AttachChildren.push_back(thisPtr);
+		return; 
+	}
+
+	if (std::find(AttachChildren.begin(), AttachChildren.end(), ThisPtr) == AttachChildren.end())
+	{
+		ThisPtr->SetOwner(InParent->GetOwner());
+		ParentAttachChildren.emplace_back(ThisPtr);
 	}
 
 	UpdateComponentToWorld();
@@ -189,6 +194,17 @@ XMFLOAT3 USceneComponent::GetForwardVector()
 	XMFLOAT3 ComponentFrontVector;
 	XMStoreFloat3(&ComponentFrontVector,ComponentFront);
 	return ComponentFrontVector;
+}
+
+void USceneComponent::SetVisibility(bool NewVisible)
+{
+	if (bIsVisibility == NewVisible)
+	{
+		return;
+	}
+
+	bIsVisibility = NewVisible;
+	FScene::ChangeComponentVisibility_GameThread(GetPrimitiveID(), bIsVisibility);
 }
 
 #ifdef WITH_EDITOR

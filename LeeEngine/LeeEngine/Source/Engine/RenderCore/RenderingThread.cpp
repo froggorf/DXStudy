@@ -748,23 +748,23 @@ static void DrawSceneProxies(const std::shared_ptr<FScene>& SceneData, const std
 		bool bIsBinding = false;
 		for (const auto& SceneProxy : SceneProxies)
 		{
-			if (SceneProxy.SceneProxy->IsSphereInCameraFrustum(&SceneData->GetViewMatrices().Frustum))
+			// !Visible 이거나 프러스텀 내에 없을 시 렌더링 x
+			if (!SceneProxy.SceneProxy->GetVisibility()
+				|| !SceneProxy.SceneProxy->IsSphereInCameraFrustum(&SceneData->GetViewMatrices().Frustum))
 			{
-				if (!bIsBinding)
-				{
-					SceneProxy.MaterialInterface->Binding();
-					bIsBinding = true;
-				}
-				// 머테리얼 파라미터 설정 (Material::Binding 내에서 기본 디폴트값이 매핑되며,
-				// MaterialInstance에서 오버라이드 한 파라미터만 세팅됨
-				SceneProxy.MaterialInterface->BindingMaterialInstanceUserParam();
-
-				
-
-				SceneProxy.SceneProxy->SetDSStateWithMonochrome();
-				SceneProxy.SceneProxy->Draw();	
+				continue;
 			}
 			
+			if (!bIsBinding)
+			{
+				SceneProxy.MaterialInterface->Binding();
+				bIsBinding = true;
+			}
+			// 머테리얼 파라미터 설정 (Material::Binding 내에서 기본 디폴트값이 매핑되며,
+			// MaterialInstance에서 오버라이드 한 파라미터만 세팅됨
+			SceneProxy.MaterialInterface->BindingMaterialInstanceUserParam();
+			SceneProxy.SceneProxy->SetDSStateWithMonochrome();
+			SceneProxy.SceneProxy->Draw();	
 		}
 	}
 }
@@ -1277,6 +1277,14 @@ void FScene::SetComponentMonochrome_GameThread(UINT PrimitiveID, bool NewMonochr
 	FRenderCommandPipe::Enqueue(Func);
 }
 
+void FScene::ChangeComponentVisibility_GameThread(UINT PrimitiveID, bool NewVisible)
+{
+	ENQUEUE_RENDER_COMMAND(([PrimitiveID, NewVisible](std::shared_ptr<FScene>& Scene)
+	{
+			Scene->ChangeComponentVisibility_RenderThread(PrimitiveID, NewVisible);
+	}));
+}
+
 static void SetComponentMonochrome(const std::unordered_map<UINT, std::vector<FPrimitiveRenderData>>& Proxies, UINT PrimitiveID, bool NewMonochrome)
 {
 	for (auto Iter = Proxies.begin(); Iter != Proxies.end(); ++Iter)
@@ -1298,6 +1306,30 @@ void FScene::SetComponentMonochrome_RenderThread(UINT PrimitiveID, bool NewMonoc
 	SetComponentMonochrome(MaskedSceneProxyRenderData, PrimitiveID, NewMonochrome);
 	SetComponentMonochrome(TranslucentSceneProxyRenderData, PrimitiveID, NewMonochrome);
 	SetComponentMonochrome(DeferredSceneProxyRenderData, PrimitiveID, NewMonochrome);
+}
+
+static void SetPrimitiveVisibility(const std::unordered_map<UINT, std::vector<FPrimitiveRenderData>>& Proxies, UINT PrimitiveID, bool NewVisible)
+{
+	for (auto Iter = Proxies.begin(); Iter != Proxies.end(); ++Iter)
+	{
+		for (auto PrimitiveIter = Iter->second.begin(); PrimitiveIter != Iter->second.end();)
+		{
+			PrimitiveIter = std::find_if(PrimitiveIter, Iter->second.end(), [PrimitiveID](const FPrimitiveRenderData& A) { return A.PrimitiveID == PrimitiveID; });
+			if (PrimitiveIter != Iter->second.end())
+			{
+				PrimitiveIter->SceneProxy->SetVisibility(NewVisible);
+				++PrimitiveIter;
+			}
+		}
+	}
+}
+
+void FScene::ChangeComponentVisibility_RenderThread(UINT PrimitiveID, bool NewVisible)
+{
+	SetPrimitiveVisibility(OpaqueSceneProxyRenderData, PrimitiveID, NewVisible);
+	SetPrimitiveVisibility(MaskedSceneProxyRenderData, PrimitiveID, NewVisible);
+	SetPrimitiveVisibility(TranslucentSceneProxyRenderData, PrimitiveID, NewVisible);
+	SetPrimitiveVisibility(DeferredSceneProxyRenderData, PrimitiveID, NewVisible);
 }
 
 

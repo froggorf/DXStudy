@@ -4,11 +4,11 @@
 	"Skeleton": "SK_UE5MM",
 	"BlendIn" : {
 		"CurveName" : "CustomCurve",
-		"BlendTime" : 0.1
+		"BlendTime" : 0.2
 	},
 	"BlendOut" : {
 		"CurveName" : "CustomCurve",
-		"BlendTime" : 0.1
+		"BlendTime" : 0.2
 	},
 
 	"SlotName": "DefaultSlot",
@@ -22,10 +22,10 @@
 		{ "NotifyClass" : "UAnimNotify_MotionWarpingStart", "TriggerTime" : 2, "WarpingName" : "SH_Attack4_Float" },
 		{ "NotifyClass" : "UAnimNotify_MotionWarpingEnd", "TriggerTime" : 20},
 	
-		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 6, "EventName": "Hide"},
-		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 13, "EventName" : "Show"},
+		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 3, "EventName": "Hide"},
+		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 9, "EventName" : "Show"},
 
-		{ "NotifyClass" : "UAnimNotify_MotionWarpingStart", "TriggerTime" : 22, "WarpingName" : "SH_Attack4_Attack" },
+		{ "NotifyClass" : "UAnimNotify_MotionWarpingStart", "TriggerTime" : 30, "WarpingName" : "SH_Attack4_Attack" },
 		{ "NotifyClass" : "UAnimNotify_MotionWarpingEnd", "TriggerTime" : 58}
   	  ]
 }

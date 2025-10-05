@@ -110,15 +110,13 @@ protected:
 	// 컨트롤러의 Rotation
 	XMFLOAT4 ControlRotation;
 
-
-	std::shared_ptr<USpringArmComponent> SpringArm;
-
 	std::shared_ptr<UCapsuleComponent> CapsuleComp;
 	std::shared_ptr<UStaticMeshComponent> QueryCheckCapsuleComp;
 
 	std::shared_ptr<USkeletalMeshComponent> SkeletalMeshComponent;
 
 	std::shared_ptr<UCameraComponent> CameraComp;
+	std::shared_ptr<USpringArmComponent> SpringArm;
 private:
 	float Radius;
 	float HalfHeight;

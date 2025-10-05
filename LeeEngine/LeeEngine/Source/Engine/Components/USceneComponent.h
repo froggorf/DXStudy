@@ -100,6 +100,8 @@ class USceneComponent : public UActorComponent, public std::enable_shared_from_t
 
 	XMFLOAT3 GetForwardVector();
 
+	void SetVisibility(bool NewVisible);
+
 #ifdef WITH_EDITOR
 	void DrawDetailPanel(UINT ComponentDepth) override;
 #endif
@@ -116,6 +118,8 @@ private:
 protected:
 	bool bIsPrimitive = false;
 	UINT PrimitiveID  = -1;
+
+	bool bIsVisibility = true;
 
 private:
 	// Relative Transform

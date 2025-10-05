@@ -55,16 +55,15 @@ void USanhwaAnimInstance::SetAnimNotify_BeginPlay()
 	Delegate<> HideDelegate;
 	HideDelegate.Add([this]()
 		{
-			//this->SetSkeletalMeshVisibility(false);
-			MY_LOG("Hide", EDebugLogLevel::DLL_Warning, "HIDEHIDEHIDE");
+			this->SetSkeletalMeshVisibility(false);
+			
 		});
 	NotifyEvent["Hide"] = HideDelegate;
 
 	Delegate<> ShowDelegate;
 	ShowDelegate.Add([this]()
 		{
-			//this->SetSkeletalMeshVisibility(true);
-			MY_LOG("Show", EDebugLogLevel::DLL_Warning, "SHOWSHOWSHOW");
+			this->SetSkeletalMeshVisibility(true);
 		});
 	NotifyEvent["Show"] = ShowDelegate;
 }
@@ -168,7 +167,7 @@ void USanhwaAnimInstance::SetSkeletalMeshVisibility(bool NewVisibility)
 	USkeletalMeshComponent* SkeletalMesh = GetSkeletalMeshComponent();
 	if (SkeletalMesh)
 	{
-		//SkeletalMesh->
+		SkeletalMesh->SetVisibility(NewVisibility);
 	}
 }
 

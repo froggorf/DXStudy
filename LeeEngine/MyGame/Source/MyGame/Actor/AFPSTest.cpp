@@ -67,13 +67,13 @@ void AFPSTest::Tick(float DeltaSeconds)
 	}
 
 	MoveTime += DeltaSeconds;
-	if (0<=MoveTime && MoveTime <= 2.0f)
+	if (0<=MoveTime && MoveTime <= 3.0f)
 	{
-		SetActorLocation(MyMath::Lerp({100,100,100}, {600,100,100}, MoveTime/2));
+		SetActorLocation(MyMath::Lerp({100,100,100}, {1000,100,100}, MoveTime/3));
 	}
-	else if (2.0f <= MoveTime && MoveTime <= 4.0f)
+	else if (3.0f <= MoveTime && MoveTime <= 6.0f)
 	{
-		SetActorLocation(MyMath::Lerp({600,100,100}, {100,100,100}, (MoveTime-2.0f)/2));
+		SetActorLocation(MyMath::Lerp({1000,100,100}, {100,100,100}, (MoveTime-3.0f)/3));
 	}
 	else
 	{

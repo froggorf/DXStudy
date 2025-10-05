@@ -307,7 +307,6 @@ void ACharacter::HandleRootMotion(const XMMATRIX& Root)
 
 	if (LastPlayingAnimMontage != CurPlayingAnimMontage || LastUpdateTime + 0.25f < GEngine->GetTimeSeconds())
 	{
-		MY_LOG("New ANimMontage",EDebugLogLevel::DLL_Error, "~~~~~~~~~~~~~~");
 		LastPlayingAnimMontage = CurPlayingAnimMontage;
 		PreviousRootMatrix = Root;
 		LastUpdateTime = GEngine->GetTimeSeconds();
@@ -320,7 +319,6 @@ void ACharacter::HandleRootMotion(const XMMATRIX& Root)
 		DeltaMatrix.r[3].m128_f32[1], 
 		DeltaMatrix.r[3].m128_f32[2]
 	};
-	MY_LOG("Delta",EDebugLogLevel::DLL_Warning, XMFLOAT3_TO_TEXT(RawDelta));
 	XMVECTOR DeltaPos = XMVectorSet(RawDelta.x, RawDelta.y, -RawDelta.z, 0.0f);
 
 	XMFLOAT3 ConvertedDelta;

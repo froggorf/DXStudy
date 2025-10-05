@@ -66,10 +66,13 @@ public:
 	virtual bool IsSkeletalMesh() const {return false;}
 
 	void SetIsMonochrome(bool NewMonochrome) {bIsMonochromeObject = NewMonochrome;}
-
+	void SetVisibility(bool NewVisible) {bIsVisible = NewVisible;}
+	bool GetVisibility() const {return bIsVisible;}
 protected:
 	UINT PrimitiveID;
 	UINT MeshIndex;
+
+	bool bIsVisible = true;
 	// 머테리얼 정보
 	std::shared_ptr<UMaterialInterface> MaterialInterface;
 

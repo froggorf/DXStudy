@@ -55,10 +55,10 @@ private:
 };
 
 #define ENQUEUE_RENDER_COMMAND(Lambda) \
-	{\
-	std::function<void(std::shared_ptr<FScene>&)> temp = Lambda;\
-		FRenderCommandPipe::Enqueue(temp);\
-	}
+    { \
+        std::function<void(std::shared_ptr<FScene>&)> temp = (Lambda); \
+        FRenderCommandPipe::Enqueue(temp); \
+    }
 
 inline std::atomic<bool> bIsGameKill               = false;
 inline std::atomic<UINT> RenderingThreadFrameCount = 0;
@@ -278,8 +278,11 @@ public:
 	static void RemovePostProcess_GameThread(UINT Priority, const std::string& Name);
 
 	static void SetComponentMonochrome_GameThread(UINT PrimitiveID, bool NewMonochrome);
-	void SetComponentMonochrome_RenderThread(UINT PrimitiveID, bool NewMonochrome);
+
+	static void ChangeComponentVisibility_GameThread(UINT PrimitiveID, bool NewVisible);
 private:
+	void SetComponentMonochrome_RenderThread(UINT PrimitiveID, bool NewMonochrome);
+	void ChangeComponentVisibility_RenderThread(UINT PrimitiveID, bool NewVisible);
 	void AddPostProcess_RenderThread(const FPostProcessRenderData& NewPostProcess)
 	{
 		PostProcessData.insert(NewPostProcess);
