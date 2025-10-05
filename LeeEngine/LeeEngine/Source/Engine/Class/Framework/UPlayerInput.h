@@ -104,6 +104,15 @@ public:
     }
 
     template<typename T>
+    void BindAction(EKeys Key, ETriggerEvent TriggerEvent, T* Object, bool (T::*Func)())
+    {
+        BindEvents[{Key, TriggerEvent}] = [Object, Func]()
+            {
+                (Object->*Func)();
+            };
+    }
+
+    template<typename T>
     void BindAxis(EKeys Key, ETriggerEvent TriggerEvent, float Val, T* Object, void (T::*Func)(float))
     {
         BindEvents[{Key, TriggerEvent}] = [Object, Func, Val]()

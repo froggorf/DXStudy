@@ -24,6 +24,16 @@ void UCombatBaseComponent::Initialize(AMyGameCharacterBase* MyCharacter)
 
 void UCombatBaseComponent::BasicAttack()
 {
+	// 로드가 안됐 을 경우 기본공격 막기
+	for (size_t i = 0; i < BasicAttackMontages.size(); ++i)
+	{
+		if (!BasicAttackMontages[i])
+		{
+			MY_LOG("No Resource" , EDebugLogLevel::DLL_Warning, GetFunctionName + "-> No Montage Yet");
+			return;
+		}
+	}
+
 	if (bIsBasicAttacking)
 	{
 		LastBasicAttackClickedTime = GEngine->GetTimeSeconds();

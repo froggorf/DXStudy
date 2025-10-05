@@ -9,6 +9,11 @@ FTimerHandle::FTimerHandle()
 
 void FTimerManager::Tick(float DeltaSeconds)
 {
+	if (Timers.empty())
+	{
+		return;
+	}
+
 	std::vector<FTimerHandle> RemoveHandles;
 	for (auto& Timer : Timers)
 	{
@@ -33,7 +38,7 @@ void FTimerManager::Tick(float DeltaSeconds)
 
 	for (const FTimerHandle& RemoveHandle : RemoveHandles)
 	{
-		ClearTimer(RemoveHandle);
+		RemoveTimer(RemoveHandle);
 	}
 }
 
@@ -47,11 +52,24 @@ void FTimerManager::SetTimer(const FTimerHandle& TimerHandle, const Delegate<>& 
 	Timers.emplace(TimerHandle, TimerData);
 }
 
-void FTimerManager::ClearTimer(const FTimerHandle& DeleteTimerHandle)
+void FTimerManager::ClearTimer(const FTimerHandle& ClearTimerHandle)
 {
-	auto DeleteIter = Timers.find(DeleteTimerHandle);
+	// Timer의 repeat 를 false로 만들고
+	// ::Tick 에서 제거되도록 유도
+	auto ClearIter = Timers.find(ClearTimerHandle);
+	if (ClearIter != Timers.end())
+	{
+		FTimerData& Data = ClearIter->second;
+		Data.bRepeat = false;
+	}
+}
+
+void FTimerManager::RemoveTimer(const FTimerHandle& RemoveTimerHandle)
+{
+	auto DeleteIter = Timers.find(RemoveTimerHandle);
 	if (DeleteIter != Timers.end())
 	{
 		Timers.erase(DeleteIter);
 	}
 }
+

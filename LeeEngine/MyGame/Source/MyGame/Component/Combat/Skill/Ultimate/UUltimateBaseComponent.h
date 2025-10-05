@@ -16,7 +16,7 @@ class UUltimateBaseComponent : public USkillBaseComponent
 public:
 	// AMyGameCharacterBase 내에서 Register 에 호출됨
 	// 초기 세팅
-	void Skill() override;
+	bool Skill() override;
 	void BindKeyInputs(const std::shared_ptr<UPlayerInput>& InputSystem) override;
 
 };

@@ -9,10 +9,11 @@ UUltimateBaseComponent::UUltimateBaseComponent()
 }
 
 
-void UUltimateBaseComponent::Skill()
+bool UUltimateBaseComponent::Skill()
 {
 
 	MY_LOG("Use Skill - ",EDebugLogLevel::DLL_Warning, "UltimateUltimateUltimateUltimateUltimateUltimate");
+	return false;
 }
 
 void UUltimateBaseComponent::BindKeyInputs(const std::shared_ptr<UPlayerInput>& InputSystem)

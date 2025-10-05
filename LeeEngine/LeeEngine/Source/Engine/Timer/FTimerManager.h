@@ -41,8 +41,9 @@ public:
 
 	void SetTimer(const FTimerHandle& TimerHandle, const Delegate<>& TimerDelegate, float DelayTime, bool bRepeat = false, float RepeatTime = 1.0f);
 
-	void ClearTimer(const FTimerHandle& DeleteTimerHandle);
+	void ClearTimer(const FTimerHandle& ClearTimerHandle);
 protected:
+	void RemoveTimer(const FTimerHandle& RemoveTimerHandle);
 private:
 	std::map<FTimerHandle, FTimerData> Timers;
 };
