@@ -85,7 +85,7 @@ void UCombatBaseComponent::SetBasicAttackMontages(const std::vector<std::string>
 			if (!BasicAttackMontages[Index])
 			{
 				MY_LOG("Warning", EDebugLogLevel::DLL_Error, GetFunctionName + ", BasicAttackMontages (Index) Montage Not exist - "+ std::to_string(Index));
-#ifdef WITH_EDITOR
+#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
 				// 개발 중 테스트를 위하여 assert
 				assert(nullptr&&"Not exist BasicAttackMontages");
 #endif

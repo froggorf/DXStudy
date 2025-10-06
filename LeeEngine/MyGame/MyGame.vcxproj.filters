@@ -83,6 +83,9 @@
     <Filter Include="Source\MyGame\Component\MotionWarping">
       <UniqueIdentifier>{00006074-5154-4845-a04b-a59d99281038}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\Component\Combat\Skill\NormalSkill\Sanhwa">
+      <UniqueIdentifier>{90fd65f6-d615-4254-9920-4f9e728bf781}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -151,6 +154,9 @@
     <ClCompile Include="Source\MyGame\Component\MotionWarping\UMotionWarpingComponent.cpp">
       <Filter>Source\MyGame\Component\MotionWarping</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Component\Combat\Skill\NormalSkill\SanHwa\USanhwaSkillComponent.cpp">
+      <Filter>Source\MyGame\Component\Combat\Skill\NormalSkill\Sanhwa</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -215,6 +221,9 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Component\MotionWarping\UMotionWarpingComponent.h">
       <Filter>Source\MyGame\Component\MotionWarping</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Component\Combat\Skill\NormalSkill\SanHwa\USanhwaSkillComponent.h">
+      <Filter>Source\MyGame\Component\Combat\Skill\NormalSkill\Sanhwa</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

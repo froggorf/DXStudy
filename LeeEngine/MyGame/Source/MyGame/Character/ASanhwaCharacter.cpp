@@ -2,6 +2,7 @@
 #include "ASanhwaCharacter.h"
 
 #include "MyGame/Component/Combat/Melee/USanhwaCombatComponent.h"
+#include "MyGame/Component/Combat/Skill/NormalSkill/SanHwa/USanhwaSkillComponent.h"
 
 ASanhwaCharacter::ASanhwaCharacter()
 {
@@ -15,7 +16,7 @@ ASanhwaCharacter::ASanhwaCharacter()
 
 	CombatComponent = std::dynamic_pointer_cast<USanhwaCombatComponent>(CreateDefaultSubobject("SanhwaCombatComp", "USanhwaCombatComponent"));
 	// TODO : 산화의 타입으로 변경해주기
-	SkillComponent = std::make_shared<USkillBaseComponent>();
+	SkillComponent = std::make_shared<USanhwaSkillComponent>();
 	UltimateComponent = std::make_shared<UUltimateBaseComponent>();
 }
 

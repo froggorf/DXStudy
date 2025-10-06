@@ -52,6 +52,7 @@ class UAnimInstance : public UObject
 	const std::array<XMMATRIX,MAX_BONES>& GetLastFrameAnimMatrices() const {return LastFrameAnimMatrices;}
 
 	std::vector<FBoneLocalTransform> GetInitialLocalBoneTransforms() const;
+	bool IsPlayingMontage() const {return bPlayRootMotion;}
 protected:
 	// 현재 애님 인스턴스의 리소스가 모두 정상적으로 존재하는지 체크하는 함수
 	virtual bool IsAllResourceOK();

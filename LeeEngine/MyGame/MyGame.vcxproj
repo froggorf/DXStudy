@@ -32,6 +32,7 @@
     <ClCompile Include="Source\MyGame\Character\ASanhwaCharacter.cpp" />
     <ClCompile Include="Source\MyGame\Component\Combat\Melee\UMeleeBaseComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\Combat\Melee\USanhwaCombatComponent.cpp" />
+    <ClCompile Include="Source\MyGame\Component\Combat\Skill\NormalSkill\SanHwa\USanhwaSkillComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\Combat\Skill\NormalSkill\USkillBaseComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\Combat\Skill\Ultimate\UUltimateBaseComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\Combat\UCombatBaseComponent.cpp" />
@@ -55,6 +56,7 @@
     <ClInclude Include="Source\MyGame\Character\ASanhwaCharacter.h" />
     <ClInclude Include="Source\MyGame\Component\Combat\Melee\UMeleeBaseComponent.h" />
     <ClInclude Include="Source\MyGame\Component\Combat\Melee\USanhwaCombatComponent.h" />
+    <ClInclude Include="Source\MyGame\Component\Combat\Skill\NormalSkill\SanHwa\USanhwaSkillComponent.h" />
     <ClInclude Include="Source\MyGame\Component\Combat\Skill\NormalSkill\USkillBaseComponent.h" />
     <ClInclude Include="Source\MyGame\Component\Combat\Skill\Ultimate\UUltimateBaseComponent.h" />
     <ClInclude Include="Source\MyGame\Component\Combat\UCombatBaseComponent.h" />

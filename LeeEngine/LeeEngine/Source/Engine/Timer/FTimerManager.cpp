@@ -1,6 +1,8 @@
 #include "CoreMinimal.h"
 #include "FTimerManager.h"
 
+#include "Engine/RenderCore/EditorScene.h"
+
 std::atomic<UINT> TimerCount = 0;
 FTimerHandle::FTimerHandle()
 {
@@ -44,6 +46,11 @@ void FTimerManager::Tick(float DeltaSeconds)
 
 void FTimerManager::SetTimer(const FTimerHandle& TimerHandle, const Delegate<>& TimerDelegate, float DelayTime, bool bRepeat, float RepeatTime)
 {
+	if (Timers.contains(TimerHandle))
+	{
+		MY_LOG("SetTimer", EDebugLogLevel::DLL_Warning, std::to_string(TimerHandle.TimerID) + " Timer already on setting");
+		return;
+	}
 	FTimerData TimerData;
 	TimerData.Delegate = TimerDelegate;
 	TimerData.CurTime = DelayTime;

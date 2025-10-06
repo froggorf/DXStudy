@@ -8,15 +8,12 @@ UUltimateBaseComponent::UUltimateBaseComponent()
 {
 }
 
-
-bool UUltimateBaseComponent::Skill()
+void UUltimateBaseComponent::TrySkill()
 {
-
-	MY_LOG("Use Skill - ",EDebugLogLevel::DLL_Warning, "UltimateUltimateUltimateUltimateUltimateUltimate");
-	return false;
+	MY_LOG(GetName(),EDebugLogLevel::DLL_Warning, GetFunctionName);
 }
 
 void UUltimateBaseComponent::BindKeyInputs(const std::shared_ptr<UPlayerInput>& InputSystem)
 {
-	InputSystem->BindAction(EKeys::Q, ETriggerEvent::Started, this, &UUltimateBaseComponent::Skill);
+	InputSystem->BindAction(EKeys::Q, ETriggerEvent::Started, this, &UUltimateBaseComponent::TrySkill);
 }
