@@ -20,8 +20,18 @@ struct FSlot
 	XMFLOAT4 GetRect() const { return {GetLeft(), GetTop(), GetRight(), GetBottom()}; }
 
 	void SetParentSize(const XMFLOAT2& InParentSize) { ParentSize = InParentSize; }
+
+	void SetParentRect(float Left, float Top, float Right, float Bottom)
+	{
+		ParentLeftTop = {Left,Top};
+		ParentRightBottom = {Right, Bottom};
+
+	}
 protected:
 	XMFLOAT2 ParentSize = {0,0};
+
+	XMFLOAT2 ParentLeftTop {};
+	XMFLOAT2 ParentRightBottom {};
 };
 
 enum class ECanvasAnchor{
@@ -50,7 +60,7 @@ struct FCanvasSlot : FSlot
 	
 	int ZOrder;
 
-
+protected:
 };
 
 enum class EHorizontalAlignment
@@ -66,22 +76,12 @@ struct FBoxSlot : FSlot{
 	float FillSize = 0.0f;    // 0.0f -> Auto, 그 외 : Fill{x}
 	float GetFillSize() const {return FillSize;}
 
-	
-
 	EHorizontalAlignment HorizontalAlignment = EHorizontalAlignment::Wrap;
 	EVerticalAlignment VerticalAlignment = EVerticalAlignment::Wrap;
-
-	void SetPosition(float Left, float Top, float Right, float Bottom)
-	{
-		LeftTop = {Left,Top};
-		RightBottom = {Right, Bottom};
-	}
 
 	void SetHorizontalPadding(const XMFLOAT2& NewPadding) {HorizontalPadding= NewPadding;}
 	void SetVerticalPadding(const XMFLOAT2& NewPadding) {VerticalPadding= NewPadding;}
 protected:
-	XMFLOAT2 LeftTop {};
-	XMFLOAT2 RightBottom {};
 	XMFLOAT2 HorizontalPadding{};
 	XMFLOAT2 VerticalPadding{};
 };

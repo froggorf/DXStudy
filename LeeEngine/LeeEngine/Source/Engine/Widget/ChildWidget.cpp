@@ -189,6 +189,19 @@ void FPanelWidget::CollectAllWidgets(std::vector<std::shared_ptr<FChildWidget>>&
 
 void FCanvasWidget::Tick(float DeltaSeconds)
 {
+	const std::shared_ptr<FSlot> Slot = GetSlot();
+	
+	const float Left = Slot? Slot->GetLeft() : 0.0f;
+	const float Top = Slot? Slot->GetTop() : 0.0f;
+	const float Right = Slot? Slot->GetRight() : GetDesignResolution().x;
+	const float Bottom = Slot? Slot->GetBottom() : GetDesignResolution().y;
+	for (const std::shared_ptr<FChildWidget>& Child : AttachChildren)
+	{
+		Child->GetSlot()->SetParentRect(Left, Top, Right, Bottom);
+	}	
+	
+	
+
 	FPanelWidget::Tick(DeltaSeconds);
 }
 
@@ -265,7 +278,7 @@ void FHorizontalBoxWidget::CalculateChildrenSlots()
 		}
 
 		// 자식의 슬롯 위치를 조정해주면서
-		HorizontalBoxSlot->SetPosition(BoxLeft + CurrentX, BoxTop + 0.0f, BoxLeft + CurrentX+SlotWidth,BoxTop + BoxWidthHeight.y);
+		HorizontalBoxSlot->SetParentRect(BoxLeft + CurrentX, BoxTop + 0.0f, BoxLeft + CurrentX+SlotWidth,BoxTop + BoxWidthHeight.y);
 		// 만약 패널 위젯이면 사이즈를 인식시켜줘야함
 		if (const std::shared_ptr<FPanelWidget>& PanelWidget = std::dynamic_pointer_cast<FPanelWidget>(Child))
 		{
@@ -348,7 +361,7 @@ void FVerticalBoxWidget::CalculateChildrenSlots()
 			SlotHeight = AvailableHeight * (VerticalBoxSlot->GetFillSize() / TotalFillRatio);
 		}
 
-		VerticalBoxSlot->SetPosition(BoxLeft + 0.0f, BoxTop + CurrentY, BoxLeft + BoxWidthHeight.x,BoxTop + CurrentY + SlotHeight);
+		VerticalBoxSlot->SetParentRect(BoxLeft + 0.0f, BoxTop + CurrentY, BoxLeft + BoxWidthHeight.x,BoxTop + CurrentY + SlotHeight);
 		if (const std::shared_ptr<FPanelWidget>& PanelWidget = std::dynamic_pointer_cast<FPanelWidget>(Child))
 		{
 			PanelWidget->SetCurrentSize({VerticalBoxSlot->GetRight()-VerticalBoxSlot->GetLeft(), VerticalBoxSlot->GetBottom() - VerticalBoxSlot->GetTop()});
