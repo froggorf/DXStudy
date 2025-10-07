@@ -37,6 +37,7 @@ VS_OUT VS_Widget(VS_IN Input)
 	output.Position = float4(scaledPos, 1.0f);
 
 	output.UV = Input.UV;
+	output.UV.y = 1 - output.UV.y;
 
 	return output;
 }
@@ -45,6 +46,7 @@ float4 PS_Widget(VS_OUT _in) : SV_Target
 {
 	float4 OutColor = (float4) 0.f;
 	float4 TextureColor = UITexture.Sample(UISampler, _in.UV);
+	
 	OutColor = TextureColor * Tint;
 	return OutColor;
 }

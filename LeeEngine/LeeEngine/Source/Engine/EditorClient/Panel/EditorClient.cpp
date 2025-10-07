@@ -59,6 +59,8 @@ void FEditorClient::Draw()
 		ImGui::RenderPlatformWindowsDefault();
 	}
 
+	
+
 	// 0901) 해당 변수를 클래스 내에서 처리할 경우,
 	// Imgui 한 프레임이 끝나기 전에 뷰포트 리사이즈를 진행하게 될 경우 Imgui 프레임의 마지막 부에 렌더링을 진행하게 되는데
 	// 해당 리소스를 손실하게 되면서 리소스 누락이 발생해 프로그램이 터지게 됨

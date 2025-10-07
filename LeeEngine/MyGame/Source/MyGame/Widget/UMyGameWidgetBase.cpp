@@ -14,7 +14,7 @@ void UMyGameWidgetBase::NativeConstruct()
 	{
 		CanvasSlot->Anchors = ECanvasAnchor::RightBottom;
 		CanvasSlot->Alignment = {1.0f,1.0f};
-		CanvasSlot->Size = {600,600};
+		CanvasSlot->Size = {600,300};
 	}
 
 	// Skill
@@ -51,7 +51,7 @@ void UMyGameWidgetBase::NativeConstruct()
 			// ㄴ
 			{
 				static constexpr XMFLOAT2 SkillSize = {200,200};
-				SkillBackground = std::make_shared<FImageWidget>(FImageBrush{ UTexture::GetTextureCache("T_SkillBG"), XMFLOAT4{1.0f,1.0f, 1.0f,0.5f}});
+				SkillBackground = std::make_shared<FImageWidget>(FImageBrush{ UTexture::GetTextureCache(" T_SkillBG"), XMFLOAT4{1.0f,1.0f, 1.0f,1.0f}});
 				SkillBackground->AttachToWidget(SkillCanvasWidget);
 				if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(SkillBackground->GetSlot()))
 				{
@@ -61,7 +61,8 @@ void UMyGameWidgetBase::NativeConstruct()
 				}
 
 
-				SkillUIImage = std::make_shared<FImageWidget>(FImageBrush{ UTexture::GetTextureCache(GetSkillTextureName()), XMFLOAT4{1.0f,1.0f,1.0f,1.0f}});
+				//SkillUIImage = std::make_shared<FImageWidget>(FImageBrush{ UTexture::GetTextureCache(GetSkillTextureName()), XMFLOAT4{1.0f,1.0f,1.0f,0.1f}});
+				SkillUIImage = std::make_shared<FImageWidget>(FImageBrush{ UTexture::GetTextureCache("T_Icon_Sanhwa_BasicAttack"), XMFLOAT4{1.0f,1.0f,1.0f,1.0f}});
 				SkillUIImage->AttachToWidget(SkillCanvasWidget);
 				if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(SkillUIImage->GetSlot()))
 				{
@@ -101,6 +102,10 @@ void UMyGameWidgetBase::NativeConstruct()
 					CanvasSlot->Alignment = {0.5f, 0.5f};
 				}
 				SkillKeyText->SetText(L"E");
+				SkillKeyText->SetFontSize(50.0f);
+				SkillKeyText->SetFontColor({1.0f,1.0f,1.0f,1.0f});
+				SkillKeyText->SetHorizontalAlignment(ETextHorizontalAlignment::Center);
+				SkillKeyText->SetVerticalAlignment(ETextVerticalAlignment::Center);
 			}
 			
 

@@ -1093,16 +1093,15 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 			}
 		}
 
-		SceneData->SetDrawScenePipeline();
+		//SceneData->SetDrawScenePipeline();
 		// Draw UI
 		{
-			// 머테리얼 바인딩
-			SceneData->M_Widget->Binding();
 			for (const FWidgetRenderData& RenderData : SceneData->CurrentFrameWidgetRenderData)
 			{
 				// 텍스트 렌더링
 				if(!RenderData.TextData.empty())
 				{
+					GDirectXDevice->SetBSState(EBlendStateType::BST_Default);
 					const Microsoft::WRL::ComPtr<ID2D1DeviceContext> Text2DDeviceContext = GDirectXDevice->Get2DDeviceContext();
 					Text2DDeviceContext->BeginDraw();
 
@@ -1136,12 +1135,22 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				}
 				else
 				{
+					SceneData->M_Widget->Binding();
+					GDirectXDevice->SetBSState(EBlendStateType::BST_AlphaBlend);
 					// ConstantBuffer 바인딩
 					FWidgetConstantBuffer WCB{RenderData.Tint,RenderData.Left, RenderData.Top, RenderData.Width,RenderData.Height};
 					GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_Widget, &WCB, sizeof(WCB));
 
 					// 텍스쳐 바인딩
-					GDirectXDevice->GetDeviceContext()->PSSetShaderResources(0,1, RenderData.Texture->GetSRV().GetAddressOf());
+					if (RenderData.Texture)
+					{
+						GDirectXDevice->GetDeviceContext()->PSSetShaderResources(0,1, RenderData.Texture->GetSRV().GetAddressOf());
+					}
+					else
+					{
+						ID3D11ShaderResourceView* NullSRV = nullptr;
+						DeviceContext->PSSetShaderResources(0, 1, &NullSRV);
+					}
 
 					// 드로우
 					SceneData->WidgetStaticMeshSceneProxy->Draw();	

@@ -10,6 +10,6 @@ class USanhwaWidget : public UMyGameWidgetBase
 
 	std::string GetSkillTextureName() override  { return "T_Icon_Sanhwa_Skill";}
 	std::string GetBasicAttackTextureName() override { return "T_Icon_Sanhwa_BasicAttack";}
-	std::string GetUltimateAttackTextureName() override { return "T_Icon_Sanhwa_Ultimate";}
+	std::string GetUltimateTextureName() override { return "T_Icon_Sanhwa_Ultimate";}
 private:
 };

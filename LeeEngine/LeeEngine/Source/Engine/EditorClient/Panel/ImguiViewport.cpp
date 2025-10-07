@@ -26,6 +26,12 @@ void FImguiLevelViewport::Draw()
 	// Actor
 	if (ImGui::Begin("Place Actors", nullptr))
 	{
+		ImGui::Text("ERT");
+		if (const std::shared_ptr<UTexture>& RenderTexture = GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor_Main)->GetRenderTargetTexture(0))
+		{
+			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), {300,200});
+		}
+
 		ImGui::Text("ERT_HDR");
 		if (const std::shared_ptr<UTexture>& RenderTexture = GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor_HDR)->GetRenderTargetTexture(0))
 		{
@@ -97,7 +103,22 @@ void FImguiLevelViewport::Draw()
 
 		if (const std::shared_ptr<UTexture>& RenderTexture = GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor_Main)->GetRenderTargetTexture(0))
 		{
-			ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), ViewPortSize);	
+			ImDrawList* draw_list = ImGui::GetWindowDrawList();
+			draw_list->AddCallback([](const ImDrawList* parent_list, const ImDrawCmd* cmd) {
+				GDirectXDevice->SetBSStateAlways(EBlendStateType::BST_Default);
+				}, nullptr);
+
+			ImVec2 pos = ImGui::GetCursorScreenPos();
+			ImVec2 size = ViewPortSize;
+			ImVec2 pos_min = pos; 
+			ImVec2 pos_max = ImVec2(pos.x + size.x, pos.y + size.y);
+			draw_list->AddImage(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), pos_min, pos_max);
+
+			// 콜백 끝나고 원래 상태로 복귀
+			draw_list->AddCallback(ImDrawCallback_ResetRenderState, nullptr);
+
+
+			//ImGui::Image(reinterpret_cast<ImTextureID>(RenderTexture->GetSRV().Get()), ViewPortSize);	
 		}	
 		
 

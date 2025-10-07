@@ -12,7 +12,7 @@ class UMyGameWidgetBase : public UUserWidget
 
 	virtual std::string GetBasicAttackTextureName() { return ""; }
 	virtual std::string GetSkillTextureName() { return ""; }
-	virtual std::string GetUltimateAttackTextureName() {return ""; }
+	virtual std::string GetUltimateTextureName() {return ""; }
 private:
 
 	// =========================== Attack ===========================

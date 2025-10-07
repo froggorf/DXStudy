@@ -44,7 +44,7 @@ bool FDirect2DDevice::Initialize(const Microsoft::WRL::ComPtr<ID3D11Device>& D3D
 #ifdef WITH_EDITOR
 	pBackBuffer = GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Editor_Main)->GetRenderTargetTexture(0)->GetTexture();
 #else
-	pBackBuffer = GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain)->GetRenderTargetTexture(0)->GetTexture();
+	pBackBuffer = GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::SwapChain_Main)->GetRenderTargetTexture(0)->GetTexture();
 #endif
 
 	ComPtr<IDXGISurface> dxgiSurface;

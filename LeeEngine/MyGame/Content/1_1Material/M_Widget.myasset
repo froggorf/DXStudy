@@ -9,6 +9,6 @@
 	"FilePath" : "/Shader/Widget.fx",
 	"Func" : "PS_Widget"
     },
-    "BlendMode": "ForDeferredMerge",
-    "TwoSided" : 1
+    "BlendMode": "DD",
+    "TwoSided" : 0
 }

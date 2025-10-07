@@ -139,6 +139,7 @@ public:
 	void SetRSState(ERasterizerType InRSType);
 	void SetDSState(EDepthStencilStateType InDSType, UINT StencilRef = 0);
 	void SetBSState(EBlendStateType InBSType);
+	void SetBSStateAlways(EBlendStateType InBSType);
 	const std::shared_ptr<FMultiRenderTarget>& GetMultiRenderTarget(EMultiRenderTargetType	Type) { return MultiRenderTargets[(UINT)Type]; }
 	const std::shared_ptr<FMultiRenderTarget>& GetBloomMRT(UINT Index) { assert(Index < BloomCount); return MultiRenderTargets[static_cast<UINT>(EMultiRenderTargetType::Bloom_Blur_0) + Index];}
 	const std::shared_ptr<UTexture>& GetBloomPPTexture(UINT Index) { assert(Index < BloomCount); return T_BloomPostProcess[Index];}

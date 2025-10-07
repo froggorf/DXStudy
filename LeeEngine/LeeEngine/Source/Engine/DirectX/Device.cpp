@@ -470,6 +470,12 @@ void FDirectXDevice::SetBSState(EBlendStateType InBSType)
 	}
 }
 
+void FDirectXDevice::SetBSStateAlways(EBlendStateType InBSType)
+{
+	m_d3dDeviceContext->OMSetBlendState(m_BSState[static_cast<UINT>(InBSType)].Get(), nullptr, 0xffffffff);
+	CurrentBSType = EBlendStateType::BST_Count;
+}
+
 std::shared_ptr<UTexture> FDirectXDevice::GetHDRRenderTargetTexture()
 {
 #ifdef WITH_EDITOR
@@ -592,7 +598,6 @@ void FDirectXDevice::CreateDepthStencilState()
 
 	// NO_TEST_NO_WRITE
 	Desc.DepthEnable = false;
-	Desc.StencilEnable = false;
 	HR(m_d3dDevice->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(EDepthStencilStateType:: NO_TEST_NO_WRITE)].GetAddressOf()));
 
 	// VOLUE_CHECK
