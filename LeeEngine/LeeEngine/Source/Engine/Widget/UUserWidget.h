@@ -12,10 +12,7 @@ class UUserWidget : public UObject
 {
 	MY_GENERATE_BODY(UUserWidget)
 public:
-	UUserWidget()
-	{
-		OwnerWidget = std::make_shared<FCanvasWidget>();
-	}
+	UUserWidget();
 
 	virtual void Tick(float DeltaSeconds) ;
 
@@ -30,5 +27,5 @@ public:
 protected:
 	std::shared_ptr<FPanelWidget> OwnerWidget;
 
-	APlayerController* OwningPlayer;
+	APlayerController* OwningPlayer = nullptr;
 };

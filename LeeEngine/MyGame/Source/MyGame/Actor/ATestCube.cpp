@@ -1,7 +1,6 @@
 #include <CoreMinimal.h>
 
 #include "ATestCube.h"
-#include "../Widget/UMyTestWidget.h"
 #include "Engine/Components/UStaticMeshComponent.h"
 
 rcPolyMesh* ATestCube::MyPolyMesh;
@@ -135,13 +134,6 @@ ATestCube::ATestCube()
 void ATestCube::BeginPlay()
 {
 	AActor::BeginPlay();
-
-	if (APlayerController* PC = GetWorld()->GetPlayerController())
-	{
-		//std::shared_ptr<UMyTestWidget> MyTestWidget = std::make_shared<UMyTestWidget>();
-		//MyTestWidget->NativeConstruct();
-		//PC->CreateWidget("TestWidget", MyTestWidget);
-	}
 
 	TestCube2->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::Physics);
 	

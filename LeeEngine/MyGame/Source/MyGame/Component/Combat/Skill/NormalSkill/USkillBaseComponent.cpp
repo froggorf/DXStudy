@@ -102,6 +102,15 @@ void USkillBaseComponent::OnSkillBlendOut()
 
 bool USkillBaseComponent::CanUseSkill()
 {
+	for (size_t i = 0; i < SkillAnimMontages.size(); ++i)
+	{
+		if (!SkillAnimMontages[i])
+		{
+			MY_LOG("No Resource" , EDebugLogLevel::DLL_Warning, GetFunctionName + "-> No Montage Yet");
+			return false;
+		}
+	}
+
 	return CurrentCoolDownTime <= 0.0f && !bIsCurrentPlayingSkill;
 }
 
