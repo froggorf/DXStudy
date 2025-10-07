@@ -17,14 +17,98 @@ void UMyGameWidgetBase::NativeConstruct()
 		CanvasSlot->Size = {600,600};
 	}
 
-	SkillBoxSlot = std::make_shared<FVerticalBoxWidget>();
-	SkillBoxSlot->AttachToWidget(AttackBoxSlot);
-	if (const std::shared_ptr<FHorizontalBoxSlot>& HBSlot = std::dynamic_pointer_cast<FHorizontalBoxSlot>(SkillBoxSlot->GetSlot()))
+	// Skill
+	// ㄴ
 	{
-		HBSlot->FillSize = 1.0f;
-		HBSlot->HorizontalAlignment = EHorizontalAlignment::Wrap;
-		HBSlot->VerticalAlignment = EVerticalAlignment::Wrap;
+		//std::shared_ptr<FVerticalBoxWidget> SkillBoxSlot;
+		//std::shared_ptr<FCanvasWidget> SkillCanvasWidget;
+		//std::shared_ptr<FImageWidget> SkillUIImage;
+		//std::shared_ptr<FImageWidget> SkillCoolDownImage;
+		//std::shared_ptr<FImageWidget> SkillKeyGuideImage;
+		//std::shared_ptr<FTextWidget> SkillCoolDownText;
+		//std::shared_ptr<FTextWidget> SkillKeyText;
+
+		SkillBoxSlot = std::make_shared<FVerticalBoxWidget>();
+		SkillBoxSlot->AttachToWidget(AttackBoxSlot);
+		if (const std::shared_ptr<FHorizontalBoxSlot>& HBSlot = std::dynamic_pointer_cast<FHorizontalBoxSlot>(SkillBoxSlot->GetSlot()))
+		{
+			HBSlot->FillSize = 1.0f;
+			HBSlot->HorizontalAlignment = EHorizontalAlignment::Wrap;
+			HBSlot->VerticalAlignment = EVerticalAlignment::Wrap;
+		}
+
+		// ㄴ
+		{
+			SkillCanvasWidget = std::make_shared<FCanvasWidget>();
+			SkillCanvasWidget->AttachToWidget(SkillBoxSlot);
+			if (const std::shared_ptr<FVerticalBoxSlot>& VBSlot = std::dynamic_pointer_cast<FVerticalBoxSlot>(SkillCanvasWidget->GetSlot()))
+			{
+				VBSlot->FillSize = 3.0f;
+				VBSlot->HorizontalAlignment = EHorizontalAlignment::Wrap;
+				VBSlot->VerticalAlignment = EVerticalAlignment::Wrap;
+			}
+
+			// ㄴ
+			{
+				static constexpr XMFLOAT2 SkillSize = {200,200};
+				SkillBackground = std::make_shared<FImageWidget>(FImageBrush{ UTexture::GetTextureCache("T_SkillBG"), XMFLOAT4{1.0f,1.0f, 1.0f,0.5f}});
+				SkillBackground->AttachToWidget(SkillCanvasWidget);
+				if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(SkillBackground->GetSlot()))
+				{
+					CanvasSlot->Size = SkillSize;
+					CanvasSlot->Anchors = ECanvasAnchor::CenterMiddle;
+					CanvasSlot->Alignment = {0.5f, 0.5f};
+				}
+
+
+				SkillUIImage = std::make_shared<FImageWidget>(FImageBrush{ UTexture::GetTextureCache(GetSkillTextureName()), XMFLOAT4{1.0f,1.0f,1.0f,1.0f}});
+				SkillUIImage->AttachToWidget(SkillCanvasWidget);
+				if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(SkillUIImage->GetSlot()))
+				{
+					CanvasSlot->Size = SkillSize;
+					CanvasSlot->Anchors = ECanvasAnchor::CenterMiddle;
+					CanvasSlot->Alignment = {0.5f, 0.5f};
+				}
+			}
+
+			SkillKeyGuideCanvas = std::make_shared<FCanvasWidget>();
+			SkillKeyGuideCanvas->AttachToWidget(SkillBoxSlot);
+			if (const std::shared_ptr<FVerticalBoxSlot>& VBSlot = std::dynamic_pointer_cast<FVerticalBoxSlot>(SkillKeyGuideCanvas->GetSlot()))
+			{
+				VBSlot->FillSize = 1.0f;
+				VBSlot->HorizontalAlignment = EHorizontalAlignment::Wrap;
+				VBSlot->VerticalAlignment = EVerticalAlignment::Wrap;
+			}
+
+			// ㄴ
+			{
+				static constexpr XMFLOAT2 GuideSize = {100,100};
+				SkillKeyGuideImage = std::make_shared<FImageWidget>(FImageBrush{ UTexture::GetTextureCache("T_KeyGuide"), XMFLOAT4{1.0f,1.0f,1.0f,0.5f}});
+				SkillKeyGuideImage->AttachToWidget(SkillKeyGuideCanvas);
+				if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(SkillKeyGuideImage->GetSlot()))
+				{
+					CanvasSlot->Size = GuideSize;
+					CanvasSlot->Anchors = ECanvasAnchor::CenterMiddle;
+					CanvasSlot->Alignment = {0.5f, 0.5f};
+				}
+
+				SkillKeyText = std::make_shared<FTextWidget>();
+				SkillKeyText->AttachToWidget(SkillKeyGuideCanvas);
+				if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(SkillKeyText->GetSlot()))
+				{
+					CanvasSlot->Size = GuideSize;
+					CanvasSlot->Anchors = ECanvasAnchor::CenterMiddle;
+					CanvasSlot->Alignment = {0.5f, 0.5f};
+				}
+				SkillKeyText->SetText(L"E");
+			}
+			
+
+		}
+		
 	}
+
+	
 
 	UltimateBoxSlot = std::make_shared<FVerticalBoxWidget>();
 	UltimateBoxSlot->AttachToWidget(AttackBoxSlot);
@@ -35,15 +119,10 @@ void UMyGameWidgetBase::NativeConstruct()
 		HBSlot->VerticalAlignment = EVerticalAlignment::Wrap;
 	}
 
-	SkillUIImage = std::make_shared<FImageWidget>(FImageBrush{UTexture::GetTextureCache("T_White"), XMFLOAT4{0.5f,0.5f,0.5f,1.0f}});
-	SkillUIImage->AttachToWidget(SkillBoxSlot);
-	if (const std::shared_ptr<FVerticalBoxSlot>& VBSlot = std::dynamic_pointer_cast<FVerticalBoxSlot>(SkillUIImage->GetSlot()))
-	{
-		VBSlot->FillSize = 2.0f;
-		VBSlot->HorizontalAlignment = EHorizontalAlignment::Wrap;
-		VBSlot->VerticalAlignment = EVerticalAlignment::Wrap;
-	}
+	
 
+
+	
 
 	
 }

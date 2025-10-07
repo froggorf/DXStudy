@@ -20,4 +20,5 @@ C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\PBRTestComponent.cpp
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\UTestComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\UTestComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Interface\Dodge\IDodgeInterface.cpp;C:\Project\DXStudy\LeeEngine\Executable\IDodgeInterface.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Notify\MyGameNotify.cpp;C:\Project\DXStudy\LeeEngine\Executable\MyGameNotify.obj
+C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Widget\Sanhwa\USanhwaWidget.cpp;C:\Project\DXStudy\LeeEngine\Executable\USanhwaWidget.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Widget\UMyGameWidgetBase.cpp;C:\Project\DXStudy\LeeEngine\Executable\UMyGameWidgetBase.obj

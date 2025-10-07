@@ -63,6 +63,9 @@ public:
 
 	float GetZOrder() const {return ZOrder;}
 	void SetZOrder(float NewZOrder) {ZOrder = NewZOrder;}
+
+	bool GetVisibility() const {return bShow; }
+	virtual void SetVisibility(bool NewVisible) {bShow = NewVisible;}
 protected:
 	// 해당 위젯이 그려질 NDC 좌표계의 위치 반환
 	void GetNDCPos(float& NDC_Left, float& NDC_Top, float& NDC_Right, float& NDC_Bottom) const;

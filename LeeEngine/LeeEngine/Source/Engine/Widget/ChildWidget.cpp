@@ -375,7 +375,7 @@ void FButtonWidget::Tick(float DeltaSeconds)
 
 	// Panel 로서 업데이트를 해줘야할 뿐 아니라 버튼만의 렌더링도 진행해줘야함
 	UINT CurButtonType = static_cast<UINT>(CurrentButtonType);
-	if (Style[CurButtonType].Image)
+	if (Style[CurButtonType].Image && GetVisibility())
 	{
 		float NDC_Left{}, NDC_Right{}, NDC_Top{}, NDC_Bottom{};
 		GetNDCPos(NDC_Left, NDC_Top, NDC_Right, NDC_Bottom);
@@ -500,7 +500,7 @@ void FImageWidget::Tick(float DeltaSeconds)
 {
 	FChildWidget::Tick(DeltaSeconds);
 
-	if (!Brush.Image)
+	if (!Brush.Image && !GetVisibility())
 	{
 		return;
 	}
@@ -556,7 +556,7 @@ void FTextWidget::Tick(float DeltaSeconds)
 {
 	FChildWidget::Tick(DeltaSeconds);
 
-	if (Text.empty())
+	if (Text.empty() && !GetVisibility())
 	{
 		return;
 	}
@@ -605,7 +605,7 @@ void FProgressBarWidget::Tick(float DeltaSeconds)
 {
 	FChildWidget::Tick(DeltaSeconds);
 
-	if (!FillBrush.Image && !BackgroundBrush.Image)
+	if (!FillBrush.Image && !BackgroundBrush.Image && !GetVisibility())
 	{
 		return;
 	}

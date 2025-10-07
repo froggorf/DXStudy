@@ -86,6 +86,9 @@
     <Filter Include="Source\MyGame\Component\Combat\Skill\NormalSkill\Sanhwa">
       <UniqueIdentifier>{90fd65f6-d615-4254-9920-4f9e728bf781}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\Widget\Sanhwa">
+      <UniqueIdentifier>{8a3a97b4-eef6-4b5d-8e18-b3eafa2b3f0e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -157,6 +160,9 @@
     <ClCompile Include="Source\MyGame\Widget\UMyGameWidgetBase.cpp">
       <Filter>Source\MyGame\Widget</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Widget\Sanhwa\USanhwaWidget.cpp">
+      <Filter>Source\MyGame\Widget\Sanhwa</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -224,6 +230,9 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Widget\UMyGameWidgetBase.h">
       <Filter>Source\MyGame\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Widget\Sanhwa\USanhwaWidget.h">
+      <Filter>Source\MyGame\Widget\Sanhwa</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

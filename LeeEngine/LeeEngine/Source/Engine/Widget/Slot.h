@@ -49,6 +49,8 @@ struct FCanvasSlot : FSlot
 	bool bSizeToContent;   // 아마 구현 안할예정
 	
 	int ZOrder;
+
+
 };
 
 enum class EHorizontalAlignment
