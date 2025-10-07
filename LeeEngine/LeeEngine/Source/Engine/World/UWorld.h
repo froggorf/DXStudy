@@ -54,6 +54,8 @@ class UWorld : public UObject, public std::enable_shared_from_this<UWorld>
 	APlayerController* GetPlayerController() const {return PlayerController.lock().get();}
 	APlayerCameraManager* GetCameraManager() const;
 
+	std::shared_ptr<AActor> SpawnActor(const std::string& ClassName, const FTransform& SpawnTransform) const;
+
 #if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
 	void DrawDebugBox(const XMFLOAT3& Center, const XMFLOAT3& Extent, const XMFLOAT3& LineColor = XMFLOAT3{1,0,0}, XMVECTOR Rotate = XMVectorSet(0,0,0,1), const float DebugDrawTime = 5.0f) const;
 #endif

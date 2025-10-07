@@ -42,9 +42,13 @@ public:
 
 	// 쿨타임 감소 (타이머로 연동)
 	void CoolDown();
+
+	float GetSkillMoveDistance(size_t SkillIndex) const {if (SkillIndex >= SkillMoveDistance.size()) return 0.0f; return SkillMoveDistance[SkillIndex];}
+	float GetSkillAnimLength(size_t SkillIndex) const;
 protected:
 	// NOTE: Initialize 안에서 사용하여 하위클래스에서 값을 조정
 	void SetSkillMontagesAndCoolDown(const std::vector<std::string>& NewMontageNames, const float NewSkillCooldown);
+	void SetSkillMoveDistance(const std::vector<float>& NewMoveDistance);
 	void SetSkillDelegates(const std::vector<Delegate<>>& NewStartDelegates, const std::vector<Delegate<>>& NewBlendOutDelegates);
 protected:
 	AMyGameCharacterBase* OwnerCharacter = nullptr;
@@ -70,6 +74,7 @@ protected:
 
 	// ================================ Skill ================================
 	std::vector<std::shared_ptr<UAnimMontage>> SkillAnimMontages;
+	std::vector<float> SkillMoveDistance;
 	std::vector<Delegate<>>	SkillStartDelegates;
 	std::vector<Delegate<>> SkillBlendOutDelegates;
 

@@ -117,6 +117,8 @@ void APlayerController::CreateWidget(const std::string& Name, const std::shared_
 		return;
 	}
 
+	NewWidget->NativeConstruct();
+
 	UserWidgets[Name] = NewWidget;
 }
 

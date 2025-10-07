@@ -109,9 +109,6 @@
     <ClCompile Include="Source\MyGame\Actor\ATestPawn.cpp">
       <Filter>Source\MyGame\Actor</Filter>
     </ClCompile>
-    <ClCompile Include="Source\MyGame\Widget\UMyTestWidget.cpp">
-      <Filter>Source\MyGame\Widget</Filter>
-    </ClCompile>
     <ClCompile Include="Source\MyGame\Component\PBRTestComponent.cpp">
       <Filter>Source\MyGame\Component</Filter>
     </ClCompile>
@@ -157,6 +154,9 @@
     <ClCompile Include="Source\MyGame\Component\Combat\Skill\NormalSkill\SanHwa\USanhwaSkillComponent.cpp">
       <Filter>Source\MyGame\Component\Combat\Skill\NormalSkill\Sanhwa</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Widget\UMyGameWidgetBase.cpp">
+      <Filter>Source\MyGame\Widget</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -176,9 +176,6 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Actor\ATestPawn.h">
       <Filter>Source\MyGame\Actor</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\MyGame\Widget\UMyTestWidget.h">
-      <Filter>Source\MyGame\Widget</Filter>
     </ClInclude>
     <ClInclude Include="Source\MyGame\Component\PBRTestComponent.h">
       <Filter>Source\MyGame\Component</Filter>
@@ -224,6 +221,9 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Component\Combat\Skill\NormalSkill\SanHwa\USanhwaSkillComponent.h">
       <Filter>Source\MyGame\Component\Combat\Skill\NormalSkill\Sanhwa</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Widget\UMyGameWidgetBase.h">
+      <Filter>Source\MyGame\Widget</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

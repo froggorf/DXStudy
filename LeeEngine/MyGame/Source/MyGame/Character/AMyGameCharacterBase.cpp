@@ -72,12 +72,11 @@ void AMyGameCharacterBase::BeginPlay()
 
 	ACharacter::BeginPlay();
 
-
-	QueryCheckCapsuleComp->SetStaticMesh((CapsuleComp->MakeStaticMesh()));
-	QueryCheckCapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	QueryCheckCapsuleComp->GetBodyInstance()->SetSimulatePhysics(false);
+	// Player 콜리젼 채널로 변경
 	QueryCheckCapsuleComp->SetCollisionObjectType(ECollisionChannel::Player);
 	QueryCheckCapsuleComp->GetBodyInstance()->SetObjectType(ECollisionChannel::Player);
+
+	CreateWidgetOnBeginPlay();
 }
 
 void AMyGameCharacterBase::BindKeyInputs()

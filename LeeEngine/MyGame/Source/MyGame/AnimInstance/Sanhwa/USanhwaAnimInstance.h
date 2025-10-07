@@ -13,12 +13,16 @@ class USanhwaAnimInstance final : public UMyGameAnimInstanceBase
 
 	bool IsAllResourceOK() override;
 
+	// MotionWarping - BasicAttack
 	void MotionWarping_BasicAttack0();
 	void MotionWarping_BasicAttack1();
 	void MotionWarping_BasicAttack2();
 	void MotionWarping_BasicAttack3();
 	void MotionWarping_BasicAttack4_Float();
 	void MotionWarping_BasicAttack4_Attack();
+
+	// MotionWarping - SkillAttack
+	void SanhwaSkillAttack();
 
 	void SetSkeletalMeshVisibility(bool NewVisibility);
 

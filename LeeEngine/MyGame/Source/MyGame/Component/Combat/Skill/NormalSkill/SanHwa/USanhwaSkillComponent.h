@@ -15,5 +15,4 @@ public:
 	void Initialize(AMyGameCharacterBase* MyCharacter) override;
 
 protected:
-
 };

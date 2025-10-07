@@ -1,8 +1,10 @@
 #include "CoreMinimal.h"
 #include "ASanhwaCharacter.h"
 
+#include "Engine/World/UWorld.h"
 #include "MyGame/Component/Combat/Melee/USanhwaCombatComponent.h"
 #include "MyGame/Component/Combat/Skill/NormalSkill/SanHwa/USanhwaSkillComponent.h"
+#include "MyGame/Widget/UMyGameWidgetBase.h"
 
 ASanhwaCharacter::ASanhwaCharacter()
 {
@@ -18,5 +20,14 @@ ASanhwaCharacter::ASanhwaCharacter()
 	// TODO : 산화의 타입으로 변경해주기
 	SkillComponent = std::make_shared<USanhwaSkillComponent>();
 	UltimateComponent = std::make_shared<UUltimateBaseComponent>();
+}
+
+void ASanhwaCharacter::CreateWidgetOnBeginPlay()
+{
+	if (APlayerController* PC = GetWorld()->GetPlayerController())
+	{
+		std::shared_ptr<UMyGameWidgetBase> MyTestWidget = std::make_shared<UMyGameWidgetBase>();
+		PC->CreateWidget("DefaultWidget", MyTestWidget);
+	}
 }
 

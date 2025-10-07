@@ -129,7 +129,7 @@ void UMyGameAnimInstanceBase::UpdateAnimation(float dt)
 	}
 }
 
-void UMyGameAnimInstanceBase::SetWarping_BasicAttack(size_t BasicAttackComboIndex, const XMFLOAT3& IfNoEnemyWarpingDirectionUnitVector)
+void UMyGameAnimInstanceBase::SetWarpingTarget(const XMFLOAT3& IfNoEnemyWarpingDirectionUnitVector, float MoveDistance, float MoveTime)
 {
 	if (!SetMotionWarping())
 	{
@@ -143,8 +143,6 @@ void UMyGameAnimInstanceBase::SetWarping_BasicAttack(size_t BasicAttackComboInde
 	}
 
 	XMFLOAT3 CurActorLocation = MyGameCharacter->GetActorLocation();
-	float MoveDistance = CombatComp->GetBasicAttackMoveDistance(BasicAttackComboIndex);
-	float MoveTime = CombatComp->GetBasicAttackMontage(BasicAttackComboIndex)->GetPlayLength();
 
 	XMFLOAT3 WarpingTargetPos;
 	if (const AActor* NearestEnemy = CombatComp->FindNearestEnemy(CurActorLocation, MoveDistance+100, {}))

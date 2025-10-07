@@ -66,6 +66,10 @@ void USanhwaAnimInstance::SetAnimNotify_BeginPlay()
 			this->SetSkeletalMeshVisibility(true);
 		});
 	NotifyEvent["Show"] = ShowDelegate;
+
+
+	Delegate<> SkillAttackDelegate = {this, &USanhwaAnimInstance::SanhwaSkillAttack};
+	NotifyEvent["SH_Skill"] = SkillAttackDelegate;
 }
 
 void USanhwaAnimInstance::BeginPlay()
@@ -82,23 +86,39 @@ bool USanhwaAnimInstance::IsAllResourceOK()
 
 void USanhwaAnimInstance::MotionWarping_BasicAttack0()
 {
-	SetWarping_BasicAttack(0, MyGameCharacter->GetActorForwardVector());
+	constexpr size_t BasicAttackIndex = 0;
+	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
+	float MoveDistance = CombatComp->GetBasicAttackMoveDistance(BasicAttackIndex);
+	float MoveTime = CombatComp->GetBasicAttackMontage(BasicAttackIndex)->GetPlayLength();
+	SetWarpingTarget(MyGameCharacter->GetActorForwardVector(), MoveDistance, MoveTime);
 }
 
 void USanhwaAnimInstance::MotionWarping_BasicAttack1()
 {
-	SetWarping_BasicAttack(1, MyGameCharacter->GetActorForwardVector());
+	constexpr size_t BasicAttackIndex = 1;
+	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
+	float MoveDistance = CombatComp->GetBasicAttackMoveDistance(BasicAttackIndex);
+	float MoveTime = CombatComp->GetBasicAttackMontage(BasicAttackIndex)->GetPlayLength();
+	SetWarpingTarget(MyGameCharacter->GetActorForwardVector(), MoveDistance, MoveTime);
 }
 
 void USanhwaAnimInstance::MotionWarping_BasicAttack2()
 {
-	SetWarping_BasicAttack(2, MyGameCharacter->GetActorForwardVector());
+	constexpr size_t BasicAttackIndex = 2;
+	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
+	float MoveDistance = CombatComp->GetBasicAttackMoveDistance(BasicAttackIndex);
+	float MoveTime = CombatComp->GetBasicAttackMontage(BasicAttackIndex)->GetPlayLength();
+	SetWarpingTarget(MyGameCharacter->GetActorForwardVector(), MoveDistance, MoveTime);
 }
 
 
 void USanhwaAnimInstance::MotionWarping_BasicAttack3()
 {
-	SetWarping_BasicAttack(3, MyGameCharacter->GetActorForwardVector());
+	constexpr size_t BasicAttackIndex = 3;
+	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
+	float MoveDistance = CombatComp->GetBasicAttackMoveDistance(BasicAttackIndex);
+	float MoveTime = CombatComp->GetBasicAttackMontage(BasicAttackIndex)->GetPlayLength();
+	SetWarpingTarget(MyGameCharacter->GetActorForwardVector(), MoveDistance, MoveTime);
 }
 
 void USanhwaAnimInstance::MotionWarping_BasicAttack4_Float()
@@ -160,6 +180,14 @@ void USanhwaAnimInstance::MotionWarping_BasicAttack4_Attack()
 	// 하드코딩, TODO: 대응하는 값으로 바꿀 수 있도록 조정해봐야함
 	float MoveTime = 38 * (1.0f/30);
 	MotionWarpingComp->SetTargetLocation(Attack4_AttackTargetPos, MoveTime);
+}
+
+void USanhwaAnimInstance::SanhwaSkillAttack()
+{
+	const std::shared_ptr<USkillBaseComponent>& SkillComp = MyGameCharacter->GetSkillComponent();
+	float MoveDistance = SkillComp->GetSkillMoveDistance(0);
+	float MoveTime = SkillComp->GetSkillAnimLength(0);
+	SetWarpingTarget(MyGameCharacter->GetActorForwardVector(), MoveDistance, MoveTime);
 }
 
 void USanhwaAnimInstance::SetSkeletalMeshVisibility(bool NewVisibility)

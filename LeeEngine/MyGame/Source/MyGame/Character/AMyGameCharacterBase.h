@@ -34,7 +34,11 @@ class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
 	void WheelUp();
 	void WheelDown();
 
+	virtual void CreateWidgetOnBeginPlay() {}
+
 	const std::shared_ptr<UCombatBaseComponent>& GetCombatComponent() const {return CombatComponent;}
+	const std::shared_ptr<USkillBaseComponent>& GetSkillComponent() const {return SkillComponent;}
+	const std::shared_ptr<UUltimateBaseComponent>& GetUltimateComponent() const {return UltimateComponent;}
 
 private:
 	bool bRightButtonPressed = false;

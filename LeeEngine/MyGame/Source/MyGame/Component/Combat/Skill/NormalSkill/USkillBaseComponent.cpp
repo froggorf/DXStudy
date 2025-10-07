@@ -118,6 +118,20 @@ void USkillBaseComponent::CoolDown()
 	}
 }
 
+float USkillBaseComponent::GetSkillAnimLength(size_t SkillIndex) const
+{
+	if (SkillIndex >= SkillAnimMontages.size())
+	{
+#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
+		std::string ErrorText = GetFunctionName + " - Wrong Index";
+		assert(nullptr && ErrorText.data());
+#else
+		return 0.0f;
+#endif
+	}
+	return SkillAnimMontages[SkillIndex]->GetPlayLength();
+}
+
 void USkillBaseComponent::SetSkillMontagesAndCoolDown(const std::vector<std::string>& NewMontageNames, const float NewSkillCooldown)
 {
 	size_t Size = NewMontageNames.size();
@@ -140,6 +154,16 @@ void USkillBaseComponent::SetSkillMontagesAndCoolDown(const std::vector<std::str
 	}
 
 	SkillCoolDownTime = NewSkillCooldown;
+}
+
+void USkillBaseComponent::SetSkillMoveDistance(const std::vector<float>& NewMoveDistance)
+{
+	size_t NewSize = NewMoveDistance.size();
+	SkillMoveDistance.resize(NewSize);
+	for (size_t i = 0; i < NewSize; ++i)
+	{
+		SkillMoveDistance[i] = NewMoveDistance[i];
+	}
 }
 
 
