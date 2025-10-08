@@ -44,6 +44,8 @@ enum class EBlendStateType
 	BST_Count
 };
 
+// MYASSET 파일에서 해당 enum 값을 UINT 로 저장하였으므로 순서를 바꾸면 안됨,
+// 추가시 아래로 이어 작성
 enum class EDepthStencilStateType
 {
 	LESS,       // Less, Depth Write

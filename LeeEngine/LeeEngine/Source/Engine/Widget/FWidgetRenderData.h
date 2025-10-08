@@ -4,6 +4,8 @@
 // 이윤석
 
 #pragma once
+class UMaterialInterface;
+
 struct FWidgetRenderData
 {
 	// NDC 좌표계로 저장할것
@@ -34,7 +36,30 @@ struct FWidgetRenderData
 	 */
 	DWRITE_TEXT_ALIGNMENT TextHorizontalAlignment = DWRITE_TEXT_ALIGNMENT_LEADING;
 	DWRITE_PARAGRAPH_ALIGNMENT TextVerticalAlignment = DWRITE_PARAGRAPH_ALIGNMENT_NEAR;
-	
 
+	bool IsSettingSystemValue() const {return bIsSettingSystemValue;}
+	void SetSystemValue(const FSystemParamConstantBuffer& NewValue)
+	{
+		bIsSettingSystemValue = true;
+		memcpy(&SystemParam, &NewValue, sizeof(NewValue));
+	}
+	const FSystemParamConstantBuffer& GetSystemParamValue() const {return SystemParam;}
+
+	bool HasOverrideMaterial() const {return bHasOverrideMaterial;}
+	void SetOverrideWidgetMaterial(const std::shared_ptr<UMaterialInterface>& NewMat)
+	{
+		if (NewMat == nullptr)
+		{
+			return;
+		}
+		bHasOverrideMaterial = true;
+		OverrideWidgetMaterial = NewMat;
+	}
+	const std::shared_ptr<UMaterialInterface>& GetOverrideMaterial() const {return OverrideWidgetMaterial;}
+private:
+	bool bIsSettingSystemValue = false;
+	FSystemParamConstantBuffer SystemParam;
+	bool bHasOverrideMaterial = false;
+	std::shared_ptr<UMaterialInterface> OverrideWidgetMaterial;
 };
 

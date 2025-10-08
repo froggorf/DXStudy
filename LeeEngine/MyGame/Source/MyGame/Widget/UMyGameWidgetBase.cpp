@@ -20,13 +20,6 @@ void UMyGameWidgetBase::NativeConstruct()
 	// Skill
 	// ㄴ
 	{
-		//std::shared_ptr<FVerticalBoxWidget> SkillBoxSlot;
-		//std::shared_ptr<FCanvasWidget> SkillCanvasWidget;
-		//std::shared_ptr<FImageWidget> SkillUIImage;
-		//std::shared_ptr<FImageWidget> SkillCoolDownImage;
-		//std::shared_ptr<FImageWidget> SkillKeyGuideImage;
-		//std::shared_ptr<FTextWidget> SkillCoolDownText;
-		//std::shared_ptr<FTextWidget> SkillKeyText;
 
 		SkillBoxSlot = std::make_shared<FVerticalBoxWidget>();
 		SkillBoxSlot->AttachToWidget(AttackBoxSlot);
@@ -70,15 +63,19 @@ void UMyGameWidgetBase::NativeConstruct()
 					CanvasSlot->Alignment = {0.5f, 0.5f};
 				}
 
-				SkillCoolDownImage = std::make_shared<FImageWidget>(FImageBrush{ UTexture::GetTextureCache("T_SkillBG"), XMFLOAT4{0.0f,0.0f,0.0f,0.9f}});
-				SkillCoolDownImage->AttachToWidget(SkillCanvasWidget);
-				if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(SkillCoolDownImage->GetSlot()))
+				//FImageBrush{ UTexture::GetTextureCache("T_SkillBG"), XMFLOAT4{0.0f,0.0f,0.0f,0.9f}})
+				PB_SkillCoolDown = std::make_shared<FProgressBarWidget>();
+				PB_SkillCoolDown->AttachToWidget(SkillCanvasWidget);
+				if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(PB_SkillCoolDown->GetSlot()))
 				{
 					CanvasSlot->Size = SkillSize;
 					CanvasSlot->Anchors = ECanvasAnchor::CenterMiddle;
 					CanvasSlot->Alignment = {0.5f, 0.5f};
 				}
-				SkillCoolDownImage->SetVisibility(false);
+				PB_SkillCoolDown->SetVisibility(false);
+				PB_SkillCoolDown->SetFillMode(EProgressBarFillMode::Radial_LeftToRight);
+				PB_SkillCoolDown->SetBackgroundImageBrush({UTexture::GetTextureCache("T_SkillBG"), XMFLOAT4{0.0f,0.0f,0.0f,0.9f}});
+				PB_SkillCoolDown->SetFillImageBrush({nullptr, XMFLOAT4{0.0f,0.0f,0.0f,0.0f}});
 
 				SkillCoolDownText = std::make_shared<FTextWidget>();
 				SkillCoolDownText->AttachToWidget(SkillCanvasWidget);
@@ -106,7 +103,7 @@ void UMyGameWidgetBase::NativeConstruct()
 
 			// ㄴ
 			{
-				static constexpr XMFLOAT2 GuideSize = {50,50};
+				static constexpr XMFLOAT2 GuideSize = {30,30};
 				SkillKeyGuideImage = std::make_shared<FImageWidget>(FImageBrush{ UTexture::GetTextureCache("T_KeyGuide"), XMFLOAT4{1.0f,1.0f,1.0f,0.5f}});
 				SkillKeyGuideImage->AttachToWidget(SkillKeyGuideCanvas);
 				if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(SkillKeyGuideImage->GetSlot()))
@@ -125,7 +122,7 @@ void UMyGameWidgetBase::NativeConstruct()
 					CanvasSlot->Alignment = {0.5f, 0.5f};
 				}
 				SkillKeyText->SetText(L"E");
-				SkillKeyText->SetFontSize(25.0f);
+				SkillKeyText->SetFontSize(15.0f);
 				SkillKeyText->SetFontColor({1.0f,1.0f,1.0f,1.0f});
 				SkillKeyText->SetHorizontalAlignment(ETextHorizontalAlignment::Center);
 				SkillKeyText->SetVerticalAlignment(ETextVerticalAlignment::Center);
@@ -155,18 +152,24 @@ void UMyGameWidgetBase::NativeConstruct()
 	
 }
 
-void UMyGameWidgetBase::SetSkillCoolDownTime(float NewCoolDownTime)
+void UMyGameWidgetBase::SetSkillCoolDownTime(float NewCoolDownTime, float MaxCoolDownTime)
 {
 	if (NewCoolDownTime <= 0.0f)
 	{
 		SkillCoolDownText->SetVisibility(false);
-		SkillCoolDownImage->SetVisibility(false);
+		PB_SkillCoolDown->SetVisibility(false);
 		return;
 	}
 
 	SkillCoolDownText->SetVisibility(true);
-	SkillCoolDownImage->SetVisibility(true);
+	PB_SkillCoolDown->SetVisibility(true);
+	PB_SkillCoolDown->SetValue(1 - NewCoolDownTime / MaxCoolDownTime);
 	SkillCoolDownText->SetText(FloatToWString(NewCoolDownTime, 1));
+}
+
+void UMyGameWidgetBase::Tick(float DeltaSeconds)
+{
+	UUserWidget::Tick(DeltaSeconds);
 }
 
 

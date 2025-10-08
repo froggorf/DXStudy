@@ -134,7 +134,7 @@ void USkillBaseComponent::CoolDown()
 	{
 		if (const std::shared_ptr<UMyGameWidgetBase>& CharacterWidget = OwnerCharacter->GetCharacterWidget())
 		{
-			CharacterWidget->SetSkillCoolDownTime(CurrentCoolDownTime);
+			CharacterWidget->SetSkillCoolDownTime(CurrentCoolDownTime, SkillCoolDownTime);
 		}
 	}
 }

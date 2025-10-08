@@ -1,0 +1,18 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_RadialPBWidget",
+    "VertexShader" : {
+	"FilePath" : "/Shader/Widget.fx",
+	"Func" : "VS_Widget"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/Widget.fx",
+	"Func" : "PS_RadialPBWidget"
+    },
+    "BlendMode": "DD",
+    "TwoSided" : 1,
+    "Stencil" : {
+        "DSState" : 3,
+	"Ref" : 0
+    }
+}

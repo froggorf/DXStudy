@@ -1135,11 +1135,27 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 				}
 				else
 				{
-					SceneData->M_Widget->Binding();
+					//const std::shared_ptr<UMaterialInterface>& WidgetMaterial = RenderData.HasOverrideMaterial() ? RenderData.GetOverrideMaterial() : SceneData->M_Widget;
+					//WidgetMaterial->Binding();
+					if (RenderData.HasOverrideMaterial())
+					{
+						RenderData.GetOverrideMaterial()->Binding();
+					}
+					else
+					{
+						SceneData->M_Widget->Binding();
+					}
+
 					GDirectXDevice->SetBSState(EBlendStateType::BST_AlphaBlend);
 					// ConstantBuffer 바인딩
 					FWidgetConstantBuffer WCB{RenderData.Tint,RenderData.Left, RenderData.Top, RenderData.Width,RenderData.Height};
 					GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_Widget, &WCB, sizeof(WCB));
+
+					if (RenderData.IsSettingSystemValue())
+					{
+						FSystemParamConstantBuffer SystemParam = RenderData.GetSystemParamValue();
+						GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_SystemParam, &SystemParam, sizeof(SystemParam));
+					}
 
 					// 텍스쳐 바인딩
 					if (RenderData.Texture)

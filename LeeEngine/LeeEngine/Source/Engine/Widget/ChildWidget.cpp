@@ -607,6 +607,8 @@ void FTextWidget::Tick(float DeltaSeconds)
 	GEngine->GetCurrentWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
 }
 
+std::shared_ptr<UMaterialInterface> FProgressBarWidget::M_RadialPBMaterial = nullptr;
+
 FProgressBarWidget::FProgressBarWidget()
 {
 	FillBrush.Image = UTexture::GetTextureCache("T_White");
@@ -618,7 +620,7 @@ void FProgressBarWidget::Tick(float DeltaSeconds)
 {
 	FChildWidget::Tick(DeltaSeconds);
 
-	if (!FillBrush.Image && !BackgroundBrush.Image || !GetVisibility())
+	if (!BackgroundBrush.Image || !GetVisibility())
 	{
 		return;
 	}
@@ -626,6 +628,7 @@ void FProgressBarWidget::Tick(float DeltaSeconds)
 	float BG_Left{}, BG_Right{}, BG_Top{}, BG_Bottom{};
 	GetNDCPos(BG_Left, BG_Top, BG_Right, BG_Bottom);
 
+	bool bIsRadial = FillMode == EProgressBarFillMode::Radial_LeftToRight || FillMode == EProgressBarFillMode::Radial_RightToLeft;
 	// 백그라운드 먼저 그리고
 	{
 		FWidgetRenderData WidgetRenderData;
@@ -636,8 +639,22 @@ void FProgressBarWidget::Tick(float DeltaSeconds)
 		WidgetRenderData.Texture = BackgroundBrush.Image;
 		WidgetRenderData.Tint = BackgroundBrush.Tint;
 		WidgetRenderData.ZOrder = GetZOrder();
+		if (bIsRadial)
+		{
+			WidgetRenderData.SetOverrideWidgetMaterial(GetRadialPBMaterial());
+			FSystemParamConstantBuffer SystemParam;
+			SystemParam.Int_1 = static_cast<int>(FillMode);
+			SystemParam.Float4_1 = FillBrush.Tint;
+			SystemParam.Float_1 = Value;
+			WidgetRenderData.SetSystemValue(SystemParam);
+		}
 
 		GEngine->GetCurrentWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
+	}
+
+	if (bIsRadial || !FillBrush.Image)
+	{
+		return;
 	}
 
 	// Fill 그리기
@@ -658,6 +675,15 @@ void FProgressBarWidget::Tick(float DeltaSeconds)
 		GEngine->GetCurrentWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
 	}
 	
+}
+
+const std::shared_ptr<UMaterialInterface>& FProgressBarWidget::GetRadialPBMaterial()
+{
+	if (!M_RadialPBMaterial)
+	{
+		M_RadialPBMaterial = UMaterial::GetMaterialCache("M_RadialPBWidget");
+	}
+	return M_RadialPBMaterial;
 }
 
 void FProgressBarWidget::CalculateFillImagePosition(float BGLeft, float BGTop, float BGRight, float BGBottom, float& FillLeft, float& FillTop, float& FillRight, float& FillBottom)

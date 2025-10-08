@@ -6,6 +6,7 @@ AFPSTest::AFPSTest()
 	SM_Attacker = std::make_shared<UStaticMeshComponent>();
 	SM_Attacker->SetupAttachment(GetRootComponent());
 	SM_Attacker->SetRelativeScale3D({10,10,10});
+	SM_Attacker->SetRelativeLocation({200,100,0});
 
 	AssetManager::GetAsyncAssetCache("SM_DeferredSphere",[this](std::shared_ptr<UObject> Object)
 		{
@@ -47,6 +48,8 @@ void AFPSTest::BeginPlay()
 void AFPSTest::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
+
+	
 	CurTime += DeltaSeconds;
 	if (CurTime >= ShotDelay)
 	{
@@ -65,7 +68,7 @@ void AFPSTest::Tick(float DeltaSeconds)
 		}
 		CurTime -= ShotDelay;
 	}
-
+	return;
 	MoveTime += DeltaSeconds;
 	if (0<=MoveTime && MoveTime <= 3.0f)
 	{

@@ -23,13 +23,15 @@ private:
 	std::shared_ptr<FCanvasWidget> SkillCanvasWidget;
 	std::shared_ptr<FImageWidget> SkillBackground;
 	std::shared_ptr<FImageWidget> SkillUIImage;
-	std::shared_ptr<FImageWidget> SkillCoolDownImage;
+	std::shared_ptr<FProgressBarWidget> PB_SkillCoolDown;
 	std::shared_ptr<FTextWidget> SkillCoolDownText;
 	std::shared_ptr<FCanvasWidget> SkillKeyGuideCanvas;
 	std::shared_ptr<FImageWidget> SkillKeyGuideImage;
 	std::shared_ptr<FTextWidget> SkillKeyText;
 public:
-	void SetSkillCoolDownTime(float NewCoolDownTime);
+	void SetSkillCoolDownTime(float NewCoolDownTime, float MaxCoolDownTime);
+
+	void Tick(float DeltaSeconds) override;
 private:
 
 	// Ultimate UI

@@ -9,6 +9,8 @@
 #include "Engine/Class/Framework/UPlayerInput.h"
 #include "Engine/Misc/Delegate.h"
 
+class UMaterialInterface;
+
 class IPanelContainer
 {
 public:
@@ -249,6 +251,8 @@ private:
 
 enum class EProgressBarFillMode
 {
+	Radial_LeftToRight,	// 0(Radial_LeftToRight), 위치 고정되어야함 셰이더와 공유 
+	Radial_RightToLeft,	// 1(Radial_RightToLeft), 위치 고정되어야함 셰이더와 공유
 	LeftToRight,
 	RightToLeft,
 	FillFromCenter,
@@ -272,6 +276,8 @@ public:
 
 	void SetValue(float NewValue)  { Value =  std::clamp(NewValue, 0.0f,1.0f); }
 	float GetValue() const {return Value;}
+
+	static const std::shared_ptr<UMaterialInterface>& GetRadialPBMaterial();
 private:
 	void CalculateFillImagePosition(float BGLeft, float BGTop, float BGRight, float BGBottom, float& FillLeft, float& FillTop, float& FillRight, float& FillBottom);
 
@@ -282,9 +288,11 @@ private:
 	EProgressBarFillMode FillMode = EProgressBarFillMode::LeftToRight;
 
 	float Value = 0.0f;
-
+protected:
 	FImageBrush BackgroundBrush;
 	FImageBrush FillBrush;
+
+	static std::shared_ptr<UMaterialInterface> M_RadialPBMaterial;
 };
 
 
