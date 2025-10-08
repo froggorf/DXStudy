@@ -14,6 +14,7 @@ void UMyGameAnimInstanceBase::LoadData_OnRegister()
 		{
 			BS_Locomotion = std::dynamic_pointer_cast<UBlendSpace>(Object);
 		});
+
 }
 
 void UMyGameAnimInstanceBase::Register()

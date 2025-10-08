@@ -1,4 +1,4 @@
-#define MAX_BONES 100
+#define MAX_BONES 200
 #define MAX_BONE_INFLUENCE 4
 
 cbuffer cbSkeletalMeshBoneFinalTransforms : register(b3)

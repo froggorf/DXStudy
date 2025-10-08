@@ -47,6 +47,11 @@ void UAnimSequence::GetBoneTransform(float CurrentAnimTime, std::vector<FBoneLoc
 	// 09.23) 재생 속도 비율을 적용시켜줌
 	CurrentAnimTime *= RateScale;
 	CurrentAnimTime = fmod(CurrentAnimTime, Duration);
+	if (CurrentAnimTime < 0.0f)
+	{
+		CurrentAnimTime += Duration;
+	}
+	
 
 	// 본 계층 순서대로
 	for (int HierarchyIndex = 0; HierarchyIndex < BoneHierarchy.size(); ++HierarchyIndex)

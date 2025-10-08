@@ -80,16 +80,33 @@ void USanhwaCombatComponent::HeavyAttackMouseReleased()
 		return;
 	}
 
+	float Gap = 1.0f / GaugeSize;
+	UINT CurrentGaugeIndex = std::min(static_cast<UINT>(CurrentChargeGauge / Gap), GaugeSize-1);
+	if (SanhwaGauge[CurrentGaugeIndex])
+	{
+		// 강공격에 성공함
+		// TODO: 후속 공격 애니메이션 들어가기
+
+		for (UINT i = 0; i < GaugeSize; ++i)
+		{
+			SanhwaGauge[i] = false;
+		}
+	}
+
 	bIsHeavyAttacking = false;
 	CurrentChargeGauge = 0.0f;
+	
 
 	if (const std::shared_ptr<USanhwaWidget>& SanhwaWidget = std::static_pointer_cast<USanhwaWidget>(OwnerCharacter->GetCharacterWidget()))
 	{
+		SanhwaWidget->SetGaugeUI(SanhwaGauge);
 		if (const std::shared_ptr<FProgressBarWidget>& PB_ChargeGauge = SanhwaWidget->GetChargeProgressBar())
 		{
 			PB_ChargeGauge->SetVisibility(false);
 		}
 	}
+
+	
 }
 
 void USanhwaCombatComponent::Attack4Success()

@@ -116,7 +116,7 @@ inline HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoin
 
 // ======================== Mesh Data ========================
 constexpr int MAX_BONE_INFLUENCE = 4;
-constexpr int MAX_BONES          = 100;
+constexpr int MAX_BONES          = 200;
 
 __declspec(align(16)) struct MyVertexData
 {

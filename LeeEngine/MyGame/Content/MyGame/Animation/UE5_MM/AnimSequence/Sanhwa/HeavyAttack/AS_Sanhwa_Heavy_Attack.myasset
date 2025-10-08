@@ -1,0 +1,8 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_Sanhwa_Heavy_Attack",
+    "Skeleton": "SK_UE5MM",
+    "AnimationDataPath": "/Content/Resource/MyGame/Animation/UE5/Sanhwa/HeavyAttack/Sanhwa_Heavy_Attack.FBX",
+    "RootMotion": 1,
+    "Rate" : 1.0
+}
