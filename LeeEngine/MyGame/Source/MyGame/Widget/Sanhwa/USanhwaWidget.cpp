@@ -60,6 +60,7 @@ void USanhwaWidget::NativeConstruct()
 	PB_ChargeGauge->SetBackgroundImageBrush({nullptr, {0,0,0,1}});
 	PB_ChargeGauge->SetFillImageBrush({nullptr, {0,0,1,1}});
 	PB_ChargeGauge->SetSlider({Tex, {1,1,1,1}}, {5, 75});
+	PB_ChargeGauge->SetVisibility(false);
 }
 
 void USanhwaWidget::Tick(float DeltaSeconds)

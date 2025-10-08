@@ -14,7 +14,7 @@ public:
 	void Initialize(AMyGameCharacterBase* MyCharacter) override;
 
 	void BasicAttack() override;
-	void StrongBasicAttack() override {};
+	void HeavyAttack() override {};
 	void JumpAttack() override {};
 
 

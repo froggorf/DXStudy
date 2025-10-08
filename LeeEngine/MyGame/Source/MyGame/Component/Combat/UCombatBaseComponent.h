@@ -25,7 +25,8 @@ public:
 
 	virtual void BasicAttack();
 	virtual void BasicAttackEnded();
-	virtual void StrongBasicAttack() {};
+	virtual void HeavyAttack() {};
+	virtual void HeavyAttackMouseReleased() {}
 	virtual void JumpAttack() {};
 	virtual void BindKeyInputs(const std::shared_ptr<UPlayerInput>& InputSystem);
 protected:
@@ -63,6 +64,9 @@ protected:
 
 	std::vector<XMFLOAT3> BasicAttackRange;
 
+	// ===================== HeavyAttack =====================
+	float LastLeftMouseClickedTime = -1.0f;
+	bool bIsHeavyAttacking = false;
 
 
 };

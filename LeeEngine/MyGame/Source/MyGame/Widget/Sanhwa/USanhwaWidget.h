@@ -18,6 +18,7 @@ class USanhwaWidget : public UMyGameWidgetBase
 	std::string GetUltimateTextureName() override { return "T_Icon_Sanhwa_Ultimate";}
 
 	void SetGaugeUI(const std::array<bool, USanhwaCombatComponent::GaugeSize>& CurrentGauge);
+	const std::shared_ptr<FProgressBarWidget>& GetChargeProgressBar() const {return PB_ChargeGauge;}
 private:
 	// ======================== Gauge ========================
 	std::shared_ptr<FCanvasWidget> GaugeCanvas;

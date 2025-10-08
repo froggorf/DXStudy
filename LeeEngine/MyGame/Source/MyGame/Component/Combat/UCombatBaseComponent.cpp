@@ -34,6 +34,9 @@ void UCombatBaseComponent::BasicAttack()
 		}
 	}
 
+	// HeavyAttack 에서 사용되는 시간값
+	LastLeftMouseClickedTime = GEngine->GetTimeSeconds();
+
 	if (bIsBasicAttacking)
 	{
 		LastBasicAttackClickedTime = GEngine->GetTimeSeconds();
@@ -70,6 +73,8 @@ void UCombatBaseComponent::BasicAttackEnded()
 void UCombatBaseComponent::BindKeyInputs(const std::shared_ptr<UPlayerInput>& InputSystem)
 {
 	InputSystem->BindAction(EKeys::MouseLeft, ETriggerEvent::Started, this, &UCombatBaseComponent::BasicAttack);
+	InputSystem->BindAction(EKeys::MouseLeft, ETriggerEvent::Trigger, this, &UCombatBaseComponent::HeavyAttack);
+	InputSystem->BindAction(EKeys::MouseLeft, ETriggerEvent::Released, this, &UCombatBaseComponent::HeavyAttackMouseReleased);
 }
 
 void UCombatBaseComponent::SetBasicAttackMontages(const std::vector<std::string>& NewMontagesName)
