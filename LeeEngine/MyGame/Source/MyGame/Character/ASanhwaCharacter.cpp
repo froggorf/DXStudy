@@ -4,7 +4,10 @@
 #include "Engine/World/UWorld.h"
 #include "MyGame/Component/Combat/Melee/USanhwaCombatComponent.h"
 #include "MyGame/Component/Combat/Skill/NormalSkill/SanHwa/USanhwaSkillComponent.h"
+#include "MyGame/Core/AMyGamePlayerController.h"
 #include "MyGame/Widget/Sanhwa/USanhwaWidget.h"
+
+std::string ASanhwaCharacter::CharacterName  = "Sanhwa";
 
 ASanhwaCharacter::ASanhwaCharacter()
 {
@@ -26,8 +29,9 @@ void ASanhwaCharacter::CreateWidgetOnBeginPlay()
 {
 	if (APlayerController* PC = GetWorld()->GetPlayerController())
 	{
-		std::shared_ptr<USanhwaWidget> MyTestWidget = std::make_shared<USanhwaWidget>();
-		PC->CreateWidget("DefaultWidget", MyTestWidget);
+		std::shared_ptr<USanhwaWidget> SanhwaWidget = std::make_shared<USanhwaWidget>();
+		PC->CreateWidget(CharacterName, SanhwaWidget);
+		CharacterWidget = SanhwaWidget;
 	}
 }
 

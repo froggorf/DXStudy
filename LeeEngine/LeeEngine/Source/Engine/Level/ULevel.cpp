@@ -113,7 +113,15 @@ void ULevel::SaveDataFromAssetToFile(nlohmann::json& Json)
 
 std::shared_ptr<AActor> ULevel::SpawnActor(const std::string& ClassName, const FTransform& SpawnTransform)
 {
-	std::shared_ptr<AActor> NewActor  = std::dynamic_pointer_cast<AActor>(GetDefaultObject(ClassName)->CreateInstance());
+	std::unordered_map<std::string, std::unique_ptr<UObject>>& CDOMap = UObject::GetCDOMap();
+	auto P = CDOMap.find(ClassName);
+	if (P == CDOMap.end())
+	{
+		MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Error, "Invalid class name");
+		return nullptr;
+	}
+
+	std::shared_ptr<AActor> NewActor  = std::dynamic_pointer_cast<AActor>(P->second->CreateInstance());
 	if (NewActor)
 	{
 		NewActor->SetActorLocation(SpawnTransform.GetTranslation());

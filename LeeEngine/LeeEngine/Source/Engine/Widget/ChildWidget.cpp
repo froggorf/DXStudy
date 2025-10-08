@@ -513,7 +513,7 @@ void FImageWidget::Tick(float DeltaSeconds)
 {
 	FChildWidget::Tick(DeltaSeconds);
 
-	if (!Brush.Image && !GetVisibility())
+	if (!Brush.Image || !GetVisibility())
 	{
 		return;
 	}
@@ -569,7 +569,7 @@ void FTextWidget::Tick(float DeltaSeconds)
 {
 	FChildWidget::Tick(DeltaSeconds);
 
-	if (Text.empty() && !GetVisibility())
+	if (Text.empty() || !GetVisibility())
 	{
 		return;
 	}
@@ -618,7 +618,7 @@ void FProgressBarWidget::Tick(float DeltaSeconds)
 {
 	FChildWidget::Tick(DeltaSeconds);
 
-	if (!FillBrush.Image && !BackgroundBrush.Image && !GetVisibility())
+	if (!FillBrush.Image && !BackgroundBrush.Image || !GetVisibility())
 	{
 		return;
 	}

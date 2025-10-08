@@ -90,10 +90,10 @@ private:
 
 	bool bIsRegister = false;
 
-	// Class Default Object 보관
-	static std::unordered_map<std::string, std::unique_ptr<UObject>>& GetCDOMap();
 
 public:
+	// Class Default Object 보관
+	static std::unordered_map<std::string, std::unique_ptr<UObject>>& GetCDOMap();
 	static void AddClassDefaultObject(const std::string& ClassName, std::unique_ptr<UObject>&& DefaultObject);
 
 	static const UObject* GetDefaultObject(const std::string& ClassName);

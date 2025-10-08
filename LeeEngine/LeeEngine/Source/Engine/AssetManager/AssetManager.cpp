@@ -2,6 +2,7 @@
 #include "AssetManager.h"
 #include "Engine/Class/UTexture.h"
 #include "Engine/Misc/QueuedThreadPool.h"
+#include "Engine/Physics/UPhysicsEngine.h"
 
 using namespace Microsoft::WRL;
 using namespace concurrency;
@@ -658,7 +659,7 @@ void AssetManager::GetAsyncAssetCache(const std::string& AssetName, const AssetL
 {
 	// 엔진이 초기화 되기 전에는 비동기 에셋 로드를 진행하지 않음
 	// 엔진 생성 이전 CDO를 만드는 과정에서 발생할 수 있기 때문에 방지
-	if(!GEngine)
+	if(!GEngine && !GDirectXDevice && !GPhysicsEngine)
 	{
 		return;
 	}

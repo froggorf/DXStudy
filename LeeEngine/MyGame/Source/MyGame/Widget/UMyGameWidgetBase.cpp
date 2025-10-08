@@ -14,7 +14,7 @@ void UMyGameWidgetBase::NativeConstruct()
 	{
 		CanvasSlot->Anchors = ECanvasAnchor::RightBottom;
 		CanvasSlot->Alignment = {1.0f,1.0f};
-		CanvasSlot->Size = {600,300};
+		CanvasSlot->Size = {300,150};
 	}
 
 	// Skill
@@ -43,15 +43,15 @@ void UMyGameWidgetBase::NativeConstruct()
 			SkillCanvasWidget->AttachToWidget(SkillBoxSlot);
 			if (const std::shared_ptr<FVerticalBoxSlot>& VBSlot = std::dynamic_pointer_cast<FVerticalBoxSlot>(SkillCanvasWidget->GetSlot()))
 			{
-				VBSlot->FillSize = 3.0f;
+				VBSlot->FillSize = 4.f;
 				VBSlot->HorizontalAlignment = EHorizontalAlignment::Wrap;
 				VBSlot->VerticalAlignment = EVerticalAlignment::Wrap;
 			}
 
 			// ㄴ
 			{
-				static constexpr XMFLOAT2 SkillSize = {200,200};
-				SkillBackground = std::make_shared<FImageWidget>(FImageBrush{ UTexture::GetTextureCache(" T_SkillBG"), XMFLOAT4{1.0f,1.0f, 1.0f,1.0f}});
+				static constexpr XMFLOAT2 SkillSize = {125,125};
+				SkillBackground = std::make_shared<FImageWidget>(FImageBrush{ UTexture::GetTextureCache("T_SkillBG"), XMFLOAT4{1.0f,1.0f, 1.0f,0.5f}});
 				SkillBackground->AttachToWidget(SkillCanvasWidget);
 				if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(SkillBackground->GetSlot()))
 				{
@@ -61,8 +61,7 @@ void UMyGameWidgetBase::NativeConstruct()
 				}
 
 
-				//SkillUIImage = std::make_shared<FImageWidget>(FImageBrush{ UTexture::GetTextureCache(GetSkillTextureName()), XMFLOAT4{1.0f,1.0f,1.0f,0.1f}});
-				SkillUIImage = std::make_shared<FImageWidget>(FImageBrush{ UTexture::GetTextureCache("T_Icon_Sanhwa_BasicAttack"), XMFLOAT4{1.0f,1.0f,1.0f,1.0f}});
+				SkillUIImage = std::make_shared<FImageWidget>(FImageBrush{ UTexture::GetTextureCache(GetSkillTextureName()), XMFLOAT4{1.0f,1.0f,1.0f,1.0f}});
 				SkillUIImage->AttachToWidget(SkillCanvasWidget);
 				if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(SkillUIImage->GetSlot()))
 				{
@@ -70,6 +69,30 @@ void UMyGameWidgetBase::NativeConstruct()
 					CanvasSlot->Anchors = ECanvasAnchor::CenterMiddle;
 					CanvasSlot->Alignment = {0.5f, 0.5f};
 				}
+
+				SkillCoolDownImage = std::make_shared<FImageWidget>(FImageBrush{ UTexture::GetTextureCache("T_SkillBG"), XMFLOAT4{0.0f,0.0f,0.0f,0.9f}});
+				SkillCoolDownImage->AttachToWidget(SkillCanvasWidget);
+				if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(SkillCoolDownImage->GetSlot()))
+				{
+					CanvasSlot->Size = SkillSize;
+					CanvasSlot->Anchors = ECanvasAnchor::CenterMiddle;
+					CanvasSlot->Alignment = {0.5f, 0.5f};
+				}
+				SkillCoolDownImage->SetVisibility(false);
+
+				SkillCoolDownText = std::make_shared<FTextWidget>();
+				SkillCoolDownText->AttachToWidget(SkillCanvasWidget);
+				if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(SkillCoolDownText->GetSlot()))
+				{
+					CanvasSlot->Size = SkillSize;
+					CanvasSlot->Anchors = ECanvasAnchor::CenterMiddle;
+					CanvasSlot->Alignment = {0.5f, 0.5f};
+				}
+				SkillCoolDownText->SetVisibility(false);
+				SkillCoolDownText->SetHorizontalAlignment(ETextHorizontalAlignment::Center);
+				SkillCoolDownText->SetVerticalAlignment(ETextVerticalAlignment::Center);
+				SkillCoolDownText->SetFontSize(40.0f);
+				SkillCoolDownText->SetFontColor({1.0f,1.0f,1.0f,1.0f});
 			}
 
 			SkillKeyGuideCanvas = std::make_shared<FCanvasWidget>();
@@ -83,7 +106,7 @@ void UMyGameWidgetBase::NativeConstruct()
 
 			// ㄴ
 			{
-				static constexpr XMFLOAT2 GuideSize = {100,100};
+				static constexpr XMFLOAT2 GuideSize = {50,50};
 				SkillKeyGuideImage = std::make_shared<FImageWidget>(FImageBrush{ UTexture::GetTextureCache("T_KeyGuide"), XMFLOAT4{1.0f,1.0f,1.0f,0.5f}});
 				SkillKeyGuideImage->AttachToWidget(SkillKeyGuideCanvas);
 				if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(SkillKeyGuideImage->GetSlot()))
@@ -102,7 +125,7 @@ void UMyGameWidgetBase::NativeConstruct()
 					CanvasSlot->Alignment = {0.5f, 0.5f};
 				}
 				SkillKeyText->SetText(L"E");
-				SkillKeyText->SetFontSize(50.0f);
+				SkillKeyText->SetFontSize(25.0f);
 				SkillKeyText->SetFontColor({1.0f,1.0f,1.0f,1.0f});
 				SkillKeyText->SetHorizontalAlignment(ETextHorizontalAlignment::Center);
 				SkillKeyText->SetVerticalAlignment(ETextVerticalAlignment::Center);
@@ -130,6 +153,20 @@ void UMyGameWidgetBase::NativeConstruct()
 	
 
 	
+}
+
+void UMyGameWidgetBase::SetSkillCoolDownTime(float NewCoolDownTime)
+{
+	if (NewCoolDownTime <= 0.0f)
+	{
+		SkillCoolDownText->SetVisibility(false);
+		SkillCoolDownImage->SetVisibility(false);
+		return;
+	}
+
+	SkillCoolDownText->SetVisibility(true);
+	SkillCoolDownImage->SetVisibility(true);
+	SkillCoolDownText->SetText(FloatToWString(NewCoolDownTime, 1));
 }
 
 

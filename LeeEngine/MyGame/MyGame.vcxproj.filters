@@ -89,6 +89,9 @@
     <Filter Include="Source\MyGame\Widget\Sanhwa">
       <UniqueIdentifier>{8a3a97b4-eef6-4b5d-8e18-b3eafa2b3f0e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\Core">
+      <UniqueIdentifier>{8e128241-8d7c-438f-a2da-1130e8dca695}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -163,6 +166,9 @@
     <ClCompile Include="Source\MyGame\Widget\Sanhwa\USanhwaWidget.cpp">
       <Filter>Source\MyGame\Widget\Sanhwa</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Core\AMyGamePlayerController.cpp">
+      <Filter>Source\MyGame\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -233,6 +239,9 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Widget\Sanhwa\USanhwaWidget.h">
       <Filter>Source\MyGame\Widget\Sanhwa</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Core\AMyGamePlayerController.h">
+      <Filter>Source\MyGame\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

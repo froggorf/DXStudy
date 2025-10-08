@@ -422,6 +422,12 @@ static EKeys VKCodeToEKey(WPARAM vk, LPARAM lParam = 0)
 	}
 }
 
+std::string UEngine::GetDefaultPlayerControllerClassName()
+{
+	
+	return EngineData[std::string{"DefaultPlayerController"}];
+}
+
 void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static XMFLOAT2 LastMousePosition;

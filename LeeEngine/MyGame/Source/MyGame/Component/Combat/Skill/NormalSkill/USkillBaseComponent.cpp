@@ -5,6 +5,7 @@
 #include "Engine/Class/Framework/UPlayerInput.h"
 #include "Engine/RenderCore/EditorScene.h"
 #include "MyGame/Character/AMyGameCharacterBase.h"
+#include "MyGame/Widget/UMyGameWidgetBase.h"
 
 USkillBaseComponent::USkillBaseComponent()
 {
@@ -92,6 +93,11 @@ void USkillBaseComponent::OnSkillBlendOut()
 		CurrentCheckDoNextSkillTime = 0.0f;
 		GEngine->GetTimerManager()->SetTimer(CheckDoNextSkillTimerHandle, {this, &USkillBaseComponent::CheckDoNextSkill}, 0.0f, true, 0.01f);
 	}
+	else
+	{
+		CurrentSkillCombo = 0;
+		bIsCurrentPlayingSkill = false;
+	}
 
 	// BlendOut Delegate 실행
 	if (CurrentSkillCombo < SkillBlendOutDelegates.size())
@@ -118,12 +124,18 @@ void USkillBaseComponent::CoolDown()
 {
 	CurrentCoolDownTime -= CoolDownTimerRepeatTime;
 
-	MY_LOG(GetName(),EDebugLogLevel::DLL_Warning, GetFunctionName + std::to_string(CurrentCoolDownTime));
 	if (CurrentCoolDownTime <= 0.0f)
 	{
 		CurrentCoolDownTime = 0.0f;
 		GEngine->GetTimerManager()->ClearTimer(CoolDownTimerHandle);
-		MY_LOG(GetName(), EDebugLogLevel::DLL_Display, GetFunctionName + " Finish");
+	}
+
+	if (OwnerCharacter)
+	{
+		if (const std::shared_ptr<UMyGameWidgetBase>& CharacterWidget = OwnerCharacter->GetCharacterWidget())
+		{
+			CharacterWidget->SetSkillCoolDownTime(CurrentCoolDownTime);
+		}
 	}
 }
 

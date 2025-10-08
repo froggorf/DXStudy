@@ -208,6 +208,12 @@ inline XMFLOAT4 operator*(const XMFLOAT4& A, float Val)
 	return ReturnValue;
 }
 
+inline std::wstring FloatToWString(float Value, int Pos)
+{
+	std::wstring Text = std::to_wstring(Value);
+	return Text.substr(0, Text.find('.') + Pos + 1);
+}
+
 namespace MyMath
 {
 	inline XMFLOAT3 Lerp(const XMFLOAT3& A, const XMFLOAT3& B, float T)

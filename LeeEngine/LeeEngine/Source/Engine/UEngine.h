@@ -87,6 +87,8 @@ class UEngine : public UObject
 		return EngineDirectory;
 	}
 
+	std::string GetDefaultPlayerControllerClassName();
+
 	virtual void HandleInput(UINT msg, WPARAM wParam, LPARAM lParam);
 	void SetEngineTickRate(float NewTickRate){EngineTickRate = NewTickRate;}
 protected:

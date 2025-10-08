@@ -24,10 +24,13 @@ private:
 	std::shared_ptr<FImageWidget> SkillBackground;
 	std::shared_ptr<FImageWidget> SkillUIImage;
 	std::shared_ptr<FImageWidget> SkillCoolDownImage;
+	std::shared_ptr<FTextWidget> SkillCoolDownText;
 	std::shared_ptr<FCanvasWidget> SkillKeyGuideCanvas;
 	std::shared_ptr<FImageWidget> SkillKeyGuideImage;
-	std::shared_ptr<FTextWidget> SkillCoolDownText;
 	std::shared_ptr<FTextWidget> SkillKeyText;
+public:
+	void SetSkillCoolDownTime(float NewCoolDownTime);
+private:
 
 	// Ultimate UI
 	std::shared_ptr<FVerticalBoxWidget> UltimateBoxSlot;

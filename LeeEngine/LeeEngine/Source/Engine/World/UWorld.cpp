@@ -46,7 +46,13 @@ void UWorld::BeginPlay()
 	}
 
 	// TODO: 0709 임시적으로 PlayerController를 해당 위치에서 생성
-	PlayerController = std::dynamic_pointer_cast<APlayerController>(PersistentLevel->SpawnActor("APlayerController", {}));
+
+	PlayerController = std::dynamic_pointer_cast<APlayerController>(PersistentLevel->SpawnActor(GEngine->GetDefaultPlayerControllerClassName(), {}));
+	if (PlayerController.expired())
+	{
+		PlayerController = std::dynamic_pointer_cast<APlayerController>(PersistentLevel->SpawnActor("APlayerController", {}));	
+	}
+	
 
 	PersistentLevel->BeginPlay();
 }

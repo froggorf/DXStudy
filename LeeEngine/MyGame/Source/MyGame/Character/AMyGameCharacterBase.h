@@ -9,6 +9,8 @@
 #include "MyGame/Component/MotionWarping/UMotionWarpingComponent.h"
 #include "MyGame/Interface/Dodge/IDodgeInterface.h"
 
+class UMyGameWidgetBase;
+
 class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
 {
 	MY_GENERATE_BODY(AMyGameCharacterBase)
@@ -39,6 +41,7 @@ class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
 	const std::shared_ptr<UCombatBaseComponent>& GetCombatComponent() const {return CombatComponent;}
 	const std::shared_ptr<USkillBaseComponent>& GetSkillComponent() const {return SkillComponent;}
 	const std::shared_ptr<UUltimateBaseComponent>& GetUltimateComponent() const {return UltimateComponent;}
+	std::shared_ptr<UMyGameWidgetBase> GetCharacterWidget() const {return CharacterWidget.lock(); }
 
 private:
 	bool bRightButtonPressed = false;
@@ -60,6 +63,8 @@ protected:
 	std::string CharacterMeshName = "SK_Manny_UE4";
 	std::string AnimInstanceName = "UMyGameAnimInstanceBase";
 
+	// 캐릭터 마다 존재하는 위젯 (BeginPlay에서 생성)
+	std::weak_ptr<UMyGameWidgetBase> CharacterWidget;
 public:
 	const std::shared_ptr<UMotionWarpingComponent>& GetMotionWarpingComponent() const {return MotionWarpingComponent;}
 protected:
