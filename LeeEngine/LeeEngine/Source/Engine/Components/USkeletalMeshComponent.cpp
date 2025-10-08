@@ -86,11 +86,6 @@ FTransform USkeletalMeshComponent::GetSocketTransform(const std::string& InSocke
 
 	if (BoneHierarchyMap.contains(SkeletalMeshName))
 	{
-		if (InSocketName == "Hand_R")
-		{
-			int a= 0;
-		}
-		
 		std::vector<FPrecomputedBoneData>& BoneHierarchy = BoneHierarchyMap[SkeletalMeshName];
 
 
@@ -167,4 +162,11 @@ void USkeletalMeshComponent::TickComponent(float DeltaSeconds)
 	{
 		GetBodyInstance()->TickComponent(0.0f);
 	}
+}
+
+void USkeletalMeshComponent::Tick_Editor(float DeltaSeconds)
+{
+	USkinnedMeshComponent::Tick_Editor(DeltaSeconds);
+
+	UpdateComponentToWorld();
 }

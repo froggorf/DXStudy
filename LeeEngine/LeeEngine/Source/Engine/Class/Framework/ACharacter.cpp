@@ -213,9 +213,6 @@ void ACharacter::Register()
 {
 	// 디버깅 테스트용
 	AActor::Register();
-
-
-
 }
 
 void ACharacter::BeginPlay()

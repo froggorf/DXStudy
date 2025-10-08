@@ -84,7 +84,6 @@ void USkeletalMesh::LoadDataFromFileData(const nlohmann::json& SkeletalMeshAsset
 	{
 		DefaultAnimSequence = std::make_shared<UAnimSequence>();
 		DefaultAnimSequence->ReadMyAssetFile(SkeletalMeshAssetData["DefaultPoseAnimData"], this);
-
 		DefaultAnimSequence->Traverse();
 	}
 	

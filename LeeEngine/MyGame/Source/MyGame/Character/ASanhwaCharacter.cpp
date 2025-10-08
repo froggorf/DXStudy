@@ -23,6 +23,22 @@ ASanhwaCharacter::ASanhwaCharacter()
 	// TODO : 산화의 타입으로 변경해주기
 	SkillComponent = std::make_shared<USanhwaSkillComponent>();
 	UltimateComponent = std::make_shared<UUltimateBaseComponent>();
+
+	SM_Sword = std::make_shared<UStaticMeshComponent>();
+	SM_Sword->SetupAttachment(SkeletalMeshComponent, "hand_r");
+	AssetManager::GetAsyncAssetCache("SM_Sword", [this](std::shared_ptr<UObject> Object)
+		{
+			SM_Sword->SetStaticMesh(std::static_pointer_cast<UStaticMesh>(Object));
+		});
+	SM_Sword->SetRelativeScale3D({0.15f,0.15f,0.15f});
+	SM_Sword->SetRelativeLocation({-0.258, -78.622, 112.711});
+	SM_Sword->SetRelativeRotation(XMFLOAT4{0.507, -0.116, -0.759, 0.392});
+	//SM_Sword->SetRelativeLocation({-9.898f,5.167f, 8.479f});
+
+	// UE 좌표계 x,y,z -> LEE 좌표계
+	// UE 회전 좌표계 x,y,z -> LEE 회전 좌표계
+	
+	//SM_Sword->SetRelativeRotation(XMFLOAT4{0.765f, 0.644f, 0.017f, 0.014f});
 }
 
 void ASanhwaCharacter::CreateWidgetOnBeginPlay()
@@ -33,5 +49,19 @@ void ASanhwaCharacter::CreateWidgetOnBeginPlay()
 		PC->CreateWidget(CharacterName, SanhwaWidget);
 		CharacterWidget = SanhwaWidget;
 	}
+}
+
+void ASanhwaCharacter::BeginPlay()
+{
+	AMyGameCharacterBase::BeginPlay();
+
+	SM_Sword->GetBodyInstance()->SetSimulatePhysics(false);
+	SM_Sword->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	for (UINT i = 0; i < static_cast<UINT>(ECollisionChannel::Count); ++i)
+	{
+		SM_Sword->GetBodyInstance()->SetCollisionResponseToChannel(static_cast<ECollisionChannel>(i), ECollisionResponse::Overlap);
+	}
+	SM_Sword->GetBodyInstance()->SetObjectType(ECollisionChannel::Pawn);
 }
 

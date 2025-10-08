@@ -20,12 +20,13 @@
 	],
     	"Notifies" : [
 		{ "NotifyClass" : "UAnimNotify_MotionWarpingStart", "TriggerTime" : 2, "WarpingName" : "SH_Attack4_Float" },
-		{ "NotifyClass" : "UAnimNotify_MotionWarpingEnd", "TriggerTime" : 20},
+		{ "NotifyClass" : "UAnimNotify_MotionWarpingStart", "TriggerTime" : 20, "WarpingName" : "SH_Attack4_Floating" },
+
 	
 		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 3, "EventName": "Hide"},
 		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 8, "EventName" : "Show"},
 
-		{ "NotifyClass" : "UAnimNotify_MotionWarpingStart", "TriggerTime" : 30, "WarpingName" : "SH_Attack4_Attack" },
-		{ "NotifyClass" : "UAnimNotify_MotionWarpingEnd", "TriggerTime" : 60}
+		{ "NotifyClass" : "UAnimNotify_MotionWarpingStart", "TriggerTime" : 25, "WarpingName" : "SH_Attack4_Attack" },
+		{ "NotifyClass" : "UAnimNotify_MotionWarpingEnd", "TriggerTime" : 58}
   	  ]
 }

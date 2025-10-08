@@ -52,6 +52,9 @@ void USanhwaAnimInstance::SetAnimNotify_BeginPlay()
 	Attack4_AttackDelegate.Add(this, &USanhwaAnimInstance::MotionWarping_BasicAttack4_Attack);
 	NotifyEvent["SH_Attack4_Attack"] = Attack4_AttackDelegate;
 
+	Delegate<> Attack4_FloatingDelegate{this, &USanhwaAnimInstance::MotionWarping_BasicAttack4_Floating};
+	NotifyEvent["SH_Attack4_Floating"] = Attack4_FloatingDelegate;
+
 	Delegate<> HideDelegate;
 	HideDelegate.Add([this]()
 		{
@@ -150,7 +153,10 @@ void USanhwaAnimInstance::MotionWarping_BasicAttack4_Float()
 		WarpingTargetPos.y += FloatingDistance;
 		MyGameCharacter->SetActorRotation(MyMath::GetRotationQuaternionToActor(CurActorLocation, EnemyLocation));
 
-		Attack4_AttackTargetPos = EnemyLocation;
+		float ToEnemyDistance = MyMath::GetDistance(CurActorLocation, EnemyLocation);
+		XMFLOAT3 ToEnemyVector = MyMath::GetDirectionUnitVector(CurActorLocation, EnemyLocation);
+
+		Attack4_AttackTargetPos = CurActorLocation + ToEnemyVector* std::min(max(ToEnemyDistance - 30, 0), Attack4MoveDistance);
 	}
 	else
 	{
@@ -160,6 +166,24 @@ void USanhwaAnimInstance::MotionWarping_BasicAttack4_Float()
 	}
 
 	MotionWarpingComp->SetTargetLocation(WarpingTargetPos, MoveTime);
+}
+
+void USanhwaAnimInstance::MotionWarping_BasicAttack4_Floating()
+{
+	// 특정한 동작을 위해 기존 SetWarping_BasicAttack을 사용하지 않음
+	if (!SetMotionWarping())
+	{
+		return;
+	}
+	const std::shared_ptr<UMotionWarpingComponent>& MotionWarpingComp = MyGameCharacter->GetMotionWarpingComponent();
+	const std::shared_ptr<USanhwaCombatComponent>& CombatComp = std::static_pointer_cast<USanhwaCombatComponent>(MyGameCharacter->GetCombatComponent());
+	if (!MotionWarpingComp || !CombatComp)
+	{
+		return;
+	}
+
+	XMFLOAT3 CurActorLocation = MyGameCharacter->GetActorLocation();
+	MotionWarpingComp->SetTargetLocation(CurActorLocation, 10.0f);
 }
 
 void USanhwaAnimInstance::MotionWarping_BasicAttack4_Attack()
