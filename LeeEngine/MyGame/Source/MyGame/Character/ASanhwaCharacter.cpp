@@ -35,8 +35,6 @@ ASanhwaCharacter::ASanhwaCharacter()
 	SM_Sword->SetRelativeRotation(XMFLOAT4{0.507, -0.116, -0.759, 0.392});
 	//SM_Sword->SetRelativeLocation({-9.898f,5.167f, 8.479f});
 
-	// UE 좌표계 x,y,z -> LEE 좌표계
-	// UE 회전 좌표계 x,y,z -> LEE 회전 좌표계
 	
 	//SM_Sword->SetRelativeRotation(XMFLOAT4{0.765f, 0.644f, 0.017f, 0.014f});
 }

@@ -17,17 +17,16 @@ private:
 
 	// =========================== Attack ===========================
 	std::shared_ptr<FHorizontalBoxWidget> AttackBoxSlot;
-
 	// Skill UI
-	std::shared_ptr<FVerticalBoxWidget> SkillBoxSlot;
-	std::shared_ptr<FCanvasWidget> SkillCanvasWidget;
-	std::shared_ptr<FImageWidget> SkillBackground;
-	std::shared_ptr<FImageWidget> SkillUIImage;
-	std::shared_ptr<FProgressBarWidget> PB_SkillCoolDown;
-	std::shared_ptr<FTextWidget> SkillCoolDownText;
-	std::shared_ptr<FCanvasWidget> SkillKeyGuideCanvas;
-	std::shared_ptr<FImageWidget> SkillKeyGuideImage;
-	std::shared_ptr<FTextWidget> SkillKeyText;
+		std::shared_ptr<FVerticalBoxWidget> SkillBoxSlot;
+			std::shared_ptr<FCanvasWidget> SkillCanvasWidget;
+				std::shared_ptr<FImageWidget> SkillBackground;
+				std::shared_ptr<FImageWidget> SkillUIImage;
+				std::shared_ptr<FProgressBarWidget> PB_SkillCoolDown;
+				std::shared_ptr<FTextWidget> SkillCoolDownText;
+			std::shared_ptr<FCanvasWidget> SkillKeyGuideCanvas;
+				std::shared_ptr<FImageWidget> SkillKeyGuideImage;
+				std::shared_ptr<FTextWidget> SkillKeyText;
 public:
 	void SetSkillCoolDownTime(float NewCoolDownTime, float MaxCoolDownTime);
 

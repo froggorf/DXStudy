@@ -31,7 +31,7 @@ public:
 protected:
 	// Initialize 안에서 적용
 	void SetBasicAttackMontages(const std::vector<std::string>& NewMontagesName);
-
+	void SetBasicAttackRange(const std::vector<XMFLOAT3>& AttackRange);
 protected:
 	AMyGameCharacterBase* OwnerCharacter = nullptr;
 
@@ -42,6 +42,7 @@ public:
 	float GetBasicAttackMoveDistance(size_t Index);
 
 	const std::shared_ptr<UAnimMontage>& GetBasicAttackMontage(size_t Index);
+	XMFLOAT3 GetBasicAttackRange(size_t Index);
 protected:
 	// 초기 세팅을 위해
 	bool bIsFightMode = true;
@@ -59,6 +60,8 @@ protected:
 	// 현재의 기본공격 단계를 저장
 	UINT CurrentBasicAttackCombo = 0;
 	bool bIsBasicAttacking = false;
+
+	std::vector<XMFLOAT3> BasicAttackRange;
 
 
 

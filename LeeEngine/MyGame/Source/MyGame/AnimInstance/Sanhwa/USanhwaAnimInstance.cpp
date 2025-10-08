@@ -73,6 +73,9 @@ void USanhwaAnimInstance::SetAnimNotify_BeginPlay()
 
 	Delegate<> SkillAttackDelegate = {this, &USanhwaAnimInstance::SanhwaSkillAttack};
 	NotifyEvent["SH_Skill"] = SkillAttackDelegate;
+
+	Delegate<> FinalAttackDelegate = {this, &USanhwaAnimInstance::Attack4};
+	NotifyEvent["GaugeAttack"] = FinalAttackDelegate;
 }
 
 void USanhwaAnimInstance::BeginPlay()
@@ -204,6 +207,33 @@ void USanhwaAnimInstance::MotionWarping_BasicAttack4_Attack()
 	// 하드코딩, TODO: 대응하는 값으로 바꿀 수 있도록 조정해봐야함
 	float MoveTime = 38 * (1.0f/30);
 	MotionWarpingComp->SetTargetLocation(Attack4_AttackTargetPos, MoveTime);
+}
+
+void USanhwaAnimInstance::Attack4()
+{
+	if (!MyGameCharacter)
+	{
+		return;
+	}
+
+	const XMFLOAT3& ActorLocation = MyGameCharacter->GetActorLocation();
+	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
+	const XMFLOAT3& AttackRange = CombatComp->GetBasicAttackRange(4);
+	const XMFLOAT3& ActorForwardVector = MyGameCharacter->GetActorForwardVector();
+	XMFLOAT3 BoxPos = ActorLocation + ActorForwardVector * AttackRange/2;
+
+	std::vector<AActor*> DamagedActors;
+	GPhysicsEngine->BoxOverlapComponents(BoxPos, AttackRange, {ECollisionChannel::Enemy}, {},DamagedActors);
+	for (AActor* DamagedActor : DamagedActors)
+	{
+		// TODO : 대미지 적용해야함
+		//DamagedActor->TakeDamage()
+	}
+
+	if (!DamagedActors.empty())
+	{
+		std::static_pointer_cast<USanhwaCombatComponent>(CombatComp)->Attack4Success();
+	}
 }
 
 void USanhwaAnimInstance::SanhwaSkillAttack()

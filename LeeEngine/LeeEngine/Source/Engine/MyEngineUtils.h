@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <iostream>
+#include <random>
 
 
 // 디버그 레벨
@@ -142,6 +142,33 @@ inline XMFLOAT4 operator+(const XMFLOAT4& A, const XMFLOAT4& B)
 	return ReturnValue;
 }
 
+inline XMFLOAT3 operator/(const XMFLOAT3& A, const float Divide)
+{
+	assert(Divide != 0);
+
+	XMFLOAT3 ReturnValue;
+	XMStoreFloat3(&ReturnValue, XMVectorDivide(XMLoadFloat3(&A), XMVectorSet(Divide,Divide,Divide,Divide)));
+	return ReturnValue;
+}
+
+inline XMFLOAT2 operator/(const XMFLOAT2& A, const float Divide)
+{
+	assert(Divide != 0);
+
+	XMFLOAT2 ReturnValue;
+	XMStoreFloat2(&ReturnValue, XMVectorDivide(XMLoadFloat2(&A), XMVectorSet(Divide,Divide,Divide,Divide)));
+	return ReturnValue;
+}
+
+inline XMFLOAT4 operator/(const XMFLOAT4& A, const float Divide)
+{
+	assert(Divide != 0);
+
+	XMFLOAT4 ReturnValue;
+	XMStoreFloat4(&ReturnValue, XMVectorDivide(XMLoadFloat4(&A), XMVectorSet(Divide,Divide,Divide,Divide)));
+	return ReturnValue;
+}
+
 inline XMFLOAT4 operator-(const XMFLOAT4& A, const XMFLOAT4& B)
 {
 	XMFLOAT4 ReturnValue;
@@ -266,4 +293,41 @@ namespace MyMath
 	}
 
 	XMFLOAT4 GetRotationQuaternionToActor(const XMFLOAT3& From, const XMFLOAT3& To);
+
+
+
+	static std::random_device rd;
+	static std::mt19937 gen(rd());
+	// 0.0f ~ 1.0f
+	inline float FRand()
+	{
+		static std::uniform_real_distribution<float> dis(0.0f, 1.0f);
+		return dis(gen);
+	}
+
+	// Start ~ End (int)
+	inline int RandRange(int Start, int End)
+	{
+		std::uniform_int_distribution<int> dis(Start, End);
+		return dis(gen);
+	}
+
+	// std::vector 안에 있는 값 중 임의로 반환
+	inline int RandVector(const std::vector<int>& Indices)
+	{
+		if (Indices.empty())
+		{
+			return 0;
+		}
+
+		int RandomIndex = RandRange(0, static_cast<int>(Indices.size() - 1));
+		return Indices[RandomIndex];
+	}
+
+	// Start ~ End (float)
+	inline float FRandRange(float Start, float End)
+	{
+		std::uniform_real_distribution<float> dis(Start, End);
+		return dis(gen);
+	}
 }

@@ -29,7 +29,7 @@ void UCombatBaseComponent::BasicAttack()
 	{
 		if (!BasicAttackMontages[i])
 		{
-			MY_LOG("No Resource" , EDebugLogLevel::DLL_Warning, GetFunctionName + "-> No Montage Yet");
+			MY_LOG("No Resource" , EDebugLogLevel::DLL_Warning, GetFunctionName + "-> No Montage Yet" + std::to_string(i));
 			return;
 		}
 	}
@@ -95,6 +95,12 @@ void UCombatBaseComponent::SetBasicAttackMontages(const std::vector<std::string>
 	
 }
 
+void UCombatBaseComponent::SetBasicAttackRange(const std::vector<XMFLOAT3>& AttackRange)
+{
+	BasicAttackRange.clear();
+	BasicAttackRange = AttackRange;
+}
+
 void UCombatBaseComponent::SetFightMode(bool NewMode)
 {
 	if (bIsFightMode == NewMode)
@@ -157,4 +163,15 @@ const std::shared_ptr<UAnimMontage>& UCombatBaseComponent::GetBasicAttackMontage
 		Index = 0;
 	}
 	return BasicAttackMontages[Index];
+}
+
+XMFLOAT3 UCombatBaseComponent::GetBasicAttackRange(size_t Index)
+{
+	if (Index < 0 || Index >= BasicAttackRange.size())
+	{
+		MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Error, "Wrong index");
+		return {0,0,0};
+	}
+
+	return BasicAttackRange[Index];
 }
