@@ -283,7 +283,7 @@ private:
 
 public:
 	bool HandleMouseInput(const FInputEvent& InputEvent) override { return false;}
-
+	void SetSlider(const FImageBrush& NewBrush, const XMFLOAT2& SliderSize);
 private:
 	EProgressBarFillMode FillMode = EProgressBarFillMode::LeftToRight;
 
@@ -292,7 +292,9 @@ protected:
 	FImageBrush BackgroundBrush;
 	FImageBrush FillBrush;
 
+	bool bIsSlider = false;
+	FImageBrush SliderBrush = {nullptr, {1,1,1,0}};
+	XMFLOAT2 SliderSize;
+
 	static std::shared_ptr<UMaterialInterface> M_RadialPBMaterial;
 };
-
-

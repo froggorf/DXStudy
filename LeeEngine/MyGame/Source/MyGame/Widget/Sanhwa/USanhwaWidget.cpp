@@ -32,6 +32,7 @@ void USanhwaWidget::NativeConstruct()
 		CanvasSlot->Size = {100,100};
 	}
 
+	const std::shared_ptr<UTexture>& Tex = UTexture::GetTextureCache("T_White");
 	for (UINT i = 0; i < USanhwaCombatComponent::GaugeSize; ++i)
 	{
 		PB_Gauge[i] = std::make_shared<FProgressBarWidget>();
@@ -43,10 +44,27 @@ void USanhwaWidget::NativeConstruct()
 			HBSlot->FillSize = 1.0f;
 		}
 		PB_Gauge[i]->SetValue(0.0f);
-		const std::shared_ptr<UTexture>& Tex = UTexture::GetTextureCache("T_White");
+		
 		PB_Gauge[i]->SetBackgroundImageBrush({Tex, {0.5f,0.5f,0.5f,1.0f}});
 		PB_Gauge[i]->SetFillImageBrush({Tex, {(145.0f/255.0f), (186.0f / 255.0f), (191.0f / 255.0f), 1.0f}});
 	}
+
+	PB_ChargeGauge = std::make_shared<FProgressBarWidget>();
+	PB_ChargeGauge->AttachToWidget(GaugeCanvas);
+	if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(PB_ChargeGauge->GetSlot()))
+	{
+		CanvasSlot->Anchors = ECanvasAnchor::WrapAll;
+		CanvasSlot->Alignment = {0.0f,0.0f};
+		CanvasSlot->Position = {0, 0};
+	}
+	PB_ChargeGauge->SetBackgroundImageBrush({nullptr, {0,0,0,1}});
+	PB_ChargeGauge->SetFillImageBrush({nullptr, {0,0,1,1}});
+	PB_ChargeGauge->SetSlider({Tex, {1,1,1,1}}, {5, 75});
+}
+
+void USanhwaWidget::Tick(float DeltaSeconds)
+{
+	UMyGameWidgetBase::Tick(DeltaSeconds);
 }
 
 void USanhwaWidget::SetGaugeUI(const std::array<bool, USanhwaCombatComponent::GaugeSize>& CurrentGauge)

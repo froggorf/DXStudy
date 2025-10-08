@@ -620,7 +620,7 @@ void FProgressBarWidget::Tick(float DeltaSeconds)
 {
 	FChildWidget::Tick(DeltaSeconds);
 
-	if (!BackgroundBrush.Image || !GetVisibility())
+	if (!GetVisibility())
 	{
 		return;
 	}
@@ -630,6 +630,7 @@ void FProgressBarWidget::Tick(float DeltaSeconds)
 
 	bool bIsRadial = FillMode == EProgressBarFillMode::Radial_LeftToRight || FillMode == EProgressBarFillMode::Radial_RightToLeft;
 	// 백그라운드 먼저 그리고
+	if (BackgroundBrush.Image)
 	{
 		FWidgetRenderData WidgetRenderData;
 		WidgetRenderData.Left = BG_Left;
@@ -652,17 +653,18 @@ void FProgressBarWidget::Tick(float DeltaSeconds)
 		GEngine->GetCurrentWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
 	}
 
-	if (bIsRadial || !FillBrush.Image)
+	if (bIsRadial )
 	{
 		return;
 	}
 
-	// Fill 그리기
-	{
-		float Fill_Left, Fill_Right, Fill_Top, Fill_Bottom;
-		CalculateFillImagePosition(BG_Left, BG_Top, BG_Right, BG_Bottom
-			,Fill_Left, Fill_Top, Fill_Right,Fill_Bottom);
+	float Fill_Left, Fill_Right, Fill_Top, Fill_Bottom;
+	CalculateFillImagePosition(BG_Left, BG_Top, BG_Right, BG_Bottom
+		,Fill_Left, Fill_Top, Fill_Right,Fill_Bottom);
 
+	// Fill 그리기
+	if (FillBrush.Image)
+	{
 		FWidgetRenderData WidgetRenderData;
 		WidgetRenderData.Left = Fill_Left;
 		WidgetRenderData.Top = max(Fill_Top,Fill_Bottom);
@@ -670,6 +672,31 @@ void FProgressBarWidget::Tick(float DeltaSeconds)
 		WidgetRenderData.Height = std::abs(Fill_Bottom - Fill_Top);	
 		WidgetRenderData.Texture = FillBrush.Image;
 		WidgetRenderData.Tint = FillBrush.Tint;
+		WidgetRenderData.ZOrder = GetZOrder();
+
+		GEngine->GetCurrentWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
+	}
+
+	// 현재는 Left->Right 만 지원
+	if (SliderBrush.Image && FillMode == EProgressBarFillMode::LeftToRight)
+	{
+		float SliderCenterX = Fill_Right;
+		float SliderCenterY = (Fill_Top + Fill_Bottom) * 0.5f;
+
+		const XMFLOAT2& ScreenSize = GDirectXDevice->GetCurrentResolution();
+		float SliderNDCWidth  = (SliderSize.x * ScaleFactor.x / ScreenSize.x) * 2.0f;
+		float SliderNDCHeight = (SliderSize.y * ScaleFactor.y / ScreenSize.y) * 2.0f;
+
+		float Slider_Top    = SliderCenterY - SliderNDCHeight * 0.5f;
+		float Slider_Bottom = SliderCenterY + SliderNDCHeight * 0.5f;
+
+		FWidgetRenderData WidgetRenderData;
+		WidgetRenderData.Left = SliderCenterX - SliderNDCWidth/2;
+		WidgetRenderData.Top = max(Slider_Top,Slider_Bottom);
+		WidgetRenderData.Width  = SliderNDCWidth;
+		WidgetRenderData.Height = SliderNDCHeight;
+		WidgetRenderData.Texture = SliderBrush.Image;
+		WidgetRenderData.Tint = SliderBrush.Tint;
 		WidgetRenderData.ZOrder = GetZOrder();
 
 		GEngine->GetCurrentWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
@@ -767,4 +794,17 @@ void FProgressBarWidget::CalculateFillImagePosition(float BGLeft, float BGTop, f
 		break;
 	
 	}
+}
+
+void FProgressBarWidget::SetSlider(const FImageBrush& NewBrush, const XMFLOAT2& SliderSize)
+{
+	if (!NewBrush.Image)
+	{
+		bIsSlider =false;
+		return;
+	}
+
+	bIsSlider = true;
+	SliderBrush = NewBrush;
+	this->SliderSize = SliderSize;
 }
