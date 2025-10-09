@@ -61,9 +61,9 @@ protected:
 	std::shared_ptr<UUltimateBaseComponent> UltimateComponent;
 
 	// 궁극기 시전 시 전환될 카메라
-	std::shared_ptr<USpringArmComponent> UltimateSceneSpringArm;
 	std::shared_ptr<UCameraComponent> UltimateSceneCameraComp;
-	std::shared_ptr<UStaticMeshComponent> TestComp_DeleteLater;
+	std::shared_ptr<USceneComponent> TestComp_DeleteLater;
+	std::shared_ptr<UStaticMeshComponent> SM_Arrow;
 public:
 	void ChangeToUltimateCamera();
 	void ChangeToNormalCamera(float BlendTime);

@@ -21,6 +21,7 @@ public:
 	bool TrySkill() override;
 	void BindKeyInputs(const std::shared_ptr<UPlayerInput>& InputSystem) override;
 
+	void CoolDown() override;
 	bool CanUseSkill() override;
 
 	void AddUltimateGauge(const float NewAddGauge);

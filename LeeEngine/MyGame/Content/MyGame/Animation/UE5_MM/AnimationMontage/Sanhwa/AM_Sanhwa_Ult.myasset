@@ -8,17 +8,21 @@
 	},
 	"BlendOut" : {
 		"CurveName" : "CustomCurve",
-		"BlendTime" : 0.2
+		"BlendTime" : 0.0
 	},
 
 	"SlotName": "DefaultSlot",
 	"AnimTrack" : [
-		{"AnimName" : "AS_Sanhwa_Ultimate"}
+		{"AnimName" : "AS_Sanhwa_Ult0"},
+		{"AnimName" : "AS_Sanhwa_Ult1"},
+		{"AnimName" : "AS_Sanhwa_Ult2"}
 	],
 	"Sections" : [
-		{ "SectionName" : "Ult", "StartTime" : 0.0 }
+		{ "SectionName" : "Ult0", "StartTime" : 0.0, "NextSectionName" : "Ult1" },
+		{ "SectionName" : "Ult1", "StartTime" : 6.0, "NextSectionName" : "Ult2" },
+		{ "SectionName" : "Ult2", "StartTime" : 21.0 }
 	],
     	"Notifies" : [
-		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 70, "EventName" : "Camera"}
+		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 5, "EventName" : "Camera"}
   	  ]
 }

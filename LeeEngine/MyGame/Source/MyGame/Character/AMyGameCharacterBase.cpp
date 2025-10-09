@@ -33,31 +33,25 @@ AMyGameCharacterBase::AMyGameCharacterBase()
 
 	MotionWarpingComponent = std::static_pointer_cast<UMotionWarpingComponent>(CreateDefaultSubobject("MotionWarpingComp", "UMotionWarpingComponent"));
 
-	UltimateSceneSpringArm = std::make_shared<USpringArmComponent>();
-	UltimateSceneSpringArm->SetArmLength(120.0f);
-	UltimateSceneSpringArm->SetRelativeRotation(XMFLOAT4{-0.04, 0.93, 0.106, 0.35});
-	// Note: 하위 클래스에서 무조건 SetupAttachment 해줘야함
-	//	UltimateSceneSpringArm->SetupAttachment(CapsuleComp);
-	UltimateSceneSpringArm->bUsePawnControlRotation = false;
-
 	UltimateSceneCameraComp = std::make_shared<UCameraComponent>();
-	UltimateSceneCameraComp->SetupAttachment(UltimateSceneSpringArm, "");
+	//UltimateSceneCameraComp->SetupAttachment(UltimateSceneSpringArm, "");
 
 
 #if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
-	static constexpr bool bFindCameraRotation = true;
+	static constexpr bool bFindCameraRotation = false;
 	if (bFindCameraRotation)
 	{
-		TestComp_DeleteLater = std::make_shared<UStaticMeshComponent>();
-		TestComp_DeleteLater->SetupAttachment(UltimateSceneSpringArm, "");
+		TestComp_DeleteLater = std::make_shared<USceneComponent>();
 
-		std::shared_ptr<UStaticMesh> SphereMesh = UStaticMesh::GetStaticMesh("SM_Sphere");
-		if (!SphereMesh)
-		{
-			AssetManager::ReadMyAsset(AssetManager::GetAssetNameAndAssetPathMap()["SM_Sphere"]);	
-			SphereMesh = UStaticMesh::GetStaticMesh("SM_Sphere");
-		}
-		TestComp_DeleteLater->SetStaticMesh(SphereMesh);	
+		SM_Arrow =  std::make_shared<UStaticMeshComponent>();
+		SM_Arrow->SetupAttachment(TestComp_DeleteLater);
+		SM_Arrow->SetRelativeRotation(XMFLOAT3{0,-90,0});
+		AssetManager::GetAsyncAssetCache("SM_Arrow", [this](std::shared_ptr<UObject> Object)
+			{
+				SM_Arrow->SetStaticMesh(std::static_pointer_cast<UStaticMesh>(Object));
+			});
+		SM_Arrow->Rename("Arrow");
+		SM_Arrow->SetRelativeScale3D({10,10,10});
 	}
 #endif
 	

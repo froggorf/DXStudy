@@ -33,12 +33,21 @@ ASanhwaCharacter::ASanhwaCharacter()
 	SM_Sword->SetRelativeScale3D({0.15f,0.15f,0.15f});
 	SM_Sword->SetRelativeLocation({-0.258, -78.622, 112.711});
 	SM_Sword->SetRelativeRotation(XMFLOAT4{0.507, -0.116, -0.759, 0.392});
+	SM_Sword->Rename("Sword");
 }
 
 void ASanhwaCharacter::Register()
 {
-	UltimateSceneSpringArm->SetupAttachment(SkeletalMeshComponent, "hand_l");
-	UltimateSceneSpringArm->SetArmLength(0.0f);
+	UltimateSceneCameraComp->SetupAttachment(SkeletalMeshComponent, "spine_05");
+	UltimateSceneCameraComp->SetRelativeLocation({11.6,167.28,0.0});
+	UltimateSceneCameraComp->SetRelativeRotation(XMFLOAT4{-0.073,-0.704,0.078, 0.702});
+	if (TestComp_DeleteLater)
+	{
+		TestComp_DeleteLater->SetupAttachment(SkeletalMeshComponent, "spine_05");
+		TestComp_DeleteLater->SetRelativeLocation({11.6,167.28,0.0});
+		TestComp_DeleteLater->SetRelativeRotation(XMFLOAT4{-0.073,-0.704,0.078, 0.702});
+	}
+	
 	
 	//UltimateSceneSpringArm->SetRelativeRotation(XMFLOAT4{-0.04, 0.93, 0.106, 0.35});
 

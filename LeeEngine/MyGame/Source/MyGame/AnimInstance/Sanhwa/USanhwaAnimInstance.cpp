@@ -254,7 +254,7 @@ void USanhwaAnimInstance::Ultimate_ChangeCameraToNormal()
 		return;
 	}
 
-	MyGameCharacter->ChangeToNormalCamera(1.0f);
+	MyGameCharacter->ChangeToNormalCamera(0.5f);
 }
 
 void USanhwaAnimInstance::Attack4()

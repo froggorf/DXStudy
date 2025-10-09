@@ -41,7 +41,7 @@ public:
 	virtual void BindKeyInputs(const std::shared_ptr<UPlayerInput>& InputSystem);
 
 	// 쿨타임 감소 (타이머로 연동)
-	void CoolDown();
+	virtual void CoolDown();
 
 	// 스킬 몽타쥬의 애니메이션 길이 & 스킬 공격 거리
 	float GetSkillMoveDistance(size_t SkillIndex) const {if (SkillIndex >= SkillMoveDistance.size()) return 0.0f; return SkillMoveDistance[SkillIndex];}

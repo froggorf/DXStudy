@@ -29,7 +29,6 @@ bool UUltimateBaseComponent::TrySkill()
 
 		if (const std::shared_ptr<UMyGameWidgetBase>& Widget =  MyGameCharacter->GetCharacterWidget())
 		{
-			Widget->SetUltimateCoolDownTime(CurrentCoolDownTime, SkillCoolDownTime);
 			Widget->SetUltimateGauge(CurrentUltimateGauge);
 		}
 	}
@@ -42,6 +41,25 @@ bool UUltimateBaseComponent::TrySkill()
 void UUltimateBaseComponent::BindKeyInputs(const std::shared_ptr<UPlayerInput>& InputSystem)
 {
 	InputSystem->BindAction(EKeys::Q, ETriggerEvent::Started, this, &UUltimateBaseComponent::TrySkill);
+}
+
+void UUltimateBaseComponent::CoolDown()
+{
+	CurrentCoolDownTime -= CoolDownTimerRepeatTime;
+
+	if (CurrentCoolDownTime <= 0.0f)
+	{
+		CurrentCoolDownTime = 0.0f;
+		GEngine->GetTimerManager()->ClearTimer(CoolDownTimerHandle);
+	}
+
+	if (MyGameCharacter)
+	{
+		if (const std::shared_ptr<UMyGameWidgetBase>& CharacterWidget = MyGameCharacter->GetCharacterWidget())
+		{
+			CharacterWidget->SetUltimateCoolDownTime(CurrentCoolDownTime, SkillCoolDownTime);
+		}
+	}
 }
 
 bool UUltimateBaseComponent::CanUseSkill()
