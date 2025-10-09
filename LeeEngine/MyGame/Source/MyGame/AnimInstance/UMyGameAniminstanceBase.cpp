@@ -15,6 +15,10 @@ void UMyGameAnimInstanceBase::LoadData_OnRegister()
 			BS_Locomotion = std::dynamic_pointer_cast<UBlendSpace>(Object);
 		});
 
+	AssetManager::GetAsyncAssetCache("AS_Sanhwa_Heavy_Idle", [this](std::shared_ptr<UObject> Object)
+		{
+			AS = std::dynamic_pointer_cast<UAnimSequence>(Object);
+		});
 }
 
 void UMyGameAnimInstanceBase::Register()
@@ -128,6 +132,9 @@ void UMyGameAnimInstanceBase::UpdateAnimation(float dt)
 	{
 		PlayMontage("DefaultSlot", BoneTransforms, FinalNotifies);
 	}
+
+	//bool Dummy;
+	//AS->GetBoneTransform(CurrentTime, BoneTransforms, &Dummy);
 }
 
 void UMyGameAnimInstanceBase::SetWarpingTarget(const XMFLOAT3& IfNoEnemyWarpingDirectionUnitVector, float MoveDistance, float MoveTime)

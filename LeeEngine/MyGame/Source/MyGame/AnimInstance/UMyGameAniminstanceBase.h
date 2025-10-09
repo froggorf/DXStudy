@@ -41,4 +41,6 @@ protected:
 private:
 	UCharacterMovementComponent* MovementComp;
 	std::shared_ptr<UBlendSpace> BS_Locomotion;
+
+	std::shared_ptr<UAnimSequence> AS;
 };

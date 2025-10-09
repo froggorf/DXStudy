@@ -132,7 +132,9 @@ bool UAnimMontage::IsWithinPos(UINT SectionIndex1, UINT SectionIndex2, float InP
 		EndTime = CompositeSections[SectionIndex2].StartTime;
 	}
 
-	return (StartTime <= InPosition && InPosition < EndTime);
+	return (StartTime <= InPosition && InPosition < EndTime);	
+	
+	
 }
 
 int UAnimMontage::GetSectionIndexFromPosition(float InPosition)
@@ -163,16 +165,21 @@ void FAnimMontageInstance::Play()
 {
 	bIsPlaying = true;
 
-	
+	int CurrentPlayingSectionIndex = Montage->GetSectionIndexFromPosition(Position < 0.0f? -Position : Position);
+	std::shared_ptr<UAnimSequence> Anim = Montage->AnimTrack.AnimSegments[CurrentPlayingSectionIndex];
+	Position += 1.0f * (30.0f/UAnimInstance::AnimTickFPS) * Anim->GetRateScale();
 
 	// 현재 섹션 끝났을 때
-	if (Position >= CurPlayingEndPosition)
+	if (std::abs(Position) >= CurPlayingEndPosition)
 	{
 		// 다음 섹션이 있다면
 		if (!NextSectionName.empty())
 		{
 			int NextSectionID = Montage->GetSectionIndex(NextSectionName);
 			SetPosition(Montage->CompositeSections[NextSectionID].StartTime);
+
+			CurrentPlayingSectionIndex = NextSectionID;
+			Anim = Montage->AnimTrack.AnimSegments[CurrentPlayingSectionIndex];
 		}
 		else
 		{
@@ -181,31 +188,16 @@ void FAnimMontageInstance::Play()
 			return;
 		}
 	}
-
 	const std::vector<std::shared_ptr<UAnimSequence>> AnimSegments        = Montage->AnimTrack.AnimSegments;
 
-	constexpr float PlayTimePerTick = 1.0f/UAnimInstance::AnimTickFPS;
-	for (const auto& Anim : AnimSegments)
+	float CurrentAnimPosition = Position;
+	if (CurrentPlayingSectionIndex != -1)
 	{
-		if (Position >= Anim->GetDuration())
-		{
-			Position -= Anim->GetDuration();
-			continue;
-		}
-		else
-		{
-			CurrentPlayTime = std::min(CurrentPlayTime + PlayTimePerTick * Anim->GetRateScale(), Anim->GetDuration());
-			Position += 1.0f * (30.0f/UAnimInstance::AnimTickFPS) * Anim->GetRateScale();
-			if (Position >= Anim->GetDuration())
-			{
-				break;
-			}
-			Anim->GetBoneTransform_NoRateScale(Position, MontageBones, &bPlayRootMotion);
-		}
-
-		
+		CurrentAnimPosition -= Montage->CompositeSections[CurrentPlayingSectionIndex].StartTime;	
 	}
+	Anim->GetBoneTransform_NoRateScale(CurrentAnimPosition, MontageBones, &bPlayRootMotion);
 	
+	CurrentPlayTime = Position < 0.0f? -Position/30 : Position/30;
 	Notifies.clear();
 	Montage->GetAnimNotifies(Position, Notifies);
 }
@@ -213,6 +205,7 @@ void FAnimMontageInstance::Play()
 void FAnimMontageInstance::SetPosition(float InPosition)
 {
 	Position      = InPosition;
+	CurrentPlayTime = Position;
 	int SectionID = Montage->GetSectionIndexFromPosition(Position);
 	if (SectionID >= 0)
 	{

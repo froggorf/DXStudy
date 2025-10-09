@@ -90,7 +90,7 @@ protected:
 	bool bUseMotionWarping = false;
 
 public:
-	static constexpr float AnimTickFPS = 60;
+	static constexpr float AnimTickFPS = 30;
 protected:
 	class ACharacter* OwnerCharacter = nullptr;
 private:

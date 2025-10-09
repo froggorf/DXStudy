@@ -1,25 +1,24 @@
 {
 	"Class": "UAnimMontage",
-	"Name": "AM_Sanhwa_BasicAttack0",
+	"Name": "AM_Sanhwa_Heavy_Press",
 	"Skeleton": "SK_UE5MM",
 	"BlendIn" : {
 		"CurveName" : "CustomCurve",
-		"BlendTime" : 0.1
+		"BlendTime" : 0.0
 	},
 	"BlendOut" : {
 		"CurveName" : "CustomCurve",
-		"BlendTime" : 0.1
+		"BlendTime" : 0.0
 	},
 
 	"SlotName": "DefaultSlot",
 	"AnimTrack" : [
-		{"AnimName" : "AS_Sanhwa_BasicAttack0"}
+		{"AnimName" : "AS_Sanhwa_Heavy_Start"},
+		{"AnimName" : "AS_Sanhwa_Heavy_Idle"}
 	],
 	"Sections" : [
-		{ "SectionName" : "BasicAttack", "StartTime" : 0.0 }
+		{ "SectionName" : "Start", "StartTime" : 0.0, "NextSectionName" : "Idle" },
+		{ "SectionName" : "Idle", "StartTime" : 9.0, "NextSectionName" : "Idle" }
 	],
-    	"Notifies" : [
-		{ "NotifyClass" : "UAnimNotify_MotionWarpingStart", "TriggerTime" : 2, "WarpingName" : "SH_Attack0" },
-		{ "NotifyClass" : "UAnimNotify_MotionWarpingEnd", "TriggerTime" : 19 }
-  	  ]
+    	"Notifies" : [  ]
 }

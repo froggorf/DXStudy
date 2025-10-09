@@ -1,7 +1,6 @@
 #include "CoreMinimal.h"
 #include "USanhwaAnimInstance.h"
 
-#include "Engine/AssetManager/AssetManager.h"
 #include "MyGame/Character/AMyGameCharacterBase.h"
 #include "MyGame/Component/Combat/Melee/USanhwaCombatComponent.h"
 #include "MyGame/Component/MotionWarping/UMotionWarpingComponent.h"
@@ -9,17 +8,6 @@
 USanhwaAnimInstance::USanhwaAnimInstance()
 {
 	BS_LocomotionName = "BS_UE5MM_Locomotion";
-
-	//for (int i = 0; i < 5; ++i)
-	//{
-	//	std::string Name = "AS_Sanhwa_BasicAttack" + std::to_string(i);
-	//	AssetManager::GetAsyncAssetCache(Name,[this, i](std::shared_ptr<UObject> Object)
-	//		{
-	//			AS_Test[i] = std::dynamic_pointer_cast<UAnimSequence>(Object);
-
-	//		});	
-	//}
-	
 }
 
 void USanhwaAnimInstance::SetAnimNotify_BeginPlay()

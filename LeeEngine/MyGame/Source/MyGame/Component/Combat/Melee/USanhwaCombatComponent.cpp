@@ -31,6 +31,49 @@ void USanhwaCombatComponent::Initialize(AMyGameCharacterBase* MyCharacter)
 		{250,250,250},
 		{250,250,250},
 	});
+
+	/// AM_Sanhwa_Heavy_Press
+	AssetManager::GetAsyncAssetCache("AM_Sanhwa_Heavy_Press",[this](std::shared_ptr<UObject> Object)
+		{
+			AM_HeavyAttack_Press = std::dynamic_pointer_cast<UAnimMontage>(Object);
+			if (!AM_HeavyAttack_Press)
+			{
+				MY_LOG("Warning", EDebugLogLevel::DLL_Error, GetFunctionName + ", Heavy Montage Not exist");
+#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
+				// 개발 중 테스트를 위하여 assert
+				assert(nullptr&&"Not exist HeavyPress");
+#endif
+			}
+		});
+
+	/// AM_Sanhwa_Heavy_Release
+	AssetManager::GetAsyncAssetCache("AM_Sanhwa_Heavy_Release",[this](std::shared_ptr<UObject> Object)
+		{
+			AM_HeavyAttack_Release = std::dynamic_pointer_cast<UAnimMontage>(Object);
+			if (!AM_HeavyAttack_Release)
+			{
+				MY_LOG("Warning", EDebugLogLevel::DLL_Error, GetFunctionName + ", Heavy Montage Not exist");
+#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
+				// 개발 중 테스트를 위하여 assert
+				assert(nullptr&&"Not exist HeavyRelease");
+#endif
+			}
+		});
+
+	/// AM_Sanhwa_Heavy_Attack
+	AssetManager::GetAsyncAssetCache("AM_Sanhwa_Heavy_Attack",[this](std::shared_ptr<UObject> Object)
+		{
+			AM_HeavyAttack_Attack = std::dynamic_pointer_cast<UAnimMontage>(Object);
+			if (!AM_HeavyAttack_Attack)
+			{
+				MY_LOG("Warning", EDebugLogLevel::DLL_Error, GetFunctionName + ", Heavy Montage Not exist");
+#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
+				// 개발 중 테스트를 위하여 assert
+				assert(nullptr&&"Not exist HeavyPress");
+#endif
+			}
+		});
+
 }
 
 void USanhwaCombatComponent::BasicAttack()
@@ -40,13 +83,29 @@ void USanhwaCombatComponent::BasicAttack()
 
 void USanhwaCombatComponent::HeavyAttack()
 {
+	if (!OwnerCharacter)
+	{
+		return;
+	}
+
+	const std::shared_ptr<UAnimInstance>& AnimInstance = OwnerCharacter->GetAnimInstance();
+	if (!AnimInstance)
+	{
+		return;
+	}
+
 	// 이전에 왼클릭 한 시간 + 홀딩 시간 이 현재 시간보다 작아지면 충분히 누른것
 	if (LastLeftMouseClickedTime + EnterHeavyAttackTime > GEngine->GetTimeSeconds())
 	{
 		return;
 	}
 
-	bIsHeavyAttacking = true;
+	if (!bIsHeavyAttacking)
+	{
+		bIsHeavyAttacking = true;
+		AnimInstance->Montage_Play(AM_HeavyAttack_Press);
+	}
+	
 	// TODO: 애니메이션 재생
 	float IncreaseValue = bIsHeavyAttackGaugeIncrease ? GEngine->GetDeltaSeconds() : -GEngine->GetDeltaSeconds();
 
@@ -75,6 +134,17 @@ void USanhwaCombatComponent::HeavyAttack()
 
 void USanhwaCombatComponent::HeavyAttackMouseReleased()
 {
+	if (!OwnerCharacter)
+	{
+		return;
+	}
+
+	const std::shared_ptr<UAnimInstance>& AnimInstance = OwnerCharacter->GetAnimInstance();
+	if (!AnimInstance)
+	{
+		return;
+	}
+
 	if (!bIsHeavyAttacking)
 	{
 		return;
@@ -86,11 +156,16 @@ void USanhwaCombatComponent::HeavyAttackMouseReleased()
 	{
 		// 강공격에 성공함
 		// TODO: 후속 공격 애니메이션 들어가기
+		AnimInstance->Montage_Play(AM_HeavyAttack_Attack);
 
 		for (UINT i = 0; i < GaugeSize; ++i)
 		{
 			SanhwaGauge[i] = false;
 		}
+	}
+	else
+	{
+		AnimInstance->Montage_Play(AM_HeavyAttack_Release);
 	}
 
 	bIsHeavyAttacking = false;

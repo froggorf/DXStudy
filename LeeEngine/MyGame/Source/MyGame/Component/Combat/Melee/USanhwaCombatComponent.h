@@ -35,6 +35,10 @@ private:
 	static constexpr float EnterHeavyAttackTime = 0.5f;
 	bool bIsHeavyAttackGaugeIncrease = true;
 	float CurrentChargeGauge = 0.0f;
+	// 강공격 애니메이션들
+	std::shared_ptr<UAnimMontage> AM_HeavyAttack_Press;
+	std::shared_ptr<UAnimMontage> AM_HeavyAttack_Release;
+	std::shared_ptr<UAnimMontage> AM_HeavyAttack_Attack;
 	
 public:
 	// 산화의 특수 게이지

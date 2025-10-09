@@ -1,22 +1,22 @@
 {
 	"Class": "UAnimMontage",
-	"Name": "AM_Sanhwa_Heavy_Release",
+	"Name": "AM_Sanhwa_Heavy_Attack",
 	"Skeleton": "SK_UE5MM",
 	"BlendIn" : {
 		"CurveName" : "CustomCurve",
-		"BlendTime" : 0.0
+		"BlendTime" : 0.1
 	},
 	"BlendOut" : {
 		"CurveName" : "CustomCurve",
-		"BlendTime" : 0.0
+		"BlendTime" : 0.1
 	},
 
 	"SlotName": "DefaultSlot",
 	"AnimTrack" : [
-		{"AnimName" : "AS_Sanhwa_Heavy_End"}
+		{"AnimName" : "AS_Sanhwa_Heavy_Attack"}
 	],
 	"Sections" : [
-		{ "SectionName" : "Release", "StartTime" : 0.0 }
+		{ "SectionName" : "HeavyAttack", "StartTime" : 0.0 }
 	],
     	"Notifies" : [
   	  ]

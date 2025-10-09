@@ -347,7 +347,7 @@ void UAnimInstance::PlayMontage(const std::string& SlotName, std::vector<FBoneLo
 			bBlendOut =false;
 
 			// 블렌드 In
-			if (MontageInstance->CurrentPlayTime < BlendInBlendTime)
+			if (StartTime > 0.0f && MontageInstance->CurrentPlayTime < BlendInBlendTime)
 			{
 				const FRichCurve& BlendInCurve   = MontageInstance->Montage->BlendIn.GetCurve()->GetRichCurve();
 				float             NormalizedTime = MontageInstance->CurrentPlayTime / BlendInBlendTime; // 0 ~ 1 의 값
@@ -359,7 +359,7 @@ void UAnimInstance::PlayMontage(const std::string& SlotName, std::vector<FBoneLo
 				}
 			}
 			// 블렌드 Out
-			else if (EndTime - BlendOutBlendTime <= MontageInstance->CurrentPlayTime /* && MontageInstance->CurrentPlayTime <= EndTime*/)
+			else if (BlendOutBlendTime > 0.0f && EndTime - BlendOutBlendTime <= MontageInstance->CurrentPlayTime /* && MontageInstance->CurrentPlayTime <= EndTime*/)
 			{
 				const FRichCurve& BlendOutCurve  = MontageInstance->Montage->BlendOut.GetCurve()->GetRichCurve();
 				float             NormalizedTime = (EndTime - MontageInstance->CurrentPlayTime) / BlendOutBlendTime; // 1~0의 값
