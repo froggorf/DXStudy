@@ -73,7 +73,7 @@ XMFLOAT3 UMyGameAnimInstanceBase::GetWarpingPositionToEnemy(const XMFLOAT3& CurA
 
 	// 적군의 길이 30 -> 적의 위치까지 가려다가 충돌체크가 이상하게 되는 경우를 방지하기 위해 약간의 갭을 두고 이동
 	// std::min(max(ToEnemyDistance - 30, 0), MaxMoveDistance) -> 이동할 수 있는 거리와 적군 앞까지의 거리중 작은것을 선택
-	return CurActorLocation + ToEnemyVector * std::min(max(ToEnemyDistance - 30, 0), MaxMoveDistance);
+	return CurActorLocation + ToEnemyVector * std::min(max(ToEnemyDistance - 75, 0), MaxMoveDistance);
 }
 
 void UMyGameAnimInstanceBase::EndMotionWarping()

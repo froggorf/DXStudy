@@ -25,7 +25,7 @@ public:
 
 	virtual void BasicAttack();
 	virtual void BasicAttackEnded();
-	virtual void HeavyAttack() {};
+	virtual void HeavyAttack();
 	virtual void HeavyAttackMouseReleased() {}
 	virtual void JumpAttack() {};
 	virtual void BindKeyInputs(const std::shared_ptr<UPlayerInput>& InputSystem);

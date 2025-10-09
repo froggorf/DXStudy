@@ -19,5 +19,8 @@
 		{ "SectionName" : "HeavyAttack", "StartTime" : 0.0 }
 	],
     	"Notifies" : [
+		{ "NotifyClass" : "UAnimNotify_MotionWarpingStart", "TriggerTime" : 1, "WarpingName" : "SH_Heavy_Move" },
+		{ "NotifyClass" : "UAnimNotify_MotionWarpingStart", "TriggerTime" : 25, "WarpingName" : "SH_Heavy_Stay" },
+		{ "NotifyClass" : "UAnimNotify_MotionWarpingEnd", "TriggerTime" : 48 }
   	  ]
 }

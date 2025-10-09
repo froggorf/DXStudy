@@ -22,6 +22,7 @@ public:
 	float GetAttack4_AttackMoveDistance() const {return Attack4_AttackMoveDistance; }
 
 	void Attack4Success();
+	float GetHeavyAttackMoveDistance() const {return HeavyAttackMoveDistance;}
 private:
 	// ================ 기본공격 변수 ================
 	// 기본공격 4의 떠오르는 높이
@@ -32,9 +33,10 @@ private:
 	float Attack4_AttackMoveDistance = 700.0f;
 
 	// ================ 강공격 변수 ================
-	static constexpr float EnterHeavyAttackTime = 0.5f;
+	static constexpr float EnterHeavyAttackTime = 0.7f;
 	bool bIsHeavyAttackGaugeIncrease = true;
 	float CurrentChargeGauge = 0.0f;
+	float HeavyAttackMoveDistance = 600.0f;
 	// 강공격 애니메이션들
 	std::shared_ptr<UAnimMontage> AM_HeavyAttack_Press;
 	std::shared_ptr<UAnimMontage> AM_HeavyAttack_Release;

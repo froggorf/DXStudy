@@ -52,6 +52,10 @@ void UAnimInstance::UpdateAnimation(float dt)
 			
 		}
 	}
+	if (MontageInstances.empty())
+	{
+		bPlayRootMotion = false;
+	}
 }
 
 void UAnimInstance::CalculateFinalBoneMatrices(std::vector<XMMATRIX>& FinalBoneMatrices)

@@ -15,3 +15,8 @@ void UMeleeBaseComponent::BasicAttack()
 {
 	UCombatBaseComponent::BasicAttack();
 }
+
+void UMeleeBaseComponent::HeavyAttack()
+{
+	UCombatBaseComponent::HeavyAttack();
+}

@@ -103,6 +103,7 @@ void USanhwaCombatComponent::HeavyAttack()
 	if (!bIsHeavyAttacking)
 	{
 		bIsHeavyAttacking = true;
+		bIsBasicAttacking = false;
 		AnimInstance->Montage_Play(AM_HeavyAttack_Press);
 	}
 	
@@ -139,13 +140,13 @@ void USanhwaCombatComponent::HeavyAttackMouseReleased()
 		return;
 	}
 
-	const std::shared_ptr<UAnimInstance>& AnimInstance = OwnerCharacter->GetAnimInstance();
-	if (!AnimInstance)
+	if (!bIsHeavyAttacking)
 	{
 		return;
 	}
 
-	if (!bIsHeavyAttacking)
+	const std::shared_ptr<UAnimInstance>& AnimInstance = OwnerCharacter->GetAnimInstance();
+	if (!AnimInstance)
 	{
 		return;
 	}
@@ -169,6 +170,7 @@ void USanhwaCombatComponent::HeavyAttackMouseReleased()
 	}
 
 	bIsHeavyAttacking = false;
+	bIsBasicAttacking = false;
 	CurrentChargeGauge = 0.0f;
 	
 

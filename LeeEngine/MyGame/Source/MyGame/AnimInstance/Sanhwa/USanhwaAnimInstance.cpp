@@ -64,6 +64,12 @@ void USanhwaAnimInstance::SetAnimNotify_BeginPlay()
 
 	Delegate<> FinalAttackDelegate = {this, &USanhwaAnimInstance::Attack4};
 	NotifyEvent["GaugeAttack"] = FinalAttackDelegate;
+
+	Delegate<> HeavyAttackMoveDelegate = {this, &USanhwaAnimInstance::MotionWarping_HeavyAttack_Move};
+	NotifyEvent["SH_Heavy_Move"] = HeavyAttackMoveDelegate;
+
+	Delegate<> HeavyAttackStayDelegate = {this, &USanhwaAnimInstance::MotionWarping_HeavyAttack_Stay};
+	NotifyEvent["SH_Heavy_Stay"] = HeavyAttackStayDelegate;
 }
 
 void USanhwaAnimInstance::BeginPlay()
@@ -147,7 +153,7 @@ void USanhwaAnimInstance::MotionWarping_BasicAttack4_Float()
 		float ToEnemyDistance = MyMath::GetDistance(CurActorLocation, EnemyLocation);
 		XMFLOAT3 ToEnemyVector = MyMath::GetDirectionUnitVector(CurActorLocation, EnemyLocation);
 
-		Attack4_AttackTargetPos = CurActorLocation + ToEnemyVector* std::min(max(ToEnemyDistance - 30, 0), Attack4MoveDistance);
+		Attack4_AttackTargetPos = CurActorLocation + ToEnemyVector* std::min(max(ToEnemyDistance - 75, 0), Attack4MoveDistance);
 	}
 	else
 	{
@@ -195,6 +201,47 @@ void USanhwaAnimInstance::MotionWarping_BasicAttack4_Attack()
 	// 하드코딩, TODO: 대응하는 값으로 바꿀 수 있도록 조정해봐야함
 	float MoveTime = 38 * (1.0f/30);
 	MotionWarpingComp->SetTargetLocation(Attack4_AttackTargetPos, MoveTime);
+}
+
+void USanhwaAnimInstance::MotionWarping_HeavyAttack_Move()
+{
+	if (!SetMotionWarping())
+	{
+		return;
+	}
+	const std::shared_ptr<UMotionWarpingComponent>& MotionWarpingComp = MyGameCharacter->GetMotionWarpingComponent();
+	const std::shared_ptr<USanhwaCombatComponent>& CombatComp = std::static_pointer_cast<USanhwaCombatComponent>(MyGameCharacter->GetCombatComponent());
+	if (!MotionWarpingComp || !CombatComp)
+	{
+		return;
+	}
+
+	// 하드코딩, TODO: 대응하는 값으로 바꿀 수 있도록 조정해봐야함
+	float MoveTime = 23 * (1.0f/30);
+	XMFLOAT3 CurLocation = MyGameCharacter->GetActorLocation();
+	XMFLOAT3 ForwardVector = MyGameCharacter->GetActorForwardVector();
+	
+	MotionWarpingComp->SetTargetLocation(CurLocation + ForwardVector * CombatComp->GetHeavyAttackMoveDistance(), MoveTime);
+}
+
+void USanhwaAnimInstance::MotionWarping_HeavyAttack_Stay()
+{
+	if (!SetMotionWarping())
+	{
+		return;
+	}
+	const std::shared_ptr<UMotionWarpingComponent>& MotionWarpingComp = MyGameCharacter->GetMotionWarpingComponent();
+	const std::shared_ptr<USanhwaCombatComponent>& CombatComp = std::static_pointer_cast<USanhwaCombatComponent>(MyGameCharacter->GetCombatComponent());
+	if (!MotionWarpingComp || !CombatComp)
+	{
+		return;
+	}
+
+	// 하드코딩, TODO: 대응하는 값으로 바꿀 수 있도록 조정해봐야함
+	float MoveTime = 22 * (1.0f/30);
+	XMFLOAT3 CurLocation = MyGameCharacter->GetActorLocation();
+
+	MotionWarpingComp->SetTargetLocation(CurLocation, MoveTime);
 }
 
 void USanhwaAnimInstance::Attack4()

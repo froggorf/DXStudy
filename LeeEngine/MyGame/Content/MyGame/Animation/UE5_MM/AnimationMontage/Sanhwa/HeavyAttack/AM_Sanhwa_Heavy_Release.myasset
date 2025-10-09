@@ -8,7 +8,7 @@
 	},
 	"BlendOut" : {
 		"CurveName" : "CustomCurve",
-		"BlendTime" : 0.0
+		"BlendTime" : 0.2
 	},
 
 	"SlotName": "DefaultSlot",

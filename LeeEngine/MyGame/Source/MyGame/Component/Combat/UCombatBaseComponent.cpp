@@ -70,6 +70,11 @@ void UCombatBaseComponent::BasicAttackEnded()
 	}
 }
 
+void UCombatBaseComponent::HeavyAttack()
+{
+	bIsBasicAttacking = false;
+}
+
 void UCombatBaseComponent::BindKeyInputs(const std::shared_ptr<UPlayerInput>& InputSystem)
 {
 	InputSystem->BindAction(EKeys::MouseLeft, ETriggerEvent::Started, this, &UCombatBaseComponent::BasicAttack);
