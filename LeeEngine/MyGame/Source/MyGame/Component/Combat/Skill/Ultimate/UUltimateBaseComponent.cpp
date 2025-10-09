@@ -13,12 +13,30 @@ void UUltimateBaseComponent::Initialize(AMyGameCharacterBase* MyCharacter)
 	USkillBaseComponent::Initialize(MyCharacter);
 }
 
-void UUltimateBaseComponent::TrySkill()
+bool UUltimateBaseComponent::TrySkill()
 {
-	USkillBaseComponent::TrySkill();
+	if (!USkillBaseComponent::TrySkill())
+	{
+		return false;
+	}
 
 	// 스킬 사용으로 인한 게이지 감소
 	CurrentUltimateGauge = 0.0f;
+
+	if (MyGameCharacter)
+	{
+		MyGameCharacter->ChangeToUltimateCamera();
+
+		if (const std::shared_ptr<UMyGameWidgetBase>& Widget =  MyGameCharacter->GetCharacterWidget())
+		{
+			Widget->SetUltimateCoolDownTime(CurrentCoolDownTime, SkillCoolDownTime);
+			Widget->SetUltimateGauge(CurrentUltimateGauge);
+		}
+	}
+
+	
+
+	return true;
 }
 
 void UUltimateBaseComponent::BindKeyInputs(const std::shared_ptr<UPlayerInput>& InputSystem)
@@ -28,7 +46,7 @@ void UUltimateBaseComponent::BindKeyInputs(const std::shared_ptr<UPlayerInput>& 
 
 bool UUltimateBaseComponent::CanUseSkill()
 {
-	return USkillBaseComponent::CanUseSkill() && CurrentUltimateGauge >= MaxUltimateGauge;
+	return USkillBaseComponent::CanUseSkill();// && CurrentUltimateGauge >= MaxUltimateGauge;
 }
 
 void UUltimateBaseComponent::AddUltimateGauge(const float NewAddGauge)
@@ -37,9 +55,9 @@ void UUltimateBaseComponent::AddUltimateGauge(const float NewAddGauge)
 
 	CurrentUltimateGauge = std::min(CurrentUltimateGauge + NewAddGauge, MaxUltimateGauge);
 
-	if (OwnerCharacter)
+	if (MyGameCharacter)
 	{
-		if (const std::shared_ptr<UMyGameWidgetBase>& Widget = std::static_pointer_cast<UMyGameWidgetBase>(OwnerCharacter->GetCharacterWidget()))
+		if (const std::shared_ptr<UMyGameWidgetBase>& Widget = std::static_pointer_cast<UMyGameWidgetBase>(MyGameCharacter->GetCharacterWidget()))
 		{
 			Widget->SetUltimateGauge(CurrentUltimateGauge / MaxUltimateGauge);
 		}

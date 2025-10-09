@@ -37,10 +37,14 @@ ASanhwaCharacter::ASanhwaCharacter()
 
 void ASanhwaCharacter::Register()
 {
+	UltimateSceneSpringArm->SetupAttachment(SkeletalMeshComponent, "hand_l");
+	UltimateSceneSpringArm->SetArmLength(0.0f);
+	
+	//UltimateSceneSpringArm->SetRelativeRotation(XMFLOAT4{-0.04, 0.93, 0.106, 0.35});
+
 	AMyGameCharacterBase::Register();
 
-	UltimateSceneSpringArm->SetArmLength(300.0f);
-	UltimateSceneSpringArm->SetRelativeRotation(XMFLOAT4{-0.04, 0.93, 0.106, 0.35});
+	
 }
 
 void ASanhwaCharacter::CreateWidgetOnBeginPlay()
@@ -70,27 +74,5 @@ void ASanhwaCharacter::BeginPlay()
 void ASanhwaCharacter::Tick(float DeltaSeconds)
 {
 	AMyGameCharacterBase::Tick(DeltaSeconds);
-
-	static bool bGo = false;
-	if (!bGo)
-	{
-		if (ImGui::IsKeyDown(ImGuiKey_5))
-		{
-			bGo = true;
-			GEngine->GetWorld()->GetCameraManager()->SetViewTargetWithBlend(
-				UltimateSceneCameraComp, 5.0f, EViewTargetBlendFunction::Cubic
-			);
-		}
-	}
-	else
-	{
-		if (ImGui::IsKeyDown(ImGuiKey_6))
-		{
-			bGo = false;
-			GEngine->GetWorld()->GetCameraManager()->SetViewTargetWithBlend(
-				CameraComp, 5.0f, EViewTargetBlendFunction::Cubic
-			);
-		}
-	}
 }
 

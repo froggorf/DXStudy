@@ -12,6 +12,7 @@ class USanhwaUltimateComponent : public UUltimateBaseComponent
 	MY_GENERATE_BODY(USanhwaUltimateComponent)
 	USanhwaUltimateComponent() = default;
 
+
 public:
 	void Initialize(AMyGameCharacterBase* MyCharacter) override;
 };

@@ -70,6 +70,9 @@ void USanhwaAnimInstance::SetAnimNotify_BeginPlay()
 
 	Delegate<> HeavyAttackStayDelegate = {this, &USanhwaAnimInstance::MotionWarping_HeavyAttack_Stay};
 	NotifyEvent["SH_Heavy_Stay"] = HeavyAttackStayDelegate;
+
+	Delegate<> UltimateCameraChangeDelegate = {this, &USanhwaAnimInstance::Ultimate_ChangeCameraToNormal};
+	NotifyEvent["Camera"] = UltimateCameraChangeDelegate;
 }
 
 void USanhwaAnimInstance::BeginPlay()
@@ -242,6 +245,16 @@ void USanhwaAnimInstance::MotionWarping_HeavyAttack_Stay()
 	XMFLOAT3 CurLocation = MyGameCharacter->GetActorLocation();
 
 	MotionWarpingComp->SetTargetLocation(CurLocation, MoveTime);
+}
+
+void USanhwaAnimInstance::Ultimate_ChangeCameraToNormal()
+{
+	if (!MyGameCharacter)
+	{
+		return;
+	}
+
+	MyGameCharacter->ChangeToNormalCamera(1.0f);
 }
 
 void USanhwaAnimInstance::Attack4()

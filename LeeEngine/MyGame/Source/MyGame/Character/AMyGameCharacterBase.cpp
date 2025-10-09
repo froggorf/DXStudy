@@ -36,7 +36,8 @@ AMyGameCharacterBase::AMyGameCharacterBase()
 	UltimateSceneSpringArm = std::make_shared<USpringArmComponent>();
 	UltimateSceneSpringArm->SetArmLength(120.0f);
 	UltimateSceneSpringArm->SetRelativeRotation(XMFLOAT4{-0.04, 0.93, 0.106, 0.35});
-	UltimateSceneSpringArm->SetupAttachment(CapsuleComp);
+	// Note: 하위 클래스에서 무조건 SetupAttachment 해줘야함
+	//	UltimateSceneSpringArm->SetupAttachment(CapsuleComp);
 	UltimateSceneSpringArm->bUsePawnControlRotation = false;
 
 	UltimateSceneCameraComp = std::make_shared<UCameraComponent>();
@@ -155,6 +156,15 @@ void AMyGameCharacterBase::AttackedWhileDodge()
 	AddMonochromePostprocess();
 }
 
+void AMyGameCharacterBase::ChangeToUltimateCamera()
+{
+	GEngine->GetWorld()->GetCameraManager()->SetTargetCamera(UltimateSceneCameraComp);
+}
+
+void AMyGameCharacterBase::ChangeToNormalCamera(float BlendTime)
+{
+	GEngine->GetWorld()->GetCameraManager()->SetViewTargetWithBlend(CameraComp, BlendTime, EViewTargetBlendFunction::Cubic);
+}
 
 
 float AMyGameCharacterBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AActor* DamageCauser)

@@ -25,6 +25,8 @@ class USanhwaAnimInstance final : public UMyGameAnimInstanceBase
 	void MotionWarping_HeavyAttack_Move();
 	void MotionWarping_HeavyAttack_Stay();
 
+	void Ultimate_ChangeCameraToNormal();
+
 	void Attack4();
 
 	// MotionWarping - SkillAttack

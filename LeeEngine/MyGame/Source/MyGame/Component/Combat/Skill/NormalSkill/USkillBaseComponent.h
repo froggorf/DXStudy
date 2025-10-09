@@ -29,7 +29,7 @@ public:
 	// 0번째 스킬이 사용 가능한지 체크
 	virtual bool CanUseSkill();
 	// 스킬 도전
-	virtual void TrySkill();
+	virtual bool TrySkill();
 	// 스킬 콤보가 존재할 경우, 애니메이션 Blend Out ~ +CheckDoNextSkillTime 시간동안 버튼을 다시 누르는지 체크하는 함수
 	virtual void CheckDoNextSkill();
 	// CanUseSkill() 일 경우 스킬을 실제로 시전하는 함수
@@ -52,7 +52,7 @@ protected:
 	void SetSkillMoveDistance(const std::vector<float>& NewMoveDistance);
 	void SetSkillDelegates(const std::vector<Delegate<>>& NewStartDelegates, const std::vector<Delegate<>>& NewBlendOutDelegates);
 protected:
-	AMyGameCharacterBase* OwnerCharacter = nullptr;
+	AMyGameCharacterBase* MyGameCharacter = nullptr;
 
 	// ================================ Cool Down ================================
 	// 기본 쿨타임 시간 (입력값 없을시 default 사용)

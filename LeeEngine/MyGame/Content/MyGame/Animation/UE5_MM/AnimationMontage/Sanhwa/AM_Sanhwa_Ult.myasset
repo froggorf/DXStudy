@@ -13,11 +13,12 @@
 
 	"SlotName": "DefaultSlot",
 	"AnimTrack" : [
-		{"AnimName" : "AS_Sanhwa_BasicAttack0"}
+		{"AnimName" : "AS_Sanhwa_Ultimate"}
 	],
 	"Sections" : [
 		{ "SectionName" : "Ult", "StartTime" : 0.0 }
 	],
     	"Notifies" : [
+		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 70, "EventName" : "Camera"}
   	  ]
 }

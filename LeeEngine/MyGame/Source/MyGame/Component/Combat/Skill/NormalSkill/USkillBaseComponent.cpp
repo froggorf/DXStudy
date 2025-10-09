@@ -13,21 +13,21 @@ USkillBaseComponent::USkillBaseComponent()
 
 void USkillBaseComponent::Initialize(AMyGameCharacterBase* MyCharacter)
 {
-	OwnerCharacter = MyCharacter;
+	MyGameCharacter = MyCharacter;
 }
 
-void USkillBaseComponent::TrySkill()
+bool USkillBaseComponent::TrySkill()
 {
-	if (!OwnerCharacter)
+	if (!MyGameCharacter)
 	{
-		return;
+		return false;
 	}
 
-	const std::shared_ptr<UAnimInstance>& AnimInstance = OwnerCharacter->GetAnimInstance();
+	const std::shared_ptr<UAnimInstance>& AnimInstance = MyGameCharacter->GetAnimInstance();
 	if (!AnimInstance || AnimInstance->IsPlayingMontage())
 	{
 		MY_LOG(GetName(),EDebugLogLevel::DLL_Warning, GetFunctionName + " !AnimInstance || Playing Montage");
-		return;
+		return false;
 	}
 
 	LastPressKeyTime = GEngine->GetTimeSeconds();
@@ -36,10 +36,11 @@ void USkillBaseComponent::TrySkill()
 	{
 		// TODO: 인게임 전용 UI 도입도 생각해보기
 		MY_LOG(GetName(),EDebugLogLevel::DLL_Warning, GetFunctionName + " Cool Time");
-		return;
+		return false;
 	}
 
 	DoSkill(0);
+	return true;
 }
 
 void USkillBaseComponent::CheckDoNextSkill()
@@ -62,7 +63,7 @@ void USkillBaseComponent::CheckDoNextSkill()
 
 void USkillBaseComponent::DoSkill(UINT SkillIndex)
 {
-	const std::shared_ptr<UAnimInstance>& AnimInstance = OwnerCharacter->GetAnimInstance();
+	const std::shared_ptr<UAnimInstance>& AnimInstance = MyGameCharacter->GetAnimInstance();
 
 	// 스킬 콤보 0번째에만 쿨타임 설정
 	if (SkillIndex == 0)
@@ -130,9 +131,9 @@ void USkillBaseComponent::CoolDown()
 		GEngine->GetTimerManager()->ClearTimer(CoolDownTimerHandle);
 	}
 
-	if (OwnerCharacter)
+	if (MyGameCharacter)
 	{
-		if (const std::shared_ptr<UMyGameWidgetBase>& CharacterWidget = OwnerCharacter->GetCharacterWidget())
+		if (const std::shared_ptr<UMyGameWidgetBase>& CharacterWidget = MyGameCharacter->GetCharacterWidget())
 		{
 			CharacterWidget->SetSkillCoolDownTime(CurrentCoolDownTime, SkillCoolDownTime);
 		}

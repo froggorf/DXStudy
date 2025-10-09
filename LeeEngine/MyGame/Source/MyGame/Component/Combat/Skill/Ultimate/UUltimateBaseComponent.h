@@ -18,7 +18,7 @@ public:
 	void Initialize(AMyGameCharacterBase* MyCharacter) override;
 	void SetMaxUltimateGauge(const float NewGauge) { MaxUltimateGauge = NewGauge; }
 
-	void TrySkill() override;
+	bool TrySkill() override;
 	void BindKeyInputs(const std::shared_ptr<UPlayerInput>& InputSystem) override;
 
 	bool CanUseSkill() override;

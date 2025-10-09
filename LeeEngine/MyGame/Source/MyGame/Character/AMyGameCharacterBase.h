@@ -64,6 +64,9 @@ protected:
 	std::shared_ptr<USpringArmComponent> UltimateSceneSpringArm;
 	std::shared_ptr<UCameraComponent> UltimateSceneCameraComp;
 	std::shared_ptr<UStaticMeshComponent> TestComp_DeleteLater;
+public:
+	void ChangeToUltimateCamera();
+	void ChangeToNormalCamera(float BlendTime);
 protected:
 	std::string CharacterMeshName = "SK_Manny_UE4";
 	std::string AnimInstanceName = "UMyGameAnimInstanceBase";
