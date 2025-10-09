@@ -3,6 +3,7 @@
 
 #include "MyGame/Character/AMyGameCharacterBase.h"
 #include "MyGame/Component/Combat/Melee/USanhwaCombatComponent.h"
+#include "MyGame/Component/Combat/Skill/Ultimate/Sanhwa/USanhwaUltimateComponent.h"
 #include "MyGame/Component/MotionWarping/UMotionWarpingComponent.h"
 
 USanhwaAnimInstance::USanhwaAnimInstance()
@@ -281,6 +282,9 @@ void USanhwaAnimInstance::Attack4()
 	if (!DamagedActors.empty())
 	{
 		std::static_pointer_cast<USanhwaCombatComponent>(CombatComp)->Attack4Success();
+
+		// TODO : 임시 코드
+		std::static_pointer_cast<USanhwaUltimateComponent>(MyGameCharacter->GetUltimateComponent())->AddUltimateGauge(35.0f);
 	}
 }
 

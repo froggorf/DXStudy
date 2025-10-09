@@ -64,7 +64,7 @@ void UUltimateBaseComponent::CoolDown()
 
 bool UUltimateBaseComponent::CanUseSkill()
 {
-	return USkillBaseComponent::CanUseSkill();// && CurrentUltimateGauge >= MaxUltimateGauge;
+	return CurrentCoolDownTime <= 0.0f && CurrentUltimateGauge >= MaxUltimateGauge;
 }
 
 void UUltimateBaseComponent::AddUltimateGauge(const float NewAddGauge)

@@ -8,6 +8,6 @@ void USanhwaUltimateComponent::Initialize(AMyGameCharacterBase* MyCharacter)
 	SetMaxUltimateGauge(100.0f);
 	SetSkillMontagesAndCoolDown(
 		{"AM_Sanhwa_Ult"},
-		10.0f
+		25.0f
 	);
 }
