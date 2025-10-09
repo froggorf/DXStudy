@@ -30,20 +30,19 @@ void UAnimMontage::LoadDataFromFileData(const nlohmann::json& AssetData)
 	SlotName = AssetData["SlotName"];
 	if (AssetData.contains("AnimTrack"))
 	{
-		auto AnimSequencesData = AssetData["AnimTrack"];
+		const auto& AnimSequencesData = AssetData["AnimTrack"];
 		int AnimTrackSize = static_cast<int>(AnimSequencesData.size());
+		AnimTrack.AnimSegments.resize(AnimTrackSize);
 		std::atomic<int> CurrentLoadedAnimCount = 0;
-		for (const auto& SequenceData : AnimSequencesData)
+		for (size_t i = 0; i < AnimSequencesData.size(); ++i)
 		{
-			//Legacy Code
-			//AnimTrack.AnimSegments.emplace_back(UAnimSequence::GetAnimationAsset(SequenceData["AnimName"]));
-			AssetManager::GetAsyncAssetCache(SequenceData["AnimName"], [this, &CurrentLoadedAnimCount](std::shared_ptr<UObject> AnimSequence)
+			AssetManager::GetAsyncAssetCache(AnimSequencesData[i]["AnimName"], [this, &CurrentLoadedAnimCount, i](std::shared_ptr<UObject> AnimSequence)
 				{
 					if (!AnimSequence)
 					{
 						assert(nullptr && "잘못된 로드");
 					}
-					AnimTrack.AnimSegments.emplace_back(std::static_pointer_cast<UAnimSequence>(AnimSequence));
+					AnimTrack.AnimSegments[i] = (std::static_pointer_cast<UAnimSequence>(AnimSequence));
 					++CurrentLoadedAnimCount;
 				});
 		}
@@ -169,6 +168,10 @@ void FAnimMontageInstance::Play()
 	std::shared_ptr<UAnimSequence> Anim = Montage->AnimTrack.AnimSegments[CurrentPlayingSectionIndex];
 	Position += 1.0f * (30.0f/UAnimInstance::AnimTickFPS) * Anim->GetRateScale();
 
+	if (ImGui::IsKeyDown(ImGuiKey_5))
+	{
+		int a= 0;
+	}
 	// 현재 섹션 끝났을 때
 	if (std::abs(Position) >= CurPlayingEndPosition)
 	{

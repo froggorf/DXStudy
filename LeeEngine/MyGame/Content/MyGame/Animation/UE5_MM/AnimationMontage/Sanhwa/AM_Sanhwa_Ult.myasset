@@ -1,0 +1,23 @@
+{
+	"Class": "UAnimMontage",
+	"Name": "AM_Sanhwa_Ult",
+	"Skeleton": "SK_UE5MM",
+	"BlendIn" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.0
+	},
+	"BlendOut" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.2
+	},
+
+	"SlotName": "DefaultSlot",
+	"AnimTrack" : [
+		{"AnimName" : "AS_Sanhwa_BasicAttack0"}
+	],
+	"Sections" : [
+		{ "SectionName" : "Ult", "StartTime" : 0.0 }
+	],
+    	"Notifies" : [
+  	  ]
+}

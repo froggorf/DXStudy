@@ -6,6 +6,7 @@
 #include "MyGame/Component/Combat/Skill/NormalSkill/USkillBaseComponent.h"
 
 
+class UCameraComponent;
 class UPlayerInput;
 
 class UUltimateBaseComponent : public USkillBaseComponent
@@ -14,9 +15,17 @@ class UUltimateBaseComponent : public USkillBaseComponent
 	UUltimateBaseComponent();
 
 public:
+	void Initialize(AMyGameCharacterBase* MyCharacter) override;
+	void SetMaxUltimateGauge(const float NewGauge) { MaxUltimateGauge = NewGauge; }
+
 	void TrySkill() override;
-	// AMyGameCharacterBase 내에서 Register 에 호출됨
-	// 초기 세팅
 	void BindKeyInputs(const std::shared_ptr<UPlayerInput>& InputSystem) override;
+
+	bool CanUseSkill() override;
+
+	void AddUltimateGauge(const float NewAddGauge);
+private:
+	float CurrentUltimateGauge = 0.0f;
+	float MaxUltimateGauge = 0.0f;
 
 };

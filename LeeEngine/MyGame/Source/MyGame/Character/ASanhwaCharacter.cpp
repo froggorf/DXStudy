@@ -4,6 +4,7 @@
 #include "Engine/World/UWorld.h"
 #include "MyGame/Component/Combat/Melee/USanhwaCombatComponent.h"
 #include "MyGame/Component/Combat/Skill/NormalSkill/SanHwa/USanhwaSkillComponent.h"
+#include "MyGame/Component/Combat/Skill/Ultimate/Sanhwa/USanhwaUltimateComponent.h"
 #include "MyGame/Core/AMyGamePlayerController.h"
 #include "MyGame/Widget/Sanhwa/USanhwaWidget.h"
 
@@ -20,9 +21,9 @@ ASanhwaCharacter::ASanhwaCharacter()
 	RollMontageName[static_cast<int>(EDodgeDirection::Backward)] = "AM_UE5MM_Roll_Bwd";
 
 	CombatComponent = std::dynamic_pointer_cast<USanhwaCombatComponent>(CreateDefaultSubobject("SanhwaCombatComp", "USanhwaCombatComponent"));
-	// TODO : 산화의 타입으로 변경해주기
-	SkillComponent = std::make_shared<USanhwaSkillComponent>();
-	UltimateComponent = std::make_shared<UUltimateBaseComponent>();
+	SkillComponent = std::dynamic_pointer_cast<USanhwaSkillComponent>(CreateDefaultSubobject("SanhwaSkillComp", "USanhwaSkillComponent"));
+	UltimateComponent = std::dynamic_pointer_cast<USanhwaUltimateComponent>(CreateDefaultSubobject("SanhwaUltComp", "USanhwaUltimateComponent"));
+
 
 	SM_Sword = std::make_shared<UStaticMeshComponent>();
 	SM_Sword->SetupAttachment(SkeletalMeshComponent, "hand_r");
@@ -33,10 +34,6 @@ ASanhwaCharacter::ASanhwaCharacter()
 	SM_Sword->SetRelativeScale3D({0.15f,0.15f,0.15f});
 	SM_Sword->SetRelativeLocation({-0.258, -78.622, 112.711});
 	SM_Sword->SetRelativeRotation(XMFLOAT4{0.507, -0.116, -0.759, 0.392});
-	//SM_Sword->SetRelativeLocation({-9.898f,5.167f, 8.479f});
-
-	
-	//SM_Sword->SetRelativeRotation(XMFLOAT4{0.765f, 0.644f, 0.017f, 0.014f});
 }
 
 void ASanhwaCharacter::CreateWidgetOnBeginPlay()
