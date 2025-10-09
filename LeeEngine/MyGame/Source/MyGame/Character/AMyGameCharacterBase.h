@@ -59,6 +59,11 @@ protected:
 	std::shared_ptr<UCombatBaseComponent> CombatComponent;
 	std::shared_ptr<USkillBaseComponent> SkillComponent;
 	std::shared_ptr<UUltimateBaseComponent> UltimateComponent;
+
+	// 궁극기 시전 시 전환될 카메라
+	std::shared_ptr<USpringArmComponent> UltimateSceneSpringArm;
+	std::shared_ptr<UCameraComponent> UltimateSceneCameraComp;
+	std::shared_ptr<UStaticMeshComponent> TestComp_DeleteLater;
 protected:
 	std::string CharacterMeshName = "SK_Manny_UE4";
 	std::string AnimInstanceName = "UMyGameAnimInstanceBase";

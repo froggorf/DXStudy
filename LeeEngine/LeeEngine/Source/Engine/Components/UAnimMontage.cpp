@@ -168,10 +168,6 @@ void FAnimMontageInstance::Play()
 	std::shared_ptr<UAnimSequence> Anim = Montage->AnimTrack.AnimSegments[CurrentPlayingSectionIndex];
 	Position += 1.0f * (30.0f/UAnimInstance::AnimTickFPS) * Anim->GetRateScale();
 
-	if (ImGui::IsKeyDown(ImGuiKey_5))
-	{
-		int a= 0;
-	}
 	// 현재 섹션 끝났을 때
 	if (std::abs(Position) >= CurPlayingEndPosition)
 	{

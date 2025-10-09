@@ -10,6 +10,7 @@ static UINT ComponentIDCount = 0;
 UActorComponent::UActorComponent()
 {
 	ComponentID = ComponentIDCount++;
+	Rename("Comp" + std::to_string(ComponentID));
 }
 
 void UActorComponent::TickComponent(float DeltaSeconds)

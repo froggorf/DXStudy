@@ -24,7 +24,6 @@ ASanhwaCharacter::ASanhwaCharacter()
 	SkillComponent = std::dynamic_pointer_cast<USanhwaSkillComponent>(CreateDefaultSubobject("SanhwaSkillComp", "USanhwaSkillComponent"));
 	UltimateComponent = std::dynamic_pointer_cast<USanhwaUltimateComponent>(CreateDefaultSubobject("SanhwaUltComp", "USanhwaUltimateComponent"));
 
-
 	SM_Sword = std::make_shared<UStaticMeshComponent>();
 	SM_Sword->SetupAttachment(SkeletalMeshComponent, "hand_r");
 	AssetManager::GetAsyncAssetCache("SM_Sword", [this](std::shared_ptr<UObject> Object)
@@ -34,6 +33,14 @@ ASanhwaCharacter::ASanhwaCharacter()
 	SM_Sword->SetRelativeScale3D({0.15f,0.15f,0.15f});
 	SM_Sword->SetRelativeLocation({-0.258, -78.622, 112.711});
 	SM_Sword->SetRelativeRotation(XMFLOAT4{0.507, -0.116, -0.759, 0.392});
+}
+
+void ASanhwaCharacter::Register()
+{
+	AMyGameCharacterBase::Register();
+
+	UltimateSceneSpringArm->SetArmLength(300.0f);
+	UltimateSceneSpringArm->SetRelativeRotation(XMFLOAT4{-0.04, 0.93, 0.106, 0.35});
 }
 
 void ASanhwaCharacter::CreateWidgetOnBeginPlay()
@@ -58,5 +65,32 @@ void ASanhwaCharacter::BeginPlay()
 		SM_Sword->GetBodyInstance()->SetCollisionResponseToChannel(static_cast<ECollisionChannel>(i), ECollisionResponse::Overlap);
 	}
 	SM_Sword->GetBodyInstance()->SetObjectType(ECollisionChannel::Pawn);
+}
+
+void ASanhwaCharacter::Tick(float DeltaSeconds)
+{
+	AMyGameCharacterBase::Tick(DeltaSeconds);
+
+	static bool bGo = false;
+	if (!bGo)
+	{
+		if (ImGui::IsKeyDown(ImGuiKey_5))
+		{
+			bGo = true;
+			GEngine->GetWorld()->GetCameraManager()->SetViewTargetWithBlend(
+				UltimateSceneCameraComp, 5.0f, EViewTargetBlendFunction::Cubic
+			);
+		}
+	}
+	else
+	{
+		if (ImGui::IsKeyDown(ImGuiKey_6))
+		{
+			bGo = false;
+			GEngine->GetWorld()->GetCameraManager()->SetViewTargetWithBlend(
+				CameraComp, 5.0f, EViewTargetBlendFunction::Cubic
+			);
+		}
+	}
 }
 
