@@ -647,7 +647,7 @@ void UEngine::InitImGui()
 void UEngine::LoadAllObjectsFromFile()
 {
 	// 디스크에 내에 있는 모든 myasset 파일을 로드하는 함수
-	std::vector<std::filesystem::path> MyAssetFiles;
+	std::vector<std::pair<int, std::filesystem::path>> MyAssetFiles;
 	MyAssetFiles.reserve(100);
 	std::string ContentDirectory = CurrentDirectory + "/Content";
 	for (const auto& Entry : std::filesystem::recursive_directory_iterator(ContentDirectory))
@@ -661,16 +661,26 @@ void UEngine::LoadAllObjectsFromFile()
 			// 머테리얼과 텍스쳐는 프리로드 되도록 변경
 			// 06.20 애니메이션 에셋을 위해 스켈레탈 메시 정보도 미리 로드되도록 변경
 			std::string AssetTypeFromName = FileName.substr(0,2);
-			if(AssetTypeFromName == "M_" || AssetTypeFromName == "T_" || AssetTypeFromName == "NS" || AssetTypeFromName == "MI" || AssetTypeFromName == "CV" || AssetTypeFromName == "SB")
+			int LoadPriority = -1;
+			if (AssetTypeFromName == "T_" 
+				||AssetTypeFromName == "CV" 
+				|| AssetTypeFromName == "SB") LoadPriority = 0;
+			else if (AssetTypeFromName == "M_") LoadPriority = 1;
+			else if (AssetTypeFromName == "MI") LoadPriority = 2;
+			else if (AssetTypeFromName == "NS") LoadPriority = 3;
+
+			if (LoadPriority != -1)
 			{
-				MyAssetFiles.push_back(Entry.path());	
+				MyAssetFiles.emplace_back(LoadPriority, Entry.path());	
 			}
 		}
 	}
 
+	std::ranges::sort(MyAssetFiles);
+
 	for (const auto& File : MyAssetFiles)
 	{
-		std::string FilePath = File.generic_string();
+		std::string FilePath = File.second.generic_string();
 
 		AssetManager::ReadMyAsset(FilePath);
 	}

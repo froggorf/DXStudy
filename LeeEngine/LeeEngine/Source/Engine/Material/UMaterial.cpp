@@ -80,10 +80,6 @@ void UMaterialInterface::LoadDataFromFileData(const nlohmann::json& AssetData)
 void UMaterial::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
 	UMaterialInterface::LoadDataFromFileData(AssetData);
-	if (AssetData["Name"] == "M_DeferredSphere")
-	{
-		int a = 0;
-	}
 	// 버텍스 셰이더 로드
 	{
 		auto        VertexShaderData = AssetData["VertexShader"];
@@ -386,6 +382,7 @@ void UMaterialInstance::LoadDataFromFileData(const nlohmann::json& AssetData)
 		{
 			int Index = Data["Index"];
 			const std::string& TexName = Data["Tex"];
+			
 			if (Index >= OverrideTextures.size())
 			{
 				const std::string& MatName = AssetData["Name"];

@@ -304,6 +304,7 @@ void AssetManager::LoadTexture(class UTexture* Texture, const nlohmann::json& As
 	else // png, jpg, jpeg, bmp
 		LoadFromWICFile(WFilePath.c_str(), WIC_FLAGS_NONE, nullptr, image);
 
+
 	if (!image.GetImages())
 	{
 		assert(nullptr && "No Valid Path");

@@ -1,0 +1,14 @@
+{
+    "Class": "UMaterialInstance",
+    "Name": "MI_Sanhwa_Ice",
+    "ParentMaterial" : "M_PBR_Default",
+    "OverrideTexture" :
+    [
+	{ "Index" : 0, "Tex": "T_Sanhwa_Ice"},
+	{ "Index" : 1, "Tex": "l"},
+	{ "Index" : 2, "Tex": ""},
+	{ "Index" : 3, "Tex": ""},
+	{ "Index" : 4, "Tex": ""},
+	{ "Index" : 5, "Tex": ""}
+    ]
+}

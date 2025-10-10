@@ -1,0 +1,6 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_Sanhwa_IceSpikes_Skill",
+    "ModelData": "/Content/Resource/MyGame/StaticMesh/Sanhwa_Skill_IceSpikes.fbx",
+    "Material" : [ "MI_Sanhwa_Ice" ]
+}

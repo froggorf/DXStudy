@@ -95,6 +95,9 @@
     <Filter Include="Source\MyGame\Component\Combat\Skill\Ultimate\Sanhwa">
       <UniqueIdentifier>{17c1fb29-120c-4c11-a0c3-6693f52024b0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\Actor\Sanhwa">
+      <UniqueIdentifier>{1256e18c-df2c-4ac6-8c2b-b03bf58f8062}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -175,6 +178,12 @@
     <ClCompile Include="Source\MyGame\Component\Combat\Skill\Ultimate\Sanhwa\USanhwaUltimateComponent.cpp">
       <Filter>Source\MyGame\Component\Combat\Skill\Ultimate\Sanhwa</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceBase.cpp">
+      <Filter>Source\MyGame\Actor\Sanhwa</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceSpikeUltimate.cpp">
+      <Filter>Source\MyGame\Actor\Sanhwa</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -251,6 +260,12 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Component\Combat\Skill\Ultimate\Sanhwa\USanhwaUltimateComponent.h">
       <Filter>Source\MyGame\Component\Combat\Skill\Ultimate\Sanhwa</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceBase.h">
+      <Filter>Source\MyGame\Actor\Sanhwa</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceSpikeUltimate.h">
+      <Filter>Source\MyGame\Actor\Sanhwa</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

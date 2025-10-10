@@ -1,6 +1,6 @@
 {
     "Class": "UMaterial",
-    "Name": "M_DeferredCube",
+    "Name": "M_Deferred_Base",
     "VertexShader" : {
 	"FilePath" : "/Shader/Deferred.fx",
 	"Func" : "VS_Std3D_Deferred"
