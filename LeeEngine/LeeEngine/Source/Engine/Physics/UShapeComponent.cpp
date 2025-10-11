@@ -27,6 +27,7 @@ void UShapeComponent::RegisterPhysics()
 	if (RigidActor)
 	{
 		RigidActor->userData = this;
+		GPhysicsEngine->AddActor(RigidActor);
 		UpdatePhysicsFilterData();
 	}
 }
@@ -38,6 +39,7 @@ void UShapeComponent::UnRegisterPhysics()
 		if (RigidActor)
 		{
 			GPhysicsEngine->UnRegisterActor(RigidActor);
+			RigidActor = nullptr;
 		}
 	}
 }
@@ -208,6 +210,24 @@ void UShapeComponent::SetKinematicRigidBody(bool bNewKinematic)
 void UShapeComponent::SetCollisionEnabled(ECollisionEnabled NewType)
 {
 	CollisionEnabled = NewType;
+	bShowCollision = NewType != ECollisionEnabled::NoCollision;
+
+	// NoCollision 이 안먹히는 현상이 존재하여 해당 방식을 추가 적용
+	if (NewType == ECollisionEnabled::NoCollision)
+	{
+		if (RigidActor && bIsAddedToPxScene)
+		{
+			UnRegisterPhysics();
+			return;
+		}
+	}
+	else
+	{
+		if (!RigidActor && !bIsAddedToPxScene)
+		{
+			RegisterPhysics();
+		}
+	}
 
 	if (!RigidActor)
 	{

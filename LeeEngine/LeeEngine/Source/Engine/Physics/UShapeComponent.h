@@ -75,6 +75,7 @@ public:
 	ECollisionEnabled GetCollisionEnabled() const {return CollisionEnabled;}
 	void SetCollisionEnabled(ECollisionEnabled NewType);
 
+	bool bIsAddedToPxScene = false;
 protected:
 	UINT LastDrawDebugRenderThreadFrame = -1;
 	bool bDrawDebug = false;

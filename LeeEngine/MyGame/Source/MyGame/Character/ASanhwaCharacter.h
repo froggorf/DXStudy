@@ -21,7 +21,7 @@ public:
 	static std::string CharacterName;
 
 public:
-	std::vector<std::weak_ptr<ASanhwaIceSpikeBase>>& GetIceSpikes() { return IceSpikes;}
+	void GetIceSpikes(std::vector<std::shared_ptr<ASanhwaIceSpikeBase>>& IceSpikeVector);
 private:
 	std::vector<std::weak_ptr<ASanhwaIceSpikeBase>> IceSpikes;
 };

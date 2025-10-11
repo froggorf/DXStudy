@@ -102,17 +102,6 @@ void USanhwaCombatComponent::HeavyAttack()
 		return;
 	}
 
-	// 산화의 특수 로직인 얼음의 충돌체크를 일시적으로 없앤다.
-	std::vector<std::weak_ptr<ASanhwaIceSpikeBase>>& IceSpikes = static_cast<ASanhwaCharacter*>(MyGameCharacter)->GetIceSpikes();
-	for (std::weak_ptr<ASanhwaIceSpikeBase>& IceSpike : IceSpikes)
-	{
-		if (!IceSpike.expired())
-		{
-			IceSpike.lock()->RemoveCollision();
-		}
-	}
-
-
 	if (!bIsHeavyAttacking)
 	{
 		bIsHeavyAttacking = true;
@@ -169,7 +158,15 @@ void USanhwaCombatComponent::HeavyAttackMouseReleased()
 	if (SanhwaGauge[CurrentGaugeIndex])
 	{
 		// 강공격에 성공함
-		// TODO: 후속 공격 애니메이션 들어가기
+
+		// 산화의 특수 로직인 얼음의 충돌체크를 일시적으로 없앤다.
+		std::vector<std::shared_ptr<ASanhwaIceSpikeBase>> IceSpikes;
+		static_cast<ASanhwaCharacter*>(MyGameCharacter)->GetIceSpikes(IceSpikes);
+		for (std::shared_ptr<ASanhwaIceSpikeBase>& IceSpike : IceSpikes)
+		{
+			IceSpike->RemoveCollision();
+		}
+
 		AnimInstance->Montage_Play(AM_HeavyAttack_Attack);
 
 		for (UINT i = 0; i < GaugeSize; ++i)

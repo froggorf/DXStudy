@@ -113,20 +113,20 @@ UPhysicsEngine::~UPhysicsEngine()
 		DefaultMaterial->release();	
 	}
 	
-	if (PxScene)
-	{
-		PxScene->release();	
-	}
-	
-	if (PxPhysics)
-	{
-		PxPhysics->release();	
-	}
-	
-	if (PxFoundation)
-	{
-		PxFoundation->release();	
-	}
+	//if (PxScene)
+	//{
+	//	PxScene->release();	
+	//}
+	//
+	//if (PxPhysics)
+	//{
+	//	PxPhysics->release();	
+	//}
+	//
+	//if (PxFoundation)
+	//{
+	//	PxFoundation->release();	
+	//}
 
 	
 }
@@ -202,7 +202,7 @@ physx::PxShape* UPhysicsEngine::CreateCapsuleShape(const float Radius, const flo
 }
 
 
-physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterActor(const FTransform& Transform, physx::PxShape* InShape, const float Mass, bool bIsDynamic) const
+physx::PxRigidActor* UPhysicsEngine::CreateActor(const FTransform& Transform, physx::PxShape* InShape, const float Mass, bool bIsDynamic) const
 {
 	physx::PxTransform ActorTransform {Transform.Translation.x,Transform.Translation.y,-Transform.Translation.z, {0.0f,0.0f,0.0f,1.0f}};
 	physx::PxRigidActor* Actor = nullptr;
@@ -222,14 +222,12 @@ physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterActor(const FTransform& Tr
 	}
 	
 	Actor->attachShape(*InShape);
-	
-	PxScene->addActor(*Actor);
 
 	return Actor;
 }
 
 
-physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterConvexActor(const FTransform& Transform, const std::shared_ptr<UStaticMesh>& StaticMesh, const float Mass, Microsoft::WRL::ComPtr<ID3D11Buffer>& OutVertexBuffer, bool bIsDynamic) const
+physx::PxRigidActor* UPhysicsEngine::CreateConvexActor(const FTransform& Transform, const std::shared_ptr<UStaticMesh>& StaticMesh, const float Mass, Microsoft::WRL::ComPtr<ID3D11Buffer>& OutVertexBuffer, bool bIsDynamic) const
 {
 	physx::PxConvexMesh* ConvexMesh = CreateConvexMesh(StaticMesh);
 	if (!ConvexMesh)
@@ -267,11 +265,6 @@ physx::PxRigidActor* UPhysicsEngine::CreateAndRegisterConvexActor(const FTransfo
 	shape->setRestOffset(0.0f);
 	Actor->attachShape(*shape);
 	shape->release();
-
-	if (PxScene && Actor)
-	{
-		PxScene->addActor(*Actor);	
-	}
 
 	return Actor;
 }
@@ -345,6 +338,11 @@ void UPhysicsEngine::UnRegisterActor(physx::PxRigidActor* RemoveActor) const
 		return;
 	}
 
+	if (RemoveActor->userData)
+	{
+		static_cast<UShapeComponent*>(RemoveActor->userData)->bIsAddedToPxScene = false;	
+	}
+	
 	RemoveActorFromScene(RemoveActor);
 
 	RemoveActor->release();
@@ -372,6 +370,11 @@ void UPhysicsEngine::AddActor(physx::PxRigidActor* AddActor) const
 	if (PxScene && AddActor && !AddActor->getScene())
 	{
 		PxScene->addActor(*AddActor);
+
+		if (AddActor->userData)
+		{
+			static_cast<UShapeComponent*>(AddActor->userData)->bIsAddedToPxScene = true;	
+		}
 	}
 }
 

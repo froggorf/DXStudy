@@ -74,7 +74,7 @@ void ASanhwaCharacter::BeginPlay()
 	AMyGameCharacterBase::BeginPlay();
 
 	SM_Sword->GetBodyInstance()->SetSimulatePhysics(false);
-	SM_Sword->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SM_Sword->GetBodyInstance()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
 	for (UINT i = 0; i < static_cast<UINT>(ECollisionChannel::Count); ++i)
 	{
@@ -108,6 +108,16 @@ void ASanhwaCharacter::CreateIceSpikes(bool bIsUltimate)
 		IceSpike = GetWorld()->SpawnActor("ASanhwaIceSpikeBase", SpawnTransform);	
 	}
 	std::shared_ptr<ASanhwaIceSpikeBase> S = std::dynamic_pointer_cast<ASanhwaIceSpikeBase>(IceSpike);
-	IceSpikes.emplace_back(); 
+	IceSpikes.emplace_back(S); 
 }
 
+void ASanhwaCharacter::GetIceSpikes(std::vector<std::shared_ptr<ASanhwaIceSpikeBase>>& IceSpikeVector)
+{
+	auto RemoveIter = std::remove_if(IceSpikes.begin(),IceSpikes.end(), [](const std::weak_ptr<ASanhwaIceSpikeBase>& IceSpike){ return IceSpike.expired(); });
+	IceSpikes.erase(RemoveIter,IceSpikes.end());
+
+	for (std::weak_ptr<ASanhwaIceSpikeBase>& IceSpike : IceSpikes)
+	{
+		IceSpikeVector.emplace_back(IceSpike.lock());
+	}
+}

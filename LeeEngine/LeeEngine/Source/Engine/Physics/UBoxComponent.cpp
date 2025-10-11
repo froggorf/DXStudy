@@ -5,6 +5,12 @@ UBoxComponent::UBoxComponent()
 {
     Rename("BoxComponent"+std::to_string(PrimitiveID));
 
+}
+
+void UBoxComponent::Register()
+{
+	UShapeComponent::Register();
+
     SetCollisionEnabled(ECollisionEnabled::QueryOnly);
     for (size_t i = 0; i < CollisionResponse.size(); ++i)
     {
@@ -16,7 +22,7 @@ physx::PxRigidActor* UBoxComponent::CreateRigidActor()
 {
 	CreateVertexBuffer();
 
-	return GPhysicsEngine->CreateAndRegisterActor(GetComponentTransform(), GPhysicsEngine->CreateBoxShape(BoxExtent), Mass, bSimulatePhysics);
+	return GPhysicsEngine->CreateActor(GetComponentTransform(), GPhysicsEngine->CreateBoxShape(BoxExtent), Mass, bSimulatePhysics);
 }
 
 void UBoxComponent::DebugDraw_RenderThread() const

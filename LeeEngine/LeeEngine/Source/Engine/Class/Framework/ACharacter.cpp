@@ -229,7 +229,7 @@ void ACharacter::BeginPlay()
 	CapsuleComp->SetKinematicRigidBody(true);
 
 	QueryCheckCapsuleComp->SetStaticMesh((CapsuleComp->MakeStaticMesh()));
-	QueryCheckCapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	QueryCheckCapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	QueryCheckCapsuleComp->GetBodyInstance()->SetSimulatePhysics(false);
 	QueryCheckCapsuleComp->SetCollisionObjectType(ECollisionChannel::Pawn);
 	QueryCheckCapsuleComp->GetBodyInstance()->SetObjectType(ECollisionChannel::Pawn);
