@@ -2,6 +2,8 @@
 #include "Engine/UEngine.h"
 #include "Engine/Widget/UUserWidget.h"
 
+class UUltimateWidget;
+class USkillWidgetBase;
 class UHealthWidgetBase;
 
 class UMyGameWidgetBase : public UUserWidget
@@ -12,42 +14,20 @@ class UMyGameWidgetBase : public UUserWidget
 
 	void NativeConstruct() override;
 
-	void Skill_NativeConstruct();
-	void Ultimate_NativeConstruct();
-
 	virtual std::string GetBasicAttackTextureName() { return ""; }
 	virtual std::string GetSkillTextureName() { return ""; }
 	virtual std::string GetUltimateTextureName() {return ""; }
 private:
+	// =========================== Health ===========================
 	std::shared_ptr<FCanvasWidget> HealthCanvas;
-	std::shared_ptr<UHealthWidgetBase> HealthWidget;
-
+		std::shared_ptr<UHealthWidgetBase> HealthWidget;
 
 	// =========================== Attack ===========================
 	std::shared_ptr<FHorizontalBoxWidget> AttackBoxSlot;
-	// Skill UI
-		std::shared_ptr<FVerticalBoxWidget> SkillBoxSlot;
-			std::shared_ptr<FCanvasWidget> SkillCanvasWidget;
-				std::shared_ptr<FImageWidget> SkillBackground;
-				std::shared_ptr<FImageWidget> SkillUIImage;
-				std::shared_ptr<FProgressBarWidget> PB_SkillCoolDown;
-				std::shared_ptr<FTextWidget> SkillCoolDownText;
-			std::shared_ptr<FCanvasWidget> SkillKeyGuideCanvas;
-				std::shared_ptr<FImageWidget> SkillKeyGuideImage;
-				std::shared_ptr<FTextWidget> SkillKeyText;
-
-	// Ultimate UI
-		std::shared_ptr<FVerticalBoxWidget> UltimateBoxSlot;
-			std::shared_ptr<FCanvasWidget> UltimateCanvasWidget;
-				std::shared_ptr<FImageWidget> UltimateBackground;
-				std::shared_ptr<FImageWidget> UltimateUIImage;
-				std::shared_ptr<FProgressBarWidget> PB_UltimateGauge;
-				std::shared_ptr<FImageWidget> UltimateNonChargedImage;
-				std::shared_ptr<FProgressBarWidget> PB_UltimateCoolDown;
-				std::shared_ptr<FTextWidget> UltimateCoolDownText;
-			std::shared_ptr<FCanvasWidget> UltimateKeyGuideCanvas;
-				std::shared_ptr<FImageWidget> UltimateKeyGuideImage;
-				std::shared_ptr<FTextWidget> UltimateKeyText;
+		// Skill UI UserWidget
+		std::shared_ptr<USkillWidgetBase> SkillCoolDownWidget;
+		// Ultimate UI UserWidget
+		std::shared_ptr<UUltimateWidget> UltimateCoolDownWidget;
 public:
 	void SetSkillCoolDownTime(float NewCoolDownTime, float MaxCoolDownTime);
 	void SetUltimateCoolDownTime(float NewCoolDownTime, float MaxCoolDownTime);

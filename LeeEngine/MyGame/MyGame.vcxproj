@@ -45,6 +45,8 @@
     <ClCompile Include="Source\MyGame\Notify\MyGameNotify.cpp" />
     <ClCompile Include="Source\MyGame\Widget\Health\UHealthWidgetBase.cpp" />
     <ClCompile Include="Source\MyGame\Widget\Sanhwa\USanhwaWidget.cpp" />
+    <ClCompile Include="Source\MyGame\Widget\Skill\USkillWidgetBase.cpp" />
+    <ClCompile Include="Source\MyGame\Widget\Skill\UUltimateWidget.cpp" />
     <ClCompile Include="Source\MyGame\Widget\UMyGameWidgetBase.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -73,6 +75,8 @@
     <ClInclude Include="Source\MyGame\Notify\MyGameNotify.h" />
     <ClInclude Include="Source\MyGame\Widget\Health\UHealthWidgetBase.h" />
     <ClInclude Include="Source\MyGame\Widget\Sanhwa\USanhwaWidget.h" />
+    <ClInclude Include="Source\MyGame\Widget\Skill\USkillWidgetBase.h" />
+    <ClInclude Include="Source\MyGame\Widget\Skill\UUltimateWidget.h" />
     <ClInclude Include="Source\MyGame\Widget\UMyGameWidgetBase.h" />
   </ItemGroup>
   <ItemGroup>

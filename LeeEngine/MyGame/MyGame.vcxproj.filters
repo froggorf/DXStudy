@@ -104,6 +104,9 @@
     <Filter Include="Source\MyGame\Widget\Health">
       <UniqueIdentifier>{d81c18ca-741a-4099-96cd-52c30e9f817d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\Widget\Skill">
+      <UniqueIdentifier>{1a6a015a-4a89-4180-834d-cc0619611289}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -187,6 +190,12 @@
     <ClCompile Include="Source\MyGame\Widget\Health\UHealthWidgetBase.cpp">
       <Filter>Source\MyGame\Widget\Health</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Widget\Skill\USkillWidgetBase.cpp">
+      <Filter>Source\MyGame\Widget\Skill</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\Widget\Skill\UUltimateWidget.cpp">
+      <Filter>Source\MyGame\Widget\Skill</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -266,6 +275,12 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Widget\Health\UHealthWidgetBase.h">
       <Filter>Source\MyGame\Widget\Health</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Widget\Skill\USkillWidgetBase.h">
+      <Filter>Source\MyGame\Widget\Skill</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Widget\Skill\UUltimateWidget.h">
+      <Filter>Source\MyGame\Widget\Skill</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

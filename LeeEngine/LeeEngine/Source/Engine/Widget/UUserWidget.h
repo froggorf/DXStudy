@@ -26,14 +26,13 @@ public:
 
 	void CollectAllWidgets(std::vector<std::shared_ptr<FChildWidget>>& Widgets);
 
-	// 부모 Widget의 특정 FCanvasWidget에 부착, 무조건 WrapAll 로 부착됨
+	// 부모 Widget의 특정 FPanelWidget 에 부착
 	// AttachToCanvas 함수 내에서 NativeConstruct 실행됨
-	void AttachToCanvas(const std::shared_ptr<FCanvasWidget>& ParentCanvas);
+	void AttachToPanel(const std::shared_ptr<FPanelWidget>& ParentPanelWidget);
 
 	const std::shared_ptr<FPanelWidget>& GetMainCanvasWidget() const {return MainCanvasWidget;}
 protected:
 	std::shared_ptr<FPanelWidget> MainCanvasWidget;
-	std::vector<std::shared_ptr<UUserWidget>> AttachedUserWidgets;
 
 	APlayerController* OwningPlayer = nullptr;
 };

@@ -1,6 +1,7 @@
 #include "CoreMinimal.h"
 #include "ChildWidget.h"
 
+#include "UUserWidget.h"
 #include "Engine/EditorClient/Panel/ImguiViewport.h"
 #include "Engine/World/UWorld.h"
 
@@ -124,14 +125,14 @@ void FPanelWidget::Tick(float DeltaSeconds)
 			std::shared_ptr<FPanelWidget> ParentPanel = std::dynamic_pointer_cast<FPanelWidget>(GetOwner());
 			if (ParentPanel)
 			{
-				XMFLOAT2 ParentSize = ParentPanel->GetCurrentSize();
+				const XMFLOAT2 ParentSize = ParentPanel->GetCurrentSize();
 				GetSlot()->SetParentSize(ParentSize);
 
 				// 슬롯으로부터 크기 계산
-				float Left = GetSlot()->GetLeft();
-				float Top = GetSlot()->GetTop();
-				float Right = GetSlot()->GetRight();
-				float Bottom = GetSlot()->GetBottom();
+				const float Left = GetSlot()->GetLeft();
+				const float Top = GetSlot()->GetTop();
+				const float Right = GetSlot()->GetRight();
+				const float Bottom = GetSlot()->GetBottom();
 
 				CurrentWidgetSize = {Right - Left, Bottom - Top};
 			}
@@ -142,12 +143,16 @@ void FPanelWidget::Tick(float DeltaSeconds)
 	// 현재 크기 저장
 	SetCurrentSize(CurrentWidgetSize);
 
+	for (const std::shared_ptr<UUserWidget>& ChildUserWidget : AttachedUserWidget)
+	{
+		ChildUserWidget->Tick_AttachedUserWidgetVersion(DeltaSeconds);
+	}
+
 	for (const std::shared_ptr<FChildWidget>& ChildWidget : AttachChildren)
 	{
 		// 루트에서부터 매프레임마다 계산되어있음
 		ChildWidget->SetScaleFactor(ScaleFactor);
 	}
-
 
 	// 모든 자식들을 Tick 돌면서 Tick 및 렌더링 되도록 업데이트를 올리기
 	for (const std::shared_ptr<FChildWidget>& ChildWidget : AttachChildren)

@@ -111,6 +111,7 @@ public:
 
 	void SetOwnerUserWidget(UUserWidget* NewOwner) {OwnerUserWidget = NewOwner;}
 	UUserWidget* GetOwnerUserWidget() const {return OwnerUserWidget;}
+	std::vector<std::shared_ptr<UUserWidget>> AttachedUserWidget;
 protected:
 	// 디자인 해상도(루트)
 	XMFLOAT2 DesignResolution = {500.0f,500.0f};
@@ -119,6 +120,7 @@ protected:
 	XMFLOAT2 CurrentSize = {0.0f,0.0f};
 
 	UUserWidget* OwnerUserWidget = nullptr;
+
 };
 
 class FCanvasWidget : public FPanelWidget{
