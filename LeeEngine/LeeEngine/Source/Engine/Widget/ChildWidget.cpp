@@ -33,7 +33,7 @@ std::shared_ptr<FCanvasWidget> FChildWidget::GetRootWidget()
 	}
 	else
 	{
-		return GetRootWidget();
+		return GetOwner()->GetRootWidget();
 	}
 }
 

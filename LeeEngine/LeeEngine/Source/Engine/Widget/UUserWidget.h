@@ -8,13 +8,15 @@
 
 class APlayerController;
 
-class UUserWidget : public UObject
+class UUserWidget : public UObject, public std::enable_shared_from_this<UUserWidget>
 {
 	MY_GENERATE_BODY(UUserWidget)
 public:
 	UUserWidget();
 
-	virtual void Tick(float DeltaSeconds) ;
+	virtual void Tick(float DeltaSeconds);
+	// 자신이 AttachedChildWidgets 에 부착되었을 때 실행되는 Tick
+	virtual void Tick_AttachedUserWidgetVersion(float DeltaSeconds) {};
 
 	virtual void NativeConstruct();
 
@@ -24,8 +26,14 @@ public:
 
 	void CollectAllWidgets(std::vector<std::shared_ptr<FChildWidget>>& Widgets);
 
+	// 부모 Widget의 특정 FCanvasWidget에 부착, 무조건 WrapAll 로 부착됨
+	// AttachToCanvas 함수 내에서 NativeConstruct 실행됨
+	void AttachToCanvas(const std::shared_ptr<FCanvasWidget>& ParentCanvas);
+
+	const std::shared_ptr<FPanelWidget>& GetMainCanvasWidget() const {return MainCanvasWidget;}
 protected:
-	std::shared_ptr<FPanelWidget> OwnerWidget;
+	std::shared_ptr<FPanelWidget> MainCanvasWidget;
+	std::vector<std::shared_ptr<UUserWidget>> AttachedUserWidgets;
 
 	APlayerController* OwningPlayer = nullptr;
 };

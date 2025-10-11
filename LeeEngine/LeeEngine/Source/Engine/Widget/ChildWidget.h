@@ -9,6 +9,7 @@
 #include "Engine/Class/Framework/UPlayerInput.h"
 #include "Engine/Misc/Delegate.h"
 
+class UUserWidget;
 class UMaterialInterface;
 
 class IPanelContainer
@@ -50,11 +51,19 @@ public:
 	virtual void Tick(float DeltaSeconds);
 
 	const std::shared_ptr<FSlot>& GetSlot() const {return Slot;}
+	void SetSlot(const std::shared_ptr<FSlot>& NewSlot) {Slot = NewSlot;}
 
 	UINT WidgetID = -1;
 
 	std::shared_ptr<class FCanvasWidget> GetRootWidget();
-	std::shared_ptr<FChildWidget> GetOwner() const {return OwnerWidget.lock();}
+	std::shared_ptr<FChildWidget> GetOwner() const
+	{
+		if (OwnerWidget.expired())
+		{
+			return nullptr;
+		}
+		return OwnerWidget.lock();
+	}
 
 	void SetScaleFactor(const XMFLOAT2& NewScaleFactor) {ScaleFactor = NewScaleFactor;}
 
@@ -99,12 +108,17 @@ public:
 	bool HandleInput(const FInputEvent& InputEvent) override;
 
 	void CollectAllWidgets(std::vector<std::shared_ptr<FChildWidget>>& Widgets);
+
+	void SetOwnerUserWidget(UUserWidget* NewOwner) {OwnerUserWidget = NewOwner;}
+	UUserWidget* GetOwnerUserWidget() const {return OwnerUserWidget;}
 protected:
 	// 디자인 해상도(루트)
 	XMFLOAT2 DesignResolution = {500.0f,500.0f};
 
 	// 해당 위젯의 사이즈
 	XMFLOAT2 CurrentSize = {0.0f,0.0f};
+
+	UUserWidget* OwnerUserWidget = nullptr;
 };
 
 class FCanvasWidget : public FPanelWidget{

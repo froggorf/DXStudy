@@ -1,15 +1,31 @@
 #include "CoreMinimal.h"
 #include "UMyGameWidgetBase.h"
 
+#include "Health/UHealthWidgetBase.h"
+
 
 void UMyGameWidgetBase::NativeConstruct()
 {
 	UUserWidget::NativeConstruct();
 
-	OwnerWidget->SetDesignResolution({1720,980});
+	MainCanvasWidget->SetDesignResolution({1720,980});
+
+	HealthCanvas = std::make_shared<FCanvasWidget>();
+	HealthCanvas->AttachToWidget(MainCanvasWidget);
+
+	if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(HealthCanvas->GetSlot()))
+	{
+		CanvasSlot->Anchors = ECanvasAnchor::CenterBottom;
+		CanvasSlot->Alignment = {0.5f, 1.0f};
+		CanvasSlot->Position = {0, 0};
+		CanvasSlot->Size = {300, 50};
+	}
+	HealthWidget = std::make_shared<UHealthWidgetBase>();
+	HealthWidget->AttachToCanvas(HealthCanvas);
+
 
 	AttackBoxSlot = std::make_shared<FHorizontalBoxWidget>();
-	AttackBoxSlot->AttachToWidget(OwnerWidget);
+	AttackBoxSlot->AttachToWidget(MainCanvasWidget);
 	if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(AttackBoxSlot->GetSlot()))
 	{
 		CanvasSlot->Anchors = ECanvasAnchor::RightBottom;

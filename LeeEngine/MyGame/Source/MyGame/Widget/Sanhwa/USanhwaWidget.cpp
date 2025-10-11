@@ -5,15 +5,9 @@ void USanhwaWidget::NativeConstruct()
 {
 	UMyGameWidgetBase::NativeConstruct();
 
-	//std::shared_ptr<FCanvasWidget> GaugeCanvas;
-	//std::shared_ptr<FHorizontalBoxWidget> GaugeHBBox;
-	//std::shared_ptr<FProgressBarWidget> PB_Gauge[USanhwaCombatComponent::GaugeSize];
-	//std::shared_ptr<FProgressBarWidget> PB_ChargeGauge;
-
-	
 
 	GaugeCanvas = std::make_shared<FCanvasWidget>();
-	GaugeCanvas->AttachToWidget(OwnerWidget);
+	GaugeCanvas->AttachToWidget(MainCanvasWidget);
 	if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(GaugeCanvas->GetSlot()))
 	{
 		CanvasSlot->Anchors = ECanvasAnchor::CenterBottom;

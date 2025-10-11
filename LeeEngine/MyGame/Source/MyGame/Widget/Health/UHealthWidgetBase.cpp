@@ -8,8 +8,16 @@ void UHealthWidgetBase::NativeConstruct()
 	UUserWidget::NativeConstruct();
 
 	PB_HealthBar = std::make_shared<FProgressBarWidget>();
-	PB_HealthBar->SetBackgroundImageBrush({UTexture::GetTextureCache("T_White"), {0.5f,0.5f,0.5f,1.0f}});
-	PB_HealthBar->SetFillImageBrush({nullptr, {0.0f,1.0f,0.0f,1.0f}});
+	PB_HealthBar->AttachToWidget(MainCanvasWidget);
+	if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(PB_HealthBar->GetSlot()))
+	{
+		CanvasSlot->Anchors = ECanvasAnchor::WrapAll;
+		CanvasSlot->Position = {0,0};
+	}
+
+	const std::shared_ptr<UTexture>& BaseTexture = UTexture::GetTextureCache("T_White");
+	PB_HealthBar->SetBackgroundImageBrush({BaseTexture, {0.5f,0.5f,0.5f,1.0f}});
+	PB_HealthBar->SetFillImageBrush({BaseTexture, {0.0f,1.0f,0.0f,1.0f}});
 	PB_HealthBar->SetFillMode(EProgressBarFillMode::LeftToRight);
 }
 

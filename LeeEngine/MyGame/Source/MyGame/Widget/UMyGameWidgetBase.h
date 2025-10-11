@@ -2,6 +2,8 @@
 #include "Engine/UEngine.h"
 #include "Engine/Widget/UUserWidget.h"
 
+class UHealthWidgetBase;
+
 class UMyGameWidgetBase : public UUserWidget
 {
 	MY_GENERATE_BODY(UMyGameWidgetBase)
@@ -17,6 +19,9 @@ class UMyGameWidgetBase : public UUserWidget
 	virtual std::string GetSkillTextureName() { return ""; }
 	virtual std::string GetUltimateTextureName() {return ""; }
 private:
+	std::shared_ptr<FCanvasWidget> HealthCanvas;
+	std::shared_ptr<UHealthWidgetBase> HealthWidget;
+
 
 	// =========================== Attack ===========================
 	std::shared_ptr<FHorizontalBoxWidget> AttackBoxSlot;
