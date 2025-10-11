@@ -104,15 +104,6 @@ physx::PxFilterFlags MyFilterShader(physx::PxFilterObjectAttributes Attributes0,
 
 UPhysicsEngine::UPhysicsEngine()
 {
-	// Foundation, Physics 생성
-	PxFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
-	PxPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *PxFoundation, physx::PxTolerancesScale());
-
-	CreateScene();
-
-	DefaultMaterial = PxPhysics->createMaterial(0.5f, 0.5f, 0.6f); // friction, restitution
-
-	
 }
 
 UPhysicsEngine::~UPhysicsEngine()
@@ -122,15 +113,15 @@ UPhysicsEngine::~UPhysicsEngine()
 		DefaultMaterial->release();	
 	}
 	
-	//if (PxScene)
-	//{
-	//	PxScene->release();	
-	//}
+	if (PxScene)
+	{
+		PxScene->release();	
+	}
 	
-	//if (PxPhysics)
-	//{
-	//	PxPhysics->release();	
-	//}
+	if (PxPhysics)
+	{
+		PxPhysics->release();	
+	}
 	
 	if (PxFoundation)
 	{
@@ -138,6 +129,17 @@ UPhysicsEngine::~UPhysicsEngine()
 	}
 
 	
+}
+
+void UPhysicsEngine::InitPhysicsEngine()
+{
+	// Foundation, Physics 생성
+	PxFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
+	PxPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *PxFoundation, physx::PxTolerancesScale());
+
+	CreateScene();
+
+	DefaultMaterial = PxPhysics->createMaterial(0.5f, 0.5f, 0.6f); // friction, restitution
 }
 
 void UPhysicsEngine::TickPhysics(float DeltaSeconds) const
@@ -335,6 +337,14 @@ void UPhysicsEngine::UnRegisterActor(physx::PxRigidActor* RemoveActor) const
 		return;
 	}
 
+	physx::PxU32 ActorNum = PxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC| physx::PxActorTypeFlag::eRIGID_STATIC);
+	std::vector<physx::PxActor*> Actors(ActorNum);
+	PxScene->getActors(physx::PxActorTypeFlag::eRIGID_STATIC|physx::PxActorTypeFlag::eRIGID_DYNAMIC, Actors.data(), ActorNum);
+	if (std::ranges::find(Actors, RemoveActor) == Actors.end	())
+	{
+		return;
+	}
+
 	RemoveActorFromScene(RemoveActor);
 
 	RemoveActor->release();
@@ -343,10 +353,18 @@ void UPhysicsEngine::UnRegisterActor(physx::PxRigidActor* RemoveActor) const
 
 void UPhysicsEngine::RemoveActorFromScene(physx::PxRigidActor* RemoveActor) const
 {
-	if (physx::PxScene* CurScene = RemoveActor->getScene())
+	if (PxScene == nullptr)
 	{
-		CurScene->removeActor(*RemoveActor);
+		MY_LOG("LogTemp", EDebugLogLevel::DLL_Error, ("PxScene is nullptr!"));
+		return;
 	}
+	if (RemoveActor == nullptr)
+	{
+		MY_LOG("LogTemp", EDebugLogLevel::DLL_Error, ("RemoveActor is nullptr!"));
+		return;
+	}
+	
+	PxScene->removeActor(*RemoveActor);
 }
 
 void UPhysicsEngine::AddActor(physx::PxRigidActor* AddActor) const

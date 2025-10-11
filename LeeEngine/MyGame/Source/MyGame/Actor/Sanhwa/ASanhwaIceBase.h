@@ -14,10 +14,12 @@ public:
 
 	void SpawnIce();
 
+	void RemoveCollision();
+
 protected:
 	virtual std::string GetIceSpikesStaticMeshName() const { return "SM_Sanhwa_IceSpikes_Skill"; }
 		
-private:
+private: 
 	std::shared_ptr<UStaticMeshComponent> SM_IceSpikes;
 	FTimerHandle SpawnTimerHandle;
 	static constexpr float StartGroundDepth = -320.0f;

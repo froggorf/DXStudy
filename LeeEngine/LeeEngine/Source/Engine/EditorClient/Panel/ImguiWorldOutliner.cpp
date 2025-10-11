@@ -16,6 +16,18 @@ FImguiWorldOutliner::FImguiWorldOutliner(FScene* Scene, class FImguiLevelViewpor
 
 void FImguiWorldOutliner::Draw()
 {
+	//Pending Kill
+	for (const std::shared_ptr<AActor>& PendingKillActor : PendingKillWorldOutlinerActors)
+	{
+		auto RemovedActor = std::ranges::find(WorldOutlinerActors, PendingKillActor);
+		if (RemovedActor != WorldOutlinerActors.end())
+		{
+			WorldOutlinerActors.erase(RemovedActor);	
+		}
+	}
+	PendingKillWorldOutlinerActors.clear();
+
+
 	// Pending Add
 	for (const auto& NewOutlinerActor : PendingAddWorldOutlinerActors)
 	{
@@ -57,9 +69,15 @@ void FImguiWorldOutliner::InitLevelData()
 {
 	WorldOutlinerActors.clear();
 	PendingAddWorldOutlinerActors.clear();
+	PendingKillWorldOutlinerActors.clear();
 }
 
 void FImguiWorldOutliner::PendingAddWorldOutlinerActor(const std::shared_ptr<AActor>& NewActor)
 {
-	PendingAddWorldOutlinerActors.push_back(NewActor);
+	PendingAddWorldOutlinerActors.emplace_back(NewActor);
+}
+
+void FImguiWorldOutliner::PendingKillWorldOutlinerActor(const std::shared_ptr<AActor>& RemoveActor)
+{
+	PendingKillWorldOutlinerActors.emplace_back(RemoveActor);
 }

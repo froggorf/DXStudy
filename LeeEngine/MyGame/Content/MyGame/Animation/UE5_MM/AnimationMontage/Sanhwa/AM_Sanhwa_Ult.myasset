@@ -23,6 +23,7 @@
 		{ "SectionName" : "Ult2", "StartTime" : 21.0 }
 	],
     	"Notifies" : [
-		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 5, "EventName" : "Camera"}
+		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 5, "EventName" : "Camera"},
+		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 11, "EventName" : "UltAttack"}
   	  ]
 }

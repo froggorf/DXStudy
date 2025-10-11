@@ -50,6 +50,8 @@ void UPrimitiveComponent::UnRegister()
 {
 	USceneComponent::UnRegister();
 
+	FScene::KillPrimitive_GameThread(PrimitiveID);
+
 	if (BodyInstance)
 	{
 		BodyInstance->UnRegister();	

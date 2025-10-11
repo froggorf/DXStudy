@@ -27,7 +27,6 @@ protected:
 	std::shared_ptr<UStaticMeshComponent> SM_Couch;
 
 	std::shared_ptr<UStaticMeshComponent> Ground;
-	std::shared_ptr<UStaticMeshComponent> Ground2;
 private:
 
 

@@ -37,6 +37,9 @@ public:
 	// 스킬 몽타쥬 BlendOut 시 Broadcast 되는 함수
 	virtual void OnSkillBlendOut();
 
+	// 실제로 스킬 공격을 적용하는 함수
+	virtual void ApplySkillAttack() {}
+
 	// 키 입력
 	virtual void BindKeyInputs(const std::shared_ptr<UPlayerInput>& InputSystem);
 

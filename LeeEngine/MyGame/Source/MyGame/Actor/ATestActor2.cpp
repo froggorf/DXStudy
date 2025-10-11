@@ -1,4 +1,4 @@
-﻿#include "ATestActor2.h"
+#include "ATestActor2.h"
 
 #include "Engine/Mesh/USkeletalMesh.h"
 #include "Engine/Components/USkeletalMeshComponent.h"
@@ -15,8 +15,6 @@ ATestActor2::ATestActor2()
 
 	TestSKComp->SetRelativeLocation(XMFLOAT3(0.0f, 5.0f, 0.0f));
 	TestSKComp->SetRelativeScale3D(XMFLOAT3(0.2f, 0.2f, 0.2f));
-
-	TestComponent = std::dynamic_pointer_cast<UTestComponent>(CreateDefaultSubobject("TestActorComp", "UTestComponent"));
 
 	NiagaraComp = std::make_shared<UNiagaraComponent>();
 	NiagaraComp->SetupAttachment(GetRootComponent());

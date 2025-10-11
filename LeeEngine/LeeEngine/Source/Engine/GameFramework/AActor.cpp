@@ -41,6 +41,25 @@ void AActor::Register()
 #endif
 }
 
+void AActor::UnRegister()
+{
+	UObject::UnRegister();
+
+	if (RootComponent)
+	{
+		RootComponent->UnRegister();
+	}
+
+	for (const std::shared_ptr<UActorComponent>& Component : OwnedComponents)
+	{
+		Component->UnRegister();
+	}
+
+#ifdef WITH_EDITOR
+	FEditorScene::RemoveWorldOutlinerActor_GameThread(shared_from_this());
+#endif
+}
+
 void AActor::BeginPlay()
 {
 	UObject::BeginPlay();

@@ -71,7 +71,8 @@ class UPhysicsEngine : public UObject
 public:
 	UPhysicsEngine();
 	~UPhysicsEngine() final;
-	 
+
+	void InitPhysicsEngine();
 	void TickPhysics(float DeltaSeconds) const;
 
 	/// Shape

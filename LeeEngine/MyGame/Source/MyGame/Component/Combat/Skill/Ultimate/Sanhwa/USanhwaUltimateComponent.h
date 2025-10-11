@@ -15,4 +15,5 @@ class USanhwaUltimateComponent : public UUltimateBaseComponent
 
 public:
 	void Initialize(AMyGameCharacterBase* MyCharacter) override;
+	void ApplyUltimateAttack() override;
 };

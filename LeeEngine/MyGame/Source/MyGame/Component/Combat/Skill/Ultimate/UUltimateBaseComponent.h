@@ -24,6 +24,8 @@ public:
 	void CoolDown() override;
 	bool CanUseSkill() override;
 
+	virtual void ApplyUltimateAttack();
+
 	void AddUltimateGauge(const float NewAddGauge);
 private:
 	float CurrentUltimateGauge = 0.0f;

@@ -22,6 +22,7 @@ enum class ELevelViewportCommandType
 {
 	LVCT_Null,
 	LVCT_AddActorToWorldOutliner,
+	LVCT_RemoveActorWorldOutliner,
 	LVCT_SetViewportSizeToEditorViewportSize,
 	LVCT_GetEditorViewMatrices,
 	LVCT_SelectActorFromWorldOutliner,
@@ -35,7 +36,7 @@ struct FImguiLevelViewportCommandData : FImguiPanelCommandData
 	~FImguiLevelViewportCommandData() override = default;
 
 	ELevelViewportCommandType CommandType;
-	std::shared_ptr<AActor>   NewPendingAddActor;
+	std::shared_ptr<AActor>   NewPendingActor;
 	std::shared_ptr<AActor>   NewSelectedActorFromWorldOutliner;
 	FViewMatrices*            ViewMatrices;
 

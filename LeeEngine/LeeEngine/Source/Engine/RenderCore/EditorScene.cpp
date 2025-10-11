@@ -133,10 +133,27 @@ void FEditorScene::AddWorldOutlinerActor_GameThread(std::shared_ptr<AActor> NewA
 			auto CommandData                = std::make_shared<FImguiLevelViewportCommandData>();
 			CommandData->PanelType          = EImguiPanelType::IPT_LevelViewport;
 			CommandData->CommandType        = ELevelViewportCommandType::LVCT_AddActorToWorldOutliner;
-			CommandData->NewPendingAddActor = NewActor;
+			CommandData->NewPendingActor = NewActor;
 			EditorSceneData->EditorClient->AddPanelCommand(CommandData);
 		}
 	};
+
+	ENQUEUE_RENDER_COMMAND(Lambda);
+}
+
+void FEditorScene::RemoveWorldOutlinerActor_GameThread(std::shared_ptr<AActor> RemoveActor)
+{
+	auto Lambda = [RemoveActor](std::shared_ptr<FScene>& SceneData)
+		{
+			if (std::shared_ptr<FEditorScene> EditorSceneData = std::dynamic_pointer_cast<FEditorScene>(SceneData))
+			{
+				auto CommandData                = std::make_shared<FImguiLevelViewportCommandData>();
+				CommandData->PanelType          = EImguiPanelType::IPT_LevelViewport;
+				CommandData->CommandType        = ELevelViewportCommandType::LVCT_RemoveActorWorldOutliner;
+				CommandData->NewPendingActor = RemoveActor;
+				EditorSceneData->EditorClient->AddPanelCommand(CommandData);
+			}
+		};
 
 	ENQUEUE_RENDER_COMMAND(Lambda);
 }

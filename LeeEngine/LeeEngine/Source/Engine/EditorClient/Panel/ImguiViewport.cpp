@@ -221,7 +221,10 @@ void FImguiLevelViewport::ExecuteCommand(const std::shared_ptr<FImguiPanelComman
 		switch (Data->CommandType)
 		{
 		case ELevelViewportCommandType::LVCT_AddActorToWorldOutliner:
-			WorldOutlinerPanel->PendingAddWorldOutlinerActor(Data->NewPendingAddActor);
+			WorldOutlinerPanel->PendingAddWorldOutlinerActor(Data->NewPendingActor);
+			break;
+		case ELevelViewportCommandType::LVCT_RemoveActorWorldOutliner:
+			WorldOutlinerPanel->PendingKillWorldOutlinerActor(Data->NewPendingActor);
 			break;
 
 		case ELevelViewportCommandType::LVCT_SetViewportSizeToEditorViewportSize:

@@ -14,5 +14,6 @@ class USanhwaSkillComponent : public USkillBaseComponent
 public:
 	void Initialize(AMyGameCharacterBase* MyCharacter) override;
 
+	void ApplySkillAttack() override;
 protected:
 };

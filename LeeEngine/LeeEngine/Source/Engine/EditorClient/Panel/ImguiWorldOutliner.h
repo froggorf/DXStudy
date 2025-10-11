@@ -17,7 +17,7 @@ public:
 	void ExecuteCommand(const std::shared_ptr<FImguiPanelCommandData>& CommandData) override { } 
 	void InitLevelData();
 	void PendingAddWorldOutlinerActor(const std::shared_ptr<AActor>& NewActor);
-
+	void PendingKillWorldOutlinerActor(const std::shared_ptr<AActor>& RemoveActor);
 private:
 	// Owner 클래스인 ImguiLevelViewport
 	class FImguiLevelViewport* LevelViewportOwnerPanel;
@@ -25,4 +25,5 @@ private:
 	// 월드 아웃라이너
 	std::vector<std::shared_ptr<AActor>> WorldOutlinerActors;
 	std::vector<std::shared_ptr<AActor>> PendingAddWorldOutlinerActors;
+	std::vector<std::shared_ptr<AActor>> PendingKillWorldOutlinerActors;
 };

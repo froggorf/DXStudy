@@ -34,7 +34,7 @@ protected:
 	void SetBasicAttackMontages(const std::vector<std::string>& NewMontagesName);
 	void SetBasicAttackRange(const std::vector<XMFLOAT3>& AttackRange);
 protected:
-	AMyGameCharacterBase* OwnerCharacter = nullptr;
+	AMyGameCharacterBase* MyGameCharacter = nullptr;
 
 public:
 	void SetFightMode(bool NewMode);

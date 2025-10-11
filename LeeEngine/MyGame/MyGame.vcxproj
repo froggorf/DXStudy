@@ -24,11 +24,9 @@
     <ClCompile Include="Source\MyGame\Actor\ATestActor2.cpp" />
     <ClCompile Include="Source\MyGame\Actor\ATestCube.cpp" />
     <ClCompile Include="Source\MyGame\Actor\ATestCube2.cpp" />
-    <ClCompile Include="Source\MyGame\Actor\ATestPawn.cpp" />
     <ClCompile Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceBase.cpp" />
     <ClCompile Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceSpikeUltimate.cpp" />
     <ClCompile Include="Source\MyGame\AnimInstance\Sanhwa\USanhwaAnimInstance.cpp" />
-    <ClCompile Include="Source\MyGame\AnimInstance\UMyAnimInstance.cpp" />
     <ClCompile Include="Source\MyGame\AnimInstance\UMyGameAniminstanceBase.cpp" />
     <ClCompile Include="Source\MyGame\Character\AMyGameCharacterBase.cpp" />
     <ClCompile Include="Source\MyGame\Character\ASanhwaCharacter.cpp" />
@@ -41,7 +39,6 @@
     <ClCompile Include="Source\MyGame\Component\Combat\UCombatBaseComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\MotionWarping\UMotionWarpingComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\PBRTestComponent.cpp" />
-    <ClCompile Include="Source\MyGame\Component\UTestComponent.cpp" />
     <ClCompile Include="Source\MyGame\Core\AMyGamePlayerController.cpp" />
     <ClCompile Include="Source\MyGame\Interface\Dodge\IDodgeInterface.cpp" />
     <ClCompile Include="Source\MyGame\Notify\MyGameNotify.cpp" />
@@ -53,11 +50,9 @@
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h" />
     <ClInclude Include="Source\MyGame\Actor\ATestCube.h" />
     <ClInclude Include="Source\MyGame\Actor\ATestCube2.h" />
-    <ClInclude Include="Source\MyGame\Actor\ATestPawn.h" />
     <ClInclude Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceBase.h" />
     <ClInclude Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceSpikeUltimate.h" />
     <ClInclude Include="Source\MyGame\AnimInstance\Sanhwa\USanhwaAnimInstance.h" />
-    <ClInclude Include="Source\MyGame\AnimInstance\UMyAnimInstance.h" />
     <ClInclude Include="Source\MyGame\AnimInstance\UMyGameAniminstanceBase.h" />
     <ClInclude Include="Source\MyGame\Character\AMyGameCharacterBase.h" />
     <ClInclude Include="Source\MyGame\Character\ASanhwaCharacter.h" />
@@ -70,7 +65,6 @@
     <ClInclude Include="Source\MyGame\Component\Combat\UCombatBaseComponent.h" />
     <ClInclude Include="Source\MyGame\Component\MotionWarping\UMotionWarpingComponent.h" />
     <ClInclude Include="Source\MyGame\Component\PBRTestComponent.h" />
-    <ClInclude Include="Source\MyGame\Component\UTestComponent.h" />
     <ClInclude Include="Source\MyGame\Core\AMyGamePlayerController.h" />
     <ClInclude Include="Source\MyGame\Interface\Dodge\IDodgeInterface.h" />
     <ClInclude Include="Source\MyGame\Notify\MyGameNotify.h" />

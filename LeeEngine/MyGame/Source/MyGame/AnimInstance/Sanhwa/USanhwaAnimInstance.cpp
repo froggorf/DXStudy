@@ -74,6 +74,12 @@ void USanhwaAnimInstance::SetAnimNotify_BeginPlay()
 
 	Delegate<> UltimateCameraChangeDelegate = {this, &USanhwaAnimInstance::Ultimate_ChangeCameraToNormal};
 	NotifyEvent["Camera"] = UltimateCameraChangeDelegate;
+
+	Delegate<> UltAttackDelegate = {this, &USanhwaAnimInstance::UltAttack};
+	NotifyEvent["UltAttack"] = UltAttackDelegate;
+
+	Delegate<> SkillAttack = {this, &USanhwaAnimInstance::SkillAttack};
+	NotifyEvent["SkillAttack"] = SkillAttack;	
 }
 
 void USanhwaAnimInstance::BeginPlay()
@@ -284,7 +290,23 @@ void USanhwaAnimInstance::Attack4()
 		std::static_pointer_cast<USanhwaCombatComponent>(CombatComp)->Attack4Success();
 
 		// TODO : 임시 코드
-		std::static_pointer_cast<USanhwaUltimateComponent>(MyGameCharacter->GetUltimateComponent())->AddUltimateGauge(35.0f);
+		std::static_pointer_cast<USanhwaUltimateComponent>(MyGameCharacter->GetUltimateComponent())->AddUltimateGauge(120.0f);
+	}
+}
+
+void USanhwaAnimInstance::SkillAttack()
+{
+	if (const std::shared_ptr<USkillBaseComponent>& SkillComp = MyGameCharacter->GetSkillComponent())
+	{
+		SkillComp->ApplySkillAttack();
+	}
+}
+
+void USanhwaAnimInstance::UltAttack()
+{
+	if (const std::shared_ptr<UUltimateBaseComponent>& UltComp = MyGameCharacter->GetUltimateComponent())
+	{
+		UltComp->ApplyUltimateAttack();
 	}
 }
 

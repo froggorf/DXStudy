@@ -236,9 +236,6 @@ void UShapeComponent::SetCollisionEnabled(ECollisionEnabled NewType)
 		break;
 		}
 	}
-
-
-
 	UpdatePhysicsFilterData();
 
 

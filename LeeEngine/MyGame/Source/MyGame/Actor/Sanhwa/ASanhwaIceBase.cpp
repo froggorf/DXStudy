@@ -24,6 +24,27 @@ void ASanhwaIceSpikeBase::BeginPlay()
 {
 	AActor::BeginPlay();
 
+	XMFLOAT3 StartLocation = GetActorLocation();
+	XMFLOAT3 EndLocation = StartLocation;
+	EndLocation.y -= 1000.0f;
+	std::vector<ECollisionChannel> CollisionChannel;
+	for (int i = 0; i < static_cast<int>(ECollisionChannel::Count); ++i)
+	{
+		ECollisionChannel Cur = static_cast<ECollisionChannel>(i);
+		if (Cur == ECollisionChannel::Enemy || Cur == ECollisionChannel::Player)
+		{
+			continue;
+		}
+
+		CollisionChannel.emplace_back(Cur);
+	}
+	FHitResult Result;
+	
+	if (GPhysicsEngine->LineTraceSingleByChannel(StartLocation,EndLocation, CollisionChannel, Result))
+	{
+		SetActorLocation(Result.Location);
+	}
+
 	GEngine->GetTimerManager()->SetTimer(SpawnTimerHandle, {this, &ASanhwaIceSpikeBase::SpawnIce}, 0.0f, true, TimerTickTime);
 }
 
@@ -37,5 +58,12 @@ void ASanhwaIceSpikeBase::SpawnIce()
 	{
 		GEngine->GetTimerManager()->ClearTimer(SpawnTimerHandle);
 	}
+	
+}
+
+void ASanhwaIceSpikeBase::RemoveCollision()
+{
+
+	SM_IceSpikes->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
 }

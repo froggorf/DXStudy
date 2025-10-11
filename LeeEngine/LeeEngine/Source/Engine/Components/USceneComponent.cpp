@@ -23,6 +23,16 @@ void USceneComponent::Register()
 	Make_Transform_Dirty()
 }
 
+void USceneComponent::UnRegister()
+{
+	UActorComponent::UnRegister();
+
+	for (const std::shared_ptr<USceneComponent>& Child : AttachChildren)
+	{
+		Child->UnRegister();
+	}
+}
+
 void USceneComponent::BeginPlay()
 {
 	UActorComponent::BeginPlay();

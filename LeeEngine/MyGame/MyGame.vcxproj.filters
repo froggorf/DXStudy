@@ -109,16 +109,7 @@
     <ClCompile Include="Source\MyGame\Actor\ATestCube.cpp">
       <Filter>Source\MyGame\Actor</Filter>
     </ClCompile>
-    <ClCompile Include="Source\MyGame\AnimInstance\UMyAnimInstance.cpp">
-      <Filter>Source\MyGame\AnimInstance</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\MyGame\Component\UTestComponent.cpp">
-      <Filter>Source\MyGame\Component</Filter>
-    </ClCompile>
     <ClCompile Include="Source\MyGame\Actor\ATestCube2.cpp">
-      <Filter>Source\MyGame\Actor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\MyGame\Actor\ATestPawn.cpp">
       <Filter>Source\MyGame\Actor</Filter>
     </ClCompile>
     <ClCompile Include="Source\MyGame\Component\PBRTestComponent.cpp">
@@ -192,16 +183,7 @@
     <ClInclude Include="Source\MyGame\Actor\ATestCube.h">
       <Filter>Source\MyGame\Actor</Filter>
     </ClInclude>
-    <ClInclude Include="Source\MyGame\AnimInstance\UMyAnimInstance.h">
-      <Filter>Source\MyGame\AnimInstance</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\MyGame\Component\UTestComponent.h">
-      <Filter>Source\MyGame\Component</Filter>
-    </ClInclude>
     <ClInclude Include="Source\MyGame\Actor\ATestCube2.h">
-      <Filter>Source\MyGame\Actor</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\MyGame\Actor\ATestPawn.h">
       <Filter>Source\MyGame\Actor</Filter>
     </ClInclude>
     <ClInclude Include="Source\MyGame\Component\PBRTestComponent.h">

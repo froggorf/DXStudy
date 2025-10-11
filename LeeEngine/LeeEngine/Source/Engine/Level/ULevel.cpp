@@ -89,6 +89,30 @@ void ULevel::Tick_Editor(float DeltaSeconds)
 	}
 }
 
+void ULevel::DestroyActor(AActor* RemoveActor)
+{
+	for (std::shared_ptr<AActor>& Actor : Actors)
+	{
+		if (Actor.get() == RemoveActor)
+		{
+			PendingKillActors.emplace_back(Actor);
+			Actor->NotePendingKill();
+		}
+	}
+}
+
+void ULevel::UnregisterPendingActors()
+{
+	for (std::shared_ptr<AActor>& PendingKillActor : PendingKillActors)
+	{
+		PendingKillActor->UnRegister();
+	}
+	PendingKillActors.clear();
+
+	auto PendingKillIter = std::remove_if(Actors.begin(),Actors.end(), [](const std::shared_ptr<AActor>& Actor){return Actor->GetPendingKill();});
+	Actors.erase(PendingKillIter ,Actors.end());
+}
+
 void ULevel::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
 	std::string LevelName = AssetData["Name"];

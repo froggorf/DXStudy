@@ -2,7 +2,9 @@
 #include "USanhwaCombatComponent.h"
 
 #include "Engine/RenderCore/EditorScene.h"
+#include "MyGame/Actor/Sanhwa/ASanhwaIceBase.h"
 #include "MyGame/Character/AMyGameCharacterBase.h"
+#include "MyGame/Character/ASanhwaCharacter.h"
 #include "MyGame/Widget/Sanhwa/USanhwaWidget.h"
 
 USanhwaCombatComponent::USanhwaCombatComponent()
@@ -83,12 +85,12 @@ void USanhwaCombatComponent::BasicAttack()
 
 void USanhwaCombatComponent::HeavyAttack()
 {
-	if (!OwnerCharacter)
+	if (!MyGameCharacter)
 	{
 		return;
 	}
 
-	const std::shared_ptr<UAnimInstance>& AnimInstance = OwnerCharacter->GetAnimInstance();
+	const std::shared_ptr<UAnimInstance>& AnimInstance = MyGameCharacter->GetAnimInstance();
 	if (!AnimInstance)
 	{
 		return;
@@ -99,6 +101,17 @@ void USanhwaCombatComponent::HeavyAttack()
 	{
 		return;
 	}
+
+	// 산화의 특수 로직인 얼음의 충돌체크를 일시적으로 없앤다.
+	std::vector<std::weak_ptr<ASanhwaIceSpikeBase>>& IceSpikes = static_cast<ASanhwaCharacter*>(MyGameCharacter)->GetIceSpikes();
+	for (std::weak_ptr<ASanhwaIceSpikeBase>& IceSpike : IceSpikes)
+	{
+		if (!IceSpike.expired())
+		{
+			IceSpike.lock()->RemoveCollision();
+		}
+	}
+
 
 	if (!bIsHeavyAttacking)
 	{
@@ -122,7 +135,7 @@ void USanhwaCombatComponent::HeavyAttack()
 		bIsHeavyAttackGaugeIncrease = true;
 	}
 
-	if (const std::shared_ptr<USanhwaWidget>& SanhwaWidget = std::static_pointer_cast<USanhwaWidget>(OwnerCharacter->GetCharacterWidget()))
+	if (const std::shared_ptr<USanhwaWidget>& SanhwaWidget = std::static_pointer_cast<USanhwaWidget>(MyGameCharacter->GetCharacterWidget()))
 	{
 		if (const std::shared_ptr<FProgressBarWidget>& PB_ChargeGauge = SanhwaWidget->GetChargeProgressBar())
 		{
@@ -135,7 +148,7 @@ void USanhwaCombatComponent::HeavyAttack()
 
 void USanhwaCombatComponent::HeavyAttackMouseReleased()
 {
-	if (!OwnerCharacter)
+	if (!MyGameCharacter)
 	{
 		return;
 	}
@@ -145,7 +158,7 @@ void USanhwaCombatComponent::HeavyAttackMouseReleased()
 		return;
 	}
 
-	const std::shared_ptr<UAnimInstance>& AnimInstance = OwnerCharacter->GetAnimInstance();
+	const std::shared_ptr<UAnimInstance>& AnimInstance = MyGameCharacter->GetAnimInstance();
 	if (!AnimInstance)
 	{
 		return;
@@ -174,7 +187,7 @@ void USanhwaCombatComponent::HeavyAttackMouseReleased()
 	CurrentChargeGauge = 0.0f;
 	
 
-	if (const std::shared_ptr<USanhwaWidget>& SanhwaWidget = std::static_pointer_cast<USanhwaWidget>(OwnerCharacter->GetCharacterWidget()))
+	if (const std::shared_ptr<USanhwaWidget>& SanhwaWidget = std::static_pointer_cast<USanhwaWidget>(MyGameCharacter->GetCharacterWidget()))
 	{
 		SanhwaWidget->SetGaugeUI(SanhwaGauge);
 		if (const std::shared_ptr<FProgressBarWidget>& PB_ChargeGauge = SanhwaWidget->GetChargeProgressBar())
@@ -208,9 +221,9 @@ void USanhwaCombatComponent::Attack4Success()
 	int NewGaugeIndex = MyMath::RandVector(EmptyGauge);
 	SanhwaGauge[NewGaugeIndex] = true;
 
-	if (OwnerCharacter)
+	if (MyGameCharacter)
 	{
-		if (const std::shared_ptr<USanhwaWidget>& SanhwaWidget = std::static_pointer_cast<USanhwaWidget>(OwnerCharacter->GetCharacterWidget()))
+		if (const std::shared_ptr<USanhwaWidget>& SanhwaWidget = std::static_pointer_cast<USanhwaWidget>(MyGameCharacter->GetCharacterWidget()))
 		{
 			SanhwaWidget->SetGaugeUI(SanhwaGauge);
 		}

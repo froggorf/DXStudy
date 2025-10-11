@@ -294,6 +294,8 @@ namespace MyMath
 
 	XMFLOAT4 GetRotationQuaternionToActor(const XMFLOAT3& From, const XMFLOAT3& To);
 
+	// Forward벡터 -> 액터의 Rotation 회전값
+	XMFLOAT4 VectorToRotationQuaternion(const XMFLOAT3& Forward);
 
 
 	static std::random_device rd;

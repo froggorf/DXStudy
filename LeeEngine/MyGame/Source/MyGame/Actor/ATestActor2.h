@@ -1,10 +1,9 @@
-﻿// 02.16
+// 02.16
 // ULevel 내 배치를 위한 테스트용 큐브 액터
 
 #pragma once
 
 #include "ATestCube.h"
-#include "../Component/UTestComponent.h"
 #include "Engine/GameFramework/AActor.h"
 
 class USkeletalMeshComponent;
@@ -18,6 +17,5 @@ class ATestActor2 : public AActor
 
 private:
 	std::shared_ptr<USkeletalMeshComponent> TestSKComp;
-	std::shared_ptr<UTestComponent>         TestComponent;
 	std::shared_ptr<UNiagaraComponent>      NiagaraComp;
 };

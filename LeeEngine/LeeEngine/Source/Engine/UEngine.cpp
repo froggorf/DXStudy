@@ -236,21 +236,10 @@ void UEngine::Tick(float DeltaSeconds)
 		FScene::DrawScene_GameThread();
 	}
 
-	static bool b = false;
-	if(ImGui::IsKeyReleased(ImGuiKey_0))
+	if (GetWorld() && GetWorld()->GetPersistentLevel())
 	{
-		if(!b)
-		{
-			b = true;
-			GEngine->ChangeLevelByName("AsyncTestLevel");
-		}
-		
+		GetWorld()->GetPersistentLevel()->UnregisterPendingActors();
 	}
-	if (ImGui::IsKeyReleased(ImGuiKey_9))
-	{
-		b=false;
-	}
-
 }
 
 void UEngine::MakeComponentTransformDirty(std::shared_ptr<USceneComponent>& SceneComponent)

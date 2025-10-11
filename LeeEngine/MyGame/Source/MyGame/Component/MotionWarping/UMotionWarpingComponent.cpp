@@ -25,7 +25,6 @@ void UMotionWarpingComponent::TickComponent(float DeltaSeconds)
 	}
 
 	CurrentTime += DeltaSeconds;
-
 	// 이동 적용
 	if (MovementComp->PxCharacterController)
 	{

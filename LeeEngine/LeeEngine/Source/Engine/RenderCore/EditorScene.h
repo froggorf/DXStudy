@@ -70,6 +70,8 @@ public:
 	// 게임쓰레드 호출_월드 아웃라이너 내 액터 추가 함수 (register 시 호출)
 	static void AddWorldOutlinerActor_GameThread(std::shared_ptr<AActor> NewActor);
 
+	static void RemoveWorldOutlinerActor_GameThread(std::shared_ptr<AActor> RemoveActor);
+
 	// ===================================================================
 };
 

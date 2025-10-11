@@ -16,6 +16,7 @@ class USceneComponent : public UActorComponent, public std::enable_shared_from_t
 	USceneComponent();
 
 	void Register() override;
+	void UnRegister() override;
 	void BeginPlay() override;
 	void TickComponent(float DeltaSeconds) override;
 	virtual void Tick_Editor(float DeltaSeconds);

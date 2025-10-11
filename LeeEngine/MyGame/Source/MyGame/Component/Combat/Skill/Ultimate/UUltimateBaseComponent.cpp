@@ -67,6 +67,10 @@ bool UUltimateBaseComponent::CanUseSkill()
 	return CurrentCoolDownTime <= 0.0f && CurrentUltimateGauge >= MaxUltimateGauge;
 }
 
+void UUltimateBaseComponent::ApplyUltimateAttack()
+{
+}
+
 void UUltimateBaseComponent::AddUltimateGauge(const float NewAddGauge)
 {
 	assert(MaxUltimateGauge != 0, "MaxUltimateGauge == 0");

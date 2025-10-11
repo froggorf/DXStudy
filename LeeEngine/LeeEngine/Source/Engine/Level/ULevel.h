@@ -12,6 +12,7 @@ class UWorld;
 class ULevel : public UObject
 {
 	MY_GENERATE_BODY(ULevel)
+	
 
 	ULevel();
 
@@ -40,16 +41,19 @@ class ULevel : public UObject
 		return Actors;
 	};
 
+
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 	void SaveDataFromAssetToFile(nlohmann::json& Json) override;
 
 	std::shared_ptr<AActor> SpawnActor(const std::string& ClassName, const FTransform& SpawnTransform);
+	void DestroyActor(AActor* RemoveActor);
+	void UnregisterPendingActors();
 private:
 
 	std::shared_ptr<UWorld> OwningWorld;
 
 	std::vector<std::shared_ptr<AActor>> Actors;
-
+	std::vector<std::shared_ptr<AActor>> PendingKillActors;
 private:
 	nlohmann::basic_json<> LevelData;
 };

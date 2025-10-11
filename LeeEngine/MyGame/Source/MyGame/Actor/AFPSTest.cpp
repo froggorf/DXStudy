@@ -7,10 +7,7 @@ AFPSTest::AFPSTest()
 	SM_Attacker->SetupAttachment(GetRootComponent());
 	SM_Attacker->SetRelativeScale3D({10,10,10});
 
-	AssetManager::GetAsyncAssetCache("SM_DeferredSphere",[this](std::shared_ptr<UObject> Object)
-		{
-			SM_Attacker->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
-		});
+	
 
 
 	ShotDelay = 0.05f;
@@ -19,6 +16,12 @@ AFPSTest::AFPSTest()
 void AFPSTest::Register()
 {
 	AActor::Register();
+
+	AssetManager::GetAsyncAssetCache("SM_DeferredSphere",[this](std::shared_ptr<UObject> Object)
+		{
+			SM_Attacker->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
+		});
+
 }
 
 void AFPSTest::Timer_Repeat()

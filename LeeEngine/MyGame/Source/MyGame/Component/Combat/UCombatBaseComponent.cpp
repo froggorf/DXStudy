@@ -19,7 +19,7 @@ void UCombatBaseComponent::BeginPlay()
 
 void UCombatBaseComponent::Initialize(AMyGameCharacterBase* MyCharacter)
 {
-	OwnerCharacter = MyCharacter;
+	MyGameCharacter = MyCharacter;
 }
 
 void UCombatBaseComponent::BasicAttack()
@@ -45,7 +45,7 @@ void UCombatBaseComponent::BasicAttack()
 
 	// 진행중이 아니면 1타 공격부터 시작하고
 	// MontageEnd를 통해서 공격을 계속 진행
-	if (const std::shared_ptr<UAnimInstance>& AnimInstance =  OwnerCharacter->GetAnimInstance())
+	if (const std::shared_ptr<UAnimInstance>& AnimInstance =  MyGameCharacter->GetAnimInstance())
 	{
 		AnimInstance->Montage_Play(BasicAttackMontages[0], 0, Delegate<>(), Delegate<>(), {this, &UCombatBaseComponent::BasicAttackEnded});
 	}
@@ -58,7 +58,7 @@ void UCombatBaseComponent::BasicAttackEnded()
 	if (LastBasicAttackClickedTime + BasicAttackApplyTime >= CurrentTime)
 	{
 		CurrentBasicAttackCombo = (CurrentBasicAttackCombo + 1) % static_cast<UINT>(BasicAttackMontages.size());
-		if (const std::shared_ptr<UAnimInstance>& AnimInstance =  OwnerCharacter->GetAnimInstance())
+		if (const std::shared_ptr<UAnimInstance>& AnimInstance =  MyGameCharacter->GetAnimInstance())
 		{
 			AnimInstance->Montage_Play(BasicAttackMontages[CurrentBasicAttackCombo], 0, Delegate<>{},Delegate<>{},{this, &UCombatBaseComponent::BasicAttackEnded});
 		}
