@@ -88,4 +88,7 @@ public:
 	const std::shared_ptr<UMotionWarpingComponent>& GetMotionWarpingComponent() const {return MotionWarpingComponent;}
 protected:
 	std::shared_ptr<UMotionWarpingComponent> MotionWarpingComponent;
+
+	float CharacterMaxHealth = 10000.0f;
+
 };

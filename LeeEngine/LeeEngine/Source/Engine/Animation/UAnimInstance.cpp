@@ -133,7 +133,7 @@ void UAnimInstance::Tick(float DeltaSeconds)
 		if (!bIsAnimationLoaded)
 		{
 			const std::string& MeshName = GetSkeletalMeshComponent()->GetSkeletalMesh()->GetName();
-			if (GEngine->GetTimeSeconds() - 1.0f >= UAnimSequence::GetLoadedTime(MeshName))
+			if (GEngine->GetTimeSeconds() - 3.0f >= UAnimSequence::GetLoadedTime(MeshName))
 			{
 				bIsAnimationLoaded = true;
 			}

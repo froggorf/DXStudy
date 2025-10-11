@@ -1,7 +1,7 @@
 #include "CoreMinimal.h"
 #include "UMyGameWidgetBase.h"
 
-#include "Health/UHealthWidgetBase.h"
+#include "Health/UPlayerHealthWidget.h"
 #include "Skill/USkillWidgetBase.h"
 #include "Skill/UUltimateWidget.h"
 
@@ -20,9 +20,9 @@ void UMyGameWidgetBase::NativeConstruct()
 		CanvasSlot->Anchors = ECanvasAnchor::CenterBottom;
 		CanvasSlot->Alignment = {0.5f, 1.0f};
 		CanvasSlot->Position = {0, 0};
-		CanvasSlot->Size = {300, 50};
+		CanvasSlot->Size = {600, 50};
 	}
-	HealthWidget = std::make_shared<UHealthWidgetBase>();
+	HealthWidget = std::make_shared<UPlayerHealthWidget>();
 	HealthWidget->AttachToPanel(HealthCanvas);
 	if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(HealthWidget->GetMainCanvasWidget()->GetSlot()))
 	{
@@ -80,6 +80,14 @@ void UMyGameWidgetBase::SetUltimateCoolDownTime(float NewCoolDownTime, float Max
 void UMyGameWidgetBase::SetUltimateGauge(float NewGauge_0_To_1)
 {
 	UltimateCoolDownWidget->SetUltimateGauge(NewGauge_0_To_1);
+}
+
+void UMyGameWidgetBase::SetHealthBarWidget(float CurValue, float MaxValue)
+{
+	if (HealthWidget)
+	{
+		HealthWidget->SetHealthBarPercent(CurValue,MaxValue);
+	}
 }
 
 void UMyGameWidgetBase::Tick(float DeltaSeconds)

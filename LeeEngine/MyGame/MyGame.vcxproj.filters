@@ -196,6 +196,9 @@
     <ClCompile Include="Source\MyGame\Widget\Skill\UUltimateWidget.cpp">
       <Filter>Source\MyGame\Widget\Skill</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Widget\Health\UPlayerHealthWidget.cpp">
+      <Filter>Source\MyGame\Widget\Health</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -281,6 +284,9 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Widget\Skill\UUltimateWidget.h">
       <Filter>Source\MyGame\Widget\Skill</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Widget\Health\UPlayerHealthWidget.h">
+      <Filter>Source\MyGame\Widget\Health</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

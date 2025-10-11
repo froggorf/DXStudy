@@ -2,9 +2,9 @@
 #include "Engine/UEngine.h"
 #include "Engine/Widget/UUserWidget.h"
 
+class UPlayerHealthWidget;
 class UUltimateWidget;
 class USkillWidgetBase;
-class UHealthWidgetBase;
 
 class UMyGameWidgetBase : public UUserWidget
 {
@@ -20,7 +20,7 @@ class UMyGameWidgetBase : public UUserWidget
 private:
 	// =========================== Health ===========================
 	std::shared_ptr<FCanvasWidget> HealthCanvas;
-		std::shared_ptr<UHealthWidgetBase> HealthWidget;
+		std::shared_ptr<UPlayerHealthWidget> HealthWidget;
 
 	// =========================== Attack ===========================
 	std::shared_ptr<FHorizontalBoxWidget> AttackBoxSlot;
@@ -32,6 +32,7 @@ public:
 	void SetSkillCoolDownTime(float NewCoolDownTime, float MaxCoolDownTime);
 	void SetUltimateCoolDownTime(float NewCoolDownTime, float MaxCoolDownTime);
 	void SetUltimateGauge(float NewGauge_0_To_1);
+	void SetHealthBarWidget(float CurValue, float MaxValue);
 	void Tick(float DeltaSeconds) override;
 
 protected:

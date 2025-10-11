@@ -99,6 +99,8 @@ void AMyGameCharacterBase::BeginPlay()
 	QueryCheckCapsuleComp->GetBodyInstance()->SetObjectType(ECollisionChannel::Player);
 
 	CreateWidgetOnBeginPlay();
+
+	HealthComponent->SetMaxHealth(CharacterMaxHealth, true);
 }
 
 void AMyGameCharacterBase::BindKeyInputs()

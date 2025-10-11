@@ -6,6 +6,7 @@
 #include "MyGame/Component/Combat/Melee/USanhwaCombatComponent.h"
 #include "MyGame/Component/Combat/Skill/NormalSkill/SanHwa/USanhwaSkillComponent.h"
 #include "MyGame/Component/Combat/Skill/Ultimate/Sanhwa/USanhwaUltimateComponent.h"
+#include "MyGame/Component/Health/UHealthComponent.h"
 #include "MyGame/Core/AMyGamePlayerController.h"
 #include "MyGame/Widget/Sanhwa/USanhwaWidget.h"
 
@@ -32,6 +33,9 @@ ASanhwaCharacter::ASanhwaCharacter()
 	SM_Sword->SetRelativeLocation({-0.258, -78.622, 112.711});
 	SM_Sword->SetRelativeRotation(XMFLOAT4{0.507, -0.116, -0.759, 0.392});
 	SM_Sword->Rename("Sword");
+
+	CharacterMaxHealth = 20000.0f;
+
 }
 
 void ASanhwaCharacter::Register()
@@ -81,11 +85,20 @@ void ASanhwaCharacter::BeginPlay()
 		SM_Sword->GetBodyInstance()->SetCollisionResponseToChannel(static_cast<ECollisionChannel>(i), ECollisionResponse::Overlap);
 	}
 	SM_Sword->GetBodyInstance()->SetObjectType(ECollisionChannel::Pawn);
+
 }
 
 void ASanhwaCharacter::Tick(float DeltaSeconds)
 {
 	AMyGameCharacterBase::Tick(DeltaSeconds);
+
+	static float LastTime = GEngine->GetTimeSeconds();
+	if (LastTime + 3.0f <= GEngine->GetTimeSeconds())
+	{
+		LastTime = GEngine->GetTimeSeconds();
+		TakeDamage(2500.0f, {},this);	
+	}
+	
 }
 
 void ASanhwaCharacter::CreateIceSpikes(bool bIsUltimate)

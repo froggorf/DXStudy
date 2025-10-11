@@ -23,6 +23,7 @@ C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Core\AMyGamePlayerController.c
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Interface\Dodge\IDodgeInterface.cpp;C:\Project\DXStudy\LeeEngine\Executable\IDodgeInterface.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Notify\MyGameNotify.cpp;C:\Project\DXStudy\LeeEngine\Executable\MyGameNotify.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Widget\Health\UHealthWidgetBase.cpp;C:\Project\DXStudy\LeeEngine\Executable\UHealthWidgetBase.obj
+C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Widget\Health\UPlayerHealthWidget.cpp;C:\Project\DXStudy\LeeEngine\Executable\UPlayerHealthWidget.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Widget\Sanhwa\USanhwaWidget.cpp;C:\Project\DXStudy\LeeEngine\Executable\USanhwaWidget.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Widget\Skill\USkillWidgetBase.cpp;C:\Project\DXStudy\LeeEngine\Executable\USkillWidgetBase.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Widget\Skill\UUltimateWidget.cpp;C:\Project\DXStudy\LeeEngine\Executable\UUltimateWidget.obj
