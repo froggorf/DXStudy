@@ -5,6 +5,7 @@
 #include "MyGame/Actor/Sanhwa/ASanhwaIceBase.h"
 #include "MyGame/Character/AMyGameCharacterBase.h"
 #include "MyGame/Character/ASanhwaCharacter.h"
+#include "MyGame/Component/Combat/Skill/Ultimate/Sanhwa/USanhwaUltimateComponent.h"
 #include "MyGame/Widget/Sanhwa/USanhwaWidget.h"
 
 USanhwaCombatComponent::USanhwaCombatComponent()
@@ -160,12 +161,7 @@ void USanhwaCombatComponent::HeavyAttackMouseReleased()
 		// 강공격에 성공함
 
 		// 산화의 특수 로직인 얼음의 충돌체크를 일시적으로 없앤다.
-		std::vector<std::shared_ptr<ASanhwaIceSpikeBase>> IceSpikes;
-		static_cast<ASanhwaCharacter*>(MyGameCharacter)->GetIceSpikes(IceSpikes);
-		for (std::shared_ptr<ASanhwaIceSpikeBase>& IceSpike : IceSpikes)
-		{
-			IceSpike->RemoveCollision();
-		}
+		std::static_pointer_cast<USanhwaUltimateComponent>(MyGameCharacter->GetUltimateComponent())->SetIceSpikeCollision(ECollisionEnabled::NoCollision);
 
 		AnimInstance->Montage_Play(AM_HeavyAttack_Attack);
 

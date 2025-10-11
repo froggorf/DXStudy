@@ -3,6 +3,7 @@
 
 #include "Engine/RenderCore/EditorScene.h"
 #include "Engine/World/UWorld.h"
+#include "MyGame/Actor/Sanhwa/ASanhwaIceBase.h"
 #include "MyGame/Character/AMyGameCharacterBase.h"
 #include "MyGame/Character/ASanhwaCharacter.h"
 
@@ -22,4 +23,14 @@ void USanhwaUltimateComponent::ApplyUltimateAttack()
 	UUltimateBaseComponent::ApplyUltimateAttack();
 
 	static_cast<ASanhwaCharacter*>(MyGameCharacter)->CreateIceSpikes(true);
+}
+
+void USanhwaUltimateComponent::SetIceSpikeCollision(ECollisionEnabled NewCollision)
+{
+	std::vector<std::shared_ptr<ASanhwaIceSpikeBase>> IceSpikes;
+	static_cast<ASanhwaCharacter*>(MyGameCharacter)->GetIceSpikes(IceSpikes);
+	for (std::shared_ptr<ASanhwaIceSpikeBase>& IceSpike : IceSpikes)
+	{
+		IceSpike->SetCollision(NewCollision);
+	}
 }

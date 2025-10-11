@@ -14,7 +14,7 @@ public:
 
 	void SpawnIce();
 
-	void RemoveCollision();
+	void SetCollision(ECollisionEnabled NewCollision);
 
 protected:
 	virtual std::string GetIceSpikesStaticMeshName() const { return "SM_Sanhwa_IceSpikes_Skill"; }

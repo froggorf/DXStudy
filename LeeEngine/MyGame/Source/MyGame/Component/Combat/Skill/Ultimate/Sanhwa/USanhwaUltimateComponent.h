@@ -2,6 +2,7 @@
 // 애니메이션을 위한 임시 액터 컴퍼넌트
 
 #pragma once
+#include "Engine/Physics/UPhysicsEngine.h"
 #include "MyGame/Component/Combat/Skill/Ultimate/UUltimateBaseComponent.h"
 
 
@@ -16,4 +17,5 @@ class USanhwaUltimateComponent : public UUltimateBaseComponent
 public:
 	void Initialize(AMyGameCharacterBase* MyCharacter) override;
 	void ApplyUltimateAttack() override;
+	void SetIceSpikeCollision(ECollisionEnabled NewCollision);
 };

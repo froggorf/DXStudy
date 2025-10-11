@@ -252,6 +252,9 @@ void USanhwaAnimInstance::MotionWarping_HeavyAttack_Stay()
 	XMFLOAT3 CurLocation = MyGameCharacter->GetActorLocation();
 
 	MotionWarpingComp->SetTargetLocation(CurLocation, MoveTime);
+
+	// 다시 설정해주어야함
+	std::static_pointer_cast<USanhwaUltimateComponent>(MyGameCharacter->GetUltimateComponent())->SetIceSpikeCollision(ECollisionEnabled::Physics);
 }
 
 void USanhwaAnimInstance::Ultimate_ChangeCameraToNormal()

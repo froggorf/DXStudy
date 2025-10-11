@@ -61,8 +61,7 @@ void ASanhwaIceSpikeBase::SpawnIce()
 	
 }
 
-void ASanhwaIceSpikeBase::RemoveCollision()
+void ASanhwaIceSpikeBase::SetCollision(ECollisionEnabled NewCollision)
 {
-	SM_IceSpikes->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	
+	SM_IceSpikes->SetCollisionEnabled(NewCollision);
 }
