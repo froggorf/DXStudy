@@ -46,6 +46,7 @@ class AActor : public UObject, public std::enable_shared_from_this<AActor>
 	void Init() override;
 	void Register() override;
 	void UnRegister() override;
+	virtual void OnDestroy(){};
 	void BeginPlay() override;
 
 	const std::shared_ptr<USceneComponent>& GetRootComponent() const
@@ -87,6 +88,7 @@ class AActor : public UObject, public std::enable_shared_from_this<AActor>
 
 	bool GetPendingKill() const {return bPendingKill;}
 	void NotePendingKill(){bPendingKill = true;}
+	virtual void DestroySelf();
 protected:
 	// 월드 내에서 Transform (Loc, Rot, Scale) 의 정보를 다루는 컴퍼넌트
 	// 모든 다른 컴퍼넌트는 해당 컴퍼넌트에 부착해야함

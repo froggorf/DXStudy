@@ -105,6 +105,7 @@ void ULevel::UnregisterPendingActors()
 {
 	for (std::shared_ptr<AActor>& PendingKillActor : PendingKillActors)
 	{
+		PendingKillActor->OnDestroy();
 		PendingKillActor->UnRegister();
 	}
 	PendingKillActors.clear();

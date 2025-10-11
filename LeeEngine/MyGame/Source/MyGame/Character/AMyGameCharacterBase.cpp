@@ -2,8 +2,7 @@
 #include "AMyGameCharacterBase.h"
 
 #include "Engine/World/UWorld.h"
-
-
+#include "MyGame/Component/Health/UHealthComponent.h"
 
 
 AMyGameCharacterBase::AMyGameCharacterBase()
@@ -32,11 +31,9 @@ AMyGameCharacterBase::AMyGameCharacterBase()
 	}
 
 	MotionWarpingComponent = std::static_pointer_cast<UMotionWarpingComponent>(CreateDefaultSubobject("MotionWarpingComp", "UMotionWarpingComponent"));
-
 	UltimateSceneCameraComp = std::make_shared<UCameraComponent>();
-	//UltimateSceneCameraComp->SetupAttachment(UltimateSceneSpringArm, "");
-
-
+	HealthComponent = std::static_pointer_cast<UHealthComponent>(CreateDefaultSubobject("HealthComp", "UHealthComponent"));
+	
 
 	
 }
@@ -171,8 +168,20 @@ float AMyGameCharacterBase::TakeDamage(float DamageAmount, const FDamageEvent& D
 		return DamageAmount;
 	}
 	
+	if (HealthComponent->ApplyDamage(DamageAmount) <= 0.0f)
+	{
+		Death();	
+	}
 
 	return DamageAmount;
+}
+
+void AMyGameCharacterBase::Death()
+{
+	// TODO : Death 애니메이션 재생
+	MY_LOG("Death", EDebugLogLevel::DLL_Warning, "Character Death");
+
+	
 }
 
 void AMyGameCharacterBase::Move(float X, float Y)

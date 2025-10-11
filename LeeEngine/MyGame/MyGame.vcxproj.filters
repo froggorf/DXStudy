@@ -98,6 +98,12 @@
     <Filter Include="Source\MyGame\Actor\Sanhwa">
       <UniqueIdentifier>{1256e18c-df2c-4ac6-8c2b-b03bf58f8062}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\Component\Health">
+      <UniqueIdentifier>{2a829987-0202-4519-bd60-07eb1b8b0207}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\MyGame\Widget\Health">
+      <UniqueIdentifier>{d81c18ca-741a-4099-96cd-52c30e9f817d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -175,6 +181,12 @@
     <ClCompile Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceSpikeUltimate.cpp">
       <Filter>Source\MyGame\Actor\Sanhwa</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Component\Health\UHealthComponent.cpp">
+      <Filter>Source\MyGame\Component\Health</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\Widget\Health\UHealthWidgetBase.cpp">
+      <Filter>Source\MyGame\Widget\Health</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -248,6 +260,12 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceSpikeUltimate.h">
       <Filter>Source\MyGame\Actor\Sanhwa</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Component\Health\UHealthComponent.h">
+      <Filter>Source\MyGame\Component\Health</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Widget\Health\UHealthWidgetBase.h">
+      <Filter>Source\MyGame\Widget\Health</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

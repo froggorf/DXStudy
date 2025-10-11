@@ -2,9 +2,7 @@
 #include "USanhwaCombatComponent.h"
 
 #include "Engine/RenderCore/EditorScene.h"
-#include "MyGame/Actor/Sanhwa/ASanhwaIceBase.h"
 #include "MyGame/Character/AMyGameCharacterBase.h"
-#include "MyGame/Character/ASanhwaCharacter.h"
 #include "MyGame/Component/Combat/Skill/Ultimate/Sanhwa/USanhwaUltimateComponent.h"
 #include "MyGame/Widget/Sanhwa/USanhwaWidget.h"
 

@@ -6,6 +6,7 @@
 #include "Engine/UObject/UObject.h"
 #include "AActor.h"
 #include "Engine/Components/USceneComponent.h"
+#include "Engine/World/UWorld.h"
 
 unsigned int ActorIDCount = 0;
 
@@ -236,4 +237,9 @@ std::shared_ptr<UActorComponent> AActor::FindComponentByClass(const std::string&
 		}
 	}
 	return nullptr;
+}
+
+void AActor::DestroySelf()
+{
+	GetWorld()->GetPersistentLevel()->DestroyActor(this);
 }

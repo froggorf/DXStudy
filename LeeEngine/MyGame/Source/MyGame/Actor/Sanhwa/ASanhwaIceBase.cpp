@@ -46,6 +46,16 @@ void ASanhwaIceSpikeBase::BeginPlay()
 	}
 
 	GEngine->GetTimerManager()->SetTimer(SpawnTimerHandle, {this, &ASanhwaIceSpikeBase::SpawnIce}, 0.0f, true, TimerTickTime);
+
+	GEngine->GetTimerManager()->SetTimer(DestroyTimerHandle, Delegate<>{this, &ASanhwaIceSpikeBase::DestroySelf}, DestroyTime);
+}
+
+void ASanhwaIceSpikeBase::OnDestroy()
+{
+	AActor::OnDestroy();
+
+	GEngine->GetTimerManager()->ClearTimer(SpawnTimerHandle);
+	GEngine->GetTimerManager()->ClearTimer(DestroyTimerHandle);
 }
 
 void ASanhwaIceSpikeBase::SpawnIce()

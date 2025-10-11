@@ -9,7 +9,13 @@
 #include "MyGame/Component/MotionWarping/UMotionWarpingComponent.h"
 #include "MyGame/Interface/Dodge/IDodgeInterface.h"
 
+class UHealthComponent;
 class UMyGameWidgetBase;
+
+/*
+	TODO: Note: 캐릭터 작성 중 생각나서 작성
+	적군 Base 를 만들 때 OnDeath 를 만들어서 플레이어에게 경험치를 주던 어떠한 작업을 하는 델리게이트를 만들어야함
+*/
 
 class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
 {
@@ -25,6 +31,8 @@ class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
 	void BindKeyInputs() override;
 
 	float TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AActor* DamageCauser) override;
+
+	void Death();
 
 	void Tick(float DeltaSeconds) override;
 	void Move(float X, float Y);
@@ -60,10 +68,13 @@ protected:
 	std::shared_ptr<USkillBaseComponent> SkillComponent;
 	std::shared_ptr<UUltimateBaseComponent> UltimateComponent;
 
+	std::shared_ptr<UHealthComponent> HealthComponent;
+
 	// 궁극기 시전 시 전환될 카메라
 	std::shared_ptr<UCameraComponent> UltimateSceneCameraComp;
 	std::shared_ptr<USceneComponent> TestComp_DeleteLater;
 	std::shared_ptr<UStaticMeshComponent> SM_Arrow;
+
 public:
 	void ChangeToUltimateCamera();
 	void ChangeToNormalCamera(float BlendTime);
