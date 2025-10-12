@@ -4,14 +4,15 @@
 // 이윤석
 #include "CoreMinimal.h"
 #include "USkeletalMeshComponent.h"
+
+#include "Engine/GameFramework/AActor.h"
 #include "Engine/Physics/UShapeComponent.h"
 #include "Engine/SceneProxy/FSkeletalMeshSceneProxy.h"
 
 USkeletalMeshComponent::USkeletalMeshComponent()
 {
 	Rename("SkeletalMeshComponent_" + std::to_string(ComponentID));
-	AnimInstance = std::make_shared<UAnimInstance>();
-	AnimInstance->SetSkeletalMeshComponent(this);
+
 }
 
 void USkeletalMeshComponent::BeginPlay()
@@ -155,7 +156,6 @@ void USkeletalMeshComponent::TickComponent(float DeltaSeconds)
 	{
 		AnimInstance->Tick(DeltaSeconds);
 	}
-
 
 	UpdateComponentToWorld();
 	if (GetBodyInstance())

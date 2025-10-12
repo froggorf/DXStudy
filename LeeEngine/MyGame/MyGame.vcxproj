@@ -24,12 +24,14 @@
     <ClCompile Include="Source\MyGame\Actor\ATestActor2.cpp" />
     <ClCompile Include="Source\MyGame\Actor\ATestCube.cpp" />
     <ClCompile Include="Source\MyGame\Actor\ATestCube2.cpp" />
+    <ClCompile Include="Source\MyGame\Actor\Damage\AFloatingDamageActor.cpp" />
     <ClCompile Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceBase.cpp" />
     <ClCompile Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceSpikeUltimate.cpp" />
     <ClCompile Include="Source\MyGame\AnimInstance\Sanhwa\USanhwaAnimInstance.cpp" />
     <ClCompile Include="Source\MyGame\AnimInstance\UMyGameAniminstanceBase.cpp" />
-    <ClCompile Include="Source\MyGame\Character\AMyGameCharacterBase.cpp" />
-    <ClCompile Include="Source\MyGame\Character\ASanhwaCharacter.cpp" />
+    <ClCompile Include="Source\MyGame\Character\Enemy\AEnemyBase.cpp" />
+    <ClCompile Include="Source\MyGame\Character\Player\AMyGameCharacterBase.cpp" />
+    <ClCompile Include="Source\MyGame\Character\Player\ASanhwaCharacter.cpp" />
     <ClCompile Include="Source\MyGame\Component\Combat\Melee\UMeleeBaseComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\Combat\Melee\USanhwaCombatComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\Combat\Skill\NormalSkill\SanHwa\USanhwaSkillComponent.cpp" />
@@ -38,6 +40,7 @@
     <ClCompile Include="Source\MyGame\Component\Combat\Skill\Ultimate\UUltimateBaseComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\Combat\UCombatBaseComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\Health\UHealthComponent.cpp" />
+    <ClCompile Include="Source\MyGame\Component\Health\UPlayerHealthComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\MotionWarping\UMotionWarpingComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\PBRTestComponent.cpp" />
     <ClCompile Include="Source\MyGame\Core\AMyGamePlayerController.cpp" />
@@ -45,6 +48,7 @@
     <ClCompile Include="Source\MyGame\Notify\MyGameNotify.cpp" />
     <ClCompile Include="Source\MyGame\Widget\Health\UHealthWidgetBase.cpp" />
     <ClCompile Include="Source\MyGame\Widget\Health\UPlayerHealthWidget.cpp" />
+    <ClCompile Include="Source\MyGame\Widget\Number\UNumberWidget.cpp" />
     <ClCompile Include="Source\MyGame\Widget\Sanhwa\USanhwaWidget.cpp" />
     <ClCompile Include="Source\MyGame\Widget\Skill\USkillWidgetBase.cpp" />
     <ClCompile Include="Source\MyGame\Widget\Skill\UUltimateWidget.cpp" />
@@ -55,12 +59,14 @@
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h" />
     <ClInclude Include="Source\MyGame\Actor\ATestCube.h" />
     <ClInclude Include="Source\MyGame\Actor\ATestCube2.h" />
+    <ClInclude Include="Source\MyGame\Actor\Damage\AFloatingDamageActor.h" />
     <ClInclude Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceBase.h" />
     <ClInclude Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceSpikeUltimate.h" />
     <ClInclude Include="Source\MyGame\AnimInstance\Sanhwa\USanhwaAnimInstance.h" />
     <ClInclude Include="Source\MyGame\AnimInstance\UMyGameAniminstanceBase.h" />
-    <ClInclude Include="Source\MyGame\Character\AMyGameCharacterBase.h" />
-    <ClInclude Include="Source\MyGame\Character\ASanhwaCharacter.h" />
+    <ClInclude Include="Source\MyGame\Character\Enemy\AEnemyBase.h" />
+    <ClInclude Include="Source\MyGame\Character\Player\AMyGameCharacterBase.h" />
+    <ClInclude Include="Source\MyGame\Character\Player\ASanhwaCharacter.h" />
     <ClInclude Include="Source\MyGame\Component\Combat\Melee\UMeleeBaseComponent.h" />
     <ClInclude Include="Source\MyGame\Component\Combat\Melee\USanhwaCombatComponent.h" />
     <ClInclude Include="Source\MyGame\Component\Combat\Skill\NormalSkill\SanHwa\USanhwaSkillComponent.h" />
@@ -69,6 +75,7 @@
     <ClInclude Include="Source\MyGame\Component\Combat\Skill\Ultimate\UUltimateBaseComponent.h" />
     <ClInclude Include="Source\MyGame\Component\Combat\UCombatBaseComponent.h" />
     <ClInclude Include="Source\MyGame\Component\Health\UHealthComponent.h" />
+    <ClInclude Include="Source\MyGame\Component\Health\UPlayerHealthComponent.h" />
     <ClInclude Include="Source\MyGame\Component\MotionWarping\UMotionWarpingComponent.h" />
     <ClInclude Include="Source\MyGame\Component\PBRTestComponent.h" />
     <ClInclude Include="Source\MyGame\Core\AMyGamePlayerController.h" />
@@ -76,6 +83,7 @@
     <ClInclude Include="Source\MyGame\Notify\MyGameNotify.h" />
     <ClInclude Include="Source\MyGame\Widget\Health\UHealthWidgetBase.h" />
     <ClInclude Include="Source\MyGame\Widget\Health\UPlayerHealthWidget.h" />
+    <ClInclude Include="Source\MyGame\Widget\Number\UNumberWidget.h" />
     <ClInclude Include="Source\MyGame\Widget\Sanhwa\USanhwaWidget.h" />
     <ClInclude Include="Source\MyGame\Widget\Skill\USkillWidgetBase.h" />
     <ClInclude Include="Source\MyGame\Widget\Skill\UUltimateWidget.h" />

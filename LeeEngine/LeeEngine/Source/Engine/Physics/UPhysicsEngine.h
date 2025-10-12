@@ -104,6 +104,8 @@ public:
 	void ResetScene();
 	void CreateScene();
 
+	physx::PxControllerManager* GetControllerManager() const {return Manager;}
+
 	// LineTrace
 	bool LineTraceSingleByChannel(const XMFLOAT3& Start, const XMFLOAT3& End, const std::vector<ECollisionChannel>& TraceChannel, FHitResult& HitResult, float DebugDrawTime = 0.0f, const XMFLOAT3& TraceColor = XMFLOAT3(1.0f,0.0f,0.0f), const XMFLOAT3& TraceHitColor = XMFLOAT3(0.0f,1.0f,0.0f)) const;
 	void SphereOverlapComponents(const XMFLOAT3& SpherePos, float SphereRadius, const std::vector<ECollisionChannel>& ObjectTypes, const std::vector<AActor*>& ActorsToIgnore, std::vector<AActor*>& OutActors);
@@ -123,10 +125,10 @@ private:
 	physx::PxDefaultErrorCallback		gErrorCallback;
 	std::unique_ptr<FPhysicsEventCallback> CallbackInstance;
 
-	// 커스텀 Deleter를 통해 관리
 	physx::PxFoundation* PxFoundation     = nullptr;
 	physx::PxPhysics* PxPhysics        = nullptr;
 	physx::PxScene* PxScene          = nullptr;
+	physx::PxControllerManager* Manager = nullptr;
 	physx::PxMaterial* DefaultMaterial = nullptr;
 
 	float DefaultGravityScale = 7.5f;

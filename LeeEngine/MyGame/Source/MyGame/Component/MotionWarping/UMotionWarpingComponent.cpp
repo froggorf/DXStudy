@@ -1,6 +1,6 @@
 #include "CoreMinimal.h"
 #include "UMotionWarpingComponent.h"
-#include "MyGame/Character/AMyGameCharacterBase.h"
+#include "MyGame/Character/Player/AMyGameCharacterBase.h"
 
 void UMotionWarpingComponent::Register()
 {

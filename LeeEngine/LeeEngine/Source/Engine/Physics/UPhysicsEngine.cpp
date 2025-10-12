@@ -403,6 +403,8 @@ void UPhysicsEngine::CreateScene()
 	}
 	SceneDesc.simulationEventCallback = CallbackInstance.get();
 	PxScene = PxPhysics->createScene(SceneDesc);
+
+	Manager = PxCreateControllerManager(*PxScene);
 }
 
 bool UPhysicsEngine::LineTraceSingleByChannel(const XMFLOAT3& Start, const XMFLOAT3& End, const std::vector<ECollisionChannel>& TraceChannel,FHitResult& HitResult, float DebugDrawTime, const XMFLOAT3& TraceColor, const XMFLOAT3& TraceHitColor) const

@@ -3,7 +3,7 @@
 
 #include "Engine/Class/Framework/UPlayerInput.h"
 #include "Engine/RenderCore/EditorScene.h"
-#include "MyGame/Character/AMyGameCharacterBase.h"
+#include "MyGame/Character/Player/AMyGameCharacterBase.h"
 
 UCombatBaseComponent::UCombatBaseComponent()
 {

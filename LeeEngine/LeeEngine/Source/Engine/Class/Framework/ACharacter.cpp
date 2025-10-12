@@ -33,7 +33,7 @@ void UCharacterMovementComponent::BeginPlay()
 {
 	UActorComponent::BeginPlay();
 
-	Manager = PxCreateControllerManager(*GPhysicsEngine->GetScene());
+	physx::PxControllerManager* Manager = GPhysicsEngine->GetControllerManager();
 
 	desc.height = std::static_pointer_cast<UCapsuleComponent>(GetOwner()->GetRootComponent())->GetHalfHeight()*2;
 	desc.radius = std::static_pointer_cast<UCapsuleComponent>(GetOwner()->GetRootComponent())->GetRadius();
@@ -206,7 +206,6 @@ ACharacter::ACharacter()
 
 	CameraComp = std::make_shared<UCameraComponent>();
 	CameraComp->SetupAttachment(SpringArm, "");
-	
 }
 
 void ACharacter::Register()
@@ -233,9 +232,6 @@ void ACharacter::BeginPlay()
 	QueryCheckCapsuleComp->GetBodyInstance()->SetSimulatePhysics(false);
 	QueryCheckCapsuleComp->SetCollisionObjectType(ECollisionChannel::Pawn);
 	QueryCheckCapsuleComp->GetBodyInstance()->SetObjectType(ECollisionChannel::Pawn);
-
-	
-	GEngine->GetCurrentWorld()->GetCameraManager()->SetTargetCamera(CameraComp);
 }
 
 void ACharacter::Tick(float DeltaSeconds)

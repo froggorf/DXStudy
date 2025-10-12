@@ -267,6 +267,8 @@ void UEngine::JoinThreadsAtDestroy()
 	{
 		AudioThread.join();
 	}
+
+	GThreadPool->ClearAllThread();
 }
 
 // AI를 이용하여 생성

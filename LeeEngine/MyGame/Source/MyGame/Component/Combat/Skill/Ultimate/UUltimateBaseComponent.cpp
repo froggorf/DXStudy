@@ -1,7 +1,7 @@
 #include "CoreMinimal.h"
 #include "UUltimateBaseComponent.h"
 #include "Engine/Class/Framework/UPlayerInput.h"
-#include "MyGame/Character/AMyGameCharacterBase.h"
+#include "MyGame/Character/Player/AMyGameCharacterBase.h"
 #include "MyGame/Widget/UMyGameWidgetBase.h"
 
 UUltimateBaseComponent::UUltimateBaseComponent()
@@ -73,7 +73,7 @@ void UUltimateBaseComponent::ApplyUltimateAttack()
 
 void UUltimateBaseComponent::AddUltimateGauge(const float NewAddGauge)
 {
-	assert(MaxUltimateGauge != 0, "MaxUltimateGauge == 0");
+	assert(MaxUltimateGauge != 0 && "MaxUltimateGauge == 0");
 
 	CurrentUltimateGauge = std::min(CurrentUltimateGauge + NewAddGauge, MaxUltimateGauge);
 

@@ -32,7 +32,7 @@ public:
 	~FQueuedThreadPool();
 
 	void AddTask(const FTask& NewTask);
-
+	void ClearAllThread();
 	UINT GetThreadCount() const
 	{
 		return static_cast<UINT>(Threads.size());

@@ -210,7 +210,7 @@ void UShapeComponent::SetKinematicRigidBody(bool bNewKinematic)
 void UShapeComponent::SetCollisionEnabled(ECollisionEnabled NewType)
 {
 	CollisionEnabled = NewType;
-	bDrawDebug = NewType != ECollisionEnabled::NoCollision;
+	//bDrawDebug = NewType != ECollisionEnabled::NoCollision;
 
 	// NoCollision 이 안먹히는 현상이 존재하여 해당 방식을 추가 적용
 	if (NewType == ECollisionEnabled::NoCollision)

@@ -1,11 +1,9 @@
 #include "CoreMinimal.h"
 #include "USanhwaUltimateComponent.h"
 
-#include "Engine/RenderCore/EditorScene.h"
-#include "Engine/World/UWorld.h"
 #include "MyGame/Actor/Sanhwa/ASanhwaIceBase.h"
-#include "MyGame/Character/AMyGameCharacterBase.h"
-#include "MyGame/Character/ASanhwaCharacter.h"
+#include "MyGame/Character/Player/AMyGameCharacterBase.h"
+#include "MyGame/Character/Player/ASanhwaCharacter.h"
 
 void USanhwaUltimateComponent::Initialize(AMyGameCharacterBase* MyCharacter)
 {

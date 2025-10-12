@@ -1,4 +1,4 @@
-﻿#include "CoreMinimal.h"
+#include "CoreMinimal.h"
 #include "QueuedThreadPool.h"
 
 std::unique_ptr<FQueuedThreadPool> GThreadPool = nullptr;
@@ -51,6 +51,18 @@ FQueuedThreadPool::FQueuedThreadPool(UINT InNumQueuedThreads)
 
 FQueuedThreadPool::~FQueuedThreadPool()
 {
+	
+}
+
+void FQueuedThreadPool::AddTask(const FTask& NewTask)
+{
+	TaskQueue.push(NewTask);
+
+	Condition.notify_one();
+}
+
+void FQueuedThreadPool::ClearAllThread()
+{
 	bStop = true;
 	Condition.notify_all();
 	for (auto& Thread : Threads)
@@ -60,13 +72,6 @@ FQueuedThreadPool::~FQueuedThreadPool()
 			Thread.join();
 		}
 	}
-}
-
-void FQueuedThreadPool::AddTask(const FTask& NewTask)
-{
-	TaskQueue.push(NewTask);
-
-	Condition.notify_one();
 }
 
 // =================================================

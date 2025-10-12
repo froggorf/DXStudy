@@ -3,6 +3,11 @@
 
 #include "Engine/RenderCore/EditorScene.h"
 
+UHealthWidgetBase::UHealthWidgetBase()
+{
+	MainCanvasWidget->SetDesignResolution({300.0f,25.0f});
+}
+
 void UHealthWidgetBase::NativeConstruct()
 {
 	UUserWidget::NativeConstruct();

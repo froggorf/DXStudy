@@ -42,6 +42,10 @@ void UAnimMontage::LoadDataFromFileData(const nlohmann::json& AssetData)
 					{
 						assert(nullptr && "잘못된 로드");
 					}
+				if (bIsGameKill)
+				{
+					return;
+				}
 					AnimTrack.AnimSegments[i] = (std::static_pointer_cast<UAnimSequence>(AnimSequence));
 					++CurrentLoadedAnimCount;
 				});
@@ -49,7 +53,14 @@ void UAnimMontage::LoadDataFromFileData(const nlohmann::json& AssetData)
 
 		while (CurrentLoadedAnimCount != AnimTrackSize)
 		{
-			std::this_thread::yield();
+			if (bIsGameKill)
+			{
+				return;
+			}
+			else
+			{			
+				std::this_thread::yield();
+			}
 		}
 	}
 

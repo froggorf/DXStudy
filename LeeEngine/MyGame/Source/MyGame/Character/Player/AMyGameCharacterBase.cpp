@@ -7,8 +7,6 @@
 
 AMyGameCharacterBase::AMyGameCharacterBase()
 {
-	if (!GDirectXDevice) return;
-
 	if (UCharacterMovementComponent* CharacterMovement = GetCharacterMovement())
 	{
 		CharacterMovement->bOrientRotationToMovement = true;
@@ -32,7 +30,7 @@ AMyGameCharacterBase::AMyGameCharacterBase()
 
 	MotionWarpingComponent = std::static_pointer_cast<UMotionWarpingComponent>(CreateDefaultSubobject("MotionWarpingComp", "UMotionWarpingComponent"));
 	UltimateSceneCameraComp = std::make_shared<UCameraComponent>();
-	HealthComponent = std::static_pointer_cast<UHealthComponent>(CreateDefaultSubobject("HealthComp", "UHealthComponent"));
+	HealthComponent = std::static_pointer_cast<UHealthComponent>(CreateDefaultSubobject("HealthComp", "UPlayerHealthComponent"));
 	
 
 	
@@ -91,8 +89,8 @@ void AMyGameCharacterBase::LoadCharacterData_OnRegister()
 void AMyGameCharacterBase::BeginPlay()
 {
 	GetWorld()->GetPlayerController()->OnPossess(this);
-
 	ACharacter::BeginPlay();
+	GEngine->GetCurrentWorld()->GetCameraManager()->SetTargetCamera(CameraComp);
 
 	// Player 콜리젼 채널로 변경
 	QueryCheckCapsuleComp->SetCollisionObjectType(ECollisionChannel::Player);

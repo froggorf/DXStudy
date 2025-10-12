@@ -12,11 +12,6 @@
 class UHealthComponent;
 class UMyGameWidgetBase;
 
-/*
-	TODO: Note: 캐릭터 작성 중 생각나서 작성
-	적군 Base 를 만들 때 OnDeath 를 만들어서 플레이어에게 경험치를 주던 어떠한 작업을 하는 델리게이트를 만들어야함
-*/
-
 class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
 {
 	MY_GENERATE_BODY(AMyGameCharacterBase)
@@ -32,7 +27,7 @@ class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
 
 	float TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AActor* DamageCauser) override;
 
-	void Death();
+	void Death() override;
 
 	void Tick(float DeltaSeconds) override;
 	void Move(float X, float Y);

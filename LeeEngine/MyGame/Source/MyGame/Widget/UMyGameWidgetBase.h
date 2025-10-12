@@ -2,6 +2,7 @@
 #include "Engine/UEngine.h"
 #include "Engine/Widget/UUserWidget.h"
 
+class UNumberWidget;
 class UPlayerHealthWidget;
 class UUltimateWidget;
 class USkillWidgetBase;
@@ -28,6 +29,7 @@ private:
 		std::shared_ptr<USkillWidgetBase> SkillCoolDownWidget;
 		// Ultimate UI UserWidget
 		std::shared_ptr<UUltimateWidget> UltimateCoolDownWidget;
+
 public:
 	void SetSkillCoolDownTime(float NewCoolDownTime, float MaxCoolDownTime);
 	void SetUltimateCoolDownTime(float NewCoolDownTime, float MaxCoolDownTime);

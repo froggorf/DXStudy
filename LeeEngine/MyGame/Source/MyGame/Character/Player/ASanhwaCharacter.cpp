@@ -6,7 +6,6 @@
 #include "MyGame/Component/Combat/Melee/USanhwaCombatComponent.h"
 #include "MyGame/Component/Combat/Skill/NormalSkill/SanHwa/USanhwaSkillComponent.h"
 #include "MyGame/Component/Combat/Skill/Ultimate/Sanhwa/USanhwaUltimateComponent.h"
-#include "MyGame/Component/Health/UHealthComponent.h"
 #include "MyGame/Core/AMyGamePlayerController.h"
 #include "MyGame/Widget/Sanhwa/USanhwaWidget.h"
 
@@ -30,8 +29,8 @@ ASanhwaCharacter::ASanhwaCharacter()
 	SM_Sword->SetupAttachment(SkeletalMeshComponent, "hand_r");
 	
 	SM_Sword->SetRelativeScale3D({0.15f,0.15f,0.15f});
-	SM_Sword->SetRelativeLocation({-0.258, -78.622, 112.711});
-	SM_Sword->SetRelativeRotation(XMFLOAT4{0.507, -0.116, -0.759, 0.392});
+	SM_Sword->SetRelativeLocation({-0.258f, -78.622f, 112.711f});
+	SM_Sword->SetRelativeRotation(XMFLOAT4{0.507f, -0.116f, -0.759f, 0.392f});
 	SM_Sword->Rename("Sword");
 
 	CharacterMaxHealth = 20000.0f;
@@ -46,13 +45,13 @@ void ASanhwaCharacter::Register()
 		});
 
 	UltimateSceneCameraComp->SetupAttachment(SkeletalMeshComponent, "spine_05");
-	UltimateSceneCameraComp->SetRelativeLocation({11.6,167.28,0.0});
-	UltimateSceneCameraComp->SetRelativeRotation(XMFLOAT4{-0.073,-0.704,0.078, 0.702});
+	UltimateSceneCameraComp->SetRelativeLocation({11.6f,167.28f,0.0f});
+	UltimateSceneCameraComp->SetRelativeRotation(XMFLOAT4{-0.073f,-0.704f,0.078f, 0.702f});
 	if (TestComp_DeleteLater)
 	{
 		TestComp_DeleteLater->SetupAttachment(SkeletalMeshComponent, "spine_05");
-		TestComp_DeleteLater->SetRelativeLocation({11.6,167.28,0.0});
-		TestComp_DeleteLater->SetRelativeRotation(XMFLOAT4{-0.073,-0.704,0.078, 0.702});
+		TestComp_DeleteLater->SetRelativeLocation({11.6f,167.28f,0.0f});
+		TestComp_DeleteLater->SetRelativeRotation(XMFLOAT4{-0.073f,-0.704f,0.078f, 0.702f});
 	}
 	
 	

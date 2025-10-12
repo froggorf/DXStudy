@@ -59,6 +59,7 @@
     <ClCompile Include="Source\Engine\Components\USkeletalMeshComponent.cpp" />
     <ClCompile Include="Source\Engine\Components\USkinnedMeshComponent.cpp" />
     <ClCompile Include="Source\Engine\Components\UStaticMeshComponent.cpp" />
+    <ClCompile Include="Source\Engine\Components\UWidgetComponent.cpp" />
     <ClCompile Include="Source\Engine\Core\Async\ThreadPool.cpp" />
     <ClCompile Include="Source\Engine\DirectX\Device.cpp" />
     <ClCompile Include="Source\Engine\DirectX\FDirect2DDevice.cpp" />
@@ -220,6 +221,7 @@
     <ClInclude Include="Source\Engine\Components\USkeletalMeshComponent.h" />
     <ClInclude Include="Source\Engine\Components\USkinnedMeshComponent.h" />
     <ClInclude Include="Source\Engine\Components\UStaticMeshComponent.h" />
+    <ClInclude Include="Source\Engine\Components\UWidgetComponent.h" />
     <ClInclude Include="Source\Engine\Core\Async\ThreadPool.h" />
     <ClInclude Include="Source\Engine\DirectX\Device.h" />
     <ClInclude Include="Source\Engine\DirectX\FDirect2DDevice.h" />

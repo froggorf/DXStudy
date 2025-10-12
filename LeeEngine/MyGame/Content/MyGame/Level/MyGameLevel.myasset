@@ -41,13 +41,13 @@
             ]
         },
 {
-            "Class": "AFPSTest",
+            "Class": "AEnemyBase",
             "Location": [
-                0.0,
-                0.0,
+                500.0,
+                100.0,
                 0.0
             ],
-            "Name": "Shooter",
+            "Name": "Enemy",
             "Rotation": [
                 0.0,
                 0.0,

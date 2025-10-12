@@ -6,6 +6,7 @@
 #include "ULevel.h"
 
 #include "Engine/GameFramework/AActor.h"
+#include "Engine/World/UWorld.h"
 
 static int LevelCount = 0;
 
@@ -75,6 +76,14 @@ void ULevel::BeginPlay()
 
 void ULevel::TickLevel(float DeltaSeconds)
 {
+	for (const std::shared_ptr<AActor>& PendingAddActor : PendingAddActors)
+	{
+		Actors.emplace_back(PendingAddActor);
+		PendingAddActor->BeginPlay();
+	}
+	PendingAddActors.clear();
+
+
 	for (const auto& Actor : Actors)
 	{
 		Actor->Tick(DeltaSeconds * Actor->GetTickRate());
@@ -138,7 +147,7 @@ void ULevel::SaveDataFromAssetToFile(nlohmann::json& Json)
 
 std::shared_ptr<AActor> ULevel::SpawnActor(const std::string& ClassName, const FTransform& SpawnTransform)
 {
-	std::unordered_map<std::string, std::unique_ptr<UObject>>& CDOMap = UObject::GetCDOMap();
+	std::unordered_map<std::string, std::shared_ptr<UObject>>& CDOMap = UObject::GetCDOMap();
 	auto P = CDOMap.find(ClassName);
 	if (P == CDOMap.end())
 	{
@@ -152,10 +161,9 @@ std::shared_ptr<AActor> ULevel::SpawnActor(const std::string& ClassName, const F
 		NewActor->SetActorLocation(SpawnTransform.GetTranslation());
 		NewActor->SetActorRotation(SpawnTransform.GetRotation());
 		NewActor->SetActorScale3D(SpawnTransform.GetScale3D());
-		Actors.emplace_back(NewActor);
-
+		
+		PendingAddActors.emplace_back(NewActor);
 		NewActor->Register();
-		NewActor->BeginPlay();
 	}
 
 	return NewActor;

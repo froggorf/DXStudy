@@ -55,18 +55,23 @@ std::shared_ptr<UWorld> UObject::GetWorld()
 	return nullptr;
 }
 
-std::unordered_map<std::string, std::unique_ptr<UObject>>& UObject::GetCDOMap()
+std::unordered_map<std::string, std::shared_ptr<UObject>>& UObject::GetCDOMap()
 {
-	static std::unordered_map<std::string, std::unique_ptr<UObject>> ClassDefaultObjectMap;
+	static std::unordered_map<std::string, std::shared_ptr<UObject>> ClassDefaultObjectMap;
 	return ClassDefaultObjectMap;
 }
 
-void UObject::AddClassDefaultObject(const std::string& ClassName, std::unique_ptr<UObject>&& DefaultObject)
+void UObject::AddClassDefaultObject(const std::string& ClassName, std::shared_ptr<UObject> DefaultObject)
 {
-	GetCDOMap()[ClassName] = std::move(DefaultObject);
+	GetCDOMap()[ClassName] = DefaultObject;
 }
 
 const UObject* UObject::GetDefaultObject(const std::string& ClassName)
 {
 	return GetCDOMap()[ClassName].get();
+}
+
+void UObject::ClearClassDefaultObject()
+{
+	GetCDOMap().clear();
 }

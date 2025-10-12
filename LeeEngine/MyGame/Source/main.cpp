@@ -6,6 +6,7 @@
 //
 //***************************************************************************************
 //#define _CRT_SECURE_NO_WARNINGS
+
 #ifdef _DEBUG
 #pragma message("_DEBUG defined")
 #endif
@@ -42,6 +43,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	// Enable run-time memory check for debug builds.
 #if defined(DEBUG) | defined(_DEBUG)
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console" )
+	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
 	MyGame theApp(hInstance);
@@ -49,7 +51,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	if (!theApp.Init())
 		return -1;
 
-	return theApp.Run();
+	bool bResult = theApp.Run();
+
+	return bResult;
 }
 
 MyGame::MyGame(HINSTANCE hInstance)

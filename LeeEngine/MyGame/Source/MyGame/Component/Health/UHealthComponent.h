@@ -14,11 +14,8 @@ public:
 	// 공격을 받은 후의 체력을 반환
 	float ApplyDamage(float AppliedDamage);
 protected:
-
-	void MarkHealthToWidget();
-private:
+	virtual void MarkHealthToWidget(){};
 	float MaxHealth = 300.0f;
 	float CurrentHealth = 0.0f;
-
-	AMyGameCharacterBase* MyGameCharacter = nullptr;
+private:
 };

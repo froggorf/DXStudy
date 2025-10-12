@@ -483,6 +483,9 @@
     <ClCompile Include="Source\Engine\Mesh\StaticMeshResources.cpp">
       <Filter>Source\Engine\Mesh</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Components\UWidgetComponent.cpp">
+      <Filter>Source\Engine\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DirectX\d3dApp.h">
@@ -853,6 +856,9 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\Timer\FTimerManager.h">
       <Filter>Source\Engine\Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Components\UWidgetComponent.h">
+      <Filter>Source\Engine\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

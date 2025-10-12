@@ -94,3 +94,20 @@ float4 PS_RadialPBWidget(VS_OUT Input) : SV_Target
     float4 TextureColor = UITexture.Sample(UISampler, UV);
     return TextureColor * PixelTint;
 }
+
+#define Number Int_1
+
+float4 PS_NumberWidget(VS_OUT Input) : SV_Target
+{
+	float2 NumberTextureUV =  Input.UV;
+	// x-> 0~1 을 0.0~0.2 로 만들고서 offset을 더해줘야함
+	NumberTextureUV.x = NumberTextureUV.x / 5 + 0.2 * (Number % 5);
+	// y-> 0~1을 0.0~0.5 로 만들고서 Offset을 더해줘야함
+	NumberTextureUV.y = NumberTextureUV.y / 2 + 0.5*(Number/5);
+
+	float4 OutColor = (float4) 0.f;
+	float4 TextureColor = UITexture.Sample(UISampler, NumberTextureUV);
+
+	OutColor = TextureColor * Tint;
+	return OutColor;
+}

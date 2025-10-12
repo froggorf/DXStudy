@@ -12,13 +12,21 @@ APlayerController::APlayerController()
 	Rename("PlayerController_"+ (PlayerControllerID++));
 
 	PlayerInput = std::make_shared<UPlayerInput>();
+
+}
+
+void APlayerController::Register()
+{
+	AActor::Register();
+
+	CameraManager = std::dynamic_pointer_cast<APlayerCameraManager>(GetWorld()->GetPersistentLevel()->SpawnActor("APlayerCameraManager", {}));
 }
 
 void APlayerController::BeginPlay()
 {
 	AActor::BeginPlay();
 
-	CameraManager = std::dynamic_pointer_cast<APlayerCameraManager>(GetWorld()->GetPersistentLevel()->SpawnActor("APlayerCameraManager", {}));
+	
 }
 
 void APlayerController::Tick(float DeltaSeconds)

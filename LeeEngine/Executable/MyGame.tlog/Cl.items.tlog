@@ -3,12 +3,14 @@ C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\AFPSTest.cpp;C:\Project\
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\ATestActor2.cpp;C:\Project\DXStudy\LeeEngine\Executable\ATestActor2.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\ATestCube.cpp;C:\Project\DXStudy\LeeEngine\Executable\ATestCube.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\ATestCube2.cpp;C:\Project\DXStudy\LeeEngine\Executable\ATestCube2.obj
+C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\Damage\AFloatingDamageActor.cpp;C:\Project\DXStudy\LeeEngine\Executable\AFloatingDamageActor.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\Sanhwa\ASanhwaIceBase.cpp;C:\Project\DXStudy\LeeEngine\Executable\ASanhwaIceBase.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\Sanhwa\ASanhwaIceSpikeUltimate.cpp;C:\Project\DXStudy\LeeEngine\Executable\ASanhwaIceSpikeUltimate.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\AnimInstance\Sanhwa\USanhwaAnimInstance.cpp;C:\Project\DXStudy\LeeEngine\Executable\USanhwaAnimInstance.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\AnimInstance\UMyGameAniminstanceBase.cpp;C:\Project\DXStudy\LeeEngine\Executable\UMyGameAniminstanceBase.obj
-C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Character\AMyGameCharacterBase.cpp;C:\Project\DXStudy\LeeEngine\Executable\AMyGameCharacterBase.obj
-C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Character\ASanhwaCharacter.cpp;C:\Project\DXStudy\LeeEngine\Executable\ASanhwaCharacter.obj
+C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Character\Enemy\AEnemyBase.cpp;C:\Project\DXStudy\LeeEngine\Executable\AEnemyBase.obj
+C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Character\Player\AMyGameCharacterBase.cpp;C:\Project\DXStudy\LeeEngine\Executable\AMyGameCharacterBase.obj
+C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Character\Player\ASanhwaCharacter.cpp;C:\Project\DXStudy\LeeEngine\Executable\ASanhwaCharacter.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\Melee\UMeleeBaseComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\UMeleeBaseComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\Melee\USanhwaCombatComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\USanhwaCombatComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\Skill\NormalSkill\SanHwa\USanhwaSkillComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\USanhwaSkillComponent.obj
@@ -17,6 +19,7 @@ C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\Skill\Ultimat
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\Skill\Ultimate\UUltimateBaseComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\UUltimateBaseComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\UCombatBaseComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\UCombatBaseComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Health\UHealthComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\UHealthComponent.obj
+C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Health\UPlayerHealthComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\UPlayerHealthComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\MotionWarping\UMotionWarpingComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\UMotionWarpingComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\PBRTestComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\PBRTestComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Core\AMyGamePlayerController.cpp;C:\Project\DXStudy\LeeEngine\Executable\AMyGamePlayerController.obj
@@ -24,6 +27,7 @@ C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Interface\Dodge\IDodgeInterfac
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Notify\MyGameNotify.cpp;C:\Project\DXStudy\LeeEngine\Executable\MyGameNotify.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Widget\Health\UHealthWidgetBase.cpp;C:\Project\DXStudy\LeeEngine\Executable\UHealthWidgetBase.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Widget\Health\UPlayerHealthWidget.cpp;C:\Project\DXStudy\LeeEngine\Executable\UPlayerHealthWidget.obj
+C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Widget\Number\UNumberWidget.cpp;C:\Project\DXStudy\LeeEngine\Executable\UNumberWidget.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Widget\Sanhwa\USanhwaWidget.cpp;C:\Project\DXStudy\LeeEngine\Executable\USanhwaWidget.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Widget\Skill\USkillWidgetBase.cpp;C:\Project\DXStudy\LeeEngine\Executable\USkillWidgetBase.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Widget\Skill\UUltimateWidget.cpp;C:\Project\DXStudy\LeeEngine\Executable\UUltimateWidget.obj

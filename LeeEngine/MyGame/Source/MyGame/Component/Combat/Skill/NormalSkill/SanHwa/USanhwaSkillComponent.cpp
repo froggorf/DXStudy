@@ -1,7 +1,7 @@
 #include "CoreMinimal.h"
 #include "USanhwaSkillComponent.h"
 
-#include "MyGame/Character/ASanhwaCharacter.h"
+#include "MyGame/Character/Player/ASanhwaCharacter.h"
 
 USanhwaSkillComponent::USanhwaSkillComponent()
 {

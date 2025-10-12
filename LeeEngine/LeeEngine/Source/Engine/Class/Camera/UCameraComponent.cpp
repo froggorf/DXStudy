@@ -25,19 +25,22 @@ void UCameraComponent::UpdateCameraMatrices()
 {
 	const FTransform& ComponentToWorld = GetComponentTransform();
 
-	ViewMatrices.UpdateViewMatrix(ComponentToWorld.GetTranslation(), ComponentToWorld.GetRotationQuat());
-
 	switch (ProjectType)
 	{
 	case EProjectionType::OrthoGraphic:
 		ViewMatrices.UpdateProjectionMatrix(XMMatrixOrthographicLH(Width * OrthoScale, Width / AspectRatio * OrthoScale, Near, Far));
-	break;
+		break;
 	case EProjectionType::Perspective:
+		AspectRatio = GDirectXDevice->GetResolution().x / GDirectXDevice->GetResolution().y;
 		ViewMatrices.UpdateProjectionMatrix(XMMatrixPerspectiveFovLH(FOV, AspectRatio, Near, Far));
 	break;
 	default:
-	break;
+		break;
 	}
+
+	ViewMatrices.UpdateViewMatrix(ComponentToWorld.GetTranslation(), ComponentToWorld.GetRotationQuat());
+
+	
 	
 }
 

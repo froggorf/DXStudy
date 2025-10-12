@@ -20,6 +20,7 @@ class APlayerController : public AActor
 public:
 	APlayerController();
 	~APlayerController() override = default;
+	void Register() override;
 	void BeginPlay() override;
 	void Tick(float DeltaSeconds) override;
 	void TickWidget(float DeltaSeconds);

@@ -262,6 +262,11 @@ void UAnimSequence::PrecomputeAnimationData(const std::string& Name)
 	// 트리 구조의 계층을 벡터 구조로 변환
 	Traverse();
 
+	if (bIsGameKill)
+	{
+		return;
+	}
+
 	if (!GetSkeletonBoneHierarchyMap().contains(Name))
 	{
 		GetSkeletonBoneHierarchyMap()[Name] = BoneHierarchy;

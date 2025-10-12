@@ -2,7 +2,7 @@
 #include "USanhwaCombatComponent.h"
 
 #include "Engine/RenderCore/EditorScene.h"
-#include "MyGame/Character/AMyGameCharacterBase.h"
+#include "MyGame/Character/Player/AMyGameCharacterBase.h"
 #include "MyGame/Component/Combat/Skill/Ultimate/Sanhwa/USanhwaUltimateComponent.h"
 #include "MyGame/Widget/Sanhwa/USanhwaWidget.h"
 
@@ -199,7 +199,7 @@ void USanhwaCombatComponent::Attack4Success()
 	{
 		if (!SanhwaGauge[i])
 		{
-			EmptyGauge.emplace_back(i);
+			EmptyGauge.emplace_back(static_cast<int>(i));
 		}
 	}
 

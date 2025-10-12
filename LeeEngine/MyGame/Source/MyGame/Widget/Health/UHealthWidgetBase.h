@@ -13,7 +13,7 @@ class UHealthWidgetBase : public UUserWidget
 {
 	MY_GENERATE_BODY(UHealthWidgetBase)
 
-	UHealthWidgetBase() = default;
+	UHealthWidgetBase();
 	~UHealthWidgetBase() override = default;
 
 	void NativeConstruct() override;

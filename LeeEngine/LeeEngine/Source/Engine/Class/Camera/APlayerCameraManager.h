@@ -31,8 +31,11 @@ public:
 	{
 		TargetCamera = InCameraComp;
 	}
+
+	FViewMatrices GetViewMatrices() const;
 private:
 	static FTransform LastUpdateCameraTransform;
+	static FViewMatrices LastUpdateViewMatrices;
 	void BlendCameraAndUpdateCameraData(float DT);
 	float CurrentCameraBlendTime = 0.0f;
 	float CameraBlendTime = 0.0f;

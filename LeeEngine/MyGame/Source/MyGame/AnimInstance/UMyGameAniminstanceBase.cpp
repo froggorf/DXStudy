@@ -1,7 +1,6 @@
 #include "CoreMinimal.h"
 #include "UMyGameAniminstanceBase.h"
-
-#include "../Character/AMyGameCharacterBase.h"
+#include "MyGame/Character/Player/AMyGameCharacterBase.h"
 #include "Engine/Components/USkeletalMeshComponent.h"
 
 UMyGameAnimInstanceBase::UMyGameAnimInstanceBase()

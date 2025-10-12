@@ -727,6 +727,10 @@ void AssetManager::GetAsyncAssetCache(const std::string& AssetName, const AssetL
 		{
 			Callback(Object);
 		}
+		if (bIsGameKill)
+		{
+			return;
+		}
 		LoadingCallbackMap.unsafe_erase(AssetName);
 
 		MY_LOG("AsyncAssetLoad", EDebugLogLevel::DLL_Display, FilePath+" Load Success");

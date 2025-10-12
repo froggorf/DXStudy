@@ -20,6 +20,7 @@ public:
 	//AttachChildren에 따라 Slot 값이 다르게 제공됨
 	virtual std::shared_ptr<FSlot> CreateSlot() = 0;
 	void AddChild(const std::shared_ptr<class FChildWidget>& NewChild);
+	void ClearChildren() {AttachChildren.clear();}
 protected:
 	std::vector<std::shared_ptr<class FChildWidget>> AttachChildren;
 };
@@ -220,6 +221,7 @@ public:
 	~FImageWidget() override = default;
 
 	void SetBrush(const FImageBrush& NewBrush) {Brush = NewBrush;}
+	void SetTexture(const std::shared_ptr<UTexture>& NewTexture) {Brush.Image = NewTexture;}
 	void SetColor(const XMFLOAT4& NewColor) {Brush.Tint = NewColor;}
 
 	const XMFLOAT4& GetColor() const {return Brush.Tint;}
@@ -228,9 +230,24 @@ public:
 
 	void Tick(float DeltaSeconds) override;
 
+	void SetSystemParam(const FSystemParamConstantBuffer& NewSystemParam)
+	{
+		bSetSystemValue = true;
+		SystemParam = NewSystemParam;
+	}
+	void SetOverrideMaterial(const std::shared_ptr<UMaterialInterface>& NewMat)
+	{
+		bOverrideMaterial = true;
+		OverrideMaterial = NewMat;
+	}
+
 	Delegate<> OnMouseButtonDown;  
 private:
 	FImageBrush Brush;
+	bool bSetSystemValue = false;
+	bool bOverrideMaterial = false;
+	std::shared_ptr<UMaterialInterface> OverrideMaterial = nullptr;
+	FSystemParamConstantBuffer SystemParam;
 
 };
 

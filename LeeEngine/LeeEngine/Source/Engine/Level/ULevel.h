@@ -53,6 +53,7 @@ private:
 	std::shared_ptr<UWorld> OwningWorld;
 
 	std::vector<std::shared_ptr<AActor>> Actors;
+	std::vector<std::shared_ptr<AActor>> PendingAddActors;
 	std::vector<std::shared_ptr<AActor>> PendingKillActors;
 private:
 	nlohmann::basic_json<> LevelData;

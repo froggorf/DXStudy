@@ -107,6 +107,18 @@
     <Filter Include="Source\MyGame\Widget\Skill">
       <UniqueIdentifier>{1a6a015a-4a89-4180-834d-cc0619611289}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\Character\Player">
+      <UniqueIdentifier>{2b4fd2f4-f7ea-4a94-9a35-a7da5dad26b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\MyGame\Character\Enemy">
+      <UniqueIdentifier>{42e70974-1782-492e-b909-bbcee1f76cea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\MyGame\Widget\Number">
+      <UniqueIdentifier>{78542c5c-adf1-4677-99a9-21f6d5909c73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\MyGame\Actor\Damage">
+      <UniqueIdentifier>{62a25a49-d1e1-47b2-9af8-1fee9ebdc1c2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -127,9 +139,6 @@
     <ClCompile Include="Source\MyGame\Actor\AFPSTest.cpp">
       <Filter>Source\MyGame\Actor</Filter>
     </ClCompile>
-    <ClCompile Include="Source\MyGame\Character\AMyGameCharacterBase.cpp">
-      <Filter>Source\MyGame\Character</Filter>
-    </ClCompile>
     <ClCompile Include="Source\MyGame\AnimInstance\UMyGameAniminstanceBase.cpp">
       <Filter>Source\MyGame\AnimInstance</Filter>
     </ClCompile>
@@ -141,9 +150,6 @@
     </ClCompile>
     <ClCompile Include="Source\MyGame\Component\Combat\Melee\USanhwaCombatComponent.cpp">
       <Filter>Source\MyGame\Component\Combat\Melee</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\MyGame\Character\ASanhwaCharacter.cpp">
-      <Filter>Source\MyGame\Character</Filter>
     </ClCompile>
     <ClCompile Include="Source\MyGame\Interface\Dodge\IDodgeInterface.cpp">
       <Filter>Source\MyGame\Interface\Dodge</Filter>
@@ -199,6 +205,24 @@
     <ClCompile Include="Source\MyGame\Widget\Health\UPlayerHealthWidget.cpp">
       <Filter>Source\MyGame\Widget\Health</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Character\Player\ASanhwaCharacter.cpp">
+      <Filter>Source\MyGame\Character\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\Character\Player\AMyGameCharacterBase.cpp">
+      <Filter>Source\MyGame\Character\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\Character\Enemy\AEnemyBase.cpp">
+      <Filter>Source\MyGame\Character\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\Component\Health\UPlayerHealthComponent.cpp">
+      <Filter>Source\MyGame\Component\Health</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\Widget\Number\UNumberWidget.cpp">
+      <Filter>Source\MyGame\Widget\Number</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\Actor\Damage\AFloatingDamageActor.cpp">
+      <Filter>Source\MyGame\Actor\Damage</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -216,9 +240,6 @@
     <ClInclude Include="Source\MyGame\Actor\AFPSTest.h">
       <Filter>Source\MyGame\Actor</Filter>
     </ClInclude>
-    <ClInclude Include="Source\MyGame\Character\AMyGameCharacterBase.h">
-      <Filter>Source\MyGame\Character</Filter>
-    </ClInclude>
     <ClInclude Include="Source\MyGame\AnimInstance\UMyGameAniminstanceBase.h">
       <Filter>Source\MyGame\AnimInstance</Filter>
     </ClInclude>
@@ -230,9 +251,6 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Component\Combat\Melee\USanhwaCombatComponent.h">
       <Filter>Source\MyGame\Component\Combat\Melee</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\MyGame\Character\ASanhwaCharacter.h">
-      <Filter>Source\MyGame\Character</Filter>
     </ClInclude>
     <ClInclude Include="Source\MyGame\Interface\Dodge\IDodgeInterface.h">
       <Filter>Source\MyGame\Interface\Dodge</Filter>
@@ -287,6 +305,24 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Widget\Health\UPlayerHealthWidget.h">
       <Filter>Source\MyGame\Widget\Health</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Character\Player\ASanhwaCharacter.h">
+      <Filter>Source\MyGame\Character\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Character\Player\AMyGameCharacterBase.h">
+      <Filter>Source\MyGame\Character\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Character\Enemy\AEnemyBase.h">
+      <Filter>Source\MyGame\Character\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Component\Health\UPlayerHealthComponent.h">
+      <Filter>Source\MyGame\Component\Health</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Widget\Number\UNumberWidget.h">
+      <Filter>Source\MyGame\Widget\Number</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Actor\Damage\AFloatingDamageActor.h">
+      <Filter>Source\MyGame\Actor\Damage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

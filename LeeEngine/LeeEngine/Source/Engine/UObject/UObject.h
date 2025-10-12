@@ -12,7 +12,7 @@ class MakeCDO\
 public:\
 	MakeCDO()\
 	{\
-		UObject::AddClassDefaultObject(#CLASS,std::make_unique<CLASS>());\
+		UObject::AddClassDefaultObject(#CLASS,std::make_shared<CLASS>());\
 	}\
 };\
 inline static MakeCDO _initializer;
@@ -93,10 +93,11 @@ private:
 
 public:
 	// Class Default Object 보관
-	static std::unordered_map<std::string, std::unique_ptr<UObject>>& GetCDOMap();
-	static void AddClassDefaultObject(const std::string& ClassName, std::unique_ptr<UObject>&& DefaultObject);
+	static std::unordered_map<std::string, std::shared_ptr<UObject>>& GetCDOMap();
+	static void AddClassDefaultObject(const std::string& ClassName, std::shared_ptr<UObject> DefaultObject);
 
 	static const UObject* GetDefaultObject(const std::string& ClassName);
+	static void ClearClassDefaultObject();
 };
 
 //std::unordered_map<std::string, std::unique_ptr<UObject>> UObject::ClassDefaultObject;

@@ -2,6 +2,7 @@
 #include "UMyGameWidgetBase.h"
 
 #include "Health/UPlayerHealthWidget.h"
+#include "Number/UNumberWidget.h"
 #include "Skill/USkillWidgetBase.h"
 #include "Skill/UUltimateWidget.h"
 
@@ -61,6 +62,7 @@ void UMyGameWidgetBase::NativeConstruct()
 	}
 	UltimateCoolDownWidget->SetSkillIconImageBrush(FImageBrush{UTexture::GetTextureCache(GetUltimateTextureName()), XMFLOAT4{1.0f,1.0f,1.0f, 1.0f}});
 	UltimateCoolDownWidget->SetUltimateGaugeColor(UltimateGaugeColor);
+
 }
 
 
@@ -93,4 +95,5 @@ void UMyGameWidgetBase::SetHealthBarWidget(float CurValue, float MaxValue)
 void UMyGameWidgetBase::Tick(float DeltaSeconds)
 {
 	UUserWidget::Tick(DeltaSeconds);
+
 }

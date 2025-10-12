@@ -46,7 +46,6 @@ public:
 
 	void AddInputVector(XMFLOAT3 WorldAccel, float Power);
 	void Jump();
-	physx::PxControllerManager* Manager = nullptr;
 	physx::PxController* PxCharacterController= nullptr;
 	physx::PxControllerFilters Filters;
 	MyQueryFilterCallback CCTQueryCallBack{};
@@ -100,6 +99,9 @@ public:
 	void HandleRootMotion(const XMMATRIX& Root);
 
 	void SetCurPlayingAnimMontage(const std::string& NewPlayingAnimMontage){CurPlayingAnimMontage = NewPlayingAnimMontage;}
+
+
+	virtual void Death(){};
 protected:
 	virtual void BindKeyInputs() {}
 private:

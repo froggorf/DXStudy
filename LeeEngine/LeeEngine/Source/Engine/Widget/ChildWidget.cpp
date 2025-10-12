@@ -535,6 +535,15 @@ void FImageWidget::Tick(float DeltaSeconds)
 	WidgetRenderData.Tint = GetColor();
 	WidgetRenderData.ZOrder = GetZOrder();
 
+	if (bSetSystemValue)
+	{
+		WidgetRenderData.SetSystemValue(SystemParam);
+	}
+	if (bOverrideMaterial)
+	{
+		WidgetRenderData.SetOverrideWidgetMaterial(OverrideMaterial);
+	}
+
 	GEngine->GetCurrentWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
 }
 

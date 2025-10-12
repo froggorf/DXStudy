@@ -3,6 +3,7 @@
 
 static UINT PlayerCameraManagerID = 0;
 FTransform APlayerCameraManager::LastUpdateCameraTransform;
+FViewMatrices APlayerCameraManager::LastUpdateViewMatrices = FViewMatrices{};
 
 APlayerCameraManager::APlayerCameraManager()
 {
@@ -35,6 +36,7 @@ void APlayerCameraManager::Tick(float DeltaSeconds)
 		{
 			LastUpdateCameraTransform = CameraComp->GetComponentTransform();
 			CameraComp->UpdateCameraData();
+			LastUpdateViewMatrices = CameraComp->GetViewMatrices();
 		}	
 	}
 	
@@ -61,6 +63,19 @@ void APlayerCameraManager::SetViewTargetWithBlend(const std::shared_ptr<UCameraC
 	}
 
 	TargetBlendingCamera = NewCameraComp;
+}
+
+FViewMatrices APlayerCameraManager::GetViewMatrices() const
+{
+	if (const std::shared_ptr<UCameraComponent>& Camera = TargetCamera.lock())
+	{
+		Camera->UpdateCameraMatrices();
+		return Camera->GetViewMatrices();
+	}
+	else
+	{
+		return LastUpdateViewMatrices;
+	}
 }
 
 void APlayerCameraManager::BlendCameraAndUpdateCameraData(float DT)

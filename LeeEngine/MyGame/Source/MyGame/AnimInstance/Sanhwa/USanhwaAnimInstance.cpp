@@ -1,7 +1,7 @@
 #include "CoreMinimal.h"
 #include "USanhwaAnimInstance.h"
 
-#include "MyGame/Character/AMyGameCharacterBase.h"
+#include "MyGame/Character/Player/AMyGameCharacterBase.h"
 #include "MyGame/Component/Combat/Melee/USanhwaCombatComponent.h"
 #include "MyGame/Component/Combat/Skill/Ultimate/Sanhwa/USanhwaUltimateComponent.h"
 #include "MyGame/Component/MotionWarping/UMotionWarpingComponent.h"
@@ -291,6 +291,13 @@ void USanhwaAnimInstance::Attack4()
 	if (!DamagedActors.empty())
 	{
 		std::static_pointer_cast<USanhwaCombatComponent>(CombatComp)->Attack4Success();
+
+		// TODO: 더 모듈화하기
+		for (size_t i = 0; i < DamagedActors.size(); ++i)
+		{
+			FDamageEvent Event;
+			DamagedActors[i]->TakeDamage(1000, Event, MyGameCharacter);
+		}
 
 		// TODO : 임시 코드
 		std::static_pointer_cast<USanhwaUltimateComponent>(MyGameCharacter->GetUltimateComponent())->AddUltimateGauge(120.0f);
