@@ -3,6 +3,7 @@
 
 #include "MyGame/Character/Player/AMyGameCharacterBase.h"
 #include "MyGame/Widget/UMyGameWidgetBase.h"
+#include "MyGame/Widget/Health/UHealthWidgetBase.h"
 
 void UHealthComponent::SetMaxHealth(float NewMaxHealth, bool bSetHealthMax)
 {
@@ -23,4 +24,12 @@ float UHealthComponent::ApplyDamage(float AppliedDamage)
 	MarkHealthToWidget();
 
 	return CurrentHealth;
+}
+
+void UHealthComponent::MarkHealthToWidget()
+{
+	if (const std::shared_ptr<UHealthWidgetBase>& Widget = HealthWidget.lock())
+	{
+		Widget->SetHealthBarPercent(CurrentHealth, MaxHealth);
+	}
 }

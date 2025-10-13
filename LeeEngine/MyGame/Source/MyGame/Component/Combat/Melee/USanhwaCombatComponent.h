@@ -19,7 +19,6 @@ public:
 
 	float GetAttack4_FloatingDistance() const {return Attack4_FloatingDistance;}
 	float GetAttack4_FloatMoveDistance() const {return Attack4_FloatMoveDistance; }
-	float GetAttack4_AttackMoveDistance() const {return Attack4_AttackMoveDistance; }
 
 	void Attack4Success();
 	float GetHeavyAttackMoveDistance() const {return HeavyAttackMoveDistance;}
@@ -29,8 +28,6 @@ private:
 	float Attack4_FloatingDistance = 500.0f;
 	// 기본공격 4의 떠오르는 중의 움직일 수 있는 거리
 	float Attack4_FloatMoveDistance = 300.0f;
-	// 기본공격 4의 공격 중의 움직일 수 있는 거리
-	float Attack4_AttackMoveDistance = 700.0f;
 
 	// ================ 강공격 변수 ================
 	static constexpr float EnterHeavyAttackTime = 0.7f;
@@ -40,7 +37,6 @@ private:
 	// 강공격 애니메이션들
 	std::shared_ptr<UAnimMontage> AM_HeavyAttack_Press;
 	std::shared_ptr<UAnimMontage> AM_HeavyAttack_Release;
-	std::shared_ptr<UAnimMontage> AM_HeavyAttack_Attack;
 	
 public:
 	// 산화의 특수 게이지

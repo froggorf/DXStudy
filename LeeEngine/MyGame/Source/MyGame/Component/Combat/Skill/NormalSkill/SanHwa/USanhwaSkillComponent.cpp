@@ -12,8 +12,9 @@ void USanhwaSkillComponent::Initialize(AMyGameCharacterBase* MyCharacter)
 	USkillBaseComponent::Initialize(MyCharacter);
 
 	// 동일한 애니메이션
-	SetSkillMontagesAndCoolDown({"AM_Sanhwa_Skill"}, 7.0f);
-	SetSkillMoveDistance({-300,-300});
+	SetSkillAttackData({"AM_Sanhwa_Skill"}, 
+	{FAttackData{XMFLOAT3{ 250,250,300},2.0f, -50.0f,20.0f}}
+	, 7.0f);
 }
 
 void USanhwaSkillComponent::ApplySkillAttack()

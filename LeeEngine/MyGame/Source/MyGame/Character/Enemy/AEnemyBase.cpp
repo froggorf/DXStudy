@@ -7,6 +7,7 @@
 #include "MyGame/Component/Health/UHealthComponent.h"
 #include "MyGame/Component/MotionWarping/UMotionWarpingComponent.h"
 #include "MyGame/Core/AMyGamePlayerController.h"
+#include "MyGame/Widget/Health/UEnemyHealthWidget.h"
 #include "MyGame/Widget/Health/UHealthWidgetBase.h"
 
 AEnemyBase::AEnemyBase()
@@ -42,11 +43,16 @@ void AEnemyBase::Register()
 	AssetManager::GetAsyncAssetCache("SM_DeferredSphere",[this](std::shared_ptr<UObject> Object)
 		{
 			TempStaticMesh->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
+			TempStaticMesh->SetCollisionObjectType(ECollisionChannel::Enemy);
+			TempStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		});
 
+	QueryCheckCapsuleComp->SetCollisionObjectType(ECollisionChannel::Enemy);
+	QueryCheckCapsuleComp->GetBodyInstance()->SetObjectType(ECollisionChannel::Enemy);
 
-	HealthWidgetComp->SetWidget(std::make_shared<UHealthWidgetBase>());
-	std::static_pointer_cast<UHealthWidgetBase>(HealthWidgetComp->GetWidget())->SetHealthBarPercent(10000,20000); 
+	std::shared_ptr<UHealthWidgetBase> EnemyHealthWidget = std::make_shared<UEnemyHealthWidget>();
+	HealthWidgetComp->SetWidget(EnemyHealthWidget);
+	HealthComponent->SetHealthWidget(EnemyHealthWidget);
 
 	//AssetManager::GetAsyncAssetCache(CharacterMeshName,[this](std::shared_ptr<UObject> Object)
 	//	{
@@ -63,8 +69,6 @@ void AEnemyBase::BeginPlay()
 	QueryCheckCapsuleComp->SetCollisionObjectType(ECollisionChannel::Enemy);
 	QueryCheckCapsuleComp->GetBodyInstance()->SetObjectType(ECollisionChannel::Enemy);
 
-	TempStaticMesh->SetCollisionObjectType(ECollisionChannel::Enemy);
-	TempStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	HealthComponent->SetMaxHealth(EnemyMaxHealth, true);
 }
@@ -85,9 +89,8 @@ float AEnemyBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent
 		{
 			DefaultColor = GetElementColor(MyGameDamageEvent->ElementType);
 		}
-		PC->SpawnFloatingDamage(GetRootComponent()->GetComponentTransform(), DefaultColor, DamageAmount);
+		PC->SpawnFloatingDamage(GetRootComponent()->GetComponentTransform(), DefaultColor, static_cast<UINT>(DamageAmount));
 	}
-	
 
 	return DamageAmount;
 }

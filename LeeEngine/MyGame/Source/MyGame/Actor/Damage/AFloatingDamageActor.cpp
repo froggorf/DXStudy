@@ -14,6 +14,8 @@ AFloatingDamageActor::AFloatingDamageActor()
 
 	XMFLOAT3 NewRelativeLocation = {MyMath::FRandRange(-1.0f,1.0f) * SpawnBoundBoxHalf, MyMath::FRandRange(-1.0f,1.0f) * SpawnBoundBoxHalf, MyMath::FRandRange(-1.0f,1.0f) * SpawnBoundBoxHalf };
 	FloatingDamageWidget->SetRelativeLocation(NewRelativeLocation);
+
+
 }
 
 void AFloatingDamageActor::Register()
@@ -28,7 +30,7 @@ void AFloatingDamageActor::BeginPlay()
 {
 	AActor::BeginPlay();
 
-
+	std::cout<<SelfDestroyTimerHandle.TimerID<<"\n";
 	GEngine->GetTimerManager()->SetTimer(SelfDestroyTimerHandle, {this, &AFloatingDamageActor::Floating}, WaitTime, true, 0.01f);
 }
 

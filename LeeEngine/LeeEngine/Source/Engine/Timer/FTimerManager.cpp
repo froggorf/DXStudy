@@ -3,9 +3,10 @@
 
 #include "Engine/RenderCore/EditorScene.h"
 
-std::atomic<UINT> TimerCount = 0;
+
 FTimerHandle::FTimerHandle()
 {
+	static std::atomic<UINT> TimerCount = 0;
 	TimerID = TimerCount++;
 }
 
@@ -27,7 +28,11 @@ void FTimerManager::Tick(float DeltaSeconds)
 			continue;
 		}
 
-		TimerData.Delegate.Broadcast();
+		if (!TimerData.bMustKill)
+		{
+			TimerData.Delegate.Broadcast();
+		}
+
 		if (TimerData.bRepeat)
 		{
 			TimerData.CurTime += TimerData.RepeatTime;
@@ -48,9 +53,9 @@ void FTimerManager::SetTimer(const FTimerHandle& TimerHandle, const Delegate<>& 
 {
 	if (Timers.contains(TimerHandle))
 	{
-		MY_LOG("SetTimer", EDebugLogLevel::DLL_Warning, std::to_string(TimerHandle.TimerID) + " Timer already on setting");
 		return;
 	}
+
 	FTimerData TimerData;
 	TimerData.Delegate = TimerDelegate;
 	TimerData.CurTime = DelayTime;
@@ -68,6 +73,7 @@ void FTimerManager::ClearTimer(const FTimerHandle& ClearTimerHandle)
 	{
 		FTimerData& Data = ClearIter->second;
 		Data.bRepeat = false;
+		Data.bMustKill = true;
 	}
 }
 

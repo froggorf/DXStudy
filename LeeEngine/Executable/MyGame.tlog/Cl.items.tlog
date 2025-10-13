@@ -25,6 +25,7 @@ C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\PBRTestComponent.cpp
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Core\AMyGamePlayerController.cpp;C:\Project\DXStudy\LeeEngine\Executable\AMyGamePlayerController.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Interface\Dodge\IDodgeInterface.cpp;C:\Project\DXStudy\LeeEngine\Executable\IDodgeInterface.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Notify\MyGameNotify.cpp;C:\Project\DXStudy\LeeEngine\Executable\MyGameNotify.obj
+C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Widget\Health\UEnemyHealthWidget.cpp;C:\Project\DXStudy\LeeEngine\Executable\UEnemyHealthWidget.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Widget\Health\UHealthWidgetBase.cpp;C:\Project\DXStudy\LeeEngine\Executable\UHealthWidgetBase.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Widget\Health\UPlayerHealthWidget.cpp;C:\Project\DXStudy\LeeEngine\Executable\UPlayerHealthWidget.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Widget\Number\UNumberWidget.cpp;C:\Project\DXStudy\LeeEngine\Executable\UNumberWidget.obj

@@ -46,6 +46,7 @@
     <ClCompile Include="Source\MyGame\Core\AMyGamePlayerController.cpp" />
     <ClCompile Include="Source\MyGame\Interface\Dodge\IDodgeInterface.cpp" />
     <ClCompile Include="Source\MyGame\Notify\MyGameNotify.cpp" />
+    <ClCompile Include="Source\MyGame\Widget\Health\UEnemyHealthWidget.cpp" />
     <ClCompile Include="Source\MyGame\Widget\Health\UHealthWidgetBase.cpp" />
     <ClCompile Include="Source\MyGame\Widget\Health\UPlayerHealthWidget.cpp" />
     <ClCompile Include="Source\MyGame\Widget\Number\UNumberWidget.cpp" />
@@ -81,6 +82,7 @@
     <ClInclude Include="Source\MyGame\Core\AMyGamePlayerController.h" />
     <ClInclude Include="Source\MyGame\Interface\Dodge\IDodgeInterface.h" />
     <ClInclude Include="Source\MyGame\Notify\MyGameNotify.h" />
+    <ClInclude Include="Source\MyGame\Widget\Health\UEnemyHealthWidget.h" />
     <ClInclude Include="Source\MyGame\Widget\Health\UHealthWidgetBase.h" />
     <ClInclude Include="Source\MyGame\Widget\Health\UPlayerHealthWidget.h" />
     <ClInclude Include="Source\MyGame\Widget\Number\UNumberWidget.h" />

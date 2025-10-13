@@ -4,6 +4,7 @@
 #pragma once
 #include "Engine/Components/UActorComponent.h"
 #include "Engine/Timer/FTimerManager.h"
+#include "MyGame/Component/Combat/UCombatBaseComponent.h"
 
 class UAnimMontage;
 class UPlayerInput;
@@ -46,13 +47,10 @@ public:
 	// 쿨타임 감소 (타이머로 연동)
 	virtual void CoolDown();
 
-	// 스킬 몽타쥬의 애니메이션 길이 & 스킬 공격 거리
-	float GetSkillMoveDistance(size_t SkillIndex) const {if (SkillIndex >= SkillMoveDistance.size()) return 0.0f; return SkillMoveDistance[SkillIndex];}
-	float GetSkillAnimLength(size_t SkillIndex) const;
+	const FAttackData& GetSkillAttackData(size_t Index);
 protected:
 	// NOTE: Initialize 안에서 사용하여 하위클래스에서 값을 조정
-	void SetSkillMontagesAndCoolDown(const std::vector<std::string>& NewMontageNames, const float NewSkillCooldown);
-	void SetSkillMoveDistance(const std::vector<float>& NewMoveDistance);
+	void SetSkillAttackData(const std::vector<std::string>& NewMontageNames, const std::vector<FAttackData>& NewAttackData, const float NewSkillCooldown);
 	void SetSkillDelegates(const std::vector<Delegate<>>& NewStartDelegates, const std::vector<Delegate<>>& NewBlendOutDelegates);
 protected:
 	AMyGameCharacterBase* MyGameCharacter = nullptr;
@@ -77,8 +75,7 @@ protected:
 	float LastPressKeyTime = 0.0f;
 
 	// ================================ Skill ================================
-	std::vector<std::shared_ptr<UAnimMontage>> SkillAnimMontages;
-	std::vector<float> SkillMoveDistance;
+	std::vector<FAttackData> SkillAttackData;
 	std::vector<Delegate<>>	SkillStartDelegates;
 	std::vector<Delegate<>> SkillBlendOutDelegates;
 

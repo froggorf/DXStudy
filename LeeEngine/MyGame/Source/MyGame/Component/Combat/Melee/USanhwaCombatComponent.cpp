@@ -28,6 +28,12 @@ void USanhwaCombatComponent::Initialize(AMyGameCharacterBase* MyCharacter)
 		FAttackData{{250,250,250}, 1.5f,500.0,15.0f}
 	});
 
+	SetHeavyAttackData({
+		"AM_Sanhwa_Heavy_Attack"
+	},{
+		FAttackData{ {200,200,1000}, 1.0f, {1000}, 20.0f}
+	});
+
 	/// AM_Sanhwa_Heavy_Press
 	AssetManager::GetAsyncAssetCache("AM_Sanhwa_Heavy_Press",[this](std::shared_ptr<UObject> Object)
 		{
@@ -52,20 +58,6 @@ void USanhwaCombatComponent::Initialize(AMyGameCharacterBase* MyCharacter)
 #if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
 				// 개발 중 테스트를 위하여 assert
 				assert(nullptr&&"Not exist HeavyRelease");
-#endif
-			}
-		});
-
-	/// AM_Sanhwa_Heavy_Attack
-	AssetManager::GetAsyncAssetCache("AM_Sanhwa_Heavy_Attack",[this](std::shared_ptr<UObject> Object)
-		{
-			AM_HeavyAttack_Attack = std::dynamic_pointer_cast<UAnimMontage>(Object);
-			if (!AM_HeavyAttack_Attack)
-			{
-				MY_LOG("Warning", EDebugLogLevel::DLL_Error, GetFunctionName + ", Heavy Montage Not exist");
-#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
-				// 개발 중 테스트를 위하여 assert
-				assert(nullptr&&"Not exist HeavyPress");
 #endif
 			}
 		});
@@ -152,7 +144,7 @@ void USanhwaCombatComponent::HeavyAttackMouseReleased()
 	if (SanhwaGauge[CurrentGaugeIndex])
 	{
 		// 강공격에 성공함
-		AnimInstance->Montage_Play(AM_HeavyAttack_Attack);
+		AnimInstance->Montage_Play(HeavyAttackData[0].AnimMontage);
 
 		for (UINT i = 0; i < GaugeSize; ++i)
 		{

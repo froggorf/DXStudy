@@ -32,6 +32,7 @@ class USanhwaAnimInstance final : public UMyGameAnimInstanceBase
 	void BasicAttack2();
 	void BasicAttack3();
 	void BasicAttack4();
+	void HeavyAttack();
 	void SkillAttack();
 	void UltAttack();
 

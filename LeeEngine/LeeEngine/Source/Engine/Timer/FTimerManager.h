@@ -27,6 +27,7 @@ struct FTimerData
 
 	float RepeatTime = 1.0f;
 	bool bRepeat = false;
+	bool bMustKill = false;
 
 	float CurTime = 1.0f;
 

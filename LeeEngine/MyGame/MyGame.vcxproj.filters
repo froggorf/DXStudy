@@ -223,6 +223,9 @@
     <ClCompile Include="Source\MyGame\Actor\Damage\AFloatingDamageActor.cpp">
       <Filter>Source\MyGame\Actor\Damage</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Widget\Health\UEnemyHealthWidget.cpp">
+      <Filter>Source\MyGame\Widget\Health</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -323,6 +326,9 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Actor\Damage\AFloatingDamageActor.h">
       <Filter>Source\MyGame\Actor\Damage</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Widget\Health\UEnemyHealthWidget.h">
+      <Filter>Source\MyGame\Widget\Health</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -91,7 +91,10 @@ void USanhwaAnimInstance::SetAnimNotify_BeginPlay()
 	NotifyEvent["UltAttack"] = UltAttackDelegate;
 
 	Delegate<> SkillAttack = {this, &USanhwaAnimInstance::SkillAttack};
-	NotifyEvent["SkillAttack"] = SkillAttack;	
+	NotifyEvent["SkillAttack"] = SkillAttack;
+
+	Delegate<> HeavyAttack = {this, &USanhwaAnimInstance::HeavyAttack};
+	NotifyEvent["HeavyAttack"] = HeavyAttack;	
 }
 
 void USanhwaAnimInstance::BeginPlay()
@@ -167,7 +170,8 @@ void USanhwaAnimInstance::MotionWarping_BasicAttack4_Float()
 
 	XMFLOAT3 CurActorLocation = MyGameCharacter->GetActorLocation();
 	float MoveDistance =CombatComp->GetAttack4_FloatMoveDistance();
-	float Attack4MoveDistance = MoveDistance + CombatComp->GetAttack4_AttackMoveDistance();
+	
+	float Attack4MoveDistance = MoveDistance + CombatComp->GetHeavyAttackData(0).MoveDistance;
 	float FloatingDistance = CombatComp->GetAttack4_FloatingDistance();
 	// 하드코딩, TODO: 대응하는 값으로 바꿀 수 있도록 조정해봐야함
 	float MoveTime = 7* (1.0f/30);
@@ -183,7 +187,7 @@ void USanhwaAnimInstance::MotionWarping_BasicAttack4_Float()
 		float ToEnemyDistance = MyMath::GetDistance(CurActorLocation, EnemyLocation);
 		XMFLOAT3 ToEnemyVector = MyMath::GetDirectionUnitVector(CurActorLocation, EnemyLocation);
 
-		Attack4_AttackTargetPos = CurActorLocation + ToEnemyVector* std::min(max(ToEnemyDistance - 75, 0), Attack4MoveDistance);
+		Attack4_AttackTargetPos = CurActorLocation + ToEnemyVector* std::min(max(ToEnemyDistance - 150, 0), Attack4MoveDistance);
 	}
 	else
 	{
@@ -293,7 +297,7 @@ void USanhwaAnimInstance::BasicAttack0()
 		return;
 	}
 	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
-	MyGameCharacter->ApplyDamageToEnemy(CombatComp->GetBasicAttackData(0), "BasicAttack");
+	MyGameCharacter->ApplyDamageToEnemy(CombatComp->GetBasicAttackData(0), "SH_BasicAttack");
 }
 
 void USanhwaAnimInstance::BasicAttack1()
@@ -303,7 +307,7 @@ void USanhwaAnimInstance::BasicAttack1()
 		return;
 	}
 	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
-	MyGameCharacter->ApplyDamageToEnemy(CombatComp->GetBasicAttackData(1), "BasicAttack");
+	MyGameCharacter->ApplyDamageToEnemy(CombatComp->GetBasicAttackData(1), "SH_BasicAttack");
 }
 
 void USanhwaAnimInstance::BasicAttack2()
@@ -313,7 +317,7 @@ void USanhwaAnimInstance::BasicAttack2()
 		return;
 	}
 	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
-	MyGameCharacter->ApplyDamageToEnemy(CombatComp->GetBasicAttackData(2), "BasicAttack");
+	MyGameCharacter->ApplyDamageToEnemy(CombatComp->GetBasicAttackData(2), "SH_BasicAttack");
 }
 
 void USanhwaAnimInstance::BasicAttack3()
@@ -323,7 +327,7 @@ void USanhwaAnimInstance::BasicAttack3()
 		return;
 	}
 	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
-	MyGameCharacter->ApplyDamageToEnemy(CombatComp->GetBasicAttackData(3), "BasicAttack");
+	MyGameCharacter->ApplyDamageToEnemy(CombatComp->GetBasicAttackData(3), "SH_BasicAttack");
 }
 
 void USanhwaAnimInstance::BasicAttack4()
@@ -333,7 +337,7 @@ void USanhwaAnimInstance::BasicAttack4()
 		return;
 	}
 	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
-	MyGameCharacter->ApplyDamageToEnemy(CombatComp->GetBasicAttackData(4), "BasicAttack");
+	MyGameCharacter->ApplyDamageToEnemy(CombatComp->GetBasicAttackData(4), "SH_BasicAttack");
 	{
 		std::static_pointer_cast<USanhwaCombatComponent>(CombatComp)->Attack4Success();
 	}
@@ -344,7 +348,18 @@ void USanhwaAnimInstance::SkillAttack()
 	if (const std::shared_ptr<USkillBaseComponent>& SkillComp = MyGameCharacter->GetSkillComponent())
 	{
 		SkillComp->ApplySkillAttack();
+		MyGameCharacter->ApplyDamageToEnemy(SkillComp->GetSkillAttackData(0), "SH_SkillAttack");
 	}
+}
+
+void USanhwaAnimInstance::HeavyAttack()
+{
+	if (!MyGameCharacter)
+	{
+		return;
+	}
+	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
+	MyGameCharacter->ApplyDamageToEnemy(CombatComp->GetHeavyAttackData(0), "SH_HeavyAttack");
 }
 
 void USanhwaAnimInstance::UltAttack()
@@ -352,14 +367,17 @@ void USanhwaAnimInstance::UltAttack()
 	if (const std::shared_ptr<UUltimateBaseComponent>& UltComp = MyGameCharacter->GetUltimateComponent())
 	{
 		UltComp->ApplyUltimateAttack();
+		MyGameCharacter->ApplyDamageToEnemy(UltComp->GetSkillAttackData(0), "SH_UltAttack");
 	}
 }
 
 void USanhwaAnimInstance::SanhwaSkillAttack()
 {
 	const std::shared_ptr<USkillBaseComponent>& SkillComp = MyGameCharacter->GetSkillComponent();
-	float MoveDistance = SkillComp->GetSkillMoveDistance(0);
-	float MoveTime = SkillComp->GetSkillAnimLength(0);
+
+	const FAttackData& SkillAttackData = SkillComp->GetSkillAttackData(0);
+	float MoveDistance = SkillAttackData.MoveDistance;
+	float MoveTime = SkillAttackData.AnimMontage->GetPlayLength();
 	SetWarpingTarget(MyGameCharacter->GetActorForwardVector(), MoveDistance, MoveTime);
 }
 

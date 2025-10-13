@@ -13,13 +13,13 @@ class AMyGameCharacterBase;
 struct FAttackData
 {
 	FAttackData() = default;
-	FAttackData(const XMFLOAT3& Range, float Damage, float MoveDistance, float GainUltimateGauge, bool bStartForward = true, const XMFLOAT3& AtkStartLoc ={})
+	FAttackData(const XMFLOAT3& Range, float Damage, float MoveDistance, float GainUltimateGauge, bool bAttackCenterFixed = false, const XMFLOAT3& AtkCenterPos ={})
 	{
 		this->AttackRange = Range;
 		this->DamagePercent = Damage;
 		this->MoveDistance = MoveDistance;
-		this->bIsAttackStartForward = bStartForward;
-		this->AttackStartLocation = AtkStartLoc;
+		this->bIsAttackCenterFixed = bAttackCenterFixed;
+		this->AttackCenterPos = AtkCenterPos;
 		this->GainUltimateGauge = GainUltimateGauge;
 	}
 	std::shared_ptr<UAnimMontage> AnimMontage;
@@ -28,8 +28,8 @@ struct FAttackData
 	float MoveDistance = 0.0f;
 	float GainUltimateGauge = 10.0f;
 
-	bool bIsAttackStartForward = true;
-	XMFLOAT3 AttackStartLocation;
+	bool bIsAttackCenterFixed = false;
+	XMFLOAT3 AttackCenterPos;
 };
 
 class UCombatBaseComponent : public UActorComponent
@@ -53,6 +53,7 @@ public:
 protected:
 	// Initialize 안에서 적용
 	void SetBasicAttackData(const std::vector<std::string>& AttackMontageNames, const std::vector<FAttackData>& NewAttackData);
+	void SetHeavyAttackData(const std::vector<std::string>& AttackMontageNames, const std::vector<FAttackData>& NewAttackData);
 protected:
 	AMyGameCharacterBase* MyGameCharacter = nullptr;
 
@@ -62,6 +63,8 @@ public:
 	AActor* FindNearestEnemy(const XMFLOAT3& SpherePos , float EnemyFindRadius , const std::vector<AActor*>& IgnoreActors);
 
 	const FAttackData& GetBasicAttackData(size_t Index);
+	const FAttackData& GetHeavyAttackData(size_t Index);
+
 protected:
 	// 초기 세팅을 위해
 	bool bIsFightMode = true;
@@ -70,6 +73,7 @@ protected:
 	// BasicAttackData.size() 가 기본공격의 콤보 수
 	// BasicAttackData, 재생할 몽타쥬, 공격범위, 퍼뎀 등의 정보가 담겨있음
 	std::vector<FAttackData> BasicAttackData;
+	std::vector<FAttackData> HeavyAttackData;
 
 	// 선입력을 위해 키입력 시간을 저장
 	float LastBasicAttackClickedTime = -1.0f;

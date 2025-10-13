@@ -8,7 +8,7 @@ class ASanhwaIceSpikeUltimate : public ASanhwaIceSpikeBase
 	MY_GENERATE_BODY(ASanhwaIceSpikeUltimate)
 
 public:
-	ASanhwaIceSpikeUltimate() = default;
+	ASanhwaIceSpikeUltimate();
 	~ASanhwaIceSpikeUltimate() override = default;
 
 protected:

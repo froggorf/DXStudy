@@ -112,6 +112,35 @@ void UCombatBaseComponent::SetBasicAttackData(const std::vector<std::string>& At
 
 }
 
+void UCombatBaseComponent::SetHeavyAttackData(const std::vector<std::string>& AttackMontageNames, const std::vector<FAttackData>& NewAttackData)
+{
+	if (AttackMontageNames.size() != NewAttackData.size())
+	{
+		assert(nullptr && "수가 다름");
+	}
+
+	size_t Size = NewAttackData.size();
+	HeavyAttackData.clear();
+	HeavyAttackData.resize(Size);
+	for (size_t Index = 0; Index < Size; ++Index)
+	{
+		memcpy(&HeavyAttackData[Index], &NewAttackData[Index], sizeof(FAttackData));
+
+		AssetManager::GetAsyncAssetCache(AttackMontageNames[Index],[this, Index](std::shared_ptr<UObject> Object)
+			{
+				HeavyAttackData[Index].AnimMontage = std::dynamic_pointer_cast<UAnimMontage>(Object);
+				if (!HeavyAttackData[Index].AnimMontage)
+				{
+					MY_LOG("Warning", EDebugLogLevel::DLL_Error, GetFunctionName + ", BasicAttackMontages (Index) Montage Not exist - "+ std::to_string(Index));
+#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
+					// 개발 중 테스트를 위하여 assert
+					assert(nullptr&&"Not exist BasicAttackMontages");
+#endif
+				}
+			}); 
+	}
+}
+
 void UCombatBaseComponent::SetFightMode(bool NewMode)
 {
 	if (bIsFightMode == NewMode)
@@ -164,4 +193,15 @@ const FAttackData& UCombatBaseComponent::GetBasicAttackData(size_t Index)
 	}
 
 	return BasicAttackData[Index];
+}
+
+const FAttackData& UCombatBaseComponent::GetHeavyAttackData(size_t Index)
+{
+	if (Index < 0 || Index >= HeavyAttackData.size())
+	{
+		MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Error, "Wrong index");
+		Index = 0;
+	}
+
+	return HeavyAttackData[Index];
 }

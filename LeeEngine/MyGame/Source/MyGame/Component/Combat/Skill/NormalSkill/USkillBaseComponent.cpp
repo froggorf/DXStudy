@@ -55,7 +55,7 @@ void USkillBaseComponent::CheckDoNextSkill()
 
 	float CurrentTime = GEngine->GetTimeSeconds();
 	// 키 입력이 진행됐었다면,
-	if (LastPressKeyTime + 0.05f > CurrentTime && CurrentSkillCombo < SkillAnimMontages.size()-1)
+	if (LastPressKeyTime + 0.05f > CurrentTime && CurrentSkillCombo < SkillAttackData.size()-1)
 	{
 		DoSkill(CurrentSkillCombo + 1);
 	}
@@ -77,7 +77,7 @@ void USkillBaseComponent::DoSkill(UINT SkillIndex)
 	bIsCurrentPlayingSkill = true;
 
 	// SkillIndex 번째 스킬 재생 및 델리게이트 진행
-	AnimInstance->Montage_Play(SkillAnimMontages[SkillIndex], 0, {}, {}, {this, &USkillBaseComponent::OnSkillBlendOut});
+	AnimInstance->Montage_Play(SkillAttackData[SkillIndex].AnimMontage, 0, {}, {}, {this, &USkillBaseComponent::OnSkillBlendOut});
 	if (SkillIndex < SkillStartDelegates.size())
 	{
 		SkillStartDelegates[SkillIndex].Broadcast();
@@ -89,7 +89,7 @@ void USkillBaseComponent::DoSkill(UINT SkillIndex)
 void USkillBaseComponent::OnSkillBlendOut()
 {
 	// 다음 콤보가 있으면 스킬 사용할지 측정하는 타이머 설정하고
-	if (CurrentSkillCombo < SkillAnimMontages.size() - 1)
+	if (CurrentSkillCombo < SkillAttackData.size() - 1)
 	{
 		CurrentCheckDoNextSkillTime = 0.0f;
 		GEngine->GetTimerManager()->SetTimer(CheckDoNextSkillTimerHandle, {this, &USkillBaseComponent::CheckDoNextSkill}, 0.0f, true, 0.01f);
@@ -109,9 +109,9 @@ void USkillBaseComponent::OnSkillBlendOut()
 
 bool USkillBaseComponent::CanUseSkill()
 {
-	for (size_t i = 0; i < SkillAnimMontages.size(); ++i)
+	for (size_t i = 0; i < SkillAttackData.size(); ++i)
 	{
-		if (!SkillAnimMontages[i])
+		if (!SkillAttackData[i].AnimMontage)
 		{
 			MY_LOG("No Resource" , EDebugLogLevel::DLL_Warning, GetFunctionName + "-> No Montage Yet");
 			return false;
@@ -140,53 +140,50 @@ void USkillBaseComponent::CoolDown()
 	}
 }
 
-float USkillBaseComponent::GetSkillAnimLength(size_t SkillIndex) const
+const FAttackData& USkillBaseComponent::GetSkillAttackData(size_t Index)
 {
-	if (SkillIndex >= SkillAnimMontages.size())
+	if (Index < 0 || Index >= SkillAttackData.size())
 	{
-#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
-		std::string ErrorText = GetFunctionName + " - Wrong Index";
-		assert(nullptr && ErrorText.data());
-#else
-		return 0.0f;
-#endif
+		MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Error, "Wrong index");
+		Index = 0;
 	}
-	return SkillAnimMontages[SkillIndex]->GetPlayLength();
+
+	return SkillAttackData[Index];
 }
 
-void USkillBaseComponent::SetSkillMontagesAndCoolDown(const std::vector<std::string>& NewMontageNames, const float NewSkillCooldown)
+void USkillBaseComponent::SetSkillAttackData(const std::vector<std::string>& AttackMontageNames, const std::vector<FAttackData>& NewAttackData, const float NewSkillCooldown)
 {
-	size_t Size = NewMontageNames.size();
-	SkillAnimMontages.clear();
-	SkillAnimMontages.resize(Size);
+
+	if (AttackMontageNames.size() != NewAttackData.size())
+	{
+		assert(nullptr && "수가 다름");
+	}
+
+	size_t Size = NewAttackData.size();
+	SkillAttackData.clear();
+	SkillAttackData.resize(Size);
 	for (size_t Index = 0; Index < Size; ++Index)
 	{
-		AssetManager::GetAsyncAssetCache(NewMontageNames[Index],[this, Index](std::shared_ptr<UObject> Object)
+		memcpy(&SkillAttackData[Index], &NewAttackData[Index], sizeof(FAttackData));
+
+		AssetManager::GetAsyncAssetCache(AttackMontageNames[Index],[this, Index](std::shared_ptr<UObject> Object)
 			{
-				SkillAnimMontages[Index] = std::dynamic_pointer_cast<UAnimMontage>(Object);
-				if (!SkillAnimMontages[Index])
+				SkillAttackData[Index].AnimMontage = std::dynamic_pointer_cast<UAnimMontage>(Object);
+				if (!SkillAttackData[Index].AnimMontage)
 				{
-					MY_LOG("SetSkillMontage", EDebugLogLevel::DLL_Error, "No valid name");
+					MY_LOG("Warning", EDebugLogLevel::DLL_Error, ", BasicAttackMontages (Index) Montage Not exist - "+ std::to_string(Index));
 #if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
 					// 개발 중 테스트를 위하여 assert
-					assert(nullptr&&"Not exist Skill Montage");
+					assert(nullptr&&"Not exist BasicAttackMontages");
 #endif
 				}
-			});
+			}); 
 	}
 
 	SkillCoolDownTime = NewSkillCooldown;
 }
 
-void USkillBaseComponent::SetSkillMoveDistance(const std::vector<float>& NewMoveDistance)
-{
-	size_t NewSize = NewMoveDistance.size();
-	SkillMoveDistance.resize(NewSize);
-	for (size_t i = 0; i < NewSize; ++i)
-	{
-		SkillMoveDistance[i] = NewMoveDistance[i];
-	}
-}
+
 
 
 void USkillBaseComponent::SetSkillDelegates(const std::vector<Delegate<>>& NewStartDelegates, const std::vector<Delegate<>>& NewBlendOutDelegates)

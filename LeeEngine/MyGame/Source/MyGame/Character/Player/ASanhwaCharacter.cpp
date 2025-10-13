@@ -111,12 +111,19 @@ void ASanhwaCharacter::CreateIceSpikes(bool bIsUltimate)
 	SpawnTransform.Translation = ActorLocation + ActorForwardVector * 100;
 	SpawnTransform.Scale3D = {1,1,1};
 	SpawnTransform.Rotation = MyMath::VectorToRotationQuaternion(ActorForwardVector);
+
+	std::shared_ptr<AActor> IceSpikesActor;
 	if (bIsUltimate)
 	{
-		GetWorld()->SpawnActor("ASanhwaIceSpikeUltimate", SpawnTransform);
+		IceSpikesActor = GetWorld()->SpawnActor("ASanhwaIceSpikeUltimate", SpawnTransform);
 	}
 	else
 	{
-		GetWorld()->SpawnActor("ASanhwaIceSpikeBase", SpawnTransform);	
+		IceSpikesActor = GetWorld()->SpawnActor("ASanhwaIceSpikeBase", SpawnTransform);	
+	}
+
+	if (const std::shared_ptr<ASanhwaIceSpikeBase>& IceActor = std::dynamic_pointer_cast<ASanhwaIceSpikeBase>(IceSpikesActor))
+	{
+		IceActor->SpawnedBy(this);
 	}
 }

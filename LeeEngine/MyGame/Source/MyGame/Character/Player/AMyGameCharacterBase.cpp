@@ -173,13 +173,20 @@ void AMyGameCharacterBase::BindKeyInputs()
 
 bool AMyGameCharacterBase::ApplyDamageToEnemy(const FAttackData& AttackData,const std::string& DamageType)
 {
-	const XMFLOAT3& ActorLocation = GetActorLocation();
 	const XMFLOAT3& AttackRange = AttackData.AttackRange;
-	const XMFLOAT3& ActorForwardVector = GetActorForwardVector();
-	XMFLOAT3 BoxPos = ActorLocation + ActorForwardVector * AttackRange/2;
-
 	std::vector<AActor*> DamagedActors;
-	GPhysicsEngine->BoxOverlapComponents(BoxPos, AttackRange, {ECollisionChannel::Enemy}, {},DamagedActors);
+	if (AttackData.bIsAttackCenterFixed)
+	{
+		GPhysicsEngine->BoxOverlapComponents(AttackData.AttackCenterPos, AttackRange, {ECollisionChannel::Enemy}, {},DamagedActors);	
+	}
+	else
+	{
+		const XMFLOAT3& ActorLocation = GetActorLocation();
+		const XMFLOAT3& ActorForwardVector = GetActorForwardVector();
+		XMFLOAT3 BoxPos = ActorLocation + ActorForwardVector * AttackRange/2;
+		GPhysicsEngine->BoxOverlapComponents(BoxPos, AttackRange, {ECollisionChannel::Enemy}, {},DamagedActors);	
+	}
+	
 
 	if (!DamagedActors.empty())
 	{
