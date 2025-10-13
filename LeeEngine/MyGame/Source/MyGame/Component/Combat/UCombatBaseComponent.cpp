@@ -25,9 +25,9 @@ void UCombatBaseComponent::Initialize(AMyGameCharacterBase* MyCharacter)
 void UCombatBaseComponent::BasicAttack()
 {
 	// 로드가 안됐 을 경우 기본공격 막기
-	for (size_t i = 0; i < BasicAttackMontages.size(); ++i)
+	for (size_t i = 0; i < BasicAttackData.size(); ++i)
 	{
-		if (!BasicAttackMontages[i])
+		if (!BasicAttackData[i].AnimMontage)
 		{
 			MY_LOG("No Resource" , EDebugLogLevel::DLL_Warning, GetFunctionName + "-> No Montage Yet" + std::to_string(i));
 			return;
@@ -47,7 +47,7 @@ void UCombatBaseComponent::BasicAttack()
 	// MontageEnd를 통해서 공격을 계속 진행
 	if (const std::shared_ptr<UAnimInstance>& AnimInstance =  MyGameCharacter->GetAnimInstance())
 	{
-		AnimInstance->Montage_Play(BasicAttackMontages[0], 0, Delegate<>(), Delegate<>(), {this, &UCombatBaseComponent::BasicAttackEnded});
+		AnimInstance->Montage_Play(BasicAttackData[0].AnimMontage, 0, Delegate<>(), Delegate<>(), {this, &UCombatBaseComponent::BasicAttackEnded});
 	}
 	bIsBasicAttacking = true;
 }
@@ -57,10 +57,10 @@ void UCombatBaseComponent::BasicAttackEnded()
 	float CurrentTime = GEngine->GetTimeSeconds();
 	if (LastBasicAttackClickedTime + BasicAttackApplyTime >= CurrentTime)
 	{
-		CurrentBasicAttackCombo = (CurrentBasicAttackCombo + 1) % static_cast<UINT>(BasicAttackMontages.size());
+		CurrentBasicAttackCombo = (CurrentBasicAttackCombo + 1) % static_cast<UINT>(BasicAttackData.size());
 		if (const std::shared_ptr<UAnimInstance>& AnimInstance =  MyGameCharacter->GetAnimInstance())
 		{
-			AnimInstance->Montage_Play(BasicAttackMontages[CurrentBasicAttackCombo], 0, Delegate<>{},Delegate<>{},{this, &UCombatBaseComponent::BasicAttackEnded});
+			AnimInstance->Montage_Play(BasicAttackData[CurrentBasicAttackCombo].AnimMontage, 0, Delegate<>{},Delegate<>{},{this, &UCombatBaseComponent::BasicAttackEnded});
 		}
 	}
 	else
@@ -82,33 +82,34 @@ void UCombatBaseComponent::BindKeyInputs(const std::shared_ptr<UPlayerInput>& In
 	InputSystem->BindAction(EKeys::MouseLeft, ETriggerEvent::Released, this, &UCombatBaseComponent::HeavyAttackMouseReleased);
 }
 
-void UCombatBaseComponent::SetBasicAttackMontages(const std::vector<std::string>& NewMontagesName)
+void UCombatBaseComponent::SetBasicAttackData(const std::vector<std::string>& AttackMontageNames, const std::vector<FAttackData>& NewAttackData)
 {
-	size_t Size = NewMontagesName.size();
-	BasicAttackMontages.clear();
-	BasicAttackMontages.resize(NewMontagesName.size());
+	if (AttackMontageNames.size() != NewAttackData.size())
+	{
+		assert(nullptr && "수가 다름");
+	}
+
+	size_t Size = NewAttackData.size();
+	BasicAttackData.clear();
+	BasicAttackData.resize(Size);
 	for (size_t Index = 0; Index < Size; ++Index)
 	{
-		AssetManager::GetAsyncAssetCache(NewMontagesName[Index],[this, Index](std::shared_ptr<UObject> Object)
-		{
-			BasicAttackMontages[Index] = std::dynamic_pointer_cast<UAnimMontage>(Object);
-			if (!BasicAttackMontages[Index])
-			{
-				MY_LOG("Warning", EDebugLogLevel::DLL_Error, GetFunctionName + ", BasicAttackMontages (Index) Montage Not exist - "+ std::to_string(Index));
-#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
-				// 개발 중 테스트를 위하여 assert
-				assert(nullptr&&"Not exist BasicAttackMontages");
-#endif
-			}
-		});
-	}
-	
-}
+		memcpy(&BasicAttackData[Index], &NewAttackData[Index], sizeof(FAttackData));
 
-void UCombatBaseComponent::SetBasicAttackRange(const std::vector<XMFLOAT3>& AttackRange)
-{
-	BasicAttackRange.clear();
-	BasicAttackRange = AttackRange;
+		AssetManager::GetAsyncAssetCache(AttackMontageNames[Index],[this, Index](std::shared_ptr<UObject> Object)
+			{
+				BasicAttackData[Index].AnimMontage = std::dynamic_pointer_cast<UAnimMontage>(Object);
+				if (!BasicAttackData[Index].AnimMontage)
+				{
+					MY_LOG("Warning", EDebugLogLevel::DLL_Error, GetFunctionName + ", BasicAttackMontages (Index) Montage Not exist - "+ std::to_string(Index));
+#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
+					// 개발 중 테스트를 위하여 assert
+					assert(nullptr&&"Not exist BasicAttackMontages");
+#endif
+				}
+			}); 
+	}
+
 }
 
 void UCombatBaseComponent::SetFightMode(bool NewMode)
@@ -154,34 +155,13 @@ AActor* UCombatBaseComponent::FindNearestEnemy(const XMFLOAT3& SpherePos, float 
 
 }
 
-float UCombatBaseComponent::GetBasicAttackMoveDistance(size_t Index)
+const FAttackData& UCombatBaseComponent::GetBasicAttackData(size_t Index)
 {
-	if (Index < 0 || Index >= BasicAttackMoveDistance.size())
-	{
-		MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Error, "Wrong index");
-		return 100;
-	}
-
-	return BasicAttackMoveDistance[Index];
-}
-
-const std::shared_ptr<UAnimMontage>& UCombatBaseComponent::GetBasicAttackMontage(size_t Index)
-{
-	if (Index < 0 || Index >= BasicAttackMontages.size())
+	if (Index < 0 || Index >= BasicAttackData.size())
 	{
 		MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Error, "Wrong index");
 		Index = 0;
 	}
-	return BasicAttackMontages[Index];
-}
 
-XMFLOAT3 UCombatBaseComponent::GetBasicAttackRange(size_t Index)
-{
-	if (Index < 0 || Index >= BasicAttackRange.size())
-	{
-		MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Error, "Wrong index");
-		return {0,0,0};
-	}
-
-	return BasicAttackRange[Index];
+	return BasicAttackData[Index];
 }

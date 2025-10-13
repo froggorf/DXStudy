@@ -27,7 +27,6 @@
 
 		{ "NotifyClass" : "UAnimNotify_MotionWarpingStart", "TriggerTime" : 25, "WarpingName" : "SH_Attack4_Attack" },
 		{ "NotifyClass" : "UAnimNotify_MotionWarpingEnd", "TriggerTime" : 58},
-
-		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 33, "EventName" : "GaugeAttack" }
+		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 33, "EventName" : "BasicAttack4" }
   	  ]
 }

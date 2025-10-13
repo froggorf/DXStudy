@@ -70,8 +70,3 @@ void ASanhwaIceSpikeBase::SpawnIce()
 	}
 	
 }
-
-void ASanhwaIceSpikeBase::SetCollision(ECollisionEnabled NewCollision)
-{
-	SM_IceSpikes->SetCollisionEnabled(NewCollision);
-}

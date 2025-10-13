@@ -6,10 +6,31 @@
 #include "Engine/Components/UAnimMontage.h"
 #include "Engine/Timer/FTimerManager.h"
 
-
 class AMyGameCharacterBase;
 class UPlayerInput;
 class AMyGameCharacterBase;
+
+struct FAttackData
+{
+	FAttackData() = default;
+	FAttackData(const XMFLOAT3& Range, float Damage, float MoveDistance, float GainUltimateGauge, bool bStartForward = true, const XMFLOAT3& AtkStartLoc ={})
+	{
+		this->AttackRange = Range;
+		this->DamagePercent = Damage;
+		this->MoveDistance = MoveDistance;
+		this->bIsAttackStartForward = bStartForward;
+		this->AttackStartLocation = AtkStartLoc;
+		this->GainUltimateGauge = GainUltimateGauge;
+	}
+	std::shared_ptr<UAnimMontage> AnimMontage;
+	XMFLOAT3 AttackRange;
+	float DamagePercent = 1.0f;
+	float MoveDistance = 0.0f;
+	float GainUltimateGauge = 10.0f;
+
+	bool bIsAttackStartForward = true;
+	XMFLOAT3 AttackStartLocation;
+};
 
 class UCombatBaseComponent : public UActorComponent
 {
@@ -31,8 +52,7 @@ public:
 	virtual void BindKeyInputs(const std::shared_ptr<UPlayerInput>& InputSystem);
 protected:
 	// Initialize 안에서 적용
-	void SetBasicAttackMontages(const std::vector<std::string>& NewMontagesName);
-	void SetBasicAttackRange(const std::vector<XMFLOAT3>& AttackRange);
+	void SetBasicAttackData(const std::vector<std::string>& AttackMontageNames, const std::vector<FAttackData>& NewAttackData);
 protected:
 	AMyGameCharacterBase* MyGameCharacter = nullptr;
 
@@ -40,20 +60,17 @@ public:
 	void SetFightMode(bool NewMode);
 	bool FindNearbyEnemy(const XMFLOAT3& SpherePos , float EnemyFindRadius , const std::vector<AActor*>& IgnoreActors, std::vector<AActor*>& OverlapActors);
 	AActor* FindNearestEnemy(const XMFLOAT3& SpherePos , float EnemyFindRadius , const std::vector<AActor*>& IgnoreActors);
-	float GetBasicAttackMoveDistance(size_t Index);
 
-	const std::shared_ptr<UAnimMontage>& GetBasicAttackMontage(size_t Index);
-	XMFLOAT3 GetBasicAttackRange(size_t Index);
+	const FAttackData& GetBasicAttackData(size_t Index);
 protected:
 	// 초기 세팅을 위해
 	bool bIsFightMode = true;
 
 	// ===================== Basic Attack =====================
-	// BasicAttackMontages.size() 가 기본공격의 콤보 수
-	std::vector<std::shared_ptr<UAnimMontage>> BasicAttackMontages;
-	// 근접 공격시 이동할 수 있는 거리
-	// 하위 캐릭터 클래스별로 조정해주어야함
-	std::vector<float> BasicAttackMoveDistance = {100,100,100,100,100};
+	// BasicAttackData.size() 가 기본공격의 콤보 수
+	// BasicAttackData, 재생할 몽타쥬, 공격범위, 퍼뎀 등의 정보가 담겨있음
+	std::vector<FAttackData> BasicAttackData;
+
 	// 선입력을 위해 키입력 시간을 저장
 	float LastBasicAttackClickedTime = -1.0f;
 	// 선입력 시간 : 0.5f
@@ -62,7 +79,6 @@ protected:
 	UINT CurrentBasicAttackCombo = 0;
 	bool bIsBasicAttacking = false;
 
-	std::vector<XMFLOAT3> BasicAttackRange;
 
 	// ===================== HeavyAttack =====================
 	float LastLeftMouseClickedTime = -1.0f;

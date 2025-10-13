@@ -12,10 +12,26 @@
 class UHealthComponent;
 class UMyGameWidgetBase;
 
+enum class EElementType
+{
+	Fusion,		// 융용
+	Glacio,		// 응결
+	Conducto,	// 전도
+	Spectra,	// 회절
+	Aero,		// 기류
+	Havoc		// 인멸
+};
+XMFLOAT4 GetElementColor(EElementType ElementType);
+struct FMyGameDamageEvent : public FDamageEvent
+{
+	~FMyGameDamageEvent() override = default;
+	EElementType ElementType;
+};
+
 class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
 {
 	MY_GENERATE_BODY(AMyGameCharacterBase)
-	
+
 	AMyGameCharacterBase();
 	~AMyGameCharacterBase() override = default;
 
@@ -25,6 +41,8 @@ class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
 
 	void BindKeyInputs() override;
 
+	// 공격에 성공할 시 true 반환
+	bool ApplyDamageToEnemy(const FAttackData& AttackData, const std::string& DamageType = "");
 	float TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AActor* DamageCauser) override;
 
 	void Death() override;
@@ -38,6 +56,12 @@ class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
 	void SetRun();
 	void WheelUp();
 	void WheelDown();
+
+	float GetCurrentPower() const;
+protected:
+	float MaxPower = 120.0f;
+	float MinPower = 80.0f;
+public:
 
 	virtual void CreateWidgetOnBeginPlay() {}
 
@@ -85,5 +109,7 @@ protected:
 	std::shared_ptr<UMotionWarpingComponent> MotionWarpingComponent;
 
 	float CharacterMaxHealth = 10000.0f;
+
+	EElementType ElementType = EElementType::Aero;
 
 };

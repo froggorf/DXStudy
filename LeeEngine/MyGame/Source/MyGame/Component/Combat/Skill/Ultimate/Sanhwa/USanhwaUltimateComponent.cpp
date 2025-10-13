@@ -22,13 +22,3 @@ void USanhwaUltimateComponent::ApplyUltimateAttack()
 
 	static_cast<ASanhwaCharacter*>(MyGameCharacter)->CreateIceSpikes(true);
 }
-
-void USanhwaUltimateComponent::SetIceSpikeCollision(ECollisionEnabled NewCollision)
-{
-	std::vector<std::shared_ptr<ASanhwaIceSpikeBase>> IceSpikes;
-	static_cast<ASanhwaCharacter*>(MyGameCharacter)->GetIceSpikes(IceSpikes);
-	for (std::shared_ptr<ASanhwaIceSpikeBase>& IceSpike : IceSpikes)
-	{
-		IceSpike->SetCollision(NewCollision);
-	}
-}

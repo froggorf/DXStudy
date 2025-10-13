@@ -18,6 +18,7 @@ class AFloatingDamageActor : public AActor
 	void OnDestroy() override;
 	void Tick(float DeltaSeconds) override;
 
+	void Floating();
 	void DestroySelf() override;
 
 	void Setting(const XMFLOAT4& Color, UINT Value, float DigitScale = 1.0f, const std::shared_ptr<UTexture>& DigitTexture = nullptr);
@@ -29,7 +30,9 @@ protected:
 	static std::shared_ptr<UTexture> DefaultDigitTexture;
 
 	FTimerHandle SelfDestroyTimerHandle;
-	static constexpr float DestroyTime = 2.0f;
+	static constexpr float WaitTime = 0.7f;
+	static constexpr float FloatingTime = 0.7f;
+	float CurrentFloatingTime = 0.0f;
 };
 
 inline void AFloatingDamageActor::DestroySelf()

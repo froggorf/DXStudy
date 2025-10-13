@@ -66,7 +66,7 @@ void AFPSTest::Tick(float DeltaSeconds)
 		bool bHit = GPhysicsEngine->LineTraceSingleByChannel(Start, End, Channel, HitResult, 0.05f);
 		if (bHit)
 		{
-			HitResult.HitActor->TakeDamage(100, {"TestShot"}, this);
+			//HitResult.HitActor->TakeDamage(100, {"TestShot"}, this);
 		}
 		CurTime -= ShotDelay;
 	}

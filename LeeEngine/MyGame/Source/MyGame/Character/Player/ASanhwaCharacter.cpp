@@ -35,6 +35,7 @@ ASanhwaCharacter::ASanhwaCharacter()
 
 	CharacterMaxHealth = 20000.0f;
 
+	ElementType = EElementType::Glacio;
 }
 
 void ASanhwaCharacter::Register()
@@ -110,26 +111,12 @@ void ASanhwaCharacter::CreateIceSpikes(bool bIsUltimate)
 	SpawnTransform.Translation = ActorLocation + ActorForwardVector * 100;
 	SpawnTransform.Scale3D = {1,1,1};
 	SpawnTransform.Rotation = MyMath::VectorToRotationQuaternion(ActorForwardVector);
-	std::shared_ptr<AActor> IceSpike;
 	if (bIsUltimate)
 	{
-		IceSpike = GetWorld()->SpawnActor("ASanhwaIceSpikeUltimate", SpawnTransform);
+		GetWorld()->SpawnActor("ASanhwaIceSpikeUltimate", SpawnTransform);
 	}
 	else
 	{
-		IceSpike = GetWorld()->SpawnActor("ASanhwaIceSpikeBase", SpawnTransform);	
-	}
-	std::shared_ptr<ASanhwaIceSpikeBase> S = std::dynamic_pointer_cast<ASanhwaIceSpikeBase>(IceSpike);
-	IceSpikes.emplace_back(S); 
-}
-
-void ASanhwaCharacter::GetIceSpikes(std::vector<std::shared_ptr<ASanhwaIceSpikeBase>>& IceSpikeVector)
-{
-	auto RemoveIter = std::remove_if(IceSpikes.begin(),IceSpikes.end(), [](const std::weak_ptr<ASanhwaIceSpikeBase>& IceSpike){ return IceSpike.expired(); });
-	IceSpikes.erase(RemoveIter,IceSpikes.end());
-
-	for (std::weak_ptr<ASanhwaIceSpikeBase>& IceSpike : IceSpikes)
-	{
-		IceSpikeVector.emplace_back(IceSpike.lock());
+		GetWorld()->SpawnActor("ASanhwaIceSpikeBase", SpawnTransform);	
 	}
 }

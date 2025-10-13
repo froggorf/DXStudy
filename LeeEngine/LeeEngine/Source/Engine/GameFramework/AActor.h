@@ -14,6 +14,7 @@ class USceneComponent;
 
 struct FDamageEvent
 {
+	virtual ~FDamageEvent() = default;
 	std::string DamageType;
 };
 

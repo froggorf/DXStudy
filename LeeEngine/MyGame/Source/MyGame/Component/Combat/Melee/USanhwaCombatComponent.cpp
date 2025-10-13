@@ -8,29 +8,24 @@
 
 USanhwaCombatComponent::USanhwaCombatComponent()
 {
-	BasicAttackMoveDistance = {
-		200, 200, 200, -200, 500
-	};
 }
 
 void USanhwaCombatComponent::Initialize(AMyGameCharacterBase* MyCharacter)
 {
 	UMeleeBaseComponent::Initialize(MyCharacter);
 
-	SetBasicAttackMontages({
+	SetBasicAttackData({
 		"AM_Sanhwa_BasicAttack0",
 		"AM_Sanhwa_BasicAttack1",
 		"AM_Sanhwa_BasicAttack2",
 		"AM_Sanhwa_BasicAttack3",
 		"AM_Sanhwa_BasicAttack4",
-	});
-
-	SetBasicAttackRange({
-		{250,250,250},
-		{250,250,250},
-		{250,250,250},
-		{250,250,250},
-		{250,250,250},
+	},	{
+		FAttackData{{250,250,250}, 1.0f, 200.0, 5.0f},
+		FAttackData{{250,250,250}, 1.0f,200.0, 5.0f},
+		FAttackData{{250,250,250}, 1.1f,200.0,5.0f},
+		FAttackData{{250,250,250}, 0.8f,-50.0, 5.0f},
+		FAttackData{{250,250,250}, 1.5f,500.0,15.0f}
 	});
 
 	/// AM_Sanhwa_Heavy_Press
@@ -157,10 +152,6 @@ void USanhwaCombatComponent::HeavyAttackMouseReleased()
 	if (SanhwaGauge[CurrentGaugeIndex])
 	{
 		// 강공격에 성공함
-
-		// 산화의 특수 로직인 얼음의 충돌체크를 일시적으로 없앤다.
-		std::static_pointer_cast<USanhwaUltimateComponent>(MyGameCharacter->GetUltimateComponent())->SetIceSpikeCollision(ECollisionEnabled::NoCollision);
-
 		AnimInstance->Montage_Play(AM_HeavyAttack_Attack);
 
 		for (UINT i = 0; i < GaugeSize; ++i)

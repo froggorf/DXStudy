@@ -5,6 +5,35 @@
 #include "MyGame/Component/Health/UHealthComponent.h"
 
 
+XMFLOAT4 GetElementColor(EElementType ElementType)
+{
+	XMFLOAT3 Color255 = {0,0,0};
+	switch (ElementType)
+	{
+	case EElementType::Fusion:	
+		Color255 = XMFLOAT3{198,42,79};
+		break;
+	case EElementType::Glacio:
+		Color255 = {57,176,211};
+		break;
+	case EElementType::Conducto:
+		Color255 = {167, 50, 176};
+		break;
+	case EElementType::Spectra:
+		Color255 = {187,169,29};
+		break;
+	case EElementType::Aero:
+		Color255 = {46,198,158};
+		break;
+	case EElementType::Havoc:
+		Color255 = {151,22,84};
+		break;
+	}
+
+	return XMFLOAT4{Color255.x/255.0f, Color255.y/255.0f, Color255.z/255.0f,1.0f};
+	
+}
+
 AMyGameCharacterBase::AMyGameCharacterBase()
 {
 	if (UCharacterMovementComponent* CharacterMovement = GetCharacterMovement())
@@ -140,6 +169,32 @@ void AMyGameCharacterBase::BindKeyInputs()
 		}
 		
 	}
+}
+
+bool AMyGameCharacterBase::ApplyDamageToEnemy(const FAttackData& AttackData,const std::string& DamageType)
+{
+	const XMFLOAT3& ActorLocation = GetActorLocation();
+	const XMFLOAT3& AttackRange = AttackData.AttackRange;
+	const XMFLOAT3& ActorForwardVector = GetActorForwardVector();
+	XMFLOAT3 BoxPos = ActorLocation + ActorForwardVector * AttackRange/2;
+
+	std::vector<AActor*> DamagedActors;
+	GPhysicsEngine->BoxOverlapComponents(BoxPos, AttackRange, {ECollisionChannel::Enemy}, {},DamagedActors);
+
+	if (!DamagedActors.empty())
+	{
+		FMyGameDamageEvent Event;
+		Event.ElementType = ElementType;
+		Event.DamageType = DamageType;
+		for (size_t i = 0; i < DamagedActors.size(); ++i)
+		{
+			DamagedActors[i]->TakeDamage(GetCurrentPower() * AttackData.DamagePercent, Event, this);
+		}
+
+		GetUltimateComponent()->AddUltimateGauge(AttackData.GainUltimateGauge * static_cast<float>(DamagedActors.size()));
+	}
+
+	return !DamagedActors.empty();
 }
 
 void AMyGameCharacterBase::AttackedWhileDodge()
@@ -302,6 +357,10 @@ void AMyGameCharacterBase::WheelDown()
 	}
 }
 
+float AMyGameCharacterBase::GetCurrentPower() const
+{
+	return MyMath::FRandRange(MinPower, MaxPower);
+}
 
 
 void AMyGameCharacterBase::Tick(float DeltaSeconds)

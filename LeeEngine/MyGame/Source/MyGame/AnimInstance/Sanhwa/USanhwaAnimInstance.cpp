@@ -63,8 +63,20 @@ void USanhwaAnimInstance::SetAnimNotify_BeginPlay()
 	Delegate<> SkillAttackDelegate = {this, &USanhwaAnimInstance::SanhwaSkillAttack};
 	NotifyEvent["SH_Skill"] = SkillAttackDelegate;
 
-	Delegate<> FinalAttackDelegate = {this, &USanhwaAnimInstance::Attack4};
-	NotifyEvent["GaugeAttack"] = FinalAttackDelegate;
+	Delegate<> BasicAttack0Delegate = {this, &USanhwaAnimInstance::BasicAttack0};
+	NotifyEvent["BasicAttack0"] = BasicAttack0Delegate;
+
+	Delegate<> BasicAttack1Delegate = {this, &USanhwaAnimInstance::BasicAttack1};
+	NotifyEvent["BasicAttack1"] = BasicAttack1Delegate;
+
+	Delegate<> BasicAttack2Delegate = {this, &USanhwaAnimInstance::BasicAttack2};
+	NotifyEvent["BasicAttack2"] = BasicAttack2Delegate;
+
+	Delegate<> BasicAttack3Delegate = {this, &USanhwaAnimInstance::BasicAttack3};
+	NotifyEvent["BasicAttack3"] = BasicAttack3Delegate;
+
+	Delegate<> FinalAttackDelegate = {this, &USanhwaAnimInstance::BasicAttack4};
+	NotifyEvent["BasicAttack4"] = FinalAttackDelegate;
 
 	Delegate<> HeavyAttackMoveDelegate = {this, &USanhwaAnimInstance::MotionWarping_HeavyAttack_Move};
 	NotifyEvent["SH_Heavy_Move"] = HeavyAttackMoveDelegate;
@@ -98,8 +110,10 @@ void USanhwaAnimInstance::MotionWarping_BasicAttack0()
 {
 	constexpr size_t BasicAttackIndex = 0;
 	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
-	float MoveDistance = CombatComp->GetBasicAttackMoveDistance(BasicAttackIndex);
-	float MoveTime = CombatComp->GetBasicAttackMontage(BasicAttackIndex)->GetPlayLength();
+	const FAttackData& AttackData = CombatComp->GetBasicAttackData(BasicAttackIndex);
+
+	float MoveDistance = AttackData.MoveDistance;
+	float MoveTime = AttackData.AnimMontage->GetPlayLength();
 	SetWarpingTarget(MyGameCharacter->GetActorForwardVector(), MoveDistance, MoveTime);
 }
 
@@ -107,8 +121,10 @@ void USanhwaAnimInstance::MotionWarping_BasicAttack1()
 {
 	constexpr size_t BasicAttackIndex = 1;
 	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
-	float MoveDistance = CombatComp->GetBasicAttackMoveDistance(BasicAttackIndex);
-	float MoveTime = CombatComp->GetBasicAttackMontage(BasicAttackIndex)->GetPlayLength();
+	const FAttackData& AttackData = CombatComp->GetBasicAttackData(BasicAttackIndex);
+
+	float MoveDistance = AttackData.MoveDistance;
+	float MoveTime = AttackData.AnimMontage->GetPlayLength();
 	SetWarpingTarget(MyGameCharacter->GetActorForwardVector(), MoveDistance, MoveTime);
 }
 
@@ -116,8 +132,10 @@ void USanhwaAnimInstance::MotionWarping_BasicAttack2()
 {
 	constexpr size_t BasicAttackIndex = 2;
 	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
-	float MoveDistance = CombatComp->GetBasicAttackMoveDistance(BasicAttackIndex);
-	float MoveTime = CombatComp->GetBasicAttackMontage(BasicAttackIndex)->GetPlayLength();
+	const FAttackData& AttackData = CombatComp->GetBasicAttackData(BasicAttackIndex);
+
+	float MoveDistance = AttackData.MoveDistance;
+	float MoveTime = AttackData.AnimMontage->GetPlayLength();
 	SetWarpingTarget(MyGameCharacter->GetActorForwardVector(), MoveDistance, MoveTime);
 }
 
@@ -126,8 +144,10 @@ void USanhwaAnimInstance::MotionWarping_BasicAttack3()
 {
 	constexpr size_t BasicAttackIndex = 3;
 	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
-	float MoveDistance = CombatComp->GetBasicAttackMoveDistance(BasicAttackIndex);
-	float MoveTime = CombatComp->GetBasicAttackMontage(BasicAttackIndex)->GetPlayLength();
+	const FAttackData& AttackData = CombatComp->GetBasicAttackData(BasicAttackIndex);
+
+	float MoveDistance = AttackData.MoveDistance;
+	float MoveTime = AttackData.AnimMontage->GetPlayLength();
 	SetWarpingTarget(MyGameCharacter->GetActorForwardVector(), MoveDistance, MoveTime);
 }
 
@@ -232,6 +252,7 @@ void USanhwaAnimInstance::MotionWarping_HeavyAttack_Move()
 	XMFLOAT3 ForwardVector = MyGameCharacter->GetActorForwardVector();
 	
 	MotionWarpingComp->SetTargetLocation(CurLocation + ForwardVector * CombatComp->GetHeavyAttackMoveDistance(), MoveTime);
+	MotionWarpingComp->SetbIsSetPosition(true);
 }
 
 void USanhwaAnimInstance::MotionWarping_HeavyAttack_Stay()
@@ -253,8 +274,6 @@ void USanhwaAnimInstance::MotionWarping_HeavyAttack_Stay()
 
 	MotionWarpingComp->SetTargetLocation(CurLocation, MoveTime);
 
-	// 다시 설정해주어야함
-	std::static_pointer_cast<USanhwaUltimateComponent>(MyGameCharacter->GetUltimateComponent())->SetIceSpikeCollision(ECollisionEnabled::Physics);
 }
 
 void USanhwaAnimInstance::Ultimate_ChangeCameraToNormal()
@@ -267,40 +286,56 @@ void USanhwaAnimInstance::Ultimate_ChangeCameraToNormal()
 	MyGameCharacter->ChangeToNormalCamera(0.5f);
 }
 
-void USanhwaAnimInstance::Attack4()
+void USanhwaAnimInstance::BasicAttack0()
 {
 	if (!MyGameCharacter)
 	{
 		return;
 	}
-
-	const XMFLOAT3& ActorLocation = MyGameCharacter->GetActorLocation();
 	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
-	const XMFLOAT3& AttackRange = CombatComp->GetBasicAttackRange(4);
-	const XMFLOAT3& ActorForwardVector = MyGameCharacter->GetActorForwardVector();
-	XMFLOAT3 BoxPos = ActorLocation + ActorForwardVector * AttackRange/2;
+	MyGameCharacter->ApplyDamageToEnemy(CombatComp->GetBasicAttackData(0), "BasicAttack");
+}
 
-	std::vector<AActor*> DamagedActors;
-	GPhysicsEngine->BoxOverlapComponents(BoxPos, AttackRange, {ECollisionChannel::Enemy}, {},DamagedActors);
-	for (AActor* DamagedActor : DamagedActors)
+void USanhwaAnimInstance::BasicAttack1()
+{
+	if (!MyGameCharacter)
 	{
-		// TODO : 대미지 적용해야함
-		//DamagedActor->TakeDamage()
+		return;
 	}
+	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
+	MyGameCharacter->ApplyDamageToEnemy(CombatComp->GetBasicAttackData(1), "BasicAttack");
+}
 
-	if (!DamagedActors.empty())
+void USanhwaAnimInstance::BasicAttack2()
+{
+	if (!MyGameCharacter)
+	{
+		return;
+	}
+	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
+	MyGameCharacter->ApplyDamageToEnemy(CombatComp->GetBasicAttackData(2), "BasicAttack");
+}
+
+void USanhwaAnimInstance::BasicAttack3()
+{
+	if (!MyGameCharacter)
+	{
+		return;
+	}
+	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
+	MyGameCharacter->ApplyDamageToEnemy(CombatComp->GetBasicAttackData(3), "BasicAttack");
+}
+
+void USanhwaAnimInstance::BasicAttack4()
+{
+	if (!MyGameCharacter)
+	{
+		return;
+	}
+	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
+	MyGameCharacter->ApplyDamageToEnemy(CombatComp->GetBasicAttackData(4), "BasicAttack");
 	{
 		std::static_pointer_cast<USanhwaCombatComponent>(CombatComp)->Attack4Success();
-
-		// TODO: 더 모듈화하기
-		for (size_t i = 0; i < DamagedActors.size(); ++i)
-		{
-			FDamageEvent Event;
-			DamagedActors[i]->TakeDamage(1000, Event, MyGameCharacter);
-		}
-
-		// TODO : 임시 코드
-		std::static_pointer_cast<USanhwaUltimateComponent>(MyGameCharacter->GetUltimateComponent())->AddUltimateGauge(120.0f);
 	}
 }
 

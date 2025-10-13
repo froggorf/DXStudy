@@ -15,13 +15,13 @@ class ASanhwaCharacter : public AMyGameCharacterBase
 	void Tick(float DeltaSeconds) override;
 
 	void CreateIceSpikes(bool bIsUltimate);
+
+	
 private:
 	std::shared_ptr<UStaticMeshComponent> SM_Sword;
 public:
 	static std::string CharacterName;
 
 public:
-	void GetIceSpikes(std::vector<std::shared_ptr<ASanhwaIceSpikeBase>>& IceSpikeVector);
 private:
-	std::vector<std::weak_ptr<ASanhwaIceSpikeBase>> IceSpikes;
 };

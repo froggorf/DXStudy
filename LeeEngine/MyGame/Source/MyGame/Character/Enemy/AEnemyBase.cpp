@@ -3,6 +3,7 @@
 
 #include "Engine/Components/UWidgetComponent.h"
 #include "Engine/World/UWorld.h"
+#include "MyGame/Character/Player/AMyGameCharacterBase.h"
 #include "MyGame/Component/Health/UHealthComponent.h"
 #include "MyGame/Component/MotionWarping/UMotionWarpingComponent.h"
 #include "MyGame/Core/AMyGamePlayerController.h"
@@ -63,7 +64,7 @@ void AEnemyBase::BeginPlay()
 	QueryCheckCapsuleComp->GetBodyInstance()->SetObjectType(ECollisionChannel::Enemy);
 
 	TempStaticMesh->SetCollisionObjectType(ECollisionChannel::Enemy);
-	TempStaticMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	TempStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	HealthComponent->SetMaxHealth(EnemyMaxHealth, true);
 }
@@ -79,9 +80,12 @@ float AEnemyBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent
 
 	if (AMyGamePlayerController* PC = dynamic_cast<AMyGamePlayerController*>(GetWorld()->GetPlayerController()))
 	{
-		XMFLOAT4 Color = {MyMath::FRand(),MyMath::FRand(),MyMath::FRand(),1.0f};
-		UINT Value = static_cast<UINT>(MyMath::RandRange(0,10000000));
-		PC->SpawnFloatingDamage(GetRootComponent()->GetComponentTransform(), Color, Value);
+		XMFLOAT4 DefaultColor = {0,0,0,1};
+		if (const FMyGameDamageEvent* MyGameDamageEvent = dynamic_cast<const FMyGameDamageEvent*>(&DamageEvent))
+		{
+			DefaultColor = GetElementColor(MyGameDamageEvent->ElementType);
+		}
+		PC->SpawnFloatingDamage(GetRootComponent()->GetComponentTransform(), DefaultColor, DamageAmount);
 	}
 	
 

@@ -28,15 +28,26 @@ void UMotionWarpingComponent::TickComponent(float DeltaSeconds)
 	// 이동 적용
 	if (MovementComp->PxCharacterController)
 	{
-		XMFLOAT3 CurrentLocation = MyCharacter->GetActorLocation();
-		XMFLOAT3 WorldDeltaPos = (TargetLocation - CurrentLocation) * (CurrentTime / WarpingTime);
-		physx::PxVec3 PxDelta(WorldDeltaPos.x, WorldDeltaPos.y, -WorldDeltaPos.z);
-		MovementComp->PxCharacterController->move(
-			PxDelta, 
-			0.01f, 
-			GEngine->GetDeltaSeconds(), 
-			MovementComp->Filters
-		);
+		if (bIsSetPosition)
+		{
+			XMFLOAT3 NewPos = MyMath::Lerp(StartLocation, TargetLocation, (CurrentTime/ WarpingTime));
+			NewPos.z *= -1;
+
+			MovementComp->PxCharacterController->setPosition(physx::PxExtendedVec3{NewPos.x,NewPos.y,NewPos.z});
+		}
+		else
+		{
+			XMFLOAT3 CurrentLocation = MyCharacter->GetActorLocation();
+			XMFLOAT3 WorldDeltaPos = (TargetLocation - CurrentLocation) * (CurrentTime / WarpingTime);
+			physx::PxVec3 PxDelta(WorldDeltaPos.x, WorldDeltaPos.y, -WorldDeltaPos.z);
+			MovementComp->PxCharacterController->move(
+				PxDelta, 
+				0.01f, 
+				GEngine->GetDeltaSeconds(), 
+				MovementComp->Filters
+			);		
+		}
+	
 	}
 
 	if (CurrentTime >= WarpingTime)
@@ -48,6 +59,7 @@ void UMotionWarpingComponent::TickComponent(float DeltaSeconds)
 void UMotionWarpingComponent::SetTargetLocation(XMFLOAT3 NewLocation, float NewTime)
 {
 	TargetLocation = NewLocation;
+	StartLocation = GetOwner()->GetActorLocation();
 	WarpingTime = NewTime;
 	CurrentTime = 0.0f;
 }

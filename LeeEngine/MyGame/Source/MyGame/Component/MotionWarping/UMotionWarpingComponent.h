@@ -11,11 +11,14 @@ class UMotionWarpingComponent : public UActorComponent
 	void TickComponent(float DeltaSeconds) override;
 	void SetTargetLocation(XMFLOAT3 NewLocation, float NewTime);
 
-	void SetMotionWarping(bool NewMotionWarping) { bMotionWarping = NewMotionWarping;} 
+	void SetMotionWarping(bool NewMotionWarping) { bMotionWarping = NewMotionWarping; bIsSetPosition = false;}
+	void SetbIsSetPosition(bool NewState) {bIsSetPosition = NewState;}
 protected:
 	bool bMotionWarping;
+	bool bIsSetPosition = false;
 
 	XMFLOAT3 TargetLocation;
+	XMFLOAT3 StartLocation;
 	float WarpingTime;
 	float CurrentTime;
 

@@ -29,7 +29,7 @@ void AFloatingDamageActor::BeginPlay()
 	AActor::BeginPlay();
 
 
-	GEngine->GetTimerManager()->SetTimer(SelfDestroyTimerHandle, {this, &AFloatingDamageActor::DestroySelf}, DestroyTime);
+	GEngine->GetTimerManager()->SetTimer(SelfDestroyTimerHandle, {this, &AFloatingDamageActor::Floating}, WaitTime, true, 0.01f);
 }
 
 void AFloatingDamageActor::OnDestroy()
@@ -42,8 +42,20 @@ void AFloatingDamageActor::OnDestroy()
 void AFloatingDamageActor::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
+}
 
-	SetActorLocation(GetActorLocation() + XMFLOAT3{0.0f,DeltaSeconds * 100,0.0f});
+void AFloatingDamageActor::Floating()
+{
+	CurrentFloatingTime+= 0.01f;
+	if (CurrentFloatingTime >= FloatingTime)
+	{
+		GEngine->GetTimerManager()->ClearTimer(SelfDestroyTimerHandle);
+		DestroySelf();
+	}
+	else
+	{
+		SetActorLocation(GetActorLocation() + XMFLOAT3{0.0f,2.0f,0.0f});
+	}
 }
 
 

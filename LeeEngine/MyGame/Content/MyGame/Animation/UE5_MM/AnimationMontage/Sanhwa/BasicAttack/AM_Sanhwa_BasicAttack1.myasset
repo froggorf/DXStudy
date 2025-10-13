@@ -20,6 +20,7 @@
 	],
     	"Notifies" : [
 		{ "NotifyClass" : "UAnimNotify_MotionWarpingStart", "TriggerTime" : 2, "WarpingName" : "SH_Attack1" },
-		{ "NotifyClass" : "UAnimNotify_MotionWarpingEnd", "TriggerTime" : 19 }
+		{ "NotifyClass" : "UAnimNotify_MotionWarpingEnd", "TriggerTime" : 19 },
+		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 3, "EventName" : "BasicAttack1" }
   	  ]
 }

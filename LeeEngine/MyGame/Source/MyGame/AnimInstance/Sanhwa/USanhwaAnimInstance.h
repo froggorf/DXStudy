@@ -27,7 +27,11 @@ class USanhwaAnimInstance final : public UMyGameAnimInstanceBase
 
 	void Ultimate_ChangeCameraToNormal();
 
-	void Attack4();
+	void BasicAttack0();
+	void BasicAttack1();
+	void BasicAttack2();
+	void BasicAttack3();
+	void BasicAttack4();
 	void SkillAttack();
 	void UltAttack();
 
