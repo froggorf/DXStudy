@@ -11,6 +11,7 @@ ATestCube2::ATestCube2()
 		Ground->SetupAttachment(GetRootComponent());
 		Ground->SetRelativeLocation({0,-10,0});
 		Ground->SetRelativeScale3D({5000,20,5000});
+		Ground->SetIsMonochromeObject(false);
 	}
 
 	{

@@ -54,7 +54,7 @@ private:
 
 	float AspectRatio = 1.777777f;
 	float Near = 0.1f;         // 투영 최소거리
-	float Far = 200000.0f;      // 투영 최대거리
+	float Far = 2000000.0f;      // 투영 최대거리
 	float FOV = XM_PI/4.0f;    // 시야각
 	float Width = 1.0f;        // 직교투영 가로 범위
 	float OrthoScale = 1.0f;   // 직교투영 배율

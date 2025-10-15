@@ -369,7 +369,13 @@ void UPhysicsEngine::AddActor(physx::PxRigidActor* AddActor) const
 {
 	if (PxScene && AddActor && !AddActor->getScene())
 	{
-		PxScene->addActor(*AddActor);
+		physx::PxU32 ActorNum = PxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC| physx::PxActorTypeFlag::eRIGID_STATIC);
+		std::vector<physx::PxActor*> Actors(ActorNum);
+		PxScene->getActors(physx::PxActorTypeFlag::eRIGID_STATIC|physx::PxActorTypeFlag::eRIGID_DYNAMIC, Actors.data(), ActorNum);
+		if (std::ranges::find(Actors, AddActor) == Actors.end())
+		{
+			PxScene->addActor(*AddActor);
+		}
 
 		if (AddActor->userData)
 		{

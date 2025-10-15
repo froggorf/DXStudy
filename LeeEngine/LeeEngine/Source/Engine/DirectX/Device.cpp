@@ -761,7 +761,7 @@ void FDirectXDevice::CreateEditorMRT()
 		, D3D11_BIND_DEPTH_STENCIL
 		, D3D11_USAGE_DEFAULT);
 
-	XMFLOAT4 ClearColor = XMFLOAT4(0.f, 0.f, 0.f, 1.f);
+	XMFLOAT4 ClearColor = XMFLOAT4(1.f, 0.f, 0.f, 1.f);
 
 	MultiRenderTargets[(UINT)EMultiRenderTargetType::Editor_Main] = std::make_shared<FMultiRenderTarget>();
 	MultiRenderTargets[(UINT)EMultiRenderTargetType::Editor_Main]->Create(&RTTex, 1, pDSTex);

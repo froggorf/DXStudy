@@ -119,6 +119,9 @@
     <Filter Include="Source\MyGame\Actor\Damage">
       <UniqueIdentifier>{62a25a49-d1e1-47b2-9af8-1fee9ebdc1c2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\AnimInstance\Gideon">
+      <UniqueIdentifier>{4832a69f-f0b3-48b6-a83e-4a442443dd8e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -226,6 +229,12 @@
     <ClCompile Include="Source\MyGame\Widget\Health\UEnemyHealthWidget.cpp">
       <Filter>Source\MyGame\Widget\Health</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Character\Player\AGideonCharacter.cpp">
+      <Filter>Source\MyGame\Character\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\AnimInstance\Gideon\UGideonAnimInstance.cpp">
+      <Filter>Source\MyGame\AnimInstance\Gideon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -329,6 +338,12 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Widget\Health\UEnemyHealthWidget.h">
       <Filter>Source\MyGame\Widget\Health</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Character\Player\AGideonCharacter.h">
+      <Filter>Source\MyGame\Character\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\AnimInstance\Gideon\UGideonAnimInstance.h">
+      <Filter>Source\MyGame\AnimInstance\Gideon</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

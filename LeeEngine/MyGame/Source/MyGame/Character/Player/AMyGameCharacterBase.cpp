@@ -249,6 +249,10 @@ void AMyGameCharacterBase::Death()
 void AMyGameCharacterBase::Move(float X, float Y)
 {
 	XMFLOAT3 ForwardDirection = Controller->GetActorForwardVector();
+	XMVECTOR ForwardDirVec = XMVectorSet(ForwardDirection.x,0.0f,ForwardDirection.z, 0.0f);
+	ForwardDirVec = XMVector3NormalizeEst(ForwardDirVec);
+	XMStoreFloat3(&ForwardDirection, ForwardDirVec);
+
 	XMFLOAT3 RightDirection = Controller->GetActorRightVector();
 
 	AddMovementInput(ForwardDirection, X);

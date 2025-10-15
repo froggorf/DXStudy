@@ -33,7 +33,7 @@ VS_OUTPUT VS(VS_INPUT Input)
 	float4 ProjPos = mul(float4(Input.Pos.xyz, 0.f), gView);
 
 	ProjPos = mul(ProjPos, gProjection);
-	ProjPos.z = ProjPos.w - 0.00005f;
+	ProjPos.z = ProjPos.w - 0.00001f;
 
 	output.PosScreen = ProjPos;
 	output.Tex = Input.TexCoord;    

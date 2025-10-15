@@ -89,6 +89,7 @@ FScene::FScene()
 	DeferredMergeRenderData.MaterialInterface = UMaterial::GetMaterialCache("M_DeferredMergeRect");
 	DeferredMergeRenderData.MaterialInterface->SetRasterizerType(ERasterizerType::RT_TwoSided);
 	DeferredMergeRenderData.MaterialInterface->SetBlendStateType(EBlendStateType::BST_Default);
+	DeferredMergeRenderData.MaterialInterface->SetDepthStencilState(EDepthStencilStateType::NO_TEST_NO_WRITE);
 	std::static_pointer_cast<UMaterial>(DeferredMergeRenderData.MaterialInterface)->SetTexture(0, UTexture::GetTextureCache("DiffuseTargetTex")); 
 	
 	std::shared_ptr<UStaticMesh> StaticMesh = UStaticMesh::GetStaticMesh("SM_DeferredMergeRect");

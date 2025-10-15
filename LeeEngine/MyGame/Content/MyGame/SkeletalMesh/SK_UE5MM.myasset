@@ -3,5 +3,5 @@
     "Name": "SK_UE5MM",
     "ModelData": "/Content/Resource/MyGame/Character/UE5_MM.FBX",
     "DefaultPoseAnimData" : "/Content/Resource/MyGame/Animation/UE5/TPose.FBX",
-    "Material" : [ "M_UE4_Character", "MI_UE4_Logo" ]
+    "Material" : [ "M_UE5_MM", "M_UE5_MM" ]
 }

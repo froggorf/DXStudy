@@ -27,9 +27,11 @@
     <ClCompile Include="Source\MyGame\Actor\Damage\AFloatingDamageActor.cpp" />
     <ClCompile Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceBase.cpp" />
     <ClCompile Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceSpikeUltimate.cpp" />
+    <ClCompile Include="Source\MyGame\AnimInstance\Gideon\UGideonAnimInstance.cpp" />
     <ClCompile Include="Source\MyGame\AnimInstance\Sanhwa\USanhwaAnimInstance.cpp" />
     <ClCompile Include="Source\MyGame\AnimInstance\UMyGameAniminstanceBase.cpp" />
     <ClCompile Include="Source\MyGame\Character\Enemy\AEnemyBase.cpp" />
+    <ClCompile Include="Source\MyGame\Character\Player\AGideonCharacter.cpp" />
     <ClCompile Include="Source\MyGame\Character\Player\AMyGameCharacterBase.cpp" />
     <ClCompile Include="Source\MyGame\Character\Player\ASanhwaCharacter.cpp" />
     <ClCompile Include="Source\MyGame\Component\Combat\Melee\UMeleeBaseComponent.cpp" />
@@ -63,9 +65,11 @@
     <ClInclude Include="Source\MyGame\Actor\Damage\AFloatingDamageActor.h" />
     <ClInclude Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceBase.h" />
     <ClInclude Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceSpikeUltimate.h" />
+    <ClInclude Include="Source\MyGame\AnimInstance\Gideon\UGideonAnimInstance.h" />
     <ClInclude Include="Source\MyGame\AnimInstance\Sanhwa\USanhwaAnimInstance.h" />
     <ClInclude Include="Source\MyGame\AnimInstance\UMyGameAniminstanceBase.h" />
     <ClInclude Include="Source\MyGame\Character\Enemy\AEnemyBase.h" />
+    <ClInclude Include="Source\MyGame\Character\Player\AGideonCharacter.h" />
     <ClInclude Include="Source\MyGame\Character\Player\AMyGameCharacterBase.h" />
     <ClInclude Include="Source\MyGame\Character\Player\ASanhwaCharacter.h" />
     <ClInclude Include="Source\MyGame\Component\Combat\Melee\UMeleeBaseComponent.h" />

@@ -1,0 +1,16 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_UE5_MM",
+    "VertexShader" : {
+	"FilePath" : "/Shader/PBR.fx",
+	"Func" : "VS_Skeletal"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/PS_PBR.fx",
+	"Func": "PBR_PS_UE4_Character"
+    },
+    "TextureParams" : [ "", "" ],
+    "BlendMode": "Deferred",
+    "TwoSided" : 0
+	
+}

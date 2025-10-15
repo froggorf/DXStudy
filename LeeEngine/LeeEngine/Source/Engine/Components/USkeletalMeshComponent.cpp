@@ -139,9 +139,9 @@ void USkeletalMeshComponent::SetAnimInstanceClass(const std::string& InAnimInsta
 	{
 		if (std::shared_ptr<UAnimInstance> NewAnimInstance = std::dynamic_pointer_cast<UAnimInstance>(AnimDefaultObject->CreateInstance()))
 		{
+			NewAnimInstance->SetSkeletalMeshComponent(this);
 			AnimInstance = NewAnimInstance;
 			AnimInstance->Register();
-			AnimInstance->SetSkeletalMeshComponent(this);
 			return;
 		}
 		MY_LOG("SetAnimInstanceClass", EDebugLogLevel::DLL_Warning, "Invalid AnimInstanceClass");
