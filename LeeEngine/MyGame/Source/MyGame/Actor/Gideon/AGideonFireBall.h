@@ -11,10 +11,12 @@ public:
 	AGideonFireBall();
 	~AGideonFireBall() override = default;
 	void Register() override;
-	void Tick(float DeltaSeconds) override;
+	void BeginPlay() override;
 
 	void Initialize(AGideonCharacter* Spawner, const XMFLOAT3& TargetPosition, const FAttackData& AttackData);
 
+
+	void FlyFireBall();
 protected:
 	FAttackData ExplosionAttackData;
 
@@ -23,10 +25,10 @@ private:
 	AGideonCharacter* Spawner;
 	XMFLOAT3 StartPosition;
 	XMFLOAT3 TargetPosition;
-	float CurrentTime = 0.0f;
 
-	// Gideon 캐릭터가 발사 후 몹에게 까지 날아가는데 걸리는 시간
-	static constexpr float ThrowTime = 0.5f;
-
+	FTimerHandle ThrowTimerHandle;
+	// 1000 unit per sec
+	static constexpr float SpeedPerSecond = 2000.0f;
+	static constexpr float ThrowTimerTickTime = 0.016f;
 	void Explosion();
 };

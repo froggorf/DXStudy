@@ -3,5 +3,6 @@
     "Name": "AS_Gideon_BasicAttack1",
     "Skeleton": "SK_Gideon",
     "AnimationDataPath": "/Content/Resource/MyGame/Animation/Gideon/BasicAttack/BasicAttack1.FBX",
-    "RootMotion": 0
+    "RootMotion": 0,
+    "Rate": 2.0
 }

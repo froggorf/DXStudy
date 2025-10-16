@@ -13,16 +13,16 @@ AGideonCharacter::AGideonCharacter()
 	if (UCharacterMovementComponent* CharacterMovement = GetCharacterMovement())
 	{
 		CharacterMovement->bOrientRotationToMovement = true;
-		CharacterMovement->Acceleration = 1024.0f;
-		CharacterMovement->RotationRate = XMFLOAT3{0.0f, 1500.0f, 0.0f};
-		CharacterMovement->MaxWalkSpeed = 500;
-		CharacterMovement->Braking = 2048;
+		CharacterMovement->Acceleration = 2048.0f;
+		CharacterMovement->RotationRate = XMFLOAT3{0.0f, 3000.0f, 0.0f};
+		CharacterMovement->MaxWalkSpeed = 550;
+		CharacterMovement->Braking = 1024;
 	}
 
 	CharacterMeshName = "SK_Gideon";
 	AnimInstanceName = "UGideonAnimInstance";
 
-	//DodgeMontageName[static_cast<int>(EDodgeDirection::Forward)] = "AM_UE5MM_Dodge_Fwd";
+	//DodgeMontageName[static_cast<int>(EDodgeDirection::Forward)] = "AboxM_UE5MM_Dodge_Fwd";
 	//DodgeMontageName[static_cast<int>(EDodgeDirection::Backward)] = "AM_UE5MM_Dodge_Bwd";
 	//RollMontageName[static_cast<int>(EDodgeDirection::Forward)] = "AM_UE5MM_Roll_Fwd";
 	//RollMontageName[static_cast<int>(EDodgeDirection::Backward)] = "AM_UE5MM_Roll_Bwd";

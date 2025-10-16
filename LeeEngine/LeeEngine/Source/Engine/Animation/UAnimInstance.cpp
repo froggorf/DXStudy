@@ -385,7 +385,7 @@ bool UAnimInstance::PlayMontage(const std::string& SlotName, std::vector<FBoneLo
 				OriginBoneTransforms = MontageBoneTransforms;
 			}
 
-			return MontageInstance->CurrentPlayTime < EndTime - BlendOutBlendTime;
+			return MontageInstance->CurrentPlayTime < EndTime - 0.001f;
 		}
 	}
 	return false;

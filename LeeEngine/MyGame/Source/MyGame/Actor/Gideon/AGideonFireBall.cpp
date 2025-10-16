@@ -22,20 +22,13 @@ AGideonFireBall::AGideonFireBall()
 void AGideonFireBall::Register()
 {
 	AActor::Register();
-
-	
 }
 
-void AGideonFireBall::Tick(float DeltaSeconds)
+void AGideonFireBall::BeginPlay()
 {
-	AActor::Tick(DeltaSeconds);
+	AActor::BeginPlay();
 
-	CurrentTime += DeltaSeconds;
-	SetActorLocation(MyMath::Lerp(StartPosition, TargetPosition, CurrentTime / ThrowTime));
-	if (CurrentTime >= ThrowTime)
-	{
-		Explosion();
-	}
+	GEngine->GetTimerManager()->SetTimer(ThrowTimerHandle, {this, &AGideonFireBall::FlyFireBall}, 0.0f, true, ThrowTimerTickTime);
 }
 
 void AGideonFireBall::Initialize(AGideonCharacter* Spawner, const XMFLOAT3& TargetPosition, const FAttackData& AttackData)
@@ -46,11 +39,32 @@ void AGideonFireBall::Initialize(AGideonCharacter* Spawner, const XMFLOAT3& Targ
 	StartPosition = GetActorLocation();
 }
 
+void AGideonFireBall::FlyFireBall()
+{
+	// 타이머 틱 당 갈수있는 unit 거리
+	float ThrowUnitPerTimerTick = SpeedPerSecond * ThrowTimerTickTime;
+	float CurrentRemainDistance = MyMath::GetDistance(GetActorLocation(), TargetPosition);
+	// 지금 틱 만에 갈 수 있다면
+	if (ThrowUnitPerTimerTick >= CurrentRemainDistance)
+	{
+		SetActorLocation(TargetPosition);
+		Explosion();
+		GEngine->GetTimerManager()->ClearTimer(ThrowTimerHandle);
+		return;
+	}
+
+	XMFLOAT3 Direction = MyMath::GetDirectionUnitVector(GetActorLocation(), TargetPosition);
+	SetActorLocation(GetActorLocation() + Direction * ThrowUnitPerTimerTick);
+}
+
 void AGideonFireBall::Explosion()
 {
 	ExplosionAttackData.bIsAttackCenterFixed = true;
 	ExplosionAttackData.AttackCenterPos = GetActorLocation();
 	Spawner->ApplyDamageToEnemy(ExplosionAttackData, "FireBall");
+
+	// TODO: 적군을 공격했으면 터지는 이펙트
+	//		아니면 그냥 사라지는 이펙트 같은걸 구현하면 좋아보임
 
 	DestroySelf();
 }
