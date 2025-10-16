@@ -30,12 +30,12 @@ void AGideonFireBall::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
 
-	//CurrentTime += DeltaSeconds;
-	//SetActorLocation(MyMath::Lerp(StartPosition, TargetPosition, CurrentTime / ThrowTime));
-	//if (CurrentTime >= ThrowTime)
-	//{
-	//	Explosion();
-	//}
+	CurrentTime += DeltaSeconds;
+	SetActorLocation(MyMath::Lerp(StartPosition, TargetPosition, CurrentTime / ThrowTime));
+	if (CurrentTime >= ThrowTime)
+	{
+		Explosion();
+	}
 }
 
 void AGideonFireBall::Initialize(AGideonCharacter* Spawner, const XMFLOAT3& TargetPosition, const FAttackData& AttackData)

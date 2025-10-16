@@ -38,7 +38,7 @@ void UGideonCombatComponent::HeavyAttackMouseReleased()
 	URangeBaseComponent::HeavyAttackMouseReleased();
 }
 
-void UGideonCombatComponent::ApplyBasicAttack0()
+void UGideonCombatComponent::ApplyBasicAttack(const std::string& SpawnSocketName, size_t AttackIndex)
 {
 	if (AGideonCharacter* GideonCharacter = dynamic_cast<AGideonCharacter*>(MyGameCharacter))
 	{
@@ -49,7 +49,7 @@ void UGideonCombatComponent::ApplyBasicAttack0()
 			return;
 		}
 
-		FTransform SpawnTransform = GideonSkeletalMesh->GetSocketTransform("hand_r");
+		FTransform SpawnTransform = GideonSkeletalMesh->GetSocketTransform(SpawnSocketName);
 		SpawnTransform.Scale3D = XMFLOAT3{1,1,1};
 		SpawnTransform.Rotation = XMFLOAT4{0,0,0,1};
 
@@ -57,9 +57,8 @@ void UGideonCombatComponent::ApplyBasicAttack0()
 		// 가까운 적을 구한다음에
 		if (AActor* NearestEnemy = FindNearestEnemy(GideonCharacter->GetActorLocation(), FireBallThrowDistance, {}))
 		{
-			TargetPosition = NearestEnemy->GetActorLocation();
 			// 적군이 있으면 해당 적군을 향해 던지고
-			
+			TargetPosition = NearestEnemy->GetActorLocation();
 		}
 		else
 		{
@@ -69,7 +68,21 @@ void UGideonCombatComponent::ApplyBasicAttack0()
 			XMStoreFloat3(&ForwardDir, XMVectorScale(XMVector3NormalizeEst(XMLoadFloat3(&ForwardDir)), FireBallThrowDistance));
 			TargetPosition = GideonCharacter->GetActorLocation() + ForwardDir;
 		}
-		GideonCharacter->SpawnFireBall(SpawnTransform, GetBasicAttackData(0), TargetPosition);
+		GideonCharacter->SpawnFireBall(SpawnTransform, GetBasicAttackData(AttackIndex), TargetPosition);
 	}
-	
+}
+
+void UGideonCombatComponent::ApplyBasicAttack0()
+{
+	ApplyBasicAttack("hand_r", 0);
+}
+
+void UGideonCombatComponent::ApplyBasicAttack1()
+{
+	ApplyBasicAttack("hand_l", 1);
+}
+
+void UGideonCombatComponent::ApplyBasicAttack2()
+{
+	ApplyBasicAttack("hand_r", 2);
 }

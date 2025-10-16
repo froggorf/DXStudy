@@ -211,12 +211,6 @@ void UAnimInstance::Tick(float DeltaSeconds)
 		
 		// 애니메이션 데이터를 렌더링쓰레드에 전달
 		FScene::UpdateSkeletalMeshAnimation_GameThread(GetSkeletalMeshComponent()->GetPrimitiveID(), FinalBoneMatrices);
-
-		// GetSocketTransform에 사용하기 위한 목적으로 현재프레임의 애니메이션 본 행렬을 저장
-		for (UINT i = 0; i < MAX_BONES; ++i)
-		{
-			LastFrameAnimMatrices[i] = FinalBoneMatrices[i];
-		}
 	}
 }
 

@@ -17,11 +17,13 @@ public:
 	void HeavyAttackMouseReleased() override;
 	void JumpAttack() override {};
 
-
+	void ApplyBasicAttack(const std::string& SpawnSocketName, size_t AttackIndex);
 	void ApplyBasicAttack0();
+	void ApplyBasicAttack1();
+	void ApplyBasicAttack2();
 private:
 public:
 private:
-	static constexpr float FireBallThrowDistance = 1000.0f;
+	static constexpr float FireBallThrowDistance = 750.0f;
 };
  
