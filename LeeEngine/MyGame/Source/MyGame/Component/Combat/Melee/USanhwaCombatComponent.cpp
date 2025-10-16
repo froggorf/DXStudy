@@ -69,25 +69,14 @@ void USanhwaCombatComponent::BasicAttack()
 	UMeleeBaseComponent::BasicAttack();
 }
 
-void USanhwaCombatComponent::HeavyAttack()
+bool USanhwaCombatComponent::HeavyAttack()
 {
-	if (!MyGameCharacter)
+	if (!UMeleeBaseComponent::HeavyAttack())
 	{
-		return;
+		return false;
 	}
 
 	const std::shared_ptr<UAnimInstance>& AnimInstance = MyGameCharacter->GetAnimInstance();
-	if (!AnimInstance)
-	{
-		return;
-	}
-
-	// 이전에 왼클릭 한 시간 + 홀딩 시간 이 현재 시간보다 작아지면 충분히 누른것
-	if (LastLeftMouseClickedTime + EnterHeavyAttackTime > GEngine->GetTimeSeconds())
-	{
-		return;
-	}
-
 	if (!bIsHeavyAttacking)
 	{
 		bIsHeavyAttacking = true;
@@ -118,7 +107,7 @@ void USanhwaCombatComponent::HeavyAttack()
 			PB_ChargeGauge->SetValue(CurrentChargeGauge);
 		}
 	}
-	
+	return true;
 }
 
 void USanhwaCombatComponent::HeavyAttackMouseReleased()

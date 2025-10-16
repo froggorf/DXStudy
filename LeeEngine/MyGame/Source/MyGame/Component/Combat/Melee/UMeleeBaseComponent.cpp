@@ -16,7 +16,7 @@ void UMeleeBaseComponent::BasicAttack()
 	UCombatBaseComponent::BasicAttack();
 }
 
-void UMeleeBaseComponent::HeavyAttack()
+bool UMeleeBaseComponent::HeavyAttack()
 {
-	UCombatBaseComponent::HeavyAttack();
+	return UCombatBaseComponent::HeavyAttack();
 }

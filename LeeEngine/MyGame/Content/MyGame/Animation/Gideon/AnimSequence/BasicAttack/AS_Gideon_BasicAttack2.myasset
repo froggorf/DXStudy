@@ -1,0 +1,7 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_Gideon_BasicAttack2",
+    "Skeleton": "SK_Gideon",
+    "AnimationDataPath": "/Content/Resource/MyGame/Animation/Gideon/BasicAttack/BasicAttack2.FBX",
+    "RootMotion": 0
+}

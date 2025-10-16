@@ -2,10 +2,7 @@
 #include "AGideonCharacter.h"
 
 #include "MyGame/Actor/Sanhwa/ASanhwaIceBase.h"
-#include "MyGame/Component/Combat/Melee/USanhwaCombatComponent.h"
-#include "MyGame/Component/Combat/Skill/NormalSkill/SanHwa/USanhwaSkillComponent.h"
-#include "MyGame/Component/Combat/Skill/Ultimate/Sanhwa/USanhwaUltimateComponent.h"
-#include "MyGame/Core/AMyGamePlayerController.h"
+#include "MyGame/Component/Combat/Range/UGideonCombatComponent.h"
 
 std::string AGideonCharacter::CharacterName  = "Gideon";
 
@@ -28,7 +25,7 @@ AGideonCharacter::AGideonCharacter()
 	//RollMontageName[static_cast<int>(EDodgeDirection::Forward)] = "AM_UE5MM_Roll_Fwd";
 	//RollMontageName[static_cast<int>(EDodgeDirection::Backward)] = "AM_UE5MM_Roll_Bwd";
 
-	//CombatComponent = std::dynamic_pointer_cast<USanhwaCombatComponent>(CreateDefaultSubobject("SanhwaCombatComp", "USanhwaCombatComponent"));
+	CombatComponent = std::dynamic_pointer_cast<UGideonCombatComponent>(CreateDefaultSubobject("GideonCombatComp", "UGideonCombatComponent"));
 	//SkillComponent = std::dynamic_pointer_cast<USanhwaSkillComponent>(CreateDefaultSubobject("SanhwaSkillComp", "USanhwaSkillComponent"));
 	//UltimateComponent = std::dynamic_pointer_cast<USanhwaUltimateComponent>(CreateDefaultSubobject("SanhwaUltComp", "USanhwaUltimateComponent"));
 

@@ -274,10 +274,10 @@ void UAnimInstance::Montage_Play(std::shared_ptr<UAnimMontage> MontageToPlay, fl
 
 std::vector<FBoneLocalTransform> UAnimInstance::GetInitialLocalBoneTransforms() const
 {
-	//if (!bIsAnimationLoaded)
-	//{
-	//	return std::vector<FBoneLocalTransform>(MAX_BONES);
-	//}
+	if (!bIsAnimationLoaded)
+	{
+		return std::vector<FBoneLocalTransform>(MAX_BONES);
+	}
 
 	std::vector<FBoneLocalTransform> BoneTransforms(MAX_BONES);
 	bool Dummy;
@@ -333,7 +333,7 @@ void UAnimInstance::LayeredBlendPerBone(const std::vector<FBoneLocalTransform>& 
 		}
 	}
 }
-void UAnimInstance::PlayMontage(const std::string& SlotName, std::vector<FBoneLocalTransform>& OriginBoneTransforms, std::vector<FAnimNotifyEvent>& OriginNotifies)
+bool UAnimInstance::PlayMontage(const std::string& SlotName, std::vector<FBoneLocalTransform>& OriginBoneTransforms, std::vector<FAnimNotifyEvent>& OriginNotifies)
 {
 	std::vector<FBoneLocalTransform> MontageBoneTransforms(MAX_BONES);
 	for (const auto& MontageInstance : MontageInstances)
@@ -390,8 +390,11 @@ void UAnimInstance::PlayMontage(const std::string& SlotName, std::vector<FBoneLo
 			{
 				OriginBoneTransforms = MontageBoneTransforms;
 			}
+
+			return MontageInstance->CurrentPlayTime < EndTime - BlendOutBlendTime;
 		}
 	}
+	return false;
 }
 
 /*

@@ -46,7 +46,7 @@ public:
 
 	virtual void BasicAttack();
 	virtual void BasicAttackEnded();
-	virtual void HeavyAttack();
+	virtual bool HeavyAttack();
 	virtual void HeavyAttackMouseReleased() {}
 	virtual void JumpAttack() {};
 	virtual void BindKeyInputs(const std::shared_ptr<UPlayerInput>& InputSystem);
@@ -82,7 +82,8 @@ protected:
 	// 현재의 기본공격 단계를 저장
 	UINT CurrentBasicAttackCombo = 0;
 	bool bIsBasicAttacking = false;
-
+	// 강공격 적용 시간
+	static constexpr float EnterHeavyAttackTime = 0.7f;
 
 	// ===================== HeavyAttack =====================
 	float LastLeftMouseClickedTime = -1.0f;

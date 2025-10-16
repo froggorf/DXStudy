@@ -11,6 +11,21 @@ bool UGideonAnimInstance::IsAllResourceOK()
 	return UMyGameAnimInstanceBase::IsAllResourceOK();
 }
 
+void UGideonAnimInstance::UpdateAnimation(float dt)
+{
+	UMyGameAnimInstanceBase::UpdateAnimation(dt);
+
+	// 몽타쥬 연결
+	{
+		std::vector<FBoneLocalTransform> UpperBodyBoneTransforms = GetInitialLocalBoneTransforms();
+		if (PlayMontage("UpperBody", UpperBodyBoneTransforms, FinalNotifies))
+		{
+			LayeredBlendPerBone(BoneTransforms, UpperBodyBoneTransforms, "spine_01", 1.0f, BoneTransforms);	
+		}
+	}
+
+}
+
 void UGideonAnimInstance::SetAnimNotify_BeginPlay()
 {
 	UMyGameAnimInstanceBase::SetAnimNotify_BeginPlay();

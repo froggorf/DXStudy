@@ -15,6 +15,8 @@ C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Character\Player\AMyGameCharac
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Character\Player\ASanhwaCharacter.cpp;C:\Project\DXStudy\LeeEngine\Executable\ASanhwaCharacter.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\Melee\UMeleeBaseComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\UMeleeBaseComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\Melee\USanhwaCombatComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\USanhwaCombatComponent.obj
+C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\Range\UGideonCombatComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\UGideonCombatComponent.obj
+C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\Range\URangeBaseComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\URangeBaseComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\Skill\NormalSkill\SanHwa\USanhwaSkillComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\USanhwaSkillComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\Skill\NormalSkill\USkillBaseComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\USkillBaseComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\Skill\Ultimate\Sanhwa\USanhwaUltimateComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\USanhwaUltimateComponent.obj

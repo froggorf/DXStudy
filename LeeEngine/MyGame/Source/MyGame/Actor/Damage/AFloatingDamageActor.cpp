@@ -30,7 +30,6 @@ void AFloatingDamageActor::BeginPlay()
 {
 	AActor::BeginPlay();
 
-	std::cout<<SelfDestroyTimerHandle.TimerID<<"\n";
 	GEngine->GetTimerManager()->SetTimer(SelfDestroyTimerHandle, {this, &AFloatingDamageActor::Floating}, WaitTime, true, 0.01f);
 }
 

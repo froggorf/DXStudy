@@ -122,6 +122,9 @@
     <Filter Include="Source\MyGame\AnimInstance\Gideon">
       <UniqueIdentifier>{4832a69f-f0b3-48b6-a83e-4a442443dd8e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\Component\Combat\Range">
+      <UniqueIdentifier>{e00e338b-8e09-4611-a65e-71f9ae7098c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -235,6 +238,12 @@
     <ClCompile Include="Source\MyGame\AnimInstance\Gideon\UGideonAnimInstance.cpp">
       <Filter>Source\MyGame\AnimInstance\Gideon</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Component\Combat\Range\URangeBaseComponent.cpp">
+      <Filter>Source\MyGame\Component\Combat\Range</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\Component\Combat\Range\UGideonCombatComponent.cpp">
+      <Filter>Source\MyGame\Component\Combat\Range</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -344,6 +353,12 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\AnimInstance\Gideon\UGideonAnimInstance.h">
       <Filter>Source\MyGame\AnimInstance\Gideon</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Component\Combat\Range\URangeBaseComponent.h">
+      <Filter>Source\MyGame\Component\Combat\Range</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Component\Combat\Range\UGideonCombatComponent.h">
+      <Filter>Source\MyGame\Component\Combat\Range</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

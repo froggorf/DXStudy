@@ -13,11 +13,6 @@ void UMyGameAnimInstanceBase::LoadData_OnRegister()
 		{
 			BS_Locomotion = std::dynamic_pointer_cast<UBlendSpace>(Object);
 		});
-
-	AssetManager::GetAsyncAssetCache("AS_Sanhwa_Heavy_Idle", [this](std::shared_ptr<UObject> Object)
-		{
-			AS = std::dynamic_pointer_cast<UAnimSequence>(Object);
-		});
 }
 
 void UMyGameAnimInstanceBase::Register()

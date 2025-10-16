@@ -11,6 +11,8 @@ class UGideonAnimInstance final : public UMyGameAnimInstanceBase
 
 	bool IsAllResourceOK() override;
 
+	void UpdateAnimation(float dt) override;
+
 	//// MotionWarping - BasicAttack
 	//void MotionWarping_BasicAttack0();
 	//void MotionWarping_BasicAttack1();

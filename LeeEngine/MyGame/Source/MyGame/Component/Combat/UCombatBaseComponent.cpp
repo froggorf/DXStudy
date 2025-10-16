@@ -70,9 +70,27 @@ void UCombatBaseComponent::BasicAttackEnded()
 	}
 }
 
-void UCombatBaseComponent::HeavyAttack()
+bool UCombatBaseComponent::HeavyAttack()
 {
+	if (!MyGameCharacter)
+	{
+		return false;
+	}
+
+	const std::shared_ptr<UAnimInstance>& AnimInstance = MyGameCharacter->GetAnimInstance();
+	if (!AnimInstance)
+	{
+		return false;
+	}
+
+	// 이전에 왼클릭 한 시간 + 홀딩 시간 이 현재 시간보다 작아지면 충분히 누른것
+	if (LastLeftMouseClickedTime + EnterHeavyAttackTime > GEngine->GetTimeSeconds())
+	{
+		return false;
+	}
 	bIsBasicAttacking = false;
+
+	return true;
 }
 
 void UCombatBaseComponent::BindKeyInputs(const std::shared_ptr<UPlayerInput>& InputSystem)

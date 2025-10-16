@@ -60,7 +60,7 @@ protected:
 	// 애니메이션 레이어 블렌딩
 	void LayeredBlendPerBone(const std::vector<FBoneLocalTransform>& BasePose, const std::vector<FBoneLocalTransform>& BlendPose, const std::string& TargetBoneName, float BlendWeights, std::vector<FBoneLocalTransform>& OutBoneTransforms);
 
-	void PlayMontage(const std::string& SlotName, std::vector<FBoneLocalTransform>& OriginBoneTransforms, std::vector<FAnimNotifyEvent>& OriginNotifies);
+	bool PlayMontage(const std::string& SlotName, std::vector<FBoneLocalTransform>& OriginBoneTransforms, std::vector<FAnimNotifyEvent>& OriginNotifies);
 
 	float DeltaTime;
 

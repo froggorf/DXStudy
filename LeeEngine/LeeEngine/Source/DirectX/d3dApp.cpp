@@ -152,7 +152,9 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		UObject::ClearClassDefaultObject();
 		FScene::KillRenderingThread();
+		Sleep(3000);
 		GEngine->JoinThreadsAtDestroy();
+		exit(0);
 	}
 	if (msg == WM_QUIT)
 	{

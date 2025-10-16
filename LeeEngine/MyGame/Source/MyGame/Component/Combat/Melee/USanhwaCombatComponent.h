@@ -13,7 +13,7 @@ public:
 	void Initialize(AMyGameCharacterBase* MyCharacter) override;
 
 	void BasicAttack() override;
-	void HeavyAttack() override;
+	bool HeavyAttack() override;
 	void HeavyAttackMouseReleased() override;
 	void JumpAttack() override {};
 
@@ -30,7 +30,6 @@ private:
 	float Attack4_FloatMoveDistance = 300.0f;
 
 	// ================ 강공격 변수 ================
-	static constexpr float EnterHeavyAttackTime = 0.7f;
 	bool bIsHeavyAttackGaugeIncrease = true;
 	float CurrentChargeGauge = 0.0f;
 	float HeavyAttackMoveDistance = 600.0f;
