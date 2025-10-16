@@ -1,6 +1,8 @@
 #include "CoreMinimal.h"
 #include "UGideonCombatComponent.h"
 
+#include "MyGame/Character/Player/AGideonCharacter.h"
+
 UGideonCombatComponent::UGideonCombatComponent()
 {
 }
@@ -34,4 +36,40 @@ bool UGideonCombatComponent::HeavyAttack()
 void UGideonCombatComponent::HeavyAttackMouseReleased()
 {
 	URangeBaseComponent::HeavyAttackMouseReleased();
+}
+
+void UGideonCombatComponent::ApplyBasicAttack0()
+{
+	if (AGideonCharacter* GideonCharacter = dynamic_cast<AGideonCharacter*>(MyGameCharacter))
+	{
+		// 소환 위치를 구하고
+		USkeletalMeshComponent* GideonSkeletalMesh = GideonCharacter->GetSkeletalMeshComponent();
+		if (!GideonSkeletalMesh)
+		{
+			return;
+		}
+
+		FTransform SpawnTransform = GideonSkeletalMesh->GetSocketTransform("hand_r");
+		SpawnTransform.Scale3D = XMFLOAT3{1,1,1};
+		SpawnTransform.Rotation = XMFLOAT4{0,0,0,1};
+
+		XMFLOAT3 TargetPosition = {0,0,0};
+		// 가까운 적을 구한다음에
+		if (AActor* NearestEnemy = FindNearestEnemy(GideonCharacter->GetActorLocation(), FireBallThrowDistance, {}))
+		{
+			TargetPosition = NearestEnemy->GetActorLocation();
+			// 적군이 있으면 해당 적군을 향해 던지고
+			
+		}
+		else
+		{
+			// 아니면 전방을 향해 던짐
+			XMFLOAT3 ForwardDir = GideonCharacter->GetActorForwardVector();
+			ForwardDir.y = 0.0f;
+			XMStoreFloat3(&ForwardDir, XMVectorScale(XMVector3NormalizeEst(XMLoadFloat3(&ForwardDir)), FireBallThrowDistance));
+			TargetPosition = GideonCharacter->GetActorLocation() + ForwardDir;
+		}
+		GideonCharacter->SpawnFireBall(SpawnTransform, GetBasicAttackData(0), TargetPosition);
+	}
+	
 }

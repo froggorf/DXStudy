@@ -50,6 +50,7 @@ class UAnimInstance : public UObject
 
 	void Montage_Play(std::shared_ptr<UAnimMontage> MontageToPlay, float InTimeToStartMontageAt = 0.0f, const Delegate<>& OnMontageEnd = Delegate<>(), const Delegate<>& OnMontageBlendingInStart = Delegate<>(), const Delegate<>& OnMontageBlendOutStart = Delegate<>());
 	const std::array<XMMATRIX,MAX_BONES>& GetLastFrameAnimMatrices() const {return LastFrameAnimMatrices;}
+	const std::vector<XMMATRIX>& GetGlobalBoneTransforms() const {return GlobalTransforms;}
 
 	std::vector<FBoneLocalTransform> GetInitialLocalBoneTransforms() const;
 	bool IsPlayingMontage() const {return bPlayRootMotion;}
@@ -77,6 +78,7 @@ protected:
 	// 이전프레임의 AnimMatrices
 	// 스켈레탈 메시의 SocketTransform 계산시 사용
 	std::array<XMMATRIX, MAX_BONES> LastFrameAnimMatrices;
+	std::vector<XMMATRIX> GlobalTransforms;
 
 	// Notify Map
 	// {노티파이 이름, 델리게이트}

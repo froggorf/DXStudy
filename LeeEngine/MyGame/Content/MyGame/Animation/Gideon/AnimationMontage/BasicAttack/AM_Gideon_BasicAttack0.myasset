@@ -17,5 +17,8 @@
 	],
 	"Sections" : [
 		{ "SectionName" : "BasicAttack", "StartTime" : 0.0 }
-	]
+	],
+    	"Notifies" : [
+		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 6, "EventName" : "BasicAttack0" }
+  	  ]
 }

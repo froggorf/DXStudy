@@ -131,6 +131,7 @@ void UAnimSequence::Traverse()
 {
 	// 트리 구조의 계층을 벡터 구조로 변환
 	BoneHierarchy.clear();
+	BoneHierarchy.reserve(MAX_BONES);
 	TraverseTreeHierarchy(&RootNode, -1);
 }
 
@@ -211,9 +212,11 @@ void UAnimSequence::TraverseTreeHierarchy(const AssimpNodeData* NodeData, int Pa
 
 	FPrecomputedBoneData BoneData;
 	BoneData.BoneName    = NodeData->name;
+	
 	BoneData.ParentIndex = ParentIndex;
 	BoneData.Bone        = FindBone(BoneData.BoneName);
 	BoneData.BoneTransform = NodeData->transformation;
+
 	if (BoneInfoMap.contains(BoneData.BoneName))
 	{
 		BoneData.BoneInfo = BoneInfoMap[BoneData.BoneName];
@@ -225,7 +228,7 @@ void UAnimSequence::TraverseTreeHierarchy(const AssimpNodeData* NodeData, int Pa
 	}
 
 	int CurrentIndex = static_cast<int>(BoneHierarchy.size());
-	BoneHierarchy.push_back(BoneData);
+	BoneHierarchy.emplace_back(BoneData);
 
 	size_t ChildCount = NodeData->children.size();
 	for (int ChildIndex = 0; ChildIndex < ChildCount; ++ChildIndex)

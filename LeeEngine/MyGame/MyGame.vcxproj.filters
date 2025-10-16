@@ -125,6 +125,9 @@
     <Filter Include="Source\MyGame\Component\Combat\Range">
       <UniqueIdentifier>{e00e338b-8e09-4611-a65e-71f9ae7098c5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\Actor\Gideon">
+      <UniqueIdentifier>{010cacbe-ff78-4051-b1b9-e72c1ae0f5e9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -244,6 +247,9 @@
     <ClCompile Include="Source\MyGame\Component\Combat\Range\UGideonCombatComponent.cpp">
       <Filter>Source\MyGame\Component\Combat\Range</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Actor\Gideon\AGideonFireBall.cpp">
+      <Filter>Source\MyGame\Actor\Gideon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -359,6 +365,9 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Component\Combat\Range\UGideonCombatComponent.h">
       <Filter>Source\MyGame\Component\Combat\Range</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Actor\Gideon\AGideonFireBall.h">
+      <Filter>Source\MyGame\Actor\Gideon</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

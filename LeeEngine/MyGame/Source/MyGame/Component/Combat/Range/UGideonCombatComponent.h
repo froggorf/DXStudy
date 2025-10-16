@@ -17,9 +17,11 @@ public:
 	void HeavyAttackMouseReleased() override;
 	void JumpAttack() override {};
 
+
+	void ApplyBasicAttack0();
 private:
 public:
 private:
-	
+	static constexpr float FireBallThrowDistance = 1000.0f;
 };
  

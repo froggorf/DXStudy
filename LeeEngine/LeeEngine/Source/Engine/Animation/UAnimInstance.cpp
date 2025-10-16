@@ -69,7 +69,7 @@ void UAnimInstance::CalculateBoneMatrices(const std::vector<FBoneLocalTransform>
 
 	std::map<std::string,std::vector<FPrecomputedBoneData>>& BoneHierarchyMap = UAnimSequence::GetSkeletonBoneHierarchyMap();
 	std::vector<FPrecomputedBoneData>& BoneHierarchy = BoneHierarchyMap[GetSkeletalMeshComponent()->GetSkeletalMesh()->GetName()];
-	std::vector<XMMATRIX> GlobalTransforms(MAX_BONES, XMMatrixIdentity());
+	GlobalTransforms = std::vector<XMMATRIX>(MAX_BONES,XMMatrixIdentity());
 	for (int HierarchyIndex = 0; HierarchyIndex < BoneHierarchy.size(); ++HierarchyIndex)
 	{
 		const FPrecomputedBoneData& BoneData = BoneHierarchy[HierarchyIndex];

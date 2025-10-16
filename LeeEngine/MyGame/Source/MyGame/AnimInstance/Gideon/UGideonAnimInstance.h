@@ -27,7 +27,7 @@ class UGideonAnimInstance final : public UMyGameAnimInstanceBase
 
 	//void Ultimate_ChangeCameraToNormal();
 
-	//void BasicAttack0();
+	void BasicAttack0();
 	//void BasicAttack1();
 	//void BasicAttack2();
 	//void BasicAttack3();

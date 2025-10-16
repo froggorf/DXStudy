@@ -4,6 +4,7 @@ C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\ATestActor2.cpp;C:\Proje
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\ATestCube.cpp;C:\Project\DXStudy\LeeEngine\Executable\ATestCube.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\ATestCube2.cpp;C:\Project\DXStudy\LeeEngine\Executable\ATestCube2.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\Damage\AFloatingDamageActor.cpp;C:\Project\DXStudy\LeeEngine\Executable\AFloatingDamageActor.obj
+C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\Gideon\AGideonFireBall.cpp;C:\Project\DXStudy\LeeEngine\Executable\AGideonFireBall.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\Sanhwa\ASanhwaIceBase.cpp;C:\Project\DXStudy\LeeEngine\Executable\ASanhwaIceBase.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\Sanhwa\ASanhwaIceSpikeUltimate.cpp;C:\Project\DXStudy\LeeEngine\Executable\ASanhwaIceSpikeUltimate.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\AnimInstance\Gideon\UGideonAnimInstance.cpp;C:\Project\DXStudy\LeeEngine\Executable\UGideonAnimInstance.obj

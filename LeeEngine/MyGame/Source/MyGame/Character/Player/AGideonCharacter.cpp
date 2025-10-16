@@ -1,6 +1,8 @@
 #include "CoreMinimal.h"
 #include "AGideonCharacter.h"
 
+#include "Engine/World/UWorld.h"
+#include "MyGame/Actor/Gideon/AGideonFireBall.h"
 #include "MyGame/Actor/Sanhwa/ASanhwaIceBase.h"
 #include "MyGame/Component/Combat/Range/UGideonCombatComponent.h"
 
@@ -49,7 +51,20 @@ void AGideonCharacter::Register()
 	AMyGameCharacterBase::Register();
 
 	
-}/*
+}
+
+void AGideonCharacter::SpawnFireBall(const FTransform& SpawnTransform, const FAttackData& AttackData, const XMFLOAT3& TargetPosition)
+{
+	if (std::shared_ptr<AGideonFireBall> FireBall = std::dynamic_pointer_cast<AGideonFireBall>(GetWorld()->SpawnActor("AGideonFireBall", SpawnTransform)))
+	{
+		FireBall->Initialize(this, TargetPosition, AttackData);
+	}
+}
+
+
+
+
+/*
 
 void AGideonCharacter::CreateWidgetOnBeginPlay()
 {

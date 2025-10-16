@@ -88,8 +88,6 @@ FTransform USkeletalMeshComponent::GetSocketTransform(const std::string& InSocke
 	if (BoneHierarchyMap.contains(SkeletalMeshName))
 	{
 		std::vector<FPrecomputedBoneData>& BoneHierarchy = BoneHierarchyMap[SkeletalMeshName];
-
-
 		auto TargetSocket = std::ranges::find_if(BoneHierarchy, [InSocketName](const FPrecomputedBoneData& Data)
 		{
 			return Data.BoneName == InSocketName;
@@ -99,36 +97,19 @@ FTransform USkeletalMeshComponent::GetSocketTransform(const std::string& InSocke
 		{
 			return GetComponentTransform();
 		}
-		XMVECTOR OutLoc, OutRot, OutScale;
 		int BoneIdx = static_cast<int>(std::distance(BoneHierarchy.begin(), TargetSocket));
-		// 누적 행렬 계산
-		FTransform AnimTransform;
-		if (XMMatrixDecompose(&OutScale, &OutRot, &OutLoc, AnimInstance->GetLastFrameAnimMatrices()[BoneIdx]))
-		{
-			XMStoreFloat3(&AnimTransform.Translation, OutLoc);
-			XMStoreFloat4(&AnimTransform.Rotation, OutRot);
-			XMStoreFloat3(&AnimTransform.Scale3D, OutScale);
-		}
 
-		XMMATRIX BoneOffset = XMMatrixIdentity();
-		while (BoneIdx >= 0)
-		{
-			BoneOffset = XMMatrixMultiply(BoneOffset, BoneHierarchy[BoneIdx].BoneTransform);
-			BoneIdx = BoneHierarchy[BoneIdx].ParentIndex;
-		}
-	
-		bool bDecompose = XMMatrixDecompose(&OutScale, &OutRot, &OutLoc, BoneOffset);
-		FTransform BoneTransform;
+		XMVECTOR OutLoc, OutRot, OutScale;
+		XMMATRIX Matrix = AnimInstance->GetGlobalBoneTransforms()[BoneIdx] * ReturnTransform.ToMatrixWithScale();
+		bool bDecompose = XMMatrixDecompose(&OutScale, &OutRot, &OutLoc, Matrix);
 		if (bDecompose)
 		{
-			XMStoreFloat3(&BoneTransform.Translation, OutLoc);
-			XMStoreFloat4(&BoneTransform.Rotation, OutRot);
-			XMStoreFloat3(&BoneTransform.Scale3D, OutScale);
+			XMStoreFloat3(&ReturnTransform.Translation, OutLoc);
+			XMStoreFloat4(&ReturnTransform.Rotation, OutRot);
+			XMStoreFloat3(&ReturnTransform.Scale3D, OutScale);
 		}
-
-
-		ReturnTransform = ReturnTransform * AnimTransform* BoneTransform;
 	}
+
 
 	return ReturnTransform;
 }

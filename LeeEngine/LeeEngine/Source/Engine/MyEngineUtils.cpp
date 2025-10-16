@@ -46,6 +46,19 @@ FTransform FTransform::operator*(const FTransform& OtherTransform)
 	return FTransform{ResultRotQuat, RetTranslation, RetScale};
 }
 
+FTransform FTransform::MultiplyNoScale(const FTransform& OtherTransform)
+{
+	XMMATRIX ResultMatrix = XMMatrixMultiply(OtherTransform.ToMatrixNoScale(), ToMatrixNoScale());
+	XMVECTOR ResultScale, ResultRotQuat, ResultTranslate;
+	XMMatrixDecompose(&ResultScale, &ResultRotQuat, &ResultTranslate, ResultMatrix);
+	XMFLOAT3 RetTranslation, RetScale;
+	XMStoreFloat3(&RetTranslation, ResultTranslate);
+
+	XMStoreFloat3(&RetScale, ResultScale);
+
+	return FTransform{ResultRotQuat, RetTranslation, RetScale};
+}
+
 XMFLOAT3 FTransform::InverseTransformPosition(const XMFLOAT3& WorldTranslation) const
 {
 	XMVECTOR WorldTranslationVec = XMLoadFloat3(&WorldTranslation);

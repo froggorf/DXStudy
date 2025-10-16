@@ -413,6 +413,15 @@ void UPhysicsEngine::CreateScene()
 	Manager = PxCreateControllerManager(*PxScene);
 }
 
+physx::PxControllerManager* UPhysicsEngine::GetControllerManager()
+{
+	if (!Manager)
+	{
+		Manager = PxCreateControllerManager(*PxScene);
+	}
+	return Manager;
+}
+
 bool UPhysicsEngine::LineTraceSingleByChannel(const XMFLOAT3& Start, const XMFLOAT3& End, const std::vector<ECollisionChannel>& TraceChannel,FHitResult& HitResult, float DebugDrawTime, const XMFLOAT3& TraceColor, const XMFLOAT3& TraceHitColor) const
 {
 	if (!PxScene)

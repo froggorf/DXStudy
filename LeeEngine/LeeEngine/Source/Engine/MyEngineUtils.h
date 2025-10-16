@@ -90,6 +90,7 @@ struct FTransform
 	XMMATRIX ToMatrixNoScale() const;
 
 	FTransform operator*(const FTransform& OtherTransform);
+	FTransform MultiplyNoScale(const FTransform& OtherTransform);
 
 	// 월드 좌표 -> 로컬좌표 위치
 	XMFLOAT3 InverseTransformPosition(const XMFLOAT3& WorldTranslation) const;

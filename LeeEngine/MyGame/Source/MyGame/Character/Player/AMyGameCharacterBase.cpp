@@ -198,7 +198,10 @@ bool AMyGameCharacterBase::ApplyDamageToEnemy(const FAttackData& AttackData,cons
 			DamagedActors[i]->TakeDamage(GetCurrentPower() * AttackData.DamagePercent, Event, this);
 		}
 
-		GetUltimateComponent()->AddUltimateGauge(AttackData.GainUltimateGauge * static_cast<float>(DamagedActors.size()));
+		if (UltimateComponent)
+		{
+			UltimateComponent->AddUltimateGauge(AttackData.GainUltimateGauge * static_cast<float>(DamagedActors.size()));
+		}
 	}
 
 	return !DamagedActors.empty();

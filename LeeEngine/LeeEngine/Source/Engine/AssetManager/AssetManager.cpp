@@ -185,7 +185,8 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const ComPtr<I
 
 	for (UINT meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex)
 	{
-		ExtractBoneWeightForVertices(allSkeletalVertices[meshIndex], scene->mMeshes[meshIndex], modelBoneInfoMap);
+		
+		ExtractBoneWeightForVertices(allSkeletalVertices[meshIndex], scene->mMeshes[meshIndex], modelBoneInfoMap, scene->mRootNode);
 	}
 
 	// 모델 로드 성공
@@ -602,44 +603,115 @@ void AssetManager::SetVertexBoneData(MyVertexData& vertexData, int boneID, float
 	}
 }
 
-void AssetManager::ExtractBoneWeightForVertices(std::vector<MyVertexData>& vVertexData, aiMesh* mesh, std::map<std::string, BoneInfo>& modelBoneInfoMap)
+static XMMATRIX ConvertAiMatrixToXMMATRIX(const aiMatrix4x4& mat)
+{
+	XMMATRIX DXMat(
+		mat.a1, mat.a2, mat.a3, mat.a4,
+		mat.b1, mat.b2, mat.b3, mat.b4,
+		mat.c1, mat.c2, mat.c3, mat.c4,
+		mat.d1, mat.d2, mat.d3, mat.d4
+	);
+	return XMMatrixTranspose(DXMat);
+}
+
+void CalculateGlobalTransforms(aiNode* node,
+	const aiMatrix4x4& parentTransform,
+	std::map<std::string, aiMatrix4x4>& outGlobalTransforms)
+{
+	aiMatrix4x4 globalTransform = parentTransform * node->mTransformation;
+	outGlobalTransforms[node->mName.C_Str()] = globalTransform;
+
+	for (UINT i = 0; i < node->mNumChildren; ++i)
+		CalculateGlobalTransforms(node->mChildren[i], globalTransform, outGlobalTransforms);
+}
+static aiNode* FindNodeByName(aiNode* node, const std::string& name)
+{
+	if (node->mName.C_Str() == name)
+		return node;
+	for (UINT i = 0; i < node->mNumChildren; ++i)
+	{
+		aiNode* found = FindNodeByName(node->mChildren[i], name);
+		if (found) return found;
+	}
+	return nullptr;
+}
+
+static aiMatrix4x4 GetRootToBoneMatrix(aiNode* Node)
+{
+	aiNode* Current = Node;
+	std::vector<aiNode*> CurToRootNodes;
+	CurToRootNodes.reserve(MAX_BONES);
+	while (Current)
+	{
+		CurToRootNodes.emplace_back(Current);
+		//mat = parent->mTransformation * mat;
+		Current = Current->mParent;
+	}
+
+	aiMatrix4x4 Mat = aiMatrix4x4{
+		1,0,0,0,
+		0,1,0,0,
+		0,0,1,0,
+		0,0,0,1
+	};
+	for(int i = static_cast<int>(CurToRootNodes.size())-1; i >= 0; --i)
+	{
+		Mat = Mat * CurToRootNodes[i]->mTransformation;
+	}
+	return Mat;
+}
+
+void AssetManager::ExtractBoneWeightForVertices(
+	std::vector<MyVertexData>& vVertexData,
+	aiMesh* mesh,
+	std::map<std::string, BoneInfo>& ModelBoneInfoMap,
+	aiNode* RootNode
+)
 {
 	for (UINT boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex)
 	{
-		std::string boneName = mesh->mBones[boneIndex]->mName.C_Str();
-		int         boneID   = -1;
-		if (!modelBoneInfoMap.contains(boneName))
+		std::string BoneName = mesh->mBones[boneIndex]->mName.C_Str();
+		int boneID = -1;
+		if (!ModelBoneInfoMap.contains(BoneName))
 		{
 			BoneInfo newBoneInfo;
-			newBoneInfo.id     = boneIndex;
-			aiMatrix4x4 aiMat  = mesh->mBones[boneIndex]->mOffsetMatrix;
-			newBoneInfo.offset = XMMATRIX(
-				aiMat.a1,aiMat.a2,aiMat.a3,aiMat.a4,
-				aiMat.b1,aiMat.b2,aiMat.b3,aiMat.b4,
-				aiMat.c1,aiMat.c2,aiMat.c3,aiMat.c4,
-				aiMat.d1,aiMat.d2,aiMat.d3,aiMat.d4
-			);
-			newBoneInfo.offset = XMMatrixTranspose(newBoneInfo.offset);
-			//ConvertAiMatrixToXMMATRIX(mesh->mBones[boneIndex]->mOffsetMatrix);
-			if (boneName.contains("mixamorig:"))
+			newBoneInfo.id = static_cast<int>(boneIndex);
+
+			aiMatrix4x4 aiOffsetMat = mesh->mBones[boneIndex]->mOffsetMatrix;
+			newBoneInfo.offset = ConvertAiMatrixToXMMATRIX(aiOffsetMat);
+
+			aiNode* boneNode = FindNodeByName(RootNode, BoneName);
+			if (boneNode)
 			{
-				boneName.replace(boneName.begin(), boneName.begin() + 10, "");
+				aiMatrix4x4 rootToBone = GetRootToBoneMatrix(boneNode);
+				newBoneInfo.RootToCurrentBoneMatrix = ConvertAiMatrixToXMMATRIX(rootToBone);
 			}
-			modelBoneInfoMap[boneName] = newBoneInfo;
-			boneID                     = boneIndex;
+			else
+			{
+				newBoneInfo.RootToCurrentBoneMatrix = XMMatrixIdentity();
+			}
+
+			if (BoneName.contains("mixamorig:"))
+			{
+				BoneName.replace(BoneName.begin(), BoneName.begin() + 10, "");
+			}
+
+			ModelBoneInfoMap[BoneName] = newBoneInfo;
+			boneID = boneIndex;
 		}
 		else
 		{
-			boneID = modelBoneInfoMap[boneName].id;
+			boneID = ModelBoneInfoMap[BoneName].id;
 		}
+
 		assert(boneID != -1);
 
-		auto weights    = mesh->mBones[boneIndex]->mWeights;
-		int  numWeights = mesh->mBones[boneIndex]->mNumWeights;
+		auto weights = mesh->mBones[boneIndex]->mWeights;
+		int numWeights = mesh->mBones[boneIndex]->mNumWeights;
 		for (int weightIndex = 0; weightIndex < numWeights; ++weightIndex)
 		{
-			int   vertexID = weights[weightIndex].mVertexId;
-			float weight   = weights[weightIndex].mWeight;
+			int vertexID = weights[weightIndex].mVertexId;
+			float weight = weights[weightIndex].mWeight;
 			SetVertexBoneData(vVertexData[vertexID], boneID, weight);
 		}
 	}

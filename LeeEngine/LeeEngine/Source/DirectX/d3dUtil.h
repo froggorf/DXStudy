@@ -133,7 +133,8 @@ __declspec(align(16)) struct MyVertexData
 struct BoneInfo
 {
 	int      id;     // 최종 본 매트릭스 내 해당 본의 ID
-	XMMATRIX offset; // 모델 root 로부터의 해당 본의 offset matrix
+	XMMATRIX offset;
+	XMMATRIX RootToCurrentBoneMatrix; // Root 로부터 현재 본으로 가도록 하는 Matrix
 };
 
 // ============================================================
