@@ -108,39 +108,94 @@ UPhysicsEngine::UPhysicsEngine()
 
 UPhysicsEngine::~UPhysicsEngine()
 {
-	if (DefaultMaterial)
+	if (PxFoundation) 
 	{
-		DefaultMaterial->release();	
+		PxFoundation->release();
+		PxFoundation = nullptr;
 	}
-	
-	//if (PxScene)
-	//{
-	//	PxScene->release();	
-	//}
-	//
 	//if (PxPhysics)
 	//{
-	//	PxPhysics->release();	
+	//	PxPhysics->release();
+	//	PxPhysics = nullptr;
 	//}
-	//
-	//if (PxFoundation)
+	//if (PxScene)
 	//{
-	//	PxFoundation->release();	
+	//	//PxScene->release();
+	//	//PxScene = nullptr;
 	//}
-
-	
+	//if (Manager)
+	//{
+	//	Manager->release();
+	//	Manager = nullptr;
+	//}
+	//if (DefaultMaterial)
+	//{
+	//	DefaultMaterial->release();
+	//	DefaultMaterial=nullptr;
+	//}
 }
 
 void UPhysicsEngine::InitPhysicsEngine()
 {
-	// Foundation, Physics 생성
+	bIsRegistered = false;
 	PxFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
+	CreateScene();
+}
+
+void UPhysicsEngine::CreateScene()
+{
+	bIsRegistered = false;
+	if (PxPhysics)
+	{
+		PxPhysics->release();
+		PxPhysics = nullptr;
+	}
+	if (PxScene)
+	{
+		//PxScene->release();
+		//PxScene = nullptr;
+	}
+	if (Manager)
+	{
+		//Manager->release();
+		//Manager = nullptr;
+	}
+	if (DefaultMaterial)
+	{
+		//DefaultMaterial->release();
+		//DefaultMaterial=nullptr;
+	}
+
 	PxPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *PxFoundation, physx::PxTolerancesScale());
 
-	CreateScene();
+	// Scene 생성
+	physx::PxSceneDesc SceneDesc(PxPhysics->getTolerancesScale());
+	SceneDesc.gravity = physx::PxVec3(0.0f,-9.8f*7.5f, 0.0f);
+	SceneDesc.cpuDispatcher = physx::PxDefaultCpuDispatcherCreate(2);
+	SceneDesc.filterShader = MyFilterShader;
+
+	if (!CallbackInstance)
+	{
+		CallbackInstance = std::make_unique<FPhysicsEventCallback>();
+	}
+	SceneDesc.simulationEventCallback = CallbackInstance.get();
+	PxScene = PxPhysics->createScene(SceneDesc);
+	if (PxScene == nullptr)
+	{
+		int a = 0;
+	}
+
+	Manager = PxCreateControllerManager(*PxScene);
+	if (Manager == nullptr)
+	{
+		int a = 0;
+	}
 
 	DefaultMaterial = PxPhysics->createMaterial(0.5f, 0.5f, 0.6f); // friction, restitution
+
+	bIsRegistered = true;
 }
+
 
 void UPhysicsEngine::TickPhysics(float DeltaSeconds) const
 {
@@ -387,30 +442,7 @@ void UPhysicsEngine::AddActor(physx::PxRigidActor* AddActor) const
 
 void UPhysicsEngine::ResetScene()
 {
-	if (PxScene)
-	{
-		PxScene->release();	
-	}
-
 	CreateScene();
-}
-
-void UPhysicsEngine::CreateScene()
-{
-	// Scene 생성
-	physx::PxSceneDesc SceneDesc(PxPhysics->getTolerancesScale());
-	SceneDesc.gravity = physx::PxVec3(0.0f,-9.8f*7.5f, 0.0f);
-	SceneDesc.cpuDispatcher = physx::PxDefaultCpuDispatcherCreate(2);
-	SceneDesc.filterShader = MyFilterShader;
-	
-	if (!CallbackInstance)
-	{
-		CallbackInstance = std::make_unique<FPhysicsEventCallback>();
-	}
-	SceneDesc.simulationEventCallback = CallbackInstance.get();
-	PxScene = PxPhysics->createScene(SceneDesc);
-
-	Manager = PxCreateControllerManager(*PxScene);
 }
 
 physx::PxControllerManager* UPhysicsEngine::GetControllerManager()

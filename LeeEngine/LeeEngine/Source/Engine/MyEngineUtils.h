@@ -333,4 +333,8 @@ namespace MyMath
 		std::uniform_real_distribution<float> dis(Start, End);
 		return dis(gen);
 	}
+
+	XMFLOAT3 RotationMatrixToEulerAngle(const XMMATRIX& Mat);
+	XMFLOAT3 QuaternionToEulerAngle(const XMFLOAT4& Quat);
+	XMFLOAT3 QuaternionToEulerAngle(const XMVECTOR& Quat);
 }

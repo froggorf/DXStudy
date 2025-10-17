@@ -61,6 +61,7 @@ class AActor : public UObject, public std::enable_shared_from_this<AActor>
 	XMFLOAT3 GetActorScale3D() const;
 	void     SetActorLocation(const XMFLOAT3& NewLocation) const;
 	void     SetActorRotation(const XMFLOAT4& NewRotation) const;
+	void	 SetActorRotation(const XMVECTOR& NewRotation) const;
 	void     SetActorScale3D(const XMFLOAT3& NewScale3D) const;
 
 	XMFLOAT3 GetActorForwardVector() const;

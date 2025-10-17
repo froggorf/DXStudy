@@ -153,4 +153,64 @@ namespace MyMath
 		XMStoreFloat4(&ReturnQuaternion, Quaternion);
 		return ReturnQuaternion;
 	}
+
+	bool closeEnough(const float& a, const float& b, const float& epsilon = FLT_EPSILON)
+	{
+		return (epsilon > std::abs(a - b));
+	}
+
+	XMFLOAT3 RotationMatrixToEulerAngle(const XMMATRIX& Mat)
+	{
+		XMFLOAT4 VectorMat[4];
+
+		XMStoreFloat4(&VectorMat[0], Mat.r[0]);
+		XMStoreFloat4(&VectorMat[1], Mat.r[1]);
+		XMStoreFloat4(&VectorMat[2], Mat.r[2]);
+		XMStoreFloat4(&VectorMat[3], Mat.r[3]);
+
+		XMFLOAT3 NewRot;
+		if (closeEnough(VectorMat[0].z, -1.0f)) {
+			float x = 0; //gimbal lock, value of x doesn't matter
+			float y = XM_PI / 2;
+			float z = x + atan2f(VectorMat[1].x, VectorMat[2].x);
+			NewRot = XMFLOAT3{ x, y, z };
+		}
+		else if (closeEnough(VectorMat[0].z, 1.0f)) {
+			float x = 0;
+			float y = -XM_PI / 2;
+			float z = -x + atan2f(-VectorMat[1].x, -VectorMat[2].x);
+			NewRot = XMFLOAT3{ x, y, z };
+		}
+		else { //two solutions exist
+			float y1 = -asinf(VectorMat[0].z);
+			float y2 = XM_PI - y1;
+
+			float x1 = atan2f(VectorMat[1].z / cosf(y1), VectorMat[2].z / cosf(y1));
+			float x2 = atan2f(VectorMat[1].z / cosf(y2), VectorMat[2].z / cosf(y2));
+
+			float z1 = atan2f(VectorMat[0].y / cosf(y1), VectorMat[0].x / cosf(y1));
+			float z2 = atan2f(VectorMat[0].y / cosf(y2), VectorMat[0].x / cosf(y2));
+
+			//choose one solution to return
+			//for example the "shortest" rotation
+			if ((std::abs(x1) + std::abs(y1) + std::abs(z1)) <= (std::abs(x2) + std::abs(y2) + std::abs(z2)))
+			{
+				NewRot = XMFLOAT3{ x1, y1, z1 };
+			}
+			else {
+				NewRot = XMFLOAT3{ x2, y2, z2 };
+			}
+		}
+		return NewRot;
+	}
+
+	XMFLOAT3 QuaternionToEulerAngle(const XMFLOAT4& Quat)
+	{
+		return QuaternionToEulerAngle(XMLoadFloat4(&Quat));
+	}
+
+	XMFLOAT3 QuaternionToEulerAngle(const XMVECTOR& Quat)
+	{
+		return RotationMatrixToEulerAngle(XMMatrixRotationQuaternion(Quat));
+	}
 }

@@ -74,7 +74,7 @@ public:
 
 	void InitPhysicsEngine();
 	void TickPhysics(float DeltaSeconds) const;
-
+	void CreateScene();
 	/// Shape
 	// Sphere Shape
 	physx::PxShape* CreateSphereShape(const float Radius) const;
@@ -102,7 +102,6 @@ public:
 
 	physx::PxScene* GetScene() const {return PxScene; }
 	void ResetScene();
-	void CreateScene();
 
 	physx::PxControllerManager* GetControllerManager();
 
@@ -119,6 +118,7 @@ protected:
 
 private:
 public:
+	std::atomic<bool> bIsRegistered = false;
 protected:
 private:
 	physx::PxDefaultAllocator			gAllocator;

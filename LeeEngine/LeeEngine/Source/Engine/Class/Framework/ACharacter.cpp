@@ -164,9 +164,16 @@ void UCharacterMovementComponent::TickComponent(float DeltaSeconds)
 		// 그 값을 적용하면 됨
 		GetOwner()->SetActorRotation(NewRot);
 	}
-	else
+	if (bOrientRotationToMovement)
 	{
-		
+		XMFLOAT4 ControlRotation = static_cast<ACharacter*>(GetOwner())->GetControlRotation();
+		XMFLOAT3 RotationEulerRadian = MyMath::QuaternionToEulerAngle(ControlRotation);
+
+		RotationEulerRadian.x = bUseControllerRotationPitch? RotationEulerRadian.x : 0.0f;
+		RotationEulerRadian.y = bUseControllerRotationYaw? RotationEulerRadian.y : 0.0f;
+		RotationEulerRadian.z = bUseControllerRotationRoll? RotationEulerRadian.z : 0.0f;
+		XMVECTOR NewRotationQuat = XMQuaternionRotationRollPitchYaw(RotationEulerRadian.x,RotationEulerRadian.y,RotationEulerRadian.z);
+		GetOwner()->SetActorRotation(NewRotationQuat);
 	}
 	/// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }

@@ -138,6 +138,14 @@ void AActor::SetActorRotation(const XMFLOAT4& NewRotation) const
 	}
 }
 
+void AActor::SetActorRotation(const XMVECTOR& NewRotation) const
+{
+	if (RootComponent)
+	{
+		RootComponent->SetRelativeRotation(NewRotation);
+	}
+}
+
 void AActor::SetActorScale3D(const XMFLOAT3& NewScale3D) const
 {
 	if (RootComponent)
