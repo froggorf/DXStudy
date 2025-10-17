@@ -5,6 +5,7 @@
 #include "Engine/Class/Framework/APlayerController.h"
 #include "Engine/RenderCore/RenderingThread.h"
 #include "Engine/World/UWorld.h"
+#include "MyGame/Core/AMyGamePlayerController.h"
 
 void IDodgeInterface::LoadAnimMontages()
 {
@@ -66,9 +67,13 @@ void IDodgeInterface::AddMonochromePostprocess()
 			DeviceContext->PSSetShaderResources(11, 1, ViewPositionTex->GetSRV().GetAddressOf());
 			
 			APlayerController* PC = GEngine->GetCurrentWorld()->GetPlayerController();
-
-
-			XMFLOAT3 Pos = PC->GetMonochromeCenterPos();
+			AMyGamePlayerController* MyGamePC = dynamic_cast<AMyGamePlayerController*>(PC);
+			if (!MyGamePC)
+			{
+				return;
+			}
+			
+			XMFLOAT3 Pos = MyGamePC->GetMonochromeCenterPos();
 			XMMATRIX ViewMat = FRenderCommandExecutor::CurrentSceneData->GetViewMatrix();
 
 			XMVECTOR WorldPos4 = XMVectorSet(Pos.x, Pos.y, Pos.z, 1.0f);
@@ -77,7 +82,7 @@ void IDodgeInterface::AddMonochromePostprocess()
 			XMStoreFloat4(&ViewPos, ViewPosVec);
 
 			FMonochromeDataConstantBuffer Data;
-			Data.Distance = PC->GetMonochromeDistance();
+			Data.Distance = MyGamePC->GetMonochromeDistance();
 			Data.CenterPos = XMFLOAT3{ViewPos.x, ViewPos.y, ViewPos.z};
 
 

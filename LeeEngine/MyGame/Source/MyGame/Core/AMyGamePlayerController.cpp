@@ -14,3 +14,16 @@ void AMyGamePlayerController::SpawnFloatingDamage(const FTransform& SpawnTransfo
 	}
 
 }
+
+XMFLOAT3 AMyGamePlayerController::GetMonochromeCenterPos()
+{
+	if (std::shared_ptr<USceneComponent> Comp = MonochromeCenterComp.lock())
+	{
+		return Comp->GetWorldLocation();
+	}
+	else
+	{
+		MonochromeDistance = 0.0f;
+		return {0,0,0};
+	}
+}

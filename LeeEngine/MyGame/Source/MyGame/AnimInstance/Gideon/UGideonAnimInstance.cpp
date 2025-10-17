@@ -20,7 +20,7 @@ void UGideonAnimInstance::UpdateAnimation(float dt)
 
 	// 몽타쥬 연결
 	{
-		std::vector<FBoneLocalTransform> UpperBodyBoneTransforms = GetInitialLocalBoneTransforms();
+		std::vector<FBoneLocalTransform> UpperBodyBoneTransforms = BoneTransforms; //GetInitialLocalBoneTransforms();
 		if (PlayMontage("UpperBody", UpperBodyBoneTransforms, FinalNotifies))
 		{
 			LayeredBlendPerBone(BoneTransforms, UpperBodyBoneTransforms, "spine_01", 1.0f, BoneTransforms);	

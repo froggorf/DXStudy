@@ -11,7 +11,7 @@
 #include "Engine/GameFramework/AActor.h"
 #include "Engine/Physics/UCapsuleComponent.h"
 
-class APlayerController;
+class AController;
 class UCameraComponent;
 
 class MyQueryFilterCallback : public physx::PxQueryFilterCallback
@@ -58,7 +58,10 @@ public:
 	float Braking = 2048.0f;
 	float Acceleration = 2048.0f;
 
-	bool bOrientRotationToMovement = true;
+	bool bOrientRotationToMovement = false;
+	bool bUseControllerRotationPitch = false;
+	bool bUseControllerRotationYaw = true;
+	bool bUseControllerRotationRoll = false;
 	XMFLOAT3 RotationRate = XMFLOAT3{0.0f,0.0f,0.0f};
 
 	physx::PxCapsuleControllerDesc desc{};
@@ -78,7 +81,6 @@ public:
 	~ACharacter() override = default;
 	void Register() override;
 	void BeginPlay() override;
-	void Tick(float DeltaSeconds) override;
 
 	void AddMovementInput(const XMFLOAT3& WorldDirection, float ScaleValue = 1.0f);
 	void AddControllerYawInput(float Val);
@@ -107,7 +109,7 @@ protected:
 private:
 public:
 	// 현재 이 액터를 소유중인 컨트롤러
-	APlayerController*  Controller;
+	AController*  Controller;
 protected:
 	// 컨트롤러의 Rotation
 	XMFLOAT4 ControlRotation;

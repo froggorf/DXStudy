@@ -4,13 +4,13 @@
 #pragma once
 #include "Engine/Class/Framework/ACharacter.h"
 #include "MyGame/Component/Combat/UCombatBaseComponent.h"
-#include "MyGame/Component/Combat/Skill/NormalSkill/USkillBaseComponent.h"
-#include "MyGame/Component/Combat/Skill/Ultimate/UUltimateBaseComponent.h"
 #include "MyGame/Component/MotionWarping/UMotionWarpingComponent.h"
 #include "MyGame/Interface/Dodge/IDodgeInterface.h"
 
 class UHealthComponent;
 class UMyGameWidgetBase;
+class USkillBaseComponent;
+class UUltimateBaseComponent;
 
 enum class EElementType
 {

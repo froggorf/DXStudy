@@ -53,7 +53,6 @@ bool UStaticMeshComponent::SetStaticMesh(const std::shared_ptr<UStaticMesh>& New
 	StaticMesh = NewMesh;
 	if (BodyInstance)
 	{
-		BodyInstance->SetObjectType(ECollisionChannel::WorldStatic);
 		std::static_pointer_cast<UConvexComponent>(BodyInstance)->SetStaticMesh(StaticMesh);	
 	}
 	//ConvexComponent->SetStaticMesh(StaticMesh, CurCollisionType);

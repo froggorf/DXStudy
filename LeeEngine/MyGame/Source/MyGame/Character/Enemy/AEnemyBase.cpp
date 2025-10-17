@@ -14,7 +14,7 @@ AEnemyBase::AEnemyBase()
 {
 	if (UCharacterMovementComponent* CharacterMovement = GetCharacterMovement())
 	{
-		CharacterMovement->bOrientRotationToMovement = true;
+		CharacterMovement->bOrientRotationToMovement = false;
 		CharacterMovement->Acceleration = 4096.0f;
 		CharacterMovement->RotationRate = XMFLOAT3{0.0f, 1500.0f, 0.0f};
 		CharacterMovement->MaxWalkSpeed = 600;

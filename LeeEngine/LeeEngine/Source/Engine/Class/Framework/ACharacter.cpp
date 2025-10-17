@@ -111,7 +111,8 @@ void UCharacterMovementComponent::TickComponent(float DeltaSeconds)
 	/// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	/// 캐릭터 회전
-	if (XMVectorGetX(XMVector3LengthEst(XMLoadFloat3(&Velocity))) > FLT_EPSILON && bOrientRotationToMovement && GetOwner())
+	// bOrientRotationToMovement == false;
+	if (XMVectorGetX(XMVector3LengthEst(XMLoadFloat3(&Velocity))) > FLT_EPSILON && !bOrientRotationToMovement && GetOwner())
 	{
 		XMFLOAT4 CharacterRotation = GetOwner()->GetActorRotation();
 		XMVECTOR CharacterRotationQuat = XMLoadFloat4(&CharacterRotation);
@@ -163,6 +164,10 @@ void UCharacterMovementComponent::TickComponent(float DeltaSeconds)
 		// 그 값을 적용하면 됨
 		GetOwner()->SetActorRotation(NewRot);
 	}
+	else
+	{
+		
+	}
 	/// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
@@ -206,6 +211,7 @@ ACharacter::ACharacter()
 
 	CameraComp = std::make_shared<UCameraComponent>();
 	CameraComp->SetupAttachment(SpringArm, "");
+	CameraComp->Rename("PlayerCameraComp");
 }
 
 void ACharacter::Register()
@@ -232,11 +238,6 @@ void ACharacter::BeginPlay()
 	QueryCheckCapsuleComp->GetBodyInstance()->SetSimulatePhysics(false);
 	QueryCheckCapsuleComp->SetCollisionObjectType(ECollisionChannel::Pawn);
 	QueryCheckCapsuleComp->GetBodyInstance()->SetObjectType(ECollisionChannel::Pawn);
-}
-
-void ACharacter::Tick(float DeltaSeconds)
-{
-	AActor::Tick(DeltaSeconds);
 }
 
 void ACharacter::AddMovementInput(const XMFLOAT3& WorldDirection, float ScaleValue)
@@ -277,7 +278,6 @@ void ACharacter::Jump()
 void ACharacter::SetControlRotation(const XMFLOAT4& NewRot)
 {
 	ControlRotation = NewRot;
-
 }
 
 std::shared_ptr<UAnimInstance> ACharacter::GetAnimInstance() const

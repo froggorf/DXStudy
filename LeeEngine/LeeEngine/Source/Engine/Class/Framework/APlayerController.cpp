@@ -6,13 +6,67 @@
 #include "Engine/World/UWorld.h"
 
 
+AController::AController()
+{
+	static std::atomic<UINT> ControllerID = 0;
+	Rename("PlayerController_"+ (ControllerID++));
+}
+
+void AController::Tick(float DeltaSeconds)
+{
+	AActor::Tick(DeltaSeconds);
+
+	if (Character)
+	{
+		Character->SetControlRotation(GetActorRotation());
+	}
+}
+
+void AController::AddYawInput(float Val)
+{
+	XMFLOAT4 Rot = GetActorRotation();
+	XMVECTOR ControlRotation = XMLoadFloat4(&Rot);
+	XMVECTOR ForwardVector = XMVector3Normalize(XMVector3Rotate(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), ControlRotation));
+	XMVECTOR UpVector    = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	XMVECTOR RightVector = XMVector3Normalize(XMVector3Cross(UpVector, ForwardVector));
+
+	XMVECTOR LocalYawQuat   = XMQuaternionRotationAxis(UpVector, XMConvertToRadians(Val));
+	XMVECTOR NewControlRotationQuat = XMQuaternionNormalize(XMQuaternionMultiply(ControlRotation, LocalYawQuat));
+
+	XMStoreFloat4(&Rot, NewControlRotationQuat);
+	SetActorRotation(Rot);
+
+}
+
+void AController::AddPitchInput(float Val)
+{
+	XMFLOAT4 Rot = GetActorRotation();
+	XMVECTOR ControlRotation = XMLoadFloat4(&Rot);
+	XMVECTOR ForwardVector = XMVector3Normalize(XMVector3Rotate(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), ControlRotation));
+	XMVECTOR UpVector    = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	XMVECTOR RightVector = XMVector3Normalize(XMVector3Cross(UpVector, ForwardVector));
+
+	XMVECTOR LocalPitchQuat = XMQuaternionRotationAxis(RightVector, XMConvertToRadians(Val));
+	XMVECTOR NewControlRotationQuat = XMQuaternionNormalize(XMQuaternionMultiply(ControlRotation, LocalPitchQuat));
+
+	XMStoreFloat4(&Rot, NewControlRotationQuat);
+	SetActorRotation(Rot);
+}
+
+void AController::OnPossess(ACharacter* CharacterToPossess)
+{
+	if (CharacterToPossess != nullptr)
+	{
+		Character = CharacterToPossess;
+		Character->Controller = this;
+	}
+}
+
 APlayerController::APlayerController()
 {
-	static UINT PlayerControllerID = 0;
-	Rename("PlayerController_"+ (PlayerControllerID++));
-
+	Character = nullptr;
+	bPlayRootMotion = false;
 	PlayerInput = std::make_shared<UPlayerInput>();
-
 }
 
 void APlayerController::Register()
@@ -31,17 +85,13 @@ void APlayerController::BeginPlay()
 
 void APlayerController::Tick(float DeltaSeconds)
 {
-	AActor::Tick(DeltaSeconds);
+	AController::Tick(DeltaSeconds);
 
 	if (PlayerInput)
 	{
 		PlayerInput->Tick();
 	}
 
-	if (Character)
-	{
-		Character->SetControlRotation(GetActorRotation());
-	}
 }
 
 void APlayerController::TickWidget(float DeltaSeconds)
@@ -52,48 +102,20 @@ void APlayerController::TickWidget(float DeltaSeconds)
 	}
 }
 
-void APlayerController::AddYawInput(float Val)
-{
-	XMFLOAT4 Rot = GetActorRotation();
-	XMVECTOR ControlRotation = XMLoadFloat4(&Rot);
-	XMVECTOR ForwardVector = XMVector3Normalize(XMVector3Rotate(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), ControlRotation));
-	XMVECTOR UpVector    = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	XMVECTOR RightVector = XMVector3Normalize(XMVector3Cross(UpVector, ForwardVector));
-
-	XMVECTOR LocalYawQuat   = XMQuaternionRotationAxis(UpVector, XMConvertToRadians(Val));
-	XMVECTOR NewControlRotationQuat = XMQuaternionNormalize(XMQuaternionMultiply(ControlRotation, LocalYawQuat));
-
-	XMStoreFloat4(&Rot, NewControlRotationQuat);
-	SetActorRotation(Rot);
-
-}
-
-void APlayerController::AddPitchInput(float Val)
-{
-	XMFLOAT4 Rot = GetActorRotation();
-	XMVECTOR ControlRotation = XMLoadFloat4(&Rot);
-	XMVECTOR ForwardVector = XMVector3Normalize(XMVector3Rotate(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), ControlRotation));
-	XMVECTOR UpVector    = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	XMVECTOR RightVector = XMVector3Normalize(XMVector3Cross(UpVector, ForwardVector));
-
-	XMVECTOR LocalPitchQuat = XMQuaternionRotationAxis(RightVector, XMConvertToRadians(Val));
-	XMVECTOR NewControlRotationQuat = XMQuaternionNormalize(XMQuaternionMultiply(ControlRotation, LocalPitchQuat));
-
-	XMStoreFloat4(&Rot, NewControlRotationQuat);
-	SetActorRotation(Rot);
-}
 
 void APlayerController::OnPossess(ACharacter* CharacterToPossess)
 {
-	if (CharacterToPossess != nullptr)
-	{
-		Character = CharacterToPossess;
-		Character->Controller = this;
+	AController::OnPossess(CharacterToPossess);
 
-		if (std::shared_ptr<APlayerCameraManager> CM = CameraManager.lock())
-		{
-			CM->TargetCamera = Character->GetCameraComponent();
-		}
+	if (!Character)
+	{
+		return; 
+	}
+
+	if (std::shared_ptr<APlayerCameraManager> CM = CameraManager.lock())
+	{
+
+		CM->TargetCamera = Character->GetCameraComponent();
 	}
 }
 
@@ -156,17 +178,3 @@ bool APlayerController::WidgetHandleInput(const FInputEvent& InputEvent)
 
 	return false;
 }
-
-XMFLOAT3 APlayerController::GetMonochromeCenterPos()
-{
-	if (std::shared_ptr<USceneComponent> Comp = MonochromeCenterComp.lock())
-	{
-		return Comp->GetWorldLocation();
-	}
-	else
-	{
-		MonochromeDistance = 0.0f;
-		return {0,0,0};
-	}
-}
-

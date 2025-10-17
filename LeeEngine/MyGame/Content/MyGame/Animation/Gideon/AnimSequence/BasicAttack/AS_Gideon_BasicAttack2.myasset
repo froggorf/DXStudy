@@ -4,5 +4,5 @@
     "Skeleton": "SK_Gideon",
     "AnimationDataPath": "/Content/Resource/MyGame/Animation/Gideon/BasicAttack/BasicAttack2.FBX",
     "RootMotion": 0,
-    "Rate": 2.0
+    "Rate": 1.3
 }

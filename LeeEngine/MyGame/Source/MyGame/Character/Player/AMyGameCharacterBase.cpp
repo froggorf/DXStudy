@@ -3,6 +3,8 @@
 
 #include "Engine/World/UWorld.h"
 #include "MyGame/Component/Health/UHealthComponent.h"
+#include "MyGame/Component/Combat/Skill/NormalSkill/USkillBaseComponent.h"
+#include "MyGame/Component/Combat/Skill/Ultimate/UUltimateBaseComponent.h"
 
 
 XMFLOAT4 GetElementColor(EElementType ElementType)
@@ -38,7 +40,7 @@ AMyGameCharacterBase::AMyGameCharacterBase()
 {
 	if (UCharacterMovementComponent* CharacterMovement = GetCharacterMovement())
 	{
-		CharacterMovement->bOrientRotationToMovement = true;
+		CharacterMovement->bOrientRotationToMovement = false;
 		CharacterMovement->Acceleration = 4096.0f;
 		CharacterMovement->RotationRate = XMFLOAT3{0.0f, 1500.0f, 0.0f};
 		CharacterMovement->MaxWalkSpeed = 600;
@@ -132,9 +134,9 @@ void AMyGameCharacterBase::BeginPlay()
 
 void AMyGameCharacterBase::BindKeyInputs()
 {
-	if (Controller)
+	if (APlayerController* PC = dynamic_cast<APlayerController*>(Controller))
 	{
-		if (std::shared_ptr<UPlayerInput> InputSystem = Controller->GetPlayerInput())
+		if (std::shared_ptr<UPlayerInput> InputSystem = PC->GetPlayerInput())
 		{
 			// Locomotion
 			InputSystem->BindAxis2D(EKeys::W, ETriggerEvent::Trigger, 1, 0,this, &AMyGameCharacterBase::Move);
@@ -265,11 +267,14 @@ void AMyGameCharacterBase::Move(float X, float Y)
 void AMyGameCharacterBase::Look(float X, float Y)
 {
 	// 우클릭이 되어있다면
-	if (bRightButtonPressed && Controller && Controller->GetPlayerInput())
+	if (APlayerController* PC = dynamic_cast<APlayerController*>(Controller))
 	{
-		XMFLOAT2 Delta = Controller->GetPlayerInput()->LastMouseDelta;
-		AddControllerYawInput(Delta.x);
-		AddControllerPitchInput(Delta.y);
+		if (bRightButtonPressed && PC->GetPlayerInput())
+		{
+			XMFLOAT2 Delta = PC->GetPlayerInput()->LastMouseDelta;
+			AddControllerYawInput(Delta.x);
+			AddControllerPitchInput(Delta.y);	
+		}
 	}
 }
 
@@ -379,5 +384,5 @@ float AMyGameCharacterBase::GetCurrentPower() const
 
 void AMyGameCharacterBase::Tick(float DeltaSeconds)
 {
-	AActor::Tick(DeltaSeconds);
+	ACharacter::Tick(DeltaSeconds);
 }

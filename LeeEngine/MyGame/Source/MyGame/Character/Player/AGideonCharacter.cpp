@@ -33,7 +33,7 @@ AGideonCharacter::AGideonCharacter()
 
 	CharacterMaxHealth = 20000.0f;
 
-	ElementType = EElementType::Havoc;
+	ElementType = EElementType::Fusion;
 }
 
 void AGideonCharacter::Register()
