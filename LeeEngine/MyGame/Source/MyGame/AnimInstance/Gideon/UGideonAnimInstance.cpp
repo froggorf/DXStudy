@@ -68,7 +68,6 @@ void UGideonAnimInstance::UpdateAnimation(float dt)
 
 	if (MovementComp->bOrientRotationToMovement)
 	{
-		MY_LOG("LOG",EDebugLogLevel::DLL_Warning, XMFLOAT2_TO_TEXT({Direction, MovementVelocity}));
 		BS_FPSLocomotion->GetAnimationBoneTransforms(XMFLOAT2{Direction, MovementVelocity }, CurrentTime, BoneTransforms, FinalNotifies);    
 	}
 	else

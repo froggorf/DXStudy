@@ -25,16 +25,38 @@ void UGideonCombatComponent::Initialize(AMyGameCharacterBase* MyCharacter)
 
 void UGideonCombatComponent::BasicAttack()
 {
+	if (!static_cast<AGideonCharacter*>(MyGameCharacter)->IsAimMode())
+	{
+		return;
+	}
+
 	URangeBaseComponent::BasicAttack();
 }
 
 bool UGideonCombatComponent::HeavyAttack()
 {
-	return URangeBaseComponent::HeavyAttack();
+	if (!static_cast<AGideonCharacter*>(MyGameCharacter)->IsAimMode())
+	{
+		return false;
+	}
+
+	if (!URangeBaseComponent::HeavyAttack())
+	{
+		return false;
+	}
+
+
+
+	HeavyAttackChargeTime += GEngine->GetDeltaSeconds();
+
+
+	return true;
 }
 
 void UGideonCombatComponent::HeavyAttackMouseReleased()
 {
+	HeavyAttackChargeTime = 0.0f;
+
 	URangeBaseComponent::HeavyAttackMouseReleased();
 }
 

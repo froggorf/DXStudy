@@ -19,6 +19,7 @@ void FEditorScene::InitSceneData_GameThread()
 {
 	ENQUEUE_RENDER_COMMAND([](std::shared_ptr<FScene>& SceneData) 
 	{
+		FImguiDebugConsole::bDelay = true;
 		SceneData = std::make_shared<FEditorScene>();
 		std::shared_ptr<FRenderTask> DummyTask;
 		// 기존에 남아있는 렌더 명령어 모두 Dequeue

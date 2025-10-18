@@ -5,6 +5,7 @@
 #include "MyGame/Actor/Gideon/AGideonFireBall.h"
 #include "MyGame/Actor/Sanhwa/ASanhwaIceBase.h"
 #include "MyGame/Component/Combat/Range/UGideonCombatComponent.h"
+#include "MyGame/Widget/Gideon/UGideonWidget.h"
 
 std::string AGideonCharacter::CharacterName  = "Gideon";
 
@@ -12,11 +13,16 @@ AGideonCharacter::AGideonCharacter()
 {
 	if (UCharacterMovementComponent* CharacterMovement = GetCharacterMovement())
 	{
-		CharacterMovement->bOrientRotationToMovement = true;
+		CharacterMovement->bOrientRotationToMovement = false;
 		CharacterMovement->Acceleration = 2048.0f;
 		CharacterMovement->RotationRate = XMFLOAT3{0.0f, 3000.0f, 0.0f};
-		CharacterMovement->MaxWalkSpeed = 150;
+		CharacterMovement->MaxWalkSpeed = 550.0;
 		CharacterMovement->Braking = 1024;
+
+		// 캐릭터가 조준 모드 (bOrientRotationToMovement == true) 일 때 Pitch/Yaw 에 맞춰 회전되도록
+		CharacterMovement->bUseControllerRotationPitch = true;
+		CharacterMovement->bUseControllerRotationYaw = true;
+		CharacterMovement->bUseControllerRotationRoll = false;
 	}
 
 	CharacterMeshName = "SK_Gideon";
@@ -34,6 +40,10 @@ AGideonCharacter::AGideonCharacter()
 	CharacterMaxHealth = 20000.0f;
 
 	ElementType = EElementType::Fusion;
+
+	AimModeCameraComp = std::make_shared<UCameraComponent>();
+	AimModeCameraComp->SetupAttachment(GetRootComponent());
+	AimModeCameraComp->SetRelativeLocation({75.0f, 75.0f,-300.0f});
 }
 
 void AGideonCharacter::Register()
@@ -53,6 +63,21 @@ void AGideonCharacter::Register()
 	
 }
 
+void AGideonCharacter::BindKeyInputs()
+{
+	AMyGameCharacterBase::BindKeyInputs();
+
+	if (APlayerController* PC = dynamic_cast<APlayerController*>(Controller))
+	{
+		if (std::shared_ptr<UPlayerInput> InputSystem = PC->GetPlayerInput())
+		{
+			InputSystem->BindAction(EKeys::MouseRight, ETriggerEvent::Started, this, &AGideonCharacter::ToAimMode);
+			InputSystem->BindAction(EKeys::MouseRight, ETriggerEvent::Released, this, &AGideonCharacter::ToNormalMode);
+		}
+	}
+}
+
+
 void AGideonCharacter::SpawnFireBall(const FTransform& SpawnTransform, const FAttackData& AttackData, const XMFLOAT3& TargetPosition)
 {
 	if (std::shared_ptr<AGideonFireBall> FireBall = std::dynamic_pointer_cast<AGideonFireBall>(GetWorld()->SpawnActor("AGideonFireBall", SpawnTransform)))
@@ -61,20 +86,50 @@ void AGideonCharacter::SpawnFireBall(const FTransform& SpawnTransform, const FAt
 	}
 }
 
-
-
-
-/*
-
 void AGideonCharacter::CreateWidgetOnBeginPlay()
 {
 	if (APlayerController* PC = GetWorld()->GetPlayerController())
 	{
-		std::shared_ptr<USanhwaWidget> SanhwaWidget = std::make_shared<USanhwaWidget>();
-		PC->CreateWidget(CharacterName, SanhwaWidget);
-		CharacterWidget = SanhwaWidget;
+		std::shared_ptr<UGideonWidget> GideonWidget = std::make_shared<UGideonWidget>();
+		PC->CreateWidget(CharacterName, GideonWidget);
+		CharacterWidget = GideonWidget;
 	}
 }
+
+void AGideonCharacter::ToAimMode()
+{
+	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
+	{
+		Movement->bOrientRotationToMovement = true;
+		Movement->MaxWalkSpeed = 150.0f;
+	}
+	GetWorld()->GetCameraManager()->SetViewTargetWithBlend(AimModeCameraComp, 0.5f, EViewTargetBlendFunction::Linear);
+	bIsAimMode = true;
+
+	if (const std::shared_ptr<UGideonWidget>& GideonWidget = std::dynamic_pointer_cast<UGideonWidget>(CharacterWidget.lock()))
+	{
+		GideonWidget->SetCrossHairVisibility(true);
+	}
+}
+
+void AGideonCharacter::ToNormalMode()
+{
+	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
+	{
+		Movement->MaxWalkSpeed = 550.0f;
+		Movement->bOrientRotationToMovement = false;
+	}
+	GetWorld()->GetCameraManager()->SetViewTargetWithBlend(CameraComp, 0.5f, EViewTargetBlendFunction::Linear);
+	bIsAimMode = false;
+
+	if (const std::shared_ptr<UGideonWidget>& GideonWidget = std::dynamic_pointer_cast<UGideonWidget>(CharacterWidget.lock()))
+	{
+		GideonWidget->SetCrossHairVisibility(false);
+	}
+}
+
+
+/*
 
 void ASanhwaCharacter::BeginPlay()
 {

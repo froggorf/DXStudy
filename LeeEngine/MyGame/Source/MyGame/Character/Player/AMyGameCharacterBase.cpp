@@ -149,8 +149,8 @@ void AMyGameCharacterBase::BindKeyInputs()
 			InputSystem->BindAction<AMyGameCharacterBase>(EKeys::Space, ETriggerEvent::Started, this, &AMyGameCharacterBase::Jump);
 			// LookRotate
 			InputSystem->BindAxis2D(EKeys::MouseXY2DAxis, ETriggerEvent::Trigger, 0,0, this, &AMyGameCharacterBase::Look);
-			InputSystem->BindAction(EKeys::MouseRight, ETriggerEvent::Started, this, &AMyGameCharacterBase::MouseRotateStart);
-			InputSystem->BindAction(EKeys::MouseRight, ETriggerEvent::Released, this, &AMyGameCharacterBase::MouseRotateEnd);
+			InputSystem->BindAction(EKeys::LCtrl, ETriggerEvent::Started, this, &AMyGameCharacterBase::AltButtonPressed);
+			InputSystem->BindAction(EKeys::LCtrl, ETriggerEvent::Released, this, &AMyGameCharacterBase::AltButtonReleased);
 
 			// TargetArmLength Wheel
 			InputSystem->BindAction(EKeys::MouseWheelUp, Started, this, &AMyGameCharacterBase::WheelUp);
@@ -269,7 +269,7 @@ void AMyGameCharacterBase::Look(float X, float Y)
 	// 우클릭이 되어있다면
 	if (APlayerController* PC = dynamic_cast<APlayerController*>(Controller))
 	{
-		if (bRightButtonPressed && PC->GetPlayerInput())
+		if (!bAltButtonPressed && PC->GetPlayerInput())
 		{
 			XMFLOAT2 Delta = PC->GetPlayerInput()->LastMouseDelta;
 			AddControllerYawInput(Delta.x);
@@ -278,15 +278,18 @@ void AMyGameCharacterBase::Look(float X, float Y)
 	}
 }
 
-void AMyGameCharacterBase::MouseRotateStart()
+void AMyGameCharacterBase::AltButtonPressed()
 {
-	bRightButtonPressed = true;
+	bAltButtonPressed = true;
+	ShowCursor(true);
 }
 
-void AMyGameCharacterBase::MouseRotateEnd()
+void AMyGameCharacterBase::AltButtonReleased()
 {
-	bRightButtonPressed = false;
+	bAltButtonPressed = false;
+	ShowCursor(false);
 }
+
 
 void AMyGameCharacterBase::Dodge()
 {

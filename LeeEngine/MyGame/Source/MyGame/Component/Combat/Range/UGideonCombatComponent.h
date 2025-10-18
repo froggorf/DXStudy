@@ -25,5 +25,6 @@ private:
 public:
 private:
 	static constexpr float FireBallThrowDistance = 750.0f;
+	float HeavyAttackChargeTime = 0.0f;
 };
  

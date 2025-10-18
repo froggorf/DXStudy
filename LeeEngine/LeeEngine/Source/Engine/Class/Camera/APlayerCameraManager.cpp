@@ -67,15 +67,7 @@ void APlayerCameraManager::SetViewTargetWithBlend(const std::shared_ptr<UCameraC
 
 FViewMatrices APlayerCameraManager::GetViewMatrices() const
 {
-	if (const std::shared_ptr<UCameraComponent>& Camera = TargetCamera.lock())
-	{
-		Camera->UpdateCameraMatrices();
-		return Camera->GetViewMatrices();
-	}
-	else
-	{
-		return LastUpdateViewMatrices;
-	}
+	return LastUpdateViewMatrices;
 }
 
 void APlayerCameraManager::BlendCameraAndUpdateCameraData(float DT)
@@ -127,5 +119,6 @@ void APlayerCameraManager::BlendCameraAndUpdateCameraData(float DT)
 
 	FViewMatrices NewViewMatrices = TargetBlendingCamera->GetViewMatrices();
 	NewViewMatrices.UpdateViewMatrix(BlendedLocation, BlendedRotation);
+	LastUpdateViewMatrices = NewViewMatrices;
 	FScene::UpdateViewMatrix_GameThread(NewViewMatrices);
 }

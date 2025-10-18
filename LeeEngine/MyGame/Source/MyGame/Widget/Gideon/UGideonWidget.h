@@ -1,0 +1,22 @@
+#pragma once
+#include "MyGame/Component/Combat/Melee/USanhwaCombatComponent.h"
+#include "MyGame/Widget/UMyGameWidgetBase.h"
+
+class UGideonWidget : public UMyGameWidgetBase
+{
+	MY_GENERATE_BODY(UGideonWidget)
+
+	UGideonWidget() = default;
+	~UGideonWidget() override = default;
+
+	void NativeConstruct() override;
+
+	// TODO: 수정하기
+	std::string GetSkillTextureName() override  { return "T_Icon_Sanhwa_Skill";}
+	std::string GetBasicAttackTextureName() override { return "T_Icon_Sanhwa_BasicAttack";}
+	std::string GetUltimateTextureName() override { return "T_Icon_Sanhwa_Ultimate";}
+
+	void SetCrossHairVisibility(bool NewVisible) const;
+private:
+	std::shared_ptr<FTextWidget> CrossHairText;
+};

@@ -128,6 +128,9 @@
     <Filter Include="Source\MyGame\Actor\Gideon">
       <UniqueIdentifier>{010cacbe-ff78-4051-b1b9-e72c1ae0f5e9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\Widget\Gideon">
+      <UniqueIdentifier>{68c6071b-f2a4-4149-80fc-114666b39a7f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -250,6 +253,9 @@
     <ClCompile Include="Source\MyGame\Actor\Gideon\AGideonFireBall.cpp">
       <Filter>Source\MyGame\Actor\Gideon</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Widget\Gideon\UGideonWidget.cpp">
+      <Filter>Source\MyGame\Widget\Gideon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -368,6 +374,9 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Actor\Gideon\AGideonFireBall.h">
       <Filter>Source\MyGame\Actor\Gideon</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Widget\Gideon\UGideonWidget.h">
+      <Filter>Source\MyGame\Widget\Gideon</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

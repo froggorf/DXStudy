@@ -50,8 +50,8 @@ class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
 	void Tick(float DeltaSeconds) override;
 	void Move(float X, float Y);
 	void Look(float X, float Y);
-	void MouseRotateStart();
-	void MouseRotateEnd();
+	void AltButtonPressed();
+	void AltButtonReleased();
 	void SetWalk();
 	void SetRun();
 	void WheelUp();
@@ -71,7 +71,7 @@ public:
 	std::shared_ptr<UMyGameWidgetBase> GetCharacterWidget() const {return CharacterWidget.lock(); }
 
 private:
-	bool bRightButtonPressed = false;
+	bool bAltButtonPressed = false;
 
 	// IDodgeInterface
 protected:
