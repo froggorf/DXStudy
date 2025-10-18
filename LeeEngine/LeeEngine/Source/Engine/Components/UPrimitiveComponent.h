@@ -11,6 +11,7 @@ class UShapeComponent;
 class FPrimitiveSceneProxy;
 
 
+// TargetComp(액터의 충돌한 컴퍼넌트), HitActor(충돌한 액터), HitComponent(충돌한 컴퍼넌트), HitResult
 #define FComponentHitSignature Delegate<UShapeComponent*, AActor*, UShapeComponent*, const FHitResult& /*Normal Impulse는 생략*/>
 #define FComponentBeginOverlapSignature Delegate<UShapeComponent*, AActor*, UShapeComponent*>
 #define FComponentEndOverlapSignature Delegate<UShapeComponent*, AActor*, UShapeComponent*>

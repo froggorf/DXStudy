@@ -5,11 +5,11 @@
     "HorizontalValue" : [ -180.0, 180.0 ],
     "VerticalValue" : [ 0.0, 150.0 ],
     "Points" : [ 
-	{ "Position": [ 0.0, 0.0 ], "AnimClipName": "AS_Gideon_FPSIdle" },
-	{ "Position": [ -90.0, 0.0 ], "AnimClipName": "AS_Gideon_FPSIdle" },
-	{ "Position": [ -180.0, 0.0 ], "AnimClipName": "AS_Gideon_FPSIdle" },
-	{ "Position": [ 90.0, 0.0 ], "AnimClipName": "AS_Gideon_FPSIdle" },
-	{ "Position": [ 180.0, 0.0 ], "AnimClipName": "AS_Gideon_FPSIdle" },
+	{ "Position": [ 0.0, 0.0 ], "AnimClipName": "AS_Gideon_Idle" },
+	{ "Position": [ -90.0, 0.0 ], "AnimClipName": "AS_Gideon_Idle" },
+	{ "Position": [ -180.0, 0.0 ], "AnimClipName": "AS_Gideon_Idle" },
+	{ "Position": [ 90.0, 0.0 ], "AnimClipName": "AS_Gideon_Idle" },
+	{ "Position": [ 180.0, 0.0 ], "AnimClipName": "AS_Gideon_Idle" },
 
 	{ "Position": [ 0.0, 150.0 ], "AnimClipName": "AS_Gideon_FPSWalkFwd" },
 	{ "Position": [ 90.0, 150.0 ], "AnimClipName": "AS_Gideon_FPSWalkLeft" },

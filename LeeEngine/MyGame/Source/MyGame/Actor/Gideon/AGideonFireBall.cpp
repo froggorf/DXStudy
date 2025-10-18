@@ -29,6 +29,7 @@ void AGideonFireBall::BeginPlay()
 	AActor::BeginPlay();
 
 	GEngine->GetTimerManager()->SetTimer(ThrowTimerHandle, {this, &AGideonFireBall::FlyFireBall}, 0.0f, true, ThrowTimerTickTime);
+	SM_FireBall->OnComponentHit.Add(this, &AGideonFireBall::OnHit);
 }
 
 void AGideonFireBall::Initialize(AGideonCharacter* Spawner, const XMFLOAT3& TargetPosition, const FAttackData& AttackData)
@@ -57,14 +58,16 @@ void AGideonFireBall::FlyFireBall()
 	SetActorLocation(GetActorLocation() + Direction * ThrowUnitPerTimerTick);
 }
 
+void AGideonFireBall::OnHit(UShapeComponent* ShapeComp, AActor* HitActor, UShapeComponent* HitComponent, const FHitResult& Result)
+{
+	MY_LOG("AGideonFireBall", EDebugLogLevel::DLL_Warning, "OnComponentHit");
+}
+
 void AGideonFireBall::Explosion()
 {
 	ExplosionAttackData.bIsAttackCenterFixed = true;
 	ExplosionAttackData.AttackCenterPos = GetActorLocation();
 	Spawner->ApplyDamageToEnemy(ExplosionAttackData, "FireBall");
-
-	// TODO: 적군을 공격했으면 터지는 이펙트
-	//		아니면 그냥 사라지는 이펙트 같은걸 구현하면 좋아보임
 
 	DestroySelf();
 }

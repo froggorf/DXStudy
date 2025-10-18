@@ -17,6 +17,8 @@ public:
 
 
 	void FlyFireBall();
+
+	void OnHit(UShapeComponent* ShapeComp, AActor* HitActor, UShapeComponent* HitComponent, const FHitResult& Result);
 protected:
 	FAttackData ExplosionAttackData;
 

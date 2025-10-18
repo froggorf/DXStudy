@@ -20,6 +20,10 @@ class AGideonCharacter final : public AMyGameCharacterBase
 	void ToAimMode();
 	void ToNormalMode();
 	bool IsAimMode() const {return bIsAimMode;}
+
+	const std::shared_ptr<USpringArmComponent>& GetAimModeSpringArm() const { return AimModeSpringArm; }
+	const std::shared_ptr<UCameraComponent>& GetAimModeCameraComp() const { return AimModeCameraComp; }
+
 private:
 public:
 	static std::string CharacterName;

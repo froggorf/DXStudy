@@ -4,13 +4,13 @@
 #include "Engine/RenderCore/EditorScene.h"
 
 // 검색에 사용되는 string
-std::string FImguiDebugConsole::DebugConsoleSearchText;
+std::string FImguiDebugConsoleData::DebugConsoleSearchText;
 // 디버그 텍스트 벡터
-std::vector<DebugText> FImguiDebugConsole::DebugConsoleText;
+std::vector<DebugText> FImguiDebugConsoleData::DebugConsoleText;
 // Pending Add
-std::vector<DebugText> FImguiDebugConsole::PendingAddDebugConsoleText;
+std::vector<DebugText> FImguiDebugConsoleData::PendingAddDebugConsoleText;
 // 검색 시 string에 맞는 디버그 문구만 모은 벡터
-std::vector<DebugText> FImguiDebugConsole::SearchingDebugConsoleText;
+std::vector<DebugText> FImguiDebugConsoleData::SearchingDebugConsoleText;
 
 FImguiDebugConsole::FImguiDebugConsole(FScene* SceneData)
 	: FImguiPanel(SceneData)
@@ -19,24 +19,23 @@ FImguiDebugConsole::FImguiDebugConsole(FScene* SceneData)
 
 void FImguiDebugConsole::Draw()
 {
-	
 	// Pending Add
-	for (const auto& Text : PendingAddDebugConsoleText)
+	for (const auto& Text : FImguiDebugConsoleData::PendingAddDebugConsoleText)
 	{
-		DebugConsoleText.emplace_back(Text);
+		FImguiDebugConsoleData::DebugConsoleText.emplace_back(Text);
 	}
-	PendingAddDebugConsoleText.clear();
+	FImguiDebugConsoleData::PendingAddDebugConsoleText.clear();
 
 	// Render 시작
 	if (ImGui::Begin("Debug Console"))
 	{
 		// EditBox
-		char* CurrentText = DebugConsoleSearchText.data();
+		char* CurrentText = FImguiDebugConsoleData::DebugConsoleSearchText.data();
 		ImGui::Text("Search: ");
 		ImGui::SameLine();
 		if (ImGui::InputText(" ", CurrentText, 100))
 		{
-			DebugConsoleSearchText = CurrentText;
+			FImguiDebugConsoleData::DebugConsoleSearchText = CurrentText;
 			SearchDebugConsole();
 		}
 
@@ -53,10 +52,10 @@ void FImguiDebugConsole::Draw()
 			bool bIsFixListBox = ImGui::GetScrollMaxY() == ImGui::GetScrollY();
 
 			// 검색 중 체크
-			bool bWhileSearching = !DebugConsoleSearchText.empty();
+			bool bWhileSearching = !FImguiDebugConsoleData::DebugConsoleSearchText.empty();
 			if (bWhileSearching)
 			{
-				for (const DebugText& Text : SearchingDebugConsoleText)
+				for (const DebugText& Text : FImguiDebugConsoleData::SearchingDebugConsoleText)
 				{
 					ImGui::TextColored(DebugText::Color[Text.Level], Text.Text.data());
 				}
@@ -64,12 +63,17 @@ void FImguiDebugConsole::Draw()
 			// 검색 아닐 시
 			else
 			{
-				size_t Size = DebugConsoleText.size();
-				for (int i = 0; i < Size; ++i)
+				size_t Capacity = FImguiDebugConsoleData::DebugConsoleText.capacity();
+				if (Capacity != 0)
 				{
-					const DebugText& Text = DebugConsoleText[i];
-					ImGui::TextColored(DebugText::Color[Text.Level], Text.Text.data());
+					size_t Size = FImguiDebugConsoleData::DebugConsoleText.size();
+					for (int i = 0; i < Size; ++i)
+					{
+						const DebugText& Text = FImguiDebugConsoleData::DebugConsoleText[i];
+						ImGui::TextColored(DebugText::Color[Text.Level], Text.Text.data());
+					}	
 				}
+				
 			}
 
 			// 리스트 맨 아래였을 시 고정
@@ -92,25 +96,25 @@ void FImguiDebugConsole::ExecuteCommand(const std::shared_ptr<FImguiPanelCommand
 	{
 		FImguiPanelCommandData* Data             = CommandData.get();
 		auto                    DebugConsoleData = static_cast<FImguiDebugConsoleCommandData*>(Data);
-		PendingAddDebugConsoleText.push_back(DebugConsoleData->DebugText);
+		FImguiDebugConsoleData::PendingAddDebugConsoleText.push_back(DebugConsoleData->DebugText);
 	}
 }
 
 void FImguiDebugConsole::SearchDebugConsole()
 {
-	SearchingDebugConsoleText.clear();
+	FImguiDebugConsoleData::SearchingDebugConsoleText.clear();
 
-	if (DebugConsoleSearchText.size() == 0)
+	if (FImguiDebugConsoleData::DebugConsoleSearchText.size() == 0)
 	{
 		return;
 	}
 
-	for (const auto& Text : DebugConsoleText)
+	for (const auto& Text : FImguiDebugConsoleData::DebugConsoleText)
 	{
 		const std::string& LogText = Text.Text;
-		if (LogText.contains(DebugConsoleSearchText))
+		if (LogText.contains(FImguiDebugConsoleData::DebugConsoleSearchText))
 		{
-			SearchingDebugConsoleText.push_back(Text);
+			FImguiDebugConsoleData::SearchingDebugConsoleText.push_back(Text);
 		}
 	}
 }

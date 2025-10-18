@@ -14,6 +14,19 @@ enum class EDebugConsoleCommandType
 	DCCT_AddConsoleText,
 };
 
+struct FImguiDebugConsoleData
+{
+	// 검색에 사용되는 string
+	static std::string DebugConsoleSearchText;
+
+	// 디버그 텍스트 벡터
+	static std::vector<DebugText> DebugConsoleText;
+	// Pending Add
+	static std::vector<DebugText> PendingAddDebugConsoleText;
+	// 검색 시 string에 맞는 디버그 문구만 모은 벡터
+	static std::vector<DebugText> SearchingDebugConsoleText;
+};
+
 struct FImguiDebugConsoleCommandData : FImguiPanelCommandData
 {
 	FImguiDebugConsoleCommandData()= default;
@@ -53,13 +66,7 @@ public:
 private:
 	void SearchDebugConsole();
 
-	// 검색에 사용되는 string
-	static std::string DebugConsoleSearchText;
+	
 
-	// 디버그 텍스트 벡터
-	static std::vector<DebugText> DebugConsoleText;
-	// Pending Add
-	static std::vector<DebugText> PendingAddDebugConsoleText;
-	// 검색 시 string에 맞는 디버그 문구만 모은 벡터
-	static std::vector<DebugText> SearchingDebugConsoleText;
+	int IsInit = 0;
 };

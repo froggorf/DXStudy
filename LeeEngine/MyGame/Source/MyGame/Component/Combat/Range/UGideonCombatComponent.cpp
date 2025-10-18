@@ -1,6 +1,7 @@
 #include "CoreMinimal.h"
 #include "UGideonCombatComponent.h"
 
+#include "Engine/Class/Camera/UCameraComponent.h"
 #include "MyGame/Character/Player/AGideonCharacter.h"
 
 UGideonCombatComponent::UGideonCombatComponent()
@@ -64,31 +65,37 @@ void UGideonCombatComponent::ApplyBasicAttack(const std::string& SpawnSocketName
 {
 	if (AGideonCharacter* GideonCharacter = dynamic_cast<AGideonCharacter*>(MyGameCharacter))
 	{
-		// 소환 위치를 구하고
+		if (!GideonCharacter->IsAimMode())
+		{
+			return;
+		}
+
 		USkeletalMeshComponent* GideonSkeletalMesh = GideonCharacter->GetSkeletalMeshComponent();
 		if (!GideonSkeletalMesh)
 		{
 			return;
 		}
 
+		const std::shared_ptr<UCameraComponent>& AimModeCameraComp = GideonCharacter->GetAimModeCameraComp();
+		const XMFLOAT3 Start = AimModeCameraComp->GetWorldLocation();
+		const XMFLOAT3 Forward = AimModeCameraComp->GetForwardVector();
+		const XMFLOAT3 End = Start + Forward * FireBallThrowDistance;
+
 		FTransform SpawnTransform = GideonSkeletalMesh->GetSocketTransform(SpawnSocketName);
 		SpawnTransform.Scale3D = XMFLOAT3{1,1,1};
 		SpawnTransform.Rotation = XMFLOAT4{0,0,0,1};
-
-		XMFLOAT3 TargetPosition = {0,0,0};
-		// 가까운 적을 구한다음에
-		if (AActor* NearestEnemy = FindNearestEnemy(GideonCharacter->GetActorLocation(), FireBallThrowDistance, {}))
+		std::vector<ECollisionChannel> Channels;
+		for (int i = 0; i < static_cast<int>(ECollisionChannel::Count); ++i)
 		{
-			// 적군이 있으면 해당 적군을 향해 던지고
-			TargetPosition = NearestEnemy->GetActorLocation();
+			Channels.emplace_back(static_cast<ECollisionChannel>(i));
 		}
-		else
+
+		FHitResult Result;
+		XMFLOAT3 TargetPosition = End;
+		if (GPhysicsEngine->LineTraceSingleByChannel(Start,End, Channels, Result, 3.0f))
 		{
-			// 아니면 전방을 향해 던짐
-			XMFLOAT3 ForwardDir = GideonCharacter->GetActorForwardVector();
-			ForwardDir.y = 0.0f;
-			XMStoreFloat3(&ForwardDir, XMVectorScale(XMVector3NormalizeEst(XMLoadFloat3(&ForwardDir)), FireBallThrowDistance));
-			TargetPosition = GideonCharacter->GetActorLocation() + ForwardDir;
+			// 부딪히는 곳이 있다면 그 위치로 던짐
+			TargetPosition = Result.Location;
 		}
 		GideonCharacter->SpawnFireBall(SpawnTransform, GetBasicAttackData(AttackIndex), TargetPosition);
 	}

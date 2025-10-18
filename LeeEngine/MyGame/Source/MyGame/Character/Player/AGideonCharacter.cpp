@@ -136,6 +136,7 @@ void AGideonCharacter::ToAimMode()
 	{
 		Movement->bOrientRotationToMovement = true;
 		Movement->MaxWalkSpeed = 150.0f;
+		Movement->Braking = 128.0f;
 	}
 	GetWorld()->GetCameraManager()->SetViewTargetWithBlend(AimModeCameraComp, 0.5f, EViewTargetBlendFunction::Linear);
 	bIsAimMode = true;
@@ -154,6 +155,7 @@ void AGideonCharacter::ToNormalMode()
 	{
 		Movement->MaxWalkSpeed = 550.0f;
 		Movement->bOrientRotationToMovement = false;
+		Movement->Braking = 1024;
 	}
 	GetWorld()->GetCameraManager()->SetViewTargetWithBlend(CameraComp, 0.5f, EViewTargetBlendFunction::Linear);
 	bIsAimMode = false;
