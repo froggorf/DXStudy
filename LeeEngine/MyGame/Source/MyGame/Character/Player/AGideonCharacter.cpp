@@ -15,7 +15,7 @@ AGideonCharacter::AGideonCharacter()
 		CharacterMovement->bOrientRotationToMovement = true;
 		CharacterMovement->Acceleration = 2048.0f;
 		CharacterMovement->RotationRate = XMFLOAT3{0.0f, 3000.0f, 0.0f};
-		CharacterMovement->MaxWalkSpeed = 550;
+		CharacterMovement->MaxWalkSpeed = 150;
 		CharacterMovement->Braking = 1024;
 	}
 

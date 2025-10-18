@@ -1,0 +1,7 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_Gideon_FPSWalkRight",
+    "Skeleton": "SK_Gideon",
+    "AnimationDataPath": "/Content/Resource/MyGame/Animation/Gideon/FPSLocomotion/Walk_Right.FBX",
+    "RootMotion": 0
+}

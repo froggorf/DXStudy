@@ -1,0 +1,7 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_Gideon_FPSWalkFwd",
+    "Skeleton": "SK_Gideon",
+    "AnimationDataPath": "/Content/Resource/MyGame/Animation/Gideon/FPSLocomotion/Walk_Fwd.FBX",
+    "RootMotion": 0
+}

@@ -34,7 +34,12 @@ void UCharacterMovementComponent::BeginPlay()
 	UActorComponent::BeginPlay();
 
 	physx::PxControllerManager* Manager = GPhysicsEngine->GetControllerManager();
-
+	if (!Manager)
+	{
+#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
+		exit(0);
+#endif
+	}
 	desc.height = std::static_pointer_cast<UCapsuleComponent>(GetOwner()->GetRootComponent())->GetHalfHeight()*2;
 	desc.radius = std::static_pointer_cast<UCapsuleComponent>(GetOwner()->GetRootComponent())->GetRadius();
 	desc.position = physx::PxExtendedVec3(GetOwner()->GetActorLocation().x,GetOwner()->GetActorLocation().y,-GetOwner()->GetActorLocation().z);

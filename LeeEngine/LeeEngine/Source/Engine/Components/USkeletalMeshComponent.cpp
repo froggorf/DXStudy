@@ -31,7 +31,7 @@ void USkeletalMeshComponent::Register()
 
 	if (AnimInstance)
 	{
-		AnimInstance->UpdateAnimation(0.0f);
+		AnimInstance->Tick(0.0f);
 	}
 }
 

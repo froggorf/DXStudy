@@ -38,7 +38,9 @@ protected:
 
 protected:
 	AMyGameCharacterBase* MyGameCharacter = nullptr;
-private:
+
+	float MovementVelocity = 0.0f;
 	UCharacterMovementComponent* MovementComp;
 	std::shared_ptr<UBlendSpace> BS_Locomotion;
+private:
 };

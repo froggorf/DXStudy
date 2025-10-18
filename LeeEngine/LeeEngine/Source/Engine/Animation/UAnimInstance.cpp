@@ -152,8 +152,12 @@ void UAnimInstance::Tick(float DeltaSeconds)
 		bPlayRootMotion = false;
 		LatestUpdateTime = CurrentTime;
 
-		NativeUpdateAnimation(DeltaSeconds);
-		UpdateAnimation(DeltaSeconds);
+		if (IsAllResourceOK())
+		{
+			NativeUpdateAnimation(DeltaSeconds);
+			UpdateAnimation(DeltaSeconds);	
+		}
+		
 
 		// 노티파이 실행
 		for (int i = 0; i < FinalNotifies.size(); ++i)

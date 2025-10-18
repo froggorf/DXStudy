@@ -7,10 +7,12 @@ class UGideonAnimInstance final : public UMyGameAnimInstanceBase
 
 	UGideonAnimInstance();
 
+	void LoadData_OnRegister() override;
 	void SetAnimNotify_BeginPlay() override;
 
 	bool IsAllResourceOK() override;
 
+	void NativeUpdateAnimation(float DeltaSeconds) override;
 	void UpdateAnimation(float dt) override;
 
 
@@ -34,5 +36,6 @@ class UGideonAnimInstance final : public UMyGameAnimInstanceBase
 	//std::shared_ptr<UAnimSequence> AS_Test[5];
 
 private:
-	//XMFLOAT3 Attack4_AttackTargetPos;
+	std::shared_ptr<UBlendSpace> BS_FPSLocomotion;
+	float Direction = 0.0f;
 };

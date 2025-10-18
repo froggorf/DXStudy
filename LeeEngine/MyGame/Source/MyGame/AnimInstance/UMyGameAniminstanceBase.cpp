@@ -55,6 +55,9 @@ void UMyGameAnimInstanceBase::NativeUpdateAnimation(float DeltaSeconds)
 {
 	UAnimInstance::NativeUpdateAnimation(DeltaSeconds);
 
+	XMFLOAT3 MoveVel = MovementComp->Velocity;
+	MoveVel.y = 0.0f;
+	MovementVelocity = XMVectorGetX(XMVector3Length(XMLoadFloat3(&MoveVel)));
 }
 
 XMFLOAT3 UMyGameAnimInstanceBase::GetWarpingPositionToEnemy(const XMFLOAT3& CurActorLocation, XMFLOAT3& EnemyLocation, float MaxMoveDistance)
@@ -115,11 +118,7 @@ void UMyGameAnimInstanceBase::UpdateAnimation(float dt)
 
 	// Locomotion Transition
 	{
-		XMFLOAT3 MoveVel = MovementComp->Velocity;
-
-		MoveVel.y = 0.0f;
-		float CurSpeed = XMVectorGetX(XMVector3Length(XMLoadFloat3(&MoveVel)));
-		BS_Locomotion->GetAnimationBoneTransforms(XMFLOAT2{0.0f, CurSpeed }, CurrentTime, BoneTransforms, FinalNotifies);      
+		BS_Locomotion->GetAnimationBoneTransforms(XMFLOAT2{0.0f, MovementVelocity }, CurrentTime, BoneTransforms, FinalNotifies);      
 	}
 
 	// 몽타쥬 연결
