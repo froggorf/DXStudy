@@ -49,7 +49,7 @@ class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
 
 	void Tick(float DeltaSeconds) override;
 	void Move(float X, float Y);
-	void Look(float X, float Y);
+	virtual void Look(float X, float Y);
 	void AltButtonPressed();
 	void AltButtonReleased();
 	void SetWalk();

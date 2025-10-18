@@ -19,8 +19,8 @@ AGideonCharacter::AGideonCharacter()
 		CharacterMovement->MaxWalkSpeed = 550.0;
 		CharacterMovement->Braking = 1024;
 
-		// 캐릭터가 조준 모드 (bOrientRotationToMovement == true) 일 때 Pitch/Yaw 에 맞춰 회전되도록
-		CharacterMovement->bUseControllerRotationPitch = true;
+		// 캐릭터가 조준 모드 (bOrientRotationToMovement == true) 일 때 Yaw 에 맞춰 회전되도록
+		CharacterMovement->bUseControllerRotationPitch = false;
 		CharacterMovement->bUseControllerRotationYaw = true;
 		CharacterMovement->bUseControllerRotationRoll = false;
 	}
@@ -41,9 +41,14 @@ AGideonCharacter::AGideonCharacter()
 
 	ElementType = EElementType::Fusion;
 
+	AimModeSpringArm = std::make_shared<USpringArmComponent>();
+	AimModeSpringArm->SetupAttachment(GetRootComponent());
+	AimModeSpringArm->SetRelativeLocation({75.0f, 75.0f,0.0f});
+	AimModeSpringArm->SetArmLength(300.0f);
+
 	AimModeCameraComp = std::make_shared<UCameraComponent>();
-	AimModeCameraComp->SetupAttachment(GetRootComponent());
-	AimModeCameraComp->SetRelativeLocation({75.0f, 75.0f,-300.0f});
+	AimModeCameraComp->SetupAttachment(AimModeSpringArm);
+	
 }
 
 void AGideonCharacter::Register()
@@ -96,6 +101,35 @@ void AGideonCharacter::CreateWidgetOnBeginPlay()
 	}
 }
 
+void AGideonCharacter::Look(float X, float Y)
+{
+	AMyGameCharacterBase::Look(X , Y);
+	APlayerController* PC = dynamic_cast<APlayerController*>(Controller);
+	if (PC && bIsAimMode)
+	{
+		XMFLOAT2 Delta = PC->GetPlayerInput()->LastMouseDelta;
+
+		XMFLOAT4 Rot = AimModeSpringArm->GetWorldRotation();
+		XMVECTOR ControlRotation = XMLoadFloat4(&Rot);
+		XMVECTOR ForwardVector = XMVector3Normalize(XMVector3Rotate(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), ControlRotation));
+		XMVECTOR UpVector = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+		XMVECTOR RightVector = XMVector3Normalize(XMVector3Cross(UpVector, ForwardVector));
+
+		XMVECTOR ForwardXZ = XMVector3Normalize(XMVectorSet(XMVectorGetX(ForwardVector), 0.0f, XMVectorGetZ(ForwardVector), 0.0f));
+		float Dot = XMVectorGetX(XMVector3Dot(ForwardVector, ForwardXZ));
+		Dot = std::clamp(Dot, -1.0f, 1.0f);
+		float CurrentAngleRad = acosf(Dot);
+		if (XMVectorGetY(ForwardVector) > 0)
+			CurrentAngleRad *= -1;
+
+		float DesiredPitchDeg = XMConvertToDegrees(CurrentAngleRad) + Delta.y;
+		float ClampedPitchDeg = std::clamp(DesiredPitchDeg, AimModePitchMin, AimModePitchMax);
+
+		XMVECTOR PitchQuat = XMQuaternionRotationAxis(RightVector, ClampedPitchDeg);
+		AimModeSpringArm->SetWorldRotation(PitchQuat);
+	}
+}
+
 void AGideonCharacter::ToAimMode()
 {
 	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
@@ -110,6 +144,8 @@ void AGideonCharacter::ToAimMode()
 	{
 		GideonWidget->SetCrossHairVisibility(true);
 	}
+
+	AimModeSpringArm->SetRelativeRotation(XMFLOAT4{0,0,0,1});
 }
 
 void AGideonCharacter::ToNormalMode()

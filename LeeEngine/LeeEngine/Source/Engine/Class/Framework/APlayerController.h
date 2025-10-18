@@ -22,8 +22,6 @@ public:
 	void Tick(float DeltaSeconds) override;
 
 	XMFLOAT4 GetControlRotation() const {return GetActorRotation();}
-	void AddYawInput(float Val);
-	void AddPitchInput(float Val);
 
 	bool IsPlayRootMotion() const {return bPlayRootMotion;}
 	void SetPlayRootMotion(bool NewRootMotion) {bPlayRootMotion = NewRootMotion;}
@@ -50,6 +48,9 @@ public:
 	void Tick(float DeltaSeconds) override;
 	void TickWidget(float DeltaSeconds);
 
+
+	void AddYawInput(float Val);
+	void AddPitchInput(float Val);
 
 	void OnPossess(ACharacter* CharacterToPossess) override;
 	

@@ -33,14 +33,22 @@ public:
 	}
 
 	FViewMatrices GetViewMatrices() const;
+public:
+	// 카메라 회전 최대/최소 변수 (Pitch만 쓸일이 있어서 Pitch에 대해서만 만듦)
+	float ViewPitchMin = -60.0f;
+	float ViewPitchMax = 60.0f;
+
 private:
 	static FTransform LastUpdateCameraTransform;
 	static FViewMatrices LastUpdateViewMatrices;
 	void BlendCameraAndUpdateCameraData(float DT);
+
+	// 카메라 블렌딩 관련 변수
 	float CurrentCameraBlendTime = 0.0f;
 	float CameraBlendTime = 0.0f;
 	bool bCameraBlending = false;
 	EViewTargetBlendFunction BlendFunction;
 	FTransform BlendStartTransform;
 	std::shared_ptr<UCameraComponent> TargetBlendingCamera;
+
 };

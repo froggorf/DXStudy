@@ -15,6 +15,8 @@ class AGideonCharacter final : public AMyGameCharacterBase
 
 	void CreateWidgetOnBeginPlay() override;
 
+	void Look(float X, float Y) override;
+
 	void ToAimMode();
 	void ToNormalMode();
 	bool IsAimMode() const {return bIsAimMode;}
@@ -24,6 +26,10 @@ public:
 
 public:
 private:
+	std::shared_ptr<USpringArmComponent> AimModeSpringArm;
 	std::shared_ptr<UCameraComponent> AimModeCameraComp;
 	bool bIsAimMode = false;
+
+	float AimModePitchMin = -70.0f;
+	float AimModePitchMax = 70.0f;
 };

@@ -11,8 +11,6 @@ std::vector<DebugText> FImguiDebugConsole::DebugConsoleText;
 std::vector<DebugText> FImguiDebugConsole::PendingAddDebugConsoleText;
 // 검색 시 string에 맞는 디버그 문구만 모은 벡터
 std::vector<DebugText> FImguiDebugConsole::SearchingDebugConsoleText;
-// 가끔 씬 재생성 시 변수들을 인식못하는 경우가 발생하여 다음과같이 딜레이를 한프레임 조정
-std::atomic<bool> FImguiDebugConsole::bDelay;
 
 FImguiDebugConsole::FImguiDebugConsole(FScene* SceneData)
 	: FImguiPanel(SceneData)
@@ -21,11 +19,7 @@ FImguiDebugConsole::FImguiDebugConsole(FScene* SceneData)
 
 void FImguiDebugConsole::Draw()
 {
-	if (bDelay)
-	{
-		bDelay = false;
-		return;
-	}
+	
 	// Pending Add
 	for (const auto& Text : PendingAddDebugConsoleText)
 	{

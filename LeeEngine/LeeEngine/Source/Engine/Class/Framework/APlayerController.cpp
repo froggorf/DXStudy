@@ -22,7 +22,7 @@ void AController::Tick(float DeltaSeconds)
 	}
 }
 
-void AController::AddYawInput(float Val)
+void APlayerController::AddYawInput(float Val)
 {
 	XMFLOAT4 Rot = GetActorRotation();
 	XMVECTOR ControlRotation = XMLoadFloat4(&Rot);
@@ -38,20 +38,45 @@ void AController::AddYawInput(float Val)
 
 }
 
-void AController::AddPitchInput(float Val)
+void APlayerController::AddPitchInput(float Val)
 {
 	XMFLOAT4 Rot = GetActorRotation();
 	XMVECTOR ControlRotation = XMLoadFloat4(&Rot);
 	XMVECTOR ForwardVector = XMVector3Normalize(XMVector3Rotate(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), ControlRotation));
-	XMVECTOR UpVector    = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	XMVECTOR UpVector = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	XMVECTOR RightVector = XMVector3Normalize(XMVector3Cross(UpVector, ForwardVector));
 
-	XMVECTOR LocalPitchQuat = XMQuaternionRotationAxis(RightVector, XMConvertToRadians(Val));
-	XMVECTOR NewControlRotationQuat = XMQuaternionNormalize(XMQuaternionMultiply(ControlRotation, LocalPitchQuat));
+	XMVECTOR ForwardXZ = XMVector3Normalize(XMVectorSet(XMVectorGetX(ForwardVector), 0.0f, XMVectorGetZ(ForwardVector), 0.0f));
+	float Dot = XMVectorGetX(XMVector3Dot(ForwardVector, ForwardXZ));
+	Dot = std::clamp(Dot, -1.0f, 1.0f);
+	float CurrentAngleRad = acosf(Dot);
+	if (XMVectorGetY(ForwardVector) > 0)
+		CurrentAngleRad *= -1;
 
-	XMStoreFloat4(&Rot, NewControlRotationQuat);
+	float MinPitchDeg = -60.0f;
+	float MaxPitchDeg = 60.0f;
+
+	if (const std::shared_ptr<APlayerCameraManager>& PCM = CameraManager.lock())
+	{
+		MinPitchDeg = PCM->ViewPitchMin;
+		MaxPitchDeg = PCM->ViewPitchMax;
+	}
+
+	float DesiredPitchDeg = XMConvertToDegrees(CurrentAngleRad) + Val;
+	float ClampedPitchDeg = std::clamp(DesiredPitchDeg, MinPitchDeg, MaxPitchDeg);
+
+	float DeltaPitchRad = XMConvertToRadians(ClampedPitchDeg) - CurrentAngleRad;
+	if (fabs(DeltaPitchRad) < FLT_EPSILON)
+		return;
+
+	XMVECTOR PitchQuat = XMQuaternionRotationAxis(RightVector, DeltaPitchRad);
+	XMVECTOR NewControlRotation = XMQuaternionMultiply(ControlRotation, PitchQuat);
+	NewControlRotation = XMQuaternionNormalize(NewControlRotation);
+
+	XMStoreFloat4(&Rot, NewControlRotation);
 	SetActorRotation(Rot);
 }
+	
 
 void AController::OnPossess(ACharacter* CharacterToPossess)
 {

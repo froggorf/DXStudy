@@ -266,7 +266,6 @@ void AMyGameCharacterBase::Move(float X, float Y)
 
 void AMyGameCharacterBase::Look(float X, float Y)
 {
-	// 우클릭이 되어있다면
 	if (APlayerController* PC = dynamic_cast<APlayerController*>(Controller))
 	{
 		if (!bAltButtonPressed && PC->GetPlayerInput())

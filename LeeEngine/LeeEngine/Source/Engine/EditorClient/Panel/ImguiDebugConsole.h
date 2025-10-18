@@ -62,6 +62,4 @@ private:
 	static std::vector<DebugText> PendingAddDebugConsoleText;
 	// 검색 시 string에 맞는 디버그 문구만 모은 벡터
 	static std::vector<DebugText> SearchingDebugConsoleText;
-public:
-	static std::atomic<bool> bDelay;
 };

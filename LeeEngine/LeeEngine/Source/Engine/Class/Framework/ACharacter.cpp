@@ -265,17 +265,19 @@ void ACharacter::AddMovementInput(const XMFLOAT3& WorldDirection, float ScaleVal
 
 void ACharacter::AddControllerYawInput(float Val)
 {
-	if (Controller && std::abs(Val) > FLT_EPSILON)
+	APlayerController* PC = dynamic_cast<APlayerController*>(Controller);
+	if (PC && std::abs(Val) > FLT_EPSILON)
 	{
-		Controller->AddYawInput(Val);
+		PC->AddYawInput(Val);
 	}
 }
 
 void ACharacter::AddControllerPitchInput(float Val)
 {
-	if (Controller && std::abs(Val) > FLT_EPSILON )
+	APlayerController* PC = dynamic_cast<APlayerController*>(Controller);
+	if (PC && std::abs(Val) > FLT_EPSILON)
 	{
-		Controller->AddPitchInput(Val);
+		PC->AddPitchInput(Val);
 	}
 }
 
