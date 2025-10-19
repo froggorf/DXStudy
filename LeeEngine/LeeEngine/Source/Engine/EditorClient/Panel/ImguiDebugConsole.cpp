@@ -19,6 +19,10 @@ FImguiDebugConsole::FImguiDebugConsole(FScene* SceneData)
 
 void FImguiDebugConsole::Draw()
 {
+	if (!FImguiDebugConsoleData::DebugConsoleSearchText.data())
+	{
+		return;
+	}
 	// Pending Add
 	for (const auto& Text : FImguiDebugConsoleData::PendingAddDebugConsoleText)
 	{

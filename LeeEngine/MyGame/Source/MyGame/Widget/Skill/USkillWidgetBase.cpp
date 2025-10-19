@@ -57,7 +57,7 @@ void USkillWidgetBase::NativeConstruct()
 				CanvasSlot->Alignment = {0.5f, 0.5f};
 			}
 			PB_SkillCoolDown->SetVisibility(false);
-			PB_SkillCoolDown->SetFillMode(EProgressBarFillMode::Radial_LeftToRight);
+			PB_SkillCoolDown->SetFillMode(EProgressBarFillMode::Radial_12To3);
 			PB_SkillCoolDown->SetBackgroundImageBrush({UTexture::GetTextureCache("T_SkillBG"), XMFLOAT4{0.0f,0.0f,0.0f,0.9f}});
 			PB_SkillCoolDown->SetFillImageBrush({nullptr, XMFLOAT4{0.0f,0.0f,0.0f,0.0f}});
 

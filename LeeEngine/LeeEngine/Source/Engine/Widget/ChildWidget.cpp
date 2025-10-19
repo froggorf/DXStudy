@@ -622,6 +622,7 @@ void FTextWidget::Tick(float DeltaSeconds)
 }
 
 std::shared_ptr<UMaterialInterface> FProgressBarWidget::M_RadialPBMaterial = nullptr;
+std::shared_ptr<UMaterialInterface> FProgressBarWidget::M_RadialPBMaterial_9To12 = nullptr;
 
 FProgressBarWidget::FProgressBarWidget()
 {
@@ -642,7 +643,8 @@ void FProgressBarWidget::Tick(float DeltaSeconds)
 	float BG_Left{}, BG_Right{}, BG_Top{}, BG_Bottom{};
 	GetNDCPos(BG_Left, BG_Top, BG_Right, BG_Bottom);
 
-	bool bIsRadial = FillMode == EProgressBarFillMode::Radial_LeftToRight || FillMode == EProgressBarFillMode::Radial_RightToLeft;
+	bool bIsRadial = FillMode == EProgressBarFillMode::Radial_12To3 || FillMode == EProgressBarFillMode::Radial_12To9
+						|| FillMode == EProgressBarFillMode::Radial_9To12;
 	// 백그라운드 먼저 그리고
 	if (BackgroundBrush.Image)
 	{
@@ -656,7 +658,7 @@ void FProgressBarWidget::Tick(float DeltaSeconds)
 		WidgetRenderData.ZOrder = GetZOrder();
 		if (bIsRadial)
 		{
-			WidgetRenderData.SetOverrideWidgetMaterial(GetRadialPBMaterial());
+			WidgetRenderData.SetOverrideWidgetMaterial(GetRadialPBMaterial(FillMode));
 			FSystemParamConstantBuffer SystemParam;
 			SystemParam.Int_1 = static_cast<int>(FillMode);
 			SystemParam.Float4_1 = FillBrush.Tint;
@@ -718,13 +720,27 @@ void FProgressBarWidget::Tick(float DeltaSeconds)
 	
 }
 
-const std::shared_ptr<UMaterialInterface>& FProgressBarWidget::GetRadialPBMaterial()
+const std::shared_ptr<UMaterialInterface>& FProgressBarWidget::GetRadialPBMaterial(EProgressBarFillMode FillMode)
 {
 	if (!M_RadialPBMaterial)
 	{
 		M_RadialPBMaterial = UMaterial::GetMaterialCache("M_RadialPBWidget");
 	}
-	return M_RadialPBMaterial;
+	if (!M_RadialPBMaterial_9To12)
+	{
+		M_RadialPBMaterial_9To12 = UMaterial::GetMaterialCache("M_RadialPB_9To12");
+	}
+
+	if (FillMode == EProgressBarFillMode::Radial_12To9 || FillMode == EProgressBarFillMode::Radial_12To3)
+	{
+		return M_RadialPBMaterial;
+	}
+	else
+	{
+		return M_RadialPBMaterial_9To12;
+	}
+
+	
 }
 
 void FProgressBarWidget::CalculateFillImagePosition(float BGLeft, float BGTop, float BGRight, float BGBottom, float& FillLeft, float& FillTop, float& FillRight, float& FillBottom)

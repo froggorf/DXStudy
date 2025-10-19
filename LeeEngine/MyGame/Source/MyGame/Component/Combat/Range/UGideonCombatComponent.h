@@ -22,9 +22,11 @@ public:
 	void ApplyBasicAttack1();
 	void ApplyBasicAttack2();
 private:
+	void SetHeavyAttackChargeTime(float NewValue);
 public:
 private:
 	static constexpr float FireBallThrowDistance = 2500.0f;
 	float HeavyAttackChargeTime = 0.0f;
+	static constexpr float MaxHeavyAttackChargeTime = 3.0f;
 };
  

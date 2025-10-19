@@ -57,7 +57,7 @@ void UUltimateWidget::NativeConstruct()
 				CanvasSlot->Anchors = ECanvasAnchor::CenterMiddle;
 				CanvasSlot->Alignment = {0.5f, 0.5f};
 			}
-			PB_UltimateGauge->SetFillMode(EProgressBarFillMode::Radial_RightToLeft);
+			PB_UltimateGauge->SetFillMode(EProgressBarFillMode::Radial_12To9);
 			PB_UltimateGauge->SetBackgroundImageBrush({UTexture::GetTextureCache("T_UltimateGauge"), {0.5f,0.5f,0.5f,0.5f}});
 
 			UltimateNonChargedImage = std::make_shared<FImageWidget>(FImageBrush{ UTexture::GetTextureCache("T_SkillBG"), XMFLOAT4{1.0f,1.0f, 1.0f,0.3f}});
@@ -79,7 +79,7 @@ void UUltimateWidget::NativeConstruct()
 				CanvasSlot->Alignment = {0.5f, 0.5f};
 			}
 			PB_SkillCoolDown->SetVisibility(false);
-			PB_SkillCoolDown->SetFillMode(EProgressBarFillMode::Radial_LeftToRight);
+			PB_SkillCoolDown->SetFillMode(EProgressBarFillMode::Radial_12To3);
 			PB_SkillCoolDown->SetBackgroundImageBrush({UTexture::GetTextureCache("T_SkillBG"), XMFLOAT4{0.0f,0.0f,0.0f,0.9f}});
 			PB_SkillCoolDown->SetFillImageBrush({nullptr, XMFLOAT4{0.0f,0.0f,0.0f,0.0f}});
 

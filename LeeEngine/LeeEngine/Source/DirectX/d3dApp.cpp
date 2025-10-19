@@ -150,10 +150,9 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 	if (msg == WM_CLOSE)
 	{
-		UObject::ClearClassDefaultObject();
 		FScene::KillRenderingThread();
-		Sleep(3000);
 		GEngine->JoinThreadsAtDestroy();
+		UObject::ClearClassDefaultObject();
 		exit(0);
 	}
 	if (msg == WM_QUIT)

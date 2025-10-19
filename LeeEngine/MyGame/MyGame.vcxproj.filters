@@ -256,6 +256,9 @@
     <ClCompile Include="Source\MyGame\Widget\Gideon\UGideonWidget.cpp">
       <Filter>Source\MyGame\Widget\Gideon</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Widget\Gideon\UGideonGaugeWidget.cpp">
+      <Filter>Source\MyGame\Widget\Gideon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -376,6 +379,9 @@
       <Filter>Source\MyGame\Actor\Gideon</Filter>
     </ClInclude>
     <ClInclude Include="Source\MyGame\Widget\Gideon\UGideonWidget.h">
+      <Filter>Source\MyGame\Widget\Gideon</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Widget\Gideon\UGideonGaugeWidget.h">
       <Filter>Source\MyGame\Widget\Gideon</Filter>
     </ClInclude>
   </ItemGroup>

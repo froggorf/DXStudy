@@ -2,6 +2,8 @@
 #include "MyGame/Component/Combat/Melee/USanhwaCombatComponent.h"
 #include "MyGame/Widget/UMyGameWidgetBase.h"
 
+class UGideonGaugeWidget;
+
 class UGideonWidget : public UMyGameWidgetBase
 {
 	MY_GENERATE_BODY(UGideonWidget)
@@ -10,6 +12,7 @@ class UGideonWidget : public UMyGameWidgetBase
 	~UGideonWidget() override = default;
 
 	void NativeConstruct() override;
+	void SetLightningAttackChargeGauge(float ChargeTime, float MaxChargeTime);
 
 	// TODO: 수정하기
 	std::string GetSkillTextureName() override  { return "T_Icon_Sanhwa_Skill";}
@@ -19,4 +22,5 @@ class UGideonWidget : public UMyGameWidgetBase
 	void SetCrossHairVisibility(bool NewVisible) const;
 private:
 	std::shared_ptr<FTextWidget> CrossHairText;
+	std::shared_ptr<UGideonGaugeWidget> GideonGaugeWidget;
 };

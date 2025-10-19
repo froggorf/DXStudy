@@ -51,8 +51,9 @@ float4 PS_Widget(VS_OUT _in) : SV_Target
 	return OutColor;
 }
 
-#define Radial_LeftToRight 0
-#define Radial_RightToLeft 1
+#define Radial_12To3 0
+#define Radial_12To9 1
+#define Radial_9To12 2
 #define FillMode Int_1
 #define FillTint Float4_1
 #define FillValue Float_1
@@ -93,6 +94,34 @@ float4 PS_RadialPBWidget(VS_OUT Input) : SV_Target
 
     float4 TextureColor = UITexture.Sample(UISampler, UV);
     return TextureColor * PixelTint;
+}
+
+// 아래 코드는 위의 코드를 보고 AI가 제작함
+float4 PS_RadialPBWidget_9to12(VS_OUT Input) : SV_Target
+{
+	float2 UV = Input.UV;
+	float2 Center = float2(0.5f, 0.5f);
+	float2 Diff = UV - Center;
+	
+	// 각도 계산
+	float Angle = atan2(-Diff.x, -Diff.y);
+	
+	// 9시 방향을 0으로 맞춤 (반시계방향 진행)
+	Angle = fmod(Angle - PI / 2 + 2 * PI, 2 * PI);
+	Angle = 2 * PI - Angle; // 반시계방향으로 뒤집기
+	Angle = fmod(Angle, 2 * PI); // 0~2PI로 정규화
+	
+	// FillValue (0~1) 만큼 진행된 각도
+	float FillAngle = FillValue * 2 * PI;
+	
+	// Angle이 FillAngle보다 작으면 채우기
+	float Mask = step(Angle, FillAngle);
+	
+	// 채워진 부분은 FillTint, 아닌 부분은 Tint
+	float4 PixelTint = lerp(Tint, FillTint, Mask);
+	
+	float4 TextureColor = UITexture.Sample(UISampler, UV);
+	return TextureColor * PixelTint;
 }
 
 #define Number Int_1

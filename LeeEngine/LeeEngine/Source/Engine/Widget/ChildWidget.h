@@ -284,8 +284,9 @@ private:
 
 enum class EProgressBarFillMode
 {
-	Radial_LeftToRight,	// 0(Radial_LeftToRight), 위치 고정되어야함 셰이더와 공유 
-	Radial_RightToLeft,	// 1(Radial_RightToLeft), 위치 고정되어야함 셰이더와 공유
+	Radial_12To3,	// 0(Radial_12To3), 위치 고정되어야함 셰이더와 공유 
+	Radial_12To9,	// 1(Radial_12To9), 위치 고정되어야함 셰이더와 공유
+	Radial_9To12,	// 2(Radial_9To12), 위치 고정되어야함 셰이더와 공유
 	LeftToRight,
 	RightToLeft,
 	FillFromCenter,
@@ -310,7 +311,7 @@ public:
 	void SetValue(float NewValue)  { Value =  std::clamp(NewValue, 0.0f,1.0f); }
 	float GetValue() const {return Value;}
 
-	static const std::shared_ptr<UMaterialInterface>& GetRadialPBMaterial();
+	static const std::shared_ptr<UMaterialInterface>& GetRadialPBMaterial(EProgressBarFillMode FillMode);
 private:
 	void CalculateFillImagePosition(float BGLeft, float BGTop, float BGRight, float BGBottom, float& FillLeft, float& FillTop, float& FillRight, float& FillBottom);
 
@@ -330,4 +331,5 @@ protected:
 	XMFLOAT2 SliderSize;
 
 	static std::shared_ptr<UMaterialInterface> M_RadialPBMaterial;
+	static std::shared_ptr<UMaterialInterface> M_RadialPBMaterial_9To12;
 };

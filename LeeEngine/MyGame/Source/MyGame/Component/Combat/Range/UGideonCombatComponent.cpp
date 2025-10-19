@@ -3,6 +3,7 @@
 
 #include "Engine/Class/Camera/UCameraComponent.h"
 #include "MyGame/Character/Player/AGideonCharacter.h"
+#include "MyGame/Widget/Gideon/UGideonWidget.h"
 
 UGideonCombatComponent::UGideonCombatComponent()
 {
@@ -47,17 +48,14 @@ bool UGideonCombatComponent::HeavyAttack()
 	}
 
 
-
-	HeavyAttackChargeTime += GEngine->GetDeltaSeconds();
-
+	SetHeavyAttackChargeTime(HeavyAttackChargeTime + GEngine->GetDeltaSeconds());
 
 	return true;
 }
 
 void UGideonCombatComponent::HeavyAttackMouseReleased()
 {
-	HeavyAttackChargeTime = 0.0f;
-
+	SetHeavyAttackChargeTime(0);
 	URangeBaseComponent::HeavyAttackMouseReleased();
 }
 
@@ -114,4 +112,14 @@ void UGideonCombatComponent::ApplyBasicAttack1()
 void UGideonCombatComponent::ApplyBasicAttack2()
 {
 	ApplyBasicAttack("hand_r", 2);
+}
+
+void UGideonCombatComponent::SetHeavyAttackChargeTime(float NewValue)
+{
+	HeavyAttackChargeTime = std::min(NewValue,MaxHeavyAttackChargeTime);
+	if (const std::shared_ptr<UGideonWidget>& GideonWidget = std::static_pointer_cast<UGideonWidget>(MyGameCharacter->GetCharacterWidget()))
+	{
+		GideonWidget->SetLightningAttackChargeGauge(HeavyAttackChargeTime, MaxHeavyAttackChargeTime);
+	}
+
 }
