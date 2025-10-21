@@ -1,0 +1,6 @@
+{
+    "Class": "UTexture",
+    "Name": "T_FireSmoke",
+    "FilePath" : "/Content/Resource/MyGame/Texture/VFX/FireBall/T_FireSmoke.PNG",
+    "BC1": 1
+}

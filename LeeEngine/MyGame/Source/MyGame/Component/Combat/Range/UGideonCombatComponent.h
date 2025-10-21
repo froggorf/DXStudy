@@ -11,7 +11,7 @@ class UGideonCombatComponent final : public URangeBaseComponent
 	~UGideonCombatComponent() override = default;
 public:
 	void Initialize(AMyGameCharacterBase* MyCharacter) override;
-
+	
 	void BasicAttack() override;
 	bool HeavyAttack() override;
 	void HeavyAttackMouseReleased() override;
@@ -25,6 +25,9 @@ private:
 	void SetHeavyAttackChargeTime(float NewValue);
 public:
 private:
+	std::shared_ptr<UAnimMontage> HeavyAttack_ChargeMontage;
+	std::shared_ptr<UAnimMontage> HeavyAttack_AttackMontage;
+
 	static constexpr float FireBallThrowDistance = 2500.0f;
 	float HeavyAttackChargeTime = 0.0f;
 	static constexpr float MaxHeavyAttackChargeTime = 3.0f;

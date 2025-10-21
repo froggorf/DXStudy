@@ -21,6 +21,8 @@ public:
 	virtual std::shared_ptr<FSlot> CreateSlot() = 0;
 	void AddChild(const std::shared_ptr<class FChildWidget>& NewChild);
 	void ClearChildren() {AttachChildren.clear();}
+
+	void SetChildrenVisibility(bool NewVisible);
 protected:
 	std::vector<std::shared_ptr<class FChildWidget>> AttachChildren;
 };
@@ -110,6 +112,12 @@ public:
 
 	void CollectAllWidgets(std::vector<std::shared_ptr<FChildWidget>>& Widgets);
 
+
+	void SetVisibility(bool NewVisible) override
+	{
+		SetChildrenVisibility(NewVisible);
+	}
+
 	void SetOwnerUserWidget(UUserWidget* NewOwner) {OwnerUserWidget = NewOwner;}
 	UUserWidget* GetOwnerUserWidget() const {return OwnerUserWidget;}
 	std::vector<std::shared_ptr<UUserWidget>> AttachedUserWidget;
@@ -129,6 +137,7 @@ public:
 	~FCanvasWidget() override = default;
 	void Tick(float DeltaSeconds) override;
 	bool HandleMouseInput(const FInputEvent& InputEvent) override { return false; }
+
 
 	std::shared_ptr<FSlot> CreateSlot() override { return std::make_shared<FCanvasSlot>(); }
 };

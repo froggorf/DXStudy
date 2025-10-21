@@ -6,6 +6,7 @@ FNiagaraSceneProxy::FNiagaraSceneProxy(UINT InPrimitiveID, std::shared_ptr<FNiag
 	: FPrimitiveSceneProxy(InPrimitiveID)
 {
 	Emitter           = InEmitter;
+	assert(Emitter->RenderProperty->GetMaterialInterface());
 	MaterialInterface = Emitter->RenderProperty->GetMaterialInterface();
 }
 

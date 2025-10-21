@@ -1,0 +1,8 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_Gideon_Charge_Idle",
+    "Skeleton": "SK_Gideon",
+    "AnimationDataPath": "/Content/Resource/MyGame/Animation/Gideon/HeavyAttack/Charge_Idle.FBX",
+    "RootMotion": 1,
+    "Rate" : 2.0
+}

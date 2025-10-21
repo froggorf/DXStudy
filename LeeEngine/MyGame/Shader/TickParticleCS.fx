@@ -17,89 +17,134 @@ float3 GetRandom(float seed)
 }
 
 // 새로운 파티클을 추가하는 함수
-void ParticleInit(inout FParticleData _Particle, in FParticleModule _Module, float _NomalizedThreadID)
+void ParticleInit(inout FParticleData Particle, in FParticleModule Module, float NormalizedThreadID)
 {
-	_Particle = (FParticleData)0.f;
+	Particle = (FParticleData)0.f;
 
 	// 파티클 활성화
-	_Particle.Active = 1;
+	Particle.Active = 1;
 
 	// Spawm Module
 	// Box
-	if (0 == _Module.SpawnShape)
+	if (0 == Module.SpawnShape)
 	{
-		float3 vRandom = GetRandom(_NomalizedThreadID);
+		float3 Random = GetRandom(NormalizedThreadID);
 
 		// 랜덤 범위를 -0.5 ~ 0.5f 로 변경 후, 스폰영역 크기를 곱해서 위치값을 구한다.
-		float3 vSpawnPos       = (vRandom - 0.5f) * _Module.SpawnShapeScale;
-		_Particle.LocalPos.xyz = vSpawnPos;
+		float3 vSpawnPos       = (Random - 0.5f) * Module.SpawnShapeScale;
+		Particle.LocalPos.xyz = vSpawnPos;
 	}
 	// Sphere
-	else if (1 == _Module.SpawnShape)
+	else if (1 == Module.SpawnShape)
 	{
-		_Particle.LocalPos.xyz = float3(0.0f, 0.0f, 0.0f);
+		float3 Random = GetRandom(NormalizedThreadID);
+
+		float Radius = Module.SpawnShapeScale.x * 0.5f; // 구의 반지름 (x축 기준)
+
+		// 랜덤 구 내부 위치
+		float Theta = Random.x * 2.0f * 3.14159265f; // 0 ~ 2pi
+		float PHI   = acos(1.0f - 2.0f * Random.y);   // 0 ~ pi
+		float R     = pow(Random.z, 1.0f/3.0f) * Radius; // 0 ~ radius (균일분포)
+
+		float X = R * sin(PHI) * cos(Theta);
+		float Y = R * sin(PHI) * sin(Theta);
+		float Z = R * cos(PHI);
+
+		float3 SpawnPos = float3(X, Y, Z);
+		Particle.LocalPos.xyz = SpawnPos;
 	}
 	// Cylinder
-	else if (2 == _Module.SpawnShape)
+	else if (2 == Module.SpawnShape)
 	{
-		float3 vRandom = GetRandom(_NomalizedThreadID);
-		float  radius  = (_Module.SpawnShapeScale.x + _Module.SpawnShapeScale.z) / 2 * 0.5f;
-		float  height  = _Module.SpawnShapeScale.y;
+		float3 Random = GetRandom(NormalizedThreadID);
+		float  radius  = (Module.SpawnShapeScale.x + Module.SpawnShapeScale.z) / 2 * 0.5f;
+		float  height  = Module.SpawnShapeScale.y;
 
-		float theta = vRandom.x * 2.0f * 3.14159265f;
-		float r     = sqrt(vRandom.y) * radius;
+		float theta = Random.x * 2.0f * 3.14159265f;
+		float r     = sqrt(Random.y) * radius;
 
 		float x = r * cos(theta);
-		float y = (vRandom.z - 0.5f) * height;
+		float y = (Random.z - 0.5f) * height;
 		float z = r * sin(theta);
 
 		float3 vSpawnPos       = float3(x, y, z);
-		_Particle.LocalPos.xyz = vSpawnPos;
+		Particle.LocalPos.xyz = vSpawnPos;
 	}
 
-	_Particle.WorldRotation.xyz = GetRandom(_NomalizedThreadID).xyz * (_Module.MaxRotation - _Module.MinRotation) + _Module.MinRotation;
+	Particle.WorldRotation.xyz = GetRandom(NormalizedThreadID).xyz * (Module.MaxRotation - Module.MinRotation) + Module.MinRotation;
 
 	// 파티클 Life 랜덤 설정
-	_Particle.Age  = 0.f;
-	float3 vRandom = GetRandom(_NomalizedThreadID + 0.1f);
-	_Particle.Life = (_Module.MaxLife - _Module.MinLife) * vRandom.r + _Module.MinLife;
+	Particle.Age  = 0.f;
+	float3 vRandom = GetRandom(NormalizedThreadID + 0.1f);
+	Particle.Life = (Module.MaxLife - Module.MinLife) * vRandom.r + Module.MinLife;
 
 	// 파티클 초기 색 설정
-	_Particle.Color = _Module.StartColor;
+	if (0 != Module.bStartColorRandom)
+	{
+		float Rand = GetRandom(NormalizedThreadID + gTime);
+		Particle.Color.x = Rand * (Module.StartColorMax.x - Module.StartColorMin.x) + Module.StartColorMin.x;
+		Particle.Color.y = Rand * (Module.StartColorMax.y - Module.StartColorMin.y) + Module.StartColorMin.y;
+		Particle.Color.z = Rand * (Module.StartColorMax.z - Module.StartColorMin.z) + Module.StartColorMin.z;
+		Particle.Color.w = Rand * (Module.StartColorMax.w - Module.StartColorMin.w) + Module.StartColorMin.w;
+		Particle.StartColor = Particle.Color;
+	}
+	else
+	{
+		Particle.Color = Module.StartColor;
+		Particle.StartColor = Module.StartColor;
+	}
 
 	// 파티클 초기 크기 설정
-	_Particle.WorldInitScale.xyz = _Particle.WorldScale.xyz = (_Module.MaxScale - _Module.MinScale) * vRandom.g + _Module.MinScale;
+	Particle.WorldInitScale.xyz = Particle.WorldScale.xyz = (Module.MaxScale - Module.MinScale) * vRandom.g + Module.MinScale;
 
 	// 파티클 질량 설정
-	_Particle.Mass = 1.f;
+	Particle.Mass = 1.f;
 
 	// 파티클 초기 속도 추가
-	_Particle.Velocity = (float4)0.f;
+	Particle.Velocity = (float4)0.f;
 
-	if (0 != _Module.Module[2])
+	if (0 != Module.Module[2])
 	{
-		float3 vRandom = GetRandom(_NomalizedThreadID + 0.2f);
+		float3 Random = GetRandom(NormalizedThreadID + 0.2f);
 
-		float3 fSpeed = _Module.AddMinSpeed + (_Module.AddMaxSpeed - _Module.AddMinSpeed) * vRandom;
+		float3 fSpeed = Module.AddMinSpeed + (Module.AddMaxSpeed - Module.AddMinSpeed) * Random;
 
 		// Random
-		if (0 == _Module.AddVelocityType)
-			_Particle.Velocity.xyz = fSpeed;
-		else if (1 == _Module.AddVelocityType)
-			_Particle.Velocity.xyz = normalize(vRandom - 0.5f) * fSpeed;
+		if (0 == Module.AddVelocityType)
+			Particle.Velocity.xyz = fSpeed;
+		else if (1 == Module.AddVelocityType)
+			Particle.Velocity.xyz = normalize(Random - 0.5f) * fSpeed;
 			// FromCenter
-		else if (2 == _Module.AddVelocityType)
-			_Particle.Velocity.xyz = normalize(_Particle.LocalPos) * fSpeed;
+		else if (2 == Module.AddVelocityType)
+			Particle.Velocity.xyz = normalize(Particle.LocalPos) * fSpeed;
 			// ToCenter
-		else if (3 == _Module.AddVelocityType)
-			_Particle.Velocity.xyz = -normalize(_Particle.LocalPos) * fSpeed;
+		else if (3 == Module.AddVelocityType)
+			Particle.Velocity.xyz = -normalize(Particle.LocalPos) * fSpeed;
 			// Fixed
 		else
-			_Particle.Velocity.xyz = normalize(_Module.AddVelocityFixedDir) * fSpeed;
+			Particle.Velocity.xyz = normalize(Module.AddVelocityFixedDir) * fSpeed;
 	}
 
 	// Particle 의 World 좌표 계산
-	_Particle.WorldPos.xyz = _Particle.LocalPos.xyz + _Module.ObjectWorldPos;
+	Particle.WorldPos.xyz = Particle.LocalPos.xyz + Module.ObjectWorldPos;
+
+	// Dynamic Param 모듈
+	if (0 != Module.Module[8])
+	{
+		Particle.DynamicParam.x = GetRandom(NormalizedThreadID*gTime) * (Module.DynamicParamMax.x - Module.DynamicParamMin.x) + Module.DynamicParamMin.x;
+		Particle.DynamicParam.y = GetRandom(NormalizedThreadID) * (Module.DynamicParamMax.y - Module.DynamicParamMin.y) + Module.DynamicParamMin.y;
+		Particle.DynamicParam.z = GetRandom(NormalizedThreadID) * (Module.DynamicParamMax.z - Module.DynamicParamMin.z) + Module.DynamicParamMin.z;
+		Particle.DynamicParam.w = GetRandom(gTime) * (Module.DynamicParamMax.w - Module.DynamicParamMin.w) + Module.DynamicParamMin.w;
+	}
+
+	// Orbit 모듈
+	if (0 != Module.Module[9])
+	{
+		float3 Random = GetRandom(NormalizedThreadID + 0.5f);
+		Particle.OrbitRadius = Module.OrbitRadiusMin + (Module.OrbitRadiusMax - Module.OrbitRadiusMin) * Random.x;
+		Particle.OrbitPhase  = 2.0f * PI * Random.y; // 0 ~ 2pi
+		Particle.OrbitSpeed  = Module.OrbitSpeedMin + (Module.OrbitSpeedMax - Module.OrbitSpeedMin) * Random.z;
+	}
 }
 
 RWStructuredBuffer<FParticleData>  gBuffer : register(u0);
@@ -196,7 +241,7 @@ StructuredBuffer<FParticleModule> gModule : register(ParticleDataRegister);
 		// 렌더링 관련 옵션들
 		if (gModule[0].Module[5])
 		{
-			gBuffer[ThreadID.x].Color = (gModule[0].EndColor - gModule[0].StartColor) * gBuffer[ThreadID.x].NormalizedAge + gModule[0].StartColor;
+			gBuffer[ThreadID.x].Color = (gModule[0].EndColor - gBuffer[ThreadID.x].StartColor) * gBuffer[ThreadID.x].NormalizedAge + gBuffer[ThreadID.x].StartColor;
 			if (gModule[0].FadeOut && gBuffer[ThreadID.x].NormalizedAge >= gModule[0].StartRatio)
 			{
 				float fRatio = saturate(1.f - (gBuffer[ThreadID.x].NormalizedAge - gModule[0].StartRatio) / (1.f - gModule[0].StartRatio));
@@ -223,6 +268,40 @@ StructuredBuffer<FParticleModule> gModule : register(ParticleDataRegister);
 			gBuffer[ThreadID.x].WorldRotation += gModule[0].AddRotation * gDeltaTime;
 		}
 
+		// Orbit 모듈
+		if (gModule[0].Module[9])
+		{
+			float CurrAngle = gBuffer[ThreadID.x].OrbitPhase + gBuffer[ThreadID.x].OrbitSpeed * gBuffer[ThreadID.x].Age;
+			float PrevAngle = gBuffer[ThreadID.x].PrevAngle;
+
+			// 현재 위치에서 이동량 계산
+			float CurrX = gBuffer[ThreadID.x].OrbitRadius * cos(CurrAngle);
+			float CurrZ = gBuffer[ThreadID.x].OrbitRadius * sin(CurrAngle);
+
+			float PrevX = gBuffer[ThreadID.x].OrbitRadius * cos(PrevAngle);
+			float PrevZ = gBuffer[ThreadID.x].OrbitRadius * sin(PrevAngle);
+
+			// 이동량(Delta) 계산
+			float DeltaX = CurrX - PrevX;
+			float DeltaZ = CurrZ - PrevZ;
+
+			// 위치에 더해줌 (Velocity 이동과 합산)
+			gBuffer[ThreadID.x].LocalPos.x += DeltaX;
+			gBuffer[ThreadID.x].LocalPos.z += DeltaZ;
+			// Module[0] : Space
+			// 0 : Local Space
+			// 1 : World Space
+			if (0 == gModule[0].SpaceType)
+			{
+				gBuffer[ThreadID.x].WorldPos = gBuffer[ThreadID.x].LocalPos + gModule[0].ObjectWorldPos;
+			}
+			else
+			{
+				gBuffer[ThreadID.x].WorldPos.x += DeltaX;
+				gBuffer[ThreadID.x].WorldPos.z += DeltaZ;
+			}
+		}
+
 		gBuffer[ThreadID.x].Age += gDeltaTime;
 		// 파티클의 수명이 다했는지 체크
 		if (gBuffer[ThreadID.x].Age >= gBuffer[ThreadID.x].Life)
@@ -238,5 +317,7 @@ StructuredBuffer<FParticleModule> gModule : register(ParticleDataRegister);
 				gBuffer[ThreadID.x].Age -= gBuffer[ThreadID.x].Life;
 			}
 		}
+
+		
 	}
 }

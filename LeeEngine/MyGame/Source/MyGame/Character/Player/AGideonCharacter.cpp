@@ -45,6 +45,7 @@ AGideonCharacter::AGideonCharacter()
 	AimModeSpringArm->SetupAttachment(GetRootComponent());
 	AimModeSpringArm->SetRelativeLocation({75.0f, 75.0f,0.0f});
 	AimModeSpringArm->SetArmLength(300.0f);
+	AimModeSpringArm->SetCheckCollision(false);
 
 	AimModeCameraComp = std::make_shared<UCameraComponent>();
 	AimModeCameraComp->SetupAttachment(AimModeSpringArm);
@@ -66,6 +67,11 @@ void AGideonCharacter::Register()
 	AMyGameCharacterBase::Register();
 
 	
+}
+
+void AGideonCharacter::Tick(float DeltaSeconds)
+{
+	AMyGameCharacterBase::Tick(DeltaSeconds);
 }
 
 void AGideonCharacter::BindKeyInputs()
@@ -143,7 +149,7 @@ void AGideonCharacter::ToAimMode()
 
 	if (const std::shared_ptr<UGideonWidget>& GideonWidget = std::dynamic_pointer_cast<UGideonWidget>(CharacterWidget.lock()))
 	{
-		GideonWidget->SetCrossHairVisibility(true);
+		GideonWidget->SetAimModeWidgetVisibility(true);
 	}
 
 	AimModeSpringArm->SetRelativeRotation(XMFLOAT4{0,0,0,1});
@@ -162,7 +168,7 @@ void AGideonCharacter::ToNormalMode()
 
 	if (const std::shared_ptr<UGideonWidget>& GideonWidget = std::dynamic_pointer_cast<UGideonWidget>(CharacterWidget.lock()))
 	{
-		GideonWidget->SetCrossHairVisibility(false);
+		GideonWidget->SetAimModeWidgetVisibility(false);
 	}
 }
 

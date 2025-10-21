@@ -108,31 +108,27 @@ UPhysicsEngine::UPhysicsEngine()
 
 UPhysicsEngine::~UPhysicsEngine()
 {
+	if (Manager) {
+		Manager->release();
+		Manager = nullptr;
+	}
+	if (PxScene) {
+		PxScene->release();
+		PxScene = nullptr;
+	}
+	if (DefaultMaterial) {
+		DefaultMaterial->release();
+		DefaultMaterial = nullptr;
+	}
+	if (PxPhysics) {
+		PxPhysics->release();
+		PxPhysics = nullptr;
+	}
 	if (PxFoundation) 
 	{
 		PxFoundation->release();
 		PxFoundation = nullptr;
 	}
-	//if (PxPhysics)
-	//{
-	//	PxPhysics->release();
-	//	PxPhysics = nullptr;
-	//}
-	//if (PxScene)
-	//{
-	//	//PxScene->release();
-	//	//PxScene = nullptr;
-	//}
-	//if (Manager)
-	//{
-	//	Manager->release();
-	//	Manager = nullptr;
-	//}
-	//if (DefaultMaterial)
-	//{
-	//	DefaultMaterial->release();
-	//	DefaultMaterial=nullptr;
-	//}
 }
 
 void UPhysicsEngine::InitPhysicsEngine()
@@ -145,53 +141,45 @@ void UPhysicsEngine::InitPhysicsEngine()
 void UPhysicsEngine::CreateScene()
 {
 	bIsRegistered = false;
-	if (PxPhysics)
-	{
+
+	// 1. Release old resources in correct order
+	if (Manager) {
+		Manager->release();
+		Manager = nullptr;
+	}
+	if (PxScene) {
+		PxScene->release();
+		PxScene = nullptr;
+	}
+	if (DefaultMaterial) {
+		DefaultMaterial->release();
+		DefaultMaterial = nullptr;
+	}
+	if (PxPhysics) {
 		PxPhysics->release();
 		PxPhysics = nullptr;
-	}
-	if (PxScene)
-	{
-		//PxScene->release();
-		//PxScene = nullptr;
-	}
-	if (Manager)
-	{
-		//Manager->release();
-		//Manager = nullptr;
-	}
-	if (DefaultMaterial)
-	{
-		//DefaultMaterial->release();
-		//DefaultMaterial=nullptr;
 	}
 
 	PxPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *PxFoundation, physx::PxTolerancesScale());
 
-	// Scene 생성
 	physx::PxSceneDesc SceneDesc(PxPhysics->getTolerancesScale());
-	SceneDesc.gravity = physx::PxVec3(0.0f,-9.8f*7.5f, 0.0f);
+	SceneDesc.gravity = physx::PxVec3(0.0f, -9.8f*7.5f, 0.0f);
 	SceneDesc.cpuDispatcher = physx::PxDefaultCpuDispatcherCreate(2);
 	SceneDesc.filterShader = MyFilterShader;
 
-	if (!CallbackInstance)
-	{
+	if (!CallbackInstance) {
 		CallbackInstance = std::make_unique<FPhysicsEventCallback>();
 	}
 	SceneDesc.simulationEventCallback = CallbackInstance.get();
 	PxScene = PxPhysics->createScene(SceneDesc);
-	if (PxScene == nullptr)
-	{
+
+	Manager = PxCreateControllerManager(*PxScene); 
+	if (Manager == nullptr) {
+		// 에러 처리
 		int a = 0;
 	}
 
-	Manager = PxCreateControllerManager(*PxScene);
-	if (Manager == nullptr)
-	{
-		int a = 0;
-	}
-
-	DefaultMaterial = PxPhysics->createMaterial(0.5f, 0.5f, 0.6f); // friction, restitution
+	DefaultMaterial = PxPhysics->createMaterial(0.5f, 0.5f, 0.6f);
 
 	bIsRegistered = true;
 }
@@ -416,8 +404,16 @@ void UPhysicsEngine::RemoveActorFromScene(physx::PxRigidActor* RemoveActor) cons
 		MY_LOG("LogTemp", EDebugLogLevel::DLL_Error, ("RemoveActor is nullptr!"));
 		return;
 	}
+
+	physx::PxU32 ActorNum = PxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC| physx::PxActorTypeFlag::eRIGID_STATIC);
+	std::vector<physx::PxActor*> Actors(ActorNum);
+	PxScene->getActors(physx::PxActorTypeFlag::eRIGID_STATIC|physx::PxActorTypeFlag::eRIGID_DYNAMIC, Actors.data(), ActorNum);
+	if (std::ranges::find(Actors, RemoveActor) != Actors.end())
+	{
+		PxScene->removeActor(*RemoveActor);
+	}
+
 	
-	PxScene->removeActor(*RemoveActor);
 }
 
 void UPhysicsEngine::AddActor(physx::PxRigidActor* AddActor) const
@@ -447,10 +443,6 @@ void UPhysicsEngine::ResetScene()
 
 physx::PxControllerManager* UPhysicsEngine::GetControllerManager()
 {
-	if (!Manager)
-	{
-		Manager = PxCreateControllerManager(*PxScene);
-	}
 	return Manager;
 }
 

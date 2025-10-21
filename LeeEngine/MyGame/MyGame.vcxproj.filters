@@ -259,6 +259,9 @@
     <ClCompile Include="Source\MyGame\Widget\Gideon\UGideonGaugeWidget.cpp">
       <Filter>Source\MyGame\Widget\Gideon</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Actor\Gideon\AGideonLightning.cpp">
+      <Filter>Source\MyGame\Actor\Gideon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -384,6 +387,9 @@
     <ClInclude Include="Source\MyGame\Widget\Gideon\UGideonGaugeWidget.h">
       <Filter>Source\MyGame\Widget\Gideon</Filter>
     </ClInclude>
+    <ClInclude Include="Source\MyGame\Actor\Gideon\AGideonLightning.h">
+      <Filter>Source\MyGame\Actor\Gideon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\SkeletalMesh.hlsl">
@@ -460,6 +466,12 @@
     </None>
     <None Include="Shader\Monochrome.fx">
       <Filter>Shader\PostProcess</Filter>
+    </None>
+    <None Include="Shader\SpriteVFX.fx">
+      <Filter>Shader\Niagara\Render\Sprite</Filter>
+    </None>
+    <None Include="Shader\MaterialNode.fx">
+      <Filter>Shader</Filter>
     </None>
   </ItemGroup>
 </Project>

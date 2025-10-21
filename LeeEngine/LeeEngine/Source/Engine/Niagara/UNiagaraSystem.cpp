@@ -28,8 +28,8 @@ std::vector<std::shared_ptr<FNiagaraEmitter>> UNiagaraSystem::CreateDynamicRende
 	{
 		// 05.08, 여기서 FNiagaraEmitter를 직접 만들어 값을 복사하여 반환했는데,
 		// 이럴경우 FNiagaraRibbonEmitter의 가상함수 Render가 실행이 안되어 이미터에서 인스턴스를 만들어 반환하도록 구조 변경
-		auto NewEmitter = Emitter->GetEmitterInstance();
-		EmitterRenderData.push_back(NewEmitter);
+		std::shared_ptr<FNiagaraEmitter> NewEmitter = Emitter->GetEmitterInstance();
+		EmitterRenderData.emplace_back(NewEmitter);
 	}
 	return EmitterRenderData;
 }

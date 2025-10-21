@@ -245,7 +245,6 @@ void AssetManager::LoadTextureFromFile(const std::wstring& szFile, const ComPtr<
 	D3D11_TEXTURE2D_DESC textureDesc = {};
 	pTexture->GetDesc(&textureDesc);
 	srvDesc.Format = textureDesc.Format;
-
 	ComPtr<ID3D11ShaderResourceView> srv = nullptr;
 
 	HR(pDevice->CreateShaderResourceView(pTexture, &srvDesc, srv.ReleaseAndGetAddressOf()));
@@ -290,9 +289,16 @@ void AssetManager::LoadTextureFromFile(const std::wstring& szFile, const ComPtr<
 
 void AssetManager::LoadTexture(class UTexture* Texture, const nlohmann::json& AssetData)
 {
+	if (AssetData.contains("BC1"))
+	{
+		LoadTextureBC1(Texture, AssetData);
+		return;
+	}
+
 	std::string FilePath  = GEngine->GetDirectoryPath() + std::string{AssetData["FilePath"]};
 	auto        WFilePath = std::wstring{FilePath.begin(), FilePath.end()};
 
+	
 	ScratchImage image;
 
 	std::filesystem::path p(WFilePath.c_str());
@@ -311,6 +317,57 @@ void AssetManager::LoadTexture(class UTexture* Texture, const nlohmann::json& As
 		assert(nullptr && "No Valid Path");
 	}
 	CreateShaderResourceView(GDirectXDevice->GetDevice().Get(), image.GetImages(), image.GetImageCount(), image.GetMetadata(), Texture->SRView.GetAddressOf());
+	Texture->SRView->GetResource((ID3D11Resource**)Texture->Texture2D.GetAddressOf());
+	Texture->Texture2D->GetDesc(&Texture->Desc);
+
+	assert(Texture->GetSRV()&& "No valid Texture");
+
+	MY_LOG("TextureLoad", EDebugLogLevel::DLL_Display, "Texture Load Success");
+}
+
+// AI가 만듦
+void AssetManager::LoadTextureBC1(UTexture* Texture, const nlohmann::json& AssetData)
+{
+	std::string FilePath  = GEngine->GetDirectoryPath() + std::string{AssetData["FilePath"]};
+	std::wstring WFilePath = std::wstring{FilePath.begin(), FilePath.end()};
+
+
+	// PNG 로드
+	DirectX::ScratchImage image;
+	HRESULT hr;
+	std::filesystem::path p(WFilePath.c_str());
+	std::wstring          ext = p.extension();
+	if (ext == L".dds" || ext == L".DDS")
+		hr = LoadFromDDSFile(WFilePath.c_str(), DDS_FLAGS_NONE, nullptr, image);
+	else if (ext == L".tga" || ext == L".TGA")
+		hr =LoadFromTGAFile(WFilePath.c_str(), nullptr, image);
+	else // png, jpg, jpeg, bmp
+		hr = LoadFromWICFile(WFilePath.c_str(), WIC_FLAGS_NONE, nullptr, image);
+
+	if (FAILED(hr)) 
+	{
+		assert(nullptr);
+	}
+
+	// BC1(DXT1)로 압축 변환
+	DirectX::ScratchImage bc1Image;
+	hr = DirectX::Compress(
+		image.GetImages(), image.GetImageCount(), image.GetMetadata(),
+		DXGI_FORMAT_BC1_UNORM, TEX_COMPRESS_DEFAULT, 0.5f, bc1Image);
+	if (FAILED(hr)) 
+	{
+		assert(nullptr);
+	}
+
+	// ShaderResourceView 생성
+	CreateShaderResourceView(
+		GDirectXDevice->GetDevice().Get(),
+		bc1Image.GetImages(),
+		bc1Image.GetImageCount(),
+		bc1Image.GetMetadata(),
+		Texture->SRView.GetAddressOf()
+	);
+
 	Texture->SRView->GetResource((ID3D11Resource**)Texture->Texture2D.GetAddressOf());
 	Texture->Texture2D->GetDesc(&Texture->Desc);
 

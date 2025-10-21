@@ -9,7 +9,7 @@ class AGideonCharacter final : public AMyGameCharacterBase
 
 	AGideonCharacter();
 	void Register() override;
-
+	void Tick(float DeltaSeconds) override;
 	void BindKeyInputs() override;
 	void SpawnFireBall(const FTransform& SpawnTransform, const FAttackData& AttackData, const XMFLOAT3& TargetPosition);
 

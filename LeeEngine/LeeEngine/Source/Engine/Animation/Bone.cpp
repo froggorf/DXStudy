@@ -45,8 +45,10 @@ FBoneLocalTransform Blend3BoneTransform(const FBoneLocalTransform& A, const FBon
 	);
 
 	// R
-	XMVECTOR RotAB = XMQuaternionSlerp(A.Rotation, B.Rotation, BWeight / (AWeight + BWeight));
-	XMVECTOR BlendedRot = XMQuaternionSlerp(RotAB,C.Rotation, CWeight);
+	float ABLerpWeight = BWeight / (AWeight + BWeight);
+	XMVECTOR RotAB = XMQuaternionSlerp(A.Rotation, B.Rotation, ABLerpWeight);
+	float CWeightAmount1 = 1 - AWeight - BWeight;
+	XMVECTOR BlendedRot = XMQuaternionSlerp(RotAB,C.Rotation, CWeightAmount1);
 
 	BlendResult.Rotation = BlendedRot;
 

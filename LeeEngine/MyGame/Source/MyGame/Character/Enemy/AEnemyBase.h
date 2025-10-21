@@ -6,6 +6,7 @@
 	적군 Base 를 만들 때 OnDeath 를 만들어서 플레이어에게 경험치를 주던 어떠한 작업을 하는 델리게이트를 만들어야함
 */
 
+class UNiagaraComponent;
 class UWidgetComponent;
 class UHealthComponent;
 class UMotionWarpingComponent;
@@ -36,6 +37,8 @@ public:
 	
 protected:
 	std::shared_ptr<UMotionWarpingComponent> MotionWarpingComponent;
+
+	std::shared_ptr<UNiagaraComponent> TestNiagaraComp;
 
 	std::shared_ptr<UStaticMeshComponent> TempStaticMesh;
 

@@ -1,6 +1,7 @@
 #include "CoreMinimal.h"
 #include "AEnemyBase.h"
 
+#include "Engine/Components/UNiagaraComponent.h"
 #include "Engine/Components/UWidgetComponent.h"
 #include "Engine/World/UWorld.h"
 #include "MyGame/Character/Player/AMyGameCharacterBase.h"
@@ -10,8 +11,10 @@
 #include "MyGame/Widget/Health/UEnemyHealthWidget.h"
 #include "MyGame/Widget/Health/UHealthWidgetBase.h"
 
+static UINT EnemyCount = 0;
 AEnemyBase::AEnemyBase()
 {
+
 	if (UCharacterMovementComponent* CharacterMovement = GetCharacterMovement())
 	{
 		CharacterMovement->bOrientRotationToMovement = false;
@@ -34,10 +37,21 @@ AEnemyBase::AEnemyBase()
 	HealthWidgetComp = std::make_shared<UWidgetComponent>();
 	HealthWidgetComp->SetupAttachment(GetRootComponent());
 	HealthWidgetComp->SetRelativeLocation({0.0f,90.0f,0.0f});
+
+	
+	TestNiagaraComp = std::make_shared<UNiagaraComponent>();
+	TestNiagaraComp->SetupAttachment(GetRootComponent());
+	const std::shared_ptr<UNiagaraSystem>& System = UNiagaraSystem::GetNiagaraAsset("NS_FireBall");
+	TestNiagaraComp->SetNiagaraAsset(System);
+
+	TestNiagaraComp->SetRelativeScale3D({100,100,100});
+	TestNiagaraComp->SetRelativeLocation({0,100,0});
 }
 
 void AEnemyBase::Register()
 {
+	Rename("Enemy_" + std::to_string(EnemyCount++));
+
 	ACharacter::Register();
 
 	AssetManager::GetAsyncAssetCache("SM_DeferredSphere",[this](std::shared_ptr<UObject> Object)

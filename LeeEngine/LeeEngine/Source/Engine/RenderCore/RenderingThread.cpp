@@ -960,7 +960,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 			// 포워드 렌더링 진행
 			{
 				DrawSceneProxies(SceneData, SceneData->OpaqueSceneProxyRenderData);
-				GDirectXDevice->SetBSState(EBlendStateType::BST_AlphaBlend);
+				GDirectXDevice->SetBSStateAlways(EBlendStateType::BST_AlphaBlend);
 				DrawSceneProxies(SceneData, SceneData->MaskedSceneProxyRenderData);
 				DrawSceneProxies(SceneData, SceneData->TranslucentSceneProxyRenderData);
 			}

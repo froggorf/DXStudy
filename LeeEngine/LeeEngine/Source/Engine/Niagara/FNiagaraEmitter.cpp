@@ -23,7 +23,7 @@ void FParticleModule::LoadDataFromFile(const nlohmann::basic_json<>& Data)
 	if (Data.contains("Loop"))
 	{
 		int bIsLoop = Data["Loop"];
-		bIsLoop     = bIsLoop;
+		this->bIsLoop     = bIsLoop;
 	}
 
 	// Scale
@@ -74,10 +74,18 @@ void FParticleModule::LoadDataFromFile(const nlohmann::basic_json<>& Data)
 		if (ModuleData.contains("Render"))
 		{
 			Module[static_cast<int>(EParticleModule::PM_Render)] = 1;
-			auto RenderData                                      = ModuleData["Render"];
+			const auto& RenderData = ModuleData["Render"];
+			if (RenderData.contains("RandomStart"))
+			{
+				bStartColorRandom = RenderData["RandomStart"];
+				const auto& MinColor = RenderData["MinStartColor"];
+				const auto& MaxColor = RenderData["MaxStartColor"];
+				StartColorMin = {MinColor[0],MinColor[1],MinColor[2],MinColor[3]};
+				StartColorMax = {MaxColor[0],MaxColor[1],MaxColor[2],MaxColor[3]};
+			}
 			if (RenderData.contains("StartColor"))
 			{
-				auto Colors = RenderData["StartColor"];
+				const auto& Colors = RenderData["StartColor"];
 				StartColor  = XMFLOAT4{Colors[0], Colors[1], Colors[2], Colors[3]};
 			}
 			if (RenderData.contains("EndColor"))
@@ -137,6 +145,32 @@ void FParticleModule::LoadDataFromFile(const nlohmann::basic_json<>& Data)
 			const auto& AddTickVelData                                    = ModuleData["TickVel"];
 			AddTickVelocity                                               = XMFLOAT3{AddTickVelData[0], AddTickVelData[1], AddTickVelData[2]};
 		}
+
+		// DynamicParam 모듈
+		if (ModuleData.contains("DynamicParam"))
+		{
+			Module[static_cast<int>(EParticleModule::PM_DynamicParam)] = 1;
+			const auto& DynamicParamModuleData = ModuleData["DynamicParam"];
+			const auto& Min = DynamicParamModuleData["Min"];
+			const auto& Max = DynamicParamModuleData["Max"];
+			DynamicParamMin.x = Min[0]; DynamicParamMax.x = Max[0];
+			DynamicParamMin.y = Min[1]; DynamicParamMax.y = Max[1];
+			DynamicParamMin.z = Min[2]; DynamicParamMax.z = Max[2];
+			DynamicParamMin.w = Min[3]; DynamicParamMax.w = Max[3];
+		}
+
+		// Orbit 모듈
+		if (ModuleData.contains("Orbit"))
+		{
+			// Speed -> rad 기준, 2.0 -> 2.0rad -> 1초에 약 0.3바퀴 / 6.0 -> 6.0rad -> 1초에 약 1바퀴
+			const auto& OrbitData = ModuleData["Orbit"];
+			const auto& SpeedData = OrbitData["Speed"];
+			const auto& RadiusData = OrbitData["Radius"];
+			OrbitRadiusMin = RadiusData[0];
+			OrbitRadiusMax = RadiusData[1];
+			OrbitSpeedMin = SpeedData[0];
+			OrbitSpeedMax = SpeedData[1];
+		}
 	}
 }
 
@@ -167,7 +201,9 @@ void FNiagaraRendererProperty::LoadDataFromFile(const nlohmann::basic_json<>& Da
 	if (Data.contains("OverrideMat"))
 	{
 		std::string_view MaterialName = Data["OverrideMat"];
-		SetMaterialInterface(UMaterialInterface::GetMaterialCache(MaterialName.data()));
+		const std::shared_ptr<UMaterialInterface>& OverrideMat = UMaterialInterface::GetMaterialCache(MaterialName.data());
+		assert(OverrideMat);
+		SetMaterialInterface(OverrideMat);
 	}
 
 	// Override Texture 세팅

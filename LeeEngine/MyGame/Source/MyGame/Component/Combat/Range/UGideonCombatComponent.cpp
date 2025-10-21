@@ -2,6 +2,7 @@
 #include "UGideonCombatComponent.h"
 
 #include "Engine/Class/Camera/UCameraComponent.h"
+#include "MyGame/AnimInstance/Gideon/UGideonAnimInstance.h"
 #include "MyGame/Character/Player/AGideonCharacter.h"
 #include "MyGame/Widget/Gideon/UGideonWidget.h"
 
@@ -23,6 +24,32 @@ void UGideonCombatComponent::Initialize(AMyGameCharacterBase* MyCharacter)
 		FAttackData{{20,20,20}, 1.25f, 0.0f, 10.0f, true},
 		FAttackData{{30,30,30}, 1.5f, 0.0f, 15.0f, true},
 	});
+
+	AssetManager::GetAsyncAssetCache("AM_Gideon_Charge",[this](std::shared_ptr<UObject> Object)
+		{
+			HeavyAttack_ChargeMontage = std::dynamic_pointer_cast<UAnimMontage>(Object);
+			if (!HeavyAttack_ChargeMontage)
+			{
+				MY_LOG("Warning", EDebugLogLevel::DLL_Error, ", HeavyAttack_ChargeMontage Montage Not exist");
+#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
+				// 개발 중 테스트를 위하여 assert
+				assert(nullptr&&"Not exist HeavyAttack_ChargeMontage");
+#endif
+			}
+		});
+
+	AssetManager::GetAsyncAssetCache("AM_Gideon_HeavyAttack",[this](std::shared_ptr<UObject> Object)
+		{
+			HeavyAttack_AttackMontage = std::dynamic_pointer_cast<UAnimMontage>(Object);
+			if (!HeavyAttack_AttackMontage)
+			{
+				MY_LOG("Warning", EDebugLogLevel::DLL_Error, ", HeavyAttack_AttackMontage Montage Not exist");
+#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
+				// 개발 중 테스트를 위하여 assert
+				assert(nullptr&&"Not exist HeavyAttack_AttackMontage");
+#endif
+			}
+		}); 
 }
 
 void UGideonCombatComponent::BasicAttack()
@@ -37,7 +64,12 @@ void UGideonCombatComponent::BasicAttack()
 
 bool UGideonCombatComponent::HeavyAttack()
 {
-	if (!static_cast<AGideonCharacter*>(MyGameCharacter)->IsAimMode())
+	if (!HeavyAttack_AttackMontage || !HeavyAttack_ChargeMontage)
+	{
+		return false;
+	}
+	AGideonCharacter* GideonCharacter = dynamic_cast<AGideonCharacter*>(MyGameCharacter);
+	if (!GideonCharacter || !GideonCharacter->IsAimMode())
 	{
 		return false;
 	}
@@ -47,6 +79,15 @@ bool UGideonCombatComponent::HeavyAttack()
 		return false;
 	}
 
+	if (!bIsHeavyAttacking)
+	{
+		bIsHeavyAttacking = true;
+		if (const std::shared_ptr<UGideonAnimInstance>& GideonAnimInstance = std::dynamic_pointer_cast<UGideonAnimInstance>(MyGameCharacter->GetAnimInstance()))
+		{
+			GideonAnimInstance->Montage_Play(HeavyAttack_ChargeMontage);
+		}
+		
+	}
 
 	SetHeavyAttackChargeTime(HeavyAttackChargeTime + GEngine->GetDeltaSeconds());
 
@@ -55,8 +96,19 @@ bool UGideonCombatComponent::HeavyAttack()
 
 void UGideonCombatComponent::HeavyAttackMouseReleased()
 {
-	SetHeavyAttackChargeTime(0);
+
 	URangeBaseComponent::HeavyAttackMouseReleased();
+
+	if (HeavyAttackChargeTime > 0.1f && HeavyAttack_AttackMontage)
+	{ 
+		if (const std::shared_ptr<UGideonAnimInstance>& GideonAnimInstance = std::dynamic_pointer_cast<UGideonAnimInstance>(MyGameCharacter->GetAnimInstance()))
+		{
+			GideonAnimInstance->Montage_Play(HeavyAttack_AttackMontage);
+		}
+	}
+
+	SetHeavyAttackChargeTime(0);
+
 }
 
 void UGideonCombatComponent::ApplyBasicAttack(const std::string& SpawnSocketName, size_t AttackIndex)

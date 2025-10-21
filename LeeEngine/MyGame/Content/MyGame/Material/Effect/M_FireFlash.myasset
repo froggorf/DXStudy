@@ -1,0 +1,20 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_FireFlash",
+    "VertexShader" : {
+	"FilePath" : "/Shader/BillboardSpriteRenderer.fx",
+	"Func" : "VS_BillboardSpriteParticle"
+    },
+    "GeometryShader": {
+	"FilePath" : "/Shader/BillboardSpriteRenderer.fx",
+	"Func": "GS_Billboard"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/SpriteVFX.fx",
+	"Func": "PS_FireFlash"
+    },
+    "BlendMode": "Translucent",
+    "TextureParams" : ["T_FireFlash"],
+    "TwoSided" : 1
+	
+}

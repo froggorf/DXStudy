@@ -1,0 +1,24 @@
+{
+	"Class": "UAnimMontage",
+	"Name": "AM_Gideon_Charge",
+	"Skeleton": "SK_Gideon",
+	"BlendIn" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.15
+	},
+	"BlendOut" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.15
+	},
+
+	"SlotName": "DefaultSlot",
+	"AnimTrack" : [
+		{"AnimName" : "AS_Gideon_Charge_Start"},
+		{"AnimName" : "AS_Gideon_Charge_Idle"}
+	],
+	"Sections" : [
+		{ "SectionName" : "Start", "StartTime" : 0.0, "NextSectionName" : "Idle" },
+		{ "SectionName" : "Idle", "StartTime" : 32.0, "NextSectionName" : "Idle" }
+	],
+    	"Notifies" : [  ]
+}

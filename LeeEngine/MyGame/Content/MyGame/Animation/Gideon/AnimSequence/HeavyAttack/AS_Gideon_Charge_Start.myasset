@@ -1,0 +1,8 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_Gideon_Charge_Start",
+    "Skeleton": "SK_Gideon",
+    "AnimationDataPath": "/Content/Resource/MyGame/Animation/Gideon/HeavyAttack/Charge_Start.FBX",
+    "RootMotion": 1,
+    "Rate" : 2.0
+}

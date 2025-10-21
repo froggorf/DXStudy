@@ -29,6 +29,7 @@ void USpringArmComponent::TickComponent(float DeltaSeconds)
 	ForwardVector *= TargetArmLength;
 	XMFLOAT3 Offset;
 	XMStoreFloat3(&Offset,XMVectorSubtract(XMLoadFloat3(&Transform.Translation) ,ForwardVector));
+	TargetOffset = Offset;
 
 	if (bCheckCollision)
 	{

@@ -31,6 +31,7 @@ void UGideonWidget::NativeConstruct()
 		CanvasSlot->Size = {500,500};
 	}
 	GideonGaugeWidget->SetLightningAttackChargeGauge(0.0f, 100.0f);
+	GideonGaugeWidget->GetMainCanvasWidget()->SetVisibility(false);
 }
 
 void UGideonWidget::SetLightningAttackChargeGauge(float ChargeTime, float MaxChargeTime)
@@ -41,10 +42,11 @@ void UGideonWidget::SetLightningAttackChargeGauge(float ChargeTime, float MaxCha
 	}
 }
 
-void UGideonWidget::SetCrossHairVisibility(bool NewVisible) const
+void UGideonWidget::SetAimModeWidgetVisibility(bool NewVisible) const
 {
 	if (CrossHairText)
 	{
 		CrossHairText->SetVisibility(NewVisible);
+		GideonGaugeWidget->GetMainCanvasWidget()->SetVisibility(NewVisible);
 	}
 }

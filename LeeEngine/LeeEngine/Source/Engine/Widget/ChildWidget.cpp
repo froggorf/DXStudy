@@ -10,6 +10,14 @@ void IPanelContainer::AddChild(const std::shared_ptr<FChildWidget>& NewChild)
 	AttachChildren.emplace_back(NewChild);
 }
 
+void IPanelContainer::SetChildrenVisibility(bool NewVisible)
+{
+	for (const std::shared_ptr<FChildWidget>& Child : AttachChildren)
+	{
+		Child->SetVisibility(NewVisible);
+	}
+}
+
 UINT WidgetCount = 0;
 FChildWidget::FChildWidget()
 {

@@ -34,6 +34,7 @@ public:
 	static void LoadTextureFromFile(const std::wstring& szFile, Microsoft::WRL::ComPtr<ID3D11Device> pDevice, std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>>& vTextureShaderResourceView);
 	static void LoadTextureFromFile(const std::wstring& szFile, Microsoft::WRL::ComPtr<ID3D11Device> pDevice, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& vTextureShaderResourceView);
 	static void LoadTexture(class UTexture* Texture, const nlohmann::json& AssetData);
+	static void LoadTextureBC1(UTexture* Texture, const nlohmann::json& AssetData);
 
 	// UINT BindFlag -> D3D11_BIND_FLAG
 	static std::shared_ptr<UTexture> CreateTexture(const std::string& Name, float Width, float Height, DXGI_FORMAT PixelFormat, UINT BindFlag, D3D11_USAGE Usage = D3D11_USAGE_DEFAULT);

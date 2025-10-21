@@ -1,7 +1,0 @@
-{
-    "Class": "UAnimSequence",
-    "Name": "AS_Gideon_FPSIdle",
-    "Skeleton": "SK_Gideon",
-    "AnimationDataPath": "/Content/Resource/MyGame/Animation/Gideon/FPSLocomotion/Idle.FBX",
-    "RootMotion": 0
-}

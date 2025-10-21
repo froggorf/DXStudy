@@ -1,7 +1,17 @@
+#ifndef _SPRITERENDERER_FX_
+#define _SPRITERENDERER_FX_
+
 #include "Global.fx"
 #include "ParticleHelper.fx"
 
-Texture2D    gParticleTexture : register(t0);
+Texture2D    Texture0 : register(t0);
+Texture2D    Texture1 : register(t1);
+Texture2D    Texture2 : register(t2);
+Texture2D    Texture3 : register(t3);
+Texture2D    Texture4 : register(t4);
+Texture2D    Texture5 : register(t5);
+Texture2D    Texture6 : register(t6);
+Texture2D    Texture7 : register(t7);
 SamplerState DefaultSampler : register(s0);
 
 struct VS_IN
@@ -35,7 +45,7 @@ VS_OUT VS_SpriteParticle(VS_IN _in)
 struct GS_OUT
 {
 	float4 vPosition : SV_Position;
-	float2 vUV : TEXCOORD;
+	float2 UV : TEXCOORD;
 	uint   InstID : FOG;
 };
 
@@ -82,7 +92,7 @@ struct GS_OUT
 		clipPos        = mul(clipPos, gProjection);
 
 		verts[i].vPosition = clipPos;
-		verts[i].vUV       = uv[i];
+		verts[i].UV       = uv[i];
 		verts[i].InstID    = _in[0].InstID;
 	}
 
@@ -102,7 +112,7 @@ float4 PS_Particle(GS_OUT _in) : SV_Target
 {
 	float4 vColor = float4(1.f, 0.f, 1.f, 1.f);
 
-	vColor = gParticleTexture.Sample(DefaultSampler, _in.vUV);
+	vColor = Texture0.Sample(DefaultSampler, _in.UV);
 	vColor.rgb *= vColor.a;
 
 	vColor *= gParticle[_in.InstID].Color;
@@ -129,12 +139,14 @@ float4 PS_Particle_UV(GS_OUT _in) : SV_Target
 	float dv = 1.0 / gParticle[_in.InstID].VCount;
 
 	// 5. 최종 UV 계산
-	float2 atlasUV = float2(uIndex * du, vIndex * dv) + _in.vUV * float2(du, dv);
+	float2 atlasUV = float2(uIndex * du, vIndex * dv) + _in.UV * float2(du, dv);
 
 	// 6. 텍스처 샘플링
-	vColor = gParticleTexture.Sample(DefaultSampler, atlasUV);
+	vColor = Texture0.Sample(DefaultSampler, atlasUV);
 
 	vColor *= gParticle[_in.InstID].Color;
 
 	return vColor;
 }
+
+#endif

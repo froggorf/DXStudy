@@ -1,0 +1,70 @@
+{
+    "Class": "UNiagaraSystem",
+    "Name": "NS_FireBall",
+    "Emitters" : [
+	{ 
+		"Property" : 1, 
+		"OverrideMat": "M_FireBall",
+		"SpawnRate" : 30,
+		"Life" : [ 1.0, 1.5 ],
+		"Scale" : [ [30,30,1] , [50,30,1] ],
+		"Rot" : [ [0,0,-180] , [0,0,180]],
+		"SpaceType": 0,
+		"SpawnShape" : 1,
+		"SpawnScale" : [15,15,15],
+		"Modules" : 
+		{
+			"Render" : {
+  			    "StartColor" : [25, 5.3624, 0.0, 0.5],
+			    "EndColor" : [7.5, 0.1116, 0.0, 1.0],
+			    "FadeOut" : [1, 0.8]
+			},
+			"Scale" :{
+			    "StartScale" : 1.0,
+			    "EndScale" : 0.3
+			},
+			"AddVelocity":{
+			    "MinVel" : [0.0, 0.0, 0.0],
+			    "MaxVel" : [0.0, 50.0, 0.0]
+			},
+			"TickVel" : [0,0,0],
+			"AddRot" : [0,0,0]
+		}
+	},
+	{ 
+		"Property" : 1, 
+		"OverrideMat": "M_FireFlash",
+		"SpawnRate" : 20,
+		"Life" : [ 0.3, 0.8 ],
+		"Scale" : [ [1,1,1] , [2,2,1] ],
+		"Rot" : [ [0,0,0] , [0,0,0]],
+		"SpaceType": 1,
+		"SpawnShape" : 0,
+		"SpawnScale" : [30,1,30],
+		"Modules" : 
+		{
+			"Render" : {
+				"RandomStart": 1,
+				"MinStartColor" : [15, 0.143,0, 1],
+				"MaxStartColor" : [8, 0.91, 0, 5],
+			    "EndColor" : [7.5, 0.1116, 0.0, 1.0],
+			    "FadeOut" : [1, 0.8]
+			},
+			"AddVelocity":{
+			    "MinVel" : [0.0, 100.0, 0.0],
+			    "MaxVel" : [0.0, 300.0, 0.0]
+			},
+			"Orbit" : {
+				"Speed" : [ 10, 60 ],
+				"Radius" : [-50, 50]
+			},
+			"DynamicParam" : {
+				"Min" : [0.2, 2.5, 0.0, 0.0],
+				"Max" : [3, 5, 0.0, 0.0]
+			}
+		}
+	}
+
+    ]
+
+}

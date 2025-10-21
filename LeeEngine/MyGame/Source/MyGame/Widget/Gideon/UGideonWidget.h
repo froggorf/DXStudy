@@ -19,7 +19,7 @@ class UGideonWidget : public UMyGameWidgetBase
 	std::string GetBasicAttackTextureName() override { return "T_Icon_Sanhwa_BasicAttack";}
 	std::string GetUltimateTextureName() override { return "T_Icon_Sanhwa_Ultimate";}
 
-	void SetCrossHairVisibility(bool NewVisible) const;
+	void SetAimModeWidgetVisibility(bool NewVisible) const;
 private:
 	std::shared_ptr<FTextWidget> CrossHairText;
 	std::shared_ptr<UGideonGaugeWidget> GideonGaugeWidget;

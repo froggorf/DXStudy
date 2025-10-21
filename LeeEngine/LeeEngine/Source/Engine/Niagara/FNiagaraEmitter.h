@@ -22,11 +22,13 @@ struct FParticleSpawn
 // 파티클 구조체
 struct FParticleData
 {
+	XMFLOAT4 DynamicParam;		// DynamicParam
 	XMFLOAT3 LocalPos{};       // 소유 오브젝트로 부터의 상대 좌표
 	XMFLOAT3 WorldPos{};       // 파티클의 월드 좌표
 	XMFLOAT3 WorldRotation{};  // 파티클의 월드 로테이션
 	XMFLOAT3 WorldInitScale{}; // 파티클 생성 시 초기 크기
 	XMFLOAT3 WorldScale{};     // 파티클 월드 크기
+	XMFLOAT4 StartColor{};
 	XMFLOAT4 Color{};          // 파티클 색상
 
 	XMFLOAT3 Force{};    // 파티클에 주어지고 있는 힘의 총합
@@ -39,6 +41,12 @@ struct FParticleData
 
 	int UCount{}; // 파티클의 텍스쳐 UV
 	int VCount{};
+
+	// Orbit 모듈 데이터
+	float OrbitRadius;      // 원의 반지름
+	float OrbitPhase;       // 시작 각도(랜덤)
+	float OrbitSpeed;       // 각속도(초당 라디안)
+	float PrevAngle;
 
 	int Active; // 파티클 활성화 여부
 };
@@ -54,7 +62,8 @@ enum class EParticleModule
 	PM_Render,
 	PM_UVAnim,
 	PM_AddRotation,
-
+	PM_DynamicParam,
+	PM_Orbit,
 	PM_END,
 };
 
@@ -67,6 +76,9 @@ struct FParticleModule
 	// Spawn Modlue
 	float    SpawnRate{};  // 초당 파티클 생성량
 	XMFLOAT4 StartColor{}; // 초기 파티클 색상
+	int bStartColorRandom {};
+	XMFLOAT4 StartColorMin {};
+	XMFLOAT4 StartColorMax {};
 	int      bIsLoop{};
 
 	XMFLOAT3 MinScale{};    // 생성 시 최소 크기
@@ -117,6 +129,15 @@ struct FParticleModule
 
 	// 추가 데이터
 	XMFLOAT3 ObjectWorldPos{};
+
+	XMFLOAT4 DynamicParamMin{};
+	XMFLOAT4 DynamicParamMax{};
+
+	// Orbit 모듈
+	float OrbitRadiusMin{};
+	float OrbitRadiusMax{};
+	float OrbitSpeedMin{};
+	float OrbitSpeedMax{};
 
 	// Module On / Off
 	int Module[static_cast<UINT>(EParticleModule::PM_END)] = {0,};

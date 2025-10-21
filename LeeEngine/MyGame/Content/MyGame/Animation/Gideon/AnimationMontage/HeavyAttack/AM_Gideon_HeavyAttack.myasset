@@ -1,0 +1,24 @@
+{
+	"Class": "UAnimMontage",
+	"Name": "AM_Gideon_HeavyAttack",
+	"Skeleton": "SK_Gideon",
+	"BlendIn" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.15
+	},
+	"BlendOut" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.3
+	},
+
+	"SlotName": "DefaultSlot",
+	"AnimTrack" : [
+		{"AnimName" : "AS_Gideon_Charge_Attack"}
+	],
+	"Sections" : [
+		{ "SectionName" : "ChargeAttack", "StartTime" : 0.0 }
+	],
+    	"Notifies" : [
+		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 79, "EventName" : "ChargeAttack" }
+  	  ]
+}

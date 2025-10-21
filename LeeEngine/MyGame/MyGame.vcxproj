@@ -26,6 +26,7 @@
     <ClCompile Include="Source\MyGame\Actor\ATestCube2.cpp" />
     <ClCompile Include="Source\MyGame\Actor\Damage\AFloatingDamageActor.cpp" />
     <ClCompile Include="Source\MyGame\Actor\Gideon\AGideonFireBall.cpp" />
+    <ClCompile Include="Source\MyGame\Actor\Gideon\AGideonLightning.cpp" />
     <ClCompile Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceBase.cpp" />
     <ClCompile Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceSpikeUltimate.cpp" />
     <ClCompile Include="Source\MyGame\AnimInstance\Gideon\UGideonAnimInstance.cpp" />
@@ -69,6 +70,7 @@
     <ClInclude Include="Source\MyGame\Actor\ATestCube2.h" />
     <ClInclude Include="Source\MyGame\Actor\Damage\AFloatingDamageActor.h" />
     <ClInclude Include="Source\MyGame\Actor\Gideon\AGideonFireBall.h" />
+    <ClInclude Include="Source\MyGame\Actor\Gideon\AGideonLightning.h" />
     <ClInclude Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceBase.h" />
     <ClInclude Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceSpikeUltimate.h" />
     <ClInclude Include="Source\MyGame\AnimInstance\Gideon\UGideonAnimInstance.h" />
@@ -223,6 +225,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\Monochrome.fx">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader\MaterialNode.fx">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Shader\SpriteVFX.fx">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

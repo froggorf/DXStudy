@@ -1,10 +1,13 @@
 struct FParticleData
 {
+	float4 DynamicParam;
+
 	float3 LocalPos; // 소유 오브젝트로 부터의 상대 좌표
 	float3 WorldPos; // 파티클의 월드 좌표
 	float3 WorldRotation;
 	float3 WorldInitScale; // 파티클 생성 시 초기 크기
 	float3 WorldScale;     // 파티클 월드 크기
+	float4 StartColor;
 	float4 Color;          // 파티클 색상
 
 	float3 Force;    // 파티클에 주어지고 있는 힘의 총합
@@ -17,6 +20,12 @@ struct FParticleData
 
 	int UCount;
 	int VCount;
+
+	// Orbit 모듈용
+	float OrbitRadius;      // 원의 반지름
+	float OrbitPhase;       // 시작 각도(랜덤)
+	float OrbitSpeed;       // 각속도(초당 라디안)
+	float PrevAngle;
 
 	int Active; // 파티클 활성화 여부
 };
@@ -40,6 +49,9 @@ struct FParticleModule
 	// Spawn Modlue
 	float  SpawnRate;  // 초당 파티클 생성량
 	float4 StartColor; // 초기 파티클 색상
+	int bStartColorRandom;
+	float4 StartColorMin;
+	float4 StartColorMax;
 	int    bIsLoop;    // 반복되는 파티클
 
 	float3 MinScale;    // 생성 시 최소 크기
@@ -91,8 +103,18 @@ struct FParticleModule
 	// 추가 데이터
 	float3 ObjectWorldPos;
 
+	// Dynamic Param 모듈
+	float4 DynamicParamMin;
+	float4 DynamicParamMax;
+
+	// Orbit 모듈
+	float OrbitRadiusMin;
+	float OrbitRadiusMax;
+	float OrbitSpeedMin;
+	float OrbitSpeedMax;
+
 	// Module On / Off
-	int Module[8];
+	int Module[10];
 };
 
 // 쿼터니언 → 3x3 회전행렬
