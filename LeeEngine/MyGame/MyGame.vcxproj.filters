@@ -473,5 +473,8 @@
     <None Include="Shader\MaterialNode.fx">
       <Filter>Shader</Filter>
     </None>
+    <None Include="Shader\RibbonVFX.fx">
+      <Filter>Shader\Niagara\Render\Ribbon</Filter>
+    </None>
   </ItemGroup>
 </Project>

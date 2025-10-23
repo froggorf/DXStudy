@@ -24,10 +24,20 @@ public:
 	void Activate();
 	void Deactivate();
 
+	bool GetIsSetSystemParam() const {return bIsSetSystemParam; }
+	void SetSystemParam(const FSystemParamConstantBuffer& NewSystemParam)
+	{
+		bIsSetSystemParam = true;
+		SystemParam = NewSystemParam;
+	}
+	std::function<void()> DelegateOnTickCS;
 protected:
 	// Niagara Emitter
 	std::shared_ptr<FNiagaraEmitter> Emitter;
 
 	bool bIsActivate        = true;
 	bool bMustTickThisFrame = false;
+
+	FSystemParamConstantBuffer SystemParam;
+	bool bIsSetSystemParam;
 };

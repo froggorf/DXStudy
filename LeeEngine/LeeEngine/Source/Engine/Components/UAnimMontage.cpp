@@ -179,17 +179,26 @@ void FAnimMontageInstance::Play()
 	std::shared_ptr<UAnimSequence> Anim = Montage->AnimTrack.AnimSegments[CurrentPlayingSectionIndex];
 	Position += 1.0f * (30.0f/UAnimInstance::AnimTickFPS) * Anim->GetRateScale();
 
+	const std::string& CurrentSectionName = Montage->CompositeSections[CurrentPlayingSectionIndex].SectionName;
+
 	// 현재 섹션 끝났을 때
 	if (std::abs(Position) >= CurPlayingEndPosition)
 	{
 		// 다음 섹션이 있다면
 		if (!NextSectionName.empty())
 		{
-			int NextSectionID = Montage->GetSectionIndex(NextSectionName);
-			SetPosition(Montage->CompositeSections[NextSectionID].StartTime);
-
-			CurrentPlayingSectionIndex = NextSectionID;
-			Anim = Montage->AnimTrack.AnimSegments[CurrentPlayingSectionIndex];
+			if (CurrentSectionName == NextSectionName)
+			{
+				SetPosition(Montage->CompositeSections[CurrentPlayingSectionIndex].StartTime + 2.0f);
+			}
+			else
+			{
+				int NextSectionID = Montage->GetSectionIndex(NextSectionName);	
+				SetPosition(Montage->CompositeSections[NextSectionID].StartTime + 1.f);
+				CurrentPlayingSectionIndex = NextSectionID;
+				Anim = Montage->AnimTrack.AnimSegments[CurrentPlayingSectionIndex];	
+			}
+			
 		}
 		else
 		{

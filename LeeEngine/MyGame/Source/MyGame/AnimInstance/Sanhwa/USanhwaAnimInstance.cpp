@@ -297,7 +297,7 @@ void USanhwaAnimInstance::BasicAttack0()
 		return;
 	}
 	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
-	MyGameCharacter->ApplyDamageToEnemy(CombatComp->GetBasicAttackData(0), "SH_BasicAttack");
+	MyGameCharacter->ApplyDamageToEnemy_Range(CombatComp->GetBasicAttackData(0), "SH_BasicAttack");
 }
 
 void USanhwaAnimInstance::BasicAttack1()
@@ -307,7 +307,7 @@ void USanhwaAnimInstance::BasicAttack1()
 		return;
 	}
 	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
-	MyGameCharacter->ApplyDamageToEnemy(CombatComp->GetBasicAttackData(1), "SH_BasicAttack");
+	MyGameCharacter->ApplyDamageToEnemy_Range(CombatComp->GetBasicAttackData(1), "SH_BasicAttack");
 }
 
 void USanhwaAnimInstance::BasicAttack2()
@@ -317,7 +317,7 @@ void USanhwaAnimInstance::BasicAttack2()
 		return;
 	}
 	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
-	MyGameCharacter->ApplyDamageToEnemy(CombatComp->GetBasicAttackData(2), "SH_BasicAttack");
+	MyGameCharacter->ApplyDamageToEnemy_Range(CombatComp->GetBasicAttackData(2), "SH_BasicAttack");
 }
 
 void USanhwaAnimInstance::BasicAttack3()
@@ -327,7 +327,7 @@ void USanhwaAnimInstance::BasicAttack3()
 		return;
 	}
 	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
-	MyGameCharacter->ApplyDamageToEnemy(CombatComp->GetBasicAttackData(3), "SH_BasicAttack");
+	MyGameCharacter->ApplyDamageToEnemy_Range(CombatComp->GetBasicAttackData(3), "SH_BasicAttack");
 }
 
 void USanhwaAnimInstance::BasicAttack4()
@@ -337,7 +337,7 @@ void USanhwaAnimInstance::BasicAttack4()
 		return;
 	}
 	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
-	MyGameCharacter->ApplyDamageToEnemy(CombatComp->GetBasicAttackData(4), "SH_BasicAttack");
+	MyGameCharacter->ApplyDamageToEnemy_Range(CombatComp->GetBasicAttackData(4), "SH_BasicAttack");
 	{
 		std::static_pointer_cast<USanhwaCombatComponent>(CombatComp)->Attack4Success();
 	}
@@ -348,7 +348,7 @@ void USanhwaAnimInstance::SkillAttack()
 	if (const std::shared_ptr<USkillBaseComponent>& SkillComp = MyGameCharacter->GetSkillComponent())
 	{
 		SkillComp->ApplySkillAttack();
-		MyGameCharacter->ApplyDamageToEnemy(SkillComp->GetSkillAttackData(0), "SH_SkillAttack");
+		MyGameCharacter->ApplyDamageToEnemy_Range(SkillComp->GetSkillAttackData(0), "SH_SkillAttack");
 	}
 }
 
@@ -359,7 +359,7 @@ void USanhwaAnimInstance::HeavyAttack()
 		return;
 	}
 	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
-	MyGameCharacter->ApplyDamageToEnemy(CombatComp->GetHeavyAttackData(0), "SH_HeavyAttack");
+	MyGameCharacter->ApplyDamageToEnemy_Range(CombatComp->GetHeavyAttackData(0), "SH_HeavyAttack");
 }
 
 void USanhwaAnimInstance::UltAttack()
@@ -367,7 +367,7 @@ void USanhwaAnimInstance::UltAttack()
 	if (const std::shared_ptr<UUltimateBaseComponent>& UltComp = MyGameCharacter->GetUltimateComponent())
 	{
 		UltComp->ApplyUltimateAttack();
-		MyGameCharacter->ApplyDamageToEnemy(UltComp->GetSkillAttackData(0), "SH_UltAttack");
+		MyGameCharacter->ApplyDamageToEnemy_Range(UltComp->GetSkillAttackData(0), "SH_UltAttack");
 	}
 }
 

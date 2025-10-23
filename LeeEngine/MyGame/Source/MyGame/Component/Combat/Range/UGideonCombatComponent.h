@@ -21,12 +21,17 @@ public:
 	void ApplyBasicAttack0();
 	void ApplyBasicAttack1();
 	void ApplyBasicAttack2();
+
+	void ApplyHeavyAttack();
 private:
 	void SetHeavyAttackChargeTime(float NewValue);
 public:
 private:
 	std::shared_ptr<UAnimMontage> HeavyAttack_ChargeMontage;
 	std::shared_ptr<UAnimMontage> HeavyAttack_AttackMontage;
+
+	FAttackData HeavyAttackDamageData;
+	float RecentChargePower = 0.0f;
 
 	static constexpr float FireBallThrowDistance = 2500.0f;
 	float HeavyAttackChargeTime = 0.0f;

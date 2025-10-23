@@ -206,7 +206,6 @@ ACharacter::ACharacter()
 	CapsuleComp->SetWorldLocation({0,HalfHeight,0});
 
 	QueryCheckCapsuleComp = std::make_shared<UStaticMeshComponent>();
-	QueryCheckCapsuleComp->SetVisibility(false);
 	
 	QueryCheckCapsuleComp->SetupAttachment(GetRootComponent());
 	
@@ -238,6 +237,7 @@ void ACharacter::BeginPlay()
 
 	BindKeyInputs();
 
+	QueryCheckCapsuleComp->SetVisibility(false);
 
 	CapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	CapsuleComp->SetCollisionObjectType(ECollisionChannel::Pawn);
@@ -265,6 +265,7 @@ void ACharacter::AddMovementInput(const XMFLOAT3& WorldDirection, float ScaleVal
 
 void ACharacter::AddControllerYawInput(float Val)
 {
+	Val /= 4;
 	APlayerController* PC = dynamic_cast<APlayerController*>(Controller);
 	if (PC && std::abs(Val) > FLT_EPSILON)
 	{
@@ -274,6 +275,7 @@ void ACharacter::AddControllerYawInput(float Val)
 
 void ACharacter::AddControllerPitchInput(float Val)
 {
+	Val /= 4;
 	APlayerController* PC = dynamic_cast<APlayerController*>(Controller);
 	if (PC && std::abs(Val) > FLT_EPSILON)
 	{

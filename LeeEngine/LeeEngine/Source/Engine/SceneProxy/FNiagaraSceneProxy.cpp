@@ -15,6 +15,10 @@ void FNiagaraSceneProxy::Draw()
 	// 활성화 중이거나 || 리본렌더러 같이 비활성화 시 잔상은 남아야 할 경우 Render 진행
 	if (bIsActivate || Emitter->bUpdateAndRenderAtDeactivate)
 	{
+		if (bIsSetSystemParam)
+		{
+			GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_SystemParam, &SystemParam, sizeof(SystemParam));
+		}
 		Emitter->Render();
 	}
 }
@@ -31,6 +35,12 @@ void FNiagaraSceneProxy::TickCS(float DeltaSeconds)
 	// 활성화 중이거나 || 이번 프레임에 틱되어야 하거나 || 리본렌더러 같이 비활성화 시 잔상은 남아야 할 경우 Tick 진행
 	if (bIsActivate || bMustTickThisFrame || Emitter->bUpdateAndRenderAtDeactivate)
 	{
+		if (DelegateOnTickCS)
+		{
+			DelegateOnTickCS();
+			DelegateOnTickCS = nullptr;
+		}
+
 		Emitter->Tick(DeltaSeconds, ComponentToWorld);
 
 		bMustTickThisFrame = false;

@@ -98,7 +98,7 @@ void ASanhwaIceSpikeBase::DamagedBySanhwa()
 	if (Spawner && bIsAttacked)
 	{
 		ExplosionAttackData.AttackCenterPos = GetActorLocation();
-		Spawner->ApplyDamageToEnemy(ExplosionAttackData);
+		Spawner->ApplyDamageToEnemy_Range(ExplosionAttackData);
 	}
 
 	GEngine->GetTimerManager()->ClearTimer(SpawnTimerHandle);

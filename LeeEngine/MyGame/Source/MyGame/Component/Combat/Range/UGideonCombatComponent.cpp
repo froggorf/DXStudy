@@ -2,6 +2,8 @@
 #include "UGideonCombatComponent.h"
 
 #include "Engine/Class/Camera/UCameraComponent.h"
+#include "Engine/World/UWorld.h"
+#include "MyGame/Actor/Gideon/AGideonLightning.h"
 #include "MyGame/AnimInstance/Gideon/UGideonAnimInstance.h"
 #include "MyGame/Character/Player/AGideonCharacter.h"
 #include "MyGame/Widget/Gideon/UGideonWidget.h"
@@ -24,6 +26,8 @@ void UGideonCombatComponent::Initialize(AMyGameCharacterBase* MyCharacter)
 		FAttackData{{20,20,20}, 1.25f, 0.0f, 10.0f, true},
 		FAttackData{{30,30,30}, 1.5f, 0.0f, 15.0f, true},
 	});
+
+	HeavyAttackDamageData = FAttackData{{0,0,0}, 1.0f, 0, 20.0f};
 
 	AssetManager::GetAsyncAssetCache("AM_Gideon_Charge",[this](std::shared_ptr<UObject> Object)
 		{
@@ -98,12 +102,13 @@ void UGideonCombatComponent::HeavyAttackMouseReleased()
 {
 
 	URangeBaseComponent::HeavyAttackMouseReleased();
-
+	RecentChargePower = 0.0f;
 	if (HeavyAttackChargeTime > 0.1f && HeavyAttack_AttackMontage)
 	{ 
 		if (const std::shared_ptr<UGideonAnimInstance>& GideonAnimInstance = std::dynamic_pointer_cast<UGideonAnimInstance>(MyGameCharacter->GetAnimInstance()))
 		{
 			GideonAnimInstance->Montage_Play(HeavyAttack_AttackMontage);
+			RecentChargePower = HeavyAttackChargeTime; 
 		}
 	}
 
@@ -142,7 +147,7 @@ void UGideonCombatComponent::ApplyBasicAttack(const std::string& SpawnSocketName
 
 		FHitResult Result;
 		XMFLOAT3 TargetPosition = End;
-		if (GPhysicsEngine->LineTraceSingleByChannel(Start,End, Channels, Result, 3.0f))
+		if (GPhysicsEngine->LineTraceSingleByChannel(Start,End, Channels, Result))
 		{
 			// 부딪히는 곳이 있다면 그 위치로 던짐
 			TargetPosition = Result.Location;
@@ -164,6 +169,33 @@ void UGideonCombatComponent::ApplyBasicAttack1()
 void UGideonCombatComponent::ApplyBasicAttack2()
 {
 	ApplyBasicAttack("hand_r", 2);
+}
+
+void UGideonCombatComponent::ApplyHeavyAttack()
+{
+	if (AGideonCharacter* GideonCharacter = dynamic_cast<AGideonCharacter*>(MyGameCharacter))
+	{
+		USkeletalMeshComponent* GideonSkeletalMesh = GideonCharacter->GetSkeletalMeshComponent();
+		if (!GideonSkeletalMesh)
+		{
+			return;
+		}
+		const FTransform& SpawnTransform = GideonSkeletalMesh->GetSocketTransform("hand_r");
+		const std::shared_ptr<AGideonLightning>& LightningActor = std::dynamic_pointer_cast<AGideonLightning>(GetWorld()->SpawnActor("AGideonLightning", SpawnTransform));
+		if (LightningActor)
+		{
+			constexpr UINT DefaultChargeLevel = 1;
+			constexpr float AddChargeLevelPerSecond = 1.0f;
+			const UINT ChargeLevel = DefaultChargeLevel + static_cast<UINT>(floor(RecentChargePower * AddChargeLevelPerSecond));
+
+			constexpr UINT DefaultAttackCount = 1;
+			constexpr float AddAttackCountPerSecond = 2.0f;		// 1초당 2마리 적군 추가
+			const UINT AttackCount = DefaultAttackCount + static_cast<UINT>(floor(RecentChargePower * AddAttackCountPerSecond));
+			LightningActor->Initialize(GideonCharacter, HeavyAttackDamageData, AttackCount, ChargeLevel);
+
+			MY_LOG("LOG", EDebugLogLevel::DLL_Warning, "Lightning Attack Actor Spawn");
+		}
+	}
 }
 
 void UGideonCombatComponent::SetHeavyAttackChargeTime(float NewValue)

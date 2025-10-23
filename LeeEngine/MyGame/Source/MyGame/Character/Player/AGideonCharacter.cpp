@@ -133,6 +133,7 @@ void AGideonCharacter::Look(float X, float Y)
 
 		XMVECTOR PitchQuat = XMQuaternionRotationAxis(RightVector, ClampedPitchDeg);
 		AimModeSpringArm->SetWorldRotation(PitchQuat);
+		AimModeSpringArm->TickComponent(0.0f);
 	}
 }
 

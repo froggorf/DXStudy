@@ -41,7 +41,7 @@ void UEngine::InitEngine()
 	}
 
 	// GameThread, RenderThread 제외한 코어 수
-	GThreadPool = std::make_unique<FQueuedThreadPool>(600);
+	GThreadPool = std::make_unique<FQueuedThreadPool>(100);
 
 	CreateAudioThread();
 
@@ -508,12 +508,14 @@ void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 void UEngine::CreateRenderThread()
 {
 	RenderThread = std::thread(&FRenderCommandExecutor::Execute);
+	SetThreadPriority(RenderThread.native_handle(), THREAD_PRIORITY_TIME_CRITICAL);
 }
 
 void UEngine::CreateAudioThread()
 {
 	GAudioDevice = std::make_shared<FAudioDevice>();
 	AudioThread  = std::thread(&FAudioThread::Execute);
+	SetThreadPriority(AudioThread.native_handle(), THREAD_PRIORITY_BELOW_NORMAL);
 }
 
 void MyCreateWindow(ImGuiViewport* Viewport)

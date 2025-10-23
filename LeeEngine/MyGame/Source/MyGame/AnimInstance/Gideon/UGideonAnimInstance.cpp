@@ -91,6 +91,7 @@ void UGideonAnimInstance::UpdateAnimation(float dt)
 	// DefaultSlot 몽타쥬
 	{
 		PlayMontage("DefaultSlot", BoneTransforms, FinalNotifies);
+		
 	}
 }
 
@@ -139,19 +140,29 @@ void UGideonAnimInstance::BasicAttack2()
 	GideonCombatComp->ApplyBasicAttack2();
 }
 
+void UGideonAnimInstance::HeavyAttack()
+{
+	if (!MyGameCharacter)
+	{
+		return;
+	}
+	std::shared_ptr<UGideonCombatComponent> GideonCombatComp = std::dynamic_pointer_cast<UGideonCombatComponent>(MyGameCharacter->GetCombatComponent());
+	if (!GideonCombatComp)
+	{
+		return;
+	}
+
+	GideonCombatComp->ApplyHeavyAttack();
+}
+
 void UGideonAnimInstance::SetAnimNotify_BeginPlay()
 {
 	UMyGameAnimInstanceBase::SetAnimNotify_BeginPlay();
 
-	Delegate<> Attack0Delegate;
-	Attack0Delegate.Add(this, &UGideonAnimInstance::BasicAttack0);
-	NotifyEvent["BasicAttack0"] = Attack0Delegate;
-
-	Delegate<> Attack1Delegate;
-	Attack1Delegate.Add(this, &UGideonAnimInstance::BasicAttack1);
-	NotifyEvent["BasicAttack1"] = Attack1Delegate;
-
-	Delegate<> Attack2Delegate;
-	Attack2Delegate.Add(this, &UGideonAnimInstance::BasicAttack2);
-	NotifyEvent["BasicAttack2"] = Attack2Delegate;
+	// BasicAttack
+	NotifyEvent["BasicAttack0"] = {this, &UGideonAnimInstance::BasicAttack0};
+	NotifyEvent["BasicAttack1"] = {this, &UGideonAnimInstance::BasicAttack1};
+	NotifyEvent["BasicAttack2"] = {this, &UGideonAnimInstance::BasicAttack2};
+	// HeavyAttack
+	NotifyEvent["ChargeAttack"] = {this,&UGideonAnimInstance::HeavyAttack};
 }

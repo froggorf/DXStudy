@@ -38,8 +38,6 @@ public:
 protected:
 	std::shared_ptr<UMotionWarpingComponent> MotionWarpingComponent;
 
-	std::shared_ptr<UNiagaraComponent> TestNiagaraComp;
-
 	std::shared_ptr<UStaticMeshComponent> TempStaticMesh;
 
 	std::shared_ptr<UHealthComponent> HealthComponent;

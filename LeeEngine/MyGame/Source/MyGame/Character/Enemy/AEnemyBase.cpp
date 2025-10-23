@@ -39,13 +39,6 @@ AEnemyBase::AEnemyBase()
 	HealthWidgetComp->SetRelativeLocation({0.0f,90.0f,0.0f});
 
 	
-	TestNiagaraComp = std::make_shared<UNiagaraComponent>();
-	TestNiagaraComp->SetupAttachment(GetRootComponent());
-	const std::shared_ptr<UNiagaraSystem>& System = UNiagaraSystem::GetNiagaraAsset("NS_FireBall");
-	TestNiagaraComp->SetNiagaraAsset(System);
-
-	TestNiagaraComp->SetRelativeScale3D({100,100,100});
-	TestNiagaraComp->SetRelativeLocation({0,100,0});
 }
 
 void AEnemyBase::Register()

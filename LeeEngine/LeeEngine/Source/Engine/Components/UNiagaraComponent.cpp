@@ -68,6 +68,14 @@ void UNiagaraComponent::Deactivate()
 	FScene::SetNiagaraEffectActivate_GameThread(SceneProxies, false);
 }
 
+void UNiagaraComponent::SetDelegateOnTickCS(const std::function<void()>& NewFunction)
+{
+	for (std::shared_ptr<FNiagaraSceneProxy>& SceneProxy : SceneProxies)
+	{
+		SceneProxy->DelegateOnTickCS = NewFunction;
+	}
+}
+
 #ifdef WITH_EDITOR
 void UNiagaraComponent::DrawDetailPanel(UINT ComponentDepth)
 {

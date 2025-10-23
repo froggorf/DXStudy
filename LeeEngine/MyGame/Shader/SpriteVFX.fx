@@ -25,13 +25,15 @@ float4 PS_FireBall(GS_OUT Input) : SV_Target
 
 	float AlphaCorrect = 13.0f;
 	float3 EmissiveColor = ParticleColor.rgb * pow(FireSmokeColor.r, AlphaCorrect);
-	
+
 	float Radius = 0.4f;
 	float RadialMask = RadialGradientExponential(Input.UV, float2(0.5,0.5), Radius, 8.0f);
 	float AlphaMask = FireSmokeColor.b * RadialMask;
 	float NewAlpha = ParticleColor.a * AlphaMask;
-	
-	float4 Color = float4(EmissiveColor.rgb, NewAlpha);
+
+	float3 HighlightColor = float3(20.0f, 0.0f,0.0f) * FireSmokeColor.g * RadialMask;
+
+	float4 Color = float4(EmissiveColor.rgb + HighlightColor, NewAlpha);
 	return Color;
 }
 

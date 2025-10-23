@@ -101,7 +101,7 @@ class USceneComponent : public UActorComponent, public std::enable_shared_from_t
 
 	XMFLOAT3 GetForwardVector();
 
-	void SetVisibility(bool NewVisible);
+	virtual void SetVisibility(bool NewVisible);
 
 #ifdef WITH_EDITOR
 	void DrawDetailPanel(UINT ComponentDepth) override;

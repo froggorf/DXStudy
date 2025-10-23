@@ -173,7 +173,7 @@ void AMyGameCharacterBase::BindKeyInputs()
 	}
 }
 
-bool AMyGameCharacterBase::ApplyDamageToEnemy(const FAttackData& AttackData,const std::string& DamageType)
+bool AMyGameCharacterBase::ApplyDamageToEnemy_Range(const FAttackData& AttackData,const std::string& DamageType)
 {
 	const XMFLOAT3& AttackRange = AttackData.AttackRange;
 	std::vector<AActor*> DamagedActors;
@@ -207,6 +207,19 @@ bool AMyGameCharacterBase::ApplyDamageToEnemy(const FAttackData& AttackData,cons
 	}
 
 	return !DamagedActors.empty();
+}
+
+void AMyGameCharacterBase::ApplyDamageToEnemy(AActor* DamagedEnemy, const FAttackData& AttackData, const std::string& DamageType)
+{
+	FMyGameDamageEvent Event;
+	Event.ElementType = ElementType;
+	Event.DamageType = DamageType;
+	DamagedEnemy->TakeDamage(GetCurrentPower() * AttackData.DamagePercent, Event, this);
+
+	if (UltimateComponent)
+	{
+		UltimateComponent->AddUltimateGauge(AttackData.GainUltimateGauge);
+	}
 }
 
 void AMyGameCharacterBase::AttackedWhileDodge()
@@ -272,7 +285,8 @@ void AMyGameCharacterBase::Look(float X, float Y)
 		{
 			XMFLOAT2 Delta = PC->GetPlayerInput()->LastMouseDelta;
 			AddControllerYawInput(Delta.x);
-			AddControllerPitchInput(Delta.y);	
+			AddControllerPitchInput(Delta.y);
+			SpringArm->TickComponent(0.0f);
 		}
 	}
 }

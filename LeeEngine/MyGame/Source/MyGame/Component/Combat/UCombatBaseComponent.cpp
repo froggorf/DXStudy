@@ -95,7 +95,6 @@ bool UCombatBaseComponent::HeavyAttack()
 
 void UCombatBaseComponent::HeavyAttackMouseReleased()
 {
-	bIsBasicAttacking = false;
 	bIsHeavyAttacking = false;
 }
 

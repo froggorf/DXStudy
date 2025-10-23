@@ -1,6 +1,7 @@
 #include "CoreMinimal.h"
 #include "ATestCube2.h"
 
+#include "Engine/Components/UNiagaraComponent.h"
 #include "Engine/Components/UStaticMeshComponent.h"
 
 
@@ -31,6 +32,15 @@ ATestCube2::ATestCube2()
 		SM_Couch->SetupAttachment(GetRootComponent());
 		SM_Couch->SetRelativeLocation({-300,10,-250});
 		SM_Couch->SetIsMonochromeObject(false);
+	}
+
+	{
+		
+		LightningTest = std::make_shared<UNiagaraComponent>();
+		LightningTest->SetupAttachment(GetRootComponent());
+		std::shared_ptr<UNiagaraSystem> System = UNiagaraSystem::GetNiagaraAsset("NS_Lightning");
+		LightningTest->SetNiagaraAsset(System);
+		LightningTest->SetRelativeLocation(XMFLOAT3{0.0, 100.0f, 0.0f});
 	}
 }
 
@@ -83,5 +93,13 @@ void ATestCube2::Tick(float DeltaSeconds)
 
 			GetWorld()->GetPersistentLevel()->DestroyActor(this);
 		}
+	}
+
+	{
+		static float Radian = 0.0f;
+		Radian += XMConvertToRadians(DeltaSeconds*90);
+		float x = 200 * std::cos(Radian);
+		float z = 200 * std::sin(Radian);
+		LightningTest->SetRelativeLocation({x,100,z});
 	}
 }

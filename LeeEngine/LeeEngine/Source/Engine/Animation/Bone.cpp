@@ -25,6 +25,19 @@ FBoneLocalTransform Blend2BoneTransform(const FBoneLocalTransform& A, const FBon
 
 FBoneLocalTransform Blend3BoneTransform(const FBoneLocalTransform& A, const FBoneLocalTransform& B, const FBoneLocalTransform& C, float AWeight, float BWeight, float CWeight)
 {
+	if (AWeight + BWeight < FLT_EPSILON)
+	{
+		return C;
+	}
+	else if (AWeight + CWeight < FLT_EPSILON)
+	{
+		return B;
+	}
+	else if (BWeight + CWeight < FLT_EPSILON)
+	{
+		return A;
+	}
+
 	FBoneLocalTransform BlendResult;
 	// T
 	BlendResult.Translation = XMVectorAdd(

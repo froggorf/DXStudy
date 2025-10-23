@@ -3,9 +3,15 @@
 
 #include "Global.fx"
 
-Texture2D    gTex0 : register( t0 );
-Texture2D    gTex1 : register( t1 );
-SamplerState samLinear : register( s0 );
+Texture2D    Texture0 : register(t0);
+Texture2D    Texture1 : register(t1);
+Texture2D    Texture2 : register(t2);
+Texture2D    Texture3 : register(t3);
+Texture2D    Texture4 : register(t4);
+Texture2D    Texture5 : register(t5);
+Texture2D    Texture6 : register(t6);
+Texture2D    Texture7 : register(t7);
+SamplerState DefaultSampler : register( s0 );
 
 struct VS_OUTPUT
 {
@@ -47,14 +53,14 @@ float4 PS_RibbonMaskTrail(VS_OUTPUT input) : SV_Target
 
 	// Trail Texture로 궤적 모양 바꾸기
 	float2 TrailUV      = float2(gTime * 3 + input.Tex.x, input.Tex.y);
-	float4 TrailSample  = gTex0.Sample(samLinear, TrailUV);
+	float4 TrailSample  = Texture0.Sample(DefaultSampler, TrailUV);
 	float2 TrailUV2     = float2(gTime * 3 + 0.7 * input.Tex.x, input.Tex.y);
-	float4 TrailSample2 = gTex0.Sample(samLinear, TrailUV2);
+	float4 TrailSample2 = Texture0.Sample(DefaultSampler, TrailUV2);
 	float  Alpha        = TrailSample.r + TrailSample2.r;
 
 	float2 MaskUV = input.Tex;
 	MaskUV.r *= -1;
-	float Mask = gTex1.Sample(samLinear, MaskUV).r;
+	float Mask = Texture1.Sample(DefaultSampler, MaskUV).r;
 	Alpha *= Mask;
 
 	float4 color = float4(ParticleColor.r, ParticleColor.g, ParticleColor.b, ParticleColor.a * Alpha);

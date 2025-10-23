@@ -3,6 +3,8 @@
 #include "Engine/GameFramework/AActor.h"
 #include "MyGame/Character/Player/AGideonCharacter.h"
 
+class UNiagaraComponent;
+
 class AGideonFireBall : public AActor
 {
 	MY_GENERATE_BODY(AGideonFireBall)
@@ -27,6 +29,8 @@ private:
 	AGideonCharacter* Spawner;
 	XMFLOAT3 StartPosition;
 	XMFLOAT3 TargetPosition;
+
+	std::shared_ptr<UNiagaraComponent> FireVFX;
 
 	FTimerHandle ThrowTimerHandle;
 	// 1000 unit per sec

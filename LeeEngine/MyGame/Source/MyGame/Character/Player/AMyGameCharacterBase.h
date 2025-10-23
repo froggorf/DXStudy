@@ -42,7 +42,8 @@ class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
 	void BindKeyInputs() override;
 
 	// 공격에 성공할 시 true 반환
-	bool ApplyDamageToEnemy(const FAttackData& AttackData, const std::string& DamageType = "");
+	bool ApplyDamageToEnemy_Range(const FAttackData& AttackData, const std::string& DamageType = "");
+	void ApplyDamageToEnemy(AActor* DamagedEnemy, const FAttackData& AttackData, const std::string& DamageType = "");
 	float TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AActor* DamageCauser) override;
 
 	void Death() override;

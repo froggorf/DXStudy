@@ -1,51 +1,68 @@
 #include "CoreMinimal.h"
 #include "QueuedThreadPool.h"
 
+#include "Engine/RenderCore/RenderingThread.h"
+
 std::unique_ptr<FQueuedThreadPool> GThreadPool = nullptr;
 
 FQueuedThreadPool::FQueuedThreadPool(UINT InNumQueuedThreads)
 {
 	for (UINT i = 0; i < InNumQueuedThreads; ++i)
 	{
-		Threads.emplace_back([this]()
-		{
-			while (true)
+		std::thread NewWorkerThread = std::thread([this]()
 			{
-				FTask CurrentTask{0, nullptr, nullptr};
-
-				// try_pop
+				while (true)
 				{
-					if (TaskQueue.try_pop(CurrentTask))
+					FTask CurrentTask{0, nullptr, nullptr};
+
+					if (bIsGameKill)
 					{
-						CurrentTask.Work();
-
-						if(CurrentTask.IsWorkComplete)
-						{
-							CurrentTask.IsWorkComplete->store(true);	
-						}
-						
-						if(CurrentTask.WorkCompleteCallback)
-						{
-							CurrentTask.WorkCompleteCallback();	
-						}
-						
-						continue;
-					}
-					// 종료되거나 작업이 생기는 시점까지 대기
-					std::unique_lock<std::mutex> Lock(QueueMutex);
-					Condition.wait(Lock,
-									[this]()
-									{
-										return bStop || !TaskQueue.empty();
-									});
-
-					if (bStop && TaskQueue.empty())
 						return;
+					}
 
-					//if(!TaskQueue.try_pop(CurrentTask)) continue;
+					// try_pop
+					{
+						if (TaskQueue.try_pop(CurrentTask))
+						{
+							CurrentTask.Work();
+
+							if(CurrentTask.IsWorkComplete)
+							{
+								CurrentTask.IsWorkComplete->store(true);	
+							}
+
+							if (bIsGameKill)
+							{
+								return;
+							}
+
+							if(CurrentTask.WorkCompleteCallback)
+							{
+								CurrentTask.WorkCompleteCallback();	
+							}
+
+							continue;
+						}
+						// 종료되거나 작업이 생기는 시점까지 대기
+						std::unique_lock<std::mutex> Lock(QueueMutex);
+						Condition.wait(Lock,
+							[this]()
+							{
+								return bStop || !TaskQueue.empty();
+							});
+
+						if (bStop && TaskQueue.empty())
+							return;
+						if (bIsGameKill)
+						{
+							return;
+						}
+					}
 				}
-			}
-		});
+			});
+
+		SetThreadPriority(NewWorkerThread.native_handle(), THREAD_PRIORITY_LOWEST); 
+		Threads.emplace_back(std::move(NewWorkerThread));
 	}
 }
 
@@ -67,10 +84,11 @@ void FQueuedThreadPool::ClearAllThread()
 	Condition.notify_all();
 	for (auto& Thread : Threads)
 	{
-		if (Thread.joinable())
-		{
-			Thread.join();
-		}
+		Thread.detach();
+		//if (Thread.joinable())
+		//{
+		//	Thread.join();
+		//}
 	}
 }
 

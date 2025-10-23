@@ -6,6 +6,7 @@
 #include "Engine/Components/USkeletalMeshComponent.h"
 #include "Engine/GameFramework/AActor.h"
 
+class UNiagaraComponent;
 class UStaticMeshComponent;
 
 class ATestCube2 : public AActor
@@ -25,6 +26,8 @@ protected:
 
 	std::shared_ptr<UStaticMeshComponent> SM_Chair;
 	std::shared_ptr<UStaticMeshComponent> SM_Couch;
+
+	std::shared_ptr<UNiagaraComponent> LightningTest;
 
 	std::shared_ptr<UStaticMeshComponent> Ground[20][20];
 private:

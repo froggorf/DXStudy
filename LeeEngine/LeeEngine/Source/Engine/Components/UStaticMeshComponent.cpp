@@ -80,3 +80,10 @@ std::shared_ptr<UShapeComponent> UStaticMeshComponent::CreateBodyInstance()
 {
 	return std::make_shared<UConvexComponent>();
 }
+
+void UStaticMeshComponent::SetVisibility(bool NewVisible)
+{
+	UMeshComponent::SetVisibility(NewVisible);
+
+	bVisibility = NewVisible;
+}

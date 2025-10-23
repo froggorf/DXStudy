@@ -1,6 +1,8 @@
 #include "CoreMinimal.h"
 #include "AGideonFireBall.h"
 
+#include "Engine/Components/UNiagaraComponent.h"
+
 AGideonFireBall::AGideonFireBall()
 {
 	SM_FireBall = std::make_shared<UStaticMeshComponent>();
@@ -17,6 +19,14 @@ AGideonFireBall::AGideonFireBall()
 			
 		});
 	SM_FireBall->SetRelativeScale3D({10,10,10});
+	
+	FireVFX = std::make_shared<UNiagaraComponent>();
+	FireVFX->SetupAttachment(GetRootComponent());
+	const std::shared_ptr<UNiagaraSystem>& System = UNiagaraSystem::GetNiagaraAsset("NS_FireBall");
+	FireVFX->SetNiagaraAsset(System);
+
+	FireVFX->SetRelativeScale3D({100,100,100});
+	FireVFX->SetRelativeLocation({0,0,0});
 }
 
 void AGideonFireBall::Register()
@@ -28,6 +38,7 @@ void AGideonFireBall::BeginPlay()
 {
 	AActor::BeginPlay();
 
+	SM_FireBall->SetVisibility(false);
 	GEngine->GetTimerManager()->SetTimer(ThrowTimerHandle, {this, &AGideonFireBall::FlyFireBall}, 0.0f, true, ThrowTimerTickTime);
 	SM_FireBall->OnComponentHit.Add(this, &AGideonFireBall::OnHit);
 }
@@ -67,7 +78,7 @@ void AGideonFireBall::Explosion()
 {
 	ExplosionAttackData.bIsAttackCenterFixed = true;
 	ExplosionAttackData.AttackCenterPos = GetActorLocation();
-	Spawner->ApplyDamageToEnemy(ExplosionAttackData, "FireBall");
+	Spawner->ApplyDamageToEnemy_Range(ExplosionAttackData, "FireBall");
 
 	DestroySelf();
 }

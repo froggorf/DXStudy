@@ -1,0 +1,16 @@
+{
+    "Class": "UNiagaraSystem",
+    "Name": "NS_Lightning",
+    "Emitters" : [
+	{ 
+		"Property" : 3, 
+		"FaceCamera": 1,
+		"OverrideMat" : "M_Lightning",
+		"OverrideTex" : [ "T_Lightning" ],
+		"Life" : [ 1.5,1.5 ],
+		"RibbonWidth" : 30.0,
+		"RibbonColor": [0.0 , 0.7 , 0.8 , 1.0]
+	}
+    ]
+
+}

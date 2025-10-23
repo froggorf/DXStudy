@@ -24,7 +24,7 @@ class UGideonAnimInstance final : public UMyGameAnimInstanceBase
 	void BasicAttack0();
 	void BasicAttack1();
 	void BasicAttack2();
-	//void HeavyAttack();
+	void HeavyAttack();
 	//void SkillAttack();
 	//void UltAttack();
 
