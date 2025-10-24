@@ -21,6 +21,8 @@ void USanhwaSkillComponent::ApplySkillAttack()
 {
 	USkillBaseComponent::ApplySkillAttack();
 
-	static_cast<ASanhwaCharacter*>(MyGameCharacter)->CreateIceSpikes(false);
-	// TODO: 대미지 적용하기
+	if (ASanhwaCharacter* Sanhwa = dynamic_cast<ASanhwaCharacter*>(MyGameCharacter))
+	{
+		Sanhwa->CreateIceSpikes(false);
+	}
 }

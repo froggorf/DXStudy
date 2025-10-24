@@ -90,7 +90,10 @@ bool UGideonCombatComponent::HeavyAttack()
 		{
 			GideonAnimInstance->Montage_Play(HeavyAttack_ChargeMontage);
 		}
-		
+		if (const std::shared_ptr<UGideonWidget>& GideonWidget = std::dynamic_pointer_cast<UGideonWidget>(MyGameCharacter->GetCharacterWidget()))
+		{
+			GideonWidget->SetAimModeWidgetVisibility(false);
+		}
 	}
 
 	SetHeavyAttackChargeTime(HeavyAttackChargeTime + GEngine->GetDeltaSeconds());
@@ -100,7 +103,6 @@ bool UGideonCombatComponent::HeavyAttack()
 
 void UGideonCombatComponent::HeavyAttackMouseReleased()
 {
-
 	URangeBaseComponent::HeavyAttackMouseReleased();
 	RecentChargePower = 0.0f;
 	if (HeavyAttackChargeTime > 0.1f && HeavyAttack_AttackMontage)
@@ -110,6 +112,11 @@ void UGideonCombatComponent::HeavyAttackMouseReleased()
 			GideonAnimInstance->Montage_Play(HeavyAttack_AttackMontage);
 			RecentChargePower = HeavyAttackChargeTime; 
 		}
+	}
+
+	if (const std::shared_ptr<UGideonWidget>& GideonWidget = std::dynamic_pointer_cast<UGideonWidget>(MyGameCharacter->GetCharacterWidget()))
+	{
+		GideonWidget->SetAimModeWidgetVisibility(false);
 	}
 
 	SetHeavyAttackChargeTime(0);

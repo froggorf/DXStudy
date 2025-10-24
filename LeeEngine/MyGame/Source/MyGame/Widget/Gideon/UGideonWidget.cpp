@@ -47,6 +47,13 @@ void UGideonWidget::SetAimModeWidgetVisibility(bool NewVisible) const
 	if (CrossHairText)
 	{
 		CrossHairText->SetVisibility(NewVisible);
+	}
+}
+
+void UGideonWidget::SetGideonGaugeWidgetVisibility(bool NewVisible) const
+{
+	if (GideonGaugeWidget)
+	{
 		GideonGaugeWidget->GetMainCanvasWidget()->SetVisibility(NewVisible);
 	}
 }

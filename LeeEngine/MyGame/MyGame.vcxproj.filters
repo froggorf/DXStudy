@@ -131,6 +131,9 @@
     <Filter Include="Source\MyGame\Widget\Gideon">
       <UniqueIdentifier>{68c6071b-f2a4-4149-80fc-114666b39a7f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\Component\Combat\Skill\NormalSkill\Gideon">
+      <UniqueIdentifier>{f6f3d3d9-1743-4ec9-b7de-a33b3301c529}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -262,6 +265,12 @@
     <ClCompile Include="Source\MyGame\Actor\Gideon\AGideonLightning.cpp">
       <Filter>Source\MyGame\Actor\Gideon</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Component\Combat\Skill\NormalSkill\Gideon\UGideonSkillComponent.cpp">
+      <Filter>Source\MyGame\Component\Combat\Skill\NormalSkill\Gideon</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\Actor\Gideon\AGideonIceStorm.cpp">
+      <Filter>Source\MyGame\Actor\Gideon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -388,6 +397,12 @@
       <Filter>Source\MyGame\Widget\Gideon</Filter>
     </ClInclude>
     <ClInclude Include="Source\MyGame\Actor\Gideon\AGideonLightning.h">
+      <Filter>Source\MyGame\Actor\Gideon</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Component\Combat\Skill\NormalSkill\Gideon\UGideonSkillComponent.h">
+      <Filter>Source\MyGame\Component\Combat\Skill\NormalSkill\Gideon</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Actor\Gideon\AGideonIceStorm.h">
       <Filter>Source\MyGame\Actor\Gideon</Filter>
     </ClInclude>
   </ItemGroup>

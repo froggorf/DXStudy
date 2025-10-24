@@ -26,6 +26,7 @@
     <ClCompile Include="Source\MyGame\Actor\ATestCube2.cpp" />
     <ClCompile Include="Source\MyGame\Actor\Damage\AFloatingDamageActor.cpp" />
     <ClCompile Include="Source\MyGame\Actor\Gideon\AGideonFireBall.cpp" />
+    <ClCompile Include="Source\MyGame\Actor\Gideon\AGideonIceStorm.cpp" />
     <ClCompile Include="Source\MyGame\Actor\Gideon\AGideonLightning.cpp" />
     <ClCompile Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceBase.cpp" />
     <ClCompile Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceSpikeUltimate.cpp" />
@@ -40,6 +41,7 @@
     <ClCompile Include="Source\MyGame\Component\Combat\Melee\USanhwaCombatComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\Combat\Range\UGideonCombatComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\Combat\Range\URangeBaseComponent.cpp" />
+    <ClCompile Include="Source\MyGame\Component\Combat\Skill\NormalSkill\Gideon\UGideonSkillComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\Combat\Skill\NormalSkill\SanHwa\USanhwaSkillComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\Combat\Skill\NormalSkill\USkillBaseComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\Combat\Skill\Ultimate\Sanhwa\USanhwaUltimateComponent.cpp" />
@@ -70,6 +72,7 @@
     <ClInclude Include="Source\MyGame\Actor\ATestCube2.h" />
     <ClInclude Include="Source\MyGame\Actor\Damage\AFloatingDamageActor.h" />
     <ClInclude Include="Source\MyGame\Actor\Gideon\AGideonFireBall.h" />
+    <ClInclude Include="Source\MyGame\Actor\Gideon\AGideonIceStorm.h" />
     <ClInclude Include="Source\MyGame\Actor\Gideon\AGideonLightning.h" />
     <ClInclude Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceBase.h" />
     <ClInclude Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceSpikeUltimate.h" />
@@ -84,6 +87,7 @@
     <ClInclude Include="Source\MyGame\Component\Combat\Melee\USanhwaCombatComponent.h" />
     <ClInclude Include="Source\MyGame\Component\Combat\Range\UGideonCombatComponent.h" />
     <ClInclude Include="Source\MyGame\Component\Combat\Range\URangeBaseComponent.h" />
+    <ClInclude Include="Source\MyGame\Component\Combat\Skill\NormalSkill\Gideon\UGideonSkillComponent.h" />
     <ClInclude Include="Source\MyGame\Component\Combat\Skill\NormalSkill\SanHwa\USanhwaSkillComponent.h" />
     <ClInclude Include="Source\MyGame\Component\Combat\Skill\NormalSkill\USkillBaseComponent.h" />
     <ClInclude Include="Source\MyGame\Component\Combat\Skill\Ultimate\Sanhwa\USanhwaUltimateComponent.h" />

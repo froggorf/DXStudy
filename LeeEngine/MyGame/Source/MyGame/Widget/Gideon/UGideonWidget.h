@@ -20,6 +20,7 @@ class UGideonWidget : public UMyGameWidgetBase
 	std::string GetUltimateTextureName() override { return "T_Icon_Sanhwa_Ultimate";}
 
 	void SetAimModeWidgetVisibility(bool NewVisible) const;
+	void SetGideonGaugeWidgetVisibility(bool NewVisible) const;
 private:
 	std::shared_ptr<FTextWidget> CrossHairText;
 	std::shared_ptr<UGideonGaugeWidget> GideonGaugeWidget;
