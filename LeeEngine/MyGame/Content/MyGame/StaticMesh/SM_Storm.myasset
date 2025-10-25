@@ -1,0 +1,6 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_Storm",
+    "ModelData": "/Content/Resource/MyGame/StaticMesh/Gideon_Storm.fbx",
+    "Material" : [ "M_Storm" ]
+}

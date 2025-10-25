@@ -1,0 +1,16 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_Brick_Ground",
+    "VertexShader" : {
+	"FilePath" : "/Shader/PBR.fx",
+	"Func" : "VS"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/PS_PBR.fx",
+	"Func": "PBR_PS_Brick_Ground"
+    },
+    "TextureParams" : [ "T_Brick_Albedo", "T_Brick_Normal", "", "", "T_Brick_Roughness", "T_Brick_AO" ],
+    "BlendMode": "Deferred",
+    "TwoSided" : 0
+	
+}

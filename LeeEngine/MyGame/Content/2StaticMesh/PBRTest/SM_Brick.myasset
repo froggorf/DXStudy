@@ -2,5 +2,5 @@
     "Class": "UStaticMesh",
     "Name": "SM_Brick",
     "ModelData": "/Content/Resource/Model/cube.obj",
-    "Material" : [ "MI_PBR_Brick" ]
+    "Material" : [ "M_Brick_Ground" ]
 }

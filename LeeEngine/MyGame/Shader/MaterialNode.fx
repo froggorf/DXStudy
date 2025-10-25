@@ -20,5 +20,17 @@ float RadialGradientExponential(in float2 UVs, in float2 CenterPosition, in floa
 	return Mask;
 }
 
+// Fresnel -> 표면의 법선 방향과 시선 방향의 각도에 따라서 반사율이 달라지는 현상
+float Fresnel(in float3 Normal, in float3 WorldPixelPos, in float4x4 CameraViewInvMat, in float Exponent, in float BaseReflectFraction)
+{
+	float3 CameraWorldPos = CameraViewInvMat[3].xyz;
+	float3 ViewDir = normalize(CameraWorldPos - WorldPixelPos);
+
+	Normal = normalize(Normal);
+
+	// Fresnel 계산
+	float Fresnel = BaseReflectFraction + (1.0 - BaseReflectFraction) * pow(1.0 - dot(Normal, ViewDir), Exponent);
+	return Fresnel;
+}
 
 #endif

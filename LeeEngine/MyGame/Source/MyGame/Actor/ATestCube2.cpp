@@ -8,16 +8,9 @@
 ATestCube2::ATestCube2()
 {
 	{
-		for (int i = 0 ; i < 20; ++i)
-		{
-			for (int j = 0; j < 20; ++j)
-			{
-				Ground[i][j]= std::make_shared<UStaticMeshComponent>();
-				Ground[i][j]->SetupAttachment(GetRootComponent());
-				Ground[i][j]->SetRelativeLocation(XMFLOAT3{-2500.0f + 250*i,-10,-2500.0f + 250 * j});
-				Ground[i][j]->SetRelativeScale3D({125,20,125});	
-			}
-		}
+		Ground= std::make_shared<UStaticMeshComponent>();
+		Ground->SetupAttachment(GetRootComponent());
+		Ground->SetRelativeScale3D({2500.0f,1.0f,2500.0f});	
 		
 	}
 
@@ -48,17 +41,11 @@ void ATestCube2::Register()
 {
 	AActor::Register();
 
-	for (int i = 0; i < 20; ++i)
-	{
-		for (int j = 0; j  < 20; ++j)
+	AssetManager::GetAsyncAssetCache("SM_Brick",[this](std::shared_ptr<UObject> Object)
 		{
-			AssetManager::GetAsyncAssetCache("SM_Brick",[this,i,j](std::shared_ptr<UObject> Object)
-				{
-					Ground[i][j]->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
-					Ground[i][j]->SetCollisionObjectType(ECollisionChannel::WorldStatic);
-				});
-		}
-	}
+			Ground->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
+			Ground->SetCollisionObjectType(ECollisionChannel::WorldStatic);
+		});
 
 	AssetManager::GetAsyncAssetCache("SM_UE_Couch",[this](std::shared_ptr<UObject> Object)
 		{

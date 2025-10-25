@@ -52,4 +52,6 @@ float4 PS_FireFlash(GS_OUT Input) : SV_Target
 	return float4(Color.rgb, Alpha);
 }
 
+
+
 #endif

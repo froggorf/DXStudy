@@ -71,9 +71,28 @@ float3 GetNormalFromMap(PBR_PS_INPUT input)
 		return normalize(input.ViewNormal);
 	}
 
-	float3 tangentNormal = NormalTexture.Sample(DefaultSampler, input.TexCoord).xyz * 2.0 - 1.0;
+	float3 tangentNormal = NormalTexture.Sample(DefaultSampler, input.UV).xyz * 2.0 - 1.0;
 
 	float3x3 matRot = 
+	{
+		input.ViewTangent,
+		input.ViewBinormal,
+		input.ViewNormal
+	};
+	return normalize(mul(tangentNormal, matRot));
+}
+
+float3 GetNormalFromMap(PBR_PS_INPUT input, float2 NewUV)
+{
+	int bNormalTexBind = bTexBind_0_3.g;
+	if (!bNormalTexBind)
+	{
+		return normalize(input.ViewNormal);
+	}
+
+	float3 tangentNormal = NormalTexture.Sample(DefaultSampler, NewUV).xyz * 2.0 - 1.0;
+
+	float3x3 matRot =
 	{
 		input.ViewTangent,
 		input.ViewBinormal,

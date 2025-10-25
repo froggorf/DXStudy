@@ -1,0 +1,6 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_Storm_Ground",
+    "ModelData": "/Content/Resource/MyGame/StaticMesh/StormGround.fbx",
+    "Material" : [ "M_Storm" ]
+}

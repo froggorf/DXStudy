@@ -4,7 +4,7 @@
 struct PBR_PS_INPUT
 {
 	float4 PosScreen : SV_POSITION;
-	float2 TexCoord : TEXCOORD;
+	float2 UV : TEXCOORD;
 	float3 ViewPosition : POSITION;
 	float3 ViewTangent : TANGENT;
 	float3 ViewNormal : NORMAL;

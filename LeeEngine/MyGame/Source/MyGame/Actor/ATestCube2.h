@@ -29,7 +29,7 @@ protected:
 
 	std::shared_ptr<UNiagaraComponent> LightningTest;
 
-	std::shared_ptr<UStaticMeshComponent> Ground[20][20];
+	std::shared_ptr<UStaticMeshComponent> Ground;
 private:
 
 

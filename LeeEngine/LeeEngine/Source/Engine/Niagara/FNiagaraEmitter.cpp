@@ -162,6 +162,7 @@ void FParticleModule::LoadDataFromFile(const nlohmann::basic_json<>& Data)
 		// Orbit 모듈
 		if (ModuleData.contains("Orbit"))
 		{
+			Module[static_cast<int>(EParticleModule::PM_Orbit)] = 1;
 			// Speed -> rad 기준, 2.0 -> 2.0rad -> 1초에 약 0.3바퀴 / 6.0 -> 6.0rad -> 1초에 약 1바퀴
 			const auto& OrbitData = ModuleData["Orbit"];
 			const auto& SpeedData = OrbitData["Speed"];
@@ -297,8 +298,14 @@ void FNiagaraRendererMeshes::LoadDataFromFile(const nlohmann::basic_json<>& Data
 	FNiagaraRendererProperty::LoadDataFromFile(Data);
 	if (Data.contains("StaticMesh"))
 	{
-		std::string_view StaticMeshName = Data["StaticMesh"];
-		SetStaticMesh(UStaticMesh::GetStaticMesh(StaticMeshName.data()));
+		const std::string& StaticMeshName = Data["StaticMesh"];
+		std::shared_ptr<UStaticMesh> StaticMesh = UStaticMesh::GetStaticMesh(StaticMeshName);
+		if (!StaticMesh)
+		{
+			AssetManager::ReadMyAsset(AssetManager::GetAssetNameAndAssetPathMap()[StaticMeshName]);	
+			StaticMesh = UStaticMesh::GetStaticMesh(StaticMeshName);
+		}
+		SetStaticMesh(StaticMesh);
 	}
 }
 

@@ -1,0 +1,20 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_Storm",
+    "VertexShader" : {
+	"FilePath" : "/Shader/MeshRenderer.fx",
+	"Func" : "VS_MeshParticle"
+    },
+    "GeometryShader": {
+	"FilePath" : "/Shader/MeshRenderer.fx",
+	"Func": "GS_Mesh"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/MeshVFX.fx",
+	"Func": "PS_Storm"
+    },
+    "BlendMode": "Translucent",
+    "TextureParams" : ["T_StormNoise"],
+    "TwoSided" : 1
+	
+}

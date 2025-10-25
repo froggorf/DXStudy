@@ -4,6 +4,7 @@ struct FParticleData
 
 	float3 LocalPos; // 소유 오브젝트로 부터의 상대 좌표
 	float3 WorldPos; // 파티클의 월드 좌표
+	float3 WorldInitPos;
 	float3 WorldRotation;
 	float3 WorldInitScale; // 파티클 생성 시 초기 크기
 	float3 WorldScale;     // 파티클 월드 크기
@@ -25,7 +26,6 @@ struct FParticleData
 	float OrbitRadius;      // 원의 반지름
 	float OrbitPhase;       // 시작 각도(랜덤)
 	float OrbitSpeed;       // 각속도(초당 라디안)
-	float PrevAngle;
 
 	int Active; // 파티클 활성화 여부
 };

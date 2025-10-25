@@ -491,5 +491,8 @@
     <None Include="Shader\RibbonVFX.fx">
       <Filter>Shader\Niagara\Render\Ribbon</Filter>
     </None>
+    <None Include="Shader\MeshVFX.fx">
+      <Filter>Shader\Niagara\Render\Mesh</Filter>
+    </None>
   </ItemGroup>
 </Project>

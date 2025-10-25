@@ -1,6 +1,0 @@
-{
-    "Class": "UStaticMesh",
-    "Name": "SM_Gideon_Storm",
-    "ModelData": "/Content/Resource/MyGame/StaticMesh/Gideon_Storm.fbx",
-    "Material" : [ "MI_Sanhwa_Ice" ]
-}

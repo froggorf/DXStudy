@@ -127,6 +127,7 @@ void ParticleInit(inout FParticleData Particle, in FParticleModule Module, float
 
 	// Particle 의 World 좌표 계산
 	Particle.WorldPos.xyz = Particle.LocalPos.xyz + Module.ObjectWorldPos;
+	Particle.WorldInitPos = Particle.WorldPos;
 
 	// Dynamic Param 모듈
 	if (0 != Module.Module[8])
@@ -272,22 +273,11 @@ StructuredBuffer<FParticleModule> gModule : register(ParticleDataRegister);
 		if (gModule[0].Module[9])
 		{
 			float CurrAngle = gBuffer[ThreadID.x].OrbitPhase + gBuffer[ThreadID.x].OrbitSpeed * gBuffer[ThreadID.x].Age;
-			float PrevAngle = gBuffer[ThreadID.x].PrevAngle;
-
-			// 현재 위치에서 이동량 계산
-			float CurrX = gBuffer[ThreadID.x].OrbitRadius * cos(CurrAngle);
-			float CurrZ = gBuffer[ThreadID.x].OrbitRadius * sin(CurrAngle);
-
-			float PrevX = gBuffer[ThreadID.x].OrbitRadius * cos(PrevAngle);
-			float PrevZ = gBuffer[ThreadID.x].OrbitRadius * sin(PrevAngle);
-
-			// 이동량(Delta) 계산
-			float DeltaX = CurrX - PrevX;
-			float DeltaZ = CurrZ - PrevZ;
-
-			// 위치에 더해줌 (Velocity 이동과 합산)
-			gBuffer[ThreadID.x].LocalPos.x += DeltaX;
-			gBuffer[ThreadID.x].LocalPos.z += DeltaZ;
+			float OrbitX = gBuffer[ThreadID.x].OrbitRadius * cos(CurrAngle);
+			float OrbitZ = gBuffer[ThreadID.x].OrbitRadius * sin(CurrAngle);
+			
+			gBuffer[ThreadID.x].LocalPos.x = OrbitX;
+			gBuffer[ThreadID.x].LocalPos.z = OrbitZ;
 			// Module[0] : Space
 			// 0 : Local Space
 			// 1 : World Space
@@ -297,8 +287,8 @@ StructuredBuffer<FParticleModule> gModule : register(ParticleDataRegister);
 			}
 			else
 			{
-				gBuffer[ThreadID.x].WorldPos.x += DeltaX;
-				gBuffer[ThreadID.x].WorldPos.z += DeltaZ;
+				gBuffer[ThreadID.x].WorldPos.x = gBuffer[ThreadID.x].WorldInitPos.x + OrbitX;
+				gBuffer[ThreadID.x].WorldPos.z = gBuffer[ThreadID.x].WorldInitPos.z + OrbitZ;
 			}
 		}
 
