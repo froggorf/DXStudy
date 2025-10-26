@@ -96,6 +96,7 @@ void ParticleInit(inout FParticleData Particle, in FParticleModule Module, float
 
 	// 파티클 초기 크기 설정
 	Particle.WorldInitScale.xyz = Particle.WorldScale.xyz = (Module.MaxScale - Module.MinScale) * vRandom.g + Module.MinScale;
+	Particle.WorldScale *= Module.ObjectWorldScale;
 
 	// 파티클 질량 설정
 	Particle.Mass = 1.f;
@@ -230,7 +231,7 @@ StructuredBuffer<FParticleModule> gModule : register(ParticleDataRegister);
 		if (gModule[0].Module[3])
 		{
 			float CurScale                 = (gModule[0].EndScale - gModule[0].StartScale) * gBuffer[ThreadID.x].NormalizedAge + gModule[0].StartScale;
-			gBuffer[ThreadID.x].WorldScale = gBuffer[ThreadID.x].WorldInitScale * CurScale;
+			gBuffer[ThreadID.x].WorldScale = gModule[0].ObjectWorldScale * gBuffer[ThreadID.x].WorldInitScale * CurScale;
 		}
 
 		// Drag 감속 모듈

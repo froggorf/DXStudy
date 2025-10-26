@@ -16,7 +16,7 @@ public:
 	void Initialize(AGideonCharacter* DamageCauser, const FAttackData& Damage);
 	void FindEnemy();
 
-	void DestroySelf() override;
+	void SetLifeTime_Timer();
 
 protected:
 protected:
@@ -28,6 +28,13 @@ private:
 	FAttackData AttackData;
 
 	FTimerHandle KillSelfTimerHandle;
-	static constexpr float KillSelfTime = 6.0f;
+	float CurrentLifeTime = 0.0f;
+	static constexpr float SetScaleTimerTickTime = 0.05f;
+	static constexpr float KillSelfTime = 8.0f;
+
+	FTimerHandle FindEnemyAndApplyDamageTimerHandle;
+	static constexpr float FindEnemyAndApplyDamageTickTime = 0.8f;
+	static constexpr float MoveSpeedPerSec = 500.0f;
+	static constexpr float ApplyDamageDistance = 300.0f;
 
 };

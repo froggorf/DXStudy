@@ -25,7 +25,7 @@ AGideonFireBall::AGideonFireBall()
 	const std::shared_ptr<UNiagaraSystem>& System = UNiagaraSystem::GetNiagaraAsset("NS_FireBall");
 	FireVFX->SetNiagaraAsset(System);
 
-	FireVFX->SetRelativeScale3D({100,100,100});
+	FireVFX->SetRelativeScale3D({1,1,1});
 	FireVFX->SetRelativeLocation({0,0,0});
 }
 

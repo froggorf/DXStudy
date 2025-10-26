@@ -9,6 +9,7 @@ AGideonIceStorm::AGideonIceStorm()
 	IceStormVFX = std::make_shared<UNiagaraComponent>();
 	IceStormVFX->SetupAttachment(GetRootComponent());
 	IceStormVFX->SetRelativeLocation({0.0f,0.0f,0.0f});
+	IceStormVFX->SetRelativeScale3D({0.0f,0.0f,0.f});
 
 	StormCollisionComponent = std::make_shared<UStaticMeshComponent>();
 	StormCollisionComponent->SetupAttachment(GetRootComponent());
@@ -37,6 +38,10 @@ void AGideonIceStorm::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
 
+	XMFLOAT3 ForwardXZ = GetActorForwardVector();
+	ForwardXZ.y = 0.0f;
+	ForwardXZ = ForwardXZ * MoveSpeedPerSec * DeltaSeconds;
+	SetActorLocation(GetActorLocation() + ForwardXZ);
 }
 
 void AGideonIceStorm::Initialize(AGideonCharacter* DamageCauser, const FAttackData& Damage)
@@ -45,23 +50,55 @@ void AGideonIceStorm::Initialize(AGideonCharacter* DamageCauser, const FAttackDa
 	
 	AttackData = Damage;
 
-	GEngine->GetTimerManager()->SetTimer(KillSelfTimerHandle, {this, &AGideonIceStorm::DestroySelf}, KillSelfTime);
-
+	GEngine->GetTimerManager()->SetTimer(KillSelfTimerHandle, {this, &AGideonIceStorm::SetLifeTime_Timer}, 0.0f, true, SetScaleTimerTickTime);
+	GEngine->GetTimerManager()->SetTimer(FindEnemyAndApplyDamageTimerHandle, {this, &AGideonIceStorm::FindEnemy}, 0.0f, true, FindEnemyAndApplyDamageTickTime);
 }
 
 void AGideonIceStorm::FindEnemy()
 {
 	std::vector<AActor*> OverlapEnemies;
 
+	GPhysicsEngine->SphereOverlapComponents(GetActorLocation(), 1000.0f, {ECollisionChannel::Enemy}, {}, OverlapEnemies);
 	if (!OverlapEnemies.empty())
 	{
-		// TODO: 대미지 입히기
+		for (AActor* Enemy : OverlapEnemies)
+		{
+			float CurDistance = MyMath::GetDistance(Enemy->GetActorLocation(), GetActorLocation());
+			if (CurDistance <= ApplyDamageDistance)
+			{
+				GideonCharacter->ApplyDamageToEnemy(Enemy, AttackData, "G_Skill");
+			}
+		}
+
+		// 무조건 0번째 적에게 대해서 접근하도록 설정
+		
+		XMFLOAT4 ToEnemyRotation = MyMath::GetRotationQuaternionToActor(GetActorLocation(), OverlapEnemies[0]->GetActorLocation());
+		SetActorRotation(ToEnemyRotation);
 	}
 
 }
 
-void AGideonIceStorm::DestroySelf()
+void AGideonIceStorm::SetLifeTime_Timer()
 {
-	AActor::DestroySelf();
-}
+	static constexpr float SetScaleTime = 0.5f;
+	CurrentLifeTime += SetScaleTimerTickTime;
+	if (CurrentLifeTime <= SetScaleTime)
+	{
+		float NewScale = std::clamp(std::lerp(0.0f, 1.0f, 1 - (SetScaleTime - CurrentLifeTime) / SetScaleTime), 0.0f, 1.0f);
+		IceStormVFX->SetRelativeScale3D(XMFLOAT3{NewScale,NewScale,NewScale});
+	}
+	else if (CurrentLifeTime >= KillSelfTime - SetScaleTime)
+	{
+		float NewScale = std::lerp(0.0f,1.0f, (KillSelfTime - CurrentLifeTime) / SetScaleTime);
+		NewScale = std::clamp(NewScale, 0.0f,1.0f);
+		IceStormVFX->SetRelativeScale3D(XMFLOAT3{NewScale,NewScale,NewScale});
+	}
 
+	if (CurrentLifeTime >= KillSelfTime)
+	{
+		GEngine->GetTimerManager()->ClearTimer(KillSelfTimerHandle);
+		GEngine->GetTimerManager()->ClearTimer(FindEnemyAndApplyDamageTimerHandle);
+		
+		DestroySelf();
+	}
+}

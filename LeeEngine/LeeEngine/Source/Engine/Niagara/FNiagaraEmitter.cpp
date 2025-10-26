@@ -346,6 +346,7 @@ FNiagaraEmitter::FNiagaraEmitter()
 void FNiagaraEmitter::Tick(float DeltaSeconds, const FTransform& SceneTransform)
 {
 	Module.ObjectWorldPos = SceneTransform.GetTranslation();
+	Module.ObjectWorldScale = SceneTransform.GetScale3D();
 
 	// 이번 프레임에 활성화 될 파티클 수 계산
 	CalcSpawnCount(DeltaSeconds);

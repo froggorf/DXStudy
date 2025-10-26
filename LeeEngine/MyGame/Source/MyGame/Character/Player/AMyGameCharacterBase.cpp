@@ -47,7 +47,8 @@ AMyGameCharacterBase::AMyGameCharacterBase()
 		CharacterMovement->Braking = 4096;
 	}
 
-	SpringArm->SetArmLength(250);
+	SpringArm->SetRelativeLocation(XMFLOAT3{0.0f, 50.0f, 0.0f});
+	SpringArm->SetArmLength(450);
 	
 
 	SkeletalMeshComponent->SetRelativeLocation({0,-85,0});

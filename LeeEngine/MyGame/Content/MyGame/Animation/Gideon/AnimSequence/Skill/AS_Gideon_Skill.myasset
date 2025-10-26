@@ -1,0 +1,7 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_Gideon_Skill",
+    "Skeleton": "SK_Gideon",
+    "AnimationDataPath": "/Content/Resource/MyGame/Animation/Gideon/Skill/Gideon_Skill.FBX",
+    "RootMotion": 1
+}

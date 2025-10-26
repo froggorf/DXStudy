@@ -25,7 +25,7 @@ class UGideonAnimInstance final : public UMyGameAnimInstanceBase
 	void BasicAttack1();
 	void BasicAttack2();
 	void HeavyAttack();
-	//void SkillAttack();
+	void SkillAttack();
 	//void UltAttack();
 
 	// MotionWarping - SkillAttack

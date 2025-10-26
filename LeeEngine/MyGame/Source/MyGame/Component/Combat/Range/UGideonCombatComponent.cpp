@@ -92,7 +92,7 @@ bool UGideonCombatComponent::HeavyAttack()
 		}
 		if (const std::shared_ptr<UGideonWidget>& GideonWidget = std::dynamic_pointer_cast<UGideonWidget>(MyGameCharacter->GetCharacterWidget()))
 		{
-			GideonWidget->SetAimModeWidgetVisibility(false);
+			GideonWidget->SetGideonGaugeWidgetVisibility(true);
 		}
 	}
 
@@ -116,7 +116,7 @@ void UGideonCombatComponent::HeavyAttackMouseReleased()
 
 	if (const std::shared_ptr<UGideonWidget>& GideonWidget = std::dynamic_pointer_cast<UGideonWidget>(MyGameCharacter->GetCharacterWidget()))
 	{
-		GideonWidget->SetAimModeWidgetVisibility(false);
+		GideonWidget->SetGideonGaugeWidgetVisibility(false);
 	}
 
 	SetHeavyAttackChargeTime(0);

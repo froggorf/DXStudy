@@ -129,6 +129,7 @@ struct FParticleModule
 
 	// 추가 데이터
 	XMFLOAT3 ObjectWorldPos{};
+	XMFLOAT3 ObjectWorldScale{};
 
 	XMFLOAT4 DynamicParamMin{};
 	XMFLOAT4 DynamicParamMax{};

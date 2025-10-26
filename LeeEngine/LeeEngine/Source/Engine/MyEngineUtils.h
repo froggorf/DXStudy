@@ -261,8 +261,12 @@ namespace MyMath
 
 	inline float GetDistance(const XMFLOAT3& From, const XMFLOAT3& To)
 	{
-		float Distance = XMVectorGetX(XMVector3Length(XMVectorSubtract( XMLoadFloat3(&From), XMLoadFloat3(&To))));
-		return Distance;
+		return XMVectorGetX(XMVector3Length(XMVectorSubtract( XMLoadFloat3(&From), XMLoadFloat3(&To))));
+	}
+
+	inline float GetDistanceEst(const XMFLOAT3& From, const XMFLOAT3& To)
+	{
+		return XMVectorGetX(XMVector3LengthEst(XMVectorSubtract( XMLoadFloat3(&From), XMLoadFloat3(&To))));
 	}
 
 	inline float GetDistance2D(const XMFLOAT2& From, const XMFLOAT2& To)
@@ -294,6 +298,7 @@ namespace MyMath
 	}
 
 	XMFLOAT4 GetRotationQuaternionToActor(const XMFLOAT3& From, const XMFLOAT3& To);
+	XMFLOAT4 ForwardVectorToRotationQuaternion(const XMFLOAT3& ForwardVector);
 
 	// Forward벡터 -> 액터의 Rotation 회전값
 	XMFLOAT4 VectorToRotationQuaternion(const XMFLOAT3& Forward);

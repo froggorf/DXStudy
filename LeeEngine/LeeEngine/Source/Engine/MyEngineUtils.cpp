@@ -133,6 +133,26 @@ namespace MyMath
 		return ReturnQuaternion;
 	}
 
+	XMFLOAT4 ForwardVectorToRotationQuaternion(const XMFLOAT3& ForwardVector)
+	{
+		XMVECTOR Direction = XMVector3Normalize(XMLoadFloat3(&ForwardVector));
+		XMVECTOR Forward = XMVectorSet(0, 0, 1, 0);
+		XMVECTOR Axis = XMVector3Cross(Forward, Direction);
+		float Dot = XMVectorGetX(XMVector3Dot(Forward, Direction));
+		float Angle = acosf(Dot);
+
+		if (XMVector3Equal(Axis, XMVectorZero()))
+		{
+			Axis = XMVectorSet(0, 1, 0, 0);
+		}
+
+		XMVECTOR Quaternion = XMQuaternionRotationAxis(Axis, Angle);
+
+		XMFLOAT4 ReturnQuaternion;
+		XMStoreFloat4(&ReturnQuaternion, Quaternion);
+		return ReturnQuaternion;
+	}
+
 	XMFLOAT4 VectorToRotationQuaternion(const XMFLOAT3& Forward)
 	{
 		XMVECTOR DefaultForward = XMVectorSet(0, 0, 1, 0);

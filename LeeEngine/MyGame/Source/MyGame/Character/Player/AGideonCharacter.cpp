@@ -3,8 +3,10 @@
 
 #include "Engine/World/UWorld.h"
 #include "MyGame/Actor/Gideon/AGideonFireBall.h"
+#include "MyGame/Actor/Gideon/AGideonIceStorm.h"
 #include "MyGame/Actor/Sanhwa/ASanhwaIceBase.h"
 #include "MyGame/Component/Combat/Range/UGideonCombatComponent.h"
+#include "MyGame/Component/Combat/Skill/NormalSkill/Gideon/UGideonSkillComponent.h"
 #include "MyGame/Widget/Gideon/UGideonWidget.h"
 
 std::string AGideonCharacter::CharacterName  = "Gideon";
@@ -34,7 +36,7 @@ AGideonCharacter::AGideonCharacter()
 	//RollMontageName[static_cast<int>(EDodgeDirection::Backward)] = "AM_UE5MM_Roll_Bwd";
 
 	CombatComponent = std::dynamic_pointer_cast<UGideonCombatComponent>(CreateDefaultSubobject("GideonCombatComp", "UGideonCombatComponent"));
-	//SkillComponent = std::dynamic_pointer_cast<USanhwaSkillComponent>(CreateDefaultSubobject("SanhwaSkillComp", "USanhwaSkillComponent"));
+	SkillComponent = std::dynamic_pointer_cast<UGideonSkillComponent>(CreateDefaultSubobject("GideonSkillComp", "UGideonSkillComponent"));
 	//UltimateComponent = std::dynamic_pointer_cast<USanhwaUltimateComponent>(CreateDefaultSubobject("SanhwaUltComp", "USanhwaUltimateComponent"));
 
 	CharacterMaxHealth = 20000.0f;
@@ -94,6 +96,14 @@ void AGideonCharacter::SpawnFireBall(const FTransform& SpawnTransform, const FAt
 	if (std::shared_ptr<AGideonFireBall> FireBall = std::dynamic_pointer_cast<AGideonFireBall>(GetWorld()->SpawnActor("AGideonFireBall", SpawnTransform)))
 	{
 		FireBall->Initialize(this, TargetPosition, AttackData);
+	}
+}
+
+void AGideonCharacter::SpawnIceStorm(const FTransform& SpawnTransform, const FAttackData& AttackData)
+{
+	if (std::shared_ptr<AGideonIceStorm> IceStorm = std::dynamic_pointer_cast<AGideonIceStorm>(GetWorld()->SpawnActor("AGideonIceStorm", SpawnTransform)))
+	{
+		IceStorm->Initialize(this, AttackData);
 	}
 }
 

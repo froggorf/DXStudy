@@ -134,7 +134,7 @@ void FImguiLevelViewport::Draw()
 		ImGui::PopClipRect();
 
 		// 키 입력 처리
-		if (ImGui::IsWindowFocused())
+		if (!GEngine->bGameStart && ImGui::IsWindowFocused())
 		{
 			static bool bShowCursor  = true;
 			static auto LastMousePos = ImVec2{-1.0f, -1.0f};

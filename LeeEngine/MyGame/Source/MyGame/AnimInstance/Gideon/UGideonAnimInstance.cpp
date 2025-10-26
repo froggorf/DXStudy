@@ -3,6 +3,7 @@
 
 #include "MyGame/Character/Player/AGideonCharacter.h"
 #include "MyGame/Component/Combat/Range/UGideonCombatComponent.h"
+#include "MyGame/Component/Combat/Skill/NormalSkill/Gideon/UGideonSkillComponent.h"
 
 UGideonAnimInstance::UGideonAnimInstance()
 {
@@ -155,6 +156,14 @@ void UGideonAnimInstance::HeavyAttack()
 	GideonCombatComp->ApplyHeavyAttack();
 }
 
+void UGideonAnimInstance::SkillAttack()
+{
+	if (const std::shared_ptr<UGideonSkillComponent>& GideonSkillComp = std::dynamic_pointer_cast<UGideonSkillComponent>(MyGameCharacter->GetSkillComponent()))
+	{
+		GideonSkillComp->ApplySkillAttack();
+	}
+}
+
 void UGideonAnimInstance::SetAnimNotify_BeginPlay()
 {
 	UMyGameAnimInstanceBase::SetAnimNotify_BeginPlay();
@@ -165,4 +174,6 @@ void UGideonAnimInstance::SetAnimNotify_BeginPlay()
 	NotifyEvent["BasicAttack2"] = {this, &UGideonAnimInstance::BasicAttack2};
 	// HeavyAttack
 	NotifyEvent["ChargeAttack"] = {this,&UGideonAnimInstance::HeavyAttack};
+	// Skill
+	NotifyEvent["G_Skill"] = {this, &UGideonAnimInstance::SkillAttack};
 }
