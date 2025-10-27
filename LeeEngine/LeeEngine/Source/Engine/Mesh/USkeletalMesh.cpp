@@ -51,7 +51,7 @@ FSkeletalMeshRenderData::FSkeletalMeshRenderData(const nlohmann::json& SkeletalM
 		UINT currentTextureCount = static_cast<UINT>(MaterialInterfaces.size());
 		for (; currentTextureCount < MeshCount; ++currentTextureCount)
 		{
-			MaterialInterfaces.push_back(MaterialInterfaces[0]);
+			MaterialInterfaces.emplace_back(MaterialInterfaces[0]);
 		}
 	}
 }

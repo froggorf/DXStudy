@@ -9,30 +9,30 @@
 
 void IDodgeInterface::LoadAnimMontages()
 {
-	// Dodge
-	{
-		AssetManager::GetAsyncAssetCache(DodgeMontageName[static_cast<int>(EDodgeDirection::Forward)], [this](std::shared_ptr<UObject> Object)
-			{
-				AM_Dodge[static_cast<int>(EDodgeDirection::Forward)] = std::dynamic_pointer_cast<UAnimMontage>(Object);
-			});
-		AssetManager::GetAsyncAssetCache(DodgeMontageName[static_cast<int>(EDodgeDirection::Backward)], [this](std::shared_ptr<UObject> Object)
-			{
-				AM_Dodge[static_cast<int>(EDodgeDirection::Backward)] = std::dynamic_pointer_cast<UAnimMontage>(Object);
-			});
-	}
-
-	// Roll
-	{
-		AssetManager::GetAsyncAssetCache(RollMontageName[static_cast<int>(EDodgeDirection::Forward)], [this](std::shared_ptr<UObject> Object)
-			{
-				AM_Roll[static_cast<int>(EDodgeDirection::Forward)] = std::dynamic_pointer_cast<UAnimMontage>(Object);
-			});
-		AssetManager::GetAsyncAssetCache(RollMontageName[static_cast<int>(EDodgeDirection::Backward)], [this](std::shared_ptr<UObject> Object)
-			{
-				AM_Roll[static_cast<int>(EDodgeDirection::Backward)] = std::dynamic_pointer_cast<UAnimMontage>(Object);
-			});
-	}
-
+	//// Dodge
+	//{
+	//	AssetManager::GetAsyncAssetCache(DodgeMontageName[static_cast<int>(EDodgeDirection::Forward)], [this](std::shared_ptr<UObject> Object)
+	//		{
+	//			AM_Dodge[static_cast<int>(EDodgeDirection::Forward)] = std::dynamic_pointer_cast<UAnimMontage>(Object);
+	//		});
+	//	AssetManager::GetAsyncAssetCache(DodgeMontageName[static_cast<int>(EDodgeDirection::Backward)], [this](std::shared_ptr<UObject> Object)
+	//		{
+	//			AM_Dodge[static_cast<int>(EDodgeDirection::Backward)] = std::dynamic_pointer_cast<UAnimMontage>(Object);
+	//		});
+	//}
+	//
+	//// Roll
+	//{
+	//	AssetManager::GetAsyncAssetCache(RollMontageName[static_cast<int>(EDodgeDirection::Forward)], [this](std::shared_ptr<UObject> Object)
+	//		{
+	//			AM_Roll[static_cast<int>(EDodgeDirection::Forward)] = std::dynamic_pointer_cast<UAnimMontage>(Object);
+	//		});
+	//	AssetManager::GetAsyncAssetCache(RollMontageName[static_cast<int>(EDodgeDirection::Backward)], [this](std::shared_ptr<UObject> Object)
+	//		{
+	//			AM_Roll[static_cast<int>(EDodgeDirection::Backward)] = std::dynamic_pointer_cast<UAnimMontage>(Object);
+	//		});
+	//}
+	//
 
 }
 

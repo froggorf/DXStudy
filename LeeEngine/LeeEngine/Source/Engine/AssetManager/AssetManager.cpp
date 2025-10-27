@@ -165,7 +165,7 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const ComPtr<I
 	BoundSphereLength = (MaxBound - MinBound).Length() / 2;
 	
 	// VertexData를 SkeletalVertexData로 변환
-	std::vector<std::vector<MyVertexData>> allSkeletalVertices(scene->mNumMeshes);
+	std::vector<std::vector<MyVertexData>> allSkeletalVertices(allVertices.size());
 	for (int meshIndex = 0; meshIndex < allVertices.size(); ++meshIndex)
 	{
 		allSkeletalVertices[meshIndex].resize(allVertices[meshIndex].size());
@@ -183,7 +183,7 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const ComPtr<I
 		}
 	}
 
-	for (UINT meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex)
+	for (UINT meshIndex = 0; meshIndex < allVertices.size(); ++meshIndex)
 	{
 		
 		ExtractBoneWeightForVertices(allSkeletalVertices[meshIndex], scene->mMeshes[meshIndex], modelBoneInfoMap, scene->mRootNode);
@@ -192,7 +192,8 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const ComPtr<I
 	// 모델 로드 성공
 	MY_LOG("AssetLoad", EDebugLogLevel::DLL_Display, "SkeletalModel - " + filePath+" Load Success");
 
-	for (UINT i = 0; i < scene->mNumMeshes; ++i)
+	size_t Size = static_cast<UINT>(allSkeletalVertices.size());
+	for (UINT i = 0; i < Size; ++i)
 	{
 		// 버텍스 버퍼
 		ComPtr<ID3D11Buffer> vertexBuffer;
@@ -546,20 +547,37 @@ UObject* AssetManager::ReadMyAsset(const std::string& FilePath)
 
 void AssetManager::ProcessScene(const aiScene* scene, std::vector<std::vector<MyVertexData>>& allVertices, std::vector<std::vector<UINT>>& allIndices, bool bISUEcoord)
 {
+	std::map<int, std::vector<MyVertexData>> materialVertices;
+	std::map<int, std::vector<UINT>> materialIndices;
+
+	UINT globalVertexOffset = 0;
+
 	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
 	{
 		aiMesh* mesh = scene->mMeshes[i];
+		int matIdx = mesh->mMaterialIndex;
 
-		// 각 메쉬의 버텍스와 인덱스 데이터를 저장할 벡터
 		std::vector<MyVertexData> vertices;
-		std::vector<UINT>         indices;
+		std::vector<UINT> indices;
 
-		// 메쉬 데이터 처리
 		ProcessMesh(mesh, vertices, indices, bISUEcoord);
 
-		// 결과를 전체 리스트에 추가
-		allVertices.emplace_back(vertices);
-		allIndices.emplace_back(indices);
+		// 인덱스 값 보정 (합칠 때 필요!)
+		for (auto& idx : indices) {
+			idx += materialVertices[matIdx].size();
+		}
+
+		// 머티리얼 인덱스별로 버텍스/인덱스 합치기
+		materialVertices[matIdx].insert(materialVertices[matIdx].end(), vertices.begin(), vertices.end());
+		materialIndices[matIdx].insert(materialIndices[matIdx].end(), indices.begin(), indices.end());
+	}
+
+	// 결과로 머티리얼 슬롯 개수
+	allVertices.clear();
+	allIndices.clear();
+	for (auto& pair : materialVertices) {
+		allVertices.push_back(pair.second);
+		allIndices.push_back(materialIndices[pair.first]);
 	}
 }
 

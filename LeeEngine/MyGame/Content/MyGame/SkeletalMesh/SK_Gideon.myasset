@@ -3,5 +3,5 @@
     "Name": "SK_Gideon",
     "ModelData": "/Content/Resource/MyGame/Character/Gideon.FBX",
     "DefaultPoseAnimData" : "/Content/Resource/MyGame/Animation/Gideon/DefaultPose.FBX",
-    "Material" : [ "M_UE5_MM", "M_UE5_MM", "M_UE5_MM", "M_UE5_MM", "M_UE5_MM", "M_UE5_MM", "M_UE5_MM", "M_UE5_MM", "M_UE5_MM", "M_UE5_MM", "M_UE5_MM", "M_UE5_MM", "M_UE5_MM" ]
+    "Material" : [ "M_Gideon_Head", "M_UE5_MM", "M_UE5_MM", "M_UE5_MM", "M_UE5_MM", "M_UE5_MM", "M_UE5_MM", "M_UE5_MM", "M_UE5_MM", "M_UE5_MM", "M_UE5_MM", "M_UE5_MM", "M_UE5_MM" ]
 }

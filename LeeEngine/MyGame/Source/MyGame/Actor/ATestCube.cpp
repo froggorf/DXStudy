@@ -11,122 +11,122 @@ dtNavMeshQuery* ATestCube::MyDtNavQuery;
 
 ATestCube::ATestCube()
 {
-	SM_Well_PBR = std::make_shared<UStaticMeshComponent>();
-	SM_Well_PBR->SetupAttachment(GetRootComponent());
-	AssetManager::GetAsyncAssetCache("SM_Well_PBR",[this](std::shared_ptr<UObject> Object)
-		{
-			SM_Well_PBR->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
-		});
-	//DecalTest1 = std::make_shared<UDecalComponent>();
-	//DecalTest1->SetupAttachment(GetRootComponent());
-	//const std::shared_ptr<UMaterialInterface>& DecalMaterial = UMaterial::GetMaterialCache("M_Decal");
-	////DecalMaterial->SetRasterizerType(ERasterizerType::RT_CullFront);
-	////DecalMaterial->SetBlendStateType(EBlendStateType::BST_Decal);
-	////DecalMaterial->SetDepthStencilState(EDepthStencilStateType::DST_NO_TEST_NO_WRITE);
-	//DecalTest1->SetDecalMaterial(DecalMaterial);
-	//DecalTest1->SetIsLight(false);
-	//DecalTest1->SetRelativeScale3D({1000,1000,1000});
+	//SM_Well_PBR = std::make_shared<UStaticMeshComponent>();
+	//SM_Well_PBR->SetupAttachment(GetRootComponent());
+	//AssetManager::GetAsyncAssetCache("SM_Well_PBR",[this](std::shared_ptr<UObject> Object)
+	//	{
+	//		SM_Well_PBR->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
+	//	});
+	////DecalTest1 = std::make_shared<UDecalComponent>();
+	////DecalTest1->SetupAttachment(GetRootComponent());
+	////const std::shared_ptr<UMaterialInterface>& DecalMaterial = UMaterial::GetMaterialCache("M_Decal");
+	//////DecalMaterial->SetRasterizerType(ERasterizerType::RT_CullFront);
+	//////DecalMaterial->SetBlendStateType(EBlendStateType::BST_Decal);
+	//////DecalMaterial->SetDepthStencilState(EDepthStencilStateType::DST_NO_TEST_NO_WRITE);
+	////DecalTest1->SetDecalMaterial(DecalMaterial);
+	////DecalTest1->SetIsLight(false);
+	////DecalTest1->SetRelativeScale3D({1000,1000,1000});
 
 
-	//Light1 = std::make_shared<ULightComponent>();
-	//Light1->SetupAttachment(GetRootComponent());
-	//Light1->SetLightType(ELightType::Point);
-	//Light1->SetRadius(150);
-	//Light1->SetLightColor({5,0,0});
-	//Light1->SetWorldLocation({100,0,100});
+	////Light1 = std::make_shared<ULightComponent>();
+	////Light1->SetupAttachment(GetRootComponent());
+	////Light1->SetLightType(ELightType::Point);
+	////Light1->SetRadius(150);
+	////Light1->SetLightColor({5,0,0});
+	////Light1->SetWorldLocation({100,0,100});
+	////
+	////Light2 = std::make_shared<ULightComponent>();
+	////Light2->SetupAttachment(GetRootComponent());
+	////Light2->SetLightType(ELightType::Point);
+	////Light2->SetRadius(300);
+	////Light2->SetLightColor({0,5,0});
+	////Light2->SetWorldLocation({-350,0,100});
+	////
+	//Light3 = std::make_shared<ULightComponent>();
+	//Light3->SetupAttachment(GetRootComponent());
+	//Light3->SetLightType(ELightType::Point);
+	//Light3->SetRadius(1000);
+	//Light3->SetLightColor({0,3,3});
+	//Light3->SetWorldLocation({100,0,-100});
 	//
-	//Light2 = std::make_shared<ULightComponent>();
-	//Light2->SetupAttachment(GetRootComponent());
-	//Light2->SetLightType(ELightType::Point);
-	//Light2->SetRadius(300);
-	//Light2->SetLightColor({0,5,0});
-	//Light2->SetWorldLocation({-350,0,100});
 	//
-	Light3 = std::make_shared<ULightComponent>();
-	Light3->SetupAttachment(GetRootComponent());
-	Light3->SetLightType(ELightType::Point);
-	Light3->SetRadius(1000);
-	Light3->SetLightColor({0,3,3});
-	Light3->SetWorldLocation({100,0,-100});
-	
-	
 
-	const int ObjectCount = 5; // 오브젝트 개수
-	const float Radius = 300.0f; // 원의 반지름 (원하는 값으로)
-	const float CenterY = 100.0f; // Z 중심값 (원의 높이)
+	//const int ObjectCount = 5; // 오브젝트 개수
+	//const float Radius = 300.0f; // 원의 반지름 (원하는 값으로)
+	//const float CenterY = 100.0f; // Z 중심값 (원의 높이)
 
-	for (UINT i = 0; i < 6; ++i)
-	{
-		float Angle = (2 * XM_PI / ObjectCount) * i; // 라디안 각도
-		float X = std::cos(Angle) * Radius;
-		float Y = std::sin(Angle) * Radius;
-		float Z = CenterY;
-		SM_DeferredSphere[i] = std::make_shared<UStaticMeshComponent>();
-		SM_DeferredSphere[i]->SetupAttachment(GetRootComponent());
-		AssetManager::GetAsyncAssetCache("SM_DeferredSphere",[this, i](std::shared_ptr<UObject> Object)
-			{
-				SM_DeferredSphere[i]->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
-			});
-		SM_DeferredSphere[i]->SetRelativeLocation({X, Z,Y});
-		SM_DeferredSphere[i]->SetRelativeScale3D({15,100,15});
-	}
-	
+	//for (UINT i = 0; i < 6; ++i)
+	//{
+	//	float Angle = (2 * XM_PI / ObjectCount) * i; // 라디안 각도
+	//	float X = std::cos(Angle) * Radius;
+	//	float Y = std::sin(Angle) * Radius;
+	//	float Z = CenterY;
+	//	SM_DeferredSphere[i] = std::make_shared<UStaticMeshComponent>();
+	//	SM_DeferredSphere[i]->SetupAttachment(GetRootComponent());
+	//	AssetManager::GetAsyncAssetCache("SM_DeferredSphere",[this, i](std::shared_ptr<UObject> Object)
+	//		{
+	//			SM_DeferredSphere[i]->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
+	//		});
+	//	SM_DeferredSphere[i]->SetRelativeLocation({X, Z,Y});
+	//	SM_DeferredSphere[i]->SetRelativeScale3D({15,100,15});
+	//}
+	//
 
-	TestCube2 = std::make_shared<UStaticMeshComponent>();
-	TestCube2->SetupAttachment(GetRootComponent());
-	// 비동기 에셋 로드 테스트
-	AssetManager::GetAsyncAssetCache("SM_DeferredCube",[this](std::shared_ptr<UObject> Object)
-	{
-		TestCube2->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
-	});
+	//TestCube2 = std::make_shared<UStaticMeshComponent>();
+	//TestCube2->SetupAttachment(GetRootComponent());
+	//// 비동기 에셋 로드 테스트
+	//AssetManager::GetAsyncAssetCache("SM_DeferredCube",[this](std::shared_ptr<UObject> Object)
+	//{
+	//	TestCube2->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
+	//});
 
-	//TestCube2->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Cube"));
-	TestCube2->SetRelativeScale3D(XMFLOAT3(1600.0f, 0.01f, 1600.0f));
-	//TestCube2->SetRelativeScale3D(XMFLOAT3(100.0f,100.0f,100.0f));
-	TestCube2->SetRelativeLocation(XMFLOAT3(0.0f, -50, 0.0f));
-	TestCube2->SetCollisionObjectType(ECollisionChannel::WorldStatic);
-	
+	////TestCube2->SetStaticMesh(UStaticMesh::GetStaticMesh("SM_Cube"));
+	//TestCube2->SetRelativeScale3D(XMFLOAT3(1600.0f, 0.01f, 1600.0f));
+	////TestCube2->SetRelativeScale3D(XMFLOAT3(100.0f,100.0f,100.0f));
+	//TestCube2->SetRelativeLocation(XMFLOAT3(0.0f, -50, 0.0f));
+	//TestCube2->SetCollisionObjectType(ECollisionChannel::WorldStatic);
+	//
 
-	
+	//
 
-	DummyComp = std::make_shared<USceneComponent>();
-	DummyComp->Rename("DummyComp");
-	DummyComp->SetupAttachment(GetRootComponent());
-	DummyComp->SetRelativeLocation(XMFLOAT3{-45.0f, 50.0f, 0.0f});
+	//DummyComp = std::make_shared<USceneComponent>();
+	//DummyComp->Rename("DummyComp");
+	//DummyComp->SetupAttachment(GetRootComponent());
+	//DummyComp->SetRelativeLocation(XMFLOAT3{-45.0f, 50.0f, 0.0f});
 
-	NC_BillboardRibbon = std::make_shared<UNiagaraComponent>();
-	NC_BillboardRibbon->SetupAttachment(DummyComp);
-	std::shared_ptr<UNiagaraSystem> System = UNiagaraSystem::GetNiagaraAsset("NS_Ribbon");
-	NC_BillboardRibbon->SetNiagaraAsset(System);
-	NC_BillboardRibbon->SetRelativeLocation(XMFLOAT3{0.0, 30.0f, 0.0f});
-	NC_BillboardRibbon->SetRelativeRotation(XMFLOAT3{90.0f, 0.0f, 0.0f});
+	//NC_BillboardRibbon = std::make_shared<UNiagaraComponent>();
+	//NC_BillboardRibbon->SetupAttachment(DummyComp);
+	//std::shared_ptr<UNiagaraSystem> System = UNiagaraSystem::GetNiagaraAsset("NS_Ribbon");
+	//NC_BillboardRibbon->SetNiagaraAsset(System);
+	//NC_BillboardRibbon->SetRelativeLocation(XMFLOAT3{0.0, 30.0f, 0.0f});
+	//NC_BillboardRibbon->SetRelativeRotation(XMFLOAT3{90.0f, 0.0f, 0.0f});
 
-	DummyComp2 = std::make_shared<USceneComponent>();
-	DummyComp2->Rename("DummyComp2");
-	DummyComp2->SetupAttachment(GetRootComponent());
-	DummyComp2->SetRelativeLocation(XMFLOAT3{45.0f, 50.0f, 0.0f});
+	//DummyComp2 = std::make_shared<USceneComponent>();
+	//DummyComp2->Rename("DummyComp2");
+	//DummyComp2->SetupAttachment(GetRootComponent());
+	//DummyComp2->SetRelativeLocation(XMFLOAT3{45.0f, 50.0f, 0.0f});
 
-	NC_Ribbon = std::make_shared<UNiagaraComponent>();
-	NC_Ribbon->SetupAttachment(DummyComp2);
-	std::shared_ptr<UNiagaraSystem> System2 = UNiagaraSystem::GetNiagaraAsset("NS_RibbonX");
-	NC_Ribbon->SetNiagaraAsset(System2);
-	NC_Ribbon->SetRelativeLocation(XMFLOAT3{0.0, 30.0f, 0.0f});
-	NC_Ribbon->SetRelativeRotation(XMFLOAT3{0.0f, 0.0f, 0.0f});
+	//NC_Ribbon = std::make_shared<UNiagaraComponent>();
+	//NC_Ribbon->SetupAttachment(DummyComp2);
+	//std::shared_ptr<UNiagaraSystem> System2 = UNiagaraSystem::GetNiagaraAsset("NS_RibbonX");
+	//NC_Ribbon->SetNiagaraAsset(System2);
+	//NC_Ribbon->SetRelativeLocation(XMFLOAT3{0.0, 30.0f, 0.0f});
+	//NC_Ribbon->SetRelativeRotation(XMFLOAT3{0.0f, 0.0f, 0.0f});
 
-	NC_Ribbon = std::make_shared<UNiagaraComponent>();
-	NC_Ribbon->SetupAttachment(GetRootComponent());
+	//NC_Ribbon = std::make_shared<UNiagaraComponent>();
+	//NC_Ribbon->SetupAttachment(GetRootComponent());
 
-	NC_Ribbon->SetNiagaraAsset(UNiagaraSystem::GetNiagaraAsset("NS_Test"));
-	NC_Ribbon->SetRelativeLocation(XMFLOAT3{-50.0, -15.0f, 0.0f});
-	//NC_Ribbon->SetRelativeLocation(XMFLOAT3{-50.0, -50.0f, 100.0f});
-	NC_Ribbon->SetRelativeRotation(XMFLOAT3{0.0f, 0.0f, 0.0f});
+	//NC_Ribbon->SetNiagaraAsset(UNiagaraSystem::GetNiagaraAsset("NS_Test"));
+	//NC_Ribbon->SetRelativeLocation(XMFLOAT3{-50.0, -15.0f, 0.0f});
+	////NC_Ribbon->SetRelativeLocation(XMFLOAT3{-50.0, -50.0f, 100.0f});
+	//NC_Ribbon->SetRelativeRotation(XMFLOAT3{0.0f, 0.0f, 0.0f});
 
-	Rename("ATestCube" + std::to_string(ActorID));
+	//Rename("ATestCube" + std::to_string(ActorID));
 
-	TriggerBox1 = std::make_shared<UBoxComponent>();
-	TriggerBox1->SetExtent(XMFLOAT3{50,3,50});
-	TriggerBox1->SetupAttachment(GetRootComponent());
-	TriggerBox1->SetRelativeLocation(XMFLOAT3{0,-10,0});
+	//TriggerBox1 = std::make_shared<UBoxComponent>();
+	//TriggerBox1->SetExtent(XMFLOAT3{50,3,50});
+	//TriggerBox1->SetupAttachment(GetRootComponent());
+	//TriggerBox1->SetRelativeLocation(XMFLOAT3{0,-10,0});
 
 	
 }
