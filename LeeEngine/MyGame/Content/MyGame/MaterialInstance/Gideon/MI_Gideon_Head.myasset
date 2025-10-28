@@ -1,0 +1,15 @@
+{
+    "Class": "UMaterialInstance",
+    "Name": "MI_Gideon_Head",
+    "ParentMaterial" : "M_Gideon_Default",
+    "OverrideTexture" :
+    [
+	{ "Index" : 0, "Tex": "T_G_Head_Base"},
+	{ "Index" : 1, "Tex": "T_G_Head_N"},
+	{ "Index" : 2, "Tex": ""},
+	{ "Index" : 3, "Tex": ""},
+	{ "Index" : 4, "Tex": "T_G_Head_R"},
+	{ "Index" : 5, "Tex": "T_G_Head_AO"},
+	{ "Index" : 6, "Tex": ""}
+    ]
+}

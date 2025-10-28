@@ -39,7 +39,7 @@ Deferred_PS_OUT PBR_PS_Default(PBR_PS_INPUT input) : SV_TARGET
 	float DefaultRoughness = 0.5f;
 	int RoughnessTexBind = bTexBind_4_7.x;
 	float roughness = RoughnessTexBind ? RoughnessTexture.Sample(DefaultSampler, input.UV).r : DefaultRoughness;
-
+	
 	float DefaultAO = 1.0f;
 	int AOTexBind = bTexBind_4_7.y;
 	float ao = AOTexBind ? AOTexture.Sample(DefaultSampler, input.UV).r : DefaultAO;

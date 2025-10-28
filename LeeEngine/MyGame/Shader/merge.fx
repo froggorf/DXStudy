@@ -44,7 +44,7 @@ float4 PS_Merge(VS_OUT _in) : SV_Target
 	float3 N = ViewNormalTexture.Sample(DefaultSampler, _in.vUV);
 	float3 V = ViewPosTexture.Sample(DefaultSampler, _in.vUV);
 	float4 PBRData = PBRTexture.Sample(DefaultSampler, _in.vUV);
-
+	
 	float ObjectMetallic = PBRData.r;
 	float ObjectSpecular = PBRData.g;
 	float ObjectRoughness = PBRData.b;

@@ -35,8 +35,7 @@ PBR_PS_INPUT VS(VS_INPUT Input)
 	output.ViewPosition = mul(float4(Input.Pos.xyz, 1.f), gMatWV);
 	output.ViewTangent = normalize(mul(float4(Input.Tangent, 0.f), gMatWV)).xyz;
 	output.ViewNormal = normalize(mul(float4(Input.Normal, 0.f), gMatWV)).xyz;
-	output.ViewBinormal = normalize(mul(float4(Input.Binormal, 0.f), gMatWV)).xyz;
-
+	output.ViewBinormal = normalize(cross(output.ViewNormal, output.ViewTangent));
 	return output;
 }
 
@@ -55,7 +54,6 @@ PBR_PS_INPUT VS_Skeletal(VS_INPUT Input)
 		Input.Pos = skinnedPosition;
 		Input.Normal = skinnedNormal;
 		Input.Tangent = skinnedTangent;
-		Input.Binormal = skinnedBinormal;
 	}
 
 	output.PosScreen = mul(mul(Input.Pos, gMatWV), gProjection);
@@ -64,7 +62,7 @@ PBR_PS_INPUT VS_Skeletal(VS_INPUT Input)
 	output.ViewPosition = mul(float4(Input.Pos.xyz, 1.f), gMatWV);
 	output.ViewTangent = normalize(mul(float4(Input.Tangent, 0.f), gMatWV)).xyz;
 	output.ViewNormal = normalize(mul(float4(Input.Normal, 0.f), gMatWV)).xyz;
-	output.ViewBinormal = normalize(mul(float4(Input.Binormal, 0.f), gMatWV)).xyz;
+	output.ViewBinormal = normalize(cross(output.ViewNormal, output.ViewTangent));
 
 	return output;
 }

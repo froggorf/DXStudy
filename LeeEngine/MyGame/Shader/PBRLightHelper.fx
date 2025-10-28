@@ -63,7 +63,7 @@ float3 FresnelSchlickRoughness(float cosTheta, float3 F0, float roughness)
 }
 
 // Get Normal from Normal Map
-float3 GetNormalFromMap(PBR_PS_INPUT input)
+float3 GetNormalFromMap(in out PBR_PS_INPUT input)
 {
 	int bNormalTexBind = bTexBind_0_3.g;
 	if (!bNormalTexBind)
@@ -71,17 +71,19 @@ float3 GetNormalFromMap(PBR_PS_INPUT input)
 		return normalize(input.ViewNormal);
 	}
 
-	float3 tangentNormal = NormalTexture.Sample(DefaultSampler, input.UV).xyz * 2.0 - 1.0;
-
-	float3x3 matRot = 
+	float3 TangentNormal = NormalTexture.Sample(DefaultSampler, input.UV).rgb;
+	TangentNormal = TangentNormal * 2 - 1.f;
+        
+	float3x3 matRot =
 	{
 		input.ViewTangent,
-		input.ViewBinormal,
-		input.ViewNormal
+        input.ViewBinormal,
+        input.ViewNormal,
 	};
-	return normalize(mul(tangentNormal, matRot));
+        
+	input.ViewNormal = normalize(mul(TangentNormal, matRot));
+	return input.ViewNormal;
 }
-
 float3 GetNormalFromMap(PBR_PS_INPUT input, float2 NewUV)
 {
 	int bNormalTexBind = bTexBind_0_3.g;
@@ -90,16 +92,53 @@ float3 GetNormalFromMap(PBR_PS_INPUT input, float2 NewUV)
 		return normalize(input.ViewNormal);
 	}
 
-	float3 tangentNormal = NormalTexture.Sample(DefaultSampler, NewUV).xyz * 2.0 - 1.0;
-
+	float3 TangentNormal = NormalTexture.Sample(DefaultSampler, NewUV).rgb;
+	TangentNormal = TangentNormal * 2 - 1.f;
+        
 	float3x3 matRot =
 	{
 		input.ViewTangent,
-		input.ViewBinormal,
-		input.ViewNormal
+        input.ViewBinormal,
+        input.ViewNormal,
 	};
-	return normalize(mul(tangentNormal, matRot));
+        
+	input.ViewNormal = normalize(mul(TangentNormal, matRot));
+	return input.ViewNormal;
 }
+
+// Get Normal from Normal Map
+float3 GetNormalFromNormalMapRG(in PBR_PS_INPUT input)
+{
+	int bNormalTexBind = bTexBind_0_3.g;
+	if (!bNormalTexBind)
+	{
+		return normalize(input.ViewNormal);
+	}
+
+    // 샘플링
+	float2 sampledRG = NormalTexture.Sample(DefaultSampler, input.UV).rg;
+	
+    // [-1, 1]로 변환
+	float2 xy = sampledRG * 2.0f - 1.0f;
+
+    // B(Z) 계산
+	float z = sqrt(saturate(1.0f - xy.x * xy.x - xy.y * xy.y));
+
+    // Tangent Space Normal
+	float3 TangentNormal = float3(xy.x, xy.y, z);
+
+    // Tangent -> View 변환
+	float3x3 matRot =
+	{
+		input.ViewTangent,
+        input.ViewBinormal,
+        input.ViewNormal,
+	};
+
+	return normalize(mul(TangentNormal, matRot));
+}
+
+
 
 float3 CalcBRDF(float3 N, float3 V, float3 L, float3 albedo, 
 	float metallic, float roughness, float3 F0, float3 radiance)

@@ -1,15 +1,15 @@
 {
     "Class": "UMaterial",
-    "Name": "M_Gideon_Head",
+    "Name": "M_Gideon_Default",
     "VertexShader" : {
 	"FilePath" : "/Shader/PBR.fx",
 	"Func" : "VS_Skeletal"
     },
     "PixelShader" : {
 	"FilePath" : "/Shader/Gideon.fx",
-	"Func": "PS_Gideon_Head"
+	"Func": "PS_Gideon_Default"
     },
-    "TextureParams" : [ "T_G_Face_Color", "T_G_Face_N", "T_G_Face_M_R" ],
+    "TextureParams" : [ "", "", "", "", "", "", "" ],
     "BlendMode": "Deferred",
     "TwoSided" : 0
 	

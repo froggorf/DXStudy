@@ -55,7 +55,6 @@ VS_OUTPUT VS(VS_INPUT input)
 		input.Pos    = skinnedPosition;
 		input.Normal = skinnedNormal;
 		input.Tangent = skinnedTangent;
-		input.Binormal = skinnedBinormal;
 	}
 
 	output.PosScreen = CalculateScreenPosition(input.Pos, World, gView, gProjection);
@@ -74,4 +73,9 @@ VS_OUTPUT VS(VS_INPUT input)
 	output.Tex = input.TexCoord;
 
 	return output;
+}
+
+float4 PS_SimpleTranslucent(VS_OUTPUT Input) : SV_TARGET
+{
+	return float4(0.0f, 0.0f, 0.0f, 0.0f);
 }

@@ -48,7 +48,10 @@ std::vector<std::shared_ptr<FPrimitiveSceneProxy>> USkeletalMeshComponent::Creat
 	for (UINT i = 0; i < MeshCount; ++i)
 	{
 		auto SceneProxy = std::make_shared<FSkeletalMeshSceneProxy>(PrimitiveID, i, SkeletalMesh);
-		SceneProxies.emplace_back(SceneProxy);
+		if (SceneProxy->GetMaterialInterface())
+		{
+			SceneProxies.emplace_back(SceneProxy);
+		}
 	}
 
 	return SceneProxies;

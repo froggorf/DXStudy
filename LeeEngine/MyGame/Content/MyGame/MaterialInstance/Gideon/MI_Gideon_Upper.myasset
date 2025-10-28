@@ -1,0 +1,15 @@
+{
+    "Class": "UMaterialInstance",
+    "Name": "MI_Gideon_Upper",
+    "ParentMaterial" : "M_Gideon_Default",
+    "OverrideTexture" :
+    [
+	{ "Index" : 0, "Tex": "T_G_Upper_Base"},
+	{ "Index" : 1, "Tex": "T_G_Upper_N"},
+	{ "Index" : 2, "Tex": "T_G_Upper_M"},
+	{ "Index" : 3, "Tex": ""},
+	{ "Index" : 4, "Tex": "T_G_Upper_R"},
+	{ "Index" : 5, "Tex": "T_G_Upper_AO"},
+	{ "Index" : 6, "Tex": "T_G_Upper_Alpha"}
+    ]
+}

@@ -164,35 +164,17 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const ComPtr<I
 	}
 	BoundSphereLength = (MaxBound - MinBound).Length() / 2;
 	
-	// VertexData를 SkeletalVertexData로 변환
-	std::vector<std::vector<MyVertexData>> allSkeletalVertices(allVertices.size());
-	for (int meshIndex = 0; meshIndex < allVertices.size(); ++meshIndex)
-	{
-		allSkeletalVertices[meshIndex].resize(allVertices[meshIndex].size());
-
-		for (int vertexIndex = 0; vertexIndex < allVertices[meshIndex].size(); ++vertexIndex)
-		{
-			allSkeletalVertices[meshIndex][vertexIndex].Pos       = allVertices[meshIndex][vertexIndex].Pos;
-			allSkeletalVertices[meshIndex][vertexIndex].Normal    = allVertices[meshIndex][vertexIndex].Normal;
-			allSkeletalVertices[meshIndex][vertexIndex].TexCoords = allVertices[meshIndex][vertexIndex].TexCoords;
-			for (int maxBoneInfluenceCount = 0; maxBoneInfluenceCount < MAX_BONE_INFLUENCE; ++maxBoneInfluenceCount)
-			{
-				allSkeletalVertices[meshIndex][vertexIndex].m_Weights[maxBoneInfluenceCount] = 0.0f;
-				allSkeletalVertices[meshIndex][vertexIndex].m_BoneIDs[maxBoneInfluenceCount] = -1;
-			}
-		}
-	}
 
 	for (UINT meshIndex = 0; meshIndex < allVertices.size(); ++meshIndex)
 	{
 		
-		ExtractBoneWeightForVertices(allSkeletalVertices[meshIndex], scene->mMeshes[meshIndex], modelBoneInfoMap, scene->mRootNode);
+		ExtractBoneWeightForVertices(allVertices[meshIndex], scene->mMeshes[meshIndex], modelBoneInfoMap, scene->mRootNode);
 	}
 
 	// 모델 로드 성공
 	MY_LOG("AssetLoad", EDebugLogLevel::DLL_Display, "SkeletalModel - " + filePath+" Load Success");
 
-	size_t Size = static_cast<UINT>(allSkeletalVertices.size());
+	size_t Size = static_cast<UINT>(allVertices.size());
 	for (UINT i = 0; i < Size; ++i)
 	{
 		// 버텍스 버퍼
@@ -201,9 +183,9 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const ComPtr<I
 		vertexBufferDesc.BindFlags            = D3D11_BIND_VERTEX_BUFFER;
 		vertexBufferDesc.CPUAccessFlags       = 0;
 		vertexBufferDesc.Usage                = D3D11_USAGE_IMMUTABLE;
-		vertexBufferDesc.ByteWidth            = sizeof(MyVertexData) * static_cast<UINT>(allSkeletalVertices[i].size());
+		vertexBufferDesc.ByteWidth            = sizeof(MyVertexData) * static_cast<UINT>(allVertices[i].size());
 		D3D11_SUBRESOURCE_DATA initVertexData = {};
-		initVertexData.pSysMem                = allSkeletalVertices[i].data();
+		initVertexData.pSysMem                = allVertices[i].data();
 		HR(pDevice->CreateBuffer(&vertexBufferDesc,&initVertexData, vertexBuffer.GetAddressOf()));
 		pVertexBuffer.push_back(vertexBuffer);
 
@@ -315,7 +297,8 @@ void AssetManager::LoadTexture(class UTexture* Texture, const nlohmann::json& As
 
 	if (!image.GetImages())
 	{
-		assert(nullptr && "No Valid Path");
+		std::string Test = p.string() +  "No Valid Path";
+		assert(nullptr && Test.data());
 	}
 	CreateShaderResourceView(GDirectXDevice->GetDevice().Get(), image.GetImages(), image.GetImageCount(), image.GetMetadata(), Texture->SRView.GetAddressOf());
 	Texture->SRView->GetResource((ID3D11Resource**)Texture->Texture2D.GetAddressOf());
@@ -649,20 +632,6 @@ void AssetManager::ProcessMesh(aiMesh* mesh, std::vector<MyVertexData>& vertices
 			indices.emplace_back(index);
 		}
 	}
-
-
-	/*
-	 for (UINT i = 0; i < mesh->mNumFaces; i++)
-	{
-		aiFace face = mesh->mFaces[i];
-		for (UINT j = 0; j < face.mNumIndices; j++)
-		{
-			UINT index = face.mIndices[j];
-			indices.emplace_back(index);
-		}
-	}
-
-	 */
 }
 
 void AssetManager::SetVertexBoneData(MyVertexData& vertexData, int boneID, float weight)

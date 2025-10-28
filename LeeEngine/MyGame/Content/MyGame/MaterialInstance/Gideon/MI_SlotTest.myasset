@@ -1,0 +1,15 @@
+{
+    "Class": "UMaterialInstance",
+    "Name": "MI_SlotTest",
+    "ParentMaterial" : "M_Gideon_Default",
+    "OverrideTexture" :
+    [
+	{ "Index" : 0, "Tex": ""},
+	{ "Index" : 1, "Tex": ""},
+	{ "Index" : 2, "Tex": ""},
+	{ "Index" : 3, "Tex": ""},
+	{ "Index" : 4, "Tex": ""},
+	{ "Index" : 5, "Tex": ""},
+	{ "Index" : 6, "Tex": ""}
+    ]
+}

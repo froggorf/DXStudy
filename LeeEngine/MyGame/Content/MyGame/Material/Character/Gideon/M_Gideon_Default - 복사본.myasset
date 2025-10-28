@@ -1,0 +1,15 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_SK_SimpleTranslucent",
+    "VertexShader" : {
+	"FilePath" : "/Shader/SkeletalMesh.hlsl",
+	"Func" : "VS"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/SkeletalMesh.hlsl",
+	"Func": "PS_SimpleTranslucent"
+    },
+    "BlendMode": "Translucent",
+    "TwoSided" : 0
+	
+}

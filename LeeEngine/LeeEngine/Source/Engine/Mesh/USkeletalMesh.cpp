@@ -30,10 +30,10 @@ FSkeletalMeshRenderData::FSkeletalMeshRenderData(const nlohmann::json& SkeletalM
 				break;
 			}
 
-			std::string                         MaterialName = MaterialData[count];
-			std::shared_ptr<UMaterialInterface> MeshMaterial = UMaterialInterface::GetMaterialCache(MaterialName);
+			const std::string&                         MaterialName = MaterialData[count];
+			const std::shared_ptr<UMaterialInterface>& MeshMaterial = UMaterialInterface::GetMaterialCache(MaterialName);
 
-			if (!MeshMaterial)
+			if (!MeshMaterial && !MaterialName.empty())
 			{
 				assert(nullptr && "잘못된 머테리얼");
 			}

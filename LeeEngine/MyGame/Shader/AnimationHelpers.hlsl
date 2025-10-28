@@ -10,31 +10,29 @@ void CalculateSkinnedPosition(const in float4 Pos, const in float3 Normal, const
 {
 	skinnedPosition = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	skinnedNormal = float3(0.0f, 0.0f, 0.0f);
+	skinnedTangentNormal = float3(0.0f, 0.0f, 0.0f);
+	skinnedTangentBinormal = float3(0.0f, 0.0f, 0.0f);
 
-	// bone에 따른 최종 위치 계산
+	for (int index = 0; index < MAX_BONE_INFLUENCE; ++index)
 	{
-		for (int index = 0; index < MAX_BONE_INFLUENCE; ++index)
+		if (boneIDs[index] < 0 || boneIDs[index] >= MAX_BONES)
 		{
-			if(boneIDs[index] <0 || boneIDs[index] >= MAX_BONES)
-			{
-				continue;
-			}
-
-			float4x4 test = BoneFinalTransforms[boneIDs[index]];
-			float weight = boneWeights[index];
-
-			float4 localPosition = mul(Pos, BoneFinalTransforms[boneIDs[index]]);
-			skinnedPosition += localPosition * weight;
-
-			float3 localNormal = mul(Normal, BoneFinalTransforms[boneIDs[index]]);
-			skinnedNormal += localNormal * weight;
-
-			float3 localTangent = mul(Tangent, BoneFinalTransforms[boneIDs[index]]);
-			skinnedTangentNormal += localTangent * weight;
-
-			float3 localBinormal = mul(Binormal, BoneFinalTransforms[boneIDs[index]]);
-			skinnedTangentBinormal += localBinormal * weight;
+			continue;
 		}
-	}
-}
 
+		float weight = boneWeights[index];
+
+		float4 localPosition = mul(Pos, BoneFinalTransforms[boneIDs[index]]);
+		skinnedPosition += localPosition * weight;
+
+		float3x3 mat3 = (float3x3) BoneFinalTransforms[boneIDs[index]];
+
+		skinnedNormal += mul(Normal, mat3) * weight;
+		skinnedTangentNormal += mul(Tangent, mat3) * weight;
+		skinnedTangentBinormal += mul(Binormal, mat3) * weight;
+	}
+
+	skinnedNormal = normalize(skinnedNormal);
+	skinnedTangentNormal = normalize(skinnedTangentNormal);
+	skinnedTangentBinormal = normalize(skinnedTangentBinormal);
+}

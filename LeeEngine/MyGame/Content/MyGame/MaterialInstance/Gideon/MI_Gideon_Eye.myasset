@@ -1,0 +1,15 @@
+{
+    "Class": "UMaterialInstance",
+    "Name": "MI_Gideon_Eye",
+    "ParentMaterial" : "M_Gideon_Default",
+    "OverrideTexture" :
+    [
+	{ "Index" : 0, "Tex": "T_G_Eye_Base"},
+	{ "Index" : 1, "Tex": "T_G_Eye_N"},
+	{ "Index" : 2, "Tex": ""},
+	{ "Index" : 3, "Tex": ""},
+	{ "Index" : 4, "Tex": ""},
+	{ "Index" : 5, "Tex": ""},
+	{ "Index" : 6, "Tex": ""}
+    ]
+}
