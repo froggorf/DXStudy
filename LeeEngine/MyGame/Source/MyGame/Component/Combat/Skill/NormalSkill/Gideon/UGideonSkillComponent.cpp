@@ -32,7 +32,7 @@ void UGideonSkillComponent::ApplySkillAttack()
 	bool bIsHit = GPhysicsEngine->LineTraceSingleByChannel(Start,End, {ECollisionChannel::WorldStatic, ECollisionChannel::WorldDynamic}, Result);
 
 	FTransform SpawnTransform;
-	SpawnTransform.Translation = bIsHit ? Result.Location : GideonCharacter->GetActorLocation();
+	SpawnTransform.Translation = bIsHit ? Result.Location +XMFLOAT3{0.0f, 5.0f, 0.0f} : GideonCharacter->GetActorLocation();
 	SpawnTransform.Rotation = GideonCharacter->GetActorRotation();
 	GideonCharacter->SpawnIceStorm(SpawnTransform, SkillAttackData[0]);
 }

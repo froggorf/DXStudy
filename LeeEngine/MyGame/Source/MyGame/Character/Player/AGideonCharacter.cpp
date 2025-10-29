@@ -101,7 +101,7 @@ void AGideonCharacter::SpawnFireBall(const FTransform& SpawnTransform, const FAt
 
 void AGideonCharacter::SpawnIceStorm(const FTransform& SpawnTransform, const FAttackData& AttackData)
 {
-	if (std::shared_ptr<AGideonIceStorm> IceStorm = std::dynamic_pointer_cast<AGideonIceStorm>(GetWorld()->SpawnActor("AGideonIceStorm", SpawnTransform)))
+	if (const std::shared_ptr<AGideonIceStorm>& IceStorm = std::dynamic_pointer_cast<AGideonIceStorm>(GetWorld()->SpawnActor("AGideonIceStorm", SpawnTransform)))
 	{
 		IceStorm->Initialize(this, AttackData);
 	}

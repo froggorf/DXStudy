@@ -22,9 +22,9 @@ void UGideonCombatComponent::Initialize(AMyGameCharacterBase* MyCharacter)
 		"AM_Gideon_BasicAttack2",
 	},
 	{
-		FAttackData{{10,10,10}, 1.0f, 0.0f, 10.0f, true},
-		FAttackData{{20,20,20}, 1.25f, 0.0f, 10.0f, true},
-		FAttackData{{30,30,30}, 1.5f, 0.0f, 15.0f, true},
+		FAttackData{{50,50,50}, 1.0f, 0.0f, 10.0f, true},
+		FAttackData{{50,50,50}, 1.25f, 0.0f, 10.0f, true},
+		FAttackData{{50,50,50}, 1.5f, 0.0f, 15.0f, true},
 	});
 
 	HeavyAttackDamageData = FAttackData{{0,0,0}, 1.0f, 0, 20.0f};

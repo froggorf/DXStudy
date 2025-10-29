@@ -14,6 +14,15 @@ AGideonIceStorm::AGideonIceStorm()
 	StormCollisionComponent = std::make_shared<UStaticMeshComponent>();
 	StormCollisionComponent->SetupAttachment(GetRootComponent());
 	StormCollisionComponent->SetRelativeScale3D({20,20,20});
+
+
+	if (!GDirectXDevice)
+	{
+		return;
+	}
+
+	static const std::shared_ptr<UNiagaraSystem>& IceStormNiagara = UNiagaraSystem::GetNiagaraAsset("NS_IceStorm");
+	IceStormVFX->SetNiagaraAsset(IceStormNiagara);
 }
 
 void AGideonIceStorm::Register()
@@ -28,8 +37,6 @@ void AGideonIceStorm::Register()
 			//StormCollisionComponent->SetVisibility(false);
 		});
 
-	IceStormVFX->SetNiagaraAsset(UNiagaraSystem::GetNiagaraAsset("NS_IceStorm"));
-	IceStormVFX->Activate();
 	AActor::Register();
 
 }
