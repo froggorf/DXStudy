@@ -4,6 +4,7 @@
 #include "Engine/World/UWorld.h"
 #include "MyGame/Actor/Gideon/AGideonFireBall.h"
 #include "MyGame/Actor/Gideon/AGideonIceStorm.h"
+#include "MyGame/Actor/Gideon/AGideonMeteor.h"
 #include "MyGame/Actor/Sanhwa/ASanhwaIceBase.h"
 #include "MyGame/Component/Combat/Range/UGideonCombatComponent.h"
 #include "MyGame/Component/Combat/Skill/NormalSkill/Gideon/UGideonSkillComponent.h"
@@ -86,6 +87,7 @@ void AGideonCharacter::BindKeyInputs()
 		{
 			InputSystem->BindAction(EKeys::MouseRight, ETriggerEvent::Started, this, &AGideonCharacter::ToAimMode);
 			InputSystem->BindAction(EKeys::MouseRight, ETriggerEvent::Released, this, &AGideonCharacter::ToNormalMode);
+			InputSystem->BindAction(EKeys::Num5, Started, this, &AGideonCharacter::SpawnMeteor);
 		}
 	}
 }
@@ -104,6 +106,26 @@ void AGideonCharacter::SpawnIceStorm(const FTransform& SpawnTransform, const FAt
 	if (const std::shared_ptr<AGideonIceStorm>& IceStorm = std::dynamic_pointer_cast<AGideonIceStorm>(GetWorld()->SpawnActor("AGideonIceStorm", SpawnTransform)))
 	{
 		IceStorm->Initialize(this, AttackData);
+	}
+}
+
+void AGideonCharacter::SpawnMeteor()
+{
+	// 테스트용 임시 코드
+	XMFLOAT4 CurActorRotation =  GetActorRotation();
+	XMFLOAT4 LocalMeteorRotation = MyMath::ForwardVectorToRotationQuaternion(XMFLOAT3{1.0f, -1.0f, 0.0f});
+	 XMMATRIX Mat = XMMatrixRotationQuaternion(XMLoadFloat4(&LocalMeteorRotation));
+	 XMMATRIX MainMat = XMMatrixMultiply(Mat,  XMMatrixRotationQuaternion(XMLoadFloat4(&CurActorRotation)) );
+
+	FTransform SpawnTransform;
+	SpawnTransform.Translation = GetActorLocation() + GetActorForwardVector() * 200 + XMFLOAT3{0.0f,500.0f,0.0f};
+	float GapX = (MyMath::FRand() - 0.5f) * 300.0f;
+	float GapZ = MyMath::FRand() * 200.0f;
+	SpawnTransform.Translation = SpawnTransform.Translation + XMFLOAT3{GapX, 0.0f, GapZ};
+	XMStoreFloat4(&SpawnTransform.Rotation, XMQuaternionRotationMatrix(MainMat)); 
+	if (const std::shared_ptr<AGideonMeteor>& Meteor = std::dynamic_pointer_cast<AGideonMeteor>(GetWorld()->SpawnActor("AGideonMeteor", SpawnTransform)))
+	{
+		//Meteor->Initialize();
 	}
 }
 

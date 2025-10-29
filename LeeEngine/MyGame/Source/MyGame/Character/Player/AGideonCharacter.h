@@ -13,6 +13,7 @@ class AGideonCharacter final : public AMyGameCharacterBase
 	void BindKeyInputs() override;
 	void SpawnFireBall(const FTransform& SpawnTransform, const FAttackData& AttackData, const XMFLOAT3& TargetPosition);
 	void SpawnIceStorm(const FTransform& SpawnTransform, const FAttackData& AttackData);
+	void SpawnMeteor();
 
 	void CreateWidgetOnBeginPlay() override;
 

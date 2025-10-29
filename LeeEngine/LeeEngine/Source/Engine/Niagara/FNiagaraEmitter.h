@@ -328,9 +328,14 @@ public:
 		bIsBillboard = bInIsBillboard;
 	}
 
-	void SetRibbonColor(XMFLOAT4 InRibbonColor)
+	void SetRibbonColor(const XMFLOAT4& InRibbonColor)
 	{
-		RibbonColor = InRibbonColor;
+		RibbonStartColor = InRibbonColor;
+	}
+
+	void SetRibbonEndColor(const XMFLOAT4& InRibbonColor)
+	{
+		RibbonEndColor = InRibbonColor;
 	}
 
 	void LoadDataFromFile(const nlohmann::basic_json<>& Data) override;
@@ -339,7 +344,8 @@ protected:
 	void     MapPointDataToVertexBuffer();
 	float    RibbonWidth  = 5.0f;
 	bool     bIsBillboard = false;
-	XMFLOAT4 RibbonColor{1, 1, 1, 1};
+	XMFLOAT4 RibbonStartColor{1, 1, 1, 1};
+	XMFLOAT4 RibbonEndColor{1,1,1,1};
 
 	// Array를 환형 큐처럼 사용
 	std::array<FRibbonPointData, MaxRibbonPointCount> RibbonPointData;

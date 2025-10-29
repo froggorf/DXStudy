@@ -42,9 +42,7 @@ VS_OUTPUT VS_RibbonParticle(float4 Pos : POSITION, float2 TexCoord : TEXCOORD, f
 //--------------------------------------------------------------------------------------
 float4 PS_RibbonParticle(VS_OUTPUT input) : SV_Target
 {
-	float4 ParticleColor = input.ParticleColor;
-	float4 color         = float4(ParticleColor.r, ParticleColor.g, ParticleColor.b, input.Tex.x);
-	return color;
+	return input.ParticleColor;
 }
 
 float4 PS_RibbonMaskTrail(VS_OUTPUT input) : SV_Target

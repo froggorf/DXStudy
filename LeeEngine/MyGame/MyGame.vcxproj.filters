@@ -274,6 +274,9 @@
     <ClCompile Include="Source\MyGame\Actor\Gideon\AGideonIceStorm.cpp">
       <Filter>Source\MyGame\Actor\Gideon</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Actor\Gideon\AGideonMeteor.cpp">
+      <Filter>Source\MyGame\Actor\Gideon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -406,6 +409,9 @@
       <Filter>Source\MyGame\Component\Combat\Skill\NormalSkill\Gideon</Filter>
     </ClInclude>
     <ClInclude Include="Source\MyGame\Actor\Gideon\AGideonIceStorm.h">
+      <Filter>Source\MyGame\Actor\Gideon</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Actor\Gideon\AGideonMeteor.h">
       <Filter>Source\MyGame\Actor\Gideon</Filter>
     </ClInclude>
   </ItemGroup>

@@ -464,7 +464,8 @@ std::shared_ptr<FNiagaraEmitter> FNiagaraRibbonEmitter::GetEmitterInstance() con
 	Instance->RenderProperty = RenderProperty;
 	Instance->RibbonWidth    = RibbonWidth;
 	Instance->bIsBillboard   = bIsBillboard;
-	Instance->RibbonColor    = RibbonColor;
+	Instance->RibbonStartColor    = RibbonStartColor;
+	Instance->RibbonEndColor = RibbonEndColor;
 	return Instance;
 }
 
@@ -611,8 +612,17 @@ void FNiagaraRibbonEmitter::LoadDataFromFile(const nlohmann::basic_json<>& Data)
 	}
 	if (Data.contains("RibbonColor"))
 	{
-		const auto& RibbonColor = Data["RibbonColor"];
-		SetRibbonColor(XMFLOAT4{RibbonColor[0], RibbonColor[1], RibbonColor[2], RibbonColor[3]});
+		const auto& RibbonColorData = Data["RibbonColor"];
+		RibbonStartColor = XMFLOAT4{RibbonColorData[0], RibbonColorData[1], RibbonColorData[2], RibbonColorData[3]};
+		if (Data.contains("EndColor"))
+		{
+			const auto& RibbonEndColorData =  Data["EndColor"];
+			RibbonEndColor = XMFLOAT4{RibbonEndColorData[0],RibbonEndColorData[1],RibbonEndColorData[2],RibbonEndColorData[3]};
+		}
+		else
+		{
+			RibbonEndColor = RibbonStartColor;
+		}
 	}
 }
 
@@ -628,7 +638,7 @@ void FNiagaraRibbonEmitter::MapPointDataToVertexBuffer()
 	D3D11_MAPPED_SUBRESOURCE    cbMapSub{};
 	ComPtr<ID3D11DeviceContext> DeviceContext = GDirectXDevice->GetDeviceContext();
 	HR(DeviceContext->Map(VB_Ribbon.Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &cbMapSub));
-
+	
 	CurVertexCount = 0;
 	for (int i = 0; i < CurPointCount - 1; ++i)
 	{
@@ -655,13 +665,15 @@ void FNiagaraRibbonEmitter::MapPointDataToVertexBuffer()
 		vD.TexCoords = {static_cast<float>(1) / CurPointCount * (i + 1), 1};
 
 		// 파티클 컬러 정보를 float4인 BONEWEIGHT 시맨틱에 담음
-		float ParticleColor[4] = {RibbonColor.x, RibbonColor.y, RibbonColor.z, RibbonColor.w};
-		for (int i = 0; i < 4; ++i)
+		float t = 1.0f - static_cast<float>(i) / static_cast<float>(CurPointCount - 2);
+		XMFLOAT4 Color = MyMath::Lerp(RibbonStartColor, RibbonEndColor, t);
+		float ParticleColor[4] = {Color.x, Color.y, Color.z, Color.w};
+		for (int j = 0; j < 4; ++j)
 		{
-			vA.m_Weights[i] = ParticleColor[i];
-			vB.m_Weights[i] = ParticleColor[i];
-			vC.m_Weights[i] = ParticleColor[i];
-			vD.m_Weights[i] = ParticleColor[i];
+			vA.m_Weights[j] = ParticleColor[j];
+			vB.m_Weights[j] = ParticleColor[j];
+			vC.m_Weights[j] = ParticleColor[j];
+			vD.m_Weights[j] = ParticleColor[j];
 		}
 
 		// 삼각형 1: A, B, C
