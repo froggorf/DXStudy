@@ -204,8 +204,7 @@ APlayerCameraManager* UWorld::GetCameraManager() const
 
 std::shared_ptr<AActor> UWorld::SpawnActor(const std::string& ClassName, const FTransform& SpawnTransform) const
 {
-	const std::shared_ptr<ULevel> PersistentLevel = GetPersistentLevel();
-	if (PersistentLevel)
+	if (const std::shared_ptr<ULevel>& PersistentLevel = GetPersistentLevel())
 	{
 		return PersistentLevel->SpawnActor(ClassName, SpawnTransform);
 	}

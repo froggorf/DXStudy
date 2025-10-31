@@ -5,10 +5,10 @@
 	{ 
 		"Property" : 3, 
 		"FaceCamera": 1,
-		"Life" : [ 5,5 ],
-		"RibbonWidth" : 30.0,
-		"RibbonColor": [15.0 , 5 , 0 , 1.0],
-		"EndColor": [5,3,0,0.9]
+		"Life" : [ 0.3,0.3 ],
+		"RibbonWidth" : 15.0,
+		"RibbonColor": [2.0, 0.7 , 0 , 0.7],
+		"EndColor": [1,0.3, 0, 0.7]
 	}
     ]
 

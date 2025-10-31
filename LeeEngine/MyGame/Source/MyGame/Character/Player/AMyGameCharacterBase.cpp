@@ -102,10 +102,10 @@ void AMyGameCharacterBase::LoadCharacterData_OnRegister()
 	static constexpr bool bFindCameraRotation = false;
 	if (bFindCameraRotation)
 	{
-		TestComp_DeleteLater = std::make_shared<USceneComponent>();
+		TestComp_CheckCameraPos = std::make_shared<USceneComponent>();
 
 		SM_Arrow =  std::make_shared<UStaticMeshComponent>();
-		SM_Arrow->SetupAttachment(TestComp_DeleteLater);
+		SM_Arrow->SetupAttachment(TestComp_CheckCameraPos);
 		SM_Arrow->SetRelativeRotation(XMFLOAT3{0,-90,0});
 		AssetManager::GetAsyncAssetCache("SM_Arrow", [this](std::shared_ptr<UObject> Object)
 			{
@@ -156,6 +156,8 @@ void AMyGameCharacterBase::BindKeyInputs()
 			// TargetArmLength Wheel
 			InputSystem->BindAction(EKeys::MouseWheelUp, Started, this, &AMyGameCharacterBase::WheelUp);
 			InputSystem->BindAction(EKeys::MouseWheelDown, Started, this, &AMyGameCharacterBase::WheelDown);
+
+			InputSystem->BindAction(EKeys::F1, Started, this, &AMyGameCharacterBase::Debug_SetUltimateGauge100);
 
 			if (CombatComponent)
 			{
@@ -390,6 +392,14 @@ void AMyGameCharacterBase::WheelDown()
 	if (SpringArm)
 	{
 		SpringArm->SetArmLength(SpringArm->TargetArmLength + 10.0f);
+	}
+}
+
+void AMyGameCharacterBase::Debug_SetUltimateGauge100()
+{
+	if (UltimateComponent)
+	{
+		UltimateComponent->AddUltimateGauge(100000);
 	}
 }
 

@@ -1,0 +1,21 @@
+{
+	"Class": "UAnimMontage",
+	"Name": "AM_Gideon_Ult_Loop1",
+	"Skeleton": "SK_Gideon",
+	"BlendIn" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.15
+	},
+	"BlendOut" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.0
+	},
+
+	"SlotName": "DefaultSlot",
+	"AnimTrack" : [
+		{"AnimName" : "AS_Gideon_Ult_Loop1"}
+	],
+	"Sections" : [
+		{ "SectionName" : "Ult", "StartTime" : 0.0 }
+	]
+}

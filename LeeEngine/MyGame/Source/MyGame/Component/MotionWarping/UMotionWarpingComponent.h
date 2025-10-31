@@ -9,7 +9,7 @@ class UMotionWarpingComponent : public UActorComponent
 	~UMotionWarpingComponent() override = default;
 	void Register() override;
 	void TickComponent(float DeltaSeconds) override;
-	void SetTargetLocation(XMFLOAT3 NewLocation, float NewTime);
+	void SetTargetLocation(XMFLOAT3 NewLocation, float NewTime, bool bMaintainMotionWarping = false);
 
 	void SetMotionWarping(bool NewMotionWarping) { bMotionWarping = NewMotionWarping; bIsSetPosition = false;}
 	void SetbIsSetPosition(bool NewState) {bIsSetPosition = NewState;}
@@ -21,6 +21,7 @@ protected:
 	XMFLOAT3 StartLocation;
 	float WarpingTime;
 	float CurrentTime;
+	bool bMaintainMotionWarping = false;
 
 	class AMyGameCharacterBase* MyCharacter;
 };

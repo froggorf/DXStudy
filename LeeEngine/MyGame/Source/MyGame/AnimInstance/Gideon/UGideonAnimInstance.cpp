@@ -5,27 +5,80 @@
 #include "MyGame/Component/Combat/Range/UGideonCombatComponent.h"
 #include "MyGame/Component/Combat/Skill/NormalSkill/Gideon/UGideonSkillComponent.h"
 
+std::shared_ptr<UAnimMontage> UGideonAnimInstance::Cache_AM_Ult_Loop1;
+std::shared_ptr<UAnimMontage> UGideonAnimInstance::Cache_AM_Ult_Loop2;
+std::shared_ptr<UAnimMontage> UGideonAnimInstance::Cache_AM_Ult_End;
+std::shared_ptr<UBlendSpace> UGideonAnimInstance::Cache_BS_Gideon_FPS_Loco;
+
 UGideonAnimInstance::UGideonAnimInstance()
 {
 	BS_LocomotionName = "BS_Gideon_Locomotion";
-
-
 }
 
 void UGideonAnimInstance::LoadData_OnRegister()
 {
 	UMyGameAnimInstanceBase::LoadData_OnRegister();
 
-	AssetManager::GetAsyncAssetCache("BS_Gideon_FPSLocomotion", [this](std::shared_ptr<UObject> Object)
-		{
-			BS_FPSLocomotion = std::dynamic_pointer_cast<UBlendSpace>(Object);
-		});
+	// BS_FPSLocomotion
+	if (!Cache_BS_Gideon_FPS_Loco)
+	{
+		AssetManager::GetAsyncAssetCache("BS_Gideon_FPSLocomotion", [this](std::shared_ptr<UObject> Object)
+			{
+				Cache_BS_Gideon_FPS_Loco = std::dynamic_pointer_cast<UBlendSpace>(Object);
+				BS_FPSLocomotion = Cache_BS_Gideon_FPS_Loco;
+			});	
+	}
+	else
+	{
+		BS_FPSLocomotion = Cache_BS_Gideon_FPS_Loco;
+	}
+
+	// AM_UltLoop1
+	if (!Cache_AM_Ult_Loop1)
+	{
+		AssetManager::GetAsyncAssetCache("AM_Gideon_Ult_Loop1", [this](std::shared_ptr<UObject> Object)
+			{
+				Cache_AM_Ult_Loop1 = std::dynamic_pointer_cast<UAnimMontage>(Object);
+				AM_UltLoop1 = Cache_AM_Ult_Loop1;
+			});	
+	}
+	else
+	{
+		AM_UltLoop1 = Cache_AM_Ult_Loop1;
+	}
+	// AM_UltLoop2
+	if (!Cache_AM_Ult_Loop2)
+	{
+		AssetManager::GetAsyncAssetCache("AM_Gideon_Ult_Loop2", [this](std::shared_ptr<UObject> Object)
+			{
+				Cache_AM_Ult_Loop2 = std::dynamic_pointer_cast<UAnimMontage>(Object);
+				AM_UltLoop2 = Cache_AM_Ult_Loop2;
+			});	
+	}
+	else
+	{
+		AM_UltLoop2 = Cache_AM_Ult_Loop2;
+	}
+
+	// AM_UltEnd
+	if (!Cache_AM_Ult_End)
+	{
+		AssetManager::GetAsyncAssetCache("AM_Gideon_Ult_End", [this](std::shared_ptr<UObject> Object)
+			{
+				Cache_AM_Ult_End = std::dynamic_pointer_cast<UAnimMontage>(Object);
+				AM_UltEnd = Cache_AM_Ult_End;
+			});	
+	}
+	else
+	{
+		AM_UltEnd = Cache_AM_Ult_End;
+	}
 }
 
 
 bool UGideonAnimInstance::IsAllResourceOK()
 {
-	return UMyGameAnimInstanceBase::IsAllResourceOK() && BS_FPSLocomotion;
+	return UMyGameAnimInstanceBase::IsAllResourceOK() && BS_FPSLocomotion && AM_UltEnd && AM_UltLoop1 && AM_UltLoop2;
 }
 
 void UGideonAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -73,11 +126,7 @@ void UGideonAnimInstance::UpdateAnimation(float dt)
 	}
 	else
 	{
-		{
-			BS_Locomotion->GetAnimationBoneTransforms(XMFLOAT2{0.0f, MovementVelocity }, CurrentTime, BoneTransforms, FinalNotifies);      
-		}
-
-		
+		BS_Locomotion->GetAnimationBoneTransforms(XMFLOAT2{0.0f, MovementVelocity }, CurrentTime, BoneTransforms, FinalNotifies);      
 	}
 
 	// UpperBody 몽타쥬
@@ -94,6 +143,90 @@ void UGideonAnimInstance::UpdateAnimation(float dt)
 		PlayMontage("DefaultSlot", BoneTransforms, FinalNotifies);
 		
 	}
+}
+
+void UGideonAnimInstance::Ultimate_StartMotionWarping()
+{
+	if (!SetMotionWarping())
+	{
+		return;
+	}
+
+	const std::shared_ptr<UMotionWarpingComponent>& MotionWarpingComp = MyGameCharacter->GetMotionWarpingComponent();
+	XMFLOAT3 NewPos = MyGameCharacter->GetActorLocation()+XMFLOAT3{0.0f,200.0f,0.0f};
+	MotionWarpingComp->SetTargetLocation(NewPos, 1.0f, true);
+}
+
+void UGideonAnimInstance::Ultimate_ChangeCameraToNormal()
+{
+	AGideonCharacter* Gideon = dynamic_cast<AGideonCharacter*>(MyGameCharacter);
+	if (!Gideon)
+	{
+		return;
+	}
+
+	Gideon->ChangeToNormalCamera(0.5f);
+}
+
+void UGideonAnimInstance::Ultimate_ChangeToLoop()
+{
+	AGideonCharacter* Gideon = dynamic_cast<AGideonCharacter*>(MyGameCharacter);
+	if (!Gideon)
+	{
+		return;
+	}
+
+	const std::shared_ptr<UAnimInstance>& AnimInstance = Gideon->GetAnimInstance();
+	if (!AnimInstance)
+	{
+		return;
+	}
+
+	// GideonCharacter 공격 시작
+	Gideon->MeteorStart();
+
+	AnimInstance->Montage_Play(AM_UltLoop1, 0, {this, &UGideonAnimInstance::Ultimate_Loop2});
+}
+
+void UGideonAnimInstance::Ultimate_Loop2()
+{
+	if (!MyGameCharacter)
+	{
+		return;
+	}
+
+	const std::shared_ptr<UAnimInstance>& AnimInstance = MyGameCharacter->GetAnimInstance();
+	if (!AnimInstance)
+	{
+		return;
+	}
+
+	AnimInstance->Montage_Play(AM_UltLoop2, 0, {this, &UGideonAnimInstance::Ultimate_End});
+}
+
+void UGideonAnimInstance::Ultimate_End()
+{
+	AGideonCharacter* Gideon = dynamic_cast<AGideonCharacter*>(MyGameCharacter);
+	if (!Gideon)
+	{
+		return;
+	}
+
+	const std::shared_ptr<UAnimInstance>& AnimInstance = Gideon->GetAnimInstance();
+	if (!AnimInstance)
+	{
+		return;
+	}
+
+	// Gideon Character 공격 종료
+	Gideon->MeteorEnd();
+
+	const std::shared_ptr<UMotionWarpingComponent>& MotionWarpingComp = MyGameCharacter->GetMotionWarpingComponent();
+	XMFLOAT3 NewPos = MyGameCharacter->GetActorLocation()+XMFLOAT3{0.0f, -200.0f,0.0f};
+	MotionWarpingComp->SetbIsSetPosition(true);
+	MotionWarpingComp->SetTargetLocation(NewPos, 1.0f);
+
+	AnimInstance->Montage_Play(AM_UltEnd, 0);
 }
 
 void UGideonAnimInstance::BasicAttack0()
@@ -176,4 +309,10 @@ void UGideonAnimInstance::SetAnimNotify_BeginPlay()
 	NotifyEvent["ChargeAttack"] = {this,&UGideonAnimInstance::HeavyAttack};
 	// Skill
 	NotifyEvent["G_Skill"] = {this, &UGideonAnimInstance::SkillAttack};
+	// Ultimate
+	{
+		NotifyEvent["UltMotionWarping"] = {this, &UGideonAnimInstance::Ultimate_StartMotionWarping};
+		NotifyEvent["Camera"] = {this, &UGideonAnimInstance::Ultimate_ChangeCameraToNormal};
+		NotifyEvent["UltLoopStart"] = {this, &UGideonAnimInstance::Ultimate_ChangeToLoop};
+	}
 }

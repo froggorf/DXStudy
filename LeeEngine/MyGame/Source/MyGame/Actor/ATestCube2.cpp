@@ -61,16 +61,4 @@ void ATestCube2::BeginPlay()
 void ATestCube2::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
-
-	static bool a = false;
-	if (!a)
-	{
-		if (ImGui::IsKeyDown(ImGuiKey_5))
-		{
-			a = true;
-
-			GetWorld()->GetPersistentLevel()->DestroyActor(this);
-		}
-	}
-
 }

@@ -102,6 +102,7 @@ public:
 
 	void SetCurPlayingAnimMontage(const std::string& NewPlayingAnimMontage){CurPlayingAnimMontage = NewPlayingAnimMontage;}
 
+	const std::shared_ptr<USpringArmComponent>& GetSpringArm() const {return SpringArm;}
 
 	virtual void Death(){};
 protected:

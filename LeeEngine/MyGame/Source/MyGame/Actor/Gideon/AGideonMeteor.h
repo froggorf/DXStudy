@@ -12,10 +12,13 @@ class AGideonMeteor : public AActor
 public:
 	AGideonMeteor();
 	~AGideonMeteor() override = default;
+	void Register() override;
 	void BeginPlay() override;
-	void Tick(float DeltaSeconds) override;
+	void OnDestroy() override;
+	void DestroySelf() override;
 	void Initialize(AGideonCharacter* Spawner, const FAttackData& AttackData);
-	
+
+	void MoveTick();
 protected:
 	FAttackData ExplosionAttackData;
 
@@ -23,10 +26,12 @@ private:
 	AGideonCharacter* Spawner;
 
 	std::shared_ptr<UNiagaraComponent> MeteorVFX;
+	std::shared_ptr<UNiagaraComponent> MeteorBallVFX;
+	std::shared_ptr<UNiagaraComponent> CollisionVFX;
 
-	FTimerHandle ThrowTimerHandle;
-	// 1000 unit per sec
-	static constexpr float SpeedPerSecond = 2000.0f;
-	static constexpr float ThrowTimerTickTime = 0.016f;
-	void Explosion();
+	FTimerHandle SelfKillTimerHandle;
+	FTimerHandle MoveTimerHandle;
+
+	static constexpr float SelfKillTime = 10.0f;
+	static constexpr float MoveTickTime = 0.030f; //약 30번 (1초)
 };

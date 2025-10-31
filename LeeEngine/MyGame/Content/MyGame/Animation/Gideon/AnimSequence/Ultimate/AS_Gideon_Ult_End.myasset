@@ -1,0 +1,8 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_Gideon_Ult_End",
+    "Skeleton": "SK_Gideon",
+    "AnimationDataPath": "/Content/Resource/MyGame/Animation/Gideon/Ultimate/Ultimate_Start.FBX",
+    "RootMotion": 1,
+    "Rate": -1.0
+}

@@ -103,9 +103,14 @@ float4 PS_Particle(GS_OUT _in) : SV_Target
 	float4 vColor = float4(1.f, 0.f, 1.f, 1.f);
 
 	vColor = Texture0.Sample(DefaultSampler, _in.UV);
-	vColor.rgb *= vColor.a;
 
 	vColor *= gParticle[_in.InstID].Color;
 	return vColor;
+}
+
+float4 PS_ParticleOnlyColor(GS_OUT _in) : SV_Target
+{
+	return gParticle[_in.InstID].Color;
+
 }
 

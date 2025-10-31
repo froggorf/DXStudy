@@ -16,14 +16,18 @@ std::vector<std::shared_ptr<FPrimitiveSceneProxy>> UNiagaraComponent::CreateScen
 		return {};
 	}
 
-	const auto& RenderData = NiagaraAsset->CreateDynamicRenderData();
+	const std::vector<std::shared_ptr<FNiagaraEmitter>>& RenderData = NiagaraAsset->CreateDynamicRenderData();
 
 	std::vector<std::shared_ptr<FPrimitiveSceneProxy>> SceneProxies;
 	SceneProxies.reserve(RenderData.size());
 	this->SceneProxies.reserve(RenderData.size());
 	for (int i = 0; i < RenderData.size(); ++i)
 	{
-		auto NiagaraSceneProxy = std::make_shared<FNiagaraSceneProxy>(GetPrimitiveID(), RenderData[i]);
+		std::shared_ptr<FNiagaraSceneProxy> NiagaraSceneProxy = std::make_shared<FNiagaraSceneProxy>(GetPrimitiveID(), RenderData[i]);
+		if (!bIsActivate)
+		{
+			NiagaraSceneProxy->Deactivate();
+		}
 		SceneProxies.emplace_back(NiagaraSceneProxy);
 		this->SceneProxies.emplace_back(NiagaraSceneProxy);
 	}
@@ -35,13 +39,14 @@ void UNiagaraComponent::TickComponent(float DeltaSeconds)
 {
 	UPrimitiveComponent::TickComponent(DeltaSeconds);
 
-	if (bIsActivate)
+	for (const auto& SceneProxy : SceneProxies)
 	{
-		for (const auto& SceneProxy : SceneProxies)
+		if (bIsActivate || SceneProxy->GetEmitter()->bUpdateAndRenderAtDeactivate)
 		{
 			GEngine->GetCurrentWorld()->AddToBeTickedNiagaraSceneProxy(SceneProxy);
 		}
 	}
+	
 }
 
 void UNiagaraComponent::Activate()
@@ -52,6 +57,11 @@ void UNiagaraComponent::Activate()
 		return;
 	}
 	bIsActivate = true;
+
+	if (SceneProxies.empty())
+	{
+		return;
+	}
 
 	FScene::SetNiagaraEffectActivate_GameThread(SceneProxies, true);
 }
@@ -64,6 +74,11 @@ void UNiagaraComponent::Deactivate()
 		return;
 	}
 	bIsActivate = false;
+
+	if (SceneProxies.empty())
+	{
+		return;
+	}
 
 	FScene::SetNiagaraEffectActivate_GameThread(SceneProxies, false);
 }

@@ -1,0 +1,32 @@
+{
+    "Class": "UNiagaraSystem",
+    "Name": "NS_MeteorBall",
+    "Emitters" : [
+	{ 
+		"Property" : 2, 
+		"OverrideMat" : "M_NiagaraMeshOnlyColor",
+		"FirstBurst" : 30,
+		"StaticMesh" : "SM_Sphere",
+		"Life" : [ 2, 3 ],
+		"Scale" : [ [2,2,5] , [2,2,5] ],
+		"Rot" : [ [0,0,0] , [0,0,0]],
+		"SpaceType": 0,
+		"SpawnShape" : 2,
+		"SpawnScale" : [0.1,0.1,0.1],
+		"Modules" : 
+		{
+			"Render" : {
+  			    "StartColor" : [2,0.7,0,1.0],
+			    "EndColor" : [2,0.7, 1,0,1.0],
+			    "FadeOut" : [1, 1.0]
+			},
+			"AddVelocity":{
+			    "MinVel" : [-300.0, 300.0, -300.0],
+			    "MaxVel" : [-300.0, 350.0, 300.0]
+			},
+			"TickVel" : [0.0, -50.0, 0.0]
+		}
+	}
+    ]
+
+}

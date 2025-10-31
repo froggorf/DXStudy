@@ -15,27 +15,30 @@ class UGideonAnimInstance final : public UMyGameAnimInstanceBase
 	void NativeUpdateAnimation(float DeltaSeconds) override;
 	void UpdateAnimation(float dt) override;
 
-
-	//void MotionWarping_HeavyAttack_Move();
-	//void MotionWarping_HeavyAttack_Stay();
-
-	//void Ultimate_ChangeCameraToNormal();
+	void Ultimate_StartMotionWarping();
+	void Ultimate_ChangeCameraToNormal();
+	// 애님몽타쥬의 PlayRate -1 작업을 위해 분리하여 작업
+	void Ultimate_ChangeToLoop();
+	void Ultimate_Loop2();
+	void Ultimate_End();
 
 	void BasicAttack0();
 	void BasicAttack1();
 	void BasicAttack2();
 	void HeavyAttack();
 	void SkillAttack();
-	//void UltAttack();
-
-	// MotionWarping - SkillAttack
-	//void SanhwaSkillAttack();
-
-	//void SetSkeletalMeshVisibility(bool NewVisibility);
-
-	//std::shared_ptr<UAnimSequence> AS_Test[5];
 
 private:
 	std::shared_ptr<UBlendSpace> BS_FPSLocomotion;
+	std::shared_ptr<UAnimMontage> AM_UltLoop1;
+	std::shared_ptr<UAnimMontage> AM_UltLoop2;
+	std::shared_ptr<UAnimMontage> AM_UltEnd;
 	float Direction = 0.0f;
+	
+
+	// 비동기 로드 에셋 캐싱
+	static std::shared_ptr<UAnimMontage> Cache_AM_Ult_Loop1;
+	static std::shared_ptr<UAnimMontage> Cache_AM_Ult_Loop2;
+	static std::shared_ptr<UAnimMontage> Cache_AM_Ult_End;
+	static std::shared_ptr<UBlendSpace> Cache_BS_Gideon_FPS_Loco;
 };

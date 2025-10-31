@@ -23,8 +23,13 @@ void UMotionWarpingComponent::TickComponent(float DeltaSeconds)
 	{
 		return;
 	}
-
+	
 	CurrentTime += DeltaSeconds;
+	if (CurrentTime >= WarpingTime)
+	{
+		CurrentTime = WarpingTime;
+	}
+
 	// 이동 적용
 	if (MovementComp->PxCharacterController)
 	{
@@ -50,16 +55,17 @@ void UMotionWarpingComponent::TickComponent(float DeltaSeconds)
 	
 	}
 
-	if (CurrentTime >= WarpingTime)
+	if (!bMaintainMotionWarping && CurrentTime >= WarpingTime)
 	{
 		bMotionWarping = false;
 	}
 }
 
-void UMotionWarpingComponent::SetTargetLocation(XMFLOAT3 NewLocation, float NewTime)
+void UMotionWarpingComponent::SetTargetLocation(XMFLOAT3 NewLocation, float NewTime, bool bMaintainMotionWarping)
 {
 	TargetLocation = NewLocation;
 	StartLocation = GetOwner()->GetActorLocation();
 	WarpingTime = NewTime;
 	CurrentTime = 0.0f;
+	this->bMaintainMotionWarping = bMaintainMotionWarping;
 }

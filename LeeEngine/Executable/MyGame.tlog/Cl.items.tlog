@@ -24,6 +24,7 @@ C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\Range\URangeB
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\Skill\NormalSkill\Gideon\UGideonSkillComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\UGideonSkillComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\Skill\NormalSkill\SanHwa\USanhwaSkillComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\USanhwaSkillComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\Skill\NormalSkill\USkillBaseComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\USkillBaseComponent.obj
+C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\Skill\Ultimate\Gideon\UGideonUltimateComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\UGideonUltimateComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\Skill\Ultimate\Sanhwa\USanhwaUltimateComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\USanhwaUltimateComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\Skill\Ultimate\UUltimateBaseComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\UUltimateBaseComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\Combat\UCombatBaseComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\UCombatBaseComponent.obj

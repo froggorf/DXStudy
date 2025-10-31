@@ -8,6 +8,8 @@
 #include "MyGame/Actor/Sanhwa/ASanhwaIceBase.h"
 #include "MyGame/Component/Combat/Range/UGideonCombatComponent.h"
 #include "MyGame/Component/Combat/Skill/NormalSkill/Gideon/UGideonSkillComponent.h"
+#include "MyGame/Component/Combat/Skill/Ultimate/UUltimateBaseComponent.h"
+#include "MyGame/Component/Combat/Skill/Ultimate/Gideon/UGideonUltimateComponent.h"
 #include "MyGame/Widget/Gideon/UGideonWidget.h"
 
 std::string AGideonCharacter::CharacterName  = "Gideon";
@@ -38,7 +40,7 @@ AGideonCharacter::AGideonCharacter()
 
 	CombatComponent = std::dynamic_pointer_cast<UGideonCombatComponent>(CreateDefaultSubobject("GideonCombatComp", "UGideonCombatComponent"));
 	SkillComponent = std::dynamic_pointer_cast<UGideonSkillComponent>(CreateDefaultSubobject("GideonSkillComp", "UGideonSkillComponent"));
-	//UltimateComponent = std::dynamic_pointer_cast<USanhwaUltimateComponent>(CreateDefaultSubobject("SanhwaUltComp", "USanhwaUltimateComponent"));
+	UltimateComponent = std::dynamic_pointer_cast<UGideonUltimateComponent>(CreateDefaultSubobject("GideonUltComp", "UGideonUltimateComponent"));
 
 	CharacterMaxHealth = 20000.0f;
 
@@ -55,17 +57,24 @@ AGideonCharacter::AGideonCharacter()
 	
 }
 
+void AGideonCharacter::LoadCharacterData_OnRegister()
+{
+	AMyGameCharacterBase::LoadCharacterData_OnRegister();
+
+	UltimateSceneCameraComp->SetupAttachment(GetRootComponent(), "root");
+	UltimateSceneCameraComp->SetRelativeLocation({0.0f,0.0f,300.0f});
+	UltimateSceneCameraComp->SetRelativeRotation(XMFLOAT3{0.0f, 180.0f,0.0f});
+	//UltimateSceneCameraComp->SetRelativeLocation({0.0f,150.0f,-300.0f});
+	//UltimateSceneCameraComp->SetRelativeRotation(XMFLOAT3{-90.0f,0.0f,180.0f});
+	if (TestComp_CheckCameraPos)
+	{
+		TestComp_CheckCameraPos->SetupAttachment(SkeletalMeshComponent, "root");
+		TestComp_CheckCameraPos->SetRelativeLocation({0.0f,150.0f,300.0f});
+	}
+}
+
 void AGideonCharacter::Register()
 {
-	//UltimateSceneCameraComp->SetupAttachment(SkeletalMeshComponent, "spine_05");
-	//UltimateSceneCameraComp->SetRelativeLocation({11.6f,167.28f,0.0f});
-	//UltimateSceneCameraComp->SetRelativeRotation(XMFLOAT4{-0.073f,-0.704f,0.078f, 0.702f});
-	//if (TestComp_DeleteLater)
-	//{
-	//	TestComp_DeleteLater->SetupAttachment(SkeletalMeshComponent, "spine_05");
-	//	TestComp_DeleteLater->SetRelativeLocation({11.6f,167.28f,0.0f});
-	//	TestComp_DeleteLater->SetRelativeRotation(XMFLOAT4{-0.073f,-0.704f,0.078f, 0.702f});
-	//}
 	
 	AMyGameCharacterBase::Register();
 
@@ -114,19 +123,29 @@ void AGideonCharacter::SpawnMeteor()
 	// 테스트용 임시 코드
 	XMFLOAT4 CurActorRotation =  GetActorRotation();
 	XMFLOAT4 LocalMeteorRotation = MyMath::ForwardVectorToRotationQuaternion(XMFLOAT3{1.0f, -1.0f, 0.0f});
-	 XMMATRIX Mat = XMMatrixRotationQuaternion(XMLoadFloat4(&LocalMeteorRotation));
-	 XMMATRIX MainMat = XMMatrixMultiply(Mat,  XMMatrixRotationQuaternion(XMLoadFloat4(&CurActorRotation)) );
+	XMMATRIX Mat = XMMatrixRotationQuaternion(XMLoadFloat4(&LocalMeteorRotation));
+	XMMATRIX MainMat = XMMatrixMultiply(Mat,  XMMatrixRotationQuaternion(XMLoadFloat4(&CurActorRotation)) );
 
 	FTransform SpawnTransform;
-	SpawnTransform.Translation = GetActorLocation() + GetActorForwardVector() * 200 + XMFLOAT3{0.0f,500.0f,0.0f};
-	float GapX = (MyMath::FRand() - 0.5f) * 300.0f;
-	float GapZ = MyMath::FRand() * 200.0f;
-	SpawnTransform.Translation = SpawnTransform.Translation + XMFLOAT3{GapX, 0.0f, GapZ};
+	SpawnTransform.Translation = GetActorLocation() + XMFLOAT3{0.0f,500.0f,0.0f};
+	SpawnTransform.Translation = SpawnTransform.Translation + GetActorForwardVector() * (200 + 500*MyMath::FRand());
+	SpawnTransform.Translation = SpawnTransform.Translation - GetActorRightVector() * (300 + (MyMath::FRand() * 450.0f));
+	
 	XMStoreFloat4(&SpawnTransform.Rotation, XMQuaternionRotationMatrix(MainMat)); 
 	if (const std::shared_ptr<AGideonMeteor>& Meteor = std::dynamic_pointer_cast<AGideonMeteor>(GetWorld()->SpawnActor("AGideonMeteor", SpawnTransform)))
 	{
-		//Meteor->Initialize();
+		Meteor->Initialize(this, UltimateComponent->GetSkillAttackData(0));
 	}
+}
+
+void AGideonCharacter::MeteorStart()
+{
+	GEngine->GetTimerManager()->SetTimer(SpawnMeteorTimerHandle, {this, &AGideonCharacter::SpawnMeteor}, 0.0f, true, SpawnMeteorRepeatTime);
+}
+
+void AGideonCharacter::MeteorEnd()
+{
+	GEngine->GetTimerManager()->ClearTimer(SpawnMeteorTimerHandle);
 }
 
 void AGideonCharacter::CreateWidgetOnBeginPlay()
@@ -204,52 +223,3 @@ void AGideonCharacter::ToNormalMode()
 		GideonWidget->SetAimModeWidgetVisibility(false);
 	}
 }
-
-
-/*
-
-void ASanhwaCharacter::BeginPlay()
-{
-	AMyGameCharacterBase::BeginPlay();
-
-}
-
-void ASanhwaCharacter::Tick(float DeltaSeconds)
-{
-	AMyGameCharacterBase::Tick(DeltaSeconds);
-
-	static float LastTime = GEngine->GetTimeSeconds();
-	if (LastTime + 3.0f <= GEngine->GetTimeSeconds())
-	{
-		LastTime = GEngine->GetTimeSeconds();
-		TakeDamage(2500.0f, {},this);	
-	}
-	
-}
-
-void ASanhwaCharacter::CreateIceSpikes(bool bIsUltimate)
-{
-	XMFLOAT3 ActorLocation = GetActorLocation();
-	XMFLOAT3 ActorForwardVector = GetActorForwardVector();
-
-
-	FTransform SpawnTransform;
-	SpawnTransform.Translation = ActorLocation + ActorForwardVector * 100;
-	SpawnTransform.Scale3D = {1,1,1};
-	SpawnTransform.Rotation = MyMath::VectorToRotationQuaternion(ActorForwardVector);
-
-	std::shared_ptr<AActor> IceSpikesActor;
-	if (bIsUltimate)
-	{
-		IceSpikesActor = GetWorld()->SpawnActor("ASanhwaIceSpikeUltimate", SpawnTransform);
-	}
-	else
-	{
-		IceSpikesActor = GetWorld()->SpawnActor("ASanhwaIceSpikeBase", SpawnTransform);	
-	}
-
-	if (const std::shared_ptr<ASanhwaIceSpikeBase>& IceActor = std::dynamic_pointer_cast<ASanhwaIceSpikeBase>(IceSpikesActor))
-	{
-		IceActor->SpawnedBy(this);
-	}
-}*/

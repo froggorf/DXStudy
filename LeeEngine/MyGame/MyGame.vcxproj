@@ -45,6 +45,7 @@
     <ClCompile Include="Source\MyGame\Component\Combat\Skill\NormalSkill\Gideon\UGideonSkillComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\Combat\Skill\NormalSkill\SanHwa\USanhwaSkillComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\Combat\Skill\NormalSkill\USkillBaseComponent.cpp" />
+    <ClCompile Include="Source\MyGame\Component\Combat\Skill\Ultimate\Gideon\UGideonUltimateComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\Combat\Skill\Ultimate\Sanhwa\USanhwaUltimateComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\Combat\Skill\Ultimate\UUltimateBaseComponent.cpp" />
     <ClCompile Include="Source\MyGame\Component\Combat\UCombatBaseComponent.cpp" />
@@ -92,6 +93,7 @@
     <ClInclude Include="Source\MyGame\Component\Combat\Skill\NormalSkill\Gideon\UGideonSkillComponent.h" />
     <ClInclude Include="Source\MyGame\Component\Combat\Skill\NormalSkill\SanHwa\USanhwaSkillComponent.h" />
     <ClInclude Include="Source\MyGame\Component\Combat\Skill\NormalSkill\USkillBaseComponent.h" />
+    <ClInclude Include="Source\MyGame\Component\Combat\Skill\Ultimate\Gideon\UGideonUltimateComponent.h" />
     <ClInclude Include="Source\MyGame\Component\Combat\Skill\Ultimate\Sanhwa\USanhwaUltimateComponent.h" />
     <ClInclude Include="Source\MyGame\Component\Combat\Skill\Ultimate\UUltimateBaseComponent.h" />
     <ClInclude Include="Source\MyGame\Component\Combat\UCombatBaseComponent.h" />

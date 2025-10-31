@@ -1,0 +1,19 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_NiagaraMeshOnlyColor",
+    "VertexShader" : {
+	"FilePath" : "/Shader/MeshRenderer.fx",
+	"Func" : "VS_MeshParticle"
+    },
+    "GeometryShader": {
+	"FilePath" : "/Shader/MeshRenderer.fx",
+	"Func": "GS_Mesh"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/MeshRenderer.fx",
+	"Func": "PS_ParticleOnlyColor"
+    },
+    "BlendMode": "Translucent",
+    "TwoSided" : 1
+	
+}

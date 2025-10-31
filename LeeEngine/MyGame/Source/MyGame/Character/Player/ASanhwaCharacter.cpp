@@ -48,11 +48,11 @@ void ASanhwaCharacter::Register()
 	UltimateSceneCameraComp->SetupAttachment(SkeletalMeshComponent, "spine_05");
 	UltimateSceneCameraComp->SetRelativeLocation({11.6f,167.28f,0.0f});
 	UltimateSceneCameraComp->SetRelativeRotation(XMFLOAT4{-0.073f,-0.704f,0.078f, 0.702f});
-	if (TestComp_DeleteLater)
+	if (TestComp_CheckCameraPos)
 	{
-		TestComp_DeleteLater->SetupAttachment(SkeletalMeshComponent, "spine_05");
-		TestComp_DeleteLater->SetRelativeLocation({11.6f,167.28f,0.0f});
-		TestComp_DeleteLater->SetRelativeRotation(XMFLOAT4{-0.073f,-0.704f,0.078f, 0.702f});
+		TestComp_CheckCameraPos->SetupAttachment(SkeletalMeshComponent, "spine_05");
+		TestComp_CheckCameraPos->SetRelativeLocation({11.6f,167.28f,0.0f});
+		TestComp_CheckCameraPos->SetRelativeRotation(XMFLOAT4{-0.073f,-0.704f,0.078f, 0.702f});
 	}
 	
 	

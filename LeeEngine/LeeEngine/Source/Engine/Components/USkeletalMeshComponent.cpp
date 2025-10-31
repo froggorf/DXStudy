@@ -79,10 +79,11 @@ bool USkeletalMeshComponent::SetSkeletalMesh(const std::shared_ptr<USkeletalMesh
 
 FTransform USkeletalMeshComponent::GetSocketTransform(const std::string& InSocketName)
 {
-	if (!AnimInstance && !GetSkeletalMesh())
+	if (!AnimInstance || !GetSkeletalMesh() || AnimInstance->GetGlobalBoneTransforms().empty())
 	{
 		return GetComponentTransform();
 	}
+	
 
 	FTransform ReturnTransform = GetComponentTransform();
 

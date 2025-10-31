@@ -293,6 +293,23 @@ StructuredBuffer<FParticleModule> gModule : register(ParticleDataRegister);
 			}
 		}
 
+		// AlignToVel
+		if (gModule[0].Module[10])
+		{
+			float3 Velocity = gBuffer[ThreadID.x].Velocity;
+			float3 Forward = normalize(Velocity);
+			float3 Up = float3(0, 1, 0);
+			float3 Right = normalize(cross(Up, Forward));
+			Up = cross(Forward, Right);
+			
+			float3x3 RotationMatrix = float3x3(Right, Up, Forward);
+			float pitch = asin(-RotationMatrix._32); // -m23
+			float yaw = atan2(RotationMatrix._31, RotationMatrix._33); // m13, m33
+			float roll = atan2(RotationMatrix._12, RotationMatrix._22); // m12, m22
+
+			gBuffer[ThreadID.x].WorldRotation = float3(pitch, yaw, roll);
+		}
+
 		gBuffer[ThreadID.x].Age += gDeltaTime;
 		// 파티클의 수명이 다했는지 체크
 		if (gBuffer[ThreadID.x].Age >= gBuffer[ThreadID.x].Life)

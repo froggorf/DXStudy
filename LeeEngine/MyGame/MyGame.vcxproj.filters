@@ -137,6 +137,9 @@
     <Filter Include="Shader\PBR\Character">
       <UniqueIdentifier>{41e5ce83-1694-43c1-92a4-6b013db9ab96}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\Component\Combat\Skill\Ultimate\Gideon">
+      <UniqueIdentifier>{a0ca4a39-4bf9-46a1-89ab-bced1e167c05}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -277,6 +280,9 @@
     <ClCompile Include="Source\MyGame\Actor\Gideon\AGideonMeteor.cpp">
       <Filter>Source\MyGame\Actor\Gideon</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Component\Combat\Skill\Ultimate\Gideon\UGideonUltimateComponent.cpp">
+      <Filter>Source\MyGame\Component\Combat\Skill\Ultimate\Gideon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -413,6 +419,9 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Actor\Gideon\AGideonMeteor.h">
       <Filter>Source\MyGame\Actor\Gideon</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Component\Combat\Skill\Ultimate\Gideon\UGideonUltimateComponent.h">
+      <Filter>Source\MyGame\Component\Combat\Skill\Ultimate\Gideon</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

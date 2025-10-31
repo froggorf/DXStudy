@@ -5,9 +5,6 @@
 #include "Engine/Physics/UPhysicsEngine.h"
 #include "MyGame/Component/Combat/Skill/Ultimate/UUltimateBaseComponent.h"
 
-
-class UPlayerInput;
-
 class USanhwaUltimateComponent : public UUltimateBaseComponent
 {
 	MY_GENERATE_BODY(USanhwaUltimateComponent)

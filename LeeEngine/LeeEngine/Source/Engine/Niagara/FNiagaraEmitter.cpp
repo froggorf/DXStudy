@@ -58,6 +58,7 @@ void FParticleModule::LoadDataFromFile(const nlohmann::basic_json<>& Data)
 		SpawnShape = Data["SpawnShape"];
 	}
 
+
 	// SpawnShapeScale
 	if (Data.contains("SpawnScale"))
 	{
@@ -172,6 +173,13 @@ void FParticleModule::LoadDataFromFile(const nlohmann::basic_json<>& Data)
 			OrbitSpeedMin = SpeedData[0];
 			OrbitSpeedMax = SpeedData[1];
 		}
+
+		// AlignToVelocity 모듈
+		if (ModuleData.contains("AlignToVel"))
+		{
+			int NewState = ModuleData["AlignToVel"];
+			Module[static_cast<int>(EParticleModule::PM_AlignToVelocity)] = NewState;
+		}
 	}
 }
 
@@ -219,13 +227,17 @@ void FNiagaraRendererProperty::LoadDataFromFile(const nlohmann::basic_json<>& Da
 
 FNiagaraRendererBillboardSprites::FNiagaraRendererBillboardSprites()
 {
-	MaterialInterface = UMaterial::GetMaterialCache("MI_NiagaraBillboardSprite");
-	StaticMesh        = UStaticMesh::GetStaticMesh("SM_Point");
-	if (!StaticMesh)
+	static const std::shared_ptr<UMaterialInterface>& BillboardSpriteMaterial = UMaterial::GetMaterialCache("MI_NiagaraBillboardSprite"); 
+	MaterialInterface = BillboardSpriteMaterial;
+
+	static std::shared_ptr<UStaticMesh> PointMesh = UStaticMesh::GetStaticMesh("SM_Point");
+	if (!PointMesh)
 	{
 		AssetManager::ReadMyAsset(AssetManager::GetAssetNameAndAssetPathMap()["SM_Point"]);	
-		StaticMesh = UStaticMesh::GetStaticMesh("SM_Point");
+		PointMesh = UStaticMesh::GetStaticMesh("SM_Point");
 	}
+	StaticMesh = PointMesh;
+	
 }
 
 // ================= Niagara Renderer ================
@@ -259,6 +271,21 @@ void FNiagaraRendererBillboardSprites::Render()
 
 	GDirectXDevice->SetDSState(EDepthStencilStateType::LESS);
 	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+}
+
+FNiagaraRendererSprites::FNiagaraRendererSprites()
+{
+	static const std::shared_ptr<UMaterialInterface>& SpriteMaterial =UMaterial::GetMaterialCache("M_NiagaraSprite"); 
+	MaterialInterface = SpriteMaterial;
+}
+
+FNiagaraRendererMeshes::FNiagaraRendererMeshes()
+{
+	static const std::shared_ptr<UStaticMesh>& CubeStaticMesh = UStaticMesh::GetStaticMesh("SM_Cube");
+	BaseStaticMesh    = CubeStaticMesh;
+	static const std::shared_ptr<UMaterialInterface>& MeshMaterial = UMaterial::GetMaterialCache("M_NiagaraMesh");
+	MaterialInterface = MeshMaterial;
+	
 }
 
 void FNiagaraRendererMeshes::Render()
@@ -374,6 +401,7 @@ std::shared_ptr<FNiagaraEmitter> FNiagaraEmitter::GetEmitterInstance() const
 	auto Instance            = std::make_shared<FNiagaraEmitter>();
 	Instance->Module         = Module;
 	Instance->RenderProperty = RenderProperty;
+	Instance->FirstFrameSpawnBurst = FirstFrameSpawnBurst;
 	return Instance;
 }
 
@@ -385,7 +413,7 @@ void FNiagaraEmitter::CalcSpawnCount(float DeltaSeconds)
 	FParticleSpawn Count{};
 	if (bFirstTick)
 	{
-		Count.SpawnCount = 1;
+		Count.SpawnCount = FirstFrameSpawnBurst;
 		bFirstTick       = false;
 	}
 	if (AccTime >= Term)
@@ -440,6 +468,12 @@ void FNiagaraEmitter::LoadDataFromFile(const nlohmann::basic_json<>& Data)
 	RenderProperty->LoadDataFromFile(Data);
 
 	Module.LoadDataFromFile(Data);
+
+	if (Data.contains("FirstBurst"))
+	{
+		UINT FirstSpawnBurst = Data["FirstBurst"];
+		FirstFrameSpawnBurst = FirstSpawnBurst;
+	}
 }
 
 FNiagaraRibbonEmitter::FNiagaraRibbonEmitter()
@@ -517,10 +551,21 @@ void FNiagaraRibbonEmitter::CreateAndAddNewRibbonPoint(XMFLOAT3 PointPos, XMVECT
 	int NewDataIndex              = (CurRibbonPointDataStartIndex + CurPointCount) % MaxRibbonPointCount;
 	RibbonPointData[NewDataIndex] = Data;
 	++CurPointCount;
+
+	bMustRemapVertexBuffer = true;
 }
 
 void FNiagaraRibbonEmitter::Tick(float DeltaSeconds, const FTransform& SceneTransform)
 {
+	CurrentTime += DeltaSeconds;
+	static constexpr float UpdateTimePerSec = 60.0f;
+	static constexpr float TickTime = 1.0f / UpdateTimePerSec;
+	if (CurrentTime < TickTime)
+	{
+		return;
+	}
+	CurrentTime -= TickTime;
+
 	XMFLOAT3 CurLoc         = SceneTransform.GetTranslation();
 	XMVECTOR CurLocationVec = XMLoadFloat3(&CurLoc);
 
@@ -532,12 +577,14 @@ void FNiagaraRibbonEmitter::Tick(float DeltaSeconds, const FTransform& SceneTran
 	for (int Count = 0; Count < CurPointCount; ++Count)
 	{
 		int CurIndex = (Count + CurRibbonPointDataStartIndex) % MaxRibbonPointCount;
-		RibbonPointData[CurIndex].RemainTime -= DeltaSeconds;
+		RibbonPointData[CurIndex].RemainTime -= TickTime;
 		// 시간이 다 된 포인트면 활성화 개수 1개 줄이기
 		if (RibbonPointData[CurIndex].RemainTime <= 0.0f)
 		{
 			CurPointCount -= 1;
 			CurRibbonPointDataStartIndex = (CurRibbonPointDataStartIndex + 1) % MaxRibbonPointCount;
+
+			bMustRemapVertexBuffer = true;
 		}
 	}
 
@@ -571,7 +618,6 @@ void FNiagaraRibbonEmitter::Render() const
 		return;
 	}
 
-	GDirectXDevice->SetDSState(EDepthStencilStateType::NO_WRITE);
 	GDirectXDevice->SetBSState(EBlendStateType::BST_AlphaBlend);
 
 	auto DeviceContext = GDirectXDevice->GetDeviceContext();
@@ -584,15 +630,12 @@ void FNiagaraRibbonEmitter::Render() const
 		DeviceContext->PSSetShaderResources(i, 1, OverrideTex[i]->GetSRV().GetAddressOf());
 	}
 
-	UINT MeshIndex = 0;
 	// 셰이더 설정
 	UINT stride = sizeof(MyVertexData);
 	UINT offset = 0;
 	DeviceContext->IASetVertexBuffers(0, 1, VB_Ribbon.GetAddressOf(), &stride, &offset);
 
 	DeviceContext->Draw(CurVertexCount, 0);
-
-	GDirectXDevice->SetDSState(EDepthStencilStateType::LESS);
 }
 
 void FNiagaraRibbonEmitter::LoadDataFromFile(const nlohmann::basic_json<>& Data)
@@ -629,10 +672,11 @@ void FNiagaraRibbonEmitter::LoadDataFromFile(const nlohmann::basic_json<>& Data)
 void FNiagaraRibbonEmitter::MapPointDataToVertexBuffer()
 {
 	// 버텍스 버퍼 내 포인트 개수랑 다른 경우에는 버텍스 버퍼를 갱신해주기
-	if (CurPointCount == CurVertexBufferPointCount)
+	if (!bMustRemapVertexBuffer)
 	{
 		return;
 	}
+	bMustRemapVertexBuffer = false;
 
 	// 버텍스 버퍼를 동적으로 갱신
 	D3D11_MAPPED_SUBRESOURCE    cbMapSub{};

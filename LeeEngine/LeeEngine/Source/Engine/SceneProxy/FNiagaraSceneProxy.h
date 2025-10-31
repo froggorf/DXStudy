@@ -31,6 +31,7 @@ public:
 		SystemParam = NewSystemParam;
 	}
 	std::function<void()> DelegateOnTickCS;
+	const std::shared_ptr<FNiagaraEmitter>& GetEmitter() const {return Emitter;}
 protected:
 	// Niagara Emitter
 	std::shared_ptr<FNiagaraEmitter> Emitter;

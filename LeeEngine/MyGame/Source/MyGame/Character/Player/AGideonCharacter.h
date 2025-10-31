@@ -8,12 +8,16 @@ class AGideonCharacter final : public AMyGameCharacterBase
 	MY_GENERATE_BODY(AGideonCharacter)
 
 	AGideonCharacter();
+	void LoadCharacterData_OnRegister() override;
 	void Register() override;
 	void Tick(float DeltaSeconds) override;
 	void BindKeyInputs() override;
 	void SpawnFireBall(const FTransform& SpawnTransform, const FAttackData& AttackData, const XMFLOAT3& TargetPosition);
 	void SpawnIceStorm(const FTransform& SpawnTransform, const FAttackData& AttackData);
 	void SpawnMeteor();
+
+	void MeteorStart();
+	void MeteorEnd();
 
 	void CreateWidgetOnBeginPlay() override;
 
@@ -38,4 +42,8 @@ private:
 
 	float AimModePitchMin = -70.0f;
 	float AimModePitchMax = 70.0f;
+
+	FTimerHandle SpawnMeteorTimerHandle;
+	// 1초에 N개 생기도록
+	static constexpr float SpawnMeteorRepeatTime = 1.0f / 5;
 };

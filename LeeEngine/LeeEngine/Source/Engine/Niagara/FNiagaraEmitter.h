@@ -9,7 +9,7 @@
 #include "Engine/Mesh/UStaticMesh.h"
 
 #define MaxParticleCount 500
-#define MaxRibbonPointCount 2000
+#define MaxRibbonPointCount 500
 #define ParticleDataRegister 20
 
 // 파티클 스폰 구조체
@@ -64,6 +64,7 @@ enum class EParticleModule
 	PM_AddRotation,
 	PM_DynamicParam,
 	PM_Orbit,
+	PM_AlignToVelocity,
 	PM_END,
 };
 
@@ -201,10 +202,7 @@ protected:
 class FNiagaraRendererSprites : public FNiagaraRendererBillboardSprites
 {
 public:
-	FNiagaraRendererSprites()
-	{
-		MaterialInterface = UMaterial::GetMaterialCache("M_NiagaraSprite");
-	}
+	FNiagaraRendererSprites();
 
 	~FNiagaraRendererSprites() override = default;
 };
@@ -213,11 +211,7 @@ public:
 class FNiagaraRendererMeshes : public FNiagaraRendererProperty
 {
 public:
-	FNiagaraRendererMeshes()
-	{
-		BaseStaticMesh    = UStaticMesh::GetStaticMesh("SM_Cube");
-		MaterialInterface = UMaterial::GetMaterialCache("M_NiagaraMesh");
-	}
+	FNiagaraRendererMeshes();
 
 	~FNiagaraRendererMeshes() override = default;
 
@@ -242,7 +236,8 @@ class FNiagaraRendererRibbons : public FNiagaraRendererProperty
 public:
 	FNiagaraRendererRibbons()
 	{
-		MaterialInterface = UMaterial::GetMaterialCache("M_NiagaraRibbon");
+		static const std::shared_ptr<UMaterialInterface>& M_NiagaraRibbon = UMaterial::GetMaterialCache("M_NiagaraRibbon");
+		MaterialInterface = M_NiagaraRibbon;
 	}
 
 	void Render() override;
@@ -289,6 +284,8 @@ protected:
 	std::shared_ptr<FStructuredBuffer>      ParticleBuffer;
 	std::shared_ptr<FStructuredBuffer>      SpawnBuffer;
 	std::shared_ptr<FStructuredBuffer>      ModuleBuffer;
+
+	UINT FirstFrameSpawnBurst = 1;
 
 	// 이펙트에 대한 버퍼를 바인딩할 레지스터 번호
 	static constexpr int EffectBufferRegNum = 20;
@@ -363,4 +360,7 @@ protected:
 
 	int CurVertexBufferPointCount = 0;
 	int CurVertexCount;
+
+	float CurrentTime = 0.0f;
+	bool bMustRemapVertexBuffer = false;
 };

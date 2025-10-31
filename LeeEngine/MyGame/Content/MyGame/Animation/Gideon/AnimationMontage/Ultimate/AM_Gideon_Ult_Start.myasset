@@ -1,0 +1,25 @@
+{
+	"Class": "UAnimMontage",
+	"Name": "AM_Gideon_Ult_Start",
+	"Skeleton": "SK_Gideon",
+	"BlendIn" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.15
+	},
+	"BlendOut" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.0
+	},
+	"SlotName": "DefaultSlot",
+	"AnimTrack" : [
+		{"AnimName" : "AS_Gideon_Ult_Start"}
+	],
+	"Sections" : [
+		{ "SectionName" : "Ult", "StartTime" : 0.0 }
+	],
+    	"Notifies" : [
+		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 3, "EventName" : "UltMotionWarping" },
+		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 65, "EventName" : "Camera" },
+		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 110, "EventName" : "UltLoopStart" }
+  	 ]
+}

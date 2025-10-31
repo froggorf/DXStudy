@@ -115,7 +115,7 @@ struct FParticleModule
 	float OrbitSpeedMax;
 
 	// Module On / Off
-	int Module[10];
+	int Module[11];
 };
 
 // 쿼터니언 → 3x3 회전행렬

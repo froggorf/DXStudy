@@ -58,6 +58,8 @@ class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
 	void WheelUp();
 	void WheelDown();
 
+	void Debug_SetUltimateGauge100();
+
 	float GetCurrentPower() const;
 protected:
 	float MaxPower = 120.0f;
@@ -92,7 +94,7 @@ protected:
 
 	// 궁극기 시전 시 전환될 카메라
 	std::shared_ptr<UCameraComponent> UltimateSceneCameraComp;
-	std::shared_ptr<USceneComponent> TestComp_DeleteLater;
+	std::shared_ptr<USceneComponent> TestComp_CheckCameraPos;
 	std::shared_ptr<UStaticMeshComponent> SM_Arrow;
 
 public:
