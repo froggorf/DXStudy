@@ -59,8 +59,6 @@ class UDecalComponent : public USceneComponent
 	MY_GENERATE_BODY(UDecalComponent)
 
 public:
-	
-
 	const std::shared_ptr<UMaterialInterface>& GetDecalMaterial() const {return DecalMaterial;}
 	void SetDecalMaterial(const std::shared_ptr<UMaterialInterface>& NewDecalMaterial) { DecalMaterial = NewDecalMaterial; }
 	void SetIsLight(bool NewIsLight) { bIsLight = NewIsLight;}
@@ -71,7 +69,7 @@ public:
 
 private:
 	std::shared_ptr<UMaterialInterface> DecalMaterial;
-	bool					  bIsLight = false;
+	bool bIsLight = false;
 	bool bIsActive = true;
 	void AddDecalInfo();
 };

@@ -1,14 +1,14 @@
 {
     "Class": "UNiagaraSystem",
-    "Name": "NS_MeteorBall",
+    "Name": "NS_MeteorCollision",
     "Emitters" : [
 	{ 
 		"Property" : 2, 
 		"OverrideMat" : "M_NiagaraMeshOnlyColor",
-		"FirstBurst" : 30,
+		"FirstBurst" : 150,
 		"StaticMesh" : "SM_Sphere",
-		"Life" : [ 2, 3 ],
-		"Scale" : [ [2,2,5] , [2,2,5] ],
+		"Life" : [ 3,3.5 ],
+		"Scale" : [ [1,1,2.5],[1,1,2.5] ],
 		"Rot" : [ [0,0,0] , [0,0,0]],
 		"SpaceType": 0,
 		"SpawnShape" : 2,
@@ -16,15 +16,16 @@
 		"Modules" : 
 		{
 			"Render" : {
-  			    "StartColor" : [2,0.7,0,1.0],
-			    "EndColor" : [2,0.7, 1,0,1.0],
-			    "FadeOut" : [1, 1.0]
+  			    "StartColor" : [1,0.0,0,1.0],
+			    "EndColor" : [1,0.5, 0,0,1.0],
+			    "FadeOut" : [1, 0.9]
 			},
 			"AddVelocity":{
-			    "MinVel" : [-300.0, 300.0, -300.0],
-			    "MaxVel" : [-300.0, 350.0, 300.0]
+			    "MinVel" : [-70.0, 80.0, -70.0],
+			    "MaxVel" : [70.0, 80.0, 70.0]
 			},
-			"TickVel" : [0.0, -50.0, 0.0]
+			"TickVel" : [0.0, -200.0, 0.0],
+			"AlignToVel" : 1
 		}
 	}
     ]

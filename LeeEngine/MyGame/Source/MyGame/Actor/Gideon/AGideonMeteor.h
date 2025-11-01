@@ -18,7 +18,11 @@ public:
 	void DestroySelf() override;
 	void Initialize(AGideonCharacter* Spawner, const FAttackData& AttackData);
 
+	// 타이머 틱 마다 메테오를 이동시키는 함수
+	// (매 타이머틱마다 오버랩을 통해 충돌체크)
 	void MoveTick();
+	// 지면에 부딪힐 시 발생하는 함수
+	void MeteorBomb();
 protected:
 	FAttackData ExplosionAttackData;
 
@@ -26,8 +30,8 @@ private:
 	AGideonCharacter* Spawner;
 
 	std::shared_ptr<UNiagaraComponent> MeteorVFX;
-	std::shared_ptr<UNiagaraComponent> MeteorBallVFX;
-	std::shared_ptr<UNiagaraComponent> CollisionVFX;
+	// 기존에는 나이아가라를 사용했으나 회전값을 적절히 사용할 방법이 존재하지 않아 다음과같이 변경
+	std::shared_ptr<UStaticMeshComponent> MeteorBallComp;
 
 	FTimerHandle SelfKillTimerHandle;
 	FTimerHandle MoveTimerHandle;

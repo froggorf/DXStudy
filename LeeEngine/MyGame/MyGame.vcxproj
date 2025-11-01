@@ -29,6 +29,7 @@
     <ClCompile Include="Source\MyGame\Actor\Gideon\AGideonIceStorm.cpp" />
     <ClCompile Include="Source\MyGame\Actor\Gideon\AGideonLightning.cpp" />
     <ClCompile Include="Source\MyGame\Actor\Gideon\AGideonMeteor.cpp" />
+    <ClCompile Include="Source\MyGame\Actor\Gideon\AGideonMeteorBomb.cpp" />
     <ClCompile Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceBase.cpp" />
     <ClCompile Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceSpikeUltimate.cpp" />
     <ClCompile Include="Source\MyGame\AnimInstance\Gideon\UGideonAnimInstance.cpp" />
@@ -77,6 +78,7 @@
     <ClInclude Include="Source\MyGame\Actor\Gideon\AGideonIceStorm.h" />
     <ClInclude Include="Source\MyGame\Actor\Gideon\AGideonLightning.h" />
     <ClInclude Include="Source\MyGame\Actor\Gideon\AGideonMeteor.h" />
+    <ClInclude Include="Source\MyGame\Actor\Gideon\AGideonMeteorBomb.h" />
     <ClInclude Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceBase.h" />
     <ClInclude Include="Source\MyGame\Actor\Sanhwa\ASanhwaIceSpikeUltimate.h" />
     <ClInclude Include="Source\MyGame\AnimInstance\Gideon\UGideonAnimInstance.h" />

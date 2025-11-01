@@ -1,0 +1,15 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_MeteorBall",
+    "VertexShader" : {
+	"FilePath" : "/Shader/PBR.fx",
+	"Func" : "VS"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/PS_PBR.fx",
+	"Func": "PS_MeteorBall"
+    },
+    "BlendMode": "Deferred",
+    "TwoSided" : 0
+	
+}

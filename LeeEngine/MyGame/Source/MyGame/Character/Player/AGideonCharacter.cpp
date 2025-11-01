@@ -61,24 +61,9 @@ void AGideonCharacter::LoadCharacterData_OnRegister()
 {
 	AMyGameCharacterBase::LoadCharacterData_OnRegister();
 
-	UltimateSceneCameraComp->SetupAttachment(GetRootComponent(), "root");
+	UltimateSceneCameraComp->SetupAttachment(GetRootComponent(), "");
 	UltimateSceneCameraComp->SetRelativeLocation({0.0f,0.0f,300.0f});
 	UltimateSceneCameraComp->SetRelativeRotation(XMFLOAT3{0.0f, 180.0f,0.0f});
-	//UltimateSceneCameraComp->SetRelativeLocation({0.0f,150.0f,-300.0f});
-	//UltimateSceneCameraComp->SetRelativeRotation(XMFLOAT3{-90.0f,0.0f,180.0f});
-	if (TestComp_CheckCameraPos)
-	{
-		TestComp_CheckCameraPos->SetupAttachment(SkeletalMeshComponent, "root");
-		TestComp_CheckCameraPos->SetRelativeLocation({0.0f,150.0f,300.0f});
-	}
-}
-
-void AGideonCharacter::Register()
-{
-	
-	AMyGameCharacterBase::Register();
-
-	
 }
 
 void AGideonCharacter::Tick(float DeltaSeconds)

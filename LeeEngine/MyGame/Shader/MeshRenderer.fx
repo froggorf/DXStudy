@@ -60,7 +60,7 @@ struct GS_OUT
 	if (!particle.Active)
 		return;
 
-	float3x3 rotMat = QuaternionRotationMatrix(particle.WorldRotation);
+	float3x3 rotMat = EulerRotationToMatrix(particle.WorldRotation);
 
 	// 4. 각 꼭짓점 변환
 	GS_OUT verts[3];

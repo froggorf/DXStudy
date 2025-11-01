@@ -4,16 +4,19 @@
 // float 1개의 seed 기반 random 값 생성 함수
 float3 GetRandom(float seed)
 {
-	// 여러 해시와 삼각함수, 상수 조합
-	float a = frac(sin(seed * 12.9898 + gTime) * 43758.5453);
-	float b = frac(cos(seed * 78.233 + a) * 12345.6789);
-	float c = frac(sin((a + b) * 45.164 + seed) * 98765.4321);
+	float s1 = seed * 12.9898 + gTime;
+	float s2 = seed * 78.233 + s1;
+	float s3 = seed * 45.164 + s2;
+
+	float a = frac(sin(s1) * 43758.5453);
+	float b = frac(cos(s2) * 12345.6789);
+	float c = frac(sin(s3) * 98765.4321);
 
 	float3 v = float3(a, b, c);
-
-	// 더 섞기
 	v = frac(v * float3(23.1, 17.7, 42.3) + sin(v.yzx * 5.13 + gTime * 0.13));
-	return v;
+	v += frac(cos(v * 3.17 + a * 7.13));
+	v = frac(v * float3(11.1, 19.7, 33.3) + cos(v.zxy * 8.31 + b * 0.23));
+	return frac(v);
 }
 
 // 새로운 파티클을 추가하는 함수
@@ -106,7 +109,7 @@ void ParticleInit(inout FParticleData Particle, in FParticleModule Module, float
 
 	if (0 != Module.Module[2])
 	{
-		float3 Random = GetRandom(NormalizedThreadID + 0.2f);
+		float3 Random = GetRandom(NormalizedThreadID);
 
 		float3 fSpeed = Module.AddMinSpeed + (Module.AddMaxSpeed - Module.AddMinSpeed) * Random;
 
@@ -296,18 +299,28 @@ StructuredBuffer<FParticleModule> gModule : register(ParticleDataRegister);
 		// AlignToVel
 		if (gModule[0].Module[10])
 		{
-			float3 Velocity = gBuffer[ThreadID.x].Velocity;
-			float3 Forward = normalize(Velocity);
-			float3 Up = float3(0, 1, 0);
-			float3 Right = normalize(cross(Up, Forward));
-			Up = cross(Forward, Right);
-			
-			float3x3 RotationMatrix = float3x3(Right, Up, Forward);
-			float pitch = asin(-RotationMatrix._32); // -m23
-			float yaw = atan2(RotationMatrix._31, RotationMatrix._33); // m13, m33
-			float roll = atan2(RotationMatrix._12, RotationMatrix._22); // m12, m22
+			float3 velocity = gBuffer[ThreadID.x].Velocity;
+			float3 forward = normalize(velocity);
 
-			gBuffer[ThreadID.x].WorldRotation = float3(pitch, yaw, roll);
+			float3 worldUp = float3(0, 1, 0);
+			if (abs(dot(forward, worldUp)) > 0.99) // 너무 평행하면
+			{
+				worldUp = float3(0, 0, 1); // 다른 Up 사용
+			}
+
+			float3 right = normalize(cross(worldUp, forward));
+			float3 up = cross(forward, right);
+
+			float3x3 rotMat = float3x3(right, up, forward);
+
+			float yaw = atan2(forward.x, forward.z);
+			float pitch = atan2(-forward.y, sqrt(forward.x * forward.x + forward.z * forward.z));
+			float roll = atan2(up.x, up.y); 
+
+			float rad2deg = 180.0 / PI;
+			float3 euler = float3(pitch, yaw, roll) * rad2deg;
+
+			gBuffer[ThreadID.x].WorldRotation = euler;
 		}
 
 		gBuffer[ThreadID.x].Age += gDeltaTime;

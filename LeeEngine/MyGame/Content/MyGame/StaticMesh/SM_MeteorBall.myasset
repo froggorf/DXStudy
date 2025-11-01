@@ -1,0 +1,6 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_MeteorBall",
+    "ModelData": "/Content/Resource/Model/Sphere.obj",
+    "Material" : [ "M_MeteorBall" ]
+}

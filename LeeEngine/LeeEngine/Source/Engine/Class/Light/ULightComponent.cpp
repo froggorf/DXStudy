@@ -130,7 +130,6 @@ void UDecalComponent::TickComponent(float DeltaSeconds)
 	if (bIsActive)
 	{
 		AddDecalInfo();
-
 	}
 }
 

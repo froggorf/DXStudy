@@ -150,7 +150,7 @@ float4 EulerToQuaternion_RollPitchYaw(float3 euler)
 }
 
 // Euler → 쿼터니언 → 회전행렬 (Roll-Pitch-Yaw 기본)
-float3x3 QuaternionRotationMatrix(float3 euler)
+float3x3 EulerRotationToMatrix(float3 euler)
 {
 	// 다이렉트 X11 좌표계를 활용했으므로 역수를 취해줘야함
 	euler *= -1;

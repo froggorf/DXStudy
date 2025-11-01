@@ -7,7 +7,7 @@
 		"FaceCamera": 1,
 		"Life" : [ 0.3,0.3 ],
 		"RibbonWidth" : 15.0,
-		"RibbonColor": [2.0, 0.7 , 0 , 0.7],
+		"RibbonColor": [1.0, 0.0 , 0 , 1.0],
 		"EndColor": [1,0.3, 0, 0.7]
 	}
     ]

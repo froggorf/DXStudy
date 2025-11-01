@@ -283,6 +283,9 @@
     <ClCompile Include="Source\MyGame\Component\Combat\Skill\Ultimate\Gideon\UGideonUltimateComponent.cpp">
       <Filter>Source\MyGame\Component\Combat\Skill\Ultimate\Gideon</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Actor\Gideon\AGideonMeteorBomb.cpp">
+      <Filter>Source\MyGame\Actor\Gideon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -422,6 +425,9 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Component\Combat\Skill\Ultimate\Gideon\UGideonUltimateComponent.h">
       <Filter>Source\MyGame\Component\Combat\Skill\Ultimate\Gideon</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Actor\Gideon\AGideonMeteorBomb.h">
+      <Filter>Source\MyGame\Actor\Gideon</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

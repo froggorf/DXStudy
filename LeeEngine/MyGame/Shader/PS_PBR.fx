@@ -219,5 +219,19 @@ Deferred_PS_OUT PBR_PS_Brick_Ground(PBR_PS_INPUT input) : SV_TARGET
 	return output;
 }
 
+Deferred_PS_OUT PS_MeteorBall(PBR_PS_INPUT input) : SV_TARGET
+{
+	
+	Deferred_PS_OUT output = (Deferred_PS_OUT) 0.f;
+	
+	output.Color = float4(0, 0, 0, 1);
+	output.PBRData = float4(0,0,0,0);
+	output.Normal = float4(input.ViewNormal, 1.f);
+	output.Position = float4(input.ViewPosition, 1.f);
+	output.Emissive = float4(15.f, 0.f, 0.f, 1.f);
+
+	return output;
+}
+
 
 #endif

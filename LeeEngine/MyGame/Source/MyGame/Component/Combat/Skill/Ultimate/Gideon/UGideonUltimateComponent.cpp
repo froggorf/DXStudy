@@ -35,7 +35,7 @@ void UGideonUltimateComponent::Initialize(AMyGameCharacterBase* MyCharacter)
 
 	SetSkillAttackData({"AM_Gideon_Ult_Start"}, 
 		{FAttackData{XMFLOAT3{ 150,150,150},3.0f, -0.0f,5.0f}}
-	, 30.0f);
+	, 5.0f);
 }
 
 void UGideonUltimateComponent::ApplyUltimateAttack()

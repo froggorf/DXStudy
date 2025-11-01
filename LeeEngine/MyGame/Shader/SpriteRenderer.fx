@@ -74,7 +74,7 @@ struct GS_OUT
 	};
 
 	// 3. 월드 회전 행렬 만들기 (오일러 각 기반, radians 단위라고 가정)
-	float3x3 rotMat = QuaternionRotationMatrix(particle.WorldRotation);
+	float3x3 rotMat = EulerRotationToMatrix(particle.WorldRotation);
 
 	// 4. 각 꼭짓점 변환
 	GS_OUT verts[4];
