@@ -109,6 +109,9 @@
     <Filter Include="Source\Engine\Timer">
       <UniqueIdentifier>{2a1be6b4-c83c-4187-a51d-b97e23b71e43}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Engine\AI">
+      <UniqueIdentifier>{8ad3d879-a5ba-4ee6-8403-de6cd1609aeb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\DirectX\d3dApp.cpp">
@@ -486,6 +489,12 @@
     <ClCompile Include="Source\Engine\Components\UWidgetComponent.cpp">
       <Filter>Source\Engine\Components</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\AI\FBTNode.cpp">
+      <Filter>Source\Engine\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\AI\FBlackBoard.cpp">
+      <Filter>Source\Engine\AI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DirectX\d3dApp.h">
@@ -859,6 +868,12 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\Components\UWidgetComponent.h">
       <Filter>Source\Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\AI\FBTNode.h">
+      <Filter>Source\Engine\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\AI\FBlackBoard.h">
+      <Filter>Source\Engine\AI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

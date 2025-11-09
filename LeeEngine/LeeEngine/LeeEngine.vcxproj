@@ -26,6 +26,8 @@
     </ClCompile>
     <ClCompile Include="Source\DirectX\d3dApp.cpp" />
     <ClCompile Include="Source\DirectX\GameTimer.cpp" />
+    <ClCompile Include="Source\Engine\AI\FBlackBoard.cpp" />
+    <ClCompile Include="Source\Engine\AI\FBTNode.cpp" />
     <ClCompile Include="Source\Engine\Animation\AnimNotifies\AnimNotify.cpp" />
     <ClCompile Include="Source\Engine\Animation\AnimTypes.cpp" />
     <ClCompile Include="Source\Engine\Animation\Bone.cpp" />
@@ -188,6 +190,8 @@
     <ClInclude Include="Source\DirectX\d3dUtil.h" />
     <ClInclude Include="Source\DirectX\GameTimer.h" />
     <ClInclude Include="Source\DirectX\LightHelper.h" />
+    <ClInclude Include="Source\Engine\AI\FBlackBoard.h" />
+    <ClInclude Include="Source\Engine\AI\FBTNode.h" />
     <ClInclude Include="Source\Engine\Animation\AnimNotifies\AnimNotify.h" />
     <ClInclude Include="Source\Engine\Animation\AnimTypes.h" />
     <ClInclude Include="Source\Engine\Animation\Bone.h" />
