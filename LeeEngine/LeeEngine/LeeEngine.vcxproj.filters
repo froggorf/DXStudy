@@ -495,6 +495,9 @@
     <ClCompile Include="Source\Engine\AI\FBlackBoard.cpp">
       <Filter>Source\Engine\AI</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\AI\FBT_Tick.cpp">
+      <Filter>Source\Engine\AI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DirectX\d3dApp.h">
@@ -873,6 +876,9 @@
       <Filter>Source\Engine\AI</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\AI\FBlackBoard.h">
+      <Filter>Source\Engine\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\AI\FBT_Tick.h">
       <Filter>Source\Engine\AI</Filter>
     </ClInclude>
   </ItemGroup>

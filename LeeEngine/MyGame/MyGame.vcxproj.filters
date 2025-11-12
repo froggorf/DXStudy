@@ -140,6 +140,9 @@
     <Filter Include="Source\MyGame\Component\Combat\Skill\Ultimate\Gideon">
       <UniqueIdentifier>{a0ca4a39-4bf9-46a1-89ab-bced1e167c05}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\BehaviorTree">
+      <UniqueIdentifier>{a82ad269-fb01-450e-85de-1ccf4e3e41ef}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -286,6 +289,9 @@
     <ClCompile Include="Source\MyGame\Actor\Gideon\AGideonMeteorBomb.cpp">
       <Filter>Source\MyGame\Actor\Gideon</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\BehaviorTree\TestBT.cpp">
+      <Filter>Source\MyGame\BehaviorTree</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -428,6 +434,9 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Actor\Gideon\AGideonMeteorBomb.h">
       <Filter>Source\MyGame\Actor\Gideon</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\BehaviorTree\TestBT.h">
+      <Filter>Source\MyGame\BehaviorTree</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

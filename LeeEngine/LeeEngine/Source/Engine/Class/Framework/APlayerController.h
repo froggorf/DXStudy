@@ -9,6 +9,8 @@
 #include "Engine/Components/UAnimMontage.h"
 #include "Engine/GameFramework/AActor.h"
 
+class FBTNode;
+class UBehaviorTree;
 class ACharacter;
 class UUserWidget;
 
@@ -33,6 +35,24 @@ protected:
 	// 현재 소유중인 캐릭터가 루트모션 애니메이션을 플레이하는지에 대한 변수
 	bool bPlayRootMotion;
 
+};
+
+class AAIController : public AController
+{
+	MY_GENERATE_BODY(AAIController)
+public:
+	AAIController();
+	~AAIController() override = default;
+	void Tick(float DeltaSeconds) override;
+
+	void SetAIActivate(bool NewActive) { bAIActivate = NewActive; }
+	void SetBehaviorTree(const std::shared_ptr<UBehaviorTree>& NewBT);
+	const std::shared_ptr<UBehaviorTree>& GetBehaviorTree() const {return BehaviorTree;}
+
+protected:
+	bool bAIActivate = true;
+
+	std::shared_ptr<UBehaviorTree> BehaviorTree;
 };
 
 class APlayerController : public AController

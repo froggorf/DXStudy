@@ -35,6 +35,7 @@
     <ClCompile Include="Source\MyGame\AnimInstance\Gideon\UGideonAnimInstance.cpp" />
     <ClCompile Include="Source\MyGame\AnimInstance\Sanhwa\USanhwaAnimInstance.cpp" />
     <ClCompile Include="Source\MyGame\AnimInstance\UMyGameAniminstanceBase.cpp" />
+    <ClCompile Include="Source\MyGame\BehaviorTree\TestBT.cpp" />
     <ClCompile Include="Source\MyGame\Character\Enemy\AEnemyBase.cpp" />
     <ClCompile Include="Source\MyGame\Character\Player\AGideonCharacter.cpp" />
     <ClCompile Include="Source\MyGame\Character\Player\AMyGameCharacterBase.cpp" />
@@ -84,6 +85,7 @@
     <ClInclude Include="Source\MyGame\AnimInstance\Gideon\UGideonAnimInstance.h" />
     <ClInclude Include="Source\MyGame\AnimInstance\Sanhwa\USanhwaAnimInstance.h" />
     <ClInclude Include="Source\MyGame\AnimInstance\UMyGameAniminstanceBase.h" />
+    <ClInclude Include="Source\MyGame\BehaviorTree\TestBT.h" />
     <ClInclude Include="Source\MyGame\Character\Enemy\AEnemyBase.h" />
     <ClInclude Include="Source\MyGame\Character\Player\AGideonCharacter.h" />
     <ClInclude Include="Source\MyGame\Character\Player\AMyGameCharacterBase.h" />

@@ -23,7 +23,7 @@ void FBlackBoardValue::GetKeyValue(EBlackBoardValueType Type, void* OutValue)
 	Get(OutValue);
 }
 
-void FBlackBoard::AddKey(const std::string& Key, const void* InitValue, EBlackBoardValueType Type)
+void FBlackBoard::AddKeyValue(const std::string& Key, const void* InitValue, EBlackBoardValueType Type)
 {
 	auto Pair = BlackBoard.insert(std::make_pair(Key, MakeBlackBoardValueByType(Type)));
 	if (Pair.second)
@@ -32,7 +32,7 @@ void FBlackBoard::AddKey(const std::string& Key, const void* InitValue, EBlackBo
 	}
 }
 
-bool FBlackBoard::GetBlackBoardKey(const std::string& Key, void* OutValue, EBlackBoardValueType Type)
+bool FBlackBoard::GetBlackBoardValue(const std::string& Key, void* OutValue, EBlackBoardValueType Type)
 {
 	auto Iter = BlackBoard.find(Key);
 	if (Iter != BlackBoard.end())
@@ -41,4 +41,14 @@ bool FBlackBoard::GetBlackBoardKey(const std::string& Key, void* OutValue, EBlac
 		return true;
 	}
 	return false;
+}
+
+void FBlackBoard::ChangeKey(const std::string& Key, const void* ChangeValue, EBlackBoardValueType Type)
+{
+	auto Iter = BlackBoard.find(Key);
+	if (Iter != BlackBoard.end())
+	{
+		Iter->second->SetKeyValue(Type, ChangeValue);
+		OnBlackBoardValueChanged.Broadcast();
+	}
 }

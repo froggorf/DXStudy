@@ -72,6 +72,13 @@ void AEnemyBase::BeginPlay()
 {
 	ACharacter::BeginPlay();
 
+	AIController = std::dynamic_pointer_cast<AAIController>(GetWorld()->SpawnActor("AAIController", FTransform{}));
+	if (AIController)
+	{
+
+		AIController->SetBehaviorTree()
+	}
+
 	// Enemy 콜리젼 채널로 변경
 	QueryCheckCapsuleComp->SetCollisionObjectType(ECollisionChannel::Enemy);
 	QueryCheckCapsuleComp->GetBodyInstance()->SetObjectType(ECollisionChannel::Enemy);

@@ -6,6 +6,7 @@
 	적군 Base 를 만들 때 OnDeath 를 만들어서 플레이어에게 경험치를 주던 어떠한 작업을 하는 델리게이트를 만들어야함
 */
 
+class AAIController;
 class UNiagaraComponent;
 class UWidgetComponent;
 class UHealthComponent;
@@ -46,4 +47,5 @@ protected:
 
 	float EnemyMaxHealth = 10000;
 
+	std::shared_ptr<AAIController> AIController;
 };

@@ -2,6 +2,7 @@
 #include "APlayerController.h"
 
 #include "ACharacter.h"
+#include "Engine/AI/FBTNode.h"
 #include "Engine/Widget/UUserWidget.h"
 #include "Engine/World/UWorld.h"
 
@@ -86,6 +87,29 @@ void AController::OnPossess(ACharacter* CharacterToPossess)
 		Character->Controller = this;
 	}
 }
+
+AAIController::AAIController()
+	: AController()
+	, bAIActivate(true)
+{
+}
+
+void AAIController::Tick(float DeltaSeconds)
+{
+	AController::Tick(DeltaSeconds);
+
+	if (!bAIActivate || !BehaviorTree)
+		return;
+
+	BehaviorTree->Tick(DeltaSeconds);
+}
+
+void AAIController::SetBehaviorTree(const std::shared_ptr<UBehaviorTree>& NewBT)
+{
+	BehaviorTree = NewBT;
+	//BehaviorTree->GetBlackBoard()->OnBlackBoardValueChanged.Add(this, &AAIController::SetMustReevaluateTrue);
+}
+
 
 APlayerController::APlayerController()
 {
