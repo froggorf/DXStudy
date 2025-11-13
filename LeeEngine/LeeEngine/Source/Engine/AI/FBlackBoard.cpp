@@ -43,7 +43,7 @@ bool FBlackBoard::GetBlackBoardValue(const std::string& Key, void* OutValue, EBl
 	return false;
 }
 
-void FBlackBoard::ChangeKey(const std::string& Key, const void* ChangeValue, EBlackBoardValueType Type)
+void FBlackBoard::ChangeValue(const std::string& Key, const void* ChangeValue, EBlackBoardValueType Type)
 {
 	auto Iter = BlackBoard.find(Key);
 	if (Iter != BlackBoard.end())

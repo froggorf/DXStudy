@@ -82,6 +82,8 @@ public:
 	void Register() override;
 	void BeginPlay() override;
 
+	void SetActorLocation_Teleport(const XMFLOAT3& NewLocation) const override;
+
 	void AddMovementInput(const XMFLOAT3& WorldDirection, float ScaleValue = 1.0f);
 	void AddControllerYawInput(float Val);
 	void AddControllerPitchInput(float Val);

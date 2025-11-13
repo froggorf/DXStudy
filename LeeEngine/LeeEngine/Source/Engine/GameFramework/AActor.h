@@ -59,7 +59,9 @@ class AActor : public UObject, public std::enable_shared_from_this<AActor>
 	XMFLOAT3 GetActorLocation() const;
 	XMFLOAT4 GetActorRotation() const;
 	XMFLOAT3 GetActorScale3D() const;
-	void     SetActorLocation(const XMFLOAT3& NewLocation) const;
+	// 캐릭터의 경우에는 CharacterController를 통해 움직여야해서 virtual 함수로 등록
+	void	SetActorLocation(const XMFLOAT3& NewLocation) const;
+	virtual void SetActorLocation_Teleport(const XMFLOAT3& NewLocation) const;
 	void     SetActorRotation(const XMFLOAT4& NewRotation) const;
 	void	 SetActorRotation(const XMVECTOR& NewRotation) const;
 	void     SetActorScale3D(const XMFLOAT3& NewScale3D) const;

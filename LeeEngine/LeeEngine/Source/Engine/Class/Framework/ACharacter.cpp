@@ -252,6 +252,26 @@ void ACharacter::BeginPlay()
 	QueryCheckCapsuleComp->GetBodyInstance()->SetObjectType(ECollisionChannel::Pawn);
 }
 
+void ACharacter::SetActorLocation_Teleport(const XMFLOAT3& NewLocation) const
+{
+	UCharacterMovementComponent* MovementComp = GetCharacterMovement();
+	if (MovementComp && MovementComp->PxCharacterController)
+	{
+		XMFLOAT3 CurrentLocation = GetActorLocation();
+		XMFLOAT3 Displacement = NewLocation - CurrentLocation;
+
+		// PhysX 좌표계로 변환 (필요한 경우 z축 반전)
+		physx::PxVec3 PxDisplacement(Displacement.x, Displacement.y, -Displacement.z);
+
+		// 충돌 검사 없이 즉시 이동하려면 PxControllerFilters를 적절히 설정
+		physx::PxControllerFilters Filters;
+
+		// 이동 실행 (마지막 파라미터는 deltaTime인데, 즉시 이동이므로 0으로 설정)
+		MovementComp->PxCharacterController->move(PxDisplacement, 0.000001f, 0.0f, Filters);
+	}
+}
+
+
 void ACharacter::AddMovementInput(const XMFLOAT3& WorldDirection, float ScaleValue)
 {
 	if (std::shared_ptr<UCharacterMovementComponent> CharacterMovementComp = CharacterMovement.lock())

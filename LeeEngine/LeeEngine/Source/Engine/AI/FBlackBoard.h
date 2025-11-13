@@ -187,7 +187,7 @@ private:
 	{
 		if (InValue)
 		{
-			Value = *static_cast<AActor* const*>(InValue); 
+			Value = static_cast<AActor*>(const_cast<void*>(InValue));
 		}
 	}
 	void Get(void* OutValue) override
@@ -206,7 +206,7 @@ class FBlackBoard final
 public:
 	void AddKeyValue(const std::string& Key, const void* InitValue, EBlackBoardValueType Type);
 	bool GetBlackBoardValue(const std::string& Key, void* OutValue, EBlackBoardValueType Type);
-	void ChangeKey(const std::string& Key, const void* ChangeValue, EBlackBoardValueType Type);
+	void ChangeValue(const std::string& Key, const void* ChangeValue, EBlackBoardValueType Type);
 protected:
 	static std::shared_ptr<FBlackBoardValue> MakeBlackBoardValueByType(EBlackBoardValueType Type)
 	{

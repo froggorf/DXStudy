@@ -129,6 +129,11 @@ void AActor::SetActorLocation(const XMFLOAT3& NewLocation) const
 	}
 }
 
+void AActor::SetActorLocation_Teleport(const XMFLOAT3& NewLocation) const
+{
+	SetActorLocation(NewLocation);
+}
+
 void AActor::SetActorRotation(const XMFLOAT4& NewRotation) const
 {
 	if (RootComponent)

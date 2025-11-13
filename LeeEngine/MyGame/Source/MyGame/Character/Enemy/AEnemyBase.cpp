@@ -4,6 +4,7 @@
 #include "Engine/Components/UNiagaraComponent.h"
 #include "Engine/Components/UWidgetComponent.h"
 #include "Engine/World/UWorld.h"
+#include "MyGame/BehaviorTree/TestBT.h"
 #include "MyGame/Character/Player/AMyGameCharacterBase.h"
 #include "MyGame/Component/Health/UHealthComponent.h"
 #include "MyGame/Component/MotionWarping/UMotionWarpingComponent.h"
@@ -75,8 +76,12 @@ void AEnemyBase::BeginPlay()
 	AIController = std::dynamic_pointer_cast<AAIController>(GetWorld()->SpawnActor("AAIController", FTransform{}));
 	if (AIController)
 	{
+		AIController->OnPossess(this);
+		std::shared_ptr<UTestBT> BT = std::make_shared<UTestBT>();
+		BT->Register();
+		BT->GetBlackBoard()->ChangeValue("Owner", this, EBlackBoardValueType::Actor);
 
-		AIController->SetBehaviorTree()
+		AIController->SetBehaviorTree(BT);
 	}
 
 	// Enemy 콜리젼 채널로 변경

@@ -339,6 +339,12 @@ namespace MyMath
 		return dis(gen);
 	}
 
+	inline bool RandBool()
+	{
+		;
+		return RandRange(0,1) == 0;
+	}
+
 	XMFLOAT3 RotationMatrixToEulerAngle(const XMMATRIX& Mat);
 	XMFLOAT3 QuaternionToEulerAngle(const XMFLOAT4& Quat);
 	XMFLOAT3 QuaternionToEulerAngle(const XMVECTOR& Quat);

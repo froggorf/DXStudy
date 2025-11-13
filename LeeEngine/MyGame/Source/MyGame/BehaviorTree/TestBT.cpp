@@ -3,92 +3,162 @@
 
 #include "Engine/GameFramework/AActor.h"
 
-bool FBTDecorator_InCenter::Eval(const std::shared_ptr<FBlackBoard>& BlackBoard)
+//bool FBTDecorator_BlackBoardValueCheck::Eval(const std::shared_ptr<FBlackBoard>& BlackBoard)
+//{
+//	void* Value;
+//	if (!BlackBoard->GetBlackBoardValue(BlackBoardKey, &Value, ValueType))
+//	{
+//		return false;
+//	}
+//
+//	switch (ValueCheckType)
+//	{
+//	case EBlackBoardValueCheckType::Equal:
+//		if (ValueType != )
+//	break;
+//	case EBlackBoardValueCheckType::NotEqual:
+//		break;
+//	case EBlackBoardValueCheckType::Less:
+//		break;
+//	case EBlackBoardValueCheckType::LessOrEqual:
+//		break;
+//	case EBlackBoardValueCheckType::Greater:
+//		break;
+//	case EBlackBoardValueCheckType::GreaterOrEqual:
+//		break;
+//	case EBlackBoardValueCheckType::IsTrue:
+//		if (ValueType != EBlackBoardValueType::Bool)
+//		{
+//			return false;
+//		}
+//		return *static_cast<bool*>(Value);
+//	case EBlackBoardValueCheckType::IsFalse:
+//		if (ValueType != EBlackBoardValueType::Bool)
+//		{
+//			return false;
+//		}
+//		return !*static_cast<bool*>(Value);
+//	default:
+//		return false;
+//	}
+//	return true;
+//
+//}
+
+bool FBTDecorator_MoveCheck::Eval(const std::shared_ptr<FBlackBoard>& BlackBoard)
 {
-	XMFLOAT3 Value;
-	if (!BlackBoard->GetBlackBoardValue("InBox", &Value, EBlackBoardValueType::Float3))
+	bool Value;
+	if (!BlackBoard->GetBlackBoardValue("MoveMode", &Value, EBlackBoardValueType::Bool))
 	{
 		return false;
 	}
 
-	AActor* Owner;
-	if (!BlackBoard->GetBlackBoardValue("Owner", &Owner, EBlackBoardValueType::Actor))
-	{
-		return false;
-	}
-
-	float Distance = 100.0f;
-	
-	if (MyMath::GetDistance(Owner->GetActorLocation(), Value) < Distance)
-	{
-		return true;
-	}
-
-	return false;
-
+	return Value;
 }
 
-EBTNodeResult FBTTask_MoveToAnyWhere::TickEveryFrame(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard)
+void FBTTask_MoveToAnyWhere::OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard)
 {
-	if (FBTTask::TickEveryFrame(DeltaSeconds , BlackBoard) != EBTNodeResult::Success)
+	CurrentMoveTime = 0.0f;
+
+	OwningActor = nullptr;
+	if (!BlackBoard->GetBlackBoardValue("Owner", &OwningActor, EBlackBoardValueType::Actor) || !OwningActor)
+	{
+		return;
+	}
+
+	StartLocation = OwningActor->GetActorLocation();
+
+	XMFLOAT3 AddVal = XMFLOAT3{ MyMath::FRandRange(MoveMin.x, MoveMax.x), MyMath::FRandRange(MoveMin.y, MoveMax.y), MyMath::FRandRange(MoveMin.z, MoveMax.z) };;
+	if (MyMath::RandBool()) AddVal.x *= -1;
+	if (MyMath::RandBool()) AddVal.y *= -1;
+	if (MyMath::RandBool()) AddVal.z *= -1;
+
+	TargetLocation = StartLocation + AddVal; 
+	
+}
+
+EBTNodeResult FBTTask_MoveToAnyWhere::Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard)
+{
+	if (FBTTask::Tick(DeltaSeconds , BlackBoard) == EBTNodeResult::Fail)
+	{
+		return EBTNodeResult::Fail;	
+	}
+
+	if (!OwningActor)
+	{
+		MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Warning, "Not valid OwningActor");
+		return EBTNodeResult::Fail;
+	}
+
+
+	CurrentMoveTime = std::min(MoveTime, CurrentMoveTime + DeltaSeconds);
+
+	XMFLOAT3 NewLocation = MyMath::Lerp(StartLocation, TargetLocation, CurrentMoveTime / MoveTime);
+	OwningActor->SetActorLocation_Teleport(NewLocation);
+
+	if (CurrentMoveTime >= MoveTime)
+	{
+		return EBTNodeResult::Success;
+	}
+	else
+	{
+		return EBTNodeResult::Running;
+	}
+	
+}
+
+void FBTTask_Wait::OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard)
+{
+	CurrentWaitTime = 0.0f;	
+}
+
+EBTNodeResult FBTTask_Wait::Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard)
+{
+	if (FBTTask::Tick(DeltaSeconds , BlackBoard) == EBTNodeResult::Fail)
 	{
 		return EBTNodeResult::Fail;
 	}
 
-	
+	CurrentWaitTime += DeltaSeconds;
+	if (CurrentWaitTime < WaitTime)
+	{
+		return EBTNodeResult::Running;
+	}
+	else
+	{
+		return EBTNodeResult::Success;
+	}
 }
 
 UTestBT::UTestBT()
 {
-	// 블랙보드 생성
-	BlackBoard = std::make_shared<FBlackBoard>();
+	
 
-	// 루트 노드로 Selector 생성
-	std::shared_ptr<FBTSelector> RootNode = std::make_shared<FBTSelector>();
+}
 
-	// 첫 번째 서브트리: 중앙에서 벗어나기 (중앙에 있을 경우)
-	std::shared_ptr<FBTSequencer> GoOutSequence = std::make_shared<FBTSequencer>();
+void UTestBT::OnConstruct()
+{
+	UBehaviorTree::OnConstruct();
 
-	// HasTarget 데코레이터 추가
-	std::shared_ptr<FBTDecorator_InCenter> IsInsideDecorator = std::make_shared<FBTDecorator_InCenter>();
-	GoOutSequence->Decorators.emplace_back(IsInsideDecorator);
+	// BlackBoard 값 설정해주고
+	bool InitMoveMode = true;
+	BlackBoard->AddKeyValue("MoveMode", &InitMoveMode, EBlackBoardValueType::Bool);
+	AActor* InitActor = nullptr;
+	BlackBoard->AddKeyValue("Owner", InitActor, EBlackBoardValueType::Actor);
 
-	// 추적 태스크 추가
-	std::shared_ptr<FBTTask_MoveTo> MoveToTargetTask = std::make_shared<FBTTask_MoveTo>();
-	MoveToTargetTask->SetTargetLocationKey("TargetLocation");
-	ChaseSequence->Children.push_back(MoveToTargetTask);
+	// 첫번째 시퀀서
+	std::shared_ptr<FBTSequencer> MoveRandomSequence = std::make_shared<FBTSequencer>();
+	BTRoot->AddChild(MoveRandomSequence);
 
-	// 두 번째 서브트리: 순찰
-	std::shared_ptr<FBTSequencer> PatrolSequence = std::make_shared<FBTSequencer>();
+	// MoveMode 체크 데코레이터 추가
+	std::shared_ptr<FBTDecorator_MoveCheck> MoveCheck = std::make_shared<FBTDecorator_MoveCheck>();
+	MoveRandomSequence->Decorators.emplace_back(MoveCheck);
 
-	// 순찰 태스크들 추가
-	std::shared_ptr<FBTTask_GetNextPatrolPoint> GetPatrolPointTask = std::make_shared<FBTTask_GetNextPatrolPoint>();
-	std::shared_ptr<FBTTask_MoveTo> MoveToPatrolPointTask = std::make_shared<FBTTask_MoveTo>();
-	std::shared_ptr<FBTTask_Wait> WaitAtPatrolPointTask = std::make_shared<FBTTask_Wait>(2.0f);
+	// 랜덤위치 이동 Task
+	std::shared_ptr<FBTTask_MoveToAnyWhere> MoveToTask = std::make_shared<FBTTask_MoveToAnyWhere>();
+	MoveRandomSequence->AddChild(MoveToTask);
 
-	PatrolSequence->Children.push_back(GetPatrolPointTask);
-	PatrolSequence->Children.push_back(MoveToPatrolPointTask);
-	PatrolSequence->Children.push_back(WaitAtPatrolPointTask);
-
-	// 루트 노드에 서브트리 추가 (우선순위 순서대로)
-	RootNode->Children.push_back(ChaseSequence);
-	RootNode->Children.push_back(PatrolSequence);
-
-	// 부모-자식 관계 설정
-	ChaseSequence->SetParent(RootNode);
-	PatrolSequence->SetParent(RootNode);
-
-	MoveToTargetTask->SetParent(ChaseSequence);
-
-	GetPatrolPointTask->SetParent(PatrolSequence);
-	MoveToPatrolPointTask->SetParent(PatrolSequence);
-	WaitAtPatrolPointTask->SetParent(PatrolSequence);
-
-	// 비헤이비어 트리 설정
-	BehaviorTree->SetBTRoot(RootNode);
-	BehaviorTree->SetBlackBoard(BlackBoard);
-
-	// AI 컨트롤러에 비헤이비어 트리 설정
-	AAIController* AIController = new AAIController();
-	AIController->SetBehaviorTree(BehaviorTree);
+	std::shared_ptr<FBTTask_Wait> WaitTask= std::make_shared<FBTTask_Wait>();
+	WaitTask->SetWaitTime(3.0f);
+	MoveRandomSequence->AddChild(WaitTask);
 }

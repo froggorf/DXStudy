@@ -2,6 +2,7 @@
 #include "UPhysicsEngine.h"
 
 #include "ULineComponent.h"
+#include "Engine/Class/Framework/ACharacter.h"
 
 std::unique_ptr<UPhysicsEngine> GPhysicsEngine = nullptr;
 

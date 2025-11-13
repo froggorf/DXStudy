@@ -30,6 +30,7 @@ protected:
 
 	std::shared_ptr<UStaticMeshComponent> Ground;
 private:
+	std::shared_ptr<AAIController> AIController;
 
 
 };
