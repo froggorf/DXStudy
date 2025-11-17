@@ -123,6 +123,18 @@ void ULevel::UnregisterPendingActors()
 	Actors.erase(PendingKillIter ,Actors.end());
 }
 
+std::shared_ptr<AActor> ULevel::FindSharedActorByRawPointer(AActor* Actor)
+{
+	for (size_t i = 0; i < Actors.size(); ++i)
+	{
+		if (Actor == Actors[i].get())
+		{
+			return Actors[i];
+		}
+	}
+	return nullptr;
+}
+
 void ULevel::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
 	std::string LevelName = AssetData["Name"];

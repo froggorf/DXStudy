@@ -34,6 +34,11 @@ public:
 			func(args...);
 	}
 
+	bool operator!() const
+	{
+		return Callbacks.empty();
+	}
+
 private:
 	std::vector<std::function<void(Args...)>> Callbacks;
 };

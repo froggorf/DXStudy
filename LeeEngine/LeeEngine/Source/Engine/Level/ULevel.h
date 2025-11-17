@@ -48,6 +48,8 @@ class ULevel : public UObject
 	std::shared_ptr<AActor> SpawnActor(const std::string& ClassName, const FTransform& SpawnTransform);
 	void DestroyActor(AActor* RemoveActor);
 	void UnregisterPendingActors();
+
+ 	std::shared_ptr<AActor> FindSharedActorByRawPointer(AActor* Actor);
 private:
 
 	std::shared_ptr<UWorld> OwningWorld;

@@ -259,3 +259,15 @@ inline XMVECTOR ComputeUpVector(const XMVECTOR& cameraPos, const XMVECTOR& targe
 
 	return up;
 }
+
+inline bool operator!=(const DirectX::XMFLOAT2& LHS, const DirectX::XMFLOAT2& RHS) {
+	return LHS.x != RHS.x || LHS.y != RHS.y;
+}
+
+inline bool operator!=(const DirectX::XMFLOAT3& LHS, const DirectX::XMFLOAT3& RHS) {
+	return LHS.x != RHS.x || LHS.y != RHS.y || LHS.z != RHS.z;
+}
+
+inline bool operator!=(const DirectX::XMFLOAT4& LHS, const DirectX::XMFLOAT4& RHS) {
+	return LHS.x != RHS.x || LHS.y != RHS.y || LHS.z != RHS.z || LHS.w != RHS.w;
+}

@@ -2,7 +2,6 @@
 #include "UPhysicsEngine.h"
 
 #include "ULineComponent.h"
-#include "Engine/Class/Framework/ACharacter.h"
 
 std::unique_ptr<UPhysicsEngine> GPhysicsEngine = nullptr;
 
@@ -225,9 +224,7 @@ void UPhysicsEngine::TickPhysics(float DeltaSeconds) const
 				}
 			}
 		}
-	}
-
-	
+	}	
 }
 
 physx::PxShape* UPhysicsEngine::CreateSphereShape(const float Radius) const

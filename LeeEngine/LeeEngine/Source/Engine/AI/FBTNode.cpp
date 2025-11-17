@@ -39,6 +39,15 @@ UINT FBTNode::FindChildIndex(const FBTNode* ChildNode)
 	return -1;
 }
 
+void FBTNode::OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard)
+{
+    for (size_t i = 0; i < Decorators.size(); ++i)
+    {
+	    Decorators[i]->OnEnterNode(BlackBoard);
+    }
+}
+
+
 EBTNodeResult FBTCompositeNode::Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard)
 {
     if (FBTNode::Tick(DeltaSeconds, BlackBoard) == EBTNodeResult::Fail)

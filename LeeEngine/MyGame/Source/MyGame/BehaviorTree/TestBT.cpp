@@ -47,26 +47,30 @@
 
 bool FBTDecorator_MoveCheck::Eval(const std::shared_ptr<FBlackBoard>& BlackBoard)
 {
-	bool Value;
-	if (!BlackBoard->GetBlackBoardValue("MoveMode", &Value, EBlackBoardValueType::Bool))
-	{
-		return false;
-	}
+	return BlackBoard->GetValue<FBlackBoardValueType_Bool>("MoveMode");
+}
 
-	return Value;
+void FBTDecorator_MoveCheck::OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard)
+{
+	FBTDecorator::OnEnterNode(BlackBoard);
+
+	BlackBoard->AddBlackBoardValueChangeObserver("MoveMode");
 }
 
 void FBTTask_MoveToAnyWhere::OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard)
 {
+	FBTTask::OnEnterNode(BlackBoard);
+
 	CurrentMoveTime = 0.0f;
 
-	OwningActor = nullptr;
-	if (!BlackBoard->GetBlackBoardValue("Owner", &OwningActor, EBlackBoardValueType::Actor) || !OwningActor)
+	OwningActor = std::dynamic_pointer_cast<AActor>(BlackBoard->GetValue<FBlackBoardValueType_Object>("Owner"));
+	if (OwningActor.expired())
 	{
 		return;
 	}
 
-	StartLocation = OwningActor->GetActorLocation();
+	std::shared_ptr<AActor> SharedOwningActor = OwningActor.lock();
+	StartLocation = SharedOwningActor->GetActorLocation();
 
 	XMFLOAT3 AddVal = XMFLOAT3{ MyMath::FRandRange(MoveMin.x, MoveMax.x), MyMath::FRandRange(MoveMin.y, MoveMax.y), MyMath::FRandRange(MoveMin.z, MoveMax.z) };;
 	if (MyMath::RandBool()) AddVal.x *= -1;
@@ -83,8 +87,8 @@ EBTNodeResult FBTTask_MoveToAnyWhere::Tick(float DeltaSeconds, const std::shared
 	{
 		return EBTNodeResult::Fail;	
 	}
-
-	if (!OwningActor)
+	std::shared_ptr<AActor> SharedOwningActor = OwningActor.lock();
+	if (!SharedOwningActor)
 	{
 		MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Warning, "Not valid OwningActor");
 		return EBTNodeResult::Fail;
@@ -94,7 +98,7 @@ EBTNodeResult FBTTask_MoveToAnyWhere::Tick(float DeltaSeconds, const std::shared
 	CurrentMoveTime = std::min(MoveTime, CurrentMoveTime + DeltaSeconds);
 
 	XMFLOAT3 NewLocation = MyMath::Lerp(StartLocation, TargetLocation, CurrentMoveTime / MoveTime);
-	OwningActor->SetActorLocation_Teleport(NewLocation);
+	SharedOwningActor->SetActorLocation_Teleport(NewLocation);
 
 	if (CurrentMoveTime >= MoveTime)
 	{
@@ -109,6 +113,8 @@ EBTNodeResult FBTTask_MoveToAnyWhere::Tick(float DeltaSeconds, const std::shared
 
 void FBTTask_Wait::OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard)
 {
+	FBTTask::OnEnterNode(BlackBoard);
+
 	CurrentWaitTime = 0.0f;	
 }
 
@@ -141,10 +147,9 @@ void UTestBT::OnConstruct()
 	UBehaviorTree::OnConstruct();
 
 	// BlackBoard 값 설정해주고
-	bool InitMoveMode = true;
-	BlackBoard->AddKeyValue("MoveMode", &InitMoveMode, EBlackBoardValueType::Bool);
-	AActor* InitActor = nullptr;
-	BlackBoard->AddKeyValue("Owner", InitActor, EBlackBoardValueType::Actor);
+	BlackBoard->SetValue<FBlackBoardValueType_Bool>("MoveMode", true);
+	std::shared_ptr<AActor> Actor = nullptr;
+	BlackBoard->SetValue<FBlackBoardValueType_Object>("Owner", Actor);
 
 	// 첫번째 시퀀서
 	std::shared_ptr<FBTSequencer> MoveRandomSequence = std::make_shared<FBTSequencer>();

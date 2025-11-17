@@ -160,9 +160,15 @@ void APlayerController::OnPossess(ACharacter* CharacterToPossess)
 		return; 
 	}
 
+	OwningPlayerCharacter = GetWorld()->GetPersistentLevel()->FindSharedActorByRawPointer(Character);
+	if (!OwningPlayerCharacter)
+	{
+		MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Error, "No Valid OwningPlayerCharacter");
+		return;
+	}
+
 	if (std::shared_ptr<APlayerCameraManager> CM = CameraManager.lock())
 	{
-
 		CM->TargetCamera = Character->GetCameraComponent();
 	}
 }

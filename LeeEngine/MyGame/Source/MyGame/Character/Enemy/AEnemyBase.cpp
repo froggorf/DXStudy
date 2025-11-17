@@ -79,7 +79,7 @@ void AEnemyBase::BeginPlay()
 		AIController->OnPossess(this);
 		std::shared_ptr<UTestBT> BT = std::make_shared<UTestBT>();
 		BT->Register();
-		BT->GetBlackBoard()->ChangeValue("Owner", this, EBlackBoardValueType::Actor);
+		BT->GetBlackBoard()->SetValue<FBlackBoardValueType_Object>("Owner", shared_from_this());
 
 		AIController->SetBehaviorTree(BT);
 	}
@@ -123,4 +123,16 @@ void AEnemyBase::Death()
 void AEnemyBase::Tick(float DeltaSeconds)
 {
 	ACharacter::Tick(DeltaSeconds);
+
+	if (APlayerController* PC = GetWorld()->GetPlayerController())
+	{
+		if (const std::shared_ptr<AActor>& PlayerCharacter = PC->GetPlayerCharacter())
+		{
+			const std::shared_ptr<FBlackBoard>& BlackBoard = AIController->GetBehaviorTree()->GetBlackBoard();
+			float Distance = MyMath::GetDistance(GetActorLocation(), PlayerCharacter->GetActorLocation());
+			bool NewValue = Distance > 300.0f;
+			BlackBoard->SetValue<FBlackBoardValueType_Bool>("MoveMode", NewValue);		
+		}
+	}
+	
 }

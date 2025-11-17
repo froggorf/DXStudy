@@ -27,6 +27,7 @@ public:
 	FBTDecorator() = default;
 	virtual ~FBTDecorator() = default;
 	virtual bool Eval(const std::shared_ptr<FBlackBoard>& BlackBoard);
+	virtual void OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard) {}
 };
 
 
@@ -71,7 +72,7 @@ public:
 	virtual bool IsCompositeNode() const { return false; };
 
 	// 노드가 수행되기 이전 값 초기화 등의 작업을 진행하는 함수
-	virtual void OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard) {};
+	virtual void OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard);
 
 	void SetRootNode() {bIsRootNode = true;}
 public:
@@ -148,6 +149,7 @@ public:
 	void SetCurrentRunningNode(const std::shared_ptr<FBTNode>& NewRunningNode) { CurrentRunningNode = NewRunningNode; }
 	void ClearCurrentRunningNode() {CurrentRunningNode = nullptr;}
 	EBTNodeResult ExecuteNode(float DeltaSeconds, const std::shared_ptr<FBTNode>& Node);
+
 protected:
 	std::shared_ptr<FBTNode> BTRoot;
 	std::shared_ptr<FBlackBoard> BlackBoard;
@@ -158,4 +160,5 @@ protected:
 	std::shared_ptr<FBTNode> CurrentRunningNode;
 
 	bool bIsRootSelector = true;
+
 };

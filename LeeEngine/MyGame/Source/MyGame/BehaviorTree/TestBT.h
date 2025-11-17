@@ -33,6 +33,7 @@ class FBTDecorator_MoveCheck : public FBTDecorator
 {
 public:
 	bool Eval(const std::shared_ptr<FBlackBoard>& BlackBoard) override;
+	void OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard) override;
 };
 
 class FBTTask_MoveToAnyWhere : public FBTTask
@@ -48,7 +49,7 @@ private:
 	XMFLOAT3 TargetLocation{};
 	static constexpr XMFLOAT3 MoveMin{200.0f, 0.0f, 200.0f};
 	static constexpr XMFLOAT3 MoveMax{500.0f, 0.0f, 500.0f};
-	AActor* OwningActor = nullptr;
+	std::weak_ptr<class AActor> OwningActor;
 };
 
 class FBTTask_Wait : public FBTTask
@@ -72,4 +73,5 @@ public:
 	~UTestBT() override = default;
 
 	void OnConstruct() override;
+	
 };

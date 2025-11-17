@@ -349,3 +349,40 @@ namespace MyMath
 	XMFLOAT3 QuaternionToEulerAngle(const XMFLOAT4& Quat);
 	XMFLOAT3 QuaternionToEulerAngle(const XMVECTOR& Quat);
 }
+
+
+struct FEngineGenericTypes
+{
+	// 8-bit unsigned integer
+	typedef unsigned char 		uint8;
+
+	// 16-bit unsigned integer
+	typedef unsigned short int	uint16;
+
+	// 32-bit unsigned integer
+	typedef unsigned int		uint32;
+
+	// 64-bit unsigned integer
+	typedef unsigned long long	uint64;
+
+	// 8-bit signed integer
+	typedef	signed char			int8;
+
+	// 16-bit signed integer
+	typedef signed short int	int16;
+
+	// 32-bit signed integer
+	typedef signed int	 		int32;
+
+	// 64-bit signed integer
+	typedef signed long long	int64;
+};
+
+typedef FEngineGenericTypes::uint8		uint8;
+typedef FEngineGenericTypes::uint16		uint16;
+typedef FEngineGenericTypes::uint32 	uint32;
+typedef FEngineGenericTypes::uint64		uint64;
+typedef FEngineGenericTypes::int8		int8;
+typedef FEngineGenericTypes::int16		int16;
+typedef FEngineGenericTypes::int32		int32;
+typedef FEngineGenericTypes::int64		int64;

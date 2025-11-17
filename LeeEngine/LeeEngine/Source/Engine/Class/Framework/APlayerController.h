@@ -67,7 +67,7 @@ public:
 	void BeginPlay() override;
 	void Tick(float DeltaSeconds) override;
 	void TickWidget(float DeltaSeconds);
-
+	std::shared_ptr<AActor> GetPlayerCharacter() const {return OwningPlayerCharacter;}
 
 	void AddYawInput(float Val);
 	void AddPitchInput(float Val);
@@ -86,13 +86,12 @@ public:
 
 private:
 	std::weak_ptr<APlayerCameraManager> CameraManager;
-
 	// 플레이어 인풋을 관리하는 오브젝트
 	std::shared_ptr<UPlayerInput> PlayerInput;
-
-
 	std::map<std::string, std::shared_ptr<UUserWidget>> UserWidgets;
-
 	std::shared_ptr<UAnimMontage> CurPlayingAnimMontage;
+
+	// AActor* Character 에 대한 shared_ptr를 따로 관리해둠
+	std::shared_ptr<AActor> OwningPlayerCharacter;
 
 };
