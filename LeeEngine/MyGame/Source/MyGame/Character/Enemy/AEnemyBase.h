@@ -45,7 +45,7 @@ protected:
 	std::shared_ptr<UWidgetComponent> HealthWidgetComp;
 	
 
-	float EnemyMaxHealth = 10000;
+	float EnemyMaxHealth = 500;
 
 	std::shared_ptr<AAIController> AIController;
 };

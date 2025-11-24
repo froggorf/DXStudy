@@ -146,7 +146,7 @@ public:
 	void OnTreeCompleted(EBTNodeResult Result);
 
 	// 만약 CompositeNode에서 다음 실행하게 할 노드를 지정해야할 경우 사용
-	void SetCurrentRunningNode(const std::shared_ptr<FBTNode>& NewRunningNode) { CurrentRunningNode = NewRunningNode; }
+	void SetCurrentRunningNode(const std::shared_ptr<FBTNode>& NewRunningNode);
 	void ClearCurrentRunningNode() {CurrentRunningNode = nullptr;}
 	EBTNodeResult ExecuteNode(float DeltaSeconds, const std::shared_ptr<FBTNode>& Node);
 

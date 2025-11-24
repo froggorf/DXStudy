@@ -33,7 +33,7 @@ public:
 protected:
 	ACharacter* Character;
 	// 현재 소유중인 캐릭터가 루트모션 애니메이션을 플레이하는지에 대한 변수
-	bool bPlayRootMotion;
+	bool bPlayRootMotion = false;
 
 };
 

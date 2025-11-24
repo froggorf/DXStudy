@@ -225,6 +225,18 @@ void UBehaviorTree::OnTreeCompleted(EBTNodeResult Result)
 
 }
 
+void UBehaviorTree::SetCurrentRunningNode(const std::shared_ptr<FBTNode>& NewRunningNode)
+{
+    if (NewRunningNode->IsCompositeNode())
+    {
+		ExecuteNode(GEngine->GetDeltaSeconds(), NewRunningNode);	    
+    }
+    else
+    {
+	    CurrentRunningNode = NewRunningNode;
+    }
+}
+
 
 EBTNodeResult UBehaviorTree::ExecuteNode(float DeltaSeconds, const std::shared_ptr<FBTNode>& Node)
 {
@@ -234,6 +246,11 @@ EBTNodeResult UBehaviorTree::ExecuteNode(float DeltaSeconds, const std::shared_p
 
 	if (Node->Tick(DeltaSeconds, BlackBoard) == EBTNodeResult::Fail)
 	{
+        const std::shared_ptr<FBTNode>& Parent = Node->GetParent();
+        if (Parent)
+        {
+            Parent->OnChildExecutionFinish(DeltaSeconds, Node.get(), EBTNodeResult::Fail);
+        }
 		return EBTNodeResult::Fail;
 	}
 

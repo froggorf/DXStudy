@@ -21,7 +21,7 @@ AEnemyBase::AEnemyBase()
 		CharacterMovement->bOrientRotationToMovement = false;
 		CharacterMovement->Acceleration = 4096.0f;
 		CharacterMovement->RotationRate = XMFLOAT3{0.0f, 1500.0f, 0.0f};
-		CharacterMovement->MaxWalkSpeed = 600;
+		CharacterMovement->MaxWalkSpeed = 300;
 		CharacterMovement->Braking = 4096;
 	}
 
@@ -82,6 +82,8 @@ void AEnemyBase::BeginPlay()
 		BT->GetBlackBoard()->SetValue<FBlackBoardValueType_Object>("Owner", shared_from_this());
 
 		AIController->SetBehaviorTree(BT);
+
+		AIController->GetBehaviorTree()->GetBlackBoard()->SetValue<FBlackBoardValueType_Object>("Player", GetWorld()->GetPlayerController()->GetPlayerCharacter());		
 	}
 
 	// Enemy 콜리젼 채널로 변경
@@ -90,6 +92,9 @@ void AEnemyBase::BeginPlay()
 
 
 	HealthComponent->SetMaxHealth(EnemyMaxHealth, true);
+
+
+
 }
 
 float AEnemyBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AActor* DamageCauser)
@@ -109,6 +114,13 @@ float AEnemyBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent
 			DefaultColor = GetElementColor(MyGameDamageEvent->ElementType);
 		}
 		PC->SpawnFloatingDamage(GetRootComponent()->GetComponentTransform(), DefaultColor, static_cast<UINT>(DamageAmount));
+	}
+
+	if (AIController)
+	{
+		float NewHealthPercent = HealthComponent->GetHealthPercent() * 100;
+		MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Warning,std::to_string(NewHealthPercent));
+		AIController->GetBehaviorTree()->GetBlackBoard()->SetValue<FBlackBoardValueType_FLOAT>("HealthPercent", NewHealthPercent);
 	}
 
 	return DamageAmount;
