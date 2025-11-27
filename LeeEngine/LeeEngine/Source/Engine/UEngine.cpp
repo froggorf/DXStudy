@@ -155,6 +155,10 @@ void UEngine::GameStart()
 		return;
 	}
 
+	// 마우스 커서 포커스 진행
+	SetMouseLock(EMouseLockMode::LockAlways);
+	SetInputMode(EInputMode::InputMode_GameOnly);
+
 	bGameStart  = true;
 	TimeSeconds = 0;
 
@@ -496,12 +500,33 @@ void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 		PC->GetPlayerInput()->LastMousePosition = LastMousePosition;
 		PC->GetPlayerInput()->LastMouseDelta = LastMouseDelta;
 
-		bool bUsedInWidget = PC->WidgetHandleInput(InputEvent);
+		bool bUsedInWidget = false;
+		if (bGameStart && InputMode != EInputMode::InputMode_GameOnly)
+		{
+			bUsedInWidget = PC->WidgetHandleInput(InputEvent);	
+		}
 
-		if (!bUsedInWidget)
+		if (!bUsedInWidget && bGameStart && InputMode != EInputMode::InputMode_UIOnly)
 		{
 			PC->GetPlayerInput()->HandleInput(InputEvent);
 		}
+	}
+}
+
+void UEngine::SetInputMode(EInputMode NewInputMode)
+{
+	InputMode = NewInputMode;
+}
+
+void UEngine::SetMouseLock(EMouseLockMode NewLockMode)
+{
+	if (EMouseLockMode::DoNotLock == NewLockMode)
+	{
+		ReleaseMouse();
+	}
+	else
+	{
+		CaptureMouse();
 	}
 }
 
@@ -685,4 +710,34 @@ void UEngine::SystemSettings()
 {
 	const std::shared_ptr<UTexture>& T_BRDF_LUT = UTexture::GetTextureCache("T_BRDF_LUT");
 	GDirectXDevice->GetDeviceContext()->PSSetShaderResources(51,1, T_BRDF_LUT->GetSRV().GetAddressOf());
+}
+
+void UEngine::CaptureMouse()
+{
+	D3DApp* Application = GetApplication();
+	if (Application)
+	{
+		RECT ClientRect;
+		// TODO: 에디터 상에서는 또 다르게 해야함
+		// 필요시 virtual
+		GetClientRect(Application->GetMainWnd(), &ClientRect);
+
+		POINT UpperLeft = { ClientRect.left, ClientRect.top };
+		POINT LowerRight = { ClientRect.right, ClientRect.bottom };
+
+		ClientToScreen(Application->GetMainWnd(), &UpperLeft);
+		ClientToScreen(Application->GetMainWnd(), &LowerRight);
+
+		ClientRect.left = UpperLeft.x;
+		ClientRect.top = UpperLeft.y;
+		ClientRect.right = LowerRight.x;
+		ClientRect.bottom = LowerRight.y;
+
+		ClipCursor(&ClientRect);
+	}
+}
+
+void UEngine::ReleaseMouse()
+{
+	ClipCursor(nullptr);
 }

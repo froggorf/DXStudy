@@ -47,7 +47,8 @@ std::vector<std::shared_ptr<FPrimitiveSceneProxy>> USkeletalMeshComponent::Creat
 	UINT MeshCount = SkeletalMesh->GetSkeletalMeshRenderData()->MeshCount;
 	for (UINT i = 0; i < MeshCount; ++i)
 	{
-		auto SceneProxy = std::make_shared<FSkeletalMeshSceneProxy>(PrimitiveID, i, SkeletalMesh);
+		std::shared_ptr<FSkeletalMeshSceneProxy> SceneProxy = std::make_shared<FSkeletalMeshSceneProxy>(PrimitiveID, i, SkeletalMesh);
+		
 		if (SceneProxy->GetMaterialInterface())
 		{
 			SceneProxies.emplace_back(SceneProxy);

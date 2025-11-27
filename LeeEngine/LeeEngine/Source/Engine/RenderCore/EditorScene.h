@@ -33,6 +33,7 @@ struct DebugText
 
 inline float RenderFPS = 0;
 
+
 #ifdef WITH_EDITOR
 class FEditorScene : public FScene
 {

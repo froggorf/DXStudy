@@ -9,6 +9,19 @@
 #include "Engine/UObject/UObject.h"
 #include "Timer/FTimerManager.h"
 
+enum class EInputMode
+{
+	InputMode_GameOnly,
+	InputMode_UIOnly,
+	InputMode_GameUI
+};
+
+enum class EMouseLockMode
+{
+	LockAlways,
+	DoNotLock,
+};
+
 class USceneComponent;
 
 class UEngine : public UObject
@@ -91,6 +104,9 @@ class UEngine : public UObject
 
 	virtual void HandleInput(UINT msg, WPARAM wParam, LPARAM lParam);
 	void SetEngineTickRate(float NewTickRate){EngineTickRate = NewTickRate;}
+
+	void SetInputMode(EInputMode NewInputMode);
+	void SetMouseLock(EMouseLockMode NewLockMode);
 protected:
 	virtual void CreateRenderThread();
 	void         CreateAudioThread();
@@ -103,8 +119,12 @@ private:
 
 	void SystemSettings();
 
+	void CaptureMouse();
+	void ReleaseMouse();
+
 public:
 	std::atomic<bool> bGameStart = false;
+
 
 protected:
 	// Default Engine ini Data
@@ -133,4 +153,7 @@ private:
 	std::shared_ptr<FTimerManager> TimerManager;
 
 	float EngineTickRate = 1.0f;
+
+	EInputMode InputMode = EInputMode::InputMode_GameOnly;
+	EInputMode LockMouseMode = EInputMode::InputMode_GameUI;
 };

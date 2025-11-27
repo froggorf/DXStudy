@@ -1,6 +1,13 @@
 #include "CoreMinimal.h"
 #include "UPlayerInput.h"
 
+void UPlayerInput::BeginPlay()
+{
+	UObject::BeginPlay();
+
+	
+}
+
 void UPlayerInput::Tick()
 {
 	for (auto EventIter = BindEvents.begin(); EventIter != BindEvents.end(); ++EventIter)

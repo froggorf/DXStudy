@@ -244,6 +244,7 @@ void FScene::BeginRenderFrame()
 			break;
 			default:
 				// 잘못된 데이터
+				MY_LOG("wrong BlendMode", EDebugLogLevel::DLL_Error, "PendingAddSceneProxy")
 				assert(0);
 				break;
 			}
@@ -255,7 +256,6 @@ void FScene::BeginRenderFrame()
 	for (const auto& NewTransform : PendingNewTransformProxies)
 	{
 		UINT FindPrimitiveID = NewTransform.first;
-
 		// Opaque
 		for (auto Iter = OpaqueSceneProxyRenderData.begin(); Iter != OpaqueSceneProxyRenderData.end(); ++Iter)
 		{
@@ -344,6 +344,8 @@ void FScene::AddPrimitive_GameThread(UINT PrimitiveID, std::shared_ptr<FPrimitiv
 {
 	if (nullptr == SceneProxy)
 	{
+		std::string S = "No SceneProxy " + std::to_string(PrimitiveID);
+		MY_LOG("", EDebugLogLevel::DLL_Error, S);
 		return;
 	}
 	auto Lambda = [PrimitiveID, SceneProxy, InitTransform](std::shared_ptr<FScene>& SceneData)
@@ -358,7 +360,7 @@ void FScene::AddPrimitive_RenderThread(const std::shared_ptr<FScene>& SceneData,
 {
 	if (!SceneData)
 	{
-		/*MY_LOG("SceneDataError", EDebugLogLevel::DLL_Error, "No SceneData");*/
+		MY_LOG("SceneDataError", EDebugLogLevel::DLL_Error, "No SceneData");
 		return;
 	}
 	SceneData->PendingAddSceneProxies[PrimitiveID].emplace_back(NewProxy);
@@ -761,6 +763,7 @@ static void DrawSceneProxies(const std::shared_ptr<FScene>& SceneData, const std
 				SceneProxy.MaterialInterface->Binding();
 				bIsBinding = true;
 			}
+
 			// 머테리얼 파라미터 설정 (Material::Binding 내에서 기본 디폴트값이 매핑되며,
 			// MaterialInstance에서 오버라이드 한 파라미터만 세팅됨
 			SceneProxy.MaterialInterface->BindingMaterialInstanceUserParam();
@@ -819,6 +822,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 
 			frameCount     = 0;
 			prevUpdateTime = currentTime;
+
 		}
 	}
 	// 프레임 단위 세팅
@@ -876,6 +880,7 @@ void FScene::DrawScene_RenderThread(std::shared_ptr<FScene> SceneData)
 			// Deferred 렌더링
 			{
 				GDirectXDevice->GetMultiRenderTarget(EMultiRenderTargetType::Deferred)->OMSet();
+
 				// Deferred 오브젝트 렌더링
 				DrawSceneProxies(SceneData, SceneData->DeferredSceneProxyRenderData);
 

@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameTimer.h"
 
+#include "Engine/RenderCore/EditorScene.h"
+
 GameTimer::GameTimer()
 	: mSecondsPerCount(0.0), mDeltaTime(-1.0), mBaseTime(0), mPausedTime(0), mPrevTime(0), mCurrTime(0), mStopped(false)
 {
@@ -116,5 +118,23 @@ void GameTimer::Tick()
 	if (mDeltaTime < 0.0)
 	{
 		mDeltaTime = 0.0;
+	}
+
+	static UINT TitleChangeTick = 0;
+	if (TitleChangeTick++ > 20)
+	{
+		TitleChangeTick = 0;
+		// 타이틀 문자열 생성
+		std::wstringstream windowText;
+		windowText << L"GameFPS: " << std::fixed << std::setprecision(2) << GEngine->GetApplication()->CurrentFrame << 
+			L"   RenderFPS: " << std::setprecision(2) << RenderFPS << L"";
+
+		// 윈도우 핸들을 가져와서 타이틀 설정
+		HWND hWnd = GetActiveWindow();  // 현재 활성화된 윈도우 핸들 가져오기
+		if (hWnd != NULL)
+		{
+			SetWindowText(hWnd, windowText.str().c_str());
+		}
+
 	}
 }

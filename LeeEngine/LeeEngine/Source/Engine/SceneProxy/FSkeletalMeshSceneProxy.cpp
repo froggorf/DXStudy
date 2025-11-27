@@ -20,7 +20,7 @@ FSkeletalMeshSceneProxy::FSkeletalMeshSceneProxy(UINT PrimitiveID, UINT InMeshIn
 		BoneFinalMatrices[BoneIndex] = XMMatrixIdentity();
 	}
 
-	std::string Text = "FSkeletalMeshSceneProxy Create SkeletalMeshSceneProxy - " + std::to_string(PrimitiveID);
+	std::string Text = "FSkeletalMeshSceneProxy Create SkeletalMeshSceneProxy - " + std::to_string(PrimitiveID) + "-> MeshIndex : " + std::to_string(MeshIndex);
 	MY_LOG(Text, EDebugLogLevel::DLL_Display, "");
 }
 
@@ -35,17 +35,21 @@ void FSkeletalMeshSceneProxy::Draw()
 		return;
 	}
 
+
 	FPrimitiveSceneProxy::Draw();
 
 	{
-		SkeletalMeshBoneTransformConstantBuffer cb;
+		SkeletalMeshBoneTransformConstantBuffer cb = {};
 		for (int i = 0; i < MAX_BONES; ++i)
 		{
 			cb.BoneFinalTransforms[i] = XMMatrixTranspose(BoneFinalMatrices[i]);
+			cb.BoneFinalTransforms[i] = XMMatrixTranspose(XMMatrixIdentity());
 		}
 
 		GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_SkeletalData, &cb, sizeof(cb));
 	}
+	
+	std::cout<<  RenderingThreadFrameCount<< "->"<< ComponentToWorld.Translation.x<<" "<<ComponentToWorld.Translation.y<<" "<<ComponentToWorld.Translation.z<<"\n";
 
 	unsigned int MeshCount = RenderData->MeshCount;
 
@@ -59,5 +63,6 @@ void FSkeletalMeshSceneProxy::Draw()
 	D3D11_BUFFER_DESC indexBufferDesc;
 	RenderData->IndexBuffer[MeshIndex]->GetDesc(&indexBufferDesc);
 	UINT indexSize = indexBufferDesc.ByteWidth / sizeof(UINT);
+
 	DeviceContext->DrawIndexed(indexSize, 0, 0);
 }

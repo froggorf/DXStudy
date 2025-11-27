@@ -21,7 +21,7 @@ FSkeletalMeshRenderData::FSkeletalMeshRenderData(const nlohmann::json& SkeletalM
 
 	// 머테리얼
 	{
-		auto   MaterialData      = SkeletalMeshFilePathData["Material"];
+		const nlohmann::basic_json<>&  MaterialData = SkeletalMeshFilePathData["Material"];
 		size_t MaterialArraySize = MaterialData.size();
 		for (UINT count = 0; count < MeshCount; ++count)
 		{
