@@ -43,13 +43,10 @@ void FSkeletalMeshSceneProxy::Draw()
 		for (int i = 0; i < MAX_BONES; ++i)
 		{
 			cb.BoneFinalTransforms[i] = XMMatrixTranspose(BoneFinalMatrices[i]);
-			cb.BoneFinalTransforms[i] = XMMatrixTranspose(XMMatrixIdentity());
 		}
 
 		GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_SkeletalData, &cb, sizeof(cb));
 	}
-	
-	std::cout<<  RenderingThreadFrameCount<< "->"<< ComponentToWorld.Translation.x<<" "<<ComponentToWorld.Translation.y<<" "<<ComponentToWorld.Translation.z<<"\n";
 
 	unsigned int MeshCount = RenderData->MeshCount;
 

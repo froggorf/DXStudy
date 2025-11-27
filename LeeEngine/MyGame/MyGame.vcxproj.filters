@@ -17,38 +17,8 @@
     <Filter Include="Source\MyGame\Component">
       <UniqueIdentifier>{3e8daa15-35b2-46a9-9f85-96ae9e4a110c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shader">
-      <UniqueIdentifier>{c608a04d-5d71-4d68-8a1d-175dcef44b29}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\Niagara">
-      <UniqueIdentifier>{7ccb398f-8864-4998-a507-167683bfdeb1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\Niagara\Compute">
-      <UniqueIdentifier>{be4749e0-386d-4a8e-8793-8d73bf908dd8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\Niagara\Render">
-      <UniqueIdentifier>{40820e1b-ea68-4a13-8d58-c0c544345b41}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\Niagara\Render\Billboard">
-      <UniqueIdentifier>{6040c05f-4beb-44d1-b447-1bc9911d570f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\Niagara\Render\Sprite">
-      <UniqueIdentifier>{42e26ab2-6578-4fc7-b884-bfb69609d72e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\Niagara\Render\Mesh">
-      <UniqueIdentifier>{8a51f196-fa93-4e85-92d8-fa1bb40e1d8d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\Niagara\Render\Ribbon">
-      <UniqueIdentifier>{d3dc4b1c-64f0-4f86-bb3b-e1d76fd0bd85}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\MyGame\Widget">
       <UniqueIdentifier>{880a53e3-e44f-4f73-bd4f-89cd464df370}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\PBR">
-      <UniqueIdentifier>{1626fc95-ca56-42df-937a-4e56b6d7f83a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\PostProcess">
-      <UniqueIdentifier>{77f4535e-6154-4826-8a84-059af45c7ba8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\MyGame\Character">
       <UniqueIdentifier>{82218869-dafc-48fe-b743-8f3c753a4583}</UniqueIdentifier>
@@ -134,14 +104,44 @@
     <Filter Include="Source\MyGame\Component\Combat\Skill\NormalSkill\Gideon">
       <UniqueIdentifier>{f6f3d3d9-1743-4ec9-b7de-a33b3301c529}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shader\PBR\Character">
-      <UniqueIdentifier>{41e5ce83-1694-43c1-92a4-6b013db9ab96}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\MyGame\Component\Combat\Skill\Ultimate\Gideon">
       <UniqueIdentifier>{a0ca4a39-4bf9-46a1-89ab-bced1e167c05}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\MyGame\BehaviorTree">
       <UniqueIdentifier>{a82ad269-fb01-450e-85de-1ccf4e3e41ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{c608a04d-5d71-4d68-8a1d-175dcef44b29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Niagara">
+      <UniqueIdentifier>{7ccb398f-8864-4998-a507-167683bfdeb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Niagara\Compute">
+      <UniqueIdentifier>{be4749e0-386d-4a8e-8793-8d73bf908dd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Niagara\Render">
+      <UniqueIdentifier>{40820e1b-ea68-4a13-8d58-c0c544345b41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Niagara\Render\Billboard">
+      <UniqueIdentifier>{6040c05f-4beb-44d1-b447-1bc9911d570f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Niagara\Render\Sprite">
+      <UniqueIdentifier>{42e26ab2-6578-4fc7-b884-bfb69609d72e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Niagara\Render\Mesh">
+      <UniqueIdentifier>{8a51f196-fa93-4e85-92d8-fa1bb40e1d8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Niagara\Render\Ribbon">
+      <UniqueIdentifier>{d3dc4b1c-64f0-4f86-bb3b-e1d76fd0bd85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\PBR">
+      <UniqueIdentifier>{1626fc95-ca56-42df-937a-4e56b6d7f83a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\PBR\Character">
+      <UniqueIdentifier>{41e5ce83-1694-43c1-92a4-6b013db9ab96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\PostProcess">
+      <UniqueIdentifier>{77f4535e-6154-4826-8a84-059af45c7ba8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -187,7 +187,7 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const ComPtr<I
 		D3D11_SUBRESOURCE_DATA initVertexData = {};
 		initVertexData.pSysMem                = allVertices[i].data();
 		HR(pDevice->CreateBuffer(&vertexBufferDesc,&initVertexData, vertexBuffer.GetAddressOf()));
-		pVertexBuffer.push_back(vertexBuffer);
+		pVertexBuffer.emplace_back(vertexBuffer);
 
 		// 인덱스 버퍼
 		ComPtr<ID3D11Buffer> indexBuffer;
@@ -199,7 +199,7 @@ void AssetManager::LoadSkeletalModelData(const std::string& path, const ComPtr<I
 		D3D11_SUBRESOURCE_DATA initIndexData = {};
 		initIndexData.pSysMem                = allIndices[i].data();
 		HR(pDevice->CreateBuffer(&indexBufferDesc, &initIndexData, indexBuffer.GetAddressOf()));
-		pIndexBuffer.push_back(indexBuffer);
+		pIndexBuffer.emplace_back(indexBuffer);
 	}
 }
 
@@ -559,8 +559,8 @@ void AssetManager::ProcessScene(const aiScene* scene, std::vector<std::vector<My
 	allVertices.clear();
 	allIndices.clear();
 	for (auto& pair : materialVertices) {
-		allVertices.push_back(pair.second);
-		allIndices.push_back(materialIndices[pair.first]);
+		allVertices.emplace_back(pair.second);
+		allIndices.emplace_back(materialIndices[pair.first]);
 	}
 }
 
@@ -569,7 +569,7 @@ void AssetManager::ProcessMesh(aiMesh* mesh, std::vector<MyVertexData>& vertices
 	// 1. 버텍스 데이터 추출
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 	{
-		MyVertexData vertex;
+		MyVertexData vertex = {};
 
 		// 정점 위치
 		vertex.Pos.x = mesh->mVertices[i].x;
@@ -636,15 +636,26 @@ void AssetManager::ProcessMesh(aiMesh* mesh, std::vector<MyVertexData>& vertices
 
 void AssetManager::SetVertexBoneData(MyVertexData& vertexData, int boneID, float weight)
 {
-	for (int i = 0; i < MAX_BONE_INFLUENCE; ++i)
-	{
-		if (vertexData.m_BoneIDs[i] < 0)
+    if (boneID < 0 || boneID >= MAX_BONES)
+    {
+        std::cout << "Invalid bone ID: " << boneID << std::endl;
+        return;
+    }
+    
+    if (weight <= 0.0f)
+    {
+        return;  
+    }
+    
+    for (int i = 0; i < MAX_BONE_INFLUENCE; ++i)
+    {
+        if (vertexData.m_BoneIDs[i] < 0)  
 		{
-			vertexData.m_Weights[i] = weight;
-			vertexData.m_BoneIDs[i] = boneID;
-			break;
-		}
-	}
+            vertexData.m_Weights[i] = weight;
+            vertexData.m_BoneIDs[i] = boneID;
+            break;
+        }
+    }
 }
 
 static XMMATRIX ConvertAiMatrixToXMMATRIX(const aiMatrix4x4& mat)
@@ -705,6 +716,26 @@ static aiMatrix4x4 GetRootToBoneMatrix(aiNode* Node)
 	return Mat;
 }
 
+static void DebugBoneData(const std::vector<MyVertexData>& vertices)
+{
+	std::cout << "=== Bone Data Debug ===" << std::endl;
+
+	for (int i = 0; i < std::min(10, (int)vertices.size()); ++i)  // 처음 10개만
+	{
+		std::cout << "Vertex[" << i << "]: ";
+		for (int j = 0; j < MAX_BONE_INFLUENCE; ++j)
+		{
+			if (vertices[i].m_BoneIDs[j] >= 0)
+			{
+				std::cout << "Bone" << vertices[i].m_BoneIDs[j] 
+					<< "(" << vertices[i].m_Weights[j] << ") ";
+			}
+		}
+		std::cout << std::endl;
+	}
+}
+
+
 void AssetManager::ExtractBoneWeightForVertices(
 	std::vector<MyVertexData>& vVertexData,
 	aiMesh* mesh,
@@ -718,7 +749,7 @@ void AssetManager::ExtractBoneWeightForVertices(
 		int boneID = -1;
 		if (!ModelBoneInfoMap.contains(BoneName))
 		{
-			BoneInfo newBoneInfo;
+			BoneInfo newBoneInfo = {};
 			newBoneInfo.id = static_cast<int>(boneIndex);
 
 			aiMatrix4x4 aiOffsetMat = mesh->mBones[boneIndex]->mOffsetMatrix;

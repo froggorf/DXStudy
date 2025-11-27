@@ -703,6 +703,7 @@ void UEngine::LoadAllObjectsFromFile()
 		AssetManager::ReadMyAsset(FilePath);
 	}
 
+
 	//MY_LOG("Load", EDebugLogLevel::DLL_Warning, "Load All Objects From File Success");
 }
 

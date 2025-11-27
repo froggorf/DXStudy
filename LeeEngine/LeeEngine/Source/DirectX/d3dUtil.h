@@ -125,8 +125,8 @@ __declspec(align(16)) struct MyVertexData
 	DirectX::XMFLOAT2 TexCoords;
 	DirectX::XMFLOAT3 Tangent;
 	DirectX::XMFLOAT3 Bitangent;
-	int               m_BoneIDs[MAX_BONE_INFLUENCE];
-	float             m_Weights[MAX_BONE_INFLUENCE];
+	int               m_BoneIDs[MAX_BONE_INFLUENCE] = {-1,-1,-1,-1};
+	float             m_Weights[MAX_BONE_INFLUENCE] = {0,0,0,0};
 
 };
 
