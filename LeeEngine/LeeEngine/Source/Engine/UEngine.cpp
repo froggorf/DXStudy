@@ -158,6 +158,7 @@ void UEngine::GameStart()
 	// 마우스 커서 포커스 진행
 	SetMouseLock(EMouseLockMode::LockAlways);
 	SetInputMode(EInputMode::InputMode_GameOnly);
+	ShowCursor(false);
 
 	bGameStart  = true;
 	TimeSeconds = 0;
@@ -528,6 +529,11 @@ void UEngine::SetMouseLock(EMouseLockMode NewLockMode)
 	{
 		CaptureMouse();
 	}
+}
+
+void UEngine::ShowCursor(bool NewVisible)
+{
+	::ShowCursor(NewVisible);
 }
 
 void UEngine::CreateRenderThread()

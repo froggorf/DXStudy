@@ -107,6 +107,7 @@ class UEngine : public UObject
 
 	void SetInputMode(EInputMode NewInputMode);
 	void SetMouseLock(EMouseLockMode NewLockMode);
+	void ShowCursor(bool NewVisible);
 protected:
 	virtual void CreateRenderThread();
 	void         CreateAudioThread();
