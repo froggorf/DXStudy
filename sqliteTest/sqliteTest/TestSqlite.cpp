@@ -4,6 +4,15 @@
 #include "sqlite3.h"
 
 
+struct FUserInfo
+{
+	int UserID;
+	std::string UserName;
+	std::string Email;
+	std::string Password;
+	std::string CreateAt;
+	std::string LastLogin;
+};
 
 namespace LeeSQLite
 {
@@ -42,12 +51,47 @@ namespace LeeSQLite
 		//return std::shared_ptr<sqlite3>(RawDB, SQLiteDeleter());
 		return {RawDB, SQLiteDeleter()};
 	}
-
-	class LoginDB
-	{
-		//static bool RegisterUser()
-	};
 }
+
+
+
+class FLoginDB
+{
+public:
+
+	static bool RegisterUser(const std::string& Email, const std::string& PW)
+	{
+		
+	}
+
+	static bool TryLogin(const std::shared_ptr<sqlite3>& LoginDB, const std::string& ID, const std::string& PW)
+	{
+		sqlite3_stmt* STMT = nullptr;
+		const char* SQL = "SELECT user_id FROM users WHERE email = ? AND password = ?;";
+		if (sqlite3_prepare_v2(LoginDB.get(), SQL, -1, &STMT, nullptr) != SQLITE_OK)
+		{
+			std::cout<<"SQL 준비 오류: "<<sqlite3_errmsg(LoginDB.get()) <<"\n";
+			return false;
+		}
+
+		sqlite3_bind_text(STMT, 1, ID.c_str(), -1 ,SQLITE_STATIC);
+		sqlite3_bind_text(STMT, 2, PW.c_str(), -1 ,SQLITE_STATIC);
+
+		bool LoginSuccess = (sqlite3_step(STMT) == SQLITE_ROW);
+		sqlite3_finalize(STMT);
+
+		if (LoginSuccess)
+		{
+			std::cout<<"로그인 성공\n";
+			return true;
+		}
+		else
+		{
+			std::cout<<"이메일 또는 비밀번호가 일치하지 않습니다.\n";
+			return false;
+		}
+	}
+};
 
 
 int main()
@@ -62,6 +106,39 @@ int main()
 
 	std::cout<<"데이터베이스 연결 완료"<<"\n";
 
+
+	while (true)
+	{
+		std::cout<<"\n\n===========================================\n";
+		std::cout<<"0 : 로그인\n";
+		std::cout<<"1 : 회원가입\n";
+		std::cout<<"2 : 종료\n";
+
+		int Command;
+		std::cout<<"명령을 입력하세요 : ";
+		std::cin>>Command;
+
+		switch (Command)
+		{
+		case 0:
+			{
+				std::string ID;
+				std::string PW;
+				std::cout << "ID : ";
+				std::cin>>ID;
+				std::cout<<"Password : ";
+				std::cin>>PW;
+				FLoginDB::TryLogin(DB, ID, PW);
+			}
+		break;
+		case 1:
+		break;
+		case 2:
+			std::cout<<"로그인 시스템을 종료합니다.\n";
+			return 0;	
+		break;
+		}
+	}
 
 	return 0;
 }
