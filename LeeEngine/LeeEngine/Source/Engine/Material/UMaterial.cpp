@@ -493,7 +493,7 @@ void UMaterialInstance::BindingMaterialInstanceUserParam() const
 
 	// 텍스쳐
 	ComPtr<ID3D11DeviceContext> DeviceContext = GDirectXDevice->GetDeviceContext();
-	FSystemParamConstantBuffer SystemBuffer;
+	FSystemParamConstantBuffer SystemBuffer{};
 	for (int i = 0; i < ParentMaterial->TextureParams.size(); ++i)
 	{
 		// 09.09 방식이 잘못 되어있다는 것을 깨달음
@@ -518,8 +518,8 @@ void UMaterialInstance::BindingMaterialInstanceUserParam() const
 			}
 			
 		}
-		GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_SystemParam, &SystemBuffer, sizeof(SystemBuffer));
 	}
+	GDirectXDevice->MapConstantBuffer(EConstantBufferType::CBT_SystemParam, &SystemBuffer, sizeof(SystemBuffer));
 }
 
 FComputeShader::FComputeShader(const std::string& FilePath, const std::string& FuncName, UINT ThreadPerGroupX, UINT ThreadPerGroupY, UINT ThreadPerGroupZ)

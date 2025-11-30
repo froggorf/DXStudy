@@ -1,0 +1,7 @@
+{
+    "Class": "USkeletalMesh",
+    "Name": "SK_Pig",
+    "ModelData": "/Content/Resource/MyGame/Enemy/SK_Pig.FBX",
+    "DefaultPoseAnimData" : "/Content/Resource/MyGame/Animation/Pig/Pig_DefaultPose.FBX",
+    "Material" : [ "MI_Pig_Body", "MI_Pig_Fur" ]
+}

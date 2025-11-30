@@ -1,0 +1,7 @@
+{
+    "Class": "USkeletalMesh",
+    "Name": "SK_Wolf",
+    "ModelData": "/Content/Resource/MyGame/Enemy/SK_Wolf.FBX",
+    "DefaultPoseAnimData" : "/Content/Resource/MyGame/Animation/Wolf/Wolf_DefaultPose.FBX",
+    "Material" : [ "MI_Wolf_Body", "MI_Wolf_Fur" ]
+}

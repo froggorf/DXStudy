@@ -143,6 +143,9 @@
     <Filter Include="Shader\PostProcess">
       <UniqueIdentifier>{77f4535e-6154-4826-8a84-059af45c7ba8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\AnimInstance\Animal">
+      <UniqueIdentifier>{e4ee2bd0-c648-4d16-83e5-1b2686478048}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -292,6 +295,9 @@
     <ClCompile Include="Source\MyGame\BehaviorTree\TestBT.cpp">
       <Filter>Source\MyGame\BehaviorTree</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\AnimInstance\Animal\UEnemyAnimInstance.cpp">
+      <Filter>Source\MyGame\AnimInstance\Animal</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -437,6 +443,9 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\BehaviorTree\TestBT.h">
       <Filter>Source\MyGame\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\AnimInstance\Animal\UEnemyAnimInstance.h">
+      <Filter>Source\MyGame\AnimInstance\Animal</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

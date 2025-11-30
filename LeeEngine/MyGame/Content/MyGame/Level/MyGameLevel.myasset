@@ -62,7 +62,7 @@
             ]
         },
 {
-            "Class": "AEnemyBase",
+            "Class": "AWolf",
             "Location": [
                 500.0,
                 100.0,
@@ -81,6 +81,27 @@
                 1.0
             ]
         },
+	{
+            "Class": "AWolf",
+            "Location": [
+                500.0,
+                100.0,
+                100.0
+            ],
+            "Name": "Enemy2",
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0,
+	  1.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+
 {
             "Class": "ATestCube2",
             "Location": [

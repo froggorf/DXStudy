@@ -1,0 +1,7 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_Pig_Death",
+    "Skeleton": "SK_Pig",
+    "AnimationDataPath": "/Content/Resource/MyGame/Animation/Pig/ANIM_Pig_Death.FBX",
+    "RootMotion": 1
+}

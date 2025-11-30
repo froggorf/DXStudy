@@ -44,9 +44,9 @@ void UMyGameAnimInstanceBase::NativeInitializeAnimation()
 
 	if (AActor* OwnerActor = GetSkeletalMeshComponent()->GetOwner())
 	{
-		if (AMyGameCharacterBase* MyGameCharacter = dynamic_cast<AMyGameCharacterBase*>(OwnerActor))
+		if (ACharacter* Character = dynamic_cast<ACharacter*>(OwnerActor))
 		{
-			MovementComp = MyGameCharacter->GetCharacterMovement();
+			MovementComp = Character->GetCharacterMovement();
 		}
 	}
 }

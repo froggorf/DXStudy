@@ -233,5 +233,38 @@ Deferred_PS_OUT PS_MeteorBall(PBR_PS_INPUT input) : SV_TARGET
 	return output;
 }
 
+Deferred_PS_OUT PBR_PS_Monster_Base(PBR_PS_INPUT input) : SV_TARGET
+{
+	int AlbedoTexBind = bTexBind_0_3.x;
+	float4 DefaultAlbedo = float4(1.0f, 0.0f, 1.0f, 1.0f);
+	float4 albedo = AlbedoTexBind ? AlbedoTexture.Sample(DefaultSampler, input.UV).rgba : DefaultAlbedo;
+
+	float DefaultMetallic = 0.2f;
+	int MRAOTexBind = bTexBind_0_3.z;
+	float4 MetallicRoughnessAOSample = MetallicTexture.Sample(DefaultSampler, input.UV);
+	float metallic = MRAOTexBind ? MetallicRoughnessAOSample.b : DefaultMetallic;
+	float DefaultRoughness = 0.5f;
+	float roughness = MRAOTexBind ? MetallicRoughnessAOSample.g : DefaultRoughness;
+	float DefaultAO = 1.0f;
+	float ao = MRAOTexBind ? MetallicRoughnessAOSample.r : DefaultAO;
+
+	float DefaultSpecular = 0.5f;
+	int SpecularTexBind = bTexBind_0_3.w;
+	float specular = SpecularTexBind ? SpecularTexture.Sample(DefaultSampler, input.UV).r : DefaultSpecular;
+
+	
+
+	Deferred_PS_OUT output = (Deferred_PS_OUT) 0.f;
+
+	output.Color = albedo;
+	output.PBRData = float4(metallic, specular, roughness, ao);
+	float3 N = GetNormalFromMap(input);
+	output.Normal = float4(N, 1.f);
+	output.Position = float4(input.ViewPosition, 1.f);
+	output.Emissive = float4(0.f, 0.f, 0.f, 1.f);
+
+	return output;
+}
+
 
 #endif

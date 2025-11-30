@@ -4,10 +4,10 @@
 #include "Engine/Components/UNiagaraComponent.h"
 #include "Engine/Components/UWidgetComponent.h"
 #include "Engine/World/UWorld.h"
+#include "MyGame/AnimInstance/Animal/UEnemyAnimInstance.h"
 #include "MyGame/BehaviorTree/TestBT.h"
 #include "MyGame/Character/Player/AMyGameCharacterBase.h"
 #include "MyGame/Component/Health/UHealthComponent.h"
-#include "MyGame/Component/MotionWarping/UMotionWarpingComponent.h"
 #include "MyGame/Core/AMyGamePlayerController.h"
 #include "MyGame/Widget/Health/UEnemyHealthWidget.h"
 #include "MyGame/Widget/Health/UHealthWidgetBase.h"
@@ -15,17 +15,18 @@
 static UINT EnemyCount = 0;
 AEnemyBase::AEnemyBase()
 {
-
 	if (UCharacterMovementComponent* CharacterMovement = GetCharacterMovement())
 	{
 		CharacterMovement->bOrientRotationToMovement = false;
 		CharacterMovement->Acceleration = 4096.0f;
 		CharacterMovement->RotationRate = XMFLOAT3{0.0f, 1500.0f, 0.0f};
-		CharacterMovement->MaxWalkSpeed = 300;
+		CharacterMovement->MaxWalkSpeed = 450;
 		CharacterMovement->Braking = 4096;
 	}
 
-	SkeletalMeshComponent->SetRelativeLocation({0,-85,0});
+	CapsuleComp->SetHalfHeight(30.0f);
+	CapsuleComp->SetRadius(30.0f);
+	SkeletalMeshComponent->SetRelativeLocation({0,-60,0});
 	SkeletalMeshComponent->SetRelativeRotation(XMFLOAT3{0,180,0});
 	
 	MotionWarpingComponent = std::static_pointer_cast<UMotionWarpingComponent>(CreateDefaultSubobject("MotionWarpingComp", "UMotionWarpingComponent"));
@@ -38,8 +39,6 @@ AEnemyBase::AEnemyBase()
 	HealthWidgetComp = std::make_shared<UWidgetComponent>();
 	HealthWidgetComp->SetupAttachment(GetRootComponent());
 	HealthWidgetComp->SetRelativeLocation({0.0f,90.0f,0.0f});
-
-	
 }
 
 void AEnemyBase::Register()
@@ -48,12 +47,18 @@ void AEnemyBase::Register()
 
 	ACharacter::Register();
 
-	AssetManager::GetAsyncAssetCache("SM_DeferredSphere",[this](std::shared_ptr<UObject> Object)
+	AssetManager::GetAsyncAssetCache(SkeletalMeshName,[this](std::shared_ptr<UObject> Object)
+		{
+			SkeletalMeshComponent->SetSkeletalMesh(std::dynamic_pointer_cast<USkeletalMesh>(Object));
+		});
+	SkeletalMeshComponent->SetAnimInstanceClass(AnimInstanceName);
+
+	/*AssetManager::GetAsyncAssetCache("SM_DeferredSphere",[this](std::shared_ptr<UObject> Object)
 		{
 			TempStaticMesh->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
 			TempStaticMesh->SetCollisionObjectType(ECollisionChannel::Enemy);
 			TempStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		});
+		});*/
 
 	QueryCheckCapsuleComp->SetCollisionObjectType(ECollisionChannel::Enemy);
 	QueryCheckCapsuleComp->GetBodyInstance()->SetObjectType(ECollisionChannel::Enemy);
@@ -62,11 +67,9 @@ void AEnemyBase::Register()
 	HealthWidgetComp->SetWidget(EnemyHealthWidget);
 	HealthComponent->SetHealthWidget(EnemyHealthWidget);
 
-	//AssetManager::GetAsyncAssetCache(CharacterMeshName,[this](std::shared_ptr<UObject> Object)
-	//	{
-	//		SkeletalMeshComponent->SetSkeletalMesh(std::static_pointer_cast<USkeletalMesh>(Object));
-	//	});
-	//SkeletalMeshComponent->SetAnimInstanceClass(AnimInstanceName);
+	EnemyAnimInstance = std::dynamic_pointer_cast<UEnemyAnimInstanceBase>(GetAnimInstance());
+	
+	
 }
 
 void AEnemyBase::BeginPlay()
@@ -126,10 +129,48 @@ float AEnemyBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent
 	return DamageAmount;
 }
 
+void AEnemyBase::PlayAttackMontage(Delegate<> AttackFinishDelegate)
+{
+	
+	if (EnemyAnimInstance)
+	{
+		MY_LOG("AEnemyBase",EDebugLogLevel::DLL_Warning,"BasicAttack");
+		EnemyAnimInstance->DoAttackAnim(AttackFinishDelegate);
+	}
+	else
+	{
+		MY_LOG("AEnemyBase",EDebugLogLevel::DLL_Warning,"No Valid EnemyAnimInstance");
+	}
+
+}
+
+void AEnemyBase::ApplyBasicAttack()
+{
+	XMFLOAT3 ForwardDir = GetActorForwardVector();
+	XMFLOAT3 ActorLocation = GetActorLocation();
+	float CapsuleRadius = GetCapsuleComponent()->GetRadius();
+	XMFLOAT3 AttackBoxCenter = ActorLocation + ForwardDir * (CapsuleRadius + BasicAttackData.AttackRange.z);
+
+	FMyGameDamageEvent DamageEvent;
+	DamageEvent.ElementType = EElementType::Spectra;
+
+	std::vector<AActor*> OverlapResults;
+	GPhysicsEngine->BoxOverlapComponents(AttackBoxCenter, BasicAttackData.AttackRange, {ECollisionChannel::Player}, {}, OverlapResults);
+	for (AActor* OverlapActor : OverlapResults)
+	{
+		if (AMyGameCharacterBase* Player =  dynamic_cast<AMyGameCharacterBase*>(OverlapActor))
+		{
+			Player->TakeDamage(EnemyPower * BasicAttackData.DamagePercent, DamageEvent, this);	
+		}
+	}
+
+}
+
+
 void AEnemyBase::Death()
 {
 	// TODO : Death 애니메이션 재생
-	MY_LOG("Death", EDebugLogLevel::DLL_Warning, "Character Death");
+	MY_LOG("Death", EDebugLogLevel::DLL_Warning, "Enemy Death");
 }
 
 void AEnemyBase::Tick(float DeltaSeconds)
@@ -142,9 +183,37 @@ void AEnemyBase::Tick(float DeltaSeconds)
 		{
 			const std::shared_ptr<FBlackBoard>& BlackBoard = AIController->GetBehaviorTree()->GetBlackBoard();
 			float Distance = MyMath::GetDistance(GetActorLocation(), PlayerCharacter->GetActorLocation());
-			bool NewValue = Distance > 300.0f;
+			bool NewValue = Distance > 700.0f;
 			BlackBoard->SetValue<FBlackBoardValueType_Bool>("MoveMode", NewValue);		
 		}
 	}
 	
+}
+
+AWolf::AWolf()
+{
+	SkeletalMeshName = "SK_Wolf";
+	AnimInstanceName = "UWolfAnimInstance";
+	BasicAttackData = FAttackData{XMFLOAT3{100, 30, 100}, 1.0f, 0.0f, 0.0f, true};
+	EnemyPower = 75.0f;
+}
+
+void AWolf::BeginPlay()
+{
+	AEnemyBase::BeginPlay();
+
+	const FTransform& CurTransform = RootComponent->GetComponentTransform();
+	for (int i = 0; i < 5; ++i)
+	{
+		FTransform NewTransform = CurTransform;
+		NewTransform.Translation = NewTransform.Translation + XMFLOAT3{500.0f * MyMath::FRand() - 250.0f, 0.0f,500.0f * MyMath::FRand() - 250.0f};
+		GetWorld()->SpawnActor("APig", NewTransform);
+	}
+	
+}
+APig::APig()
+{
+	SkeletalMeshName = "SK_Pig";
+	AnimInstanceName = "UPigAnimInstance";
+	BasicAttackData = FAttackData{XMFLOAT3{100,30,100}, 1.0f, 0.0f, 0.0f, true};
 }

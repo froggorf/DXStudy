@@ -1,0 +1,7 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_Wolf_Walk",
+    "Skeleton": "SK_Wolf",
+    "AnimationDataPath": "/Content/Resource/MyGame/Animation/Wolf/ANIM_Wolf_Walk.FBX",
+    "RootMotion": 0
+}

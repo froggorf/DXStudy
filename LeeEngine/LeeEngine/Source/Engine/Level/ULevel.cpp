@@ -76,13 +76,20 @@ void ULevel::BeginPlay()
 
 void ULevel::TickLevel(float DeltaSeconds)
 {
-	for (const std::shared_ptr<AActor>& PendingAddActor : PendingAddActors)
+	// Note: PendingAddActor 가 BeginPlay에서 SpawnActor를 진행할경우 PendingAddActors에 계속 추가되면서 반복자 무효화가 발생하는 현상이 있었음
+	// 따라서 별도 컨테이너로 복사하고서 작업을 진행하도록 수정
+	if (!PendingAddActors.empty())
 	{
-		Actors.emplace_back(PendingAddActor);
-		PendingAddActor->BeginPlay();
-	}
-	PendingAddActors.clear();
+		std::vector<std::shared_ptr<AActor>> CopyPendingAddActors = PendingAddActors;
+		PendingAddActors.clear();
+		for (const std::shared_ptr<AActor>& PendingAddActor : CopyPendingAddActors)
+		{
+			Actors.emplace_back(PendingAddActor);
+			PendingAddActor->BeginPlay();
+		}
 
+	}
+	
 
 	for (const auto& Actor : Actors)
 	{

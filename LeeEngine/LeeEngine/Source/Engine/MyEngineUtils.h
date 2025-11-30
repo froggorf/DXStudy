@@ -242,6 +242,13 @@ inline std::wstring FloatToWString(float Value, int Pos)
 	return Text.substr(0, Text.find('.') + Pos + 1);
 }
 
+// NOTE:
+// 진짜 화나는 사유임,
+// 에셋 제작자가 메쉬에서는 "Wolf_-Head" 로 이름을 짓고
+//				애니메이션에서는 "Wolf_ Head" 같이 지어서
+// 데이터를 넣고 MissingBone 을 찾을때 하나하나 정규화를 진행해주기로 해서 해당 함수를 개발 (AI로 구현)
+void NormalizeBoneName(std::string& OriginalBoneName);
+
 namespace MyMath
 {
 	inline XMFLOAT3 Lerp(const XMFLOAT3& A, const XMFLOAT3& B, float T)

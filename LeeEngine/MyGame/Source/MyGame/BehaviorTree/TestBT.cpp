@@ -142,7 +142,8 @@ EBTNodeResult FBTTask_MoveToPlayer::Tick(float DeltaSeconds, const std::shared_p
 	}
 
 	float Distance = MyMath::GetDistance(Owner->GetActorLocation(), SharedPlayer->GetActorLocation());
-	if (Distance < 75.0f)
+
+	if (Distance < Owner->GetCapsuleComponent()->GetRadius() * 2 + 50.0f)
 	{
 		return EBTNodeResult::Success;
 	}
@@ -152,6 +153,64 @@ EBTNodeResult FBTTask_MoveToPlayer::Tick(float DeltaSeconds, const std::shared_p
 		return EBTNodeResult::Running;
 	}
 	
+}
+
+void FBTTask_EnemyBasicAttack::OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard)
+{
+	FBTTask::OnEnterNode(BlackBoard);
+	bAttackFinish = false;
+	bDoAttack = false;
+
+	// Note: 해당 값은 노드가 살아있는 동안에 계속해서 존재해야 하므로,
+	// 값을 초기화하지 말아야함
+	//LastAttackTime = 0.0f;
+
+	OwningActor = std::dynamic_pointer_cast<AEnemyBase>(BlackBoard->GetValue<FBlackBoardValueType_Object>("Owner"));
+	if (OwningActor.expired())
+	{
+		return;
+	}
+
+	Player = std::dynamic_pointer_cast<AActor>(BlackBoard->GetValue<FBlackBoardValueType_Object>("Player"));
+}
+
+EBTNodeResult FBTTask_EnemyBasicAttack::Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard)
+{
+	if (FBTTask::Tick(DeltaSeconds , BlackBoard) == EBTNodeResult::Fail)
+	{
+		return EBTNodeResult::Fail;		
+	}
+
+	// 공격 쿨타임이 지나지 않았으면 Fail
+	if (GEngine->GetTimeSeconds() < LastAttackTime + CoolDownTime)
+	{
+		return EBTNodeResult::Fail;
+	}
+
+	std::shared_ptr<AActor> SharedPlayer = Player.lock();
+	std::shared_ptr<AEnemyBase> Owner = OwningActor.lock();
+	if (!SharedPlayer || !Owner)
+	{
+		MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Warning, "Not valid OwningActor / SharedPlayer");
+		return EBTNodeResult::Fail;
+	}
+
+	if (!bDoAttack)
+	{
+		bDoAttack = true;
+		Owner->PlayAttackMontage(Delegate<>{this, &FBTTask_EnemyBasicAttack::FinishAttack});
+		LastAttackTime = GEngine->GetTimeSeconds();
+	}
+	
+
+	if (bAttackFinish)
+	{
+		return EBTNodeResult::Success;
+	}
+	else
+	{
+		return EBTNodeResult::Running;
+	}
 }
 
 
@@ -251,11 +310,11 @@ void UTestBT::OnConstruct()
 		MoveRandomSequence->Decorators.emplace_back(IsPlayerFar);
 
 		// 랜덤위치 이동 Task
-		std::shared_ptr<FBTTask_MoveToAnyWhere> MoveToTask = std::make_shared<FBTTask_MoveToAnyWhere>();
-		MoveRandomSequence->AddChild(MoveToTask);
+		/*std::shared_ptr<FBTTask_MoveToAnyWhere> MoveToTask = std::make_shared<FBTTask_MoveToAnyWhere>();
+		MoveRandomSequence->AddChild(MoveToTask);*/
 
 		std::shared_ptr<FBTTask_Wait> WaitTask= std::make_shared<FBTTask_Wait>();
-		WaitTask->SetWaitTime(3.0f);
+		WaitTask->SetWaitTime(0.5f);
 		MoveRandomSequence->AddChild(WaitTask);
 	}
 	// 플레이어가 주변에 있다면
@@ -278,8 +337,10 @@ void UTestBT::OnConstruct()
 				// 적 앞으로 다가간다
 				std::shared_ptr<FBTTask_MoveToPlayer> MoveToPlayerTask = std::make_shared<FBTTask_MoveToPlayer>();
 				AttackPlayerSequencer->AddChild(MoveToPlayerTask);
+
 				// 적을 공격한다.
-				// TODO: 만들 예정
+				std::shared_ptr<FBTTask_EnemyBasicAttack> EnemyBasicAttackTask = std::make_shared<FBTTask_EnemyBasicAttack>();
+				AttackPlayerSequencer->AddChild(EnemyBasicAttackTask);
 			}
 		}
 

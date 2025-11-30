@@ -196,7 +196,7 @@ bool AMyGameCharacterBase::ApplyDamageToEnemy_Range(const FAttackData& AttackDat
 	if (!DamagedActors.empty())
 	{
 		FMyGameDamageEvent Event;
-		Event.ElementType = ElementType;
+		Event.ElementType = EElementType::Aero;
 		Event.DamageType = DamageType;
 		for (size_t i = 0; i < DamagedActors.size(); ++i)
 		{
@@ -215,7 +215,7 @@ bool AMyGameCharacterBase::ApplyDamageToEnemy_Range(const FAttackData& AttackDat
 void AMyGameCharacterBase::ApplyDamageToEnemy(AActor* DamagedEnemy, const FAttackData& AttackData, const std::string& DamageType)
 {
 	FMyGameDamageEvent Event;
-	Event.ElementType = ElementType;
+	Event.ElementType = EElementType::Aero;
 	Event.DamageType = DamageType;
 	DamagedEnemy->TakeDamage(GetCurrentPower() * AttackData.DamagePercent, Event, this);
 
@@ -245,6 +245,7 @@ void AMyGameCharacterBase::ChangeToNormalCamera(float BlendTime)
 
 float AMyGameCharacterBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AActor* DamageCauser)
 {
+	MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Error, std::to_string(DamageAmount));
 	if (bIsDodging)
 	{
 		ChangeToRoll();

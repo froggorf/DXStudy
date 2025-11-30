@@ -177,13 +177,13 @@ void UAnimInstance::Tick(float DeltaSeconds)
 		CalculateFinalBoneMatrices(FinalBoneMatrices);
 
 		/// 루트 모션 처리
-		if (APlayerController* PC = GEngine->GetCurrentWorld()->GetPlayerController())
+		if (AController* Controller = OwnerCharacter->GetController())
 		{
 			// PlayerController에 의해 조종되는 캐릭터일 경우
-			bool bPlayerCharacter =  (PC->GetCharacter() && PC->GetCharacter()->GetSkeletalMeshComponent() == GetSkeletalMeshComponent());
+			bool bPlayerCharacter =  (Controller->GetCharacter() && Controller->GetCharacter()->GetSkeletalMeshComponent() == GetSkeletalMeshComponent());
 			if (bPlayerCharacter)
 			{
-				PC->SetPlayRootMotion(false);
+				Controller->SetPlayRootMotion(false);
 			}
 			
 			if (bPlayRootMotion)
@@ -201,7 +201,7 @@ void UAnimInstance::Tick(float DeltaSeconds)
 
 				if (bPlayerCharacter)
 				{
-					PC->SetPlayRootMotion(true);
+					Controller->SetPlayRootMotion(true);
 				}
 
 				if (!bBlendOut && !bUseMotionWarping)

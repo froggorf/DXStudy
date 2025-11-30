@@ -1,0 +1,12 @@
+{
+    "Class": "UBlendSpace",
+    "Name": "BS_Wolf_Locomotion",
+    "Skeleton": "SK_Wolf",
+    "HorizontalValue" : [ 0.0, 0.0 ],
+    "VerticalValue" : [ 0.0, 500.0 ],
+    "Points" : [ 
+	{ "Position": [ 0.0, 0.0 ], "AnimClipName": "AS_Wolf_Idle" },
+	{ "Position": [ 0.0, 150.0 ], "AnimClipName": "AS_Wolf_Walk" },
+	{ "Position": [ 0.0, 450.0 ], "AnimClipName": "AS_Wolf_Run" }
+     ]
+}

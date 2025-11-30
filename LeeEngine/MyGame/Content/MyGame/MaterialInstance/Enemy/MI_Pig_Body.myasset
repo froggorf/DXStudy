@@ -1,0 +1,12 @@
+{
+    "Class": "UMaterialInstance",
+    "Name": "MI_Pig_Body",
+    "ParentMaterial" : "M_Animal_Default",
+    "OverrideTexture" :
+    [
+	{ "Index" : 0, "Tex": "T_Pig_Color"},
+	{ "Index" : 1, "Tex": "T_Pig_Normal"},
+	{ "Index" : 2, "Tex": "T_Pig_MRAO"},
+	{ "Index" : 3, "Tex": "T_Pig_Specular"}
+    ]
+}

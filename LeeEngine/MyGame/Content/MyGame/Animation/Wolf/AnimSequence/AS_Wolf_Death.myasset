@@ -1,0 +1,7 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_Wolf_Death",
+    "Skeleton": "SK_Wolf",
+    "AnimationDataPath": "/Content/Resource/MyGame/Animation/Wolf/ANIM_Wolf_Death.FBX",
+    "RootMotion": 1
+}

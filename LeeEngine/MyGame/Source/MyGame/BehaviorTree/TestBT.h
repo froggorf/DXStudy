@@ -105,6 +105,22 @@ private:
 	std::weak_ptr<class AActor> Player;
 };
 
+class FBTTask_EnemyBasicAttack : public FBTTask
+{
+public:
+	void OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard) override;
+	EBTNodeResult Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard) override;
+	void FinishAttack() { bAttackFinish = true;}
+private:
+	std::weak_ptr<class AEnemyBase> OwningActor;
+	std::weak_ptr<class AActor> Player;
+	bool bAttackFinish = false;
+	bool bDoAttack = false;
+	float LastAttackTime = 0.0f;
+
+	static constexpr float CoolDownTime = 5.0f;
+};
+
 class FBTTask_RunFromPlayer : public FBTTask
 {
 public:

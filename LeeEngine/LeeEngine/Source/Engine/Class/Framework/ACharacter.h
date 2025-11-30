@@ -106,6 +106,8 @@ public:
 
 	const std::shared_ptr<USpringArmComponent>& GetSpringArm() const {return SpringArm;}
 
+	const std::shared_ptr<UCapsuleComponent>& GetCapsuleComponent() const {return CapsuleComp; }
+	AController* GetController() const {return Controller;}
 	virtual void Death(){};
 protected:
 	virtual void BindKeyInputs() {}
@@ -124,6 +126,7 @@ protected:
 
 	std::shared_ptr<UCameraComponent> CameraComp;
 	std::shared_ptr<USpringArmComponent> SpringArm;
+
 private:
 	float Radius;
 	float HalfHeight;

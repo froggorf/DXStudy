@@ -145,10 +145,7 @@ void UAnimSequence::ReadMissingBones(const aiAnimation* animation, std::map<std:
 		auto        channel  = animation->mChannels[index];
 		std::string boneName = channel->mNodeName.C_Str();
 
-		if (boneName.contains("mixamorig:"))
-		{
-			boneName.replace(boneName.begin(), boneName.begin() + 10, "");
-		}
+		NormalizeBoneName(boneName);
 
 		// Missing Bone 추가
 		if (!modelBoneInfoMap.contains(boneName))
@@ -168,10 +165,9 @@ void UAnimSequence::ReadHierarchyData(AssimpNodeData& dest, const aiNode* src)
 	assert(src);
 
 	dest.name = src->mName.C_Str();
-	if (dest.name.contains("mixamorig:"))
-	{
-		dest.name.replace(dest.name.begin(), dest.name.begin() + 10, "");
-	}
+
+	NormalizeBoneName(dest.name);
+
 	aiMatrix4x4 aiMat   = src->mTransformation;
 	dest.transformation = XMMATRIX(aiMat.a1,
 									aiMat.b1,

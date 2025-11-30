@@ -108,6 +108,34 @@ XMFLOAT3 FTransform::CalculateEulerRotationFromQuaternion(const XMVECTOR& Quater
 	return Euler;
 }
 
+void NormalizeBoneName(std::string& OriginalBoneName)
+{
+	if (OriginalBoneName.contains("mixamorig:"))
+	{
+		OriginalBoneName.replace(OriginalBoneName.begin(), OriginalBoneName.begin() + 10, "");
+	}
+
+	// 첫 글자로 빠르게 필터링
+	if (OriginalBoneName.empty() || (OriginalBoneName[0] != 'W' && OriginalBoneName[0] != 'P'))
+	{
+		return;
+	}
+
+	if (!OriginalBoneName.contains("Wolf") &&
+		!OriginalBoneName.starts_with("Pig") && 
+		!OriginalBoneName.starts_with("PIG"))
+	{
+		return;
+	}
+
+	// 특수 문자 제거
+	OriginalBoneName.erase(
+		std::remove_if(OriginalBoneName.begin(), OriginalBoneName.end(), 
+			[](char c) { return c == '_' || c == '-' || c == ' '; }),
+		OriginalBoneName.end()
+	);
+}
+
 namespace MyMath
 {
 	XMFLOAT4 GetRotationQuaternionToActor(const XMFLOAT3& From, const XMFLOAT3& To)

@@ -766,13 +766,10 @@ void AssetManager::ExtractBoneWeightForVertices(
 				newBoneInfo.RootToCurrentBoneMatrix = XMMatrixIdentity();
 			}
 
-			if (BoneName.contains("mixamorig:"))
-			{
-				BoneName.replace(BoneName.begin(), BoneName.begin() + 10, "");
-			}
+			NormalizeBoneName(BoneName);
 
 			ModelBoneInfoMap[BoneName] = newBoneInfo;
-			boneID = boneIndex;
+			boneID = static_cast<int>(boneIndex);
 		}
 		else
 		{

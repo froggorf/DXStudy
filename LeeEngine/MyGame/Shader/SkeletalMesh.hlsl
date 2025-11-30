@@ -4,8 +4,11 @@
 #include "Global.fx"
 #include "TransformHelpers.hlsl"
 #include "AnimationHelpers.hlsl"
-
-Texture2D    txDiffuse : register( t0 );
+Texture2D Tex0 : register( t0 );
+Texture2D Tex1 : register(t1);
+Texture2D Tex2 : register(t2);
+Texture2D Tex3 : register(t3);
+Texture2D Tex4 : register(t4);
 SamplerState samLinear : register( s0 );
 
 Texture2D    gShadowMap : register(t1);
@@ -66,10 +69,6 @@ VS_OUTPUT VS(VS_INPUT input)
 	output.ViewNormal = normalize(mul(float4(input.Normal, 0.f), gMatWV)).xyz;
 	output.ViewBinormal = normalize(mul(float4(input.Binormal, 0.f), gMatWV)).xyz;
 	
-
-	// light source에서 버텍스로의 position
-	//output.PosLightSpace = CalculateScreenPosition(input.Pos, World, gLightView, gLightProj);
-
 	output.Tex = input.TexCoord;
 
 	return output;
