@@ -1,0 +1,25 @@
+{
+	"Class": "UAnimMontage",
+	"Name": "AM_Dragon_FlyFlame",
+	"Skeleton": "SK_Dragon",
+	"BlendIn" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.15
+	},
+	"BlendOut" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.3
+	},
+
+	"SlotName": "DefaultSlot",
+	"AnimTrack" : [
+		{"AnimName" : "AS_Dragon_FlyFlame"}
+	],
+	"Sections" : [
+		{ "SectionName" : "BasicAttack", "StartTime" : 0.0 }
+	],
+    	"Notifies" : [
+		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 20, "EventName" : "FlyFlameStart" }
+		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 60, "EventName" : "FlyFlameEnd" }
+  	  ]
+}

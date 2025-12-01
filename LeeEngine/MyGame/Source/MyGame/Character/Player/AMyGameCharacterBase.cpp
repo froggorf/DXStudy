@@ -1,6 +1,7 @@
 #include "CoreMinimal.h"
 #include "AMyGameCharacterBase.h"
 
+#include "Engine/Class/Framework/AGameMode.h"
 #include "Engine/World/UWorld.h"
 #include "MyGame/Component/Health/UHealthComponent.h"
 #include "MyGame/Component/Combat/Skill/NormalSkill/USkillBaseComponent.h"
@@ -131,6 +132,9 @@ void AMyGameCharacterBase::BeginPlay()
 	CreateWidgetOnBeginPlay();
 
 	HealthComponent->SetMaxHealth(CharacterMaxHealth, true);
+
+	// TODO : Note) 테스트용 임시코드
+	GetWorld()->GetGameMode()->StartGame();
 }
 
 void AMyGameCharacterBase::BindKeyInputs()
@@ -150,8 +154,8 @@ void AMyGameCharacterBase::BindKeyInputs()
 			InputSystem->BindAction<AMyGameCharacterBase>(EKeys::Space, ETriggerEvent::Started, this, &AMyGameCharacterBase::Jump);
 			// LookRotate
 			InputSystem->BindAxis2D(EKeys::MouseXY2DAxis, ETriggerEvent::Trigger, 0,0, this, &AMyGameCharacterBase::Look);
-			InputSystem->BindAction(EKeys::LAlt, ETriggerEvent::Started, this, &AMyGameCharacterBase::AltButtonPressed);
-			InputSystem->BindAction(EKeys::LAlt, ETriggerEvent::Released, this, &AMyGameCharacterBase::AltButtonReleased);
+			InputSystem->BindAction(EKeys::LCtrl, ETriggerEvent::Started, this, &AMyGameCharacterBase::AltButtonPressed);
+			InputSystem->BindAction(EKeys::LCtrl, ETriggerEvent::Released, this, &AMyGameCharacterBase::AltButtonReleased);
 
 			// TargetArmLength Wheel
 			InputSystem->BindAction(EKeys::MouseWheelUp, Started, this, &AMyGameCharacterBase::WheelUp);
@@ -298,7 +302,7 @@ void AMyGameCharacterBase::Look(float X, float Y)
 void AMyGameCharacterBase::AltButtonPressed()
 {
 	bAltButtonPressed = true;
-	GEngine->SetInputMode(EInputMode::InputMode_UIOnly);
+	GEngine->SetInputMode(EInputMode::InputMode_GameUI);
 	GEngine->SetMouseLock(EMouseLockMode::DoNotLock);
 	GEngine->ShowCursor(true);
 }

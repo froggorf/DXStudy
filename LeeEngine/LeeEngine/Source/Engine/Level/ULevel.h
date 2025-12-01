@@ -6,6 +6,7 @@
 #pragma once
 #include "Engine/UObject/UObject.h"
 #include "Engine/MyEngineUtils.h"
+class AGameMode;
 class AActor;
 class UWorld;
 
@@ -50,6 +51,8 @@ class ULevel : public UObject
 	void UnregisterPendingActors();
 
  	std::shared_ptr<AActor> FindSharedActorByRawPointer(AActor* Actor);
+
+	std::shared_ptr<AGameMode> GetGameMode() const {return GameModeActor;}
 private:
 
 	std::shared_ptr<UWorld> OwningWorld;
@@ -57,6 +60,8 @@ private:
 	std::vector<std::shared_ptr<AActor>> Actors;
 	std::vector<std::shared_ptr<AActor>> PendingAddActors;
 	std::vector<std::shared_ptr<AActor>> PendingKillActors;
+
+	std::shared_ptr<AGameMode> GameModeActor;
 private:
 	nlohmann::basic_json<> LevelData;
 };

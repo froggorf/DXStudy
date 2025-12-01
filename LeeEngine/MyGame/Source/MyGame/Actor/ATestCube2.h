@@ -6,6 +6,7 @@
 #include "Engine/Components/USkeletalMeshComponent.h"
 #include "Engine/GameFramework/AActor.h"
 
+class UDecalComponent;
 class UNiagaraComponent;
 class UStaticMeshComponent;
 
@@ -29,6 +30,8 @@ protected:
 
 
 	std::shared_ptr<UStaticMeshComponent> Ground;
+
+	std::shared_ptr<UDecalComponent> Decal;
 private:
 	std::shared_ptr<AAIController> AIController;
 

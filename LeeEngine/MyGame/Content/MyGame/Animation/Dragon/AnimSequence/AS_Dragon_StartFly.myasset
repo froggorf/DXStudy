@@ -1,0 +1,7 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_Dragon_StartFly",
+    "Skeleton": "SK_Dragon",
+    "AnimationDataPath": "/Content/Resource/MyGame/Animation/Dragon/TakeOffAnim.FBX",
+    "RootMotion": 1
+}

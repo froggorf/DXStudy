@@ -69,7 +69,6 @@ class AWolf final : public AEnemyBase
 	MY_GENERATE_BODY(AWolf)
 
 	AWolf();
-	void BeginPlay() override;
 	~AWolf() override = default;
 };
 
@@ -79,4 +78,12 @@ class APig final : public AEnemyBase
 
 	APig();
 	~APig() override = default;
+};
+
+class ADragon final : public AEnemyBase
+{
+	MY_GENERATE_BODY(ADragon)
+
+	ADragon();
+	~ADragon() override = default;
 };

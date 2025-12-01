@@ -27,6 +27,7 @@ class UWolfAnimInstance final : public UEnemyAnimInstanceBase
 	MY_GENERATE_BODY(UWolfAnimInstance)
 
 	UWolfAnimInstance();
+	~UWolfAnimInstance() override = default;
 };
 
 class UPigAnimInstance final : public UEnemyAnimInstanceBase
@@ -34,4 +35,13 @@ class UPigAnimInstance final : public UEnemyAnimInstanceBase
 	MY_GENERATE_BODY(UPigAnimInstance)
 
 	UPigAnimInstance();
+	~UPigAnimInstance() override = default;
+};
+
+class UDragonAnimInstance final : public UEnemyAnimInstanceBase
+{
+	MY_GENERATE_BODY(UDragonAnimInstance)
+
+	UDragonAnimInstance();
+	~UDragonAnimInstance() override = default;
 };

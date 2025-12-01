@@ -24,9 +24,9 @@ AEnemyBase::AEnemyBase()
 		CharacterMovement->Braking = 4096;
 	}
 
-	CapsuleComp->SetHalfHeight(30.0f);
-	CapsuleComp->SetRadius(30.0f);
-	SkeletalMeshComponent->SetRelativeLocation({0,-60,0});
+	CapsuleComp->SetHalfHeight(50.0f);
+	CapsuleComp->SetRadius(50.0f);
+	SkeletalMeshComponent->SetRelativeLocation({0,-100,0});
 	SkeletalMeshComponent->SetRelativeRotation(XMFLOAT3{0,180,0});
 	
 	MotionWarpingComponent = std::static_pointer_cast<UMotionWarpingComponent>(CreateDefaultSubobject("MotionWarpingComp", "UMotionWarpingComponent"));
@@ -198,22 +198,22 @@ AWolf::AWolf()
 	EnemyPower = 75.0f;
 }
 
-void AWolf::BeginPlay()
-{
-	AEnemyBase::BeginPlay();
-
-	const FTransform& CurTransform = RootComponent->GetComponentTransform();
-	for (int i = 0; i < 5; ++i)
-	{
-		FTransform NewTransform = CurTransform;
-		NewTransform.Translation = NewTransform.Translation + XMFLOAT3{500.0f * MyMath::FRand() - 250.0f, 0.0f,500.0f * MyMath::FRand() - 250.0f};
-		GetWorld()->SpawnActor("APig", NewTransform);
-	}
-	
-}
 APig::APig()
 {
 	SkeletalMeshName = "SK_Pig";
 	AnimInstanceName = "UPigAnimInstance";
 	BasicAttackData = FAttackData{XMFLOAT3{100,30,100}, 1.0f, 0.0f, 0.0f, true};
+}
+
+ADragon::ADragon()
+{
+	CapsuleComp->SetHalfHeight(250.0f);
+	CapsuleComp->SetRadius(250.0f);
+	SkeletalMeshComponent->SetRelativeLocation({0,-500,0});
+	SkeletalMeshComponent->SetRelativeRotation(XMFLOAT3{0,180,0});
+
+	SkeletalMeshName = "SK_Dragon";
+	AnimInstanceName = "UDragonAnimInstance";
+	BasicAttackData = FAttackData{XMFLOAT3{100,30,100}, 1.0f, 0.0f, 0.0f, true};
+	EnemyPower = 150.0f;
 }

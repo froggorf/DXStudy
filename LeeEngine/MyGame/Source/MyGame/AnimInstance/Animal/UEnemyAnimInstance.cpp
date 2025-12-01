@@ -63,3 +63,9 @@ UPigAnimInstance::UPigAnimInstance()
 	BS_LocomotionName = "BS_Pig_Locomotion";
 	AttackMontageName = "AM_Pig_Attack";
 }
+
+UDragonAnimInstance::UDragonAnimInstance()
+{
+	BS_LocomotionName = "BS_Dragon_Locomotion";
+	AttackMontageName = "AM_Dragon_Attack";
+}

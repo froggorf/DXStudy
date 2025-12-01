@@ -521,6 +521,13 @@ void UEngine::SetInputMode(EInputMode NewInputMode)
 
 void UEngine::SetMouseLock(EMouseLockMode NewLockMode)
 {
+	if (LockMouseMode == NewLockMode)
+	{
+		return; 
+	}
+
+	LockMouseMode = NewLockMode;
+
 	if (EMouseLockMode::DoNotLock == NewLockMode)
 	{
 		ReleaseMouse();

@@ -45,6 +45,7 @@
     <ClCompile Include="Source\Engine\Class\Camera\UCameraComponent.cpp" />
     <ClCompile Include="Source\Engine\Class\Curve\UCurveBase.cpp" />
     <ClCompile Include="Source\Engine\Class\Framework\ACharacter.cpp" />
+    <ClCompile Include="Source\Engine\Class\Framework\AGameMode.cpp" />
     <ClCompile Include="Source\Engine\Class\Framework\APlayerController.cpp" />
     <ClCompile Include="Source\Engine\Class\Framework\UPlayerInput.cpp" />
     <ClCompile Include="Source\Engine\Class\Framework\USpringArmComponent.cpp" />
@@ -210,6 +211,7 @@
     <ClInclude Include="Source\Engine\Class\Camera\UCameraComponent.h" />
     <ClInclude Include="Source\Engine\Class\Curve\UCurveBase.h" />
     <ClInclude Include="Source\Engine\Class\Framework\ACharacter.h" />
+    <ClInclude Include="Source\Engine\Class\Framework\AGameMode.h" />
     <ClInclude Include="Source\Engine\Class\Framework\APlayerController.h" />
     <ClInclude Include="Source\Engine\Class\Framework\UPlayerInput.h" />
     <ClInclude Include="Source\Engine\Class\Framework\USpringArmComponent.h" />

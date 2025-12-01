@@ -6,7 +6,7 @@
 	"Func" : "VS_Skeletal"
     },
     "PixelShader" : {
-	"FilePath" : "/Shader/Gideon.fx",
+	"FilePath" : "/Shader/PS_PBR.fx",
 	"Func": "PBR_PS_Monster_Base"
     },
     "TextureParams" : [ "", "", "", ""],

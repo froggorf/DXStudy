@@ -1,0 +1,7 @@
+{
+    "Class": "USkeletalMesh",
+    "Name": "SK_Dragon",
+    "ModelData": "/Content/Resource/MyGame/Enemy/SK_Dragon.FBX",
+    "DefaultPoseAnimData" : "/Content/Resource/MyGame/Animation/Dragon/Dragon_DefaultPose.FBX",
+    "Material" : [ "M_Dragon" ]
+}

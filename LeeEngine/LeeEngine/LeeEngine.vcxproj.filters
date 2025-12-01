@@ -498,6 +498,9 @@
     <ClCompile Include="Source\Engine\AI\FBT_Tick.cpp">
       <Filter>Source\Engine\AI</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Class\Framework\AGameMode.cpp">
+      <Filter>Source\Engine\Class\Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DirectX\d3dApp.h">
@@ -880,6 +883,9 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\AI\FBT_Tick.h">
       <Filter>Source\Engine\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Class\Framework\AGameMode.h">
+      <Filter>Source\Engine\Class\Framework</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

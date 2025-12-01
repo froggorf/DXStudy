@@ -156,5 +156,5 @@ private:
 	float EngineTickRate = 1.0f;
 
 	EInputMode InputMode = EInputMode::InputMode_GameOnly;
-	EInputMode LockMouseMode = EInputMode::InputMode_GameUI;
+	EMouseLockMode LockMouseMode = EMouseLockMode::DoNotLock;
 };

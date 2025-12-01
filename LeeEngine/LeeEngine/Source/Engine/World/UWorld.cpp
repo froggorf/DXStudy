@@ -210,6 +210,15 @@ std::shared_ptr<AActor> UWorld::SpawnActor(const std::string& ClassName, const F
 	}
 	return nullptr;
 }
+
+std::shared_ptr<AGameMode> UWorld::GetGameMode() const
+{
+	if (const std::shared_ptr<ULevel>& PersistentLevel = GetPersistentLevel())
+	{
+		return PersistentLevel->GetGameMode();
+	}
+	return nullptr;
+}
 #if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
 
 

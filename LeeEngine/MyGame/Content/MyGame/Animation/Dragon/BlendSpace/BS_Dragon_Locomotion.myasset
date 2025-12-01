@@ -1,0 +1,12 @@
+{
+    "Class": "UBlendSpace",
+    "Name": "BS_Dragon_Locomotion",
+    "Skeleton": "SK_Dragon",
+    "HorizontalValue" : [ 0.0, 0.0 ],
+    "VerticalValue" : [ 0.0, 500.0 ],
+    "Points" : [ 
+	{ "Position": [ 0.0, 0.0 ], "AnimClipName": "AS_Dragon_Idle" },
+	{ "Position": [ 0.0, 150.0 ], "AnimClipName": "AS_Dragon_Walk" },
+	{ "Position": [ 0.0, 450.0 ], "AnimClipName": "AS_Dragon_Run" }
+     ]
+}

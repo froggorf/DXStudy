@@ -125,5 +125,6 @@
     ],
 
     "Class": "ULevel",
-    "Name": "MyGameLevel"
+    "Name": "MyGameLevel",
+    "GameModeClass": "ATestGameMode"
 }

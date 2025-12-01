@@ -298,6 +298,9 @@
     <ClCompile Include="Source\MyGame\AnimInstance\Animal\UEnemyAnimInstance.cpp">
       <Filter>Source\MyGame\AnimInstance\Animal</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Core\ATestGameMode.cpp">
+      <Filter>Source\MyGame\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -446,6 +449,9 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\AnimInstance\Animal\UEnemyAnimInstance.h">
       <Filter>Source\MyGame\AnimInstance\Animal</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Core\ATestGameMode.h">
+      <Filter>Source\MyGame\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

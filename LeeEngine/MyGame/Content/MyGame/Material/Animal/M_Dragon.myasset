@@ -1,0 +1,16 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_Dragon",
+    "VertexShader" : {
+	"FilePath" : "/Shader/PBR.fx",
+	"Func" : "VS_Skeletal"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/PS_PBR.fx",
+	"Func": "PBR_PS_Dragon"
+    },
+    "TextureParams" : [ "T_Dragon_Color", "T_Dragon_Normal", "T_Dragon_RAOM", "T_Dragon_Emissive"],
+    "BlendMode": "Deferred",
+    "TwoSided" : 0
+	
+}

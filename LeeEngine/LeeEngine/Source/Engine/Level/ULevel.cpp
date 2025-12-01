@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "ULevel.h"
 
+#include "Engine/Class/Framework/AGameMode.h"
 #include "Engine/GameFramework/AActor.h"
 #include "Engine/World/UWorld.h"
 
@@ -18,6 +19,7 @@ ULevel::ULevel()
 ULevel::ULevel(const ULevel* LevelInstance)
 {
 	OwningWorld = GEngine->GetCurrentWorld();
+
 	Rename(LevelInstance->GetName());
 
 	nlohmann::basic_json<> ActorsData = LevelInstance->LevelData["Actor"];
@@ -26,13 +28,27 @@ ULevel::ULevel(const ULevel* LevelInstance)
 	for (size_t i = 0; i < ActorCount; ++i)
 	{
 		nlohmann::basic_json<>  ActorData = ActorsData[i];
-		std::string             ClassName = ActorData["Class"];
+		const std::string& ClassName = ActorData["Class"];
 		std::shared_ptr<AActor> NewActor  = std::dynamic_pointer_cast<AActor>(GetDefaultObject(ClassName)->CreateInstance());
 		if (NewActor)
 		{
 			NewActor->LoadDataFromFileData(ActorData);
-			Actors.push_back(NewActor);
+			Actors.emplace_back(NewActor);
 		}
+	}
+
+	// 게임모드에 대해서도 생성해줘야함
+	auto It = LevelInstance->LevelData.find("GameModeClass");
+	if (It != LevelInstance->LevelData.end())
+	{
+		const std::string& GameModeClassName = It.value();
+		GameModeActor = std::dynamic_pointer_cast<AGameMode>(GetDefaultObject(GameModeClassName)->CreateInstance());
+		
+	}
+
+	if (!GameModeActor)
+	{
+		GameModeActor = std::dynamic_pointer_cast<AGameMode>(GetDefaultObject("AGameMode")->CreateInstance());
 	}
 }
 
@@ -58,6 +74,11 @@ void ULevel::Register()
 	FScene::InitSceneData_GameThread();
 #endif
 
+	if (GameModeActor)
+	{
+		GameModeActor->Register();
+	}
+
 	for (const auto& Actor : Actors)
 	{
 		Actor->Register();
@@ -67,6 +88,11 @@ void ULevel::Register()
 void ULevel::BeginPlay()
 {
 	UObject::BeginPlay();
+
+	if (GameModeActor)
+	{
+		GameModeActor->BeginPlay();
+	}
 
 	for (size_t Index = 0; Index < Actors.size(); ++Index)
 	{
@@ -89,7 +115,11 @@ void ULevel::TickLevel(float DeltaSeconds)
 		}
 
 	}
-	
+
+	if (GameModeActor)
+	{
+		GameModeActor->Tick(DeltaSeconds);
+	}
 
 	for (const auto& Actor : Actors)
 	{
@@ -160,7 +190,7 @@ void ULevel::SaveDataFromAssetToFile(nlohmann::json& Json)
 		nlohmann::json ActorJson;
 		Actor->SaveDataFromAssetToFile(ActorJson);
 
-		Json["Actor"].push_back(ActorJson);
+		Json["Actor"].emplace_back(ActorJson);
 	}
 }
 

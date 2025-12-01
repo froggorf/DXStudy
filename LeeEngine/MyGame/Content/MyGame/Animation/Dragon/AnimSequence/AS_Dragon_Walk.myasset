@@ -1,0 +1,7 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_Dragon_Walk",
+    "Skeleton": "SK_Dragon",
+    "AnimationDataPath": "/Content/Resource/MyGame/Animation/Dragon/WalkAnim.FBX",
+    "RootMotion": 0
+}

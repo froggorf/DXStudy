@@ -92,9 +92,12 @@ void FDecalInfo::Render()
 		}
 		BoxSceneProxy = std::make_shared<FStaticMeshSceneProxy>(0,0,BoxMesh);
 	}
+	
 
 	BoxSceneProxy->SetSceneProxyWorldTransform(Transform);
 	DecalMaterial->Binding();
+	DecalMaterial->BindingMaterialInstanceUserParam();
+
 	const std::shared_ptr<UTexture>& PositionTargetTexture = UTexture::GetTextureCache("PositionTargetTex");
 	GDirectXDevice->GetDeviceContext()->PSSetShaderResources(10,1,PositionTargetTexture->GetSRV().GetAddressOf());
 	BoxSceneProxy->Draw();

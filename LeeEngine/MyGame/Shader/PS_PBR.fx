@@ -252,8 +252,6 @@ Deferred_PS_OUT PBR_PS_Monster_Base(PBR_PS_INPUT input) : SV_TARGET
 	int SpecularTexBind = bTexBind_0_3.w;
 	float specular = SpecularTexBind ? SpecularTexture.Sample(DefaultSampler, input.UV).r : DefaultSpecular;
 
-	
-
 	Deferred_PS_OUT output = (Deferred_PS_OUT) 0.f;
 
 	output.Color = albedo;
@@ -262,6 +260,36 @@ Deferred_PS_OUT PBR_PS_Monster_Base(PBR_PS_INPUT input) : SV_TARGET
 	output.Normal = float4(N, 1.f);
 	output.Position = float4(input.ViewPosition, 1.f);
 	output.Emissive = float4(0.f, 0.f, 0.f, 1.f);
+
+	return output;
+}
+
+Deferred_PS_OUT PBR_PS_Dragon(PBR_PS_INPUT Input) :  SV_TARGET
+{
+	int AlbedoTexBind = bTexBind_0_3.x;
+	float4 DefaultAlbedo = float4(1.0f, 0.0f, 1.0f, 1.0f);
+	float4 albedo = AlbedoTexBind ? AlbedoTexture.Sample(DefaultSampler, Input.UV).rgba : DefaultAlbedo;
+	albedo.a = 1.0f;
+	
+	int MRAOTexBind = bTexBind_0_3.z;
+	float4 RAOMSampleValue = MetallicTexture.Sample(DefaultSampler, Input.UV);
+	float roughness = MRAOTexBind ? RAOMSampleValue.r : 0.5f;
+	float ao = MRAOTexBind ? RAOMSampleValue.g : 1.0f;
+	float metallic = MRAOTexBind ? RAOMSampleValue.b : 0.2f;
+	float specular = 0.5f;
+
+	int EmissiveTexBind = bTexBind_0_3.w;
+	// NOTE :  Texture2D SpecularTexture : register(t3);
+	float3 EmissiveColor = EmissiveTexBind ? SpecularTexture.Sample(DefaultSampler, Input.UV) : float3(0.0f, 0.0f, 0.0f);
+	EmissiveColor *= 2.0f;
+
+	Deferred_PS_OUT output = (Deferred_PS_OUT) 0.f;
+	output.Color = albedo;
+	output.PBRData = float4(metallic, specular, roughness, ao);
+	float3 N = GetNormalFromMap(Input);
+	output.Normal = float4(N, 1.f);
+	output.Position = float4(Input.ViewPosition, 1.f);
+	output.Emissive = float4(EmissiveColor , 1.f);
 
 	return output;
 }

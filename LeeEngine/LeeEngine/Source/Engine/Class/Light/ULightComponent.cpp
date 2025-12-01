@@ -154,6 +154,14 @@ void UDecalComponent::AddDecalInfo()
 	DecalMaterial->SetRasterizerType(ERasterizerType::RT_CullFront);
 	DecalMaterial->SetBlendStateType(EBlendStateType::BST_Decal);
 	DecalMaterial->SetDepthStencilState(EDepthStencilStateType::NO_TEST_NO_WRITE);
-	DecalInfo.DecalMaterial = DecalMaterial;
+	if (DecalMaterial->IsMaterialInstance())
+	{
+		DecalInfo.DecalMaterial = std::dynamic_pointer_cast<UMaterialInstance>(DecalMaterial)->GetInstance();
+	}
+	else
+	{
+		DecalInfo.DecalMaterial = DecalMaterial;	
+	}
+	
 	GEngine->GetCurrentWorld()->AddCurrentFrameDecalInfo(DecalInfo);
 }

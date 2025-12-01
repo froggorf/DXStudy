@@ -1,0 +1,7 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_Dragon_Land",
+    "Skeleton": "SK_Dragon",
+    "AnimationDataPath": "/Content/Resource/MyGame/Animation/Dragon/LandAnim.FBX",
+    "RootMotion": 1
+}

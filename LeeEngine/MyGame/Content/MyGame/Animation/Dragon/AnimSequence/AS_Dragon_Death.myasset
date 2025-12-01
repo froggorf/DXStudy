@@ -1,0 +1,7 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_Dragon_Death",
+    "Skeleton": "SK_Dragon",
+    "AnimationDataPath": "/Content/Resource/MyGame/Animation/Dragon/DieAnim.FBX",
+    "RootMotion": 1
+}
