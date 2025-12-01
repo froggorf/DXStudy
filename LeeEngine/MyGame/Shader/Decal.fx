@@ -2,7 +2,7 @@
 #define _DECAL
 
 #include "Global.fx"
-
+#include "MaterialNode.fx"
 
 SamplerState samLinear : register( s0 );
 
@@ -76,6 +76,116 @@ PS_OUT PS_Decal(VS_OUT _in)
 	{
 		output.Color = DecalColor;
 		output.Emissive = float4(0.0f,0.0f,0.0f,0.0f);
+	}
+
+	return output;
+}
+
+cbuffer cbSkillRange : register(b4)
+{
+	float Progress; // 스킬 준비 진행도 (0~1)
+	float BorderThickness; // 테두리 두께
+	
+	// 현재 구현의 편의를 위해 float 만 가능함
+	float BaseColorR;
+	float BaseColorG;
+	float BaseColorB;
+	float ActiveColorR;
+	float ActiveColorG;
+	float ActiveColorB;
+	//float4 BaseColor; // 기본 색상
+	//float4 ActiveColor; // 활성화 색상
+}
+
+
+PS_OUT PS_SkillRangeDecal(VS_OUT _in)
+{
+	PS_OUT output = (PS_OUT) 0.f;
+
+	float2 vScreenUV = _in.Position.xy / gResolution;
+	float4 vViewPos = POSITION_TARGET.Sample(samLinear, vScreenUV);
+
+    // 해당 영역에 존재하는 물체가 없다
+	if (vViewPos.x == 0.f && vViewPos.y == 0.f && vViewPos.z == 0.f)
+	{
+		discard;
+	}
+
+	float3 vLocalPos = mul(mul(float4(vViewPos.xyz, 1.f), gViewInv), WorldInv).xyz;
+	if (vLocalPos.x < -0.5f || 0.5f < vLocalPos.x 
+    || vLocalPos.y < -0.5f || 0.5f < vLocalPos.y 
+    || vLocalPos.z < -0.5f || 0.5f < vLocalPos.z)
+	{
+		discard;
+	}
+
+	float Radius = 0.45f;
+	float4 BaseColor = float4(BaseColorR, BaseColorG, BaseColorB, 1.0f); // 주황색
+	float4 ActiveColor = float4(ActiveColorR, ActiveColorG, ActiveColorB, 1.0f); // 빨간색
+	float4 BorderColor = float4(1.0, 1.0, 1.0, 1.0f); // 노란색 테두리
+
+	float2 UV = float2(vLocalPos.x + 0.5f, 1.f - (vLocalPos.z + 0.5f));
+	float2 Center = float2(0.5f, 0.5f);
+
+    // 거리 계산
+	float Dist = distance(UV, Center);
+    
+    // 원형 영역 바깥은 완전히 렌더링하지 않음
+	if (Dist > Radius)
+	{
+		discard;
+	}
+    
+    // 테두리 마스크 계산 - 다른 접근 방식
+    // 1. 원의 가장자리에 가까울수록 1, 멀어질수록 0
+	float edgeDistance = Radius - Dist;
+	float BorderMask = 1.0 - smoothstep(0.0, BorderThickness, edgeDistance);
+    
+    // 진행도에 따른 채움 효과 - Radius까지 완전히 채워지도록
+	float FillRadius = Progress * Radius;
+	float FillMask = step(Dist, FillRadius);
+    
+    // 기본 색상 (주황색)과 활성 색상(빨간색) 혼합
+	float4 FillColor = lerp(BaseColor, ActiveColor, FillMask);
+    
+    // 테두리 효과 - 노란색 그라데이션
+	float BorderGlow = (sin(gTime * 5.0) * 0.5 + 0.5) * 0.3; // 시간에 따른 반짝임
+    
+    // 노란색 테두리로 그라데이션 효과
+	float NormalizedDist = Dist / Radius;
+	float gradientPower = 2.0; // 그라데이션 강도
+	float gradientEffect = pow(NormalizedDist, gradientPower);
+    
+    // 최종 색상 계산
+	float4 FinalColor;
+    
+    // 테두리 부분은 노란색 그라데이션
+	if (BorderMask > 0.01)
+	{
+        // 테두리 영역
+		FinalColor = lerp(FillColor, BorderColor, BorderMask * (0.7 + BorderGlow));
+	}
+	else
+	{
+        // 내부 영역
+		FinalColor = FillColor;
+	}
+    
+    // 발광 효과 설정
+	if (gDecalIsLight)
+	{
+        // 발광 효과로 처리
+		output.Emissive = FinalColor;
+		output.Color = float4(0, 0, 0, 0);
+	}
+	else
+	{
+        // 일반 색상으로 처리
+		output.Color = FinalColor;
+        
+        // 테두리만 발광 효과
+		float emissiveIntensity = BorderMask * (0.5 + BorderGlow);
+		output.Emissive = float4(BorderColor.rgb * emissiveIntensity, 0.0f);
 	}
 
 	return output;

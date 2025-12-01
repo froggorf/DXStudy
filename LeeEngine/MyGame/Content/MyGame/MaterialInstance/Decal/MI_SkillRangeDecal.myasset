@@ -1,0 +1,16 @@
+{
+    "Class": "UMaterialInstance",
+    "Name": "MI_SkillRangeDecal",
+    "ParentMaterial" : "M_SkillRangeDecal",
+    "OverrideParams" : [
+	{"Name": "Progress", 		"Type" : "float", "Value" : 0.0},
+	{"Name": "BorderThickness", 	"Type" : "float", "Value" : 0.01},
+	{"Name": "BaseColorR",		"Type" : "float", "Value" : 0.4},
+	{"Name": "BaseColorG", 	"Type" : "float", "Value" : 0.05},
+	{"Name": "BaseColorB", 	"Type" : "float", "Value" : 0.0},
+	{"Name": "ActiveColorR", 	"Type" : "float", "Value" : 0.3},
+	{"Name": "ActiveColorG", 	"Type" : "float", "Value" : 0.0},
+	{"Name": "ActiveColorB", 	"Type" : "float", "Value" : 0.0}
+
+    ]
+}
