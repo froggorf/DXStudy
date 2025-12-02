@@ -60,7 +60,7 @@ class UDecalComponent : public USceneComponent
 
 public:
 	const std::shared_ptr<UMaterialInterface>& GetDecalMaterial() const {return DecalMaterial;}
-	void SetDecalMaterial(const std::shared_ptr<UMaterialInterface>& NewDecalMaterial) { DecalMaterial = NewDecalMaterial; }
+	void SetDecalMaterial(const std::shared_ptr<UMaterialInterface>& NewDecalMaterial); 
 	void SetIsLight(bool NewIsLight) { bIsLight = NewIsLight;}
 	void SetActive(bool NewActive) { bIsActive = NewActive;}
 

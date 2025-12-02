@@ -34,7 +34,7 @@ ATestCube2::ATestCube2()
 		Decal->SetupAttachment(GetRootComponent());
 		Decal->SetDecalMaterial(DecalMaterial);
 		Decal->SetIsLight(true);
-		Decal->SetRelativeScale3D({300,10,300.0f});
+		Decal->SetRelativeScale3D({500,10,500});
 
 	}
 
@@ -44,7 +44,7 @@ ATestCube2::ATestCube2()
 		PizzaDecal1->SetupAttachment(GetRootComponent());
 		PizzaDecal1->SetDecalMaterial(DecalMaterial);
 		PizzaDecal1->SetIsLight(true);
-		PizzaDecal1->SetRelativeScale3D({300,10,300.0f});
+		PizzaDecal1->SetRelativeScale3D({500,10,500});
 		PizzaDecal1->SetRelativeLocation({0,0,-500});
 
 	}
@@ -54,7 +54,7 @@ ATestCube2::ATestCube2()
 		PizzaDecal2->SetupAttachment(GetRootComponent());
 		PizzaDecal2->SetDecalMaterial(DecalMaterial);
 		PizzaDecal2->SetIsLight(true);
-		PizzaDecal2->SetRelativeScale3D({300,10,300.0f});
+		PizzaDecal2->SetRelativeScale3D({500,10,500});
 		PizzaDecal2->SetRelativeLocation({0,0,-1000});
 
 	}
@@ -89,6 +89,7 @@ void ATestCube2::BeginPlay()
 	AActor::BeginPlay();
 
 	PizzaDecal1->GetDecalMaterial()->SetScalarParam("HalfAngleDeg", 30.0f);
+	PizzaDecal2->GetDecalMaterial()->SetScalarParam("HalfAngleDeg", 60.0f);
 }
 
 void ATestCube2::Tick(float DeltaSeconds)
@@ -104,6 +105,16 @@ void ATestCube2::Tick(float DeltaSeconds)
 	}
 
 	Decal->GetDecalMaterial()->SetScalarParam("Progress", Value);
-	//PizzaDecal1->GetDecalMaterial()->SetScalarParam("Progress", Value);
-	//PizzaDecal2->GetDecalMaterial()->SetScalarParam("Progress", Value);
+
+	PizzaDecal1->GetDecalMaterial()->SetScalarParam("Progress", Value);
+
+	static float Angle = 0.0f;
+	Angle = fmod(Angle + DeltaSeconds * 30, 360.0f);
+	
+	static XMFLOAT3 Forward = {0,0,1};
+	XMFLOAT3 Rotate;
+	XMStoreFloat3(&Rotate, XMVector3Rotate(XMLoadFloat3(&Forward), XMQuaternionRotationRollPitchYaw(0, XMConvertToRadians(Angle), 0)));
+	PizzaDecal2->GetDecalMaterial()->SetScalarParam("ForwardX", Rotate.x);
+	PizzaDecal2->GetDecalMaterial()->SetScalarParam("ForwardZ", Rotate.z);
+	PizzaDecal2->GetDecalMaterial()->SetScalarParam("Progress", Value);
 }

@@ -123,6 +123,23 @@ void ULightComponent::AddLightInfo()
 }
 
 
+void UDecalComponent::SetDecalMaterial(const std::shared_ptr<UMaterialInterface>& NewDecalMaterial)
+{
+	if (!NewDecalMaterial || NewDecalMaterial == DecalMaterial)
+	{
+		return;
+	}
+
+	if (NewDecalMaterial->IsMaterialInstance())
+	{
+		DecalMaterial = std::static_pointer_cast<UMaterialInstance>(NewDecalMaterial)->GetInstance();
+	}
+	else
+	{
+		DecalMaterial = NewDecalMaterial;
+	}
+}
+
 void UDecalComponent::TickComponent(float DeltaSeconds)
 {
 	USceneComponent::TickComponent(DeltaSeconds);
