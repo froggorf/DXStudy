@@ -10,7 +10,10 @@
 	{"Name": "BaseColorB", 	"Type" : "float", "Value" : 0.0},
 	{"Name": "ActiveColorR", 	"Type" : "float", "Value" : 0.3},
 	{"Name": "ActiveColorG", 	"Type" : "float", "Value" : 0.0},
-	{"Name": "ActiveColorB", 	"Type" : "float", "Value" : 0.0}
+	{"Name": "ActiveColorB", 	"Type" : "float", "Value" : 0.0},
+	{"Name": "HalfAngleDeg", 	"Type" : "float", "Value" : 180.0},
+	{"Name": "ForwardX", 		"Type" : "float", "Value" : 0.0},
+	{"Name": "ForwardZ", 		"Type" : "float", "Value" : 1.0}
 
     ]
 }

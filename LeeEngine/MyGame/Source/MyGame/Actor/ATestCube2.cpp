@@ -37,6 +37,27 @@ ATestCube2::ATestCube2()
 		Decal->SetRelativeScale3D({300,10,300.0f});
 
 	}
+
+	{
+		PizzaDecal1 =std::make_shared<UDecalComponent>();
+		const std::shared_ptr<UMaterialInterface>& DecalMaterial = UMaterial::GetMaterialCache("MI_SkillRangeDecal");
+		PizzaDecal1->SetupAttachment(GetRootComponent());
+		PizzaDecal1->SetDecalMaterial(DecalMaterial);
+		PizzaDecal1->SetIsLight(true);
+		PizzaDecal1->SetRelativeScale3D({300,10,300.0f});
+		PizzaDecal1->SetRelativeLocation({0,0,-500});
+
+	}
+	{
+		PizzaDecal2 =std::make_shared<UDecalComponent>();
+		const std::shared_ptr<UMaterialInterface>& DecalMaterial = UMaterial::GetMaterialCache("MI_SkillRangeDecal");
+		PizzaDecal2->SetupAttachment(GetRootComponent());
+		PizzaDecal2->SetDecalMaterial(DecalMaterial);
+		PizzaDecal2->SetIsLight(true);
+		PizzaDecal2->SetRelativeScale3D({300,10,300.0f});
+		PizzaDecal2->SetRelativeLocation({0,0,-1000});
+
+	}
 }
 
 void ATestCube2::Register()
@@ -67,33 +88,22 @@ void ATestCube2::BeginPlay()
 {
 	AActor::BeginPlay();
 
+	PizzaDecal1->GetDecalMaterial()->SetScalarParam("HalfAngleDeg", 30.0f);
 }
 
 void ATestCube2::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
 
-	static bool bFill = true;
 	static float Value = 0.0f;
-	if (bFill)
-	{
-		Value += DeltaSeconds;
-	}
-	else
-	{
-		Value -= DeltaSeconds;
-	}
+	Value += DeltaSeconds;
 	
 	if (Value >= 1.0f)
 	{
-		bFill = !bFill;
-		Value = 1.0f;
-	}
-	else if (Value <= 0.0f)
-	{
-		bFill = !bFill;
 		Value = 0.0f;
 	}
 
 	Decal->GetDecalMaterial()->SetScalarParam("Progress", Value);
+	//PizzaDecal1->GetDecalMaterial()->SetScalarParam("Progress", Value);
+	//PizzaDecal2->GetDecalMaterial()->SetScalarParam("Progress", Value);
 }

@@ -93,10 +93,36 @@ cbuffer cbSkillRange : register(b4)
 	float ActiveColorR;
 	float ActiveColorG;
 	float ActiveColorB;
-	//float4 BaseColor; // 기본 색상
-	//float4 ActiveColor; // 활성화 색상
+
+	
+	// 부채꼴의 반각(Ded)
+	float HalfAngleDeg;
+	// ForwardX/Z 를 통해서 부채꼴의 정면을 구함
+	float ForwardX;
+	float ForwardZ;
 }
 
+
+// 부채꼴 범위 안에 있는지 확인하는 용도
+bool IsInsideFanShape(float2 UV, float2 Center, float Radius, float2 Forward, float HalfAngleRad)
+{
+	float2 Dir = UV - Center;
+	float Dist = length(Dir);
+    
+    // 반경 밖이면 제외
+	if (Dist > Radius)
+		return false;
+    
+    // 정규화된 방향
+	float2 NormalizedDir = normalize(Dir);
+    
+    // Forward 벡터와 현재 방향 사이의 각도 계산
+	float DotProduct = dot(NormalizedDir, normalize(Forward));
+	float Angle = acos(DotProduct);
+    
+    // HalfAngle 내부에 있으면 true
+	return (Angle <= HalfAngleRad);
+}
 
 PS_OUT PS_SkillRangeDecal(VS_OUT _in)
 {
@@ -132,6 +158,14 @@ PS_OUT PS_SkillRangeDecal(VS_OUT _in)
     
     // 원형 영역 바깥은 완전히 렌더링하지 않음
 	if (Dist > Radius)
+	{
+		discard;
+	}
+
+	// 부채꼴 내부인지 확인
+	float2 Forward = normalize(float2(ForwardX, ForwardZ));
+	float HalfAngleRad = radians(HalfAngleDeg);
+	if (!IsInsideFanShape(UV, Center, Radius, Forward, HalfAngleRad))
 	{
 		discard;
 	}
