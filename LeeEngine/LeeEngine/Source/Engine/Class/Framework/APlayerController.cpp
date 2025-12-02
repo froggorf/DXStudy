@@ -107,6 +107,11 @@ void AAIController::Tick(float DeltaSeconds)
 void AAIController::SetBehaviorTree(const std::shared_ptr<UBehaviorTree>& NewBT)
 {
 	BehaviorTree = NewBT;
+
+	if (!BehaviorTree->IsRegister())
+	{
+		BehaviorTree->Register();
+	}
 }
 
 

@@ -4,6 +4,7 @@ C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\ATestActor2.cpp;C:\Proje
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\ATestCube.cpp;C:\Project\DXStudy\LeeEngine\Executable\ATestCube.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\ATestCube2.cpp;C:\Project\DXStudy\LeeEngine\Executable\ATestCube2.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\Damage\AFloatingDamageActor.cpp;C:\Project\DXStudy\LeeEngine\Executable\AFloatingDamageActor.obj
+C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\Decal\ARangeDecalActor.cpp;C:\Project\DXStudy\LeeEngine\Executable\ARangeDecalActor.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\Gideon\AGideonFireBall.cpp;C:\Project\DXStudy\LeeEngine\Executable\AGideonFireBall.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\Gideon\AGideonIceStorm.cpp;C:\Project\DXStudy\LeeEngine\Executable\AGideonIceStorm.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\Gideon\AGideonLightning.cpp;C:\Project\DXStudy\LeeEngine\Executable\AGideonLightning.obj

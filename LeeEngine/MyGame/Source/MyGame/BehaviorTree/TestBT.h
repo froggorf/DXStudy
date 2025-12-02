@@ -1,6 +1,9 @@
 #pragma once
 #include "Engine/AI/FBTNode.h"
 
+class ARangeDecalActor;
+class ADragon;
+
 enum class EBlackBoardValueCheckType
 {
 	Equal, NotEqual,
@@ -166,4 +169,44 @@ public:
 
 	void OnConstruct() override;
 	
+};
+
+class FBTTask_DragonSkillCharging : public FBTTask
+{
+public:
+	void OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard) override;
+	EBTNodeResult Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard) override;
+
+	void SetChargingTime(float NewChargingTime) {ChargingTime = NewChargingTime;}
+
+private:
+	float CurrentChargingTime = 0.0f;
+	float ChargingTime = 1.0f;
+	bool bStartCharge = false;
+
+	std::weak_ptr<ADragon> OwnerDragon;
+	std::shared_ptr<ARangeDecalActor> ShowRangeActor;
+};
+
+class FBTTask_DragonUseSkill : public FBTTask
+{
+public:
+	void OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard) override;
+	EBTNodeResult Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard) override;
+	void FinishSkill() { bSkillFinish = true;}
+private:
+	std::weak_ptr<class ADragon> OwningDragon;
+	bool bSkillFinish = false;
+	bool bDoSkill = false;
+};
+
+
+class UDragonBT : public UBehaviorTree
+{
+	MY_GENERATE_BODY(UDragonBT)
+public:
+	UDragonBT();
+	~UDragonBT() override = default;
+
+	void OnConstruct() override;
 };

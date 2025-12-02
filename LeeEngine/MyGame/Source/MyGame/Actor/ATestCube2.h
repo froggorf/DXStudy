@@ -31,9 +31,6 @@ protected:
 
 	std::shared_ptr<UStaticMeshComponent> Ground;
 
-	std::shared_ptr<UDecalComponent> Decal;
-	std::shared_ptr<UDecalComponent> PizzaDecal1;
-	std::shared_ptr<UDecalComponent> PizzaDecal2;
 private:
 	std::shared_ptr<AAIController> AIController;
 

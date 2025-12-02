@@ -2,6 +2,8 @@
 #include "TestBT.h"
 
 #include "Engine/GameFramework/AActor.h"
+#include "Engine/World/UWorld.h"
+#include "MyGame/Actor/Decal/ARangeDecalActor.h"
 #include "MyGame/Character/Enemy/AEnemyBase.h"
 
 //bool FBTDecorator_BlackBoardValueCheck::Eval(const std::shared_ptr<FBlackBoard>& BlackBoard)
@@ -356,9 +358,162 @@ void UTestBT::OnConstruct()
 
 	}
 	
+}
+
+void FBTTask_DragonSkillCharging::OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard)
+{
+	FBTTask::OnEnterNode(BlackBoard);
+	bStartCharge = false;
+	CurrentChargingTime = 0.0f;
+
+	const std::shared_ptr<ADragon>& Dragon = std::dynamic_pointer_cast<ADragon>(BlackBoard->GetValue<FBlackBoardValueType_Object>("Owner"));
+	if (!Dragon)
+	{
+		return;
+	}
+
+	OwnerDragon = Dragon;
+
+	FTransform SpawnTransform;
+	SpawnTransform.Translation = Dragon->GetActorLocation();
+	float Radius = Dragon->GetFlameSkillRadius() * 2;
+	SpawnTransform.Scale3D = XMFLOAT3 {Radius, 5.0f, Radius};
+	static std::vector<ECollisionChannel> CollisionChannels;
+	if (CollisionChannels.empty())
+	{
+		CollisionChannels.reserve(static_cast<int>(ECollisionChannel::Count));
+		for (int i = 0; i < static_cast<int>(ECollisionChannel::Count); ++i)
+		{
+			ECollisionChannel Channel = static_cast<ECollisionChannel>(i);
+			if (Channel == ECollisionChannel::Player || Channel == ECollisionChannel::Enemy)
+			{
+				continue;
+			}
+			CollisionChannels.emplace_back(Channel);
+		}
+	}
+	FHitResult HitResult;
+	XMFLOAT3 Start = SpawnTransform.Translation;
+	XMFLOAT3 End = Start;
+	End.y -= 1000.0f;
+	if (GPhysicsEngine->LineTraceSingleByChannel(Start, End, CollisionChannels, HitResult))
+	{
+		SpawnTransform.Translation = HitResult.Location;
+	}
+	
+	if (!ShowRangeActor)
+	{
+		ShowRangeActor = std::dynamic_pointer_cast<ARangeDecalActor>(GEngine->GetWorld()->SpawnActor("ARangeDecalActor", SpawnTransform));
+	}
+
+	
+	ShowRangeActor->SetForward(Dragon->GetActorForwardVector())
+					->SetHalfAngleDeg(Dragon->GetFlameSkillHalfAngle());
+	
+}
+
+EBTNodeResult FBTTask_DragonSkillCharging::Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard)
+{
+	if (FBTTask::Tick(DeltaSeconds , BlackBoard) == EBTNodeResult::Fail)
+	{
+		return EBTNodeResult::Fail;
+	}
+
+	const std::shared_ptr<ADragon>& Dragon = OwnerDragon.lock();
+	if (!Dragon || !ShowRangeActor)
+	{
+		return EBTNodeResult::Fail;
+	}
+
+	// 차지 시작에 대한 함수를 실행해주고,
+	if (!bStartCharge)
+	{
+		bStartCharge = true;
+		if (!Dragon->StartSkillCharge())
+		{
+			return EBTNodeResult::Fail;
+		}
+	}
+
+	// 범위 장판 갱신
+	CurrentChargingTime += DeltaSeconds;
+	ShowRangeActor->SetProgress(CurrentChargingTime / ChargingTime);
+
+	if (CurrentChargingTime >= ChargingTime)
+	{
+		GEngine->GetWorld()->GetPersistentLevel()->DestroyActor(ShowRangeActor.get());
+		ShowRangeActor.reset();
+
+		return EBTNodeResult::Success;
+	}
+	else
+	{
+		return EBTNodeResult::Running;
+	}
+}
+
+void FBTTask_DragonUseSkill::OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard)
+{
+	FBTTask::OnEnterNode(BlackBoard);
+	bDoSkill = false;
+	bSkillFinish = false;
+
+	OwningDragon = std::dynamic_pointer_cast<ADragon>(BlackBoard->GetValue<FBlackBoardValueType_Object>("Owner"));
+}
+
+EBTNodeResult FBTTask_DragonUseSkill::Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard)
+{
+	if (FBTTask::Tick(DeltaSeconds , BlackBoard) == EBTNodeResult::Fail)
+	{
+		return EBTNodeResult::Fail;		
+	}
 
 
+	std::shared_ptr<ADragon> Dragon = OwningDragon.lock();
+	if (!Dragon)
+	{
+		MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Warning, "Not valid OwningActor / SharedPlayer");
+		return EBTNodeResult::Fail;
+	}
+
+	if (!bDoSkill)
+	{
+		bDoSkill = true;
+		Dragon->SkillChargeEnd(Delegate<>{this, &FBTTask_DragonUseSkill::FinishSkill});
+	}
 
 
+	if (bSkillFinish)
+	{
+		return EBTNodeResult::Success;
+	}
+	else
+	{
+		return EBTNodeResult::Running;
+	}
+}
+
+UDragonBT::UDragonBT()
+{
+}
+
+void UDragonBT::OnConstruct()
+{
+	UBehaviorTree::OnConstruct();
+
+	BlackBoard->SetValue<FBlackBoardValueType_Object>("Owner", nullptr);
+
+	std::shared_ptr<FBTSequencer> Sequencer = std::make_shared<FBTSequencer>();
+	BTRoot->AddChild(Sequencer);
+
+	{
+		std::shared_ptr<FBTTask_DragonSkillCharging> ChargingSkillTask = std::make_shared<FBTTask_DragonSkillCharging>();
+		ChargingSkillTask->SetChargingTime(5.0f);
+
+		std::shared_ptr<FBTTask_DragonUseSkill> UseSkillTask = std::make_shared<FBTTask_DragonUseSkill>();
+
+		Sequencer->AddChild(ChargingSkillTask);
+		Sequencer->AddChild(UseSkillTask);
+	}
 	
 }

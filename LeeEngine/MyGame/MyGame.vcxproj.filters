@@ -146,6 +146,9 @@
     <Filter Include="Source\MyGame\AnimInstance\Animal">
       <UniqueIdentifier>{e4ee2bd0-c648-4d16-83e5-1b2686478048}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\Actor\Decal">
+      <UniqueIdentifier>{4cb48653-7dac-4406-b8e6-c5772b8b6948}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -301,6 +304,9 @@
     <ClCompile Include="Source\MyGame\Core\ATestGameMode.cpp">
       <Filter>Source\MyGame\Core</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Actor\Decal\ARangeDecalActor.cpp">
+      <Filter>Source\MyGame\Actor\Decal</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -452,6 +458,9 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Core\ATestGameMode.h">
       <Filter>Source\MyGame\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Actor\Decal\ARangeDecalActor.h">
+      <Filter>Source\MyGame\Actor\Decal</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

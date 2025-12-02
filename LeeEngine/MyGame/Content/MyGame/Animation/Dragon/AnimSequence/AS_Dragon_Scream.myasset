@@ -3,5 +3,5 @@
     "Name": "AS_Dragon_Scream",
     "Skeleton": "SK_Dragon",
     "AnimationDataPath": "/Content/Resource/MyGame/Animation/Dragon/ScreamAnim.FBX",
-    "RootMotion": 1
+    "RootMotion": 0
 }

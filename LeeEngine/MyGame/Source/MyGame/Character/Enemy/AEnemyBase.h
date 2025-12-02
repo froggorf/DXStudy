@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Class/Framework/ACharacter.h"
+#include "MyGame/Actor/Decal/ARangeDecalActor.h"
 #include "MyGame/Component/Combat/UCombatBaseComponent.h"
 
 /*
@@ -34,6 +35,8 @@ class AEnemyBase : public ACharacter
 	void Death() override;
 
 	void Tick(float DeltaSeconds) override;
+
+	virtual void BindingBehaviorTree();
 
 
 protected:
@@ -86,4 +89,22 @@ class ADragon final : public AEnemyBase
 
 	ADragon();
 	~ADragon() override = default;
+
+	void Register() override;
+
+	void BindingBehaviorTree() override;
+
+	// 주기적으로 사용하는 스킬의 차지를 시작
+	bool StartSkillCharge();
+	// 스킬의 차지 종료 후 스킬을 사용하는 함수
+	void SkillChargeEnd(const Delegate<>& OnSkillMontagePlayEnd);
+
+	float GetFlameSkillHalfAngle() const {return FlameHalfAngle; }
+	float GetFlameSkillRadius() const {return FlameSkillRadius; }
+protected:
+	std::shared_ptr<UAnimMontage> AM_Dragon_Scream;
+	std::shared_ptr<UAnimMontage> AM_Dragon_Flame;
+	float FlameHalfAngle = 60.0f;
+	float FlameSkillRadius = 1500.0f;
+private:
 };

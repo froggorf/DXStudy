@@ -25,6 +25,7 @@
     <ClCompile Include="Source\MyGame\Actor\ATestCube.cpp" />
     <ClCompile Include="Source\MyGame\Actor\ATestCube2.cpp" />
     <ClCompile Include="Source\MyGame\Actor\Damage\AFloatingDamageActor.cpp" />
+    <ClCompile Include="Source\MyGame\Actor\Decal\ARangeDecalActor.cpp" />
     <ClCompile Include="Source\MyGame\Actor\Gideon\AGideonFireBall.cpp" />
     <ClCompile Include="Source\MyGame\Actor\Gideon\AGideonIceStorm.cpp" />
     <ClCompile Include="Source\MyGame\Actor\Gideon\AGideonLightning.cpp" />
@@ -77,6 +78,7 @@
     <ClInclude Include="Source\MyGame\Actor\ATestCube.h" />
     <ClInclude Include="Source\MyGame\Actor\ATestCube2.h" />
     <ClInclude Include="Source\MyGame\Actor\Damage\AFloatingDamageActor.h" />
+    <ClInclude Include="Source\MyGame\Actor\Decal\ARangeDecalActor.h" />
     <ClInclude Include="Source\MyGame\Actor\Gideon\AGideonFireBall.h" />
     <ClInclude Include="Source\MyGame\Actor\Gideon\AGideonIceStorm.h" />
     <ClInclude Include="Source\MyGame\Actor\Gideon\AGideonLightning.h" />

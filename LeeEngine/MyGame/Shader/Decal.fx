@@ -150,7 +150,8 @@ PS_OUT PS_SkillRangeDecal(VS_OUT _in)
 	float4 ActiveColor = float4(ActiveColorR, ActiveColorG, ActiveColorB, 1.0f); // 빨간색
 	float4 BorderColor = float4(1.0, 1.0, 1.0, 1.0f); // 노란색 테두리
 
-	float2 UV = float2(vLocalPos.x + 0.5f, 1.f - (vLocalPos.z + 0.5f));
+	// 월드 좌표는 Z+ 가 ForwardVector 이므로
+	float2 UV = float2(vLocalPos.x + 0.5f, vLocalPos.z + 0.5f);
 	float2 Center = float2(0.5f, 0.5f);
 
     // 거리 계산

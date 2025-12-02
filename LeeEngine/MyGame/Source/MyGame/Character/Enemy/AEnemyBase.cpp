@@ -77,17 +77,7 @@ void AEnemyBase::BeginPlay()
 	ACharacter::BeginPlay();
 
 	AIController = std::dynamic_pointer_cast<AAIController>(GetWorld()->SpawnActor("AAIController", FTransform{}));
-	if (AIController)
-	{
-		AIController->OnPossess(this);
-		std::shared_ptr<UTestBT> BT = std::make_shared<UTestBT>();
-		BT->Register();
-		BT->GetBlackBoard()->SetValue<FBlackBoardValueType_Object>("Owner", shared_from_this());
-
-		AIController->SetBehaviorTree(BT);
-
-		AIController->GetBehaviorTree()->GetBlackBoard()->SetValue<FBlackBoardValueType_Object>("Player", GetWorld()->GetPlayerController()->GetPlayerCharacter());		
-	}
+	BindingBehaviorTree();
 
 	// Enemy 콜리젼 채널로 변경
 	QueryCheckCapsuleComp->SetCollisionObjectType(ECollisionChannel::Enemy);
@@ -190,6 +180,21 @@ void AEnemyBase::Tick(float DeltaSeconds)
 	
 }
 
+void AEnemyBase::BindingBehaviorTree()
+{
+	if (AIController)
+	{
+		AIController->OnPossess(this);
+		std::shared_ptr<UTestBT> BT = std::make_shared<UTestBT>();
+		BT->Register();
+		BT->GetBlackBoard()->SetValue<FBlackBoardValueType_Object>("Owner", shared_from_this());
+
+		AIController->SetBehaviorTree(BT);
+
+		AIController->GetBehaviorTree()->GetBlackBoard()->SetValue<FBlackBoardValueType_Object>("Player", GetWorld()->GetPlayerController()->GetPlayerCharacter());		
+	}
+}
+
 AWolf::AWolf()
 {
 	SkeletalMeshName = "SK_Wolf";
@@ -211,9 +216,66 @@ ADragon::ADragon()
 	CapsuleComp->SetRadius(250.0f);
 	SkeletalMeshComponent->SetRelativeLocation({0,-500,0});
 	SkeletalMeshComponent->SetRelativeRotation(XMFLOAT3{0,180,0});
+	SkeletalMeshComponent->SetRelativeScale3D({0.5f,0.5f,0.5f});
 
 	SkeletalMeshName = "SK_Dragon";
 	AnimInstanceName = "UDragonAnimInstance";
 	BasicAttackData = FAttackData{XMFLOAT3{100,30,100}, 1.0f, 0.0f, 0.0f, true};
 	EnemyPower = 150.0f;
+}
+
+void ADragon::Register()
+{
+	AEnemyBase::Register();
+
+
+	AssetManager::GetAsyncAssetCache("AM_Dragon_Scream",[this](std::shared_ptr<UObject> Object)
+		{
+			AM_Dragon_Scream = std::dynamic_pointer_cast<UAnimMontage>(Object);
+		});
+
+	AssetManager::GetAsyncAssetCache("AM_Dragon_Flame",[this](std::shared_ptr<UObject> Object)
+		{
+			AM_Dragon_Flame = std::dynamic_pointer_cast<UAnimMontage>(Object);
+		});
+
+}
+
+void ADragon::BindingBehaviorTree()
+{
+	if (AIController)
+	{
+		AIController->OnPossess(this);
+		std::shared_ptr<UDragonBT> BT = std::make_shared<UDragonBT>();
+		AIController->SetBehaviorTree(BT);
+		BT->GetBlackBoard()->SetValue<FBlackBoardValueType_Object>("Owner", shared_from_this());
+
+	}
+}
+
+bool ADragon::StartSkillCharge()
+{
+	if (!AM_Dragon_Scream || !AM_Dragon_Flame)
+	{
+		//MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Warning, "No valid Dragon Skill")
+		return false;
+	}
+
+	//MY_LOG("LOG", EDebugLogLevel::DLL_Warning, "Dragon charges skill")
+
+	// TODO: 스킬 차지용 애니메이션이나 이펙트 구현 할 시 이곳에서 사용
+	if (const std::shared_ptr<UAnimInstance>& AnimInstance = GetAnimInstance())
+	{
+		AnimInstance->Montage_Play(AM_Dragon_Scream, 0);
+	}
+
+	return true;
+}
+
+void ADragon::SkillChargeEnd(const Delegate<>& OnSkillMontagePlayEnd)
+{
+	if (const std::shared_ptr<UAnimInstance>& AnimInstance = GetAnimInstance())
+	{
+		AnimInstance->Montage_Play(AM_Dragon_Flame, 0, OnSkillMontagePlayEnd);
+	}
 }
