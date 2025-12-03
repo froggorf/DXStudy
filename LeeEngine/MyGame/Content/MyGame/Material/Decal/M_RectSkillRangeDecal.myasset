@@ -1,0 +1,29 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_RectSkillRangeDecal",
+    "VertexShader" : {
+	"FilePath" : "/Shader/Decal.fx",
+	"Func" : "VS_Decal"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/Decal.fx",
+	"Func": "PS_SkillRangeDecal_Rect"
+    },
+    "BlendMode": "ForDeferredMerge",
+    "TotalSize" : 48,
+    "Params" : [
+	{"Name": "Progress", "Type" : "float", "Offset" : 0, "DefaultValue" : 0.0},
+	{"Name": "BorderThickness", "Type" : "float", "Offset" : 4, "DefaultValue" : 0.05},
+	{"Name": "BaseColorR", "Type" : "float", "Offset" : 8, "DefaultValue" : 1.0},
+	{"Name": "BaseColorG", "Type" : "float", "Offset" : 12, "DefaultValue" : 0.3},
+	{"Name": "BaseColorB", "Type" : "float", "Offset" : 16, "DefaultValue" : 0.0},
+	{"Name": "ActiveColorR", "Type" : "float", "Offset" : 20, "DefaultValue" : 1.0},
+	{"Name": "ActiveColorG", "Type" : "float", "Offset" : 24, "DefaultValue" : 0.0},
+	{"Name": "ActiveColorB", "Type" : "float", "Offset" : 28, "DefaultValue" : 0.0},
+	{"Name": "HalfAngleDeg", "Type" : "float", "Offset" : 32, "DefaultValue" : 180.0},
+	{"Name": "ForwardX", "Type" : "float", "Offset" : 36, "DefaultValue" : 0.0},
+	{"Name": "ForwardZ", "Type" : "float", "Offset" : 40, "DefaultValue" : 1.0}
+    ],
+    "TwoSided" : 1
+	
+}

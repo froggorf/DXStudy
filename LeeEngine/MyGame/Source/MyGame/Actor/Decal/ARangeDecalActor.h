@@ -20,6 +20,10 @@ struct FRangeDecalData
 };
 
 
+enum class ERangeType
+{
+	Pizza, Rect
+};
 class ARangeDecalActor : public AActor
 {
 	MY_GENERATE_BODY(ARangeDecalActor)
@@ -27,6 +31,7 @@ class ARangeDecalActor : public AActor
 	ARangeDecalActor();
 	~ARangeDecalActor() override = default;
 
+	ARangeDecalActor* SetRangeType(ERangeType NewRangeType);
 	ARangeDecalActor* SetProgress(float NewProgress);
 	ARangeDecalActor* SetBaseColor(const XMFLOAT3& NewBaseColor);
 	ARangeDecalActor* SetActiveColor(const XMFLOAT3& ActiveColor);
@@ -37,8 +42,10 @@ class ARangeDecalActor : public AActor
 	void SetDebugDraw(bool NewDebugDraw) { if (DecalComp) DecalComp->SetDebugDraw(NewDebugDraw); }
 
 	static std::shared_ptr<UMaterialInterface> MI_SkillRangeDecal;
+	static std::shared_ptr<UMaterialInterface> MI_RectSkillRangeDecal;
 
 protected:
 	std::shared_ptr<UDecalComponent> DecalComp;
 	FRangeDecalData DecalData;
+	ERangeType CurrentRangeType;
 };

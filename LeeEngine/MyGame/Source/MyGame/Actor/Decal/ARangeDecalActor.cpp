@@ -4,6 +4,7 @@
 #include "Engine/Class/Light/ULightComponent.h"
 
 std::shared_ptr<UMaterialInterface> ARangeDecalActor::MI_SkillRangeDecal = nullptr;
+std::shared_ptr<UMaterialInterface> ARangeDecalActor::MI_RectSkillRangeDecal = nullptr;
 
 ARangeDecalActor::ARangeDecalActor()
 {
@@ -11,11 +12,35 @@ ARangeDecalActor::ARangeDecalActor()
 	{
 		MI_SkillRangeDecal = UMaterial::GetMaterialCache("MI_SkillRangeDecal");
 	}
+	if (!MI_RectSkillRangeDecal)
+	{
+		MI_RectSkillRangeDecal = UMaterial::GetMaterialCache("MI_RectSkillRangeDecal");
+	}
 
 	DecalComp =std::make_shared<UDecalComponent>();
 	DecalComp->SetupAttachment(GetRootComponent());
 	DecalComp->SetDecalMaterial(MI_SkillRangeDecal);
 	DecalComp->SetIsLight(true);
+}
+
+ARangeDecalActor* ARangeDecalActor::SetRangeType(ERangeType NewRangeType)
+{
+	if (CurrentRangeType == NewRangeType)
+	{
+		return this;
+	}
+
+	CurrentRangeType = NewRangeType;
+	if (CurrentRangeType==ERangeType::Rect)
+	{
+		DecalComp->SetDecalMaterial(MI_RectSkillRangeDecal);
+	}
+	else
+	{
+		DecalComp->SetDecalMaterial(MI_SkillRangeDecal);
+	}
+
+	return this;
 }
 
 ARangeDecalActor* ARangeDecalActor::SetProgress(float NewProgress)

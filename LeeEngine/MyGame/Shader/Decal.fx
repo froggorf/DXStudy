@@ -184,7 +184,7 @@ PS_OUT PS_SkillRangeDecal(VS_OUT _in)
 	float4 FillColor = lerp(BaseColor, ActiveColor, FillMask);
     
     // 테두리 효과 - 노란색 그라데이션
-	float BorderGlow = (sin(gTime * 5.0) * 0.5 + 0.5) * 0.3; // 시간에 따른 반짝임
+	float BorderGlow = (sin(gTime * 5.0) * 0.3f + 0.7f); // 시간에 따른 반짝임
     
     // 노란색 테두리로 그라데이션 효과
 	float NormalizedDist = Dist / Radius;
@@ -198,7 +198,7 @@ PS_OUT PS_SkillRangeDecal(VS_OUT _in)
 	if (BorderMask > 0.01)
 	{
         // 테두리 영역
-		FinalColor = lerp(FillColor, BorderColor, BorderMask * (0.7 + BorderGlow));
+		FinalColor = lerp(FillColor, BorderColor * BorderGlow, BorderMask);
 	}
 	else
 	{
@@ -226,4 +226,67 @@ PS_OUT PS_SkillRangeDecal(VS_OUT _in)
 	return output;
 }
 
+
+PS_OUT PS_SkillRangeDecal_Rect(VS_OUT _in)
+{
+	PS_OUT output = (PS_OUT) 0.f;
+
+	float2 vScreenUV = _in.Position.xy / gResolution;
+	float4 vViewPos = POSITION_TARGET.Sample(samLinear, vScreenUV);
+
+    // 해당 영역에 존재하는 물체가 없다
+	if (vViewPos.x == 0.f && vViewPos.y == 0.f && vViewPos.z == 0.f)
+	{
+		discard;
+	}
+
+	float3 vLocalPos = mul(mul(float4(vViewPos.xyz, 1.f), gViewInv), WorldInv).xyz;
+	if (vLocalPos.x < -0.5f || 0.5f < vLocalPos.x 
+    || vLocalPos.y < -0.5f || 0.5f < vLocalPos.y 
+    || vLocalPos.z < -0.5f || 0.5f < vLocalPos.z)
+	{
+		discard;
+	}
+
+    // UV 좌표 계산 (0~1 범위)
+	float2 UV = float2(vLocalPos.x + 0.5f, vLocalPos.z + 0.5f);
+    
+    // 기본 색상 및 활성 색상 설정
+	float4 BaseColor = float4(BaseColorR, BaseColorG, BaseColorB, 1.0f);
+	float4 ActiveColor = float4(ActiveColorR, ActiveColorG, ActiveColorB, 1.0f);
+	float4 BorderColor = float4(1.0, 1.0, 1.0, 1.0f);
+    
+    
+    // 활성화 영역 마스크 (UV.y <= Progress) - 위에서 아래로 채워짐
+	float activeMask = step(UV.y, Progress);
+    
+    // 진행 경계 테두리 마스크 (Progress 라인 주변)
+	float progressBorderMask = step(Progress - BorderThickness, UV.y) * step(UV.y, Progress);
+    
+    // 외곽 테두리 마스크
+	float edgeBorderX = step(UV.x, BorderThickness) + step(1.0 - BorderThickness, UV.x);
+	float edgeBorderY = step(UV.y, BorderThickness) + step(1.0 - BorderThickness, UV.y);
+	float edgeBorderMask = min(1.0, edgeBorderX + edgeBorderY);
+    
+    // 최종 테두리 마스크
+	float borderMask = min(1.0, progressBorderMask + edgeBorderMask);
+    
+    // 색상 계산
+	float4 fillColor = lerp(BaseColor, ActiveColor, activeMask);
+	float4 finalColor = lerp(fillColor, BorderColor, borderMask);
+    
+    // 발광 효과 설정
+	if (gDecalIsLight)
+	{
+		output.Emissive = finalColor;
+		output.Color = float4(0, 0, 0, 0);
+	}
+	else
+	{
+		output.Color = finalColor;
+		output.Emissive = float4(BorderColor.rgb * borderMask * 0.5, 0.0);
+	}
+
+	return output;
+}
 #endif

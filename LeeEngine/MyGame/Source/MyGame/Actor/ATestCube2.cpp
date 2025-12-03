@@ -64,3 +64,9 @@ void ATestCube2::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
 }
+
+void ATestCube2::Tick_Editor(float DeltaSeconds)
+{
+	AActor::Tick_Editor(DeltaSeconds);
+
+}
