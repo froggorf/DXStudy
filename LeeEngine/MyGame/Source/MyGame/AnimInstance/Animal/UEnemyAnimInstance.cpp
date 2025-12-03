@@ -69,3 +69,29 @@ UDragonAnimInstance::UDragonAnimInstance()
 	BS_LocomotionName = "BS_Dragon_Locomotion";
 	AttackMontageName = "AM_Dragon_Attack";
 }
+
+void UDragonAnimInstance::SetAnimNotify_BeginPlay()
+{
+	UEnemyAnimInstanceBase::SetAnimNotify_BeginPlay();
+
+	NotifyEvent["FlameStart"] = {this, &UDragonAnimInstance::FlameStart};
+	NotifyEvent["FlameEnd"] = {this, &UDragonAnimInstance::FlameEnd};
+}
+
+void UDragonAnimInstance::FlameStart()
+{
+	if (ADragon* Dragon = dynamic_cast<ADragon*>(OwnerCharacter))
+	{
+		Dragon->StartFlame();
+		MY_LOG("Dragon", EDebugLogLevel::DLL_Warning, "Start Flame");
+	}
+}
+
+void UDragonAnimInstance::FlameEnd()
+{
+	if (ADragon* Dragon = dynamic_cast<ADragon*>(OwnerCharacter))
+	{
+		Dragon->EndFlame();
+		MY_LOG("Dragon", EDebugLogLevel::DLL_Warning, "End Flame");
+	}
+}

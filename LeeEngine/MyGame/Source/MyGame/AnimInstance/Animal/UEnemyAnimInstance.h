@@ -44,4 +44,10 @@ class UDragonAnimInstance final : public UEnemyAnimInstanceBase
 
 	UDragonAnimInstance();
 	~UDragonAnimInstance() override = default;
+
+	void SetAnimNotify_BeginPlay() override;
+
+protected:
+	void FlameStart();
+	void FlameEnd();
 };

@@ -147,6 +147,12 @@ void UDecalComponent::TickComponent(float DeltaSeconds)
 	if (bIsActive)
 	{
 		AddDecalInfo();
+
+		if (bDrawDebugInPlaying)
+		{
+			const FTransform& CurrentTransform = GetComponentTransform();
+			GEngine->GetCurrentWorld()->DrawDebugBox(GetWorldLocation(), {CurrentTransform.GetScale3D().x/2,CurrentTransform.GetScale3D().y/2,CurrentTransform.GetScale3D().z/2}, XMFLOAT3{0.0f,1.0f,0.0f}, CurrentTransform.GetRotationQuat(), DeltaSeconds);
+		}
 	}
 }
 

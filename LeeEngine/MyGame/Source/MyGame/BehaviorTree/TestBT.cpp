@@ -394,6 +394,8 @@ void FBTTask_DragonSkillCharging::OnEnterNode(const std::shared_ptr<FBlackBoard>
 	}
 	FHitResult HitResult;
 	XMFLOAT3 Start = SpawnTransform.Translation;
+	// 약간의 갭을 주기 위하여
+	Start.y += 50.0f;
 	XMFLOAT3 End = Start;
 	End.y -= 1000.0f;
 	if (GPhysicsEngine->LineTraceSingleByChannel(Start, End, CollisionChannels, HitResult))
@@ -405,7 +407,7 @@ void FBTTask_DragonSkillCharging::OnEnterNode(const std::shared_ptr<FBlackBoard>
 	{
 		ShowRangeActor = std::dynamic_pointer_cast<ARangeDecalActor>(GEngine->GetWorld()->SpawnActor("ARangeDecalActor", SpawnTransform));
 	}
-
+	ShowRangeActor->SetDebugDraw(true);
 	
 	ShowRangeActor->SetForward(Dragon->GetActorForwardVector())
 					->SetHalfAngleDeg(Dragon->GetFlameSkillHalfAngle());
@@ -429,7 +431,7 @@ EBTNodeResult FBTTask_DragonSkillCharging::Tick(float DeltaSeconds, const std::s
 	if (!bStartCharge)
 	{
 		bStartCharge = true;
-		if (!Dragon->StartSkillCharge())
+		if (!Dragon->StartFlameSkillCharge())
 		{
 			return EBTNodeResult::Fail;
 		}
@@ -479,7 +481,7 @@ EBTNodeResult FBTTask_DragonUseSkill::Tick(float DeltaSeconds, const std::shared
 	if (!bDoSkill)
 	{
 		bDoSkill = true;
-		Dragon->SkillChargeEnd(Delegate<>{this, &FBTTask_DragonUseSkill::FinishSkill});
+		Dragon->FlameSkillChargeEnd(Delegate<>{this, &FBTTask_DragonUseSkill::FinishSkill});
 	}
 
 

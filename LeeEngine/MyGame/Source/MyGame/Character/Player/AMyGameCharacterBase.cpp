@@ -6,6 +6,7 @@
 #include "MyGame/Component/Health/UHealthComponent.h"
 #include "MyGame/Component/Combat/Skill/NormalSkill/USkillBaseComponent.h"
 #include "MyGame/Component/Combat/Skill/Ultimate/UUltimateBaseComponent.h"
+#include "MyGame/Core/AMyGamePlayerController.h"
 
 
 XMFLOAT4 GetElementColor(EElementType ElementType)
@@ -249,7 +250,6 @@ void AMyGameCharacterBase::ChangeToNormalCamera(float BlendTime)
 
 float AMyGameCharacterBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AActor* DamageCauser)
 {
-	MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Error, std::to_string(DamageAmount));
 	if (bIsDodging)
 	{
 		ChangeToRoll();
@@ -259,6 +259,17 @@ float AMyGameCharacterBase::TakeDamage(float DamageAmount, const FDamageEvent& D
 	if (HealthComponent->ApplyDamage(DamageAmount) <= 0.0f)
 	{
 		Death();	
+	}
+
+	// 대미지 폰트 띄우기
+	if (AMyGamePlayerController* PC = dynamic_cast<AMyGamePlayerController*>(GetWorld()->GetPlayerController()))
+	{
+		XMFLOAT4 DefaultColor = {0,0,0,1};
+		if (const FMyGameDamageEvent* MyGameDamageEvent = dynamic_cast<const FMyGameDamageEvent*>(&DamageEvent))
+		{
+			DefaultColor = GetElementColor(MyGameDamageEvent->ElementType);
+		}
+		PC->SpawnFloatingDamage(GetRootComponent()->GetComponentTransform(), DefaultColor, static_cast<UINT>(DamageAmount));
 	}
 
 	return DamageAmount;

@@ -66,10 +66,11 @@ public:
 
 	void TickComponent(float DeltaSeconds) override;
 	void Tick_Editor(float DeltaSeconds) override;
-
+	void SetDebugDraw(bool NewDebugDraw) {bDrawDebugInPlaying = NewDebugDraw;}
 private:
 	std::shared_ptr<UMaterialInterface> DecalMaterial;
-	bool bIsLight = false;
-	bool bIsActive = true;
+	bool                                bIsLight  = false;
+	bool                                bIsActive = true;
+	bool                                bDrawDebugInPlaying = false;
 	void AddDecalInfo();
 };

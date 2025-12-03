@@ -145,7 +145,7 @@ PS_OUT PS_SkillRangeDecal(VS_OUT _in)
 		discard;
 	}
 
-	float Radius = 0.45f;
+	float Radius = 0.5f;
 	float4 BaseColor = float4(BaseColorR, BaseColorG, BaseColorB, 1.0f); // 주황색
 	float4 ActiveColor = float4(ActiveColorR, ActiveColorG, ActiveColorB, 1.0f); // 빨간색
 	float4 BorderColor = float4(1.0, 1.0, 1.0, 1.0f); // 노란색 테두리

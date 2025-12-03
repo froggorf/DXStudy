@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Class/Light/ULightComponent.h"
 #include "Engine/GameFramework/AActor.h"
 
 /*
@@ -32,6 +33,8 @@ class ARangeDecalActor : public AActor
 	ARangeDecalActor* SetHalfAngleDeg(float NewHalfAngleDeg);
 	ARangeDecalActor* SetForward(const XMFLOAT3& NewForward);
 	ARangeDecalActor* SetForward(const XMFLOAT2& NewForward);
+
+	void SetDebugDraw(bool NewDebugDraw) { if (DecalComp) DecalComp->SetDebugDraw(NewDebugDraw); }
 
 	static std::shared_ptr<UMaterialInterface> MI_SkillRangeDecal;
 

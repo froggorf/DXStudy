@@ -24,9 +24,10 @@ AEnemyBase::AEnemyBase()
 		CharacterMovement->Braking = 4096;
 	}
 
-	CapsuleComp->SetHalfHeight(50.0f);
+	CapsuleComp->SetHalfHeight(12.5f);
+	CapsuleComp->SetDebugDraw(true);
 	CapsuleComp->SetRadius(50.0f);
-	SkeletalMeshComponent->SetRelativeLocation({0,-100,0});
+	SkeletalMeshComponent->SetRelativeLocation({0,-12.5f*5,0});
 	SkeletalMeshComponent->SetRelativeRotation(XMFLOAT3{0,180,0});
 	
 	MotionWarpingComponent = std::static_pointer_cast<UMotionWarpingComponent>(CreateDefaultSubobject("MotionWarpingComp", "UMotionWarpingComponent"));
@@ -112,7 +113,6 @@ float AEnemyBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent
 	if (AIController)
 	{
 		float NewHealthPercent = HealthComponent->GetHealthPercent() * 100;
-		MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Warning,std::to_string(NewHealthPercent));
 		AIController->GetBehaviorTree()->GetBlackBoard()->SetValue<FBlackBoardValueType_FLOAT>("HealthPercent", NewHealthPercent);
 	}
 
@@ -124,7 +124,6 @@ void AEnemyBase::PlayAttackMontage(Delegate<> AttackFinishDelegate)
 	
 	if (EnemyAnimInstance)
 	{
-		MY_LOG("AEnemyBase",EDebugLogLevel::DLL_Warning,"BasicAttack");
 		EnemyAnimInstance->DoAttackAnim(AttackFinishDelegate);
 	}
 	else
@@ -212,9 +211,11 @@ APig::APig()
 
 ADragon::ADragon()
 {
-	CapsuleComp->SetHalfHeight(250.0f);
+	CapsuleComp->SetHalfHeight(62.5f);
 	CapsuleComp->SetRadius(250.0f);
-	SkeletalMeshComponent->SetRelativeLocation({0,-500,0});
+	CapsuleComp->SetDebugDraw(true);
+
+	SkeletalMeshComponent->SetRelativeLocation({0,-62.5f*5,0});
 	SkeletalMeshComponent->SetRelativeRotation(XMFLOAT3{0,180,0});
 	SkeletalMeshComponent->SetRelativeScale3D({0.5f,0.5f,0.5f});
 
@@ -253,7 +254,7 @@ void ADragon::BindingBehaviorTree()
 	}
 }
 
-bool ADragon::StartSkillCharge()
+bool ADragon::StartFlameSkillCharge()
 {
 	if (!AM_Dragon_Scream || !AM_Dragon_Flame)
 	{
@@ -272,10 +273,48 @@ bool ADragon::StartSkillCharge()
 	return true;
 }
 
-void ADragon::SkillChargeEnd(const Delegate<>& OnSkillMontagePlayEnd)
+void ADragon::FlameSkillChargeEnd(const Delegate<>& OnSkillMontagePlayEnd)
 {
 	if (const std::shared_ptr<UAnimInstance>& AnimInstance = GetAnimInstance())
 	{
 		AnimInstance->Montage_Play(AM_Dragon_Flame, 0, OnSkillMontagePlayEnd);
 	}
+}
+
+void ADragon::StartFlame()
+{
+	// 이펙트 시작
+
+	// 공격 적용하기
+	// NOTE: 어차피 플레이어가 1인인 게임이라 따로 충돌체크 없이
+	// 플레이어와 거리, 각도를 계산해서 적용
+	if (const std::shared_ptr<AActor>& Player = GetWorld()->GetPlayerController()->GetPlayerCharacter())
+	{
+		// Y축 정보는 취급 안함
+		XMFLOAT3 PlayerLocationXZ = Player->GetActorLocation();
+		PlayerLocationXZ.y = 0.0f;
+		XMFLOAT3 DragonLocationXZ = GetActorLocation();
+		DragonLocationXZ.y = 0.0f;
+		float Distance = MyMath::GetDistance(PlayerLocationXZ, DragonLocationXZ);
+		if (Distance <= FlameSkillRadius)
+		{
+			XMFLOAT3 ToPlayer = MyMath::GetDirectionUnitVector(GetActorLocation(), Player->GetActorLocation());
+			XMFLOAT3 Forward = GetActorForwardVector();
+			float Dot = XMVectorGetX(XMVector3Dot(XMLoadFloat3(&ToPlayer), XMLoadFloat3(&Forward)));
+
+			float AngleToPlayer = std::abs(XMConvertToDegrees(std::acos(Dot)));
+			if (AngleToPlayer <= FlameHalfAngleDeg)
+			{
+				FDamageEvent Event;
+				Event.DamageType = "Flame";
+				Player->TakeDamage(EnemyPower * FlameSkillAttackPower, Event, this);
+			}
+
+		}
+	}
+}
+
+void ADragon::EndFlame()
+{
+	// 불 뿜는 이펙트 종료
 }
