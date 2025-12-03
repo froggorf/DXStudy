@@ -188,19 +188,34 @@ private:
 	std::shared_ptr<ARangeDecalActor> ShowRangeActor;
 };
 
-class FBTTask_DragonUseSkill : public FBTTask
+// 특정 애니메이션을 재생하고, 애니메이션 종료시 Success를 반환하는 태스크
+// NOTE : 해당 태스크를 소유하는 BT의 소유자 (즉 최종 AI 캐릭터) 는 무조건 ACharacter 의 자식이어야지만 정상적으로 애니메이션이 작동합니다.
+class FBTTask_PlayAnimation : public FBTTask
 {
 public:
 	void OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard) override;
 	EBTNodeResult Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard) override;
-	void FinishSkill() { bSkillFinish = true;}
-private:
-	std::weak_ptr<class ADragon> OwningDragon;
-	bool bSkillFinish = false;
-	bool bDoSkill = false;
+	void FinishAnimation() {bAnimationFinish = true;}
+	void SetPlayingAnimationBlackBoardKeyName(const std::string& BlackBoardName) {AnimationBlackBoardKeyName = BlackBoardName;}
+protected:
+	std::weak_ptr<class ACharacter> Character;
+	std::weak_ptr<class UAnimMontage> PlayingAnimation;
+	bool bStartAnimation = false;
+	bool bAnimationFinish = false;
+	std::string AnimationBlackBoardKeyName = "";
 };
 
+class FBTTask_DragonMoveToPatternLocation : public FBTTask_PlayAnimation
+{
+public:
+	EBTNodeResult Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard) override;
+};
 
+class FBTTask_Land : public FBTTask_PlayAnimation
+{
+public:
+	void OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard) override;
+};
 class UDragonBT : public UBehaviorTree
 {
 	MY_GENERATE_BODY(UDragonBT)

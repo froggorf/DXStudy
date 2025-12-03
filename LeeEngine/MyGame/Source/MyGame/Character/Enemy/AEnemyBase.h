@@ -97,8 +97,6 @@ class ADragon final : public AEnemyBase
 	/// ==================== Flame Skill ====================
 	// 주기적으로 사용하는 스킬의 차지를 시작
 	bool StartFlameSkillCharge();
-	// 스킬의 차지 종료 후 스킬을 사용하는 함수
-	void FlameSkillChargeEnd(const Delegate<>& OnSkillMontagePlayEnd);
 
 	// 범위 내의 플레이어에게 공격을 가하는 함수
 	void StartFlame();
@@ -111,6 +109,8 @@ class ADragon final : public AEnemyBase
 protected:
 	std::shared_ptr<UAnimMontage> AM_Dragon_Scream;
 	std::shared_ptr<UAnimMontage> AM_Dragon_Flame;
+	std::shared_ptr<UAnimMontage> AM_Dragon_FlyStart;
+	std::shared_ptr<UAnimMontage> AM_Dragon_Landing;
 	float FlameHalfAngleDeg = 60.0f;
 	float FlameSkillRadius = 1500.0f;
 	float FlameSkillAttackPower = 5.0f;

@@ -454,44 +454,75 @@ EBTNodeResult FBTTask_DragonSkillCharging::Tick(float DeltaSeconds, const std::s
 	}
 }
 
-void FBTTask_DragonUseSkill::OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard)
+void FBTTask_PlayAnimation::OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard)
 {
 	FBTTask::OnEnterNode(BlackBoard);
-	bDoSkill = false;
-	bSkillFinish = false;
+	bStartAnimation = false;
+	bAnimationFinish = false;
 
-	OwningDragon = std::dynamic_pointer_cast<ADragon>(BlackBoard->GetValue<FBlackBoardValueType_Object>("Owner"));
+	Character = std::dynamic_pointer_cast<ACharacter>(BlackBoard->GetValue<FBlackBoardValueType_Object>("Owner"));
+	PlayingAnimation = std::dynamic_pointer_cast<UAnimMontage>(BlackBoard->GetValue<FBlackBoardValueType_Object>(AnimationBlackBoardKeyName));
 }
 
-EBTNodeResult FBTTask_DragonUseSkill::Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard)
+EBTNodeResult FBTTask_PlayAnimation::Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard)
 {
 	if (FBTTask::Tick(DeltaSeconds , BlackBoard) == EBTNodeResult::Fail)
 	{
 		return EBTNodeResult::Fail;		
 	}
 
-
-	std::shared_ptr<ADragon> Dragon = OwningDragon.lock();
-	if (!Dragon)
+	std::shared_ptr<ACharacter> OwnerCharacterShared = Character.lock();
+	if (!OwnerCharacterShared)
 	{
-		MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Warning, "Not valid OwningActor / SharedPlayer");
+		MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Warning, "Not valid OwningActor");
 		return EBTNodeResult::Fail;
 	}
 
-	if (!bDoSkill)
+	std::shared_ptr<UAnimMontage> PlayingAnimationShared = PlayingAnimation.lock();
+	if (!PlayingAnimationShared)
 	{
-		bDoSkill = true;
-		Dragon->FlameSkillChargeEnd(Delegate<>{this, &FBTTask_DragonUseSkill::FinishSkill});
+		MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Warning, "Not valid Animation");
+		return EBTNodeResult::Fail;
 	}
 
-
-	if (bSkillFinish)
+	if (!bStartAnimation)
 	{
-		return EBTNodeResult::Success;
+		bStartAnimation = true;
+		if (const std::shared_ptr<UAnimInstance>& AnimInstance = OwnerCharacterShared->GetAnimInstance())
+		{
+			AnimInstance->Montage_Play(PlayingAnimationShared, 0, {this, &FBTTask_PlayAnimation::FinishAnimation});
+		}
 	}
-	else
+
+	return bAnimationFinish? EBTNodeResult::Success : EBTNodeResult::Running;
+}
+
+EBTNodeResult FBTTask_DragonMoveToPatternLocation::Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard)
+{
+	EBTNodeResult Result = FBTTask_PlayAnimation::Tick(DeltaSeconds , BlackBoard);
+
+	if (Result == EBTNodeResult::Success)
 	{
-		return EBTNodeResult::Running;
+		if (const std::shared_ptr<ACharacter>& CharacterShared = Character.lock())
+		{
+			CharacterShared->SetActorLocation_Teleport({750,0,-500});
+			CharacterShared->SetActorRotation(MyMath::ForwardVectorToRotationQuaternion({-1,0,0}));
+			CharacterShared->GetSkeletalMeshComponent()->SetVisibility(false);
+		}
+
+	}
+
+	
+	return Result;
+}
+
+void FBTTask_Land::OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard)
+{
+	FBTTask_PlayAnimation::OnEnterNode(BlackBoard);
+
+	if (const std::shared_ptr<ACharacter>& CharacterShared = Character.lock())
+	{
+		CharacterShared->GetSkeletalMeshComponent()->SetVisibility(true);
 	}
 }
 
@@ -504,18 +535,36 @@ void UDragonBT::OnConstruct()
 	UBehaviorTree::OnConstruct();
 
 	BlackBoard->SetValue<FBlackBoardValueType_Object>("Owner", nullptr);
+	BlackBoard->SetValue<FBlackBoardValueType_Object>("FlameAnim", nullptr);
 
 	std::shared_ptr<FBTSequencer> Sequencer = std::make_shared<FBTSequencer>();
 	BTRoot->AddChild(Sequencer);
 
+	// 쿨마다 쓰는 스킬에 대한 Task들
 	{
 		std::shared_ptr<FBTTask_DragonSkillCharging> ChargingSkillTask = std::make_shared<FBTTask_DragonSkillCharging>();
 		ChargingSkillTask->SetChargingTime(5.0f);
-
-		std::shared_ptr<FBTTask_DragonUseSkill> UseSkillTask = std::make_shared<FBTTask_DragonUseSkill>();
+	
+		std::shared_ptr<FBTTask_PlayAnimation> UseSkillTask = std::make_shared<FBTTask_PlayAnimation>();
+		UseSkillTask->SetPlayingAnimationBlackBoardKeyName("FlameAnim");
 
 		Sequencer->AddChild(ChargingSkillTask);
 		Sequencer->AddChild(UseSkillTask);
 	}
-	
+
+	// 하늘로 떠서 사라졌다가 특정위치로 이동하는 Task
+	{
+		std::shared_ptr<FBTTask_DragonMoveToPatternLocation> StartFlyTask = std::make_shared<FBTTask_DragonMoveToPatternLocation>();
+		StartFlyTask->SetPlayingAnimationBlackBoardKeyName("StartFlyAnim");
+
+		std::shared_ptr<FBTTask_Wait> WaitTask = std::make_shared<FBTTask_Wait>();
+		WaitTask->SetWaitTime(2.0f);
+
+		std::shared_ptr<FBTTask_Land> LandingTask = std::make_shared<FBTTask_Land>();
+		LandingTask->SetPlayingAnimationBlackBoardKeyName("LandAnim");
+
+		Sequencer->AddChild(StartFlyTask);
+		Sequencer->AddChild(WaitTask);
+		Sequencer->AddChild(LandingTask);
+	}
 }

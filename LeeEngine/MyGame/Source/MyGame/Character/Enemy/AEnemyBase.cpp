@@ -238,6 +238,49 @@ void ADragon::Register()
 	AssetManager::GetAsyncAssetCache("AM_Dragon_Flame",[this](std::shared_ptr<UObject> Object)
 		{
 			AM_Dragon_Flame = std::dynamic_pointer_cast<UAnimMontage>(Object);
+			while (true)
+			{
+				if (AIController)
+				{
+					if (const std::shared_ptr<UBehaviorTree>& BT = AIController->GetBehaviorTree())
+					{
+						BT->GetBlackBoard()->SetValue<FBlackBoardValueType_Object>("FlameAnim",AM_Dragon_Flame);
+						break;
+					}
+				}
+			}
+		});
+
+	AssetManager::GetAsyncAssetCache("AM_Dragon_StartFly",[this](std::shared_ptr<UObject> Object)
+		{
+			AM_Dragon_FlyStart = std::dynamic_pointer_cast<UAnimMontage>(Object);
+			while (true)
+			{
+				if (AIController)
+				{
+					if (const std::shared_ptr<UBehaviorTree>& BT = AIController->GetBehaviorTree())
+					{
+						BT->GetBlackBoard()->SetValue<FBlackBoardValueType_Object>("StartFlyAnim",AM_Dragon_FlyStart);
+						break;
+					}
+				}
+			}
+		});
+
+	AssetManager::GetAsyncAssetCache("AM_Dragon_Land",[this](std::shared_ptr<UObject> Object)
+		{
+			AM_Dragon_Landing = std::dynamic_pointer_cast<UAnimMontage>(Object);
+			while (true)
+			{
+				if (AIController)
+				{
+					if (const std::shared_ptr<UBehaviorTree>& BT = AIController->GetBehaviorTree())
+					{
+						BT->GetBlackBoard()->SetValue<FBlackBoardValueType_Object>("LandAnim",AM_Dragon_Landing);
+						break;
+					}
+				}
+			}
 		});
 
 }
@@ -271,14 +314,6 @@ bool ADragon::StartFlameSkillCharge()
 	}
 
 	return true;
-}
-
-void ADragon::FlameSkillChargeEnd(const Delegate<>& OnSkillMontagePlayEnd)
-{
-	if (const std::shared_ptr<UAnimInstance>& AnimInstance = GetAnimInstance())
-	{
-		AnimInstance->Montage_Play(AM_Dragon_Flame, 0, OnSkillMontagePlayEnd);
-	}
 }
 
 void ADragon::StartFlame()
