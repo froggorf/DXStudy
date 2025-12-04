@@ -1,6 +1,7 @@
 #include "CoreMinimal.h"
 #include "FBTNode.h"
 
+#include "Engine/Class/Framework/ACharacter.h"
 #include "Engine/RenderCore/EditorScene.h"
 
 bool FBTDecorator::Eval(const std::shared_ptr<FBlackBoard>& BlackBoard)
@@ -284,4 +285,81 @@ EBTNodeResult UBehaviorTree::ExecuteNode(float DeltaSeconds, const std::shared_p
     }
 
     return Result;
+}
+
+
+
+
+
+
+
+// ====================== FBT Task 자식들 ======================
+
+void FBTTask_PlayAnimation::OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard)
+{
+    FBTTask::OnEnterNode(BlackBoard);
+    bStartAnimation = false;
+    bAnimationFinish = false;
+
+    Character = std::dynamic_pointer_cast<ACharacter>(BlackBoard->GetValue<FBlackBoardValueType_Object>("Owner"));
+    PlayingAnimation = std::dynamic_pointer_cast<UAnimMontage>(BlackBoard->GetValue<FBlackBoardValueType_Object>(AnimationBlackBoardKeyName));
+}
+
+EBTNodeResult FBTTask_PlayAnimation::Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard)
+{
+    if (FBTTask::Tick(DeltaSeconds , BlackBoard) == EBTNodeResult::Fail)
+    {
+        return EBTNodeResult::Fail;		
+    }
+
+    std::shared_ptr<ACharacter> OwnerCharacterShared = Character.lock();
+    if (!OwnerCharacterShared)
+    {
+        MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Warning, "Not valid OwningActor");
+        return EBTNodeResult::Fail;
+    }
+
+    std::shared_ptr<UAnimMontage> PlayingAnimationShared = PlayingAnimation.lock();
+    if (!PlayingAnimationShared)
+    {
+        MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Warning, "Not valid Animation");
+        return EBTNodeResult::Fail;
+    }
+
+    if (!bStartAnimation)
+    {
+        bStartAnimation = true;
+        if (const std::shared_ptr<UAnimInstance>& AnimInstance = OwnerCharacterShared->GetAnimInstance())
+        {
+            AnimInstance->Montage_Play(PlayingAnimationShared, 0, {this, &FBTTask_PlayAnimation::FinishAnimation});
+        }
+    }
+
+    return bAnimationFinish? EBTNodeResult::Success : EBTNodeResult::Running;
+}
+
+
+void FBTTask_Wait::OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard)
+{
+    FBTTask::OnEnterNode(BlackBoard);
+
+    CurrentWaitTime = 0.0f;	
+}
+
+EBTNodeResult FBTTask_Wait::Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard)
+{
+    if (FBTTask::Tick(DeltaSeconds , BlackBoard) == EBTNodeResult::Fail)
+    {
+        return EBTNodeResult::Fail;
+    }
+
+    CurrentWaitTime += DeltaSeconds;
+    if (CurrentWaitTime < WaitTime)
+    {
+        return EBTNodeResult::Running;
+    }
+    else
+    {
+        return EBTNodeResult::Success;
+    }
 }

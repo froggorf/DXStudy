@@ -19,20 +19,11 @@ class ATestCube2 : public AActor
 	void Register() override;
 	void BeginPlay() override;
 	void Tick(float DeltaSeconds) override;
-	void Tick_Editor(float DeltaSeconds) override;
 
 protected:
-	std::shared_ptr<UStaticMeshComponent> SM_Well;
-	std::shared_ptr<UStaticMeshComponent> SM_Barrel1;
-	std::shared_ptr<UStaticMeshComponent> SM_Barrel2;
-
-	std::shared_ptr<UStaticMeshComponent> SM_Chair;
-	std::shared_ptr<UStaticMeshComponent> SM_Couch;
 
 
 	std::shared_ptr<UStaticMeshComponent> Ground;
-
-	std::shared_ptr<UDecalComponent> Decal;
 
 private:
 	std::shared_ptr<AAIController> AIController;

@@ -21,27 +21,6 @@
             ]
         },
 {
-            "Class": "AGideonIceStorm",
-            "Location": [
-                450.0,
-                2.0,
-                450.0
-            ],
-            "Name": "GideonStorm",
-            "Rotation": [
-                0.0,
-                0.0,
-                0.0,
-	  1.0
-            ],
-            "Scale": [
-                1.0,
-                1.0,
-                1.0
-            ]
-        },
-
-{
             "Class": "AGideonCharacter",
             "Location": [
                 0.0,
@@ -61,47 +40,6 @@
                 1.0
             ]
         },
-{
-            "Class": "AWolf",
-            "Location": [
-                500.0,
-                100.0,
-                0.0
-            ],
-            "Name": "Enemy1",
-            "Rotation": [
-                0.0,
-                0.0,
-                0.0,
-	  1.0
-            ],
-            "Scale": [
-                1.0,
-                1.0,
-                1.0
-            ]
-        },
-	{
-            "Class": "AWolf",
-            "Location": [
-                500.0,
-                100.0,
-                100.0
-            ],
-            "Name": "Enemy2",
-            "Rotation": [
-                0.0,
-                0.0,
-                0.0,
-	  1.0
-            ],
-            "Scale": [
-                1.0,
-                1.0,
-                1.0
-            ]
-        },
-
 {
             "Class": "ATestCube2",
             "Location": [

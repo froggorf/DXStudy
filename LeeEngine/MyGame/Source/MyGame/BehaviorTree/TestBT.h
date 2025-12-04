@@ -135,18 +135,6 @@ private:
 	std::weak_ptr<class AActor> Player;
 };
 
-class FBTTask_Wait : public FBTTask
-{
-public:
-	void OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard) override;
-	EBTNodeResult Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard) override;
-
-	void SetWaitTime(float NewWaitTime) {WaitTime = NewWaitTime;}
-
-private:
-	float CurrentWaitTime = 0.0f;
-	float WaitTime = 1.0f;
-};
 
 
 // 플레이어가 거리 200m 이내에 있다면,
@@ -171,7 +159,9 @@ public:
 	
 };
 
-class FBTTask_DragonSkillCharging : public FBTTask
+// NOTE: Dragon 에 국한되게 태스크가 짜여있긴 하지만,
+// 기능상 ADragon 부모로 ABossEnemy 를 두고 virtual 등을 통해 확장성을 늘릴 수 있을 것 같음
+class FBTTask_DragonFlameSkillCharging : public FBTTask
 {
 public:
 	void OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard) override;
@@ -185,24 +175,6 @@ private:
 	bool bStartCharge = false;
 
 	std::weak_ptr<ADragon> OwnerDragon;
-	std::shared_ptr<ARangeDecalActor> ShowRangeActor;
-};
-
-// 특정 애니메이션을 재생하고, 애니메이션 종료시 Success를 반환하는 태스크
-// NOTE : 해당 태스크를 소유하는 BT의 소유자 (즉 최종 AI 캐릭터) 는 무조건 ACharacter 의 자식이어야지만 정상적으로 애니메이션이 작동합니다.
-class FBTTask_PlayAnimation : public FBTTask
-{
-public:
-	void OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard) override;
-	EBTNodeResult Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard) override;
-	void FinishAnimation() {bAnimationFinish = true;}
-	void SetPlayingAnimationBlackBoardKeyName(const std::string& BlackBoardName) {AnimationBlackBoardKeyName = BlackBoardName;}
-protected:
-	std::weak_ptr<class ACharacter> Character;
-	std::weak_ptr<class UAnimMontage> PlayingAnimation;
-	bool bStartAnimation = false;
-	bool bAnimationFinish = false;
-	std::string AnimationBlackBoardKeyName = "";
 };
 
 class FBTTask_DragonMoveToPatternLocation : public FBTTask_PlayAnimation
@@ -216,6 +188,25 @@ class FBTTask_Land : public FBTTask_PlayAnimation
 public:
 	void OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard) override;
 };
+
+
+class FBTTask_DragonHPSkillCharging : public FBTTask
+{
+public:
+	void OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard) override;
+	EBTNodeResult Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard) override;
+
+	void SetChargingTime(float NewChargingTime) {ChargingTime = NewChargingTime;}
+
+private:
+	float CurrentChargingTime = 0.0f;
+	float ChargingTime = 1.0f;
+	bool bStartCharge = false;
+
+	std::weak_ptr<ADragon> OwnerDragon;
+};
+
+
 class UDragonBT : public UBehaviorTree
 {
 	MY_GENERATE_BODY(UDragonBT)

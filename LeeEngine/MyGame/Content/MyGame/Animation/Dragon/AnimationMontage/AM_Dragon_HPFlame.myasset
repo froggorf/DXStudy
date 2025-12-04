@@ -1,0 +1,25 @@
+{
+	"Class": "UAnimMontage",
+	"Name": "AM_Dragon_HPFlame",
+	"Skeleton": "SK_Dragon",
+	"BlendIn" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.0
+	},
+	"BlendOut" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.0
+	},
+
+	"SlotName": "DefaultSlot",
+	"AnimTrack" : [
+		{"AnimName" : "AS_Dragon_Flame"}
+	],
+	"Sections" : [
+		{ "SectionName" : "BasicAttack", "StartTime" : 0.0 }
+	],
+    	"Notifies" : [
+		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 20, "EventName" : "HPFlameStart" },
+		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 60, "EventName" : "HPFlameEnd" }
+  	  ]
+}

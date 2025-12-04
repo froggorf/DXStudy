@@ -76,6 +76,9 @@ void UDragonAnimInstance::SetAnimNotify_BeginPlay()
 
 	NotifyEvent["FlameStart"] = {this, &UDragonAnimInstance::FlameStart};
 	NotifyEvent["FlameEnd"] = {this, &UDragonAnimInstance::FlameEnd};
+
+	NotifyEvent["HPFlameStart"] = {this, &UDragonAnimInstance::HPFlameStart};
+	NotifyEvent["HPFlameEnd"] = {this, &UDragonAnimInstance::HPFlameEnd};
 }
 
 void UDragonAnimInstance::FlameStart()
@@ -92,6 +95,24 @@ void UDragonAnimInstance::FlameEnd()
 	if (ADragon* Dragon = dynamic_cast<ADragon*>(OwnerCharacter))
 	{
 		Dragon->EndFlame();
+		MY_LOG("Dragon", EDebugLogLevel::DLL_Warning, "End Flame");
+	}
+}
+
+void UDragonAnimInstance::HPFlameStart()
+{
+	if (ADragon* Dragon = dynamic_cast<ADragon*>(OwnerCharacter))
+	{
+		Dragon->StartHPSkill();
+		MY_LOG("Dragon", EDebugLogLevel::DLL_Warning, "Start Flame");
+	}
+}
+
+void UDragonAnimInstance::HPFlameEnd()
+{
+	if (ADragon* Dragon = dynamic_cast<ADragon*>(OwnerCharacter))
+	{
+		Dragon->EndHPSkill();
 		MY_LOG("Dragon", EDebugLogLevel::DLL_Warning, "End Flame");
 	}
 }

@@ -27,6 +27,7 @@ AEnemyBase::AEnemyBase()
 	CapsuleComp->SetHalfHeight(12.5f);
 	CapsuleComp->SetDebugDraw(true);
 	CapsuleComp->SetRadius(50.0f);
+	CapsuleComp->SetObjectType(ECollisionChannel::Enemy);
 	SkeletalMeshComponent->SetRelativeLocation({0,-12.5f*5,0});
 	SkeletalMeshComponent->SetRelativeRotation(XMFLOAT3{0,180,0});
 	
@@ -81,6 +82,9 @@ void AEnemyBase::BeginPlay()
 	BindingBehaviorTree();
 
 	// Enemy 콜리젼 채널로 변경
+	CapsuleComp->Rename("EnemyCapsuleComp");
+	CapsuleComp->SetCollisionObjectType(ECollisionChannel::Enemy);
+	CapsuleComp->SetObjectType(ECollisionChannel::Enemy);
 	QueryCheckCapsuleComp->SetCollisionObjectType(ECollisionChannel::Enemy);
 	QueryCheckCapsuleComp->GetBodyInstance()->SetObjectType(ECollisionChannel::Enemy);
 
@@ -213,7 +217,6 @@ ADragon::ADragon()
 {
 	CapsuleComp->SetHalfHeight(62.5f);
 	CapsuleComp->SetRadius(250.0f);
-	CapsuleComp->SetDebugDraw(true);
 
 	SkeletalMeshComponent->SetRelativeLocation({0,-62.5f*5,0});
 	SkeletalMeshComponent->SetRelativeRotation(XMFLOAT3{0,180,0});
@@ -283,6 +286,22 @@ void ADragon::Register()
 			}
 		});
 
+	AssetManager::GetAsyncAssetCache("AM_Dragon_HPFlame",[this](std::shared_ptr<UObject> Object)
+		{
+			AM_Dragon_HPFlame = std::dynamic_pointer_cast<UAnimMontage>(Object);
+			while (true)
+			{
+				if (AIController)
+				{
+					if (const std::shared_ptr<UBehaviorTree>& BT = AIController->GetBehaviorTree())
+					{
+						BT->GetBlackBoard()->SetValue<FBlackBoardValueType_Object>("HPFlame",AM_Dragon_HPFlame);
+						break;
+					}
+				}
+			}
+		});
+
 }
 
 void ADragon::BindingBehaviorTree()
@@ -313,7 +332,65 @@ bool ADragon::StartFlameSkillCharge()
 		AnimInstance->Montage_Play(AM_Dragon_Scream, 0);
 	}
 
+	FTransform SpawnTransform;
+	SpawnTransform.Translation = GetActorLocation();
+	float Radius = GetFlameSkillRadius() * 2;
+	SpawnTransform.Scale3D = XMFLOAT3 {Radius, 10.0f, Radius};
+	static std::vector<ECollisionChannel> CollisionChannels;
+	if (CollisionChannels.empty())
+	{
+		CollisionChannels.reserve(static_cast<int>(ECollisionChannel::Count));
+		for (int i = 0; i < static_cast<int>(ECollisionChannel::Count); ++i)
+		{
+			ECollisionChannel Channel = static_cast<ECollisionChannel>(i);
+			if (Channel == ECollisionChannel::Player || Channel == ECollisionChannel::Enemy)
+			{
+				continue;
+			}
+			CollisionChannels.emplace_back(Channel);
+		}
+	}
+	FHitResult HitResult;
+	XMFLOAT3 Start = SpawnTransform.Translation;
+	// 약간의 갭을 주기 위하여
+	Start.y += -10.0f;
+	XMFLOAT3 End = Start;
+	End.y -= 1000.0f;
+	if (GPhysicsEngine->LineTraceSingleByChannel(Start, End, CollisionChannels, HitResult))
+	{
+		MY_LOG("LOG",EDebugLogLevel::DLL_Error,HitResult.HitComponent->GetName() );
+		MY_LOG("LOG",EDebugLogLevel::DLL_Error,HitResult.HitComponent->GetClass() ); 
+		SpawnTransform.Translation = HitResult.Location;
+		MY_LOG("LOG",EDebugLogLevel::DLL_Error,XMFLOAT3_TO_TEXT(HitResult.Location));
+	}
+
+	if (!ShowRangeActor)
+	{
+		ShowRangeActor = std::dynamic_pointer_cast<ARangeDecalActor>(GEngine->GetWorld()->SpawnActor("ARangeDecalActor", SpawnTransform));
+	}
+	ShowRangeActor->SetForward(GetActorForwardVector())
+				->SetHalfAngleDeg(GetFlameSkillHalfAngle());
+	ShowRangeActor->SetDebugDraw(true);
+
 	return true;
+}
+
+void ADragon::ResetSkillRangeActor()
+{
+	if (ShowRangeActor)
+	{
+		GetWorld()->GetPersistentLevel()->DestroyActor(ShowRangeActor.get());	
+	}
+	ShowRangeActor.reset();
+}
+
+void ADragon::SkillCharging(float Progress)
+{
+	if (ShowRangeActor)
+	{
+		ShowRangeActor->SetProgress(Progress);	
+	}
+	
 }
 
 void ADragon::StartFlame()
@@ -352,4 +429,72 @@ void ADragon::StartFlame()
 void ADragon::EndFlame()
 {
 	// 불 뿜는 이펙트 종료
+}
+
+bool ADragon::StartHPSkillCharge()
+{
+	if (!AM_Dragon_HPFlame)
+	{
+		return false;
+	}
+
+
+	FTransform SpawnTransform;
+	XMFLOAT3 Forward = GetActorForwardVector();
+	Forward.y = 0.0f;
+	XMStoreFloat3(&Forward, XMVector3Normalize(XMLoadFloat3(&Forward)));
+	SpawnTransform.Translation = GetActorLocation() + Forward * HPSkillRange.z/2;
+	SpawnTransform.Rotation = MyMath::ForwardVectorToRotationQuaternion(Forward);
+	SpawnTransform.Scale3D = HPSkillRange;
+	static std::vector<ECollisionChannel> CollisionChannels;
+	if (CollisionChannels.empty())
+	{
+		CollisionChannels.reserve(static_cast<int>(ECollisionChannel::Count));
+		for (int i = 0; i < static_cast<int>(ECollisionChannel::Count); ++i)
+		{
+			ECollisionChannel Channel = static_cast<ECollisionChannel>(i);
+			if (Channel == ECollisionChannel::Player || Channel == ECollisionChannel::Enemy)
+			{
+				continue;
+			}
+			CollisionChannels.emplace_back(Channel);
+		}
+	}
+	FHitResult HitResult;
+	XMFLOAT3 Start = SpawnTransform.Translation;
+	// 약간의 갭을 주기 위하여
+	Start.y += 50.0f;
+	XMFLOAT3 End = Start;
+	End.y -= 1000.0f;
+	if (GPhysicsEngine->LineTraceSingleByChannel(Start, End, CollisionChannels, HitResult))
+	{
+		SpawnTransform.Translation = HitResult.Location;
+	}
+
+	if (!ShowRangeActor)
+	{
+		ShowRangeActor = std::dynamic_pointer_cast<ARangeDecalActor>(GEngine->GetWorld()->SpawnActor("ARangeDecalActor", SpawnTransform));
+	}
+	ShowRangeActor->SetRangeType(ERangeType::Rect);
+
+
+	return true;
+}
+
+void ADragon::StartHPSkill()
+{
+	// 공격 적용하기
+	// NOTE: 어차피 플레이어가 1인인 게임이라 따로 충돌체크 없이
+	// 플레이어와 거리, 각도를 계산해서 적용
+	if (const std::shared_ptr<AActor>& Player = GetWorld()->GetPlayerController()->GetPlayerCharacter())
+	{
+		FDamageEvent Event;
+		Event.DamageType = "DragonHPSkill";
+		Player->TakeDamage(EnemyPower * 100, Event, this);
+	}
+}
+
+void ADragon::EndHPSkill()
+{
+	
 }

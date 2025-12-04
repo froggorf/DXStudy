@@ -50,4 +50,7 @@ class UDragonAnimInstance final : public UEnemyAnimInstanceBase
 protected:
 	void FlameStart();
 	void FlameEnd();
+
+	void HPFlameStart();
+	void HPFlameEnd();
 };

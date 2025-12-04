@@ -254,31 +254,6 @@ EBTNodeResult FBTTask_RunFromPlayer::Tick(float DeltaSeconds, const std::shared_
 }
 
 
-void FBTTask_Wait::OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard)
-{
-	FBTTask::OnEnterNode(BlackBoard);
-
-	CurrentWaitTime = 0.0f;	
-}
-
-EBTNodeResult FBTTask_Wait::Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard)
-{
-	if (FBTTask::Tick(DeltaSeconds , BlackBoard) == EBTNodeResult::Fail)
-	{
-		return EBTNodeResult::Fail;
-	}
-
-	CurrentWaitTime += DeltaSeconds;
-	if (CurrentWaitTime < WaitTime)
-	{
-		return EBTNodeResult::Running;
-	}
-	else
-	{
-		return EBTNodeResult::Success;
-	}
-}
-
 UTestBT::UTestBT()
 {
 	
@@ -360,7 +335,7 @@ void UTestBT::OnConstruct()
 	
 }
 
-void FBTTask_DragonSkillCharging::OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard)
+void FBTTask_DragonFlameSkillCharging::OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard)
 {
 	FBTTask::OnEnterNode(BlackBoard);
 	bStartCharge = false;
@@ -371,50 +346,12 @@ void FBTTask_DragonSkillCharging::OnEnterNode(const std::shared_ptr<FBlackBoard>
 	{
 		return;
 	}
-
 	OwnerDragon = Dragon;
 
-	FTransform SpawnTransform;
-	SpawnTransform.Translation = Dragon->GetActorLocation();
-	float Radius = Dragon->GetFlameSkillRadius() * 2;
-	SpawnTransform.Scale3D = XMFLOAT3 {Radius, 5.0f, Radius};
-	static std::vector<ECollisionChannel> CollisionChannels;
-	if (CollisionChannels.empty())
-	{
-		CollisionChannels.reserve(static_cast<int>(ECollisionChannel::Count));
-		for (int i = 0; i < static_cast<int>(ECollisionChannel::Count); ++i)
-		{
-			ECollisionChannel Channel = static_cast<ECollisionChannel>(i);
-			if (Channel == ECollisionChannel::Player || Channel == ECollisionChannel::Enemy)
-			{
-				continue;
-			}
-			CollisionChannels.emplace_back(Channel);
-		}
-	}
-	FHitResult HitResult;
-	XMFLOAT3 Start = SpawnTransform.Translation;
-	// 약간의 갭을 주기 위하여
-	Start.y += 50.0f;
-	XMFLOAT3 End = Start;
-	End.y -= 1000.0f;
-	if (GPhysicsEngine->LineTraceSingleByChannel(Start, End, CollisionChannels, HitResult))
-	{
-		SpawnTransform.Translation = HitResult.Location;
-	}
-	
-	if (!ShowRangeActor)
-	{
-		ShowRangeActor = std::dynamic_pointer_cast<ARangeDecalActor>(GEngine->GetWorld()->SpawnActor("ARangeDecalActor", SpawnTransform));
-	}
-	ShowRangeActor->SetDebugDraw(true);
-	
-	ShowRangeActor->SetForward(Dragon->GetActorForwardVector())
-					->SetHalfAngleDeg(Dragon->GetFlameSkillHalfAngle());
 	
 }
 
-EBTNodeResult FBTTask_DragonSkillCharging::Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard)
+EBTNodeResult FBTTask_DragonFlameSkillCharging::Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard)
 {
 	if (FBTTask::Tick(DeltaSeconds , BlackBoard) == EBTNodeResult::Fail)
 	{
@@ -422,7 +359,7 @@ EBTNodeResult FBTTask_DragonSkillCharging::Tick(float DeltaSeconds, const std::s
 	}
 
 	const std::shared_ptr<ADragon>& Dragon = OwnerDragon.lock();
-	if (!Dragon || !ShowRangeActor)
+	if (!Dragon)
 	{
 		return EBTNodeResult::Fail;
 	}
@@ -439,13 +376,11 @@ EBTNodeResult FBTTask_DragonSkillCharging::Tick(float DeltaSeconds, const std::s
 
 	// 범위 장판 갱신
 	CurrentChargingTime += DeltaSeconds;
-	ShowRangeActor->SetProgress(CurrentChargingTime / ChargingTime);
+	Dragon->SkillCharging(CurrentChargingTime / ChargingTime);
 
 	if (CurrentChargingTime >= ChargingTime)
 	{
-		GEngine->GetWorld()->GetPersistentLevel()->DestroyActor(ShowRangeActor.get());
-		ShowRangeActor.reset();
-
+		Dragon->ResetSkillRangeActor();
 		return EBTNodeResult::Success;
 	}
 	else
@@ -454,48 +389,6 @@ EBTNodeResult FBTTask_DragonSkillCharging::Tick(float DeltaSeconds, const std::s
 	}
 }
 
-void FBTTask_PlayAnimation::OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard)
-{
-	FBTTask::OnEnterNode(BlackBoard);
-	bStartAnimation = false;
-	bAnimationFinish = false;
-
-	Character = std::dynamic_pointer_cast<ACharacter>(BlackBoard->GetValue<FBlackBoardValueType_Object>("Owner"));
-	PlayingAnimation = std::dynamic_pointer_cast<UAnimMontage>(BlackBoard->GetValue<FBlackBoardValueType_Object>(AnimationBlackBoardKeyName));
-}
-
-EBTNodeResult FBTTask_PlayAnimation::Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard)
-{
-	if (FBTTask::Tick(DeltaSeconds , BlackBoard) == EBTNodeResult::Fail)
-	{
-		return EBTNodeResult::Fail;		
-	}
-
-	std::shared_ptr<ACharacter> OwnerCharacterShared = Character.lock();
-	if (!OwnerCharacterShared)
-	{
-		MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Warning, "Not valid OwningActor");
-		return EBTNodeResult::Fail;
-	}
-
-	std::shared_ptr<UAnimMontage> PlayingAnimationShared = PlayingAnimation.lock();
-	if (!PlayingAnimationShared)
-	{
-		MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Warning, "Not valid Animation");
-		return EBTNodeResult::Fail;
-	}
-
-	if (!bStartAnimation)
-	{
-		bStartAnimation = true;
-		if (const std::shared_ptr<UAnimInstance>& AnimInstance = OwnerCharacterShared->GetAnimInstance())
-		{
-			AnimInstance->Montage_Play(PlayingAnimationShared, 0, {this, &FBTTask_PlayAnimation::FinishAnimation});
-		}
-	}
-
-	return bAnimationFinish? EBTNodeResult::Success : EBTNodeResult::Running;
-}
 
 EBTNodeResult FBTTask_DragonMoveToPatternLocation::Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard)
 {
@@ -526,6 +419,58 @@ void FBTTask_Land::OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard)
 	}
 }
 
+void FBTTask_DragonHPSkillCharging::OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard)
+{
+	FBTTask::OnEnterNode(BlackBoard);
+	bStartCharge = false;
+	CurrentChargingTime = 0.0f;
+
+	const std::shared_ptr<ADragon>& Dragon = std::dynamic_pointer_cast<ADragon>(BlackBoard->GetValue<FBlackBoardValueType_Object>("Owner"));
+	if (!Dragon)
+	{
+		return;
+	}
+	OwnerDragon = Dragon;
+}
+
+EBTNodeResult FBTTask_DragonHPSkillCharging::Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard)
+{
+	if (FBTTask::Tick(DeltaSeconds , BlackBoard) == EBTNodeResult::Fail)
+	{
+		return EBTNodeResult::Fail;
+	}
+
+	const std::shared_ptr<ADragon>& Dragon = OwnerDragon.lock();
+	if (!Dragon)
+	{
+		return EBTNodeResult::Fail;
+	}
+
+	// 차지 시작에 대한 함수를 실행해주고,
+	if (!bStartCharge)
+	{
+		bStartCharge = true;
+		if (!Dragon->StartHPSkillCharge())
+		{
+			return EBTNodeResult::Fail;
+		}
+	}
+
+	// 범위 장판 갱신
+	CurrentChargingTime += DeltaSeconds;
+	Dragon->SkillCharging(CurrentChargingTime / ChargingTime);
+
+	if (CurrentChargingTime >= ChargingTime)
+	{
+		Dragon->ResetSkillRangeActor();
+		return EBTNodeResult::Success;
+	}
+	else
+	{
+		return EBTNodeResult::Running;
+	}
+}
+
 UDragonBT::UDragonBT()
 {
 }
@@ -542,7 +487,7 @@ void UDragonBT::OnConstruct()
 
 	// 쿨마다 쓰는 스킬에 대한 Task들
 	{
-		std::shared_ptr<FBTTask_DragonSkillCharging> ChargingSkillTask = std::make_shared<FBTTask_DragonSkillCharging>();
+		std::shared_ptr<FBTTask_DragonFlameSkillCharging> ChargingSkillTask = std::make_shared<FBTTask_DragonFlameSkillCharging>();
 		ChargingSkillTask->SetChargingTime(5.0f);
 	
 		std::shared_ptr<FBTTask_PlayAnimation> UseSkillTask = std::make_shared<FBTTask_PlayAnimation>();
@@ -563,8 +508,16 @@ void UDragonBT::OnConstruct()
 		std::shared_ptr<FBTTask_Land> LandingTask = std::make_shared<FBTTask_Land>();
 		LandingTask->SetPlayingAnimationBlackBoardKeyName("LandAnim");
 
+		std::shared_ptr<FBTTask_DragonHPSkillCharging> ChargingSkillTask = std::make_shared<FBTTask_DragonHPSkillCharging>();
+		ChargingSkillTask->SetChargingTime(5.0f);
+
+		std::shared_ptr<FBTTask_PlayAnimation> UseSkillTask = std::make_shared<FBTTask_PlayAnimation>();
+		UseSkillTask->SetPlayingAnimationBlackBoardKeyName("HPFlame");
+
 		Sequencer->AddChild(StartFlyTask);
 		Sequencer->AddChild(WaitTask);
 		Sequencer->AddChild(LandingTask);
+		Sequencer->AddChild(ChargingSkillTask);
+		Sequencer->AddChild(UseSkillTask);
 	}
 }

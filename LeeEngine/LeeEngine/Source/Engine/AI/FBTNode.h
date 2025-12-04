@@ -162,3 +162,44 @@ protected:
 	bool bIsRootSelector = true;
 
 };
+
+
+
+
+
+
+
+
+
+
+// ======================== FBT_Task 자식들 ========================
+// 특정 애니메이션을 재생하고, 애니메이션 종료시 Success를 반환하는 태스크
+// NOTE : 해당 태스크를 소유하는 BT의 소유자 (즉 최종 AI 캐릭터) 는 무조건 ACharacter 의 자식이어야지만 정상적으로 애니메이션이 작동합니다.
+class FBTTask_PlayAnimation : public FBTTask
+{
+public:
+	void OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard) override;
+	EBTNodeResult Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard) override;
+	void FinishAnimation() {bAnimationFinish = true;}
+	void SetPlayingAnimationBlackBoardKeyName(const std::string& BlackBoardName) {AnimationBlackBoardKeyName = BlackBoardName;}
+protected:
+	std::weak_ptr<class ACharacter> Character;
+	std::weak_ptr<class UAnimMontage> PlayingAnimation;
+	bool bStartAnimation = false;
+	bool bAnimationFinish = false;
+	std::string AnimationBlackBoardKeyName = "";
+};
+
+
+class FBTTask_Wait : public FBTTask
+{
+public:
+	void OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard) override;
+	EBTNodeResult Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard) override;
+
+	void SetWaitTime(float NewWaitTime) {WaitTime = NewWaitTime;}
+
+private:
+	float CurrentWaitTime = 0.0f;
+	float WaitTime = 1.0f;
+};

@@ -94,10 +94,14 @@ class ADragon final : public AEnemyBase
 
 	void BindingBehaviorTree() override;
 
+	/// ===================== Skill Range =====================
+	void SkillCharging(float Progress);
+	void ResetSkillRangeActor();
+	/// =======================================================
+
 	/// ==================== Flame Skill ====================
 	// 주기적으로 사용하는 스킬의 차지를 시작
 	bool StartFlameSkillCharge();
-
 	// 범위 내의 플레이어에게 공격을 가하는 함수
 	void StartFlame();
 	void EndFlame();
@@ -105,14 +109,28 @@ class ADragon final : public AEnemyBase
 	float GetFlameSkillHalfAngle() const {return FlameHalfAngleDeg; }
 	float GetFlameSkillRadius() const {return FlameSkillRadius; }
 	/// =====================================================
+
+	/// ==================== HP Skill ====================
+	bool StartHPSkillCharge();
+	void StartHPSkill();
+	void EndHPSkill();
+
+	/// ==================================================
 	
 protected:
 	std::shared_ptr<UAnimMontage> AM_Dragon_Scream;
 	std::shared_ptr<UAnimMontage> AM_Dragon_Flame;
+
 	std::shared_ptr<UAnimMontage> AM_Dragon_FlyStart;
 	std::shared_ptr<UAnimMontage> AM_Dragon_Landing;
+	std::shared_ptr<UAnimMontage> AM_Dragon_HPFlame;
 	float FlameHalfAngleDeg = 60.0f;
 	float FlameSkillRadius = 1500.0f;
 	float FlameSkillAttackPower = 5.0f;
+
+	XMFLOAT3 HPSkillRange = XMFLOAT3{2000.0f, 10.0f, 3000.0f};
+
+	// 범위기 표시 장판 액터
+	std::shared_ptr<ARangeDecalActor> ShowRangeActor;
 private:
 };

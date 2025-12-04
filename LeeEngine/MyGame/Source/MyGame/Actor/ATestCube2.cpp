@@ -15,19 +15,6 @@ ATestCube2::ATestCube2()
 		
 	}
 
-	{
-		SM_Chair = std::make_shared<UStaticMeshComponent>();
-		SM_Chair->SetupAttachment(GetRootComponent());
-		SM_Chair->SetRelativeLocation({-300,10,0});
-	}
-
-	{
-		SM_Couch = std::make_shared<UStaticMeshComponent>();
-		SM_Couch->SetupAttachment(GetRootComponent());
-		SM_Couch->SetRelativeLocation({-300,10,-250});
-		SM_Couch->SetIsMonochromeObject(false);
-	}
-
 }
 
 void ATestCube2::Register()
@@ -40,18 +27,7 @@ void ATestCube2::Register()
 			Ground->SetCollisionObjectType(ECollisionChannel::WorldStatic);
 		});
 
-	AssetManager::GetAsyncAssetCache("SM_UE_Couch",[this](std::shared_ptr<UObject> Object)
-		{
-			SM_Couch->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
-			SM_Couch->SetCollisionObjectType(ECollisionChannel::WorldStatic);
-		});
-
-
-	AssetManager::GetAsyncAssetCache("SM_UE_Chair",[this](std::shared_ptr<UObject> Object)
-		{
-			SM_Chair->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
-			SM_Chair->SetCollisionObjectType(ECollisionChannel::WorldStatic);
-		});
+	
 }
 
 void ATestCube2::BeginPlay()
@@ -63,10 +39,4 @@ void ATestCube2::BeginPlay()
 void ATestCube2::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
-}
-
-void ATestCube2::Tick_Editor(float DeltaSeconds)
-{
-	AActor::Tick_Editor(DeltaSeconds);
-
 }
