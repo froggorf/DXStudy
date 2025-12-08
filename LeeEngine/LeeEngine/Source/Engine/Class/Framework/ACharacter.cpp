@@ -32,7 +32,7 @@ UCharacterMovementComponent::UCharacterMovementComponent()
 void UCharacterMovementComponent::BeginPlay()
 {
 	UActorComponent::BeginPlay();
-
+	OwnerCharacter = dynamic_cast<ACharacter*>(GetOwner());
 	physx::PxControllerManager* Manager = GPhysicsEngine->GetControllerManager();
 	if (!Manager)
 	{
@@ -40,6 +40,7 @@ void UCharacterMovementComponent::BeginPlay()
 		exit(0);
 #endif
 	}
+
 	desc.height = std::static_pointer_cast<UCapsuleComponent>(GetOwner()->GetRootComponent())->GetHalfHeight()*2;
 	desc.radius = std::static_pointer_cast<UCapsuleComponent>(GetOwner()->GetRootComponent())->GetRadius();
 	desc.position = physx::PxExtendedVec3(GetOwner()->GetActorLocation().x,GetOwner()->GetActorLocation().y,-GetOwner()->GetActorLocation().z);
@@ -47,10 +48,16 @@ void UCharacterMovementComponent::BeginPlay()
 	desc.stepOffset = MaxStepHeight;
 	desc.slopeLimit = XMConvertToRadians(WalkableFloorAngle);
 
+	// 컨트롤러 관찰자 생성 및 설정
+	ControllerObserver = std::make_unique<FCharacterControllerObserver>(this);
+	desc.reportCallback = ControllerObserver.get();
+
 	PxCharacterController = Manager->createController(desc);
 
 	CCTQueryCallBack.IgnoreActor = GetOwner();
 	Filters.mFilterCallback = &CCTQueryCallBack;
+
+	bIsFalling = false;
 }
 
 void UCharacterMovementComponent::TickComponent(float DeltaSeconds)
@@ -193,6 +200,18 @@ void UCharacterMovementComponent::AddInputVector(XMFLOAT3 WorldAccel, float Powe
 void UCharacterMovementComponent::Jump()
 {
 	CurVelocityY = JumpZVelocity;
+	Velocity.y = JumpZVelocity;
+	bIsFalling = true;
+}
+
+void UCharacterMovementComponent::Landing()
+{
+	bIsFalling = false;
+
+	if (OwnerCharacter)
+	{
+		OwnerCharacter->Landing();
+	}
 }
 
 ACharacter::ACharacter()
@@ -308,6 +327,19 @@ void ACharacter::Jump()
 	if (std::shared_ptr<UCharacterMovementComponent> CharacterMovementComp = CharacterMovement.lock())
 	{
 		CharacterMovementComp->Jump();
+	}
+
+	if (const std::shared_ptr<UAnimInstance>& AnimInstance = GetAnimInstance())
+	{
+		AnimInstance->JumpStart();
+	}
+}
+
+void ACharacter::Landing()
+{
+	if (const std::shared_ptr<UAnimInstance>& AnimInstance = GetAnimInstance())
+	{
+		AnimInstance->LandingStart();
 	}
 }
 

@@ -359,7 +359,7 @@ void USanhwaAnimInstance::HeavyAttack()
 		return;
 	}
 	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
-	MyGameCharacter->ApplyDamageToEnemy_Range(CombatComp->GetHeavyAttackData(0), "SH_HeavyAttack");
+	MyGameCharacter->ApplyDamageToEnemy_Range(CombatComp->GetHeavyAttackData(0), "BreakIce");
 }
 
 void USanhwaAnimInstance::UltAttack()

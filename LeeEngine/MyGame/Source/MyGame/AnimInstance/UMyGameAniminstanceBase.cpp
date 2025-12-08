@@ -13,6 +13,21 @@ void UMyGameAnimInstanceBase::LoadData_OnRegister()
 		{
 			BS_Locomotion = std::dynamic_pointer_cast<UBlendSpace>(Object);
 		});
+
+	AssetManager::GetAsyncAssetCache(GetJumpStartAnimSequenceName(), [this](std::shared_ptr<UObject> Object)
+		{
+			AS_JumpStart = std::dynamic_pointer_cast<UAnimSequence>(Object);
+		});
+
+	AssetManager::GetAsyncAssetCache(GetFallingAnimSequenceName(), [this](std::shared_ptr<UObject> Object)
+		{
+			AS_Falling = std::dynamic_pointer_cast<UAnimSequence>(Object);
+		});
+
+	AssetManager::GetAsyncAssetCache(GetLandAnimSequenceName(), [this](std::shared_ptr<UObject> Object)
+		{
+			AS_Land = std::dynamic_pointer_cast<UAnimSequence>(Object);
+		});
 }
 
 void UMyGameAnimInstanceBase::Register()
@@ -101,9 +116,12 @@ bool UMyGameAnimInstanceBase::SetMotionWarping()
 	return true;
 }
 
+
+
+// Note: 뭔가 더 좋은 방법이 있을것같은데 귀찮아서 단순히 나눔
 bool UMyGameAnimInstanceBase::IsAllResourceOK()
 {
-	return UAnimInstance::IsAllResourceOK() && MovementComp && BS_Locomotion ;
+	return UAnimInstance::IsAllResourceOK() && MovementComp && BS_Locomotion;
 }
 
 
@@ -118,7 +136,71 @@ void UMyGameAnimInstanceBase::UpdateAnimation(float dt)
 
 	// Locomotion Transition
 	{
-		BS_Locomotion->GetAnimationBoneTransforms(XMFLOAT2{0.0f, MovementVelocity }, CurrentTime, BoneTransforms, FinalNotifies);      
+		if (AnimState != EAnimState::Locomotion)
+		{
+			int a= 0;
+		}
+		switch (AnimState)
+		{
+		case EAnimState::Locomotion:
+			BS_Locomotion->GetAnimationBoneTransforms(XMFLOAT2{0.0f, MovementVelocity }, CurrentTime, BoneTransforms, FinalNotifies);      	
+		break;
+		case EAnimState::Falling:
+			{
+			MY_LOG("LOG", EDebugLogLevel::DLL_Display, "Falling");
+			float FallingTime = AS_Falling->GetDuration();
+			if (CurrentFallingTime >= FallingTime)
+			{
+				CurrentFallingTime = FallingTime;
+				LandingStart();
+			}
+			AS_Falling->GetBoneTransform(CurrentFallingTime, BoneTransforms, nullptr);
+				CurrentFallingTime += dt;
+			}
+		break;
+		case EAnimState::Jump:
+			{
+			MY_LOG("LOG", EDebugLogLevel::DLL_Display, "Jump");
+			float JumpStartAnimTime = AS_JumpStart->GetDuration();
+			if (CurrentJumpStartTime >= JumpStartAnimTime)
+			{
+				CurrentJumpStartTime= JumpStartAnimTime;
+				FallingStart();
+			}
+			AS_JumpStart->GetBoneTransform(CurrentJumpStartTime, BoneTransforms, nullptr);
+				CurrentJumpStartTime += dt*1500;
+			}
+		break;
+		case EAnimState::Landing:
+			{
+				MY_LOG("LOG", EDebugLogLevel::DLL_Display, "Land");
+				float LandingAnimDuration = AS_Land->GetDuration();
+				if (CurrentLandingTime >= LandingAnimDuration)
+				{
+					CurrentLandingTime = LandingAnimDuration;
+					AnimState = EAnimState::Locomotion;
+				}
+				static std::vector<FBoneLocalTransform> LocomotionBoneTransform(MAX_BONES,FBoneLocalTransform{});
+				// Locomotion
+				BS_Locomotion->GetAnimationBoneTransforms(XMFLOAT2{0.0f, MovementVelocity }, CurrentTime, LocomotionBoneTransform, FinalNotifies);      	
+				// Landing 애니메이션 재생
+				static std::vector<FBoneLocalTransform> LandBoneTransforms(MAX_BONES, FBoneLocalTransform{});
+				AS_Land->GetBoneTransform(CurrentLandingTime, LandBoneTransforms, nullptr);
+
+				for (int i = 0; i < MAX_BONES; ++i)
+				{
+					BoneTransforms[i] = Blend2BoneTransform(LocomotionBoneTransform[i], LandBoneTransforms[i], 1.0f - CurrentLandingTime / LandingAnimDuration);
+				}
+				 
+
+				CurrentLandingTime += dt * 1500;
+
+			}
+		break;
+		default:
+			MY_LOG("LOG",EDebugLogLevel::DLL_Error, "!");
+		}
+		
 	}
 
 	// 몽타쥬 연결

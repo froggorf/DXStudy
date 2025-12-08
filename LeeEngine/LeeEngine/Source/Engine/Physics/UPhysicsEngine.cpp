@@ -2,6 +2,7 @@
 #include "UPhysicsEngine.h"
 
 #include "ULineComponent.h"
+#include "Engine/Class/Framework/ACharacter.h"
 
 std::unique_ptr<UPhysicsEngine> GPhysicsEngine = nullptr;
 
@@ -66,6 +67,17 @@ void FPhysicsEventCallback::onContact(const physx::PxContactPairHeader& pairHead
 			HitResult.HitComponent = A;
 
 			B->OnComponentHit.Broadcast(B, A->GetOwner(), A, HitResult);
+		}
+	}
+}
+
+void FCharacterControllerObserver::onShapeHit(const physx::PxControllerShapeHit& hit)
+{
+	if (hit.worldNormal.y > 0.5f && MovementComponent->bIsFalling)
+	{
+		if (MovementComponent)
+		{
+			MovementComponent->Landing();
 		}
 	}
 }

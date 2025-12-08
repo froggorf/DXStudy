@@ -1,7 +1,7 @@
 #include "CoreMinimal.h"
 #include "ASanhwaIceBase.h"
 
-ASanhwaIceSpikeBase::ASanhwaIceSpikeBase()
+AIceSpikeBase::AIceSpikeBase()
 {
 	SM_IceSpikes = std::make_shared<UStaticMeshComponent>();
 	SM_IceSpikes->SetupAttachment(GetRootComponent());
@@ -13,7 +13,7 @@ ASanhwaIceSpikeBase::ASanhwaIceSpikeBase()
 	ExplosionAttackData = FAttackData{XMFLOAT3{500,500,500}, 3.0f, 0.0f, 5.0f, false};
 }
 
-void ASanhwaIceSpikeBase::Register()
+void AIceSpikeBase::Register()
 {
 	AActor::Register();
 
@@ -26,7 +26,7 @@ void ASanhwaIceSpikeBase::Register()
 	
 }
 
-void ASanhwaIceSpikeBase::BeginPlay()
+void AIceSpikeBase::BeginPlay()
 {
 	AActor::BeginPlay();
 
@@ -52,17 +52,17 @@ void ASanhwaIceSpikeBase::BeginPlay()
 		SetActorLocation(Result.Location);
 	}
 
-	GEngine->GetTimerManager()->SetTimer(SpawnTimerHandle, {this, &ASanhwaIceSpikeBase::SpawnIce}, 0.0f, true, TimerTickTime);
-	GEngine->GetTimerManager()->SetTimer(DestroyTimerHandle, Delegate<>{this, &ASanhwaIceSpikeBase::DamagedBySanhwa}, DestroyTime);
+	GEngine->GetTimerManager()->SetTimer(SpawnTimerHandle, {this, &AIceSpikeBase::SpawnIce}, 0.0f, true, TimerTickTime);
+	GEngine->GetTimerManager()->SetTimer(DestroyTimerHandle, Delegate<>{this, &AIceSpikeBase::DamagedByCharacter}, DestroyTime);
 }
 
-void ASanhwaIceSpikeBase::OnDestroy()
+void AIceSpikeBase::OnDestroy()
 {
 	AActor::OnDestroy();
 
 }
 
-void ASanhwaIceSpikeBase::SpawnIce()
+void AIceSpikeBase::SpawnIce()
 {
 	CurrentSpawnTime = std::min(CurrentSpawnTime + TimerTickTime, SpawnTime);
 
@@ -75,23 +75,23 @@ void ASanhwaIceSpikeBase::SpawnIce()
 	
 }
 
-void ASanhwaIceSpikeBase::SpawnedBy(ASanhwaCharacter* Spawner)
+void AIceSpikeBase::SpawnedBy(AMyGameCharacterBase* Spawner)
 {
 	this->Spawner = Spawner;
 }
 
-float ASanhwaIceSpikeBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AActor* DamageCauser)
+float AIceSpikeBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AActor* DamageCauser)
 {
-	if (DamageCauser->GetClass() == "ASanhwaCharacter" && DamageEvent.DamageType == "SH_HeavyAttack")
+	if (dynamic_cast<AMyGameCharacterBase*>(DamageCauser) == Spawner && DamageEvent.DamageType == "BreakIce")
 	{
 		bIsAttacked = true;
-		DamagedBySanhwa();
+		DamagedByCharacter();
 	}
 
 	return DamageAmount;
 }
 
-void ASanhwaIceSpikeBase::DamagedBySanhwa()
+void AIceSpikeBase::DamagedByCharacter()
 {
 	// TODO: 이펙트 같은거 꺼내기
 

@@ -41,8 +41,11 @@ std::shared_ptr<UAnimSequence> UAnimSequence::GetAnimationAsset(const std::strin
 
 void UAnimSequence::GetBoneTransform(float CurrentAnimTime, std::vector<FBoneLocalTransform>& OutBoneLocals, bool* bPlayRootMotion)
 {
-
-	*bPlayRootMotion = bEnableRootMotion;
+	if (bPlayRootMotion)
+	{
+		*bPlayRootMotion = bEnableRootMotion;	
+	}
+	
 
 	// 09.23) 재생 속도 비율을 적용시켜줌
 	CurrentAnimTime *= RateScale;

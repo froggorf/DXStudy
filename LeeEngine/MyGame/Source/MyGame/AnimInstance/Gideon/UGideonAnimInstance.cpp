@@ -78,7 +78,8 @@ void UGideonAnimInstance::LoadData_OnRegister()
 
 bool UGideonAnimInstance::IsAllResourceOK()
 {
-	return UMyGameAnimInstanceBase::IsAllResourceOK() && BS_FPSLocomotion && AM_UltEnd && AM_UltLoop1 && AM_UltLoop2;
+	return UMyGameAnimInstanceBase::IsAllResourceOK() && BS_FPSLocomotion && AM_UltEnd && AM_UltLoop1 && AM_UltLoop2
+	&& AS_Falling && AS_JumpStart && AS_Land;
 }
 
 void UGideonAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -123,10 +124,6 @@ void UGideonAnimInstance::UpdateAnimation(float dt)
 	if (MovementComp->bOrientRotationToMovement)
 	{
 		BS_FPSLocomotion->GetAnimationBoneTransforms(XMFLOAT2{Direction, MovementVelocity }, CurrentTime, BoneTransforms, FinalNotifies);    
-	}
-	else
-	{
-		BS_Locomotion->GetAnimationBoneTransforms(XMFLOAT2{0.0f, MovementVelocity }, CurrentTime, BoneTransforms, FinalNotifies);      
 	}
 
 	// UpperBody 몽타쥬

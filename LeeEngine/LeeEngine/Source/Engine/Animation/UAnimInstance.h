@@ -9,6 +9,15 @@
 #include "Engine/Misc/Delegate.h"
 #include "Engine/UObject/UObject.h"
 
+enum class EAnimState
+{
+	Locomotion,
+	Jump,
+	Falling,
+	Landing
+};
+
+
 class USkeletalMeshComponent;
 
 
@@ -53,6 +62,27 @@ class UAnimInstance : public UObject
 
 	std::vector<FBoneLocalTransform> GetInitialLocalBoneTransforms() const;
 	bool IsPlayingMontage() const {return bPlayRootMotion;}
+
+	void ApplyAdditiveAnimation(const std::vector<FBoneLocalTransform>& BasePose, const std::vector<FBoneLocalTransform>& AdditivePose, float Weight, std::vector<FBoneLocalTransform>& OutPose);
+
+	void JumpStart();
+	void FallingStart()
+	{
+		AnimState = EAnimState::Falling;
+		CurrentFallingTime = 0.0f;
+	}
+	void LandingStart()
+	{
+		AnimState = EAnimState::Landing;
+		CurrentLandingTime = 0.0f;
+	}
+protected:
+	EAnimState AnimState = EAnimState::Locomotion;
+	float CurrentJumpStartTime = 0.0f;
+	float CurrentFallingTime = 0.0f;
+	float CurrentLandingTime = 0.0f;
+
+
 protected:
 	// 현재 애님 인스턴스의 리소스가 모두 정상적으로 존재하는지 체크하는 함수
 	virtual bool IsAllResourceOK();

@@ -284,6 +284,58 @@ std::vector<FBoneLocalTransform> UAnimInstance::GetInitialLocalBoneTransforms() 
 	return BoneTransforms;
 }
 
+void UAnimInstance::ApplyAdditiveAnimation(const std::vector<FBoneLocalTransform>& BasePose, const std::vector<FBoneLocalTransform>& AdditivePose, float Weight, std::vector<FBoneLocalTransform>& OutPose)
+{
+	OutPose = BasePose;  // 기본 포즈로 시작
+
+	for (size_t i = 0; i < BasePose.size() && i < AdditivePose.size(); ++i)
+	{
+		// 위치(Translation) 처리
+		OutPose[i].Translation = XMVectorAdd(OutPose[i].Translation, XMVectorScale(AdditivePose[i].Translation, Weight));
+
+		// 2. 회전(Rotation) 처리
+		XMVECTOR CombinedQuat;
+		if (Weight < 1.0f)
+		{
+			XMVECTOR IdentityQuat = XMQuaternionIdentity();
+			XMVECTOR WeightedAddQuat = XMQuaternionSlerp(IdentityQuat, AdditivePose[i].Rotation, Weight);
+			CombinedQuat = XMQuaternionMultiply(BasePose[i].Rotation, WeightedAddQuat);
+		}
+		else
+		{
+			CombinedQuat = XMQuaternionMultiply(BasePose[i].Rotation, AdditivePose[i].Rotation);
+		}
+
+		OutPose[i].Rotation = CombinedQuat;
+
+		// 스케일(Scale) 처리
+		OutPose[i].Scale = XMVectorAdd(OutPose[i].Scale, XMVectorScale(XMVectorSubtract(AdditivePose[i].Scale, XMVectorSet(1,1,1,0)), Weight));
+	}
+}
+
+void UAnimInstance::JumpStart()
+{
+	
+	if (UCharacterMovementComponent* Movement = OwnerCharacter->GetCharacterMovement())
+	{
+		// 떨어지는 중이 아니면 아웃
+		if (!Movement->bIsFalling )
+		{
+			return;
+		}
+
+		// 100 이상의 속력을 가지는게 아니면 Falling으로
+		if (Movement->Velocity.y < 100.0f)
+		{
+			FallingStart();
+			return;
+		}
+	}
+
+	AnimState = EAnimState::Jump;
+	CurrentJumpStartTime = 0.0f;
+}
+
 bool UAnimInstance::IsAllResourceOK()
 {
 	bool bIsGameStart = GEngine->bGameStart;

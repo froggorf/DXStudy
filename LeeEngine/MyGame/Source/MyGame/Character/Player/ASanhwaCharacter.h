@@ -1,7 +1,7 @@
 #pragma once
 #include "AMyGameCharacterBase.h"
 
-class ASanhwaIceSpikeBase;
+class AIceSpikeBase;
 class UUserWidget;
 
 class ASanhwaCharacter : public AMyGameCharacterBase
@@ -12,10 +12,8 @@ class ASanhwaCharacter : public AMyGameCharacterBase
 	void Register() override;
 	void CreateWidgetOnBeginPlay() override;
 	void BeginPlay() override;
-	void Tick(float DeltaSeconds) override;
-
+	
 	void CreateIceSpikes(bool bIsUltimate);
-
 	
 private:
 	std::shared_ptr<UStaticMeshComponent> SM_Sword;

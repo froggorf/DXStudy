@@ -46,9 +46,12 @@ public:
 
 	void AddInputVector(XMFLOAT3 WorldAccel, float Power);
 	void Jump();
+	void Landing();
 	physx::PxController* PxCharacterController= nullptr;
+	physx::PxCapsuleControllerDesc desc{};
 	physx::PxControllerFilters Filters;
 	MyQueryFilterCallback CCTQueryCallBack{};
+	std::unique_ptr<FCharacterControllerObserver> ControllerObserver;
 
 	float GravityScale = 12.5f;
 	float MaxStepHeight = 20.0f;
@@ -64,12 +67,14 @@ public:
 	bool bUseControllerRotationRoll = false;
 	XMFLOAT3 RotationRate = XMFLOAT3{0.0f,0.0f,0.0f};
 
-	physx::PxCapsuleControllerDesc desc{};
 	EMovementMode MovementMode = EMovementMode::Walking;
 
-	float CurVelocityY = 0.0f;
+	float    CurVelocityY = 0.0f;
 	XMFLOAT3 ControlInputVector{};
 	XMFLOAT3 Velocity{};
+	bool      bIsFalling;
+
+	ACharacter* OwnerCharacter;
 };
 
 class ACharacter : public AActor
@@ -89,6 +94,7 @@ public:
 	void AddControllerPitchInput(float Val);
 
 	void Jump();
+	virtual void Landing();
 
 	void SetControlRotation(const XMFLOAT4& NewRot);
 	XMFLOAT4 GetControlRotation() const {return ControlRotation;}

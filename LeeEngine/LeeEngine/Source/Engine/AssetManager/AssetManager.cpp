@@ -809,6 +809,11 @@ void AssetManager::GetAsyncAssetCache(const std::string& AssetName, const AssetL
 		return;
 	}
 
+	if (AssetName.empty())
+	{
+		return;
+	}
+
 	// 이미 로드한 적이 있어 캐시에 있다면 바로 콜백함수 적용
 	const auto Iter = AsyncAssetCache.find(AssetName);
 	if(Iter != AsyncAssetCache.end())

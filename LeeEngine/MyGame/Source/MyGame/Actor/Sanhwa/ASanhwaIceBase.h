@@ -3,23 +3,25 @@
 #include "Engine/GameFramework/AActor.h"
 #include "MyGame/Character/Player/ASanhwaCharacter.h"
 
-class ASanhwaIceSpikeBase : public AActor
+class AGideonCharacter;
+
+class AIceSpikeBase : public AActor
 {
-	MY_GENERATE_BODY(ASanhwaIceSpikeBase)
+	MY_GENERATE_BODY(AIceSpikeBase)
 
 public:
-	ASanhwaIceSpikeBase();
-	~ASanhwaIceSpikeBase() override = default;
+	AIceSpikeBase();
+	~AIceSpikeBase() override = default;
 	void Register() override;
 	void BeginPlay() override;
 	void OnDestroy() override;
 
 	void SpawnIce();
-	void SpawnedBy(ASanhwaCharacter* Spawner);
+	void SpawnedBy(AMyGameCharacterBase* Spawner);
 
 	float TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AActor* DamageCauser) override;
 
-	void DamagedBySanhwa();
+	void DamagedByCharacter();
 protected:
 	virtual std::string GetIceSpikesStaticMeshName() const { return "SM_Sanhwa_IceSpikes_Skill"; }
 
@@ -38,7 +40,7 @@ private:
 	FTimerHandle DestroyTimerHandle;
 	static constexpr float DestroyTime = 20.0f;
 
-	ASanhwaCharacter* Spawner;
+	AMyGameCharacterBase* Spawner;
 
 
 };

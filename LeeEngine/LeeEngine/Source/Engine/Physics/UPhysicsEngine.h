@@ -64,6 +64,32 @@ public:
 	void onWake(physx::PxActor** actors, physx::PxU32 count) override{}
 };
 
+class FCharacterControllerObserver : public physx::PxUserControllerHitReport
+{
+private:
+	class UCharacterMovementComponent* MovementComponent;
+
+public:
+	FCharacterControllerObserver(UCharacterMovementComponent* InMovementComponent)
+		: MovementComponent(InMovementComponent)
+	{
+	}
+
+	
+	// 캐릭터가 다른 컨트롤러와 충돌할 때 호출
+	void onShapeHit(const physx::PxControllerShapeHit& hit) override;
+	// 캐릭터가 다른 컨트롤러와 충돌할 때 호출
+	virtual void onControllerHit(const physx::PxControllersHit& hit) override
+	{
+	}
+
+	// 캐릭터가 장애물과 충돌할 때 호출
+	virtual void onObstacleHit(const physx::PxControllerObstacleHit& hit) override
+	{
+	}
+};
+
+
 // Physics Engine
 class UPhysicsEngine : public UObject
 {

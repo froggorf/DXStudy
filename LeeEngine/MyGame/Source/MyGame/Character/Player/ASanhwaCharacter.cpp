@@ -88,19 +88,6 @@ void ASanhwaCharacter::BeginPlay()
 
 }
 
-void ASanhwaCharacter::Tick(float DeltaSeconds)
-{
-	AMyGameCharacterBase::Tick(DeltaSeconds);
-
-	static float LastTime = GEngine->GetTimeSeconds();
-	if (LastTime + 3.0f <= GEngine->GetTimeSeconds())
-	{
-		LastTime = GEngine->GetTimeSeconds();
-		TakeDamage(2500.0f, {},this);	
-	}
-	
-}
-
 void ASanhwaCharacter::CreateIceSpikes(bool bIsUltimate)
 {
 	XMFLOAT3 ActorLocation = GetActorLocation();
@@ -115,14 +102,14 @@ void ASanhwaCharacter::CreateIceSpikes(bool bIsUltimate)
 	std::shared_ptr<AActor> IceSpikesActor;
 	if (bIsUltimate)
 	{
-		IceSpikesActor = GetWorld()->SpawnActor("ASanhwaIceSpikeUltimate", SpawnTransform);
+		IceSpikesActor = GetWorld()->SpawnActor("AIceSpikeUltimate", SpawnTransform);
 	}
 	else
 	{
-		IceSpikesActor = GetWorld()->SpawnActor("ASanhwaIceSpikeBase", SpawnTransform);	
+		IceSpikesActor = GetWorld()->SpawnActor("AIceSpikeBase", SpawnTransform);	
 	}
 
-	if (const std::shared_ptr<ASanhwaIceSpikeBase>& IceActor = std::dynamic_pointer_cast<ASanhwaIceSpikeBase>(IceSpikesActor))
+	if (const std::shared_ptr<AIceSpikeBase>& IceActor = std::dynamic_pointer_cast<AIceSpikeBase>(IceSpikesActor))
 	{
 		IceActor->SpawnedBy(this);
 	}

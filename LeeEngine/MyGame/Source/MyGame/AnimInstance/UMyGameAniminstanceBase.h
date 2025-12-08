@@ -15,8 +15,15 @@ class UMyGameAnimInstanceBase : public UAnimInstance
 	UMyGameAnimInstanceBase();
 	~UMyGameAnimInstanceBase() override = default;
 
+	// 기존에는 abstract 로 만들었으나
+	// 다른 하위 클래스를 모두 수정해줄 필요는 없기에 다음과 같이 조정
+	// 필요한 캐릭터만 오버라이딩하여 적용
+	virtual std::string GetJumpStartAnimSequenceName() {return "";};
+	virtual std::string GetFallingAnimSequenceName() {return "";};
+	virtual std::string GetLandAnimSequenceName() {return "";};
+
 	virtual void LoadData_OnRegister();
-	void Register() override;
+	void         Register() override;
 
 	void     SetAnimNotify_BeginPlay() override;
 	void     BeginPlay() override;
@@ -31,16 +38,25 @@ class UMyGameAnimInstanceBase : public UAnimInstance
 	void EndMotionWarping();
 	bool SetMotionWarping();
 
+	
 	bool IsAllResourceOK() override;
 
 protected:
 	std::string BS_LocomotionName = "BS_UE4_Locomotion";
 
 protected:
+
 	AMyGameCharacterBase* MyGameCharacter = nullptr;
 
 	float MovementVelocity = 0.0f;
 	UCharacterMovementComponent* MovementComp;
 	std::shared_ptr<UBlendSpace> BS_Locomotion;
+
+	std::shared_ptr<UAnimSequence> AS_JumpStart;
+	std::shared_ptr<UAnimSequence> AS_Falling;
+	std::shared_ptr<UAnimSequence> AS_Land;
+
+	
+
 private:
 };

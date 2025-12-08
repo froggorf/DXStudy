@@ -3,7 +3,7 @@
 #include "Engine/Components/UStaticMeshComponent.h"
 #include "Engine/GameFramework/AActor.h"
 
-class ASanhwaIceSpikeUltimate : public ASanhwaIceSpikeBase
+class ASanhwaIceSpikeUltimate : public AIceSpikeBase
 {
 	MY_GENERATE_BODY(ASanhwaIceSpikeUltimate)
 

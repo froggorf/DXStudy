@@ -39,7 +39,7 @@ class USanhwaAnimInstance final : public UMyGameAnimInstanceBase
 	// MotionWarping - SkillAttack
 	void SanhwaSkillAttack();
 
-	void SetSkeletalMeshVisibility(bool NewVisibility);
+	void               SetSkeletalMeshVisibility(bool NewVisibility);
 
 	std::shared_ptr<UAnimSequence> AS_Test[5];
 

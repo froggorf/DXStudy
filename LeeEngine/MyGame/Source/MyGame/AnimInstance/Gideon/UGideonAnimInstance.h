@@ -22,11 +22,15 @@ class UGideonAnimInstance final : public UMyGameAnimInstanceBase
 	void Ultimate_Loop2();
 	void Ultimate_End();
 
-	void BasicAttack0();
-	void BasicAttack1();
-	void BasicAttack2();
-	void HeavyAttack();
-	void SkillAttack();
+	void               BasicAttack0();
+	void               BasicAttack1();
+	void               BasicAttack2();
+	void               HeavyAttack();
+	void               SkillAttack();
+
+	std::string GetJumpStartAnimSequenceName() override { return "AS_Gideon_JumpStart";};
+	std::string GetFallingAnimSequenceName() override { return "AS_Gideon_Falling";};
+	std::string GetLandAnimSequenceName() override { return "AS_Gideon_Land";};
 
 private:
 	std::shared_ptr<UBlendSpace> BS_FPSLocomotion;
