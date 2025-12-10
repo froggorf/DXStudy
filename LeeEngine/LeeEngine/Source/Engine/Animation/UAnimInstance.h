@@ -65,19 +65,25 @@ class UAnimInstance : public UObject
 
 	void ApplyAdditiveAnimation(const std::vector<FBoneLocalTransform>& BasePose, const std::vector<FBoneLocalTransform>& AdditivePose, float Weight, std::vector<FBoneLocalTransform>& OutPose);
 
+	void ChangeAnimState(EAnimState NewAnimState);
+
 	void JumpStart();
 	void FallingStart()
 	{
-		AnimState = EAnimState::Falling;
+		ChangeAnimState(EAnimState::Falling);
 		CurrentFallingTime = 0.0f;
 	}
 	void LandingStart()
 	{
-		AnimState = EAnimState::Landing;
+		ChangeAnimState(EAnimState::Landing);
 		CurrentLandingTime = 0.0f;
 	}
 protected:
 	EAnimState AnimState = EAnimState::Locomotion;
+	EAnimState LastAnimState = EAnimState::Locomotion;
+	float AnimationStateTransitionTime = 0.0f;
+
+
 	float CurrentJumpStartTime = 0.0f;
 	float CurrentFallingTime = 0.0f;
 	float CurrentLandingTime = 0.0f;

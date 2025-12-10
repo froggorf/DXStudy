@@ -313,6 +313,16 @@ void UAnimInstance::ApplyAdditiveAnimation(const std::vector<FBoneLocalTransform
 	}
 }
 
+void UAnimInstance::ChangeAnimState(EAnimState NewAnimState)
+{
+	if (AnimState != NewAnimState)
+	{
+		LastAnimState = AnimState;
+		AnimState = NewAnimState;
+		AnimationStateTransitionTime = 0.0f;
+	}
+}
+
 void UAnimInstance::JumpStart()
 {
 	
@@ -332,7 +342,7 @@ void UAnimInstance::JumpStart()
 		}
 	}
 
-	AnimState = EAnimState::Jump;
+	ChangeAnimState(EAnimState::Jump);
 	CurrentJumpStartTime = 0.0f;
 }
 

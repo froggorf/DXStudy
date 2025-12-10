@@ -42,10 +42,11 @@ class UMyGameAnimInstanceBase : public UAnimInstance
 	bool IsAllResourceOK() override;
 
 protected:
-	std::string BS_LocomotionName = "BS_UE4_Locomotion";
+	void CalculateAnimByState(EAnimState State, float AnimTime, std::vector<FBoneLocalTransform>& OutBoneTransform);
+	void UpdateAnimationState(float dt , std::vector<FBoneLocalTransform>& OutBoneTransform);
 
 protected:
-
+	std::string BS_LocomotionName = "BS_UE4_Locomotion";
 	AMyGameCharacterBase* MyGameCharacter = nullptr;
 
 	float MovementVelocity = 0.0f;

@@ -117,13 +117,98 @@ bool UMyGameAnimInstanceBase::SetMotionWarping()
 }
 
 
-
-// Note: 뭔가 더 좋은 방법이 있을것같은데 귀찮아서 단순히 나눔
 bool UMyGameAnimInstanceBase::IsAllResourceOK()
 {
 	return UAnimInstance::IsAllResourceOK() && MovementComp && BS_Locomotion;
 }
 
+void UMyGameAnimInstanceBase::CalculateAnimByState(EAnimState State, float AnimTime, std::vector<FBoneLocalTransform>& OutBoneTransform)
+{
+	switch (AnimState)
+	{
+	case EAnimState::Locomotion:
+		BS_Locomotion->GetAnimationBoneTransforms(XMFLOAT2{0.0f, MovementVelocity }, CurrentTime, OutBoneTransform, FinalNotifies);      	
+		break;
+	case EAnimState::Falling:
+	{
+		AS_Falling->GetBoneTransform(CurrentFallingTime, OutBoneTransform, nullptr);
+		
+	}
+	break;
+	case EAnimState::Jump:
+	{
+		AS_JumpStart->GetBoneTransform(CurrentJumpStartTime, OutBoneTransform, nullptr);
+	}
+	break;
+	case EAnimState::Landing:
+	{
+		AS_Land->GetBoneTransform(CurrentLandingTime, OutBoneTransform, nullptr);
+	}
+	break;
+	default:
+		MY_LOG("LOG",EDebugLogLevel::DLL_Error, "!");
+	}
+}
+
+void UMyGameAnimInstanceBase::UpdateAnimationState(float dt, std::vector<FBoneLocalTransform>& OutBoneTransform)
+{
+	static float AnimTimeMultiply = 1500.0f;
+	switch (AnimState)
+	{
+	case EAnimState::Locomotion:
+		BS_Locomotion->GetAnimationBoneTransforms(XMFLOAT2{0.0f, MovementVelocity}, CurrentTime, OutBoneTransform, FinalNotifies);
+		break;
+
+	case EAnimState::Jump:
+	{
+		float JumpStartAnimTime = AS_JumpStart->GetDuration();
+		AS_JumpStart->GetBoneTransform(CurrentJumpStartTime, OutBoneTransform, nullptr);
+
+		// 점프 시간 업데이트 및 상태 전환 체크
+		CurrentJumpStartTime += dt * AnimTimeMultiply;
+		if (CurrentJumpStartTime >= JumpStartAnimTime)
+		{
+			CurrentJumpStartTime = JumpStartAnimTime;
+			FallingStart();
+		}
+	}
+	break;
+
+	case EAnimState::Falling:
+	{
+		float FallingTime = AS_Falling->GetDuration();
+		AS_Falling->GetBoneTransform(CurrentFallingTime, OutBoneTransform, nullptr);
+
+		// 낙하 시간 업데이트 및 상태 전환 체크
+		CurrentFallingTime += dt;
+		if (CurrentFallingTime >= FallingTime)
+		{
+			CurrentFallingTime = FallingTime;
+			LandingStart();
+		}
+	}
+	break;
+
+	case EAnimState::Landing:
+	{
+		float LandingAnimDuration = AS_Land->GetDuration();
+		AS_Land->GetBoneTransform(CurrentLandingTime, OutBoneTransform, nullptr);
+
+		// 착지 시간 업데이트 및 상태 전환 체크
+		CurrentLandingTime += dt * AnimTimeMultiply;
+		if (CurrentLandingTime >= LandingAnimDuration)
+		{
+			CurrentLandingTime = LandingAnimDuration;
+			ChangeAnimState(EAnimState::Locomotion);
+		}
+	}
+	break;
+
+	default:
+		MY_LOG("LOG", EDebugLogLevel::DLL_Error, "Unknown animation state!");
+		break;
+	}
+}
 
 void UMyGameAnimInstanceBase::UpdateAnimation(float dt)
 {
@@ -134,82 +219,40 @@ void UMyGameAnimInstanceBase::UpdateAnimation(float dt)
 		return;
 	}
 
-	// Locomotion Transition
+	// 현재 상태와 이전 상태의 애니메이션 계산
+	std::vector<FBoneLocalTransform> CurrentStateBones(MAX_BONES, FBoneLocalTransform{});
+	std::vector<FBoneLocalTransform> PreviousStateBones(MAX_BONES, FBoneLocalTransform{});
+
+	// 현재 상태의 애니메이션 계산
+	UpdateAnimationState(dt, CurrentStateBones);
+
+	// 상태 전환 중이라면 이전 상태의 애니메이션도 계산
+	if (AnimationStateTransitionTime < 0.5f && LastAnimState != AnimState)
 	{
-		if (AnimState != EAnimState::Locomotion)
+		CalculateAnimByState(LastAnimState, CurrentTime, PreviousStateBones);
+
+		// 블렌드 가중치 계산 (0.5초에 걸쳐 0->1로 변화)
+		float BlendWeight = AnimationStateTransitionTime / 0.5f;
+
+		// 두 애니메이션 블렌딩
+		for (int i = 0; i < MAX_BONES; ++i)
 		{
-			int a= 0;
+			BoneTransforms[i] = Blend2BoneTransform(PreviousStateBones[i], CurrentStateBones[i], BlendWeight);
 		}
-		switch (AnimState)
-		{
-		case EAnimState::Locomotion:
-			BS_Locomotion->GetAnimationBoneTransforms(XMFLOAT2{0.0f, MovementVelocity }, CurrentTime, BoneTransforms, FinalNotifies);      	
-		break;
-		case EAnimState::Falling:
-			{
-			MY_LOG("LOG", EDebugLogLevel::DLL_Display, "Falling");
-			float FallingTime = AS_Falling->GetDuration();
-			if (CurrentFallingTime >= FallingTime)
-			{
-				CurrentFallingTime = FallingTime;
-				LandingStart();
-			}
-			AS_Falling->GetBoneTransform(CurrentFallingTime, BoneTransforms, nullptr);
-				CurrentFallingTime += dt;
-			}
-		break;
-		case EAnimState::Jump:
-			{
-			MY_LOG("LOG", EDebugLogLevel::DLL_Display, "Jump");
-			float JumpStartAnimTime = AS_JumpStart->GetDuration();
-			if (CurrentJumpStartTime >= JumpStartAnimTime)
-			{
-				CurrentJumpStartTime= JumpStartAnimTime;
-				FallingStart();
-			}
-			AS_JumpStart->GetBoneTransform(CurrentJumpStartTime, BoneTransforms, nullptr);
-				CurrentJumpStartTime += dt*1500;
-			}
-		break;
-		case EAnimState::Landing:
-			{
-				MY_LOG("LOG", EDebugLogLevel::DLL_Display, "Land");
-				float LandingAnimDuration = AS_Land->GetDuration();
-				if (CurrentLandingTime >= LandingAnimDuration)
-				{
-					CurrentLandingTime = LandingAnimDuration;
-					AnimState = EAnimState::Locomotion;
-				}
-				static std::vector<FBoneLocalTransform> LocomotionBoneTransform(MAX_BONES,FBoneLocalTransform{});
-				// Locomotion
-				BS_Locomotion->GetAnimationBoneTransforms(XMFLOAT2{0.0f, MovementVelocity }, CurrentTime, LocomotionBoneTransform, FinalNotifies);      	
-				// Landing 애니메이션 재생
-				static std::vector<FBoneLocalTransform> LandBoneTransforms(MAX_BONES, FBoneLocalTransform{});
-				AS_Land->GetBoneTransform(CurrentLandingTime, LandBoneTransforms, nullptr);
 
-				for (int i = 0; i < MAX_BONES; ++i)
-				{
-					BoneTransforms[i] = Blend2BoneTransform(LocomotionBoneTransform[i], LandBoneTransforms[i], 1.0f - CurrentLandingTime / LandingAnimDuration);
-				}
-				 
-
-				CurrentLandingTime += dt * 1500;
-
-			}
-		break;
-		default:
-			MY_LOG("LOG",EDebugLogLevel::DLL_Error, "!");
-		}
-		
+		// 전환 시간 업데이트
+		AnimationStateTransitionTime += dt;
+	}
+	else
+	{
+		// 전환이 끝났거나 전환 중이 아니면 현재 상태 애니메이션만 사용
+		BoneTransforms = CurrentStateBones;
 	}
 
 	// 몽타쥬 연결
 	{
 		PlayMontage("DefaultSlot", BoneTransforms, FinalNotifies);
 	}
-
-	//bool Dummy;
-	//AS->GetBoneTransform(CurrentTime, BoneTransforms, &Dummy);
 }
 
 void UMyGameAnimInstanceBase::SetWarpingTarget(const XMFLOAT3& IfNoEnemyWarpingDirectionUnitVector, float MoveDistance, float MoveTime)
