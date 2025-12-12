@@ -1,0 +1,7 @@
+{
+    "Class": "USkeletalMesh",
+    "Name": "SK_Sanhwa",
+    "ModelData": "/Content/Resource/MyGame/Character/Sanhwa.FBX",
+    "DefaultPoseAnimData" : "/Content/Resource/MyGame/Animation/Sanhwa/DefaultPose.FBX",
+    "Material" : [ "MI_Sanhwa_Head", "MI_Sanhwa_Armor", "MI_Sanhwa_Dress", "MI_Sanhwa_Skin", "MI_Sanhwa_Hair", "MI_Sanhwa_Eye", "",  "", "", "MI_Gideon_Mouth", "", "MI_Sanhwa_Body",  "MI_Sanhwa_Body_Metals", "MI_Sanhwa_Sword", "MI_Sanhwa_Dress_Skin",  "MI_Sanhwa_Dress", "MI_Sanhwa_Dress","MI_Sanhwa_AuroraTransition" ]
+}

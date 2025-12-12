@@ -15,7 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="백준 가장 긴 증가하는 부분 수열 .cpp">
+    <ClCompile Include="MyassetGenerator_Texture.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialGenerator.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

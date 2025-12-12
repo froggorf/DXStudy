@@ -4,10 +4,38 @@
 #include "Engine/World/UWorld.h"
 #include "MyGame/Character/Enemy/AEnemyBase.h"
 
+void ATestGameMode::Tick(float DeltaSeconds)
+{
+	AGameMode::Tick(DeltaSeconds);
+
+	static bool bTest = true;
+	if (ImGui::IsKeyPressed(ImGuiKey_9))
+	{
+		const std::shared_ptr<AActor>& Actor = GetWorld()->GetPersistentLevel()->FindActorByName("MyCharacter");
+		GetWorld()->GetPlayerController()->OnPossess(std::dynamic_pointer_cast<ACharacter>(Actor).get());
+	}
+	if (ImGui::IsKeyPressed(ImGuiKey_0))
+	{
+		const std::shared_ptr<AActor>& Actor = GetWorld()->GetPersistentLevel()->FindActorByName("TestChar");
+		GetWorld()->GetPlayerController()->OnPossess(std::dynamic_pointer_cast<ACharacter>(Actor).get());
+	}
+}
+
+void ATestGameMode::BeginPlay()
+{
+	AGameMode::BeginPlay();
+
+
+	GetWorld()->GetGameMode()->StartGame();
+}
+
 void ATestGameMode::StartGame()
 {
 	AGameMode::StartGame();
+	const std::shared_ptr<AActor>& Actor = GetWorld()->GetPersistentLevel()->FindActorByName("MyCharacter");
+	GetWorld()->GetPlayerController()->OnPossess(std::dynamic_pointer_cast<ACharacter>(Actor).get());
 
+	
 	FTransform SpawnTransform{XMFLOAT3{500,150,500}, MyMath::ForwardVectorToRotationQuaternion({-1,0,-1}), XMFLOAT3{1,1,1}};
 	BossActor = std::dynamic_pointer_cast<ADragon>(GetWorld()->SpawnActor("ADragon", SpawnTransform));
 }

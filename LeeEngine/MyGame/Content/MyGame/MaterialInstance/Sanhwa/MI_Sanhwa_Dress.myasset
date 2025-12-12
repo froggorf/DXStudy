@@ -1,0 +1,14 @@
+{
+    "Class": "UMaterialInstance",
+    "Name": "MI_Sanhwa_Dress",
+    "ParentMaterial" : "M_Sanhwa_Default",
+    "OverrideTexture" :
+    [
+	{ "Index" : 0, "Tex": "T_Dress_BaseColor"},
+	{ "Index" : 1, "Tex": "T_Dress_Normal"},
+	{ "Index" : 2, "Tex": "T_Dress_MetallicRoughness"},
+	{ "Index" : 3, "Tex": "T_Dress_Specular"},
+	{ "Index" : 4, "Tex": "T_Dress_Emissive"},
+	{ "Index" : 5, "Tex": "T_Dress_Occlusion"}
+    ]
+}

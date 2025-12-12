@@ -115,8 +115,8 @@ public:
 	const std::shared_ptr<UCapsuleComponent>& GetCapsuleComponent() const {return CapsuleComp; }
 	AController* GetController() const {return Controller;}
 	virtual void Death(){};
-protected:
 	virtual void BindKeyInputs() {}
+protected:
 private:
 public:
 	// 현재 이 액터를 소유중인 컨트롤러

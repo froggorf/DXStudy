@@ -1,0 +1,14 @@
+{
+    "Class": "UMaterialInstance",
+    "Name": "MI_Sanhwa_Hair",
+    "ParentMaterial" : "M_Sanhwa_Default",
+    "OverrideTexture" :
+    [
+	{ "Index" : 0, "Tex": "T_Hair_BaseColor"},
+	{ "Index" : 1, "Tex": "T_Hair_Normal"},
+	{ "Index" : 2, "Tex": "T_Hair_MetallicRoughness"},
+	{ "Index" : 3, "Tex": ""},
+	{ "Index" : 4, "Tex": ""},
+	{ "Index" : 5, "Tex": "T_Hair_Occlusion"}
+    ]
+}

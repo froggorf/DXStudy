@@ -50,6 +50,7 @@ class ULevel : public UObject
 	void DestroyActor(AActor* RemoveActor);
 	void UnregisterPendingActors();
 
+	const std::shared_ptr<AActor>& FindActorByName(const std::string& Name);
  	std::shared_ptr<AActor> FindSharedActorByRawPointer(AActor* Actor);
 
 	std::shared_ptr<AGameMode> GetGameMode() const {return GameModeActor;}

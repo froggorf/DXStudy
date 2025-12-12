@@ -172,6 +172,13 @@ void APlayerController::OnPossess(ACharacter* CharacterToPossess)
 		return;
 	}
 
+	if (const std::shared_ptr<UPlayerInput>& InputSystem = GetPlayerInput())
+	{
+		InputSystem->BindEvents.clear();
+	}
+
+	CharacterToPossess->BindKeyInputs();
+
 	if (std::shared_ptr<APlayerCameraManager> CM = CameraManager.lock())
 	{
 		CM->TargetCamera = Character->GetCameraComponent();

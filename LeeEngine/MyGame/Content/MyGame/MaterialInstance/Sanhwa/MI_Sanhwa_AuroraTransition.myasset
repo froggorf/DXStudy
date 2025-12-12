@@ -1,0 +1,14 @@
+{
+    "Class": "UMaterialInstance",
+    "Name": "MI_Sanhwa_AuroraTransition",
+    "ParentMaterial" : "M_Sanhwa_Default",
+    "OverrideTexture" :
+    [
+	{ "Index" : 0, "Tex": "T_PDO_AuroraTransition_BaseColor"},
+	{ "Index" : 1, "Tex": "T_PDO_AuroraTransition_Inst_Normal"},
+	{ "Index" : 2, "Tex": "T_PDO_AuroraTransition_Inst_MetallicRoughness"},
+	{ "Index" : 3, "Tex": "T_PDO_AuroraTransition_Inst_Specular"},
+	{ "Index" : 4, "Tex": ""},
+	{ "Index" : 5, "Tex": ""}
+    ]
+}

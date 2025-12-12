@@ -1,0 +1,14 @@
+{
+    "Class": "UMaterialInstance",
+    "Name": "MI_Sanhwa_Head",
+    "ParentMaterial" : "M_Sanhwa_Default",
+    "OverrideTexture" :
+    [
+	{ "Index" : 0, "Tex": "T_Head_BaseColor"},
+	{ "Index" : 1, "Tex": "T_Head_Normal"},
+	{ "Index" : 2, "Tex": "T_Head_MetallicRoughness"},
+	{ "Index" : 3, "Tex": "T_Head_Specular"},
+	{ "Index" : 4, "Tex": ""},
+	{ "Index" : 5, "Tex": "T_Head_Occlusion"}
+    ]
+}

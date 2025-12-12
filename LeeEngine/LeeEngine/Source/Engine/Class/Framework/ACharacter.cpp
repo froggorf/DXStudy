@@ -254,8 +254,6 @@ void ACharacter::BeginPlay()
 {
 	AActor::BeginPlay();
 
-	BindKeyInputs();
-
 	QueryCheckCapsuleComp->SetVisibility(false);
 
 	CapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);

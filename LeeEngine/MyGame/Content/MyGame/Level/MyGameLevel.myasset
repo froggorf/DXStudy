@@ -40,6 +40,27 @@
                 1.0
             ]
         },
+
+{
+            "Class": "ASanhwaCharacter",
+            "Location": [
+                500.0,
+                100.0,
+                0.0
+            ],
+            "Name": "TestChar",
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0,
+	  1.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
 {
             "Class": "ATestCube2",
             "Location": [

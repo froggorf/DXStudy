@@ -160,6 +160,19 @@ void ULevel::UnregisterPendingActors()
 	Actors.erase(PendingKillIter ,Actors.end());
 }
 
+const std::shared_ptr<AActor>& ULevel::FindActorByName(const std::string& Name)
+{
+	for (const std::shared_ptr<AActor>& Actor : Actors)
+	{
+		if (Actor->GetName() == Name)
+		{
+			return Actor;
+		}
+	}
+
+	return nullptr;
+}
+
 std::shared_ptr<AActor> ULevel::FindSharedActorByRawPointer(AActor* Actor)
 {
 	for (size_t i = 0; i < Actors.size(); ++i)

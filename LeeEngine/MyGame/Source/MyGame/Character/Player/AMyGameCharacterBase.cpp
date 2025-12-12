@@ -122,9 +122,7 @@ void AMyGameCharacterBase::LoadCharacterData_OnRegister()
 
 void AMyGameCharacterBase::BeginPlay()
 {
-	GetWorld()->GetPlayerController()->OnPossess(this);
 	ACharacter::BeginPlay();
-	GEngine->GetCurrentWorld()->GetCameraManager()->SetTargetCamera(CameraComp);
 
 	// Player 콜리젼 채널로 변경
 	QueryCheckCapsuleComp->SetCollisionObjectType(ECollisionChannel::Player);
@@ -134,8 +132,7 @@ void AMyGameCharacterBase::BeginPlay()
 
 	HealthComponent->SetMaxHealth(CharacterMaxHealth, true);
 
-	// TODO : Note) 테스트용 임시코드
-	GetWorld()->GetGameMode()->StartGame();
+	
 }
 
 void AMyGameCharacterBase::BindKeyInputs()

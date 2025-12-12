@@ -13,7 +13,7 @@ std::string ASanhwaCharacter::CharacterName  = "Sanhwa";
 
 ASanhwaCharacter::ASanhwaCharacter()
 {
-	CharacterMeshName = "SK_UE5MM";
+	CharacterMeshName = "SK_Sanhwa";
 	AnimInstanceName = "USanhwaAnimInstance";
 
 	DodgeMontageName[static_cast<int>(EDodgeDirection::Forward)] = "AM_UE5MM_Dodge_Fwd";

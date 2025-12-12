@@ -1,0 +1,14 @@
+{
+    "Class": "UMaterialInstance",
+    "Name": "MI_Sanhwa_Skin",
+    "ParentMaterial" : "M_Sanhwa_Default",
+    "OverrideTexture" :
+    [
+	{ "Index" : 0, "Tex": "T_Body_Skin_BaseColor"},
+	{ "Index" : 1, "Tex": "T_Body_Skin_Normal"},
+	{ "Index" : 2, "Tex": "T_Body_Skin_MetallicRoughness"},
+	{ "Index" : 3, "Tex": "T_Body_Skin_Specular"},
+	{ "Index" : 4, "Tex": ""},
+	{ "Index" : 5, "Tex": "T_Body_Skin_Occlusion"}
+    ]
+}

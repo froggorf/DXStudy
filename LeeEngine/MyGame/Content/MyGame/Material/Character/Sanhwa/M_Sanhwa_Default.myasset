@@ -1,0 +1,16 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_Sanhwa_Default",
+    "VertexShader" : {
+	"FilePath" : "/Shader/PBR.fx",
+	"Func" : "VS_Skeletal"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/Gideon.fx",
+	"Func": "PS_Sanhwa_Default"
+    },
+    "TextureParams" : [ "", "", "", "", "", "" ],
+    "BlendMode": "Deferred",
+    "TwoSided" : 0
+	
+}
