@@ -18,7 +18,8 @@ class AGideonCharacter final : public AMyGameCharacterBase
 	void MeteorStart();
 	void MeteorEnd();
 
-	void CreateWidgetOnBeginPlay() override;
+	void PossessedBy(AController* NewController) override;
+	void UnPossessed() override;
 
 	void Look(float X, float Y) override;
 

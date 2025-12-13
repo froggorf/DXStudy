@@ -1,0 +1,26 @@
+{
+	"Class": "UAnimMontage",
+	"Name": "AM_Sanhwa_Skill",
+	"Skeleton": "SK_Sanhwa",
+	"BlendIn" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.3
+	},
+	"BlendOut" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.3
+	},
+
+	"SlotName": "DefaultSlot",
+	"AnimTrack" : [
+		{"AnimName" : "AS_Sanhwa_BasicAttack2"}
+	],
+	"Sections" : [
+		{ "SectionName" : "BasicAttack", "StartTime" : 0.0 }
+	],
+    	"Notifies" : [
+		{ "NotifyClass" : "UAnimNotify_MotionWarpingStart", "TriggerTime" : 2, "WarpingName" : "SH_Skill" },
+		{ "NotifyClass" : "UAnimNotify_MotionWarpingStart", "TriggerTime" : 5, "WarpingName" : "SkillAttack" },
+		{ "NotifyClass" : "UAnimNotify_MotionWarpingEnd", "TriggerTime" : 24 }
+  	  ]
+}

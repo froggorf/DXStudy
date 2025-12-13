@@ -43,6 +43,7 @@ class UMyGameAnimInstanceBase : public UAnimInstance
 
 protected:
 	void CalculateAnimByState(EAnimState State, float AnimTime, std::vector<FBoneLocalTransform>& OutBoneTransform);
+	virtual float GetLandingTimeMultiply() {return 2.0f;}
 	void UpdateAnimationState(float dt , std::vector<FBoneLocalTransform>& OutBoneTransform);
 
 protected:

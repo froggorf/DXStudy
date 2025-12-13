@@ -31,7 +31,7 @@ public:
 	virtual void OnPossess(ACharacter* CharacterToPossess);
 	ACharacter* GetCharacter() const {return Character;}
 protected:
-	ACharacter* Character;
+	ACharacter* Character = nullptr;
 	// 현재 소유중인 캐릭터가 루트모션 애니메이션을 플레이하는지에 대한 변수
 	bool bPlayRootMotion = false;
 
@@ -81,6 +81,8 @@ public:
 	std::shared_ptr<UUserWidget> GetWidget(const std::string& WidgetName);
 
 	void CreateWidget(const std::string& Name, const std::shared_ptr<UUserWidget>& NewWidget);
+	void AddToViewport(const std::string& Name, const std::shared_ptr<UUserWidget>& NewWidget);
+	void RemoveFromParent(const std::string& Name);
 	// 해당 위젯에서 Input을 소모했는지를 bool값으로 반환
 	bool WidgetHandleInput(const FInputEvent& InputEvent);
 

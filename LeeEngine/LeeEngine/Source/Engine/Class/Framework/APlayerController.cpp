@@ -83,8 +83,13 @@ void AController::OnPossess(ACharacter* CharacterToPossess)
 {
 	if (CharacterToPossess != nullptr)
 	{
+		if (Character)
+		{
+			Character->UnPossessed();
+		}
+
 		Character = CharacterToPossess;
-		Character->Controller = this;
+		Character->PossessedBy(this);
 	}
 }
 
@@ -214,8 +219,20 @@ void APlayerController::CreateWidget(const std::string& Name, const std::shared_
 	}
 
 	NewWidget->NativeConstruct();
+}
 
+void APlayerController::AddToViewport(const std::string& Name, const std::shared_ptr<UUserWidget>& NewWidget)
+{
 	UserWidgets[Name] = NewWidget;
+}
+
+void APlayerController::RemoveFromParent(const std::string& Name)
+{
+	auto It = UserWidgets.find(Name);
+	if (It != UserWidgets.end())
+	{
+		UserWidgets.erase(It);
+	}
 }
 
 // 해당 위젯에서 Input을 소모했는지를 bool값으로 반환

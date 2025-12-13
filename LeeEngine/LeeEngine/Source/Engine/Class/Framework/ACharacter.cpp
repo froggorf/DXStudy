@@ -269,6 +269,16 @@ void ACharacter::BeginPlay()
 	QueryCheckCapsuleComp->GetBodyInstance()->SetObjectType(ECollisionChannel::Pawn);
 }
 
+void ACharacter::PossessedBy(AController* NewController)
+{
+	Controller = NewController;
+}
+
+void ACharacter::UnPossessed()
+{
+	Controller = nullptr;
+}
+
 void ACharacter::SetActorLocation_Teleport(const XMFLOAT3& NewLocation) const
 {
 	UCharacterMovementComponent* MovementComp = GetCharacterMovement();

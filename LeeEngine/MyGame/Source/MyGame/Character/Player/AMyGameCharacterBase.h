@@ -38,8 +38,11 @@ class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
 	void Register() override;
 	virtual void LoadCharacterData_OnRegister();
 	void BeginPlay() override;
+	void Tick_Editor(float DeltaSeconds) override;
 
 	void BindKeyInputs() override;
+
+	virtual void OnSkeletalMeshLoadSuccess();
 
 	// 공격에 성공할 시 true 반환
 	bool ApplyDamageToEnemy_Range(const FAttackData& AttackData, const std::string& DamageType = "");
@@ -65,13 +68,10 @@ protected:
 	float MaxPower = 120.0f;
 	float MinPower = 80.0f;
 public:
-
-	virtual void CreateWidgetOnBeginPlay() {}
-
 	const std::shared_ptr<UCombatBaseComponent>& GetCombatComponent() const {return CombatComponent;}
 	const std::shared_ptr<USkillBaseComponent>& GetSkillComponent() const {return SkillComponent;}
 	const std::shared_ptr<UUltimateBaseComponent>& GetUltimateComponent() const {return UltimateComponent;}
-	std::shared_ptr<UMyGameWidgetBase> GetCharacterWidget() const {return CharacterWidget.lock(); }
+	std::shared_ptr<UMyGameWidgetBase> GetCharacterWidget() const {return CharacterWidget; }
 
 private:
 	bool bAltButtonPressed = false;
@@ -104,8 +104,7 @@ protected:
 	std::string CharacterMeshName = "SK_Manny_UE4";
 	std::string AnimInstanceName = "UMyGameAnimInstanceBase";
 
-	// 캐릭터 마다 존재하는 위젯 (BeginPlay에서 생성)
-	std::weak_ptr<UMyGameWidgetBase> CharacterWidget;
+	std::shared_ptr<UMyGameWidgetBase> CharacterWidget;
 public:
 	const std::shared_ptr<UMotionWarpingComponent>& GetMotionWarpingComponent() const {return MotionWarpingComponent;}
 protected:

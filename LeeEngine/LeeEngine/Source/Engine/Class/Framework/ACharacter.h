@@ -87,6 +87,9 @@ public:
 	void Register() override;
 	void BeginPlay() override;
 
+	virtual void PossessedBy(AController* NewController);
+	virtual void UnPossessed();
+
 	void SetActorLocation_Teleport(const XMFLOAT3& NewLocation) const override;
 
 	void AddMovementInput(const XMFLOAT3& WorldDirection, float ScaleValue = 1.0f);
@@ -120,7 +123,7 @@ protected:
 private:
 public:
 	// 현재 이 액터를 소유중인 컨트롤러
-	AController*  Controller;
+	AController*  Controller = nullptr;
 protected:
 	// 컨트롤러의 Rotation
 	XMFLOAT4 ControlRotation;

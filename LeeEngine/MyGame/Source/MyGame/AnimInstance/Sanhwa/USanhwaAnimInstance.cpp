@@ -8,7 +8,7 @@
 
 USanhwaAnimInstance::USanhwaAnimInstance()
 {
-	BS_LocomotionName = "BS_UE5MM_Locomotion";
+	BS_LocomotionName = "BS_Sanhwa_Locomotion";
 }
 
 void USanhwaAnimInstance::SetAnimNotify_BeginPlay()
@@ -104,7 +104,7 @@ void USanhwaAnimInstance::BeginPlay()
 
 bool USanhwaAnimInstance::IsAllResourceOK()
 {
-	return UMyGameAnimInstanceBase::IsAllResourceOK();
+	return UMyGameAnimInstanceBase::IsAllResourceOK() && AS_Falling && AS_JumpStart && AS_Land;
 }
 
 

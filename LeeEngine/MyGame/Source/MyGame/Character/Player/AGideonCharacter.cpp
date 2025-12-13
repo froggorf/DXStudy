@@ -133,14 +133,30 @@ void AGideonCharacter::MeteorEnd()
 	GEngine->GetTimerManager()->ClearTimer(SpawnMeteorTimerHandle);
 }
 
-void AGideonCharacter::CreateWidgetOnBeginPlay()
+void AGideonCharacter::PossessedBy(AController* NewController)
 {
-	if (APlayerController* PC = GetWorld()->GetPlayerController())
+	AMyGameCharacterBase::PossessedBy(NewController);
+
+	if (!CharacterWidget)
 	{
-		std::shared_ptr<UGideonWidget> GideonWidget = std::make_shared<UGideonWidget>();
-		PC->CreateWidget(CharacterName, GideonWidget);
-		CharacterWidget = GideonWidget;
+		CharacterWidget = std::make_shared<UGideonWidget>();
+		CharacterWidget->NativeConstruct();
 	}
+
+	if (APlayerController* PC = dynamic_cast<APlayerController*>(NewController))
+	{
+		PC->AddToViewport(CharacterName, CharacterWidget);	
+	}
+}
+
+void AGideonCharacter::UnPossessed()
+{
+	if (APlayerController* PC = dynamic_cast<APlayerController*>(Controller))
+	{
+		PC->RemoveFromParent(CharacterName);	
+	}
+
+	AMyGameCharacterBase::UnPossessed();
 }
 
 void AGideonCharacter::Look(float X, float Y)
@@ -184,7 +200,7 @@ void AGideonCharacter::ToAimMode()
 	GetWorld()->GetCameraManager()->SetViewTargetWithBlend(AimModeCameraComp, 0.5f, EViewTargetBlendFunction::Linear);
 	bIsAimMode = true;
 
-	if (const std::shared_ptr<UGideonWidget>& GideonWidget = std::dynamic_pointer_cast<UGideonWidget>(CharacterWidget.lock()))
+	if (const std::shared_ptr<UGideonWidget>& GideonWidget = std::dynamic_pointer_cast<UGideonWidget>(CharacterWidget))
 	{
 		GideonWidget->SetAimModeWidgetVisibility(true);
 	}
@@ -203,7 +219,7 @@ void AGideonCharacter::ToNormalMode()
 	GetWorld()->GetCameraManager()->SetViewTargetWithBlend(CameraComp, 0.5f, EViewTargetBlendFunction::Linear);
 	bIsAimMode = false;
 
-	if (const std::shared_ptr<UGideonWidget>& GideonWidget = std::dynamic_pointer_cast<UGideonWidget>(CharacterWidget.lock()))
+	if (const std::shared_ptr<UGideonWidget>& GideonWidget = std::dynamic_pointer_cast<UGideonWidget>(CharacterWidget))
 	{
 		GideonWidget->SetAimModeWidgetVisibility(false);
 	}

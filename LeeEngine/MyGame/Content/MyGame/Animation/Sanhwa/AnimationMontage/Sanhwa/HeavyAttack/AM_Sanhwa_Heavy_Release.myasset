@@ -1,0 +1,23 @@
+{
+	"Class": "UAnimMontage",
+	"Name": "AM_Sanhwa_Heavy_Release",
+	"Skeleton": "SK_Sanhwa",
+	"BlendIn" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.0
+	},
+	"BlendOut" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.2
+	},
+
+	"SlotName": "DefaultSlot",
+	"AnimTrack" : [
+		{"AnimName" : "AS_Sanhwa_Heavy_End"}
+	],
+	"Sections" : [
+		{ "SectionName" : "Release", "StartTime" : 0.0 }
+	],
+    	"Notifies" : [
+  	  ]
+}

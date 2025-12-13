@@ -1,0 +1,24 @@
+{
+	"Class": "UAnimMontage",
+	"Name": "AM_Sanhwa_Heavy_Press",
+	"Skeleton": "SK_Sanhwa",
+	"BlendIn" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.0
+	},
+	"BlendOut" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.0
+	},
+
+	"SlotName": "DefaultSlot",
+	"AnimTrack" : [
+		{"AnimName" : "AS_Sanhwa_Heavy_Start"},
+		{"AnimName" : "AS_Sanhwa_Heavy_Idle"}
+	],
+	"Sections" : [
+		{ "SectionName" : "Start", "StartTime" : 0.0, "NextSectionName" : "Idle" },
+		{ "SectionName" : "Idle", "StartTime" : 9.0, "NextSectionName" : "Idle" }
+	],
+    	"Notifies" : [  ]
+}

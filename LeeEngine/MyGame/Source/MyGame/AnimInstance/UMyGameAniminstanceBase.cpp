@@ -152,7 +152,7 @@ void UMyGameAnimInstanceBase::CalculateAnimByState(EAnimState State, float AnimT
 
 void UMyGameAnimInstanceBase::UpdateAnimationState(float dt, std::vector<FBoneLocalTransform>& OutBoneTransform)
 {
-	static float AnimTimeMultiply = 1500.0f;
+	static float AnimTimeMultiply = 1500.f;
 	switch (AnimState)
 	{
 	case EAnimState::Locomotion:
@@ -191,16 +191,38 @@ void UMyGameAnimInstanceBase::UpdateAnimationState(float dt, std::vector<FBoneLo
 
 	case EAnimState::Landing:
 	{
-		float LandingAnimDuration = AS_Land->GetDuration();
-		AS_Land->GetBoneTransform(CurrentLandingTime, OutBoneTransform, nullptr);
+		std::vector<FBoneLocalTransform> LandingAnim(MAX_BONES);
+		std::vector<FBoneLocalTransform> LocomotionAnim(MAX_BONES);
 
-		// 착지 시간 업데이트 및 상태 전환 체크
-		CurrentLandingTime += dt * AnimTimeMultiply;
+		float LandingAnimDuration = AS_Land->GetDuration();
+			AS_Land->GetBoneTransform(CurrentLandingTime, LandingAnim, nullptr);
+		BS_Locomotion->GetAnimationBoneTransforms(
+			XMFLOAT2{0.0f, MovementVelocity}, 
+			CurrentTime, 
+			LocomotionAnim, 
+			FinalNotifies
+		);
+
+		float BlendAlpha = std::clamp(CurrentLandingTime / LandingAnimDuration, 0.0f, 1.0f);
+
+		for (int i = 0; i < MAX_BONES; ++i)
+		{
+			OutBoneTransform[i] = Blend2BoneTransform(
+				LandingAnim[i],      
+				LocomotionAnim[i],   
+				BlendAlpha           
+			);
+		}
+
+		CurrentLandingTime += dt * AnimTimeMultiply * GetLandingTimeMultiply();
+
 		if (CurrentLandingTime >= LandingAnimDuration)
 		{
-			CurrentLandingTime = LandingAnimDuration;
+			CurrentLandingTime = 0.0f;  
 			ChangeAnimState(EAnimState::Locomotion);
 		}
+
+		break;
 	}
 	break;
 

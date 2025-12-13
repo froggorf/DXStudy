@@ -1,8 +1,0 @@
-{
-    "Class": "UAnimSequence",
-    "Name": "AS_Sanhwa_BasicAttack1",
-    "Skeleton": "SK_UE5MM",
-    "AnimationDataPath": "/Content/Resource/MyGame/Animation/UE5/Sanhwa/BasicAttack/Sanhwa_Basic_1.FBX",
-    "RootMotion": 1,
-    "Rate" : 1.0
-}

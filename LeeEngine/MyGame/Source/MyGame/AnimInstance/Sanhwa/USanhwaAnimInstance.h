@@ -41,8 +41,12 @@ class USanhwaAnimInstance final : public UMyGameAnimInstanceBase
 
 	void               SetSkeletalMeshVisibility(bool NewVisibility);
 
-	std::shared_ptr<UAnimSequence> AS_Test[5];
-
+	
+	std::string GetJumpStartAnimSequenceName() override { return "AS_Sanhwa_JumpStart";};
+	std::string GetFallingAnimSequenceName() override { return "AS_Sanhwa_Falling";};
+	std::string GetLandAnimSequenceName() override { return "AS_Sanhwa_Landing";};
+protected:
+	float GetLandingTimeMultiply() override {return 20.0f;}
 private:
 	XMFLOAT3 Attack4_AttackTargetPos;
 };

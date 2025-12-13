@@ -1,0 +1,26 @@
+{
+	"Class": "UAnimMontage",
+	"Name": "AM_Sanhwa_BasicAttack0",
+	"Skeleton": "SK_Sanhwa",
+	"BlendIn" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.1
+	},
+	"BlendOut" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.1
+	},
+
+	"SlotName": "DefaultSlot",
+	"AnimTrack" : [
+		{"AnimName" : "AS_Sanhwa_BasicAttack0"}
+	],
+	"Sections" : [
+		{ "SectionName" : "BasicAttack", "StartTime" : 0.0 }
+	],
+    	"Notifies" : [
+		{ "NotifyClass" : "UAnimNotify_MotionWarpingStart", "TriggerTime" : 2, "WarpingName" : "SH_Attack0" },
+		{ "NotifyClass" : "UAnimNotify_MotionWarpingEnd", "TriggerTime" : 19 },
+		{ "NotifyClass" : "UAnimNotify_Event", "TriggerTime" : 4, "EventName" : "BasicAttack0" }
+  	  ]
+}

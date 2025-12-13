@@ -67,7 +67,23 @@ AMyGameCharacterBase::AMyGameCharacterBase()
 	HealthComponent = std::static_pointer_cast<UHealthComponent>(CreateDefaultSubobject("HealthComp", "UPlayerHealthComponent"));
 	
 
-	
+#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
+	static constexpr bool bFindCameraRotation = true;
+	if (bFindCameraRotation)
+	{
+		TestComp_CheckCameraPos = std::make_shared<USceneComponent>();
+		TestComp_CheckCameraPos->Rename("Hello!!");
+		SM_Arrow =  std::make_shared<UStaticMeshComponent>();
+		SM_Arrow->SetupAttachment(TestComp_CheckCameraPos);
+		SM_Arrow->SetRelativeRotation(XMFLOAT3{0,-90,0});
+		AssetManager::GetAsyncAssetCache("SM_Arrow", [this](std::shared_ptr<UObject> Object)
+			{
+				SM_Arrow->SetStaticMesh(std::static_pointer_cast<UStaticMesh>(Object));
+			});
+		SM_Arrow->Rename("Arrow");
+		SM_Arrow->SetRelativeScale3D({10,10,10});
+	}
+#endif
 }
 
 void AMyGameCharacterBase::Register()
@@ -97,26 +113,11 @@ void AMyGameCharacterBase::LoadCharacterData_OnRegister()
 	AssetManager::GetAsyncAssetCache(CharacterMeshName,[this](std::shared_ptr<UObject> Object)
 		{
 			SkeletalMeshComponent->SetSkeletalMesh(std::static_pointer_cast<USkeletalMesh>(Object));
+			OnSkeletalMeshLoadSuccess();
 		});
 	SkeletalMeshComponent->SetAnimInstanceClass(AnimInstanceName);
 
-#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
-	static constexpr bool bFindCameraRotation = false;
-	if (bFindCameraRotation)
-	{
-		TestComp_CheckCameraPos = std::make_shared<USceneComponent>();
 
-		SM_Arrow =  std::make_shared<UStaticMeshComponent>();
-		SM_Arrow->SetupAttachment(TestComp_CheckCameraPos);
-		SM_Arrow->SetRelativeRotation(XMFLOAT3{0,-90,0});
-		AssetManager::GetAsyncAssetCache("SM_Arrow", [this](std::shared_ptr<UObject> Object)
-			{
-				SM_Arrow->SetStaticMesh(std::static_pointer_cast<UStaticMesh>(Object));
-			});
-		SM_Arrow->Rename("Arrow");
-		SM_Arrow->SetRelativeScale3D({10,10,10});
-	}
-#endif
 }
 
 
@@ -128,11 +129,19 @@ void AMyGameCharacterBase::BeginPlay()
 	QueryCheckCapsuleComp->SetCollisionObjectType(ECollisionChannel::Player);
 	QueryCheckCapsuleComp->GetBodyInstance()->SetObjectType(ECollisionChannel::Player);
 
-	CreateWidgetOnBeginPlay();
-
 	HealthComponent->SetMaxHealth(CharacterMaxHealth, true);
 
 	
+}
+
+void AMyGameCharacterBase::Tick_Editor(float DeltaSeconds)
+{
+	ACharacter::Tick_Editor(DeltaSeconds);
+
+	if (GetRootComponent())
+	{
+		GetRootComponent()->UpdateComponentToWorld();
+	}
 }
 
 void AMyGameCharacterBase::BindKeyInputs()
@@ -175,6 +184,14 @@ void AMyGameCharacterBase::BindKeyInputs()
 			}
 		}
 		
+	}
+}
+
+void AMyGameCharacterBase::OnSkeletalMeshLoadSuccess()
+{
+	if (GetRootComponent())
+	{
+		GetRootComponent()->UpdateComponentToWorld();
 	}
 }
 

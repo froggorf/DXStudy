@@ -1,0 +1,8 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_Sanhwa_Heavy_Start",
+    "Skeleton": "SK_Sanhwa",
+    "AnimationDataPath": "/Content/Resource/MyGame/Animation/Sanhwa/Sanhwa_Heavy_Start.FBX",
+    "RootMotion": 1,
+    "Rate" : 1.0
+}
