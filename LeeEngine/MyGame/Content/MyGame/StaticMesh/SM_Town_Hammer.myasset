@@ -1,0 +1,6 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_Town_Hammer",
+    "ModelData": "/Content/Resource/MyGame/StaticMesh/town/hammer.FBX",
+    "Material" : [ "MI_Town_Base" ]
+}

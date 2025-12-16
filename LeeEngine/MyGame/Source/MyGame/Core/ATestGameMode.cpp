@@ -35,9 +35,10 @@ void ATestGameMode::StartGame()
 	const std::shared_ptr<AActor>& Actor = GetWorld()->GetPersistentLevel()->FindActorByName("MyCharacter");
 	GetWorld()->GetPlayerController()->OnPossess(std::dynamic_pointer_cast<ACharacter>(Actor).get());
 
-	
+	/*
 	FTransform SpawnTransform{XMFLOAT3{500,150,500}, MyMath::ForwardVectorToRotationQuaternion({-1,0,-1}), XMFLOAT3{1,1,1}};
 	BossActor = std::dynamic_pointer_cast<ADragon>(GetWorld()->SpawnActor("ADragon", SpawnTransform));
+	*/
 }
 
 void ATestGameMode::EndGame()

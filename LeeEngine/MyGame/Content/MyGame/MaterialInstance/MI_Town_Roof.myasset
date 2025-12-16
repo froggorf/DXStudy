@@ -1,0 +1,14 @@
+{
+    "Class": "UMaterialInstance",
+    "Name": "MI_Town_Roof",
+    "ParentMaterial" : "M_PBR_Default",
+    "OverrideTexture" :
+    [
+	{ "Index" : 0, "Tex": "T_Roof_Color"},
+	{ "Index" : 1, "Tex": ""},
+	{ "Index" : 2, "Tex": ""},
+	{ "Index" : 3, "Tex": "T_Roof_Roughness"},
+	{ "Index" : 4, "Tex": ""},
+	{ "Index" : 5, "Tex": ""}
+    ]
+}

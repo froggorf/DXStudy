@@ -16,6 +16,11 @@ void UConvexComponent::SetStaticMesh(const std::shared_ptr<UStaticMesh>& InStati
 		UnRegisterPhysics();
 	}
 
+	if (ECollisionEnabled::NoCollision == CollisionEnabled)
+	{
+		return;
+	}
+
 	BaseStaticMesh = InStaticMesh;
 	RegisterPhysics();	
 

@@ -1,0 +1,6 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_Town_Roof1",
+    "ModelData": "/Content/Resource/MyGame/StaticMesh/town/roof_0_ED4461D1.FBX",
+    "Material" : [ "MI_Town_Roof" ]
+}

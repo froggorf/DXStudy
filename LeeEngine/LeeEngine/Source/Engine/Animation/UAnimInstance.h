@@ -125,7 +125,7 @@ protected:
 	bool bUseMotionWarping = false;
 
 public:
-	static constexpr float AnimTickFPS = 30;
+	static constexpr float AnimTickFPS = 60;
 protected:
 	class ACharacter* OwnerCharacter = nullptr;
 private:

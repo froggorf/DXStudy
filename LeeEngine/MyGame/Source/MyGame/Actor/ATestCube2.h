@@ -21,9 +21,14 @@ class ATestCube2 : public AActor
 	void Tick(float DeltaSeconds) override;
 
 protected:
-
-
 	std::shared_ptr<UStaticMeshComponent> Ground;
+
+	std::shared_ptr<UStaticMeshComponent> Mesh4;
+	std::shared_ptr<UStaticMeshComponent> Mesh0;
+	std::shared_ptr<UStaticMeshComponent> Mesh1;
+	std::shared_ptr<UStaticMeshComponent> Mesh2;
+	std::shared_ptr<UStaticMeshComponent> Mesh3;
+	;
 
 private:
 	std::shared_ptr<AAIController> AIController;
