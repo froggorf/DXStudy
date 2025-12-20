@@ -46,7 +46,7 @@ class ULevel : public UObject
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 	void SaveDataFromAssetToFile(nlohmann::json& Json) override;
 
-	std::shared_ptr<AActor> SpawnActor(const std::string& ClassName, const FTransform& SpawnTransform);
+	std::shared_ptr<AActor> SpawnActor(const std::string& ClassName, const FTransform& SpawnTransform, const std::string& Name = "");
 	void DestroyActor(AActor* RemoveActor);
 	void UnregisterPendingActors();
 

@@ -182,6 +182,14 @@ std::shared_ptr<AActor> ULevel::FindSharedActorByRawPointer(AActor* Actor)
 			return Actors[i];
 		}
 	}
+
+	for (const std::shared_ptr<AActor>& PendingAddActor : PendingAddActors)
+	{
+		if (PendingAddActor.get() == Actor)
+		{
+			return PendingAddActor;
+		}
+	}
 	return nullptr;
 }
 
@@ -207,7 +215,7 @@ void ULevel::SaveDataFromAssetToFile(nlohmann::json& Json)
 	}
 }
 
-std::shared_ptr<AActor> ULevel::SpawnActor(const std::string& ClassName, const FTransform& SpawnTransform)
+std::shared_ptr<AActor> ULevel::SpawnActor(const std::string& ClassName, const FTransform& SpawnTransform, const std::string& Name)
 {
 	std::unordered_map<std::string, std::shared_ptr<UObject>>& CDOMap = UObject::GetCDOMap();
 	auto P = CDOMap.find(ClassName);
@@ -223,7 +231,11 @@ std::shared_ptr<AActor> ULevel::SpawnActor(const std::string& ClassName, const F
 		NewActor->SetActorLocation(SpawnTransform.GetTranslation());
 		NewActor->SetActorRotation(SpawnTransform.GetRotation());
 		NewActor->SetActorScale3D(SpawnTransform.GetScale3D());
-		
+
+		if (!Name.empty())
+		{
+			NewActor->Rename(Name);
+		}
 		PendingAddActors.emplace_back(NewActor);
 		NewActor->Register();
 	}

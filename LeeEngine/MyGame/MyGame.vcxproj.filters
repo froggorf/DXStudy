@@ -307,6 +307,9 @@
     <ClCompile Include="Source\MyGame\Actor\Decal\ARangeDecalActor.cpp">
       <Filter>Source\MyGame\Actor\Decal</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Core\ATownGameMode.cpp">
+      <Filter>Source\MyGame\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -461,6 +464,9 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Actor\Decal\ARangeDecalActor.h">
       <Filter>Source\MyGame\Actor\Decal</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Core\ATownGameMode.h">
+      <Filter>Source\MyGame\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

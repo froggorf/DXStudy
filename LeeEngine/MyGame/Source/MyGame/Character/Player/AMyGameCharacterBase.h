@@ -21,6 +21,17 @@ enum class EElementType
 	Aero,		// 기류
 	Havoc		// 인멸
 };
+
+enum class EEquipType
+{
+	Head,
+	Armor,
+	Glove,
+	Shoes,
+	Weapon,
+	Count
+};
+
 XMFLOAT4 GetElementColor(EElementType ElementType);
 struct FMyGameDamageEvent : public FDamageEvent
 {
@@ -64,9 +75,12 @@ class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
 	void Debug_SetUltimateGauge100();
 
 	float GetCurrentPower() const;
+	float GetWeaponPower() const;
+	void SetEquipmentLevel(const std::array<int, static_cast<int>(EEquipType::Count)>& NewEquipArr);
 protected:
 	float MaxPower = 120.0f;
 	float MinPower = 80.0f;
+	std::array<float, static_cast<int>(EEquipType::Count)> EquipLevel = {0,0,0,0,0};
 public:
 	const std::shared_ptr<UCombatBaseComponent>& GetCombatComponent() const {return CombatComponent;}
 	const std::shared_ptr<USkillBaseComponent>& GetSkillComponent() const {return SkillComponent;}
@@ -76,8 +90,8 @@ public:
 private:
 	bool bAltButtonPressed = false;
 
-	// IDodgeInterface
 protected:
+	// IDodgeInterface
 	void Dodge() override;
 	void DodgeEnd() override;
 	void ChangeToRoll() override;

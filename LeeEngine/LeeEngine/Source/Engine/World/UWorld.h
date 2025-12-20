@@ -54,7 +54,7 @@ class UWorld : public UObject, public std::enable_shared_from_this<UWorld>
 	APlayerController* GetPlayerController() const {return PlayerController.lock().get();}
 	APlayerCameraManager* GetCameraManager() const;
 
-	std::shared_ptr<AActor> SpawnActor(const std::string& ClassName, const FTransform& SpawnTransform) const;
+	std::shared_ptr<AActor> SpawnActor(const std::string& ClassName, const FTransform& SpawnTransform, const std::string& Name = "") const;
 
 	std::shared_ptr<AGameMode> GetGameMode() const;
 

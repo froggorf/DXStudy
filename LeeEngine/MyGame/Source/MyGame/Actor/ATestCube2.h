@@ -6,6 +6,7 @@
 #include "Engine/Components/USkeletalMeshComponent.h"
 #include "Engine/GameFramework/AActor.h"
 
+class UBoxComponent;
 class UDecalComponent;
 class UNiagaraComponent;
 class UStaticMeshComponent;
@@ -19,7 +20,9 @@ class ATestCube2 : public AActor
 	void Register() override;
 	void BeginPlay() override;
 	void Tick(float DeltaSeconds) override;
-
+protected:
+	void ActorComeToSmithy(UShapeComponent* TargetComp, AActor* OverlapActor, UShapeComponent* OverlapComp);
+	void ActorComeOutSmithy(UShapeComponent* TargetComp, AActor* OverlapActor, UShapeComponent* OverlapComp);
 protected:
 	std::shared_ptr<UStaticMeshComponent> Ground;
 
@@ -28,7 +31,9 @@ protected:
 	std::shared_ptr<UStaticMeshComponent> Mesh1;
 	std::shared_ptr<UStaticMeshComponent> Mesh2;
 	std::shared_ptr<UStaticMeshComponent> Mesh3;
-	;
+
+
+	std::shared_ptr<UBoxComponent> BoxCollision;
 
 private:
 	std::shared_ptr<AAIController> AIController;

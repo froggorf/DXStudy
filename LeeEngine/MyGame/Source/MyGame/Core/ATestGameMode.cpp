@@ -25,8 +25,7 @@ void ATestGameMode::BeginPlay()
 {
 	AGameMode::BeginPlay();
 
-
-	GetWorld()->GetGameMode()->StartGame();
+	StartGame();
 }
 
 void ATestGameMode::StartGame()

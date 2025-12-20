@@ -59,6 +59,7 @@
     <ClCompile Include="Source\MyGame\Component\PBRTestComponent.cpp" />
     <ClCompile Include="Source\MyGame\Core\AMyGamePlayerController.cpp" />
     <ClCompile Include="Source\MyGame\Core\ATestGameMode.cpp" />
+    <ClCompile Include="Source\MyGame\Core\ATownGameMode.cpp" />
     <ClCompile Include="Source\MyGame\Interface\Dodge\IDodgeInterface.cpp" />
     <ClCompile Include="Source\MyGame\Notify\MyGameNotify.cpp" />
     <ClCompile Include="Source\MyGame\Widget\Gideon\UGideonGaugeWidget.cpp" />
@@ -112,6 +113,7 @@
     <ClInclude Include="Source\MyGame\Component\PBRTestComponent.h" />
     <ClInclude Include="Source\MyGame\Core\AMyGamePlayerController.h" />
     <ClInclude Include="Source\MyGame\Core\ATestGameMode.h" />
+    <ClInclude Include="Source\MyGame\Core\ATownGameMode.h" />
     <ClInclude Include="Source\MyGame\Interface\Dodge\IDodgeInterface.h" />
     <ClInclude Include="Source\MyGame\Notify\MyGameNotify.h" />
     <ClInclude Include="Source\MyGame\Widget\Gideon\UGideonGaugeWidget.h" />

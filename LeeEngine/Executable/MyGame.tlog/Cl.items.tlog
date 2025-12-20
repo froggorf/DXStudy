@@ -38,6 +38,7 @@ C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\MotionWarping\UMotio
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Component\PBRTestComponent.cpp;C:\Project\DXStudy\LeeEngine\Executable\PBRTestComponent.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Core\AMyGamePlayerController.cpp;C:\Project\DXStudy\LeeEngine\Executable\AMyGamePlayerController.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Core\ATestGameMode.cpp;C:\Project\DXStudy\LeeEngine\Executable\ATestGameMode.obj
+C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Core\ATownGameMode.cpp;C:\Project\DXStudy\LeeEngine\Executable\ATownGameMode.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Interface\Dodge\IDodgeInterface.cpp;C:\Project\DXStudy\LeeEngine\Executable\IDodgeInterface.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Notify\MyGameNotify.cpp;C:\Project\DXStudy\LeeEngine\Executable\MyGameNotify.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Widget\Gideon\UGideonGaugeWidget.cpp;C:\Project\DXStudy\LeeEngine\Executable\UGideonGaugeWidget.obj

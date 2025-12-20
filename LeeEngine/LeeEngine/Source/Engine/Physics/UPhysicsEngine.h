@@ -19,6 +19,7 @@ enum class ECollisionChannel
 	Pawn,
 	Player,
 	Enemy,
+	AlwaysOverlap,
 	Count
 };
 enum class ECollisionResponse
@@ -37,7 +38,8 @@ enum class ECollisionEnabled
 	// 오버랩, 레이트레이스 등에만 사용
 	QueryOnly,
 	// 물리가 적용
-	Physics
+	Physics,
+	QueryAndPhysics
 };
 
 struct FHitResult

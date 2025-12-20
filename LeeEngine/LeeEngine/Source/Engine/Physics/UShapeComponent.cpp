@@ -4,6 +4,13 @@
 UShapeComponent::UShapeComponent()
 {
 	SetCollisionEnabled(ECollisionEnabled::Physics);
+	ObjectType = ECollisionChannel::Visibility;
+	for (size_t i = 0; i < CollisionResponse.size(); ++i)
+	{
+		CollisionResponse[i] = ECollisionResponse::Overlap;  // 기본값
+	}
+
+	SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
 
@@ -154,6 +161,10 @@ void UShapeComponent::UpdatePhysicsFilterData()
 		physx::PxFilterData FilterData;
 		FilterData.word0 = static_cast<physx::PxU32>(1 << static_cast<UINT>(ObjectType));
 
+		if (FilterData.word0 == 0)
+		{
+			int a = 0;
+		}
 		physx::PxU32 BlockMask = 0;
 		physx::PxU32 OverlapMask = 0;
 
@@ -180,9 +191,18 @@ void UShapeComponent::UpdatePhysicsFilterData()
 		Shape->setQueryFilterData(FilterData);
 	}
 
+	if (bIsAddedToPxScene && RigidActor->getScene())
+	{
+		RigidActor->getScene()->resetFiltering(*RigidActor);
+	}
+
 	if (physx::PxRigidDynamic* RigidDynamic = RigidActor->is<physx::PxRigidDynamic>())
 	{
-		RigidDynamic->wakeUp();
+		if (bIsAddedToPxScene)
+		{
+			RigidDynamic->wakeUp();
+			
+		}
 	}
 
 }
@@ -244,15 +264,18 @@ void UShapeComponent::SetCollisionEnabled(ECollisionEnabled NewType)
 		{
 		case ECollisionEnabled::NoCollision:
 			Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
-			Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false); 
+			Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false);
+			Shape->setFlag(physx::PxShapeFlag::eSCENE_QUERY_SHAPE, false);
 		break;
 		case ECollisionEnabled::Physics:
-			Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false); 
 			Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
+			Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false);
+			Shape->setFlag(physx::PxShapeFlag::eSCENE_QUERY_SHAPE, false);
 		break;
 		case ECollisionEnabled::QueryOnly:
 			Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
 			Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
+			Shape->setFlag(physx::PxShapeFlag::eSCENE_QUERY_SHAPE, true);
 		break;
 		}
 	}

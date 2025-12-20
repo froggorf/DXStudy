@@ -10,12 +10,6 @@ UBoxComponent::UBoxComponent()
 void UBoxComponent::Register()
 {
 	UShapeComponent::Register();
-
-    SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-    for (size_t i = 0; i < CollisionResponse.size(); ++i)
-    {
-        CollisionResponse[i] = ECollisionResponse::Overlap;
-    }
 }
 
 physx::PxRigidActor* UBoxComponent::CreateRigidActor()

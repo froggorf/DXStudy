@@ -65,6 +65,12 @@ AMyGameCharacterBase::AMyGameCharacterBase()
 	MotionWarpingComponent = std::static_pointer_cast<UMotionWarpingComponent>(CreateDefaultSubobject("MotionWarpingComp", "UMotionWarpingComponent"));
 	UltimateSceneCameraComp = std::make_shared<UCameraComponent>();
 	HealthComponent = std::static_pointer_cast<UHealthComponent>(CreateDefaultSubobject("HealthComp", "UPlayerHealthComponent"));
+
+
+	// Player 콜리젼 채널로 변경
+	QueryCheckCapsuleComp->SetCollisionObjectType(ECollisionChannel::Player);
+	QueryCheckCapsuleComp->SetCollisionObjectType(ECollisionChannel::Player);
+	QueryCheckCapsuleComp->SetCollisionResponseToChannel(ECollisionChannel::AlwaysOverlap, ECollisionResponse::Overlap);
 	
 
 #if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
@@ -125,9 +131,6 @@ void AMyGameCharacterBase::BeginPlay()
 {
 	ACharacter::BeginPlay();
 
-	// Player 콜리젼 채널로 변경
-	QueryCheckCapsuleComp->SetCollisionObjectType(ECollisionChannel::Player);
-	QueryCheckCapsuleComp->GetBodyInstance()->SetObjectType(ECollisionChannel::Player);
 
 	HealthComponent->SetMaxHealth(CharacterMaxHealth, true);
 
@@ -439,11 +442,26 @@ void AMyGameCharacterBase::Debug_SetUltimateGauge100()
 
 float AMyGameCharacterBase::GetCurrentPower() const
 {
-	return MyMath::FRandRange(MinPower, MaxPower);
+	return MyMath::FRandRange(MinPower, MaxPower) * GetWeaponPower();
 }
 
+float AMyGameCharacterBase::GetWeaponPower() const
+{
+	// 레벨당 30%로 간단히 적용
+	return 1.0f + 0.3f * EquipLevel[static_cast<int>(EEquipType::Weapon)];
+}
+
+void AMyGameCharacterBase::SetEquipmentLevel(const std::array<int, static_cast<int>(EEquipType::Count)>& NewEquipArr)
+{
+	for (int i = 0 ; i < static_cast<int>(EEquipType::Count); ++i)
+	{
+		EquipLevel[i] = NewEquipArr[i];	
+	}
+	
+}
 
 void AMyGameCharacterBase::Tick(float DeltaSeconds)
 {
 	ACharacter::Tick(DeltaSeconds);
+
 }

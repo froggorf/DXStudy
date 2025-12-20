@@ -202,11 +202,11 @@ APlayerCameraManager* UWorld::GetCameraManager() const
 	return nullptr;
 }
 
-std::shared_ptr<AActor> UWorld::SpawnActor(const std::string& ClassName, const FTransform& SpawnTransform) const
+std::shared_ptr<AActor> UWorld::SpawnActor(const std::string& ClassName, const FTransform& SpawnTransform, const std::string& Name) const
 {
 	if (const std::shared_ptr<ULevel>& PersistentLevel = GetPersistentLevel())
 	{
-		return PersistentLevel->SpawnActor(ClassName, SpawnTransform);
+		return PersistentLevel->SpawnActor(ClassName, SpawnTransform, Name);
 	}
 	return nullptr;
 }
