@@ -14,6 +14,7 @@ class ASkyBox : public AActor
 public:
 	ASkyBox();
 	void Register() override;
+	void Tick(float DeltaSeconds) override;
 private:
 
 	std::shared_ptr<ULightComponent> DirectionalLight;

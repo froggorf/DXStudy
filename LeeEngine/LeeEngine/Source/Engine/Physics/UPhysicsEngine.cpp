@@ -89,47 +89,8 @@ physx::PxFilterFlags MyFilterShader(
 	const void* /*constantBlock*/, 
 	physx::PxU32 /*constantBlockSize*/)
 {
-	static int CallCount = 0;
-	static std::map<std::pair<void*, void*>, int> PairCallCount;
-
-	// ✅ 페어 추적
-	void* Ptr0 = (void*)Attributes0;
-	void* Ptr1 = (void*)Attributes1;
-	auto PairKey = std::make_pair(std::min(Ptr0, Ptr1), max(Ptr0, Ptr1));
-	PairCallCount[PairKey]++;
-
-	CallCount++;
-
-	// ✅ FilterData 전체 정보 로그
 	physx::PxU32 Channel0 = FilterData0.word0;
 	physx::PxU32 Channel1 = FilterData1.word0;
-
-	MY_LOG("LogTemp", EDebugLogLevel::DLL_Error, ("========================================"));
-	MY_LOG("LogTemp", EDebugLogLevel::DLL_Error, ("FilterShader Call #%d (Pair #%d)"), CallCount, PairCallCount[PairKey]);
-	MY_LOG("LogTemp", EDebugLogLevel::DLL_Error, ("Actor0: Channel=%u, BlockMask=%u, OverlapMask=%u"), 
-		Channel0, FilterData0.word1, FilterData0.word2);
-	MY_LOG("LogTemp", EDebugLogLevel::DLL_Error, ("Actor1: Channel=%u, BlockMask=%u, OverlapMask=%u"), 
-		Channel1, FilterData1.word1, FilterData1.word2);
-
-	// ✅ word0이 0인 경우 경고
-	if (Channel0 == 0)
-	{
-		MY_LOG("LogTemp", EDebugLogLevel::DLL_Error, ("❌❌❌ Actor0 has INVALID Channel (0)! ❌❌❌"));
-		MY_LOG("LogTemp", EDebugLogLevel::DLL_Error, ("  IsTrigger: %d, IsKinematic: %d"), 
-			physx::PxFilterObjectIsTrigger(Attributes0),
-			physx::PxFilterObjectIsKinematic(Attributes0));
-	}
-	if (Channel1 == 0)
-	{
-		MY_LOG("LogTemp", EDebugLogLevel::DLL_Error, ("❌❌❌ Actor1 has INVALID Channel (0)! ❌❌❌"));
-		MY_LOG("LogTemp", EDebugLogLevel::DLL_Error, ("  IsTrigger: %d, IsKinematic: %d"), 
-			physx::PxFilterObjectIsTrigger(Attributes1),
-			physx::PxFilterObjectIsKinematic(Attributes1));
-	}
-
-
-
-
 
 	// Block 체크
 	bool Block0 = (FilterData0.word1 & Channel1) != 0;

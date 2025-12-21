@@ -106,6 +106,7 @@ class UEngine : public UObject
 	void SetEngineTickRate(float NewTickRate){EngineTickRate = NewTickRate;}
 
 	void SetInputMode(EInputMode NewInputMode);
+	EInputMode GetInputMode() const {return InputMode;}
 	void SetMouseLock(EMouseLockMode NewLockMode);
 	void ShowCursor(bool NewVisible);
 protected:

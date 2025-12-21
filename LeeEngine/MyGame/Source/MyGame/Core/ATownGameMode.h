@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Class/Framework/AGameMode.h"
+#include "MyGame/Character/Player/AMyGameCharacterBase.h"
 
 class ATownGameMode : public AGameMode
 {
@@ -10,4 +11,12 @@ class ATownGameMode : public AGameMode
 	void BeginPlay() override;
 	void StartGame() override;
 	void EndGame() override;
+
+	void AddEquipLevel(EEquipType Type);
+
+
+	std::weak_ptr<class ASanhwaCharacter> SanhwaCharacter;
+	std::weak_ptr<class AGideonCharacter> GideonCharacter;
+	static std::array<int, static_cast<int>(EEquipType::Count)> EquipLevel;
+
 };

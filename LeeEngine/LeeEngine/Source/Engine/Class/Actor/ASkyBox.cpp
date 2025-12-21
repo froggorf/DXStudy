@@ -173,3 +173,16 @@ void ASkyBox::Register()
 #endif
 }
 
+void ASkyBox::Tick(float DeltaSeconds)
+{
+	AActor::Tick(DeltaSeconds);
+
+	if (APlayerController* PC = GetWorld()->GetPlayerController())
+	{
+		if (const std::shared_ptr<AActor>& Actor = PC->GetPlayerCharacter())
+		{
+			SetActorLocation(Actor->GetActorLocation());
+		}
+	}
+}
+

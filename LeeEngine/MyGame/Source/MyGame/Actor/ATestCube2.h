@@ -6,6 +6,7 @@
 #include "Engine/Components/USkeletalMeshComponent.h"
 #include "Engine/GameFramework/AActor.h"
 
+class UEnchantWidget;
 class UBoxComponent;
 class UDecalComponent;
 class UNiagaraComponent;
@@ -21,8 +22,8 @@ class ATestCube2 : public AActor
 	void BeginPlay() override;
 	void Tick(float DeltaSeconds) override;
 protected:
-	void ActorComeToSmithy(UShapeComponent* TargetComp, AActor* OverlapActor, UShapeComponent* OverlapComp);
-	void ActorComeOutSmithy(UShapeComponent* TargetComp, AActor* OverlapActor, UShapeComponent* OverlapComp);
+	void ActorComeToSmithy();
+	void ActorComeOutSmithy();
 protected:
 	std::shared_ptr<UStaticMeshComponent> Ground;
 
@@ -33,10 +34,11 @@ protected:
 	std::shared_ptr<UStaticMeshComponent> Mesh3;
 
 
-	std::shared_ptr<UBoxComponent> BoxCollision;
-
 private:
 	std::shared_ptr<AAIController> AIController;
+
+	std::shared_ptr<UEnchantWidget> EnchantWidget;
+	bool bEnchantWidgetAttached = false;
 
 
 };

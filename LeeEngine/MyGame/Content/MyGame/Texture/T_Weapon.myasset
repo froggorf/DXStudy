@@ -1,0 +1,5 @@
+{
+    "Class": "UTexture",
+    "Name": "T_Weapon",
+    "FilePath" : "/Content/Resource/MyGame/Texture/Weapon.png"
+}

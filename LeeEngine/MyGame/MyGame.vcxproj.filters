@@ -149,6 +149,9 @@
     <Filter Include="Source\MyGame\Actor\Decal">
       <UniqueIdentifier>{4cb48653-7dac-4406-b8e6-c5772b8b6948}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\Widget\Town">
+      <UniqueIdentifier>{aa35399d-ba4b-4d64-8ebf-921d2193a44a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -310,6 +313,9 @@
     <ClCompile Include="Source\MyGame\Core\ATownGameMode.cpp">
       <Filter>Source\MyGame\Core</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Widget\Town\UEnchantWidget.cpp">
+      <Filter>Source\MyGame\Widget\Town</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -467,6 +473,9 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Core\ATownGameMode.h">
       <Filter>Source\MyGame\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Widget\Town\UEnchantWidget.h">
+      <Filter>Source\MyGame\Widget\Town</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

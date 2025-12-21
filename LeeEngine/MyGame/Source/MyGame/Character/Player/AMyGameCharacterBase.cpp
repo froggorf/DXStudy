@@ -272,6 +272,8 @@ float AMyGameCharacterBase::TakeDamage(float DamageAmount, const FDamageEvent& D
 		ChangeToRoll();
 		return DamageAmount;
 	}
+
+	DamageAmount = max(0, DamageAmount - GetArmorPower());
 	
 	if (HealthComponent->ApplyDamage(DamageAmount) <= 0.0f)
 	{
@@ -449,6 +451,12 @@ float AMyGameCharacterBase::GetWeaponPower() const
 {
 	// 레벨당 30%로 간단히 적용
 	return 1.0f + 0.3f * EquipLevel[static_cast<int>(EEquipType::Weapon)];
+}
+
+float AMyGameCharacterBase::GetArmorPower() const
+{
+	// 레벨당 100씩 막아줌
+	return 100.0f * (EquipLevel[static_cast<int>(EEquipType::Armor)] + EquipLevel[static_cast<int>(EEquipType::Glove)] + EquipLevel[static_cast<int>(EEquipType::Head)]);
 }
 
 void AMyGameCharacterBase::SetEquipmentLevel(const std::array<int, static_cast<int>(EEquipType::Count)>& NewEquipArr)

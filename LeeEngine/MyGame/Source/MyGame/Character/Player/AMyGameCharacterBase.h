@@ -27,7 +27,6 @@ enum class EEquipType
 	Head,
 	Armor,
 	Glove,
-	Shoes,
 	Weapon,
 	Count
 };
@@ -76,11 +75,12 @@ class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
 
 	float GetCurrentPower() const;
 	float GetWeaponPower() const;
+	float GetArmorPower() const;
 	void SetEquipmentLevel(const std::array<int, static_cast<int>(EEquipType::Count)>& NewEquipArr);
 protected:
 	float MaxPower = 120.0f;
 	float MinPower = 80.0f;
-	std::array<float, static_cast<int>(EEquipType::Count)> EquipLevel = {0,0,0,0,0};
+	std::array<float, static_cast<int>(EEquipType::Count)> EquipLevel = {0,0,0,0};
 public:
 	const std::shared_ptr<UCombatBaseComponent>& GetCombatComponent() const {return CombatComponent;}
 	const std::shared_ptr<USkillBaseComponent>& GetSkillComponent() const {return SkillComponent;}
