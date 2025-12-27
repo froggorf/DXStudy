@@ -38,7 +38,8 @@ void UMyGameWidgetBase::NativeConstruct()
 	{
 		CanvasSlot->Anchors = ECanvasAnchor::RightBottom;
 		CanvasSlot->Alignment = {1.0f,1.0f};
-		CanvasSlot->Size = {300,150};
+		CanvasSlot->Size = {450,150};
+		CanvasSlot->Position = {50.0f,50.0f};
 	}
 
 	SkillCoolDownWidget = std::make_shared<USkillWidgetBase>();
@@ -63,6 +64,17 @@ void UMyGameWidgetBase::NativeConstruct()
 	UltimateCoolDownWidget->SetSkillIconImageBrush(FImageBrush{UTexture::GetTextureCache(GetUltimateTextureName()), XMFLOAT4{1.0f,1.0f,1.0f, 1.0f}});
 	UltimateCoolDownWidget->SetUltimateGaugeColor(UltimateGaugeColor);
 
+	PotionCoolDownWidget = std::make_shared<USkillWidgetBase>();
+	PotionCoolDownWidget->AttachToPanel(MainCanvasWidget);
+	if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(PotionCoolDownWidget->GetMainCanvasWidget()->GetSlot()))
+	{
+		CanvasSlot->Anchors = ECanvasAnchor::RightBottom;
+		CanvasSlot->Alignment = {1.0f,1.0f};
+		CanvasSlot->Size = {150,150};
+		CanvasSlot->Position = {50.0f,50.0f + 200.0f};
+	}
+	PotionCoolDownWidget->SetSkillText(L"T");
+	PotionCoolDownWidget->SetSkillIconImageBrush(FImageBrush{UTexture::GetTextureCache("T_White"), XMFLOAT4{1,1,1,1}});
 }
 
 
@@ -82,6 +94,14 @@ void UMyGameWidgetBase::SetUltimateCoolDownTime(float NewCoolDownTime, float Max
 void UMyGameWidgetBase::SetUltimateGauge(float NewGauge_0_To_1)
 {
 	UltimateCoolDownWidget->SetUltimateGauge(NewGauge_0_To_1);
+}
+
+void UMyGameWidgetBase::SetPotionCoolDownTime(float NewCoolDownTime , float MaxCoolDownTime)
+{
+	if (PotionCoolDownWidget)
+	{
+		PotionCoolDownWidget->SetSkillCoolDownTime(NewCoolDownTime, MaxCoolDownTime);
+	}
 }
 
 void UMyGameWidgetBase::SetHealthBarWidget(float CurValue, float MaxValue)

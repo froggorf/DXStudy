@@ -70,6 +70,7 @@ void UMyGameAnimInstanceBase::NativeUpdateAnimation(float DeltaSeconds)
 {
 	UAnimInstance::NativeUpdateAnimation(DeltaSeconds);
 
+	
 	XMFLOAT3 MoveVel = MovementComp->Velocity;
 	MoveVel.y = 0.0f;
 	MovementVelocity = XMVectorGetX(XMVector3Length(XMLoadFloat3(&MoveVel)));

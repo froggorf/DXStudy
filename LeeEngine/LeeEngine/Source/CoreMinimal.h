@@ -76,9 +76,7 @@
 #include <FMOD/fmod_output.h>
 
 // PhysX
-#include <PhysX/PxPhysicsAPI.h>
-#include <PhysX/cooking/PxCooking.h>
-#include <PhysX/cooking/PxConvexMeshDesc.h>
+#include "PhysX/PxPhysicsAPI.h"
 
 // Recast & Detour
 #include <Recast/Recast.h>

@@ -1,4 +1,4 @@
-﻿// 06.25
+// 06.25
 // 언리얼 엔진 5 코드를 분석하며 자체엔진으로 작성중인 코드입니다.
 // 언리얼엔진의 코딩컨벤션을 따릅니다.  https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coding-standard?application_version=4.27
 // 이윤석
@@ -31,10 +31,10 @@ public:
 	void DebugDraw_RenderThread() const override;
 
 	// NavMesh 를 렌더링하기 위한 목적으로 임시적으로 VertexBuffer를 만들어 관리하는 함수
-	void CreateVertexBufferForNavMesh(rcPolyMeshDetail* dmesh);
 protected:
 	std::weak_ptr<UStaticMesh> BaseStaticMesh;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> ConvexMeshVertexBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> TriangleMeshVertexBuffer;
 
 	bool bRenderNavMesh = false;
 };

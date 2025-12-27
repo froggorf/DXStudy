@@ -30,10 +30,12 @@ private:
 		// Ultimate UI UserWidget
 		std::shared_ptr<UUltimateWidget> UltimateCoolDownWidget;
 
+	std::shared_ptr<USkillWidgetBase> PotionCoolDownWidget;
 public:
 	void SetSkillCoolDownTime(float NewCoolDownTime, float MaxCoolDownTime);
 	void SetUltimateCoolDownTime(float NewCoolDownTime, float MaxCoolDownTime);
 	void SetUltimateGauge(float NewGauge_0_To_1);
+	void SetPotionCoolDownTime(float NewCoolDownTime, float MaxCoolDownTime);
 	void SetHealthBarWidget(float CurValue, float MaxValue);
 	void Tick(float DeltaSeconds) override;
 

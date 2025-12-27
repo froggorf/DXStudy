@@ -50,8 +50,8 @@ void ATestCube2::Register()
 
 	AssetManager::GetAsyncAssetCache("SM_Town_Box",[this](std::shared_ptr<UObject> Object)
 		{
-			Mesh4->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			Mesh4->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
+			Ground->SetCollisionObjectType(ECollisionChannel::WorldStatic);
 		});
 
 	AssetManager::GetAsyncAssetCache("SM_Town_Builing",[this](std::shared_ptr<UObject> Object)
@@ -62,8 +62,8 @@ void ATestCube2::Register()
 
 	AssetManager::GetAsyncAssetCache("SM_Town_Hammer",[this](std::shared_ptr<UObject> Object)
 		{
-			Mesh1->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			Mesh1->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
+			Ground->SetCollisionObjectType(ECollisionChannel::WorldStatic);
 		});
 
 	AssetManager::GetAsyncAssetCache("SM_Town_Roof1",[this](std::shared_ptr<UObject> Object)

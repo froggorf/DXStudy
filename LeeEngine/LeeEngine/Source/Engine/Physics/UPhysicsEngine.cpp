@@ -639,3 +639,271 @@ physx::PxConvexMesh* UPhysicsEngine::CreateConvexMesh(const std::shared_ptr<USta
 	physx::PxDefaultMemoryInputData input(Buffer.getData(), Buffer.getSize());
 	return PxPhysics->createConvexMesh(input);
 }
+
+physx::PxTriangleMesh* UPhysicsEngine::CreateTriangleMesh(const std::vector<physx::PxVec3>& Vertices, const std::vector<uint32_t>& Indices) const
+{
+	if (!PxPhysics)
+	{
+		MY_LOG("Error", EDebugLogLevel::DLL_Error, "PxPhysics is null!");
+		return nullptr;
+	}
+
+	physx::PxTriangleMeshDesc MeshDesc;
+	MeshDesc.points.count = static_cast<physx::PxU32>(Vertices.size());
+	MeshDesc.points.stride = sizeof(physx::PxVec3);
+	MeshDesc.points.data = Vertices.data();
+
+	MeshDesc.triangles.count = static_cast<physx::PxU32>(Indices.size() / 3);
+	MeshDesc.triangles.stride = 3 * sizeof(uint32_t);
+	MeshDesc.triangles.data = Indices.data();
+
+	if (!MeshDesc.isValid())
+	{
+		MY_LOG("Error", EDebugLogLevel::DLL_Error, "Triangle mesh descriptor is invalid!");
+		return nullptr;
+	}
+
+	physx::PxCookingParams CookingParams(PxPhysics->getTolerancesScale());
+
+	CookingParams.meshPreprocessParams = physx::PxMeshPreprocessingFlag::eDISABLE_CLEAN_MESH;
+	CookingParams.meshWeldTolerance = 0.0f;
+	CookingParams.buildTriangleAdjacencies = true;  
+
+	physx::PxDefaultMemoryOutputStream WriteBuffer;
+
+	physx::PxTriangleMeshCookingResult::Enum Result;
+
+	bool bSuccess = PxCookTriangleMesh(
+		CookingParams,
+		MeshDesc,
+		WriteBuffer,
+		&Result 
+	);
+
+	if (!bSuccess)
+	{
+		const char* ResultStr = "UNKNOWN";
+		switch (Result)
+		{
+		case physx::PxTriangleMeshCookingResult::eSUCCESS:
+			ResultStr = "SUCCESS";
+			break;
+		case physx::PxTriangleMeshCookingResult::eLARGE_TRIANGLE:
+			ResultStr = "LARGE_TRIANGLE (Warning: Some triangles are very large)";
+			break;
+		case physx::PxTriangleMeshCookingResult::eFAILURE:
+			ResultStr = "FAILURE";
+			break;
+		}
+
+		MY_LOG("Error", EDebugLogLevel::DLL_Error, 
+			"Failed to cook triangle mesh. Result: " + std::string(ResultStr));
+		return nullptr;
+	}
+
+	physx::PxDefaultMemoryInputData ReadBuffer(WriteBuffer.getData(), WriteBuffer.getSize());
+	physx::PxTriangleMesh* TriangleMesh = PxPhysics->createTriangleMesh(ReadBuffer);
+
+	if (!TriangleMesh)
+	{
+		MY_LOG("Error", EDebugLogLevel::DLL_Error, "createTriangleMesh failed!");
+		return nullptr;
+	}
+
+	MY_LOG("Info", EDebugLogLevel::DLL_Display, 
+		"Triangle mesh created: " + std::to_string(Vertices.size()) + " vertices, " +
+		std::to_string(Indices.size() / 3) + " triangles");
+
+	return TriangleMesh;
+}
+
+physx::PxRigidActor* UPhysicsEngine::CreateTriangleMeshActor(
+	const FTransform& Transform, 
+	const std::shared_ptr<UStaticMesh>& StaticMesh, 
+	const float Mass, 
+	Microsoft::WRL::ComPtr<ID3D11Buffer>& OutVertexBuffer, 
+	bool bIsDynamic
+) const
+{
+	if (!StaticMesh)
+	{
+		MY_LOG("Warning", EDebugLogLevel::DLL_Warning, "StaticMesh is null");
+		return nullptr;
+	}
+
+	// ========== 1. 메쉬 데이터 추출 ==========
+
+	std::vector<physx::PxVec3> Vertices;
+	std::vector<uint32_t> Indices;
+
+	const auto& RenderData = StaticMesh->GetStaticMeshRenderData();
+
+	for (const auto& VertexVec : RenderData->VertexData)
+	{
+		for (const auto& Vertex : VertexVec)
+		{
+			Vertices.emplace_back(physx::PxVec3(
+				Vertex.Pos.x,
+				Vertex.Pos.y,
+				-Vertex.Pos.z
+			));
+		}
+	}
+
+	for (const auto& IndexVec : RenderData->IndexData)
+	{
+		for (size_t i = 0; i < IndexVec.size(); i += 3)
+		{
+			if (i + 2 < IndexVec.size())
+			{
+				Indices.emplace_back(IndexVec[i + 0]);
+				Indices.emplace_back(IndexVec[i + 2]);
+				Indices.emplace_back(IndexVec[i + 1]);
+			}
+		}
+	}
+
+	if (Vertices.empty() || Indices.empty())
+	{
+		MY_LOG("Error", EDebugLogLevel::DLL_Error, 
+			"Empty mesh data! Vertices=" + std::to_string(Vertices.size()) + 
+			", Indices=" + std::to_string(Indices.size()));
+		return nullptr;
+	}
+
+	// ========== 2. PhysX Triangle Mesh 생성 ==========
+
+	physx::PxTriangleMesh* TriangleMesh = CreateTriangleMesh(Vertices, Indices);
+
+	if (!TriangleMesh)
+	{
+		MY_LOG("Error", EDebugLogLevel::DLL_Error, "Failed to create triangle mesh");
+		return nullptr;
+	}
+
+	// ========== 3. DirectX Vertex Buffer 생성 (Debug Draw용) ==========
+
+#if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
+	{
+		std::vector<MyVertexData> VertexData;
+		VertexData.reserve(Indices.size());
+
+		for (uint32_t Index : Indices)
+		{
+			if (Index >= Vertices.size())
+			{
+				MY_LOG("Error", EDebugLogLevel::DLL_Error, 
+					"Index out of range: " + std::to_string(Index));
+				continue;
+			}
+
+			const physx::PxVec3& v = Vertices[Index];
+
+			MyVertexData vtx;
+			vtx.Pos = DirectX::XMFLOAT3(v.x, v.y, -v.z);
+			vtx.Normal = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
+			vtx.TexCoords = DirectX::XMFLOAT2(0.0f, 0.0f);
+
+			VertexData.push_back(vtx);
+		}
+
+		if (!VertexData.empty())
+		{
+			D3D11_BUFFER_DESC bd = {};
+			bd.Usage = D3D11_USAGE_DEFAULT;
+			bd.ByteWidth = static_cast<UINT>(sizeof(MyVertexData) * VertexData.size());
+			bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+			bd.CPUAccessFlags = 0;
+
+			D3D11_SUBRESOURCE_DATA InitData = {};
+			InitData.pSysMem = VertexData.data();
+
+			HRESULT hr = GDirectXDevice->GetDevice()->CreateBuffer(&bd, &InitData, OutVertexBuffer.GetAddressOf());
+
+			if (FAILED(hr))
+			{
+				MY_LOG("Error", EDebugLogLevel::DLL_Error, 
+					"Failed to create vertex buffer! HRESULT: " + std::to_string(hr));
+			}
+			else
+			{
+				MY_LOG("Info", EDebugLogLevel::DLL_Display, 
+					"Vertex buffer created: " + std::to_string(VertexData.size()) + " vertices");
+			}
+		}
+	}
+#endif
+
+	// ========== 4. Geometry 생성 (Scale 적용!) ==========
+
+	float ScaleOffset = 1.0f;
+	physx::PxMeshScale Scale(
+		physx::PxVec3(
+			Transform.Scale3D.x * ScaleOffset,
+			Transform.Scale3D.y * ScaleOffset,
+			Transform.Scale3D.z * ScaleOffset
+		)
+	);
+
+	physx::PxTriangleMeshGeometry TriMeshGeom(TriangleMesh, Scale);
+
+	// ========== 5. Transform 설정 ==========
+
+	physx::PxTransform PxTransform(
+		physx::PxVec3(Transform.Translation.x, Transform.Translation.y, -Transform.Translation.z),
+		physx::PxQuat(-Transform.Rotation.x, -Transform.Rotation.y, Transform.Rotation.z, Transform.Rotation.w)
+	);
+
+	// ========== 6. Static Actor 생성 ==========
+
+	physx::PxRigidActor* Actor = PxPhysics->createRigidStatic(PxTransform);
+
+	if (!Actor)
+	{
+		MY_LOG("Error", EDebugLogLevel::DLL_Error, "Failed to create rigid actor");
+		TriangleMesh->release();
+		return nullptr;
+	}
+
+	// ========== 7. Shape 생성 및 설정 ==========
+
+	// ✅ Material은 DefaultMaterial 사용 (매번 생성하지 말 것!)
+	physx::PxShape* Shape = PxPhysics->createShape(TriMeshGeom, *DefaultMaterial, true);
+
+	if (!Shape)
+	{
+		MY_LOG("Error", EDebugLogLevel::DLL_Error, "Failed to create shape");
+		Actor->release();
+		TriangleMesh->release();
+		return nullptr;
+	}
+
+	Shape->setContactOffset(2.f);  
+	Shape->setRestOffset(0.1f);
+
+	Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
+	Shape->setFlag(physx::PxShapeFlag::eSCENE_QUERY_SHAPE, true);
+	Shape->setFlag(physx::PxShapeFlag::eVISUALIZATION, true);
+
+	physx::PxFilterData filterData;
+	filterData.word0 = 1;  // Collision Channel (기본값)
+	filterData.word1 = 0xFFFFFFFF;  // Block all
+	filterData.word2 = 0;  // Overlap none
+
+	Shape->setSimulationFilterData(filterData);
+	Shape->setQueryFilterData(filterData);
+
+	Actor->attachShape(*Shape);
+	Shape->release();
+
+	// ========== 8. Scene에 추가 ==========
+
+	PxScene->addActor(*Actor);
+
+	MY_LOG("Info", EDebugLogLevel::DLL_Display, 
+		"Triangle mesh actor created: " + 
+		std::to_string(Vertices.size()) + " vertices, " +
+		std::to_string(Indices.size() / 3) + " triangles");
+
+	return Actor;
+}

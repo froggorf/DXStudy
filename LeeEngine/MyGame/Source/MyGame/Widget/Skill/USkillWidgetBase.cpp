@@ -105,7 +105,7 @@ void USkillWidgetBase::NativeConstruct()
 				CanvasSlot->Anchors = ECanvasAnchor::CenterMiddle;
 				CanvasSlot->Alignment = {0.5f, 0.5f};
 			}
-			SkillKeyText->SetText(L"E");
+			SkillKeyText->SetText(KeyText);
 			SkillKeyText->SetFontSize(15.0f);
 			SkillKeyText->SetFontColor({1.0f,1.0f,1.0f,1.0f});
 			SkillKeyText->SetHorizontalAlignment(ETextHorizontalAlignment::Center);

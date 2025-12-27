@@ -61,6 +61,8 @@ class UWorld : public UObject, public std::enable_shared_from_this<UWorld>
 #if defined(MYENGINE_BUILD_DEBUG) || defined(MYENGINE_BUILD_DEVELOPMENT)
 	void DrawDebugBox(const XMFLOAT3& Center, const XMFLOAT3& Extent, const XMFLOAT3& LineColor = XMFLOAT3{1,0,0}, XMVECTOR Rotate = XMVectorSet(0,0,0,1), const float DebugDrawTime = 5.0f) const;
 #endif
+
+	void SetPlayerController(const std::shared_ptr<APlayerController>& NewPC) {PlayerController = NewPC;}
 protected:
 	std::weak_ptr<APlayerController> PlayerController;
 
@@ -68,6 +70,7 @@ protected:
 private:
 	// 콜렉션과 관련된 현재 레벨
 	std::shared_ptr<ULevel> PersistentLevel;
+	std::shared_ptr<ULevel> PendingChangeLevel;
 
 	// 콜렉션에 있는 모든 레벨정보
 	std::set<std::shared_ptr<ULevel>> Levels;

@@ -12,6 +12,7 @@ class USkillWidgetBase : public UUserWidget
 public:
 	void SetSkillIconImageBrush(const FImageBrush& NewBrush);
 	void SetSkillCoolDownTime(float NewCoolDownTime, float MaxCooldownTime);
+	void SetSkillText(const std::wstring& NewKeyText) {KeyText = NewKeyText;}
 protected:
 	std::shared_ptr<FVerticalBoxWidget> SkillBoxSlot;
 			std::shared_ptr<FCanvasWidget> SkillCanvasWidget;
@@ -23,4 +24,5 @@ protected:
 				std::shared_ptr<FImageWidget> SkillKeyGuideImage;
 				std::shared_ptr<FTextWidget> SkillKeyText;
 private:
+	std::wstring KeyText = L"E";
 };

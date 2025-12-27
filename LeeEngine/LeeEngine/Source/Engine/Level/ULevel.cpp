@@ -88,6 +88,14 @@ void ULevel::Register()
 void ULevel::BeginPlay()
 {
 	UObject::BeginPlay();
+	
+	PlayerControllerActor = std::dynamic_pointer_cast<APlayerController>(SpawnActor(GEngine->GetDefaultPlayerControllerClassName(), {}));
+	if (PlayerControllerActor)
+	{
+		PlayerControllerActor = std::dynamic_pointer_cast<APlayerController>(SpawnActor("APlayerController", {}));	
+	}
+	GEngine->GetWorld()->SetPlayerController(PlayerControllerActor);
+	
 
 	if (GameModeActor)
 	{
@@ -192,6 +200,7 @@ std::shared_ptr<AActor> ULevel::FindSharedActorByRawPointer(AActor* Actor)
 	}
 	return nullptr;
 }
+
 
 void ULevel::LoadDataFromFileData(const nlohmann::json& AssetData)
 {

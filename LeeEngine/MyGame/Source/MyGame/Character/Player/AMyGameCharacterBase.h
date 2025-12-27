@@ -71,6 +71,9 @@ class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
 	void WheelUp();
 	void WheelDown();
 
+	void TryUsePotion();
+	void ApplyPotion();
+
 	void Debug_SetUltimateGauge100();
 
 	float GetCurrentPower() const;

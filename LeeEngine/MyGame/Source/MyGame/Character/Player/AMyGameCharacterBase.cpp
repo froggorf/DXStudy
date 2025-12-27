@@ -173,6 +173,8 @@ void AMyGameCharacterBase::BindKeyInputs()
 
 			InputSystem->BindAction(EKeys::F1, Started, this, &AMyGameCharacterBase::Debug_SetUltimateGauge100);
 
+			InputSystem->BindAction(EKeys::T, Started, this, &AMyGameCharacterBase::TryUsePotion);
+
 			if (CombatComponent)
 			{
 				CombatComponent->BindKeyInputs(InputSystem);
@@ -432,6 +434,15 @@ void AMyGameCharacterBase::WheelDown()
 	{
 		SpringArm->SetArmLength(SpringArm->TargetArmLength + 10.0f);
 	}
+}
+
+void AMyGameCharacterBase::TryUsePotion()
+{
+	MY_LOG("LOG",EDebugLogLevel::DLL_Warning, "TODO: TryUsePotion");
+}
+
+void AMyGameCharacterBase::ApplyPotion()
+{
 }
 
 void AMyGameCharacterBase::Debug_SetUltimateGauge100()

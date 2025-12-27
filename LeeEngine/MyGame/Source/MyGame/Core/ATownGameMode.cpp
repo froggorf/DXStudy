@@ -23,6 +23,12 @@ void ATownGameMode::Tick(float DeltaSeconds)
 		GetWorld()->GetPlayerController()->OnPossess(std::dynamic_pointer_cast<ACharacter>(Actor).get());
 	}
 
+	static bool Test = false;
+	if (!Test && ImGui::IsKeyPressed(ImGuiKey_7))
+	{
+		Test = true;
+		GEngine->ChangeLevelByName("TestLevel");
+	}
 
 	//if (ImGui::IsKeyPressed(ImGuiKey_C))
 	//{

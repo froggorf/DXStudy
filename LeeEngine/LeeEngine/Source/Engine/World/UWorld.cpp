@@ -47,14 +47,11 @@ void UWorld::BeginPlay()
 
 	// TODO: 0709 임시적으로 PlayerController를 해당 위치에서 생성
 
-	PlayerController = std::dynamic_pointer_cast<APlayerController>(PersistentLevel->SpawnActor(GEngine->GetDefaultPlayerControllerClassName(), {}));
-	if (PlayerController.expired())
-	{
-		PlayerController = std::dynamic_pointer_cast<APlayerController>(PersistentLevel->SpawnActor("APlayerController", {}));	
-	}
+	
 	
 
 	PersistentLevel->BeginPlay();
+	
 }
 
 void UWorld::TickLightAndDecal()
@@ -86,6 +83,13 @@ void UWorld::TickLightAndDecal()
 
 void UWorld::TickWorld(float DeltaSeconds)
 {
+	if (PendingChangeLevel)
+	{
+		PersistentLevel = nullptr;
+		SetPersistentLevel(PendingChangeLevel);
+		PendingChangeLevel = nullptr;
+	}
+
 	// Level Tick
 	if (PersistentLevel)
 	{
@@ -143,18 +147,29 @@ std::shared_ptr<ULevel> UWorld::GetPersistentLevel() const
 
 void UWorld::SetPersistentLevel(const std::shared_ptr<ULevel>& NewLevel)
 {
-	GPhysicsEngine->ResetScene();
-	while (!GPhysicsEngine->bIsRegistered)
+	if (PersistentLevel)
 	{
-		Sleep(100);
+		PendingChangeLevel = NewLevel;
 	}
-	PersistentLevel = nullptr;
-	PersistentLevel = NewLevel;
-	PersistentLevel->Register();
-	if (GEngine->bGameStart)
+	else
 	{
-		PersistentLevel->BeginPlay();
+		GPhysicsEngine->ResetScene();
+		while (!GPhysicsEngine->bIsRegistered)
+		{
+			Sleep(100);
+		}
+		PersistentLevel = nullptr;
+		PersistentLevel = NewLevel;
+		PendingChangeLevel = nullptr;
+		PersistentLevel->Register();
+		if (GEngine->bGameStart)
+		{
+			PersistentLevel->BeginPlay();
+		}
 	}
+
+
+	
 
 #ifdef WITH_EDITOR
 	// 타이틀 바 내 현재 레벨 이름 변경

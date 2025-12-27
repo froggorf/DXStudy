@@ -4,6 +4,7 @@
 // 이윤석
 
 #pragma once
+#include "CoreMinimal.h"
 #include "Engine/Mesh/UStaticMesh.h"
 #include "Engine/UObject/UObject.h"
 
@@ -140,10 +141,13 @@ public:
 	physx::PxMaterial* GetDefaultMaterial() const {return DefaultMaterial;}
 
 	float GetSceneDefaultGravityScale() const {return DefaultGravityScale;}
+
+	physx::PxRigidActor* CreateTriangleMeshActor(const FTransform& Transform, const std::shared_ptr<UStaticMesh>& StaticMesh, const float Mass, Microsoft::WRL::ComPtr<ID3D11Buffer>& OutVertexBuffer, bool bIsDynamic) const;
 protected:
 	// StaticMesh정보를 통해 ConvexMesh를 만들어 반환해주는 함수
 	physx::PxConvexMesh* CreateConvexMesh(const std::shared_ptr<UStaticMesh>& StaticMesh) const;
-
+	
+	physx::PxTriangleMesh* CreateTriangleMesh(const std::vector<physx::PxVec3>& Vertices,const std::vector<uint32_t>& Indices) const;
 private:
 public:
 	std::atomic<bool> bIsRegistered = false;

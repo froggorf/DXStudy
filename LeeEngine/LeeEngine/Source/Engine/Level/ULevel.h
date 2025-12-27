@@ -42,7 +42,7 @@ class ULevel : public UObject
 		return Actors;
 	};
 
-
+	
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 	void SaveDataFromAssetToFile(nlohmann::json& Json) override;
 
@@ -54,6 +54,7 @@ class ULevel : public UObject
  	std::shared_ptr<AActor> FindSharedActorByRawPointer(AActor* Actor);
 
 	std::shared_ptr<AGameMode> GetGameMode() const {return GameModeActor;}
+	const std::shared_ptr<class APlayerController>& GetPlayerControllerActor() const {return PlayerControllerActor;}
 private:
 
 	std::shared_ptr<UWorld> OwningWorld;
@@ -63,6 +64,8 @@ private:
 	std::vector<std::shared_ptr<AActor>> PendingKillActors;
 
 	std::shared_ptr<AGameMode> GameModeActor;
+	std::shared_ptr<class APlayerController> PlayerControllerActor;
+
 private:
 	nlohmann::basic_json<> LevelData;
 };
