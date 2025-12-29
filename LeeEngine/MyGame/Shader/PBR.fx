@@ -23,12 +23,14 @@ struct PBR_PS_INPUT
 	float3 ViewTangent : TANGENT;
 	float3 ViewNormal : NORMAL;
 	float3 ViewBinormal : BINORMAL;
+	float3 PosWorld : POSITION1;
 };
 
 PBR_PS_INPUT VS(VS_INPUT Input)
 {
 	PBR_PS_INPUT output = (PBR_PS_INPUT)0;
-	
+
+	output.PosWorld = mul(Input.Pos, World);
 	output.PosScreen = mul(mul(Input.Pos, gMatWV), gProjection);
 	output.TexCoord = Input.TexCoord;
 

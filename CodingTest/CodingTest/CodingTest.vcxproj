@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="백준 가장긴증가하는부분수열4.cpp" />
+    <ClCompile Include="백준 히스토그램에서 가장 큰 직사각형.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

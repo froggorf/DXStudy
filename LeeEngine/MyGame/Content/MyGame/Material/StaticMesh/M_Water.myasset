@@ -1,0 +1,16 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_Water",
+    "VertexShader" : {
+	"FilePath" : "/Shader/PBR.fx",
+	"Func" : "VS"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/PS_PBR.fx",
+	"Func": "PBR_PS_Water"
+    },
+    "TextureParams" : [ "T_Water_Base", "T_Water_Normal", "T_Water_Metallic", "T_Water_Spec"],
+    "BlendMode": "Deferred",
+    "TwoSided" : 0
+	
+}

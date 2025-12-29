@@ -1,0 +1,6 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_Dungeon",
+    "ModelData": "/Content/Resource/MyGame/StaticMesh/dungeon/dungeon.FBX",
+    "Material" : [ "MI_Town_Base" ]
+}

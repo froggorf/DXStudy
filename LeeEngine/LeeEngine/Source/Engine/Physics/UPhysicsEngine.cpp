@@ -663,11 +663,28 @@ physx::PxTriangleMesh* UPhysicsEngine::CreateTriangleMesh(const std::vector<phys
 		return nullptr;
 	}
 
-	physx::PxCookingParams CookingParams(PxPhysics->getTolerancesScale());
+	physx::PxTolerancesScale ToleranceScale;
+	ToleranceScale.length = 0.0001f;  // 기본값 1.0 → 0.01 (100배 작게)
+	ToleranceScale.speed = 10.0f;   // 기본값
 
-	CookingParams.meshPreprocessParams = physx::PxMeshPreprocessingFlag::eDISABLE_CLEAN_MESH;
-	CookingParams.meshWeldTolerance = 0.0f;
-	CookingParams.buildTriangleAdjacencies = true;  
+	physx::PxCookingParams CookingParams(ToleranceScale);
+
+	// ✅ 얇은 삼각형 유지 설정
+	CookingParams.meshPreprocessParams = 
+		physx::PxMeshPreprocessingFlag::eWELD_VERTICES;  // 중복만 병합
+
+	// ✅ Weld Tolerance를 매우 작게
+	CookingParams.meshWeldTolerance = 0.000001f;  // 0.01cm
+
+	// ✅ 작은 삼각형 제거 비활성화
+	CookingParams.buildTriangleAdjacencies = false;  // 인접성 계산 안함 (속도 향상)
+
+	// ✅ 중요: 작은 삼각형 제거 방지
+	CookingParams.suppressTriangleMeshRemapTable = true;
+
+	// ✅ 영역 테스트 비활성화 (작은 삼각형 유지)
+	CookingParams.areaTestEpsilon = 0.0f;  // 기본값 0.06 → 0.0
+
 
 	physx::PxDefaultMemoryOutputStream WriteBuffer;
 
@@ -878,8 +895,8 @@ physx::PxRigidActor* UPhysicsEngine::CreateTriangleMeshActor(
 		return nullptr;
 	}
 
-	Shape->setContactOffset(2.f);  
-	Shape->setRestOffset(0.1f);
+	Shape->setContactOffset(0.02f);  
+	Shape->setRestOffset(0.001f);
 
 	Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
 	Shape->setFlag(physx::PxShapeFlag::eSCENE_QUERY_SHAPE, true);

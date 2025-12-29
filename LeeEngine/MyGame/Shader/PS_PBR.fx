@@ -2,6 +2,7 @@
 #define __PS_PBR_FX__
 
 #include "PBRLightHelper.fx"
+#include "MaterialNode.fx"
 
 /* // Textures
  Texture2D AlbedoTexture     : register(t0);
@@ -293,6 +294,93 @@ Deferred_PS_OUT PBR_PS_Dragon(PBR_PS_INPUT Input) :  SV_TARGET
 
 	return output;
 }
+
+Deferred_PS_OUT PBR_PS_Water(PBR_PS_INPUT Input) : SV_TARGET
+{
+	float3 NewNormal = float3(0.0f, 1.0f, 0.0f);
+
+    // ========== Normal 계산 ==========
+    {
+		float UsedValue1 = 0.0f;
+        {
+			float2 NewUV = Panner(Input.UV, gTime, float2(0.0f, -0.01f));
+			float3 Tex = AlbedoTexture.Sample(DefaultSampler, NewUV).rgb;
+            
+            // ✅ 0.6~1.0 범위 (어두워지지 않음)
+			float sinValue = sin(gTime * 0.5f) * 0.2f + 0.8f;
+			float cosValue = cos(gTime * 0.7f) * 0.2f + 0.8f;
+            
+			float Mul1 = pow(Tex.r, lerp(2.0f, 5.0f, sinValue));
+			float Mul2 = lerp(0.7f, 1.5f, cosValue);
+			UsedValue1 = Mul1 * Mul2;
+            
+            // ✅ 최소값 보장
+			UsedValue1 = max(UsedValue1, 0.5f);
+		}
+
+		float UsedValue2 = 0.0f;
+        {
+			float SampleVal1 = MetallicTexture.Sample(DefaultSampler,
+                Panner(Input.UV, gTime, float2(0.002f, 0.007f))).r;
+			float SampleVal2 = MetallicTexture.Sample(DefaultSampler,
+                Panner(Input.UV, gTime, float2(-0.001f, 0.002f))).r;
+            
+            // ✅ 0.6~1.0 범위
+			float sinValue = sin(gTime * 0.3f) * 0.2f + 0.8f;
+            
+			float Val = pow(lerp(0.5f, 2.0f, sinValue) * SampleVal1, 6.0f) *
+                       pow(lerp(1.0f, 2.0f, sinValue) * SampleVal2, 6.0f);
+			UsedValue2 = lerp(1.2f, 2.5f, Val);
+            
+            // ✅ 최소값 보장
+			UsedValue2 = max(UsedValue2, 1.2f);
+		}
+
+		float3 SampleVal = NormalTexture.Sample(DefaultSampler,
+            Panner(Input.UV, gTime, float2(-0.002f, 0.01f))).rgb;
+        
+		float2 NewFloat2 = float2(SampleVal.r * UsedValue1, SampleVal.g * UsedValue1);
+		NewFloat2 *= UsedValue2;
+		NewNormal = float3(NewFloat2, SampleVal.b) * float3(2.0f, 2.0f, 1.0f);
+
+        {
+			float2 Value = SpecularTexture.Sample(DefaultSampler,
+                Panner(Input.UV, gTime, float2(-0.025f, -0.033f))).rg;
+			Value *= UsedValue2;
+			float3 Appended = float3(Value, 0.0f) * float3(0.15f, 0.15f, 0.0f);
+			NewNormal += Appended;
+		}
+
+		NewNormal = normalize(NewNormal);
+	}
+
+    // ========== BaseColor 계산 ==========
+	float4 BaseColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    {
+		float3 DarkWaterColor = float3(0.04f, 0.11f, 0.16f);
+        
+		float2 NewUV = Panner(Input.UV, gTime, float2(0.0f, -0.01f));
+		float3 SampledColor = AlbedoTexture.Sample(DefaultSampler, NewUV).rgb;
+		float3 BrightWaterColor = SampledColor * float3(0.10f, 0.22f, 0.32f);
+        
+		float normalBlend = saturate(NewNormal.y * 0.1f + 0.9f);
+        
+		BaseColor = float4(lerp(DarkWaterColor, BrightWaterColor, normalBlend), 1.0f);
+	}
+
+	float3 ViewNormal = mul(float4(NewNormal, 0.0f), gView).xyz;
+	ViewNormal = normalize(ViewNormal);
+
+	Deferred_PS_OUT output = (Deferred_PS_OUT) 0.f;
+	output.Color = BaseColor;
+	output.PBRData = float4(0.0f, 0.5f, 0.0f, 1.0f);
+	output.Normal = float4(ViewNormal, 1.f);
+	output.Position = float4(Input.ViewPosition, 1.f);
+	output.Emissive = float4(0.0f, 0.0f, 0.0f, 1.f);
+
+	return output;
+}
+
 
 
 #endif

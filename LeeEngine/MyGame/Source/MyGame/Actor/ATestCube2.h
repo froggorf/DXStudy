@@ -33,6 +33,9 @@ protected:
 	std::shared_ptr<UStaticMeshComponent> Mesh2;
 	std::shared_ptr<UStaticMeshComponent> Mesh3;
 
+	std::shared_ptr<UStaticMeshComponent> Test;
+	std::shared_ptr<UStaticMeshComponent> Test2;
+
 
 private:
 	std::shared_ptr<AAIController> AIController;

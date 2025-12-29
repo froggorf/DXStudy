@@ -299,8 +299,14 @@ void AssetManager::LoadTexture(class UTexture* Texture, const nlohmann::json& As
 	{
 		std::string Test = p.string() +  "No Valid Path";
 		assert(nullptr && Test.data());
+		return;
 	}
-	CreateShaderResourceView(GDirectXDevice->GetDevice().Get(), image.GetImages(), image.GetImageCount(), image.GetMetadata(), Texture->SRView.GetAddressOf());
+	HRESULT hr = CreateShaderResourceView(GDirectXDevice->GetDevice().Get(), image.GetImages(), image.GetImageCount(), image.GetMetadata(), Texture->SRView.GetAddressOf());
+	if (FAILED(hr))
+	{
+		assert(nullptr && "Fail to create srv");
+		return;
+	}
 	Texture->SRView->GetResource((ID3D11Resource**)Texture->Texture2D.GetAddressOf());
 	Texture->Texture2D->GetDesc(&Texture->Desc);
 

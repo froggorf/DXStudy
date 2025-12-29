@@ -9,6 +9,7 @@ struct PBR_PS_INPUT
 	float3 ViewTangent : TANGENT;
 	float3 ViewNormal : NORMAL;
 	float3 ViewBinormal : BINORMAL;
+	float3 PosWorld : POSITION1;
 };
 // Textures
 Texture2D AlbedoTexture     : register(t0);

@@ -33,4 +33,27 @@ float Fresnel(in float3 Normal, in float3 WorldPixelPos, in float4x4 CameraViewI
 	return Fresnel;
 }
 
+float3 Fresnel(float3 Normal,float3 ViewDirection,float Exponent = 5.0,float BaseReflectFraction = 0.04)
+{
+    // 벡터 정규화
+	float3 N = normalize(Normal);
+	float3 V = normalize(ViewDirection);
+    
+    // 내적 계산 (코사인 각도)
+	float NDotV = saturate(dot(N, V));
+    
+    // 프레넬 계산
+	float FresnelTerm = pow(1.0 - NDotV, Exponent);
+    
+    // 슐릭 근사 (Schlick's approximation)
+	float Fresnel = BaseReflectFraction + (1.0 - BaseReflectFraction) * FresnelTerm;
+    
+	return saturate(Fresnel);
+}
+
+float3 CalculateViewDirection(float3 WorldPosition)
+{
+	float3 CameraWorldPos = mul(float4(0, 0, 0, 1), gViewInv).xyz;
+	return normalize(CameraWorldPos - WorldPosition);
+}
 #endif
