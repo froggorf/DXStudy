@@ -48,10 +48,10 @@ void ULightComponent::SetLightType(ELightType Type)
 		ShadowMRT->SetViewport({0,0,8192,8192,0.0f,1.0f});
 		
 		// 카메라 최대시야를 널널하게 설정
-		ShadowCameraComp->SetFar(10000.f);
+		ShadowCameraComp->SetFar(50000.f);
 		ShadowCameraComp->SetProjectionType(EProjectionType::OrthoGraphic);
 		ShadowCameraComp->SetOrthoScale(1.f);
-		ShadowCameraComp->SetWidth(8192.f);
+		ShadowCameraComp->SetWidth(8192.f*2);
 		ShadowCameraComp->SetAspectRatio(1.f);
 
 			

@@ -1,0 +1,16 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_Dungeon_12",
+    "VertexShader" : {
+	"FilePath" : "/Shader/PBR.fx",
+	"Func" : "VS"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/PS_Dungeon.fx",
+	"Func": "PBR_Dungeon_12"
+    },
+    "TextureParams" : [ "T_Dungeon_12_Base_01", "T_Dungeon_12_Normal_01" ],
+    "BlendMode": "Deferred",
+    "TwoSided" : 0
+	
+}

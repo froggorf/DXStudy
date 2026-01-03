@@ -41,7 +41,7 @@ ULevel::ULevel(const ULevel* LevelInstance)
 	auto It = LevelInstance->LevelData.find("GameModeClass");
 	if (It != LevelInstance->LevelData.end())
 	{
-		const std::string& GameModeClassName = It.value();
+		GameModeClassName = It.value();
 		GameModeActor = std::dynamic_pointer_cast<AGameMode>(GetDefaultObject(GameModeClassName)->CreateInstance());
 		
 	}
@@ -201,6 +201,21 @@ std::shared_ptr<AActor> ULevel::FindSharedActorByRawPointer(AActor* Actor)
 	return nullptr;
 }
 
+std::vector<std::shared_ptr<AActor>> ULevel::GetActorsFromClass(const std::string& ClassName) const
+{
+	std::vector<std::shared_ptr<AActor>> ReturnVector;
+	ReturnVector.reserve(Actors.size());
+	for (const std::shared_ptr<AActor>& Actor : Actors)
+	{
+		if (Actor->GetClass() == ClassName)
+		{
+			ReturnVector.emplace_back(Actor);
+		}
+	}
+	ReturnVector.shrink_to_fit();
+	return ReturnVector;
+}
+
 
 void ULevel::LoadDataFromFileData(const nlohmann::json& AssetData)
 {
@@ -222,6 +237,16 @@ void ULevel::SaveDataFromAssetToFile(nlohmann::json& Json)
 
 		Json["Actor"].emplace_back(ActorJson);
 	}
+
+	for (const auto& Actor : PendingAddActors)
+	{
+		nlohmann::json ActorJson;
+		Actor->SaveDataFromAssetToFile(ActorJson);
+
+		Json["Actor"].emplace_back(ActorJson);
+	}
+
+	Json["GameModeClass"] = GameModeClassName;
 }
 
 std::shared_ptr<AActor> ULevel::SpawnActor(const std::string& ClassName, const FTransform& SpawnTransform, const std::string& Name)

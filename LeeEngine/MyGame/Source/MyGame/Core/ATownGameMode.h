@@ -20,3 +20,14 @@ class ATownGameMode : public AGameMode
 	static std::array<int, static_cast<int>(EEquipType::Count)> EquipLevel;
 
 };
+
+class ADungeonGameMode : public AGameMode
+{
+	MY_GENERATE_BODY(ADungeonGameMode)
+
+	void Tick(float DeltaSeconds) override;
+	void Register() override;
+	void BeginPlay() override;
+	void StartGame() override;
+	void EndGame() override;
+};

@@ -167,7 +167,7 @@ void FImguiLevelViewport::Draw()
 				ImGuiIO&     io        = ImGui::GetIO();
 				if (io.MouseWheel > 0.0f)
 				{
-					MoveSpeed = std::min(MoveSpeed + 0.05f, 10000.0f);
+					MoveSpeed = std::min(MoveSpeed + 1.f, 1000000.0f);
 				}
 				else if (io.MouseWheel < -0.0f)
 				{

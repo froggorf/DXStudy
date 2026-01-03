@@ -21,7 +21,7 @@ physx::PxQueryHitType::Enum MyQueryFilterCallback::preFilter(const physx::PxFilt
 UCharacterMovementComponent::UCharacterMovementComponent()
 {
 	GravityScale = 12.5f;
-	MaxStepHeight = 20.0f;
+	MaxStepHeight = 50.0f;
 	WalkableFloorAngle = 44.5f;
 	MaxWalkSpeed = 500.0f;
 	JumpZVelocity = 450.0f;

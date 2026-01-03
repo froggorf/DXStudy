@@ -54,7 +54,7 @@ public:
 	std::unique_ptr<FCharacterControllerObserver> ControllerObserver;
 
 	float GravityScale = 12.5f;
-	float MaxStepHeight = 20.0f;
+	float MaxStepHeight = 50.0f;
 	float WalkableFloorAngle = 44.5f;
 	float MaxWalkSpeed = 500.0f;
 	float JumpZVelocity = 450.0f;

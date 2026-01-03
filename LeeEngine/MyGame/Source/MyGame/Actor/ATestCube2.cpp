@@ -37,21 +37,13 @@ ATestCube2::ATestCube2()
 	Mesh4->SetupAttachment(GetRootComponent());
 	Mesh4->SetRelativeScale3D({Size, Size, Size});
 
-	Test = std::make_shared<UStaticMeshComponent>();
-	Test->SetupAttachment(GetRootComponent());
-	Test->SetRelativeScale3D(XMFLOAT3{10000.0f,10000.0f,10000.0f});
-	Test->SetRelativeLocation({0.0f,100.0f,0.0f});
-
-	Test2 = std::make_shared<UStaticMeshComponent>();
-	Test2->SetupAttachment(GetRootComponent());
-	Test2->SetRelativeLocation({0.0f,500.0f,0.0f});
 }
 
 void ATestCube2::Register()
 {
 	AActor::Register();
 
-	/*AssetManager::GetAsyncAssetCache("SM_Brick",[this](std::shared_ptr<UObject> Object)
+	AssetManager::GetAsyncAssetCache("SM_Brick",[this](std::shared_ptr<UObject> Object)
 		{
 			Ground->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
 			Ground->SetCollisionObjectType(ECollisionChannel::WorldStatic);
@@ -85,19 +77,9 @@ void ATestCube2::Register()
 		{
 			Mesh3->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
 			Mesh3->SetCollisionObjectType(ECollisionChannel::WorldStatic);
-		});*/
-
-	AssetManager::GetAsyncAssetCache("SM_Water",[this](std::shared_ptr<UObject> Object)
-		{
-			Test->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
-			Test->SetCollisionObjectType(ECollisionChannel::WorldStatic);
 		});
 
-	AssetManager::GetAsyncAssetCache("SM_Dungeon",[this](std::shared_ptr<UObject> Object)
-		{
-			Test2->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
-			Test2->SetCollisionObjectType(ECollisionChannel::WorldStatic);
-		});
+	
 	
 }
 void ATestCube2::BeginPlay()

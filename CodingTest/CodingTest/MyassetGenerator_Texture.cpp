@@ -104,8 +104,8 @@ int main()
     // 설정
     MyAssetGenerator::Config config;
 
-    config.sourceFolder = R"(C:\Project\DXStudy\LeeEngine\MyGame\Content\Resource\MyGame\Texture\Sanhwa)";
-    config.outputFolder = R"(C:\Project\DXStudy\LeeEngine\MyGame\Content\MyGame\Texture\Sanhwa)";
+    config.sourceFolder = R"(C:\Project\DXStudy\LeeEngine\MyGame\Content\Resource\MyGame\Texture\dungeon)";
+    config.outputFolder = R"(C:\Project\DXStudy\LeeEngine\MyGame\Content\MyGame\Texture\Dungeon)";
     config.assetClass = "UTexture";
     config.contentBasePath = R"(C:\Project\DXStudy\LeeEngine\MyGame\Content)";
 

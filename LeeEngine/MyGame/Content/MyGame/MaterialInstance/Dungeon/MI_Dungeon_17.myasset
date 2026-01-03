@@ -1,0 +1,10 @@
+{
+    "Class": "UMaterialInstance",
+    "Name": "MI_Dungeon_17",
+    "ParentMaterial" : "M_Dungeon_Grass_Base",
+    "OverrideTexture" :
+    [
+	{ "Index" : 0, "Tex": "T_Dungeon_17_Base_01"},
+	{ "Index" : 1, "Tex": "T_Dungeon_17_Normal_01"}
+    ]
+}

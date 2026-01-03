@@ -2,5 +2,7 @@
     "Class": "UStaticMesh",
     "Name": "SM_Dungeon",
     "ModelData": "/Content/Resource/MyGame/StaticMesh/dungeon/dungeon.FBX",
-    "Material" : [ "MI_Town_Base" ]
+    "Material" : [ "M_Dungeon_00", "MI_Dungeon_01", "MI_Dungeon_02", "MI_Dungeon_03", "MI_Dungeon_04", "MI_Dungeon_05", "MI_Dungeon_06",
+                      "MI_Dungeon_07","MI_Dungeon_08","MI_Dungeon_09","MI_Dungeon_10", "MI_Dungeon_11", "M_Dungeon_12", "MI_Dungeon_13",
+		      "M_Dungeon_14", "MI_Dungeon_15", "MI_Dungeon_16", "MI_Dungeon_17"]
 }

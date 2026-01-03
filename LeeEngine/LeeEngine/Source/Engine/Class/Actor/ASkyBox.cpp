@@ -29,7 +29,7 @@ ASkyBox::ASkyBox()
 
 	DirectionalLight= std::make_shared<ULightComponent>();
 	DirectionalLight->SetupAttachment(GetRootComponent());
-	DirectionalLight->SetWorldLocation(XMFLOAT3{-3000, 6000,-3000});
+	DirectionalLight->SetWorldLocation(XMFLOAT3{-10000, 20000,-10000});
 	DirectionalLight->SetLightType(ELightType::Directional);
 	XMVECTOR RotQuat = XMQuaternionRotationRollPitchYaw(
 		XMConvertToRadians(45.0f),

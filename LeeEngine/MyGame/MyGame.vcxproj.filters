@@ -169,7 +169,7 @@
     <ClCompile Include="Source\MyGame\Component\PBRTestComponent.cpp">
       <Filter>Source\MyGame\Component</Filter>
     </ClCompile>
-    <ClCompile Include="Source\MyGame\Actor\AFPSTest.cpp">
+    <ClCompile Include="Source\MyGame\Actor\ADungeon.cpp">
       <Filter>Source\MyGame\Actor</Filter>
     </ClCompile>
     <ClCompile Include="Source\MyGame\AnimInstance\UMyGameAniminstanceBase.cpp">
@@ -316,6 +316,9 @@
     <ClCompile Include="Source\MyGame\Widget\Town\UEnchantWidget.cpp">
       <Filter>Source\MyGame\Widget\Town</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Actor\AEnemySpawner.cpp">
+      <Filter>Source\MyGame\Actor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -330,7 +333,7 @@
     <ClInclude Include="Source\MyGame\Component\PBRTestComponent.h">
       <Filter>Source\MyGame\Component</Filter>
     </ClInclude>
-    <ClInclude Include="Source\MyGame\Actor\AFPSTest.h">
+    <ClInclude Include="Source\MyGame\Actor\ADungeon.h">
       <Filter>Source\MyGame\Actor</Filter>
     </ClInclude>
     <ClInclude Include="Source\MyGame\AnimInstance\UMyGameAniminstanceBase.h">
@@ -477,6 +480,9 @@
     <ClInclude Include="Source\MyGame\Widget\Town\UEnchantWidget.h">
       <Filter>Source\MyGame\Widget\Town</Filter>
     </ClInclude>
+    <ClInclude Include="Source\MyGame\Actor\AEnemySpawner.h">
+      <Filter>Source\MyGame\Actor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\SkeletalMesh.hlsl">
@@ -568,6 +574,9 @@
     </None>
     <None Include="Shader\Gideon.fx">
       <Filter>Shader\PBR\Character</Filter>
+    </None>
+    <None Include="Shader\PS_Dungeon.fx">
+      <Filter>Shader\PBR</Filter>
     </None>
   </ItemGroup>
 </Project>

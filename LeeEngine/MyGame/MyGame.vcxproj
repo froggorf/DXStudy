@@ -20,7 +20,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp" />
-    <ClCompile Include="Source\MyGame\Actor\AFPSTest.cpp" />
+    <ClCompile Include="Source\MyGame\Actor\ADungeon.cpp" />
+    <ClCompile Include="Source\MyGame\Actor\AEnemySpawner.cpp" />
     <ClCompile Include="Source\MyGame\Actor\ATestActor2.cpp" />
     <ClCompile Include="Source\MyGame\Actor\ATestCube.cpp" />
     <ClCompile Include="Source\MyGame\Actor\ATestCube2.cpp" />
@@ -75,7 +76,8 @@
     <ClCompile Include="Source\MyGame\Widget\UMyGameWidgetBase.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\MyGame\Actor\AFPSTest.h" />
+    <ClInclude Include="Source\MyGame\Actor\ADungeon.h" />
+    <ClInclude Include="Source\MyGame\Actor\AEnemySpawner.h" />
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h" />
     <ClInclude Include="Source\MyGame\Actor\ATestCube.h" />
     <ClInclude Include="Source\MyGame\Actor\ATestCube2.h" />
@@ -270,6 +272,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\Gideon.fx">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader\PS_Dungeon.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

@@ -55,6 +55,7 @@ class ULevel : public UObject
 
 	std::shared_ptr<AGameMode> GetGameMode() const {return GameModeActor;}
 	const std::shared_ptr<class APlayerController>& GetPlayerControllerActor() const {return PlayerControllerActor;}
+	std::vector<std::shared_ptr<AActor>> GetActorsFromClass(const std::string& ClassName) const;
 private:
 
 	std::shared_ptr<UWorld> OwningWorld;
@@ -65,7 +66,7 @@ private:
 
 	std::shared_ptr<AGameMode> GameModeActor;
 	std::shared_ptr<class APlayerController> PlayerControllerActor;
-
+	std::string GameModeClassName = "AGameMode";
 private:
 	nlohmann::basic_json<> LevelData;
 };

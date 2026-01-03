@@ -1,0 +1,16 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_Dungeon_14",
+    "VertexShader" : {
+	"FilePath" : "/Shader/PBR.fx",
+	"Func" : "VS_Grass"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/PS_Dungeon.fx",
+	"Func": "PBR_Dungeon_14"
+    },
+    "TextureParams" : [ "T_Dungeon_14_Base_01", "T_Dungeon_14_Normal_01" ],
+    "BlendMode": "Deferred",
+    "TwoSided" : 0
+	
+}

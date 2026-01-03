@@ -56,4 +56,60 @@ float3 CalculateViewDirection(float3 WorldPosition)
 	float3 CameraWorldPos = mul(float4(0, 0, 0, 1), gViewInv).xyz;
 	return normalize(CameraWorldPos - WorldPosition);
 }
+
+// Note: AI를 활용해 함수 구현
+float3 SimpleGrassWind(float3 worldPos, float3 normal, float2 texCoord, float time)
+{
+    // 🌿 강화된 바람 파라미터
+	float windIntensity = 2.0f;
+	float windWeight = 1.0f;
+	float windSpeed = 1.5f;
+    
+    // 🌪️ 복합적인 바람 방향 (시간에 따라 변화)
+	float3 primaryWind = float3(1.0, 0.0, 0.3);
+	float3 secondaryWind = float3(0.7, 0.0, -0.4);
+	float windDirBlend = sin(time * 0.3) * 0.5 + 0.5;
+	float3 windDir = normalize(lerp(primaryWind, secondaryWind, windDirBlend));
+    
+    // 🌊 복잡한 바람 패턴 (여러 레이어)
+	float timeOffset = time * windSpeed;
+	float spatialX = worldPos.x * 0.05;
+	float spatialZ = worldPos.z * 0.08;
+    
+    // 메인 바람 (큰 움직임)
+	float mainWind = sin(timeOffset + spatialX + spatialZ);
+    
+    // 세부 바람 (작은 떨림)
+	float detailWind1 = sin(timeOffset * 3.7 + spatialX * 2.1) * 0.4;
+	float detailWind2 = sin(timeOffset * 6.3 + spatialZ * 1.8) * 0.2;
+    
+    // 돌풍 효과 (간헐적인 강한 바람)
+	float gustPhase = time * 0.8 + worldPos.x * 0.02;
+	float gust = pow(saturate(sin(gustPhase)), 8.0) * 1.5;
+    
+    // 🎭 최종 바람 노이즈 조합 (-1 ~ 1 범위 유지)
+	float windNoise = mainWind + detailWind1 + detailWind2 + gust;
+    
+    // 🍃 높이 기반 가중치 (아래쪽은 덜 움직임)
+	float heightInfluence = pow(saturate(texCoord.y), 0.8);
+    
+    // 🌱 노멀 영향 완화 (모든 방향에서 어느 정도 움직임)
+	float normalInfluence = saturate(dot(normal, float3(0, 1, 0))) * 0.3 + 0.7;
+    
+    // ⬆️ Y축 움직임 추가 (핵심!)
+	float verticalWind = sin(timeOffset * 1.2 + spatialX * 1.5 + spatialZ * 0.8) * 0.4;
+	verticalWind += sin(timeOffset * 2.8 + worldPos.y * 0.1) * 0.2; // 높이별 차등
+    
+    // 🌀 3D 바람 벡터 생성
+	float3 finalWindDir = float3(
+        windDir.x, // 기존 X축
+        verticalWind, // 새로운 Y축 움직임
+        windDir.z               // 기존 Z축
+    );
+    
+    // 최종 바람 오프셋
+	float3 windOffset = finalWindDir * windIntensity * windNoise * heightInfluence * normalInfluence;
+    
+	return windOffset;
+}
 #endif

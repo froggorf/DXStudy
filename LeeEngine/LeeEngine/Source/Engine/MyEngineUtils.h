@@ -52,7 +52,7 @@ struct FTransform
 {
 	FTransform() = default;
 
-	FTransform(XMFLOAT3 InTranslation, XMFLOAT4 InRotation, XMFLOAT3 InScale);
+	FTransform(XMFLOAT3 InTranslation, XMFLOAT4 InRotation = XMFLOAT4{0,0,0,1}, XMFLOAT3 InScale = XMFLOAT3{1,1,1});
 
 	FTransform(XMVECTOR InRotationQuat, XMFLOAT3 InTranslation, XMFLOAT3 InScale);
 

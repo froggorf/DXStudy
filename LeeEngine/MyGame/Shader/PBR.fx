@@ -3,6 +3,7 @@
 
 #include "Global.fx"
 #include "AnimationHelpers.hlsl"
+#include "MaterialNode.fx"
 
 struct VS_INPUT
 {
@@ -38,6 +39,27 @@ PBR_PS_INPUT VS(VS_INPUT Input)
 	output.ViewTangent = normalize(mul(float4(Input.Tangent, 0.f), gMatWV)).xyz;
 	output.ViewNormal = normalize(mul(float4(Input.Normal, 0.f), gMatWV)).xyz;
 	output.ViewBinormal = normalize(cross(output.ViewNormal, output.ViewTangent));
+	return output;
+}
+
+PBR_PS_INPUT VS_Grass(VS_INPUT Input)
+{
+	PBR_PS_INPUT output = (PBR_PS_INPUT) 0;
+	
+	float4 worldPos = mul(Input.Pos, World);
+    
+	float3 windOffset = SimpleGrassWind(worldPos.xyz,Input.Normal,Input.TexCoord,gTime);
+	windOffset *= 2.0f;
+	worldPos.xyz += windOffset;
+    
+    output.PosWorld = worldPos;
+	output.PosScreen = mul(mul(worldPos, gView), gProjection);
+	output.TexCoord = Input.TexCoord;
+	output.ViewPosition = mul(worldPos, gView);
+	output.ViewTangent = normalize(mul(float4(Input.Tangent, 0.f), gMatWV)).xyz;
+	output.ViewNormal = normalize(mul(float4(Input.Normal, 0.f), gMatWV)).xyz;
+	output.ViewBinormal = normalize(cross(output.ViewNormal, output.ViewTangent));
+    
 	return output;
 }
 

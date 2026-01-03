@@ -1,0 +1,16 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_Dungeon_00",
+    "VertexShader" : {
+	"FilePath" : "/Shader/PBR.fx",
+	"Func" : "VS"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/PS_Dungeon.fx",
+	"Func": "PBR_Dungeon_00"
+    },
+    "TextureParams" : [ "T_Dungeon_00_Base_01", "T_Dungeon_00_Base_02", "T_Dungeon_00_Base_03", "T_Dungeon_00_Normal_01", "T_Dungeon_00_Normal_02" ],
+    "BlendMode": "Deferred",
+    "TwoSided" : 0
+	
+}

@@ -84,6 +84,27 @@ float3 GetNormalFromMap(in out PBR_PS_INPUT input)
 	input.ViewNormal = normalize(mul(TangentNormal, matRot));
 	return input.ViewNormal;
 }
+
+float3 CalculateNormal(in out PBR_PS_INPUT input, float3 InNormal)
+{
+	int bNormalTexBind = bTexBind_0_3.g;
+	if (!bNormalTexBind)
+	{
+		return normalize(input.ViewNormal);
+	}
+    
+	float3x3 matRot =
+	{
+		input.ViewTangent,
+        input.ViewBinormal,
+        input.ViewNormal,
+	};
+        
+	input.ViewNormal = normalize(mul(InNormal, matRot));
+	return input.ViewNormal;
+}
+
+
 float3 GetNormalFromMap(PBR_PS_INPUT input, float2 NewUV)
 {
 	int bNormalTexBind = bTexBind_0_3.g;
