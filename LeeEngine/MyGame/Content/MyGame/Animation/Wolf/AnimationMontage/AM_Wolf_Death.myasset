@@ -1,0 +1,21 @@
+{
+	"Class": "UAnimMontage",
+	"Name": "AM_Wolf_Death",
+	"Skeleton": "SK_Wolf",
+	"BlendIn" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.15
+	},
+	"BlendOut" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.0
+	},
+
+	"SlotName": "DefaultSlot",
+	"AnimTrack" : [
+		{"AnimName" : "AS_Wolf_Death"}
+	],
+	"Sections" : [
+		{ "SectionName" : "0", "StartTime" : 0.0 }
+	]
+}

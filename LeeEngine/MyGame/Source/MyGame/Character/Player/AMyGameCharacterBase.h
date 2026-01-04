@@ -50,6 +50,7 @@ class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
 	void BeginPlay() override;
 	void Tick_Editor(float DeltaSeconds) override;
 
+
 	void BindKeyInputs() override;
 
 	virtual void OnSkeletalMeshLoadSuccess();

@@ -30,4 +30,7 @@ class ADungeonGameMode : public AGameMode
 	void BeginPlay() override;
 	void StartGame() override;
 	void EndGame() override;
+
+
+	float PotionCoolDownTime = 10.0f;
 };

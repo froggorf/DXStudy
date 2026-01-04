@@ -108,6 +108,7 @@ class UEngine : public UObject
 	void SetInputMode(EInputMode NewInputMode);
 	EInputMode GetInputMode() const {return InputMode;}
 	void SetMouseLock(EMouseLockMode NewLockMode);
+	EMouseLockMode GetMouseLock() const {return LockMouseMode;}
 	void ShowCursor(bool NewVisible);
 protected:
 	virtual void CreateRenderThread();

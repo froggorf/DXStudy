@@ -21,7 +21,7 @@ D3DApp::D3DApp(HINSTANCE hInstance)
 	m_hAppInstance = hInstance;
 	m_MainWndTitle = L"2019180031 D3D11";
 	m_ClientWidth  = 2540;
-	m_ClientHeight = 1440;
+	m_ClientHeight = 1350;
 	m_hMainWnd     = nullptr;
 	m_AppPaused    = m_Minimized = m_Maximized = m_Resizing = false;
 

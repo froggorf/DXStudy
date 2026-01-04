@@ -45,11 +45,6 @@ void UWorld::BeginPlay()
 		return;
 	}
 
-	// TODO: 0709 임시적으로 PlayerController를 해당 위치에서 생성
-
-	
-	
-
 	PersistentLevel->BeginPlay();
 	
 }

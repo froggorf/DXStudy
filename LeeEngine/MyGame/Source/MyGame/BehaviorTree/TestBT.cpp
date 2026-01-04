@@ -398,7 +398,7 @@ EBTNodeResult FBTTask_DragonMoveToPatternLocation::Tick(float DeltaSeconds, cons
 	{
 		if (const std::shared_ptr<ACharacter>& CharacterShared = Character.lock())
 		{
-			CharacterShared->SetActorLocation_Teleport({750,0,-500});
+			CharacterShared->SetActorLocation_Teleport({12439,4250,6284});
 			CharacterShared->SetActorRotation(MyMath::ForwardVectorToRotationQuaternion({-1,0,0}));
 			CharacterShared->GetSkeletalMeshComponent()->SetVisibility(false);
 		}

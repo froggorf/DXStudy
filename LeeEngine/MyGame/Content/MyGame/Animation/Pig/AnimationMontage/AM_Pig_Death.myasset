@@ -1,0 +1,21 @@
+{
+	"Class": "UAnimMontage",
+	"Name": "AM_Pig_Death",
+	"Skeleton": "SK_Pig",
+	"BlendIn" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.15
+	},
+	"BlendOut" : {
+		"CurveName" : "CustomCurve",
+		"BlendTime" : 0.0
+	},
+
+	"SlotName": "DefaultSlot",
+	"AnimTrack" : [
+		{"AnimName" : "AS_Pig_Death"}
+	],
+	"Sections" : [
+		{ "SectionName" : "0", "StartTime" : 0.0 }
+	]
+}

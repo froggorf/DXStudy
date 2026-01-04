@@ -65,10 +65,15 @@ void UEngine::InitEngine()
 	// 에디터가 아닐경우 바로 게임이 실행되도록 설정
 	//GameStart();
 	// GameStart호출이 안되는경우가 있어 해당방식으로 수정
+	
+	SetMouseLock(EMouseLockMode::LockAlways);
+	SetInputMode(EInputMode::InputMode_GameOnly);
+	ShowCursor(false);
+
 	bGameStart  = true;
 	TimeSeconds = 0;
 
-	GetWorld()->BeginPlay();
+	GetCurrentWorld()->BeginPlay();
 #endif
 }
 
@@ -428,73 +433,137 @@ void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static XMFLOAT2 LastMousePosition;
 	static XMFLOAT2 LastMouseDelta;
+	static bool bFirstMove = true;
 
 	FInputEvent InputEvent;
 	InputEvent.Key = EKeys::None;
+
 	switch (msg)
 	{
 	case WM_LBUTTONDOWN:
 	case WM_LBUTTONUP:
-		InputEvent.Key= EKeys::MouseLeft;
+		InputEvent.Key = EKeys::MouseLeft;
 		InputEvent.CurPosition.x = static_cast<float>(GET_X_LPARAM(lParam));
 		InputEvent.CurPosition.y = static_cast<float>(GET_Y_LPARAM(lParam));
 		InputEvent.bKeyDown = (msg == WM_LBUTTONDOWN);
 		InputEvent.bIsKeyEvent = false;
 		break;
-	case WM_RBUTTONUP:
+
 	case WM_RBUTTONDOWN:
-		InputEvent.Key= EKeys::MouseRight;
+		// 우클릭 시작 시 첫 이동 플래그 리셋
+		bFirstMove = true;
+
+		InputEvent.Key = EKeys::MouseRight;
 		InputEvent.CurPosition.x = static_cast<float>(GET_X_LPARAM(lParam));
 		InputEvent.CurPosition.y = static_cast<float>(GET_Y_LPARAM(lParam));
-		InputEvent.bKeyDown = (msg == WM_RBUTTONDOWN);
+		InputEvent.bKeyDown = true;
 		InputEvent.bIsKeyEvent = false;
 		break;
+
+	case WM_RBUTTONUP:
+		bFirstMove = true;
+
+		InputEvent.Key = EKeys::MouseRight;
+		InputEvent.CurPosition.x = static_cast<float>(GET_X_LPARAM(lParam));
+		InputEvent.CurPosition.y = static_cast<float>(GET_Y_LPARAM(lParam));
+		InputEvent.bKeyDown = false;
+		InputEvent.bIsKeyEvent = false;
+		break;
+
 	case WM_MBUTTONUP:
 	case WM_MBUTTONDOWN:
 		InputEvent.bIsKeyEvent = false;
 		break;
-	case WM_MOUSEMOVE:
-		{
-			int x = GET_X_LPARAM(lParam);
-			int y = GET_Y_LPARAM(lParam);
-			LastMouseDelta = {x - LastMousePosition.x, y - LastMousePosition.y};
-			LastMousePosition = {static_cast<float>(x),static_cast<float>(y)};
 
-			InputEvent.Key = EKeys::MouseXY2DAxis;
-			InputEvent.bKeyDown = false;
-			InputEvent.Delta = LastMouseDelta;
-			InputEvent.CurPosition = LastMousePosition;
-			InputEvent.bIsKeyEvent = false;
-		}
-		break;
-	case WM_MOUSEWHEEL:
-		if (GET_WHEEL_DELTA_WPARAM(wParam) > 0)
+	case WM_MOUSEMOVE:
+	{
+		int x = GET_X_LPARAM(lParam);
+		int y = GET_Y_LPARAM(lParam);
+
+		if (bFirstMove)
 		{
-			InputEvent.Key = EKeys::MouseWheelUp;	
+			LastMousePosition = {static_cast<float>(x), static_cast<float>(y)};
+			LastMouseDelta = {0.0f, 0.0f};
+			bFirstMove = false;
 		}
 		else
 		{
-			InputEvent.Key = EKeys::MouseWheelDown;	
+			LastMouseDelta = {x - LastMousePosition.x, y - LastMousePosition.y};
+			LastMousePosition = {static_cast<float>(x), static_cast<float>(y)};
+
+			// 마우스 캡처 중이고 화면 끝 근처면 중앙으로 리셋
+			if (GEngine->GetMouseLock() == EMouseLockMode::LockAlways)
+			{
+				D3DApp* App = GetApplication();
+				if (App)
+				{
+					RECT ClientRect;
+					GetClientRect(App->GetMainWnd(), &ClientRect);
+
+					int Margin = 50; // 경계 마진
+					bool bNeedReset = false;
+
+					if (x < Margin || x > ClientRect.right - Margin ||
+						y < Margin || y > ClientRect.bottom - Margin)
+					{
+						bNeedReset = true;
+					}
+
+					if (bNeedReset)
+					{
+						// 중앙으로 리셋
+						int CenterX = ClientRect.right / 2;
+						int CenterY = ClientRect.bottom / 2;
+
+						POINT CenterPoint = {CenterX, CenterY};
+						ClientToScreen(App->GetMainWnd(), &CenterPoint);
+						SetCursorPos(CenterPoint.x, CenterPoint.y);
+
+						LastMousePosition = {static_cast<float>(CenterX), 
+							static_cast<float>(CenterY)};
+
+						MY_LOG("Input", EDebugLogLevel::DLL_Verbose, 
+							"Mouse reset to center");
+					}
+				}
+			}
+		}
+
+		InputEvent.Key = EKeys::MouseXY2DAxis;
+		InputEvent.bKeyDown = false;
+		InputEvent.Delta = LastMouseDelta;
+		InputEvent.CurPosition = LastMousePosition;
+		InputEvent.bIsKeyEvent = false;
+	}
+	break;
+
+	case WM_MOUSEWHEEL:
+		if (GET_WHEEL_DELTA_WPARAM(wParam) > 0)
+		{
+			InputEvent.Key = EKeys::MouseWheelUp;
+		}
+		else
+		{
+			InputEvent.Key = EKeys::MouseWheelDown;
 		}
 		InputEvent.bKeyDown = true;
 		InputEvent.bIsKeyEvent = false;
-		
-	break;
+		break;
+
 	case WM_KEYDOWN:
 	case WM_KEYUP:
-		InputEvent.Key = VKCodeToEKey(wParam,lParam);
+		InputEvent.Key = VKCodeToEKey(wParam, lParam);
 		InputEvent.bKeyDown = (msg == WM_KEYDOWN);
 		InputEvent.CurPosition = LastMousePosition;
 		InputEvent.Delta = LastMouseDelta;
 		InputEvent.bIsKeyEvent = true;
 		break;
+
 	default:
 		// 잘못된 데이터는 그냥 종료
 		return;
 	}
-	
 
-	
 	if (GetCurrentWorld() && GetCurrentWorld()->GetPlayerController())
 	{
 		APlayerController* PC = GetCurrentWorld()->GetPlayerController();
@@ -504,7 +573,7 @@ void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 		bool bUsedInWidget = false;
 		if (bGameStart && InputMode != EInputMode::InputMode_GameOnly)
 		{
-			bUsedInWidget = PC->WidgetHandleInput(InputEvent);	
+			bUsedInWidget = PC->WidgetHandleInput(InputEvent);
 		}
 
 		if (!bUsedInWidget && bGameStart && InputMode != EInputMode::InputMode_UIOnly)
@@ -513,6 +582,7 @@ void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 	}
 }
+
 
 void UEngine::SetInputMode(EInputMode NewInputMode)
 {

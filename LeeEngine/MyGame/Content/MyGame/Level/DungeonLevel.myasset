@@ -299,7 +299,28 @@
                 1.0,
                 1.0
             ]
+        },
+	     {
+            "Class": "ADragon",
+            "Location": [
+                9493,
+                4685,
+                5822
+            ],
+            "Name": "Boss",
+            "Rotation": [
+                0.0,
+                -0.7076467275619507,
+                0.0,
+                0.7065665125846863
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
         }
+
     ],
     "Class": "ULevel",
     "GameModeClass": "ADungeonGameMode",

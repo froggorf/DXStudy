@@ -36,6 +36,9 @@ public:
 	virtual void UnRegisterPhysics();
 	void ResetPhysics();
 
+	XMFLOAT3 GetPhysicsLocation() const;
+	XMFLOAT4 GetPhysicsRotation() const;
+	FTransform GetPhysicsTransform() const;
 	
 
 	void TickComponent(float DeltaSeconds) override;

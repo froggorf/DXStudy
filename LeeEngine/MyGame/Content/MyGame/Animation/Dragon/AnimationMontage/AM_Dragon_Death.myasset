@@ -8,7 +8,7 @@
 	},
 	"BlendOut" : {
 		"CurveName" : "CustomCurve",
-		"BlendTime" : 0.3
+		"BlendTime" : 0.0
 	},
 
 	"SlotName": "DefaultSlot",
@@ -16,6 +16,6 @@
 		{"AnimName" : "AS_Dragon_Death"}
 	],
 	"Sections" : [
-		{ "SectionName" : "BasicAttack", "StartTime" : 0.0 }
+		{ "SectionName" : "0", "StartTime" : 0.0 }
 	]
 }

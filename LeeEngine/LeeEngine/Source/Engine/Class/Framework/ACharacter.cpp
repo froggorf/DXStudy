@@ -21,7 +21,7 @@ physx::PxQueryHitType::Enum MyQueryFilterCallback::preFilter(const physx::PxFilt
 UCharacterMovementComponent::UCharacterMovementComponent()
 {
 	GravityScale = 12.5f;
-	MaxStepHeight = 50.0f;
+	MaxStepHeight = 30.0f;
 	WalkableFloorAngle = 44.5f;
 	MaxWalkSpeed = 500.0f;
 	JumpZVelocity = 450.0f;
@@ -295,6 +295,8 @@ void ACharacter::SetActorLocation_Teleport(const XMFLOAT3& NewLocation) const
 		// 이동 실행 (마지막 파라미터는 deltaTime인데, 즉시 이동이므로 0으로 설정)
 		MovementComp->PxCharacterController->move(PxDisplacement, 0.000001f, 0.0f, Filters);
 	}
+
+	SetActorLocation(NewLocation);
 }
 
 

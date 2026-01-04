@@ -39,8 +39,6 @@ void UEnemyAnimInstanceBase::SetAnimNotify_BeginPlay()
 {
 	UMyGameAnimInstanceBase::SetAnimNotify_BeginPlay();
 
-	// TODO: 맞춰서 넣기
-	//// BasicAttack
 	NotifyEvent["BasicAttack"] = {this, &UEnemyAnimInstanceBase::ApplyBasicAttack};
 }
 

@@ -11,6 +11,7 @@ ADungeon::ADungeon()
 	Ground = std::make_shared<UStaticMeshComponent>();
 	Ground->SetupAttachment(GetRootComponent());
 	Ground->SetRelativeLocation({0.0f,0.0f,0.0f});
+
 }
 
 void ADungeon::Register()
@@ -23,11 +24,15 @@ void ADungeon::Register()
 			Water->SetCollisionObjectType(ECollisionChannel::WorldStatic);
 		});
 
-	AssetManager::GetAsyncAssetCache("SM_Dungeon",[this](std::shared_ptr<UObject> Object)
-		{
-			Ground->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(Object));
-			Ground->SetCollisionObjectType(ECollisionChannel::WorldStatic);
-		});
+
+	static std::shared_ptr<UStaticMesh> GroundMesh = UStaticMesh::GetStaticMesh("SM_Dungeon");
+	if (!GroundMesh)
+	{
+		AssetManager::ReadMyAsset(AssetManager::GetAssetNameAndAssetPathMap()["SM_Dungeon"]);	
+		GroundMesh = UStaticMesh::GetStaticMesh("SM_Dungeon");
+	}
+	Ground->SetStaticMesh(std::dynamic_pointer_cast<UStaticMesh>(GroundMesh));
+	Ground->SetCollisionObjectType(ECollisionChannel::WorldStatic);
 
 }
 

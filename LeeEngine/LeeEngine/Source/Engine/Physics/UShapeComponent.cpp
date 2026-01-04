@@ -62,6 +62,74 @@ void UShapeComponent::ResetPhysics()
 	RegisterPhysics();
 }
 
+XMFLOAT3 UShapeComponent::GetPhysicsLocation() const
+{
+	if (!RigidActor)
+	{
+		return XMFLOAT3{0.0f, 0.0f, 0.0f};
+	}
+
+	physx::PxTransform GlobalPose = RigidActor->getGlobalPose();
+
+	// PhysX 좌표계 -> 언리얼 좌표계 (Z축 반전)
+	return XMFLOAT3{
+		GlobalPose.p.x,
+		GlobalPose.p.y,
+		-GlobalPose.p.z
+	};
+}
+
+XMFLOAT4 UShapeComponent::GetPhysicsRotation() const
+{
+	if (!RigidActor)
+	{
+		return XMFLOAT4{0.0f, 0.0f, 0.0f, 1.0f};
+	}
+
+	physx::PxTransform GlobalPose = RigidActor->getGlobalPose();
+	physx::PxQuat PxQuat = GlobalPose.q;
+
+	// PhysX 쿼터니언 -> 언리얼 쿼터니언 (Z축 반전)
+	return XMFLOAT4{
+		-PxQuat.x,
+		-PxQuat.y,
+		PxQuat.z,
+		PxQuat.w
+	};
+}
+
+FTransform UShapeComponent::GetPhysicsTransform() const
+{
+	FTransform Result;
+
+	if (!RigidActor)
+	{
+		return Result;
+	}
+
+	physx::PxTransform GlobalPose = RigidActor->getGlobalPose();
+
+	// Translation
+	Result.Translation = XMFLOAT3{
+		GlobalPose.p.x,
+		GlobalPose.p.y,
+		-GlobalPose.p.z
+	};
+
+	// Rotation
+	Result.Rotation = XMFLOAT4{
+		-GlobalPose.q.x,
+		-GlobalPose.q.y,
+		GlobalPose.q.z,
+		GlobalPose.q.w
+	};
+
+	// Scale (PhysX는 스케일 정보 없음)
+	Result.Scale3D = XMFLOAT3{1.0f, 1.0f, 1.0f};
+
+	return Result;
+}
+
 void UShapeComponent::TickComponent(float DeltaSeconds)
 {
 	UPrimitiveComponent::TickComponent(DeltaSeconds);

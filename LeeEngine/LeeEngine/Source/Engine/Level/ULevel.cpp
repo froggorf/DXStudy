@@ -262,7 +262,7 @@ std::shared_ptr<AActor> ULevel::SpawnActor(const std::string& ClassName, const F
 	std::shared_ptr<AActor> NewActor  = std::dynamic_pointer_cast<AActor>(P->second->CreateInstance());
 	if (NewActor)
 	{
-		NewActor->SetActorLocation(SpawnTransform.GetTranslation());
+		NewActor->SetActorLocation_Teleport(SpawnTransform.GetTranslation());
 		NewActor->SetActorRotation(SpawnTransform.GetRotation());
 		NewActor->SetActorScale3D(SpawnTransform.GetScale3D());
 

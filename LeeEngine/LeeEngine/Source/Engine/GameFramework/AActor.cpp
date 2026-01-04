@@ -214,7 +214,7 @@ void AActor::LoadDataFromFileData(const nlohmann::json& AssetData)
 	Rename(AssetData["Name"]);
 	int  X            = 0, Y = 1, Z = 2, W = 3;
 	auto LocationData = AssetData["Location"];
-	SetActorLocation(XMFLOAT3(LocationData[X], LocationData[Y], LocationData[Z]));
+	SetActorLocation_Teleport(XMFLOAT3(LocationData[X], LocationData[Y], LocationData[Z]));
 	auto RotationData = AssetData["Rotation"];
 	SetActorRotation(XMFLOAT4(RotationData[X], RotationData[Y], RotationData[Z], RotationData[W]));
 	auto ScaleData = AssetData["Scale"];

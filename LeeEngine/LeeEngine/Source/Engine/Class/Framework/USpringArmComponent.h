@@ -18,7 +18,7 @@ class USpringArmComponent : public USceneComponent
 	float TargetArmLength = 300.0f;
 	XMFLOAT3 TargetOffset;
 
-	ACharacter* OwningCharacter;
+	ACharacter* OwningCharacter = nullptr;
 
 	bool bUsePawnControlRotation = true;
 

@@ -33,12 +33,12 @@ class AEnemyBase : public ACharacter
 	void ApplyBasicAttack();
 
 	void Death() override;
+	void DestroyAtDeath();
 
 	void Tick(float DeltaSeconds) override;
 
 	virtual void BindingBehaviorTree();
-
-
+	virtual std::shared_ptr<UAnimMontage> GetDeathAnimMontage() const {assert(nullptr); return nullptr;}
 protected:
 	std::string CharacterMeshName = "";
 	std::string AnimInstanceName = "UMyGameAnimInstanceBase";
@@ -47,9 +47,11 @@ protected:
 	FAttackData BasicAttackData{};
 	float EnemyPower = 50.0f;
 
+	FTimerHandle DeathTimerHandle;
 public:
 	const std::shared_ptr<UMotionWarpingComponent>& GetMotionWarpingComponent() const {return MotionWarpingComponent;}
-	
+
+	Delegate<> OnDeath;
 protected:
 	std::shared_ptr<UMotionWarpingComponent> MotionWarpingComponent;
 
@@ -64,6 +66,7 @@ protected:
 	std::shared_ptr<AAIController> AIController;
 
 	std::shared_ptr<UEnemyAnimInstanceBase> EnemyAnimInstance;
+
 };
 
 
@@ -73,6 +76,11 @@ class AWolf final : public AEnemyBase
 
 	AWolf();
 	~AWolf() override = default;
+
+	void Register() override;
+
+	std::shared_ptr<UAnimMontage> GetDeathAnimMontage() const override {return DeathMontage;}
+	std::shared_ptr<UAnimMontage> DeathMontage;
 };
 
 class APig final : public AEnemyBase
@@ -81,6 +89,11 @@ class APig final : public AEnemyBase
 
 	APig();
 	~APig() override = default;
+
+	void Register() override;
+
+	std::shared_ptr<UAnimMontage> GetDeathAnimMontage() const override {return DeathMontage;}
+	std::shared_ptr<UAnimMontage> DeathMontage;
 };
 
 class ADragon final : public AEnemyBase
@@ -116,7 +129,8 @@ class ADragon final : public AEnemyBase
 	void EndHPSkill();
 
 	/// ==================================================
-	
+	std::shared_ptr<UAnimMontage> GetDeathAnimMontage() const override {return DeathMontage;}
+	std::shared_ptr<UAnimMontage> DeathMontage;
 protected:
 	std::shared_ptr<UAnimMontage> AM_Dragon_Scream;
 	std::shared_ptr<UAnimMontage> AM_Dragon_Flame;

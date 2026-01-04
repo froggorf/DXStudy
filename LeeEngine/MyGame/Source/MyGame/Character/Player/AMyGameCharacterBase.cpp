@@ -7,6 +7,7 @@
 #include "MyGame/Component/Combat/Skill/NormalSkill/USkillBaseComponent.h"
 #include "MyGame/Component/Combat/Skill/Ultimate/UUltimateBaseComponent.h"
 #include "MyGame/Core/AMyGamePlayerController.h"
+#include "MyGame/Core/ATownGameMode.h"
 
 
 XMFLOAT4 GetElementColor(EElementType ElementType)
@@ -134,6 +135,11 @@ void AMyGameCharacterBase::BeginPlay()
 
 	HealthComponent->SetMaxHealth(CharacterMaxHealth, true);
 
+
+	CapsuleComp->SetCollisionObjectType(ECollisionChannel::Player);
+	CapsuleComp->SetObjectType(ECollisionChannel::Player);
+	QueryCheckCapsuleComp->SetCollisionObjectType(ECollisionChannel::Player);
+	QueryCheckCapsuleComp->GetBodyInstance()->SetObjectType(ECollisionChannel::Player);
 	
 }
 
@@ -438,7 +444,7 @@ void AMyGameCharacterBase::WheelDown()
 
 void AMyGameCharacterBase::TryUsePotion()
 {
-	MY_LOG("LOG",EDebugLogLevel::DLL_Warning, "TODO: TryUsePotion");
+	
 }
 
 void AMyGameCharacterBase::ApplyPotion()
@@ -483,4 +489,10 @@ void AMyGameCharacterBase::Tick(float DeltaSeconds)
 {
 	ACharacter::Tick(DeltaSeconds);
 
+	if (QueryCheckCapsuleComp->GetBodyInstance())
+	{
+		std::cout<<XMFLOAT3_TO_TEXT(QueryCheckCapsuleComp->GetBodyInstance()->GetPhysicsLocation())<<"\n";
+		std::cout<<"    "<<XMFLOAT3_TO_TEXT(CapsuleComp->GetPhysicsLocation())<<"\n";
+	}
+	
 }
