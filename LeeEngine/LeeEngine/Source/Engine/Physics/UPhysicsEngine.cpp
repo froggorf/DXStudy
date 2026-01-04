@@ -130,9 +130,9 @@ UPhysicsEngine::UPhysicsEngine()
 
 UPhysicsEngine::~UPhysicsEngine()
 {
-	if (Manager) {
-		Manager->release();
-		Manager = nullptr;
+	if (ControllerManager) {
+		ControllerManager->release();
+		ControllerManager = nullptr;
 	}
 	if (PxScene) {
 		PxScene->release();
@@ -165,9 +165,9 @@ void UPhysicsEngine::CreateScene()
 	bIsRegistered = false;
 
 	// 1. Release old resources in correct order
-	if (Manager) {
-		Manager->release();
-		Manager = nullptr;
+	if (ControllerManager) {
+		ControllerManager->release();
+		ControllerManager = nullptr;
 	}
 	if (PxScene) {
 		PxScene->release();
@@ -195,8 +195,8 @@ void UPhysicsEngine::CreateScene()
 	SceneDesc.simulationEventCallback = CallbackInstance.get();
 	PxScene = PxPhysics->createScene(SceneDesc);
 
-	Manager = PxCreateControllerManager(*PxScene); 
-	if (Manager == nullptr) {
+	ControllerManager = PxCreateControllerManager(*PxScene); 
+	if (ControllerManager == nullptr) {
 		// 에러 처리
 		int a = 0;
 	}
@@ -222,31 +222,140 @@ void UPhysicsEngine::TickPhysics(float DeltaSeconds) const
 			PxScene->fetchResults(true);
 		}
 		CurFrameTime -= UpdateTime;
+		SyncRigidDynamicActors();
+		SyncCharacterControllers();
+	}	
+}
 
-		// 위치 정보도 적용해주기
-		physx::PxU32 ActorNum = PxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC);
-		std::vector<physx::PxActor*> SceneActors(ActorNum);
-		PxScene->getActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC, SceneActors.data(), ActorNum);
-		
-		for (physx::PxU32 i = 0; i < ActorNum; ++i)
+void UPhysicsEngine::SyncRigidDynamicActors() const
+{
+	if (!PxScene)
+	{
+		return;
+	}
+
+	physx::PxU32 ActorNum = PxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC);
+	std::vector<physx::PxActor*> SceneActors(ActorNum);
+	PxScene->getActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC, SceneActors.data(), ActorNum);
+
+	for (physx::PxU32 i = 0; i < ActorNum; ++i)
+	{
+		physx::PxActor* Actor = SceneActors[i];
+
+		if (!Actor || !Actor->userData)
 		{
-			physx::PxActor* Actor = SceneActors[i];
-		
-			if (UShapeComponent* ShapeComp = static_cast<UShapeComponent*>(Actor->userData))
+			continue;
+		}
+
+		if (UShapeComponent* ShapeComp = static_cast<UShapeComponent*>(Actor->userData))
+		{
+			if (physx::PxRigidDynamic* RigidDynamic = Actor->is<physx::PxRigidDynamic>())
 			{
-				if (physx::PxRigidDynamic* RigidDynamic = Actor->is<physx::PxRigidDynamic>())
+				// 키네마틱인 애들은 위치 정보를 갱신해주지 말아야함
+				if (!RigidDynamic->getRigidBodyFlags().isSet(physx::PxRigidBodyFlag::eKINEMATIC))
 				{
-					// 키네마틱인 애들은 위치 정보를 갱신해주지 말아야함
-					if (!RigidDynamic->getRigidBodyFlags().isSet(physx::PxRigidBodyFlag::eKINEMATIC))
-					{
-						const physx::PxTransform& PxTransform = RigidDynamic->getGlobalPose();
-						FTransform Transform{{PxTransform.p.x, PxTransform.p.y, -PxTransform.p.z},{PxTransform.q.x, PxTransform.q.y, PxTransform.q.z, PxTransform.q.w},{1, 1, 1}};
-						ShapeComp->SetWorldTransform(Transform);
-					}
+					const physx::PxTransform& PxTransform = RigidDynamic->getGlobalPose();
+					FTransform Transform{
+						{PxTransform.p.x, PxTransform.p.y, -PxTransform.p.z},
+						{-PxTransform.q.x, -PxTransform.q.y, PxTransform.q.z, PxTransform.q.w}, // ✅ 쿼터니언 부호 수정
+						{1, 1, 1}
+					};
+					ShapeComp->SetWorldTransform(Transform);
 				}
 			}
 		}
-	}	
+	}
+}
+
+// ✅ Character Controller 동기화 (새로운 함수)
+void UPhysicsEngine::SyncCharacterControllers() const
+{
+	if (!ControllerManager)
+	{
+		return;
+	}
+
+	physx::PxU32 ControllerNum = ControllerManager->getNbControllers();
+
+	for (physx::PxU32 i = 0; i < ControllerNum; ++i)
+	{
+		physx::PxController* Controller = ControllerManager->getController(i);
+		if (!Controller)
+		{
+			continue;
+		}
+
+		// ✅ Controller의 UserData에서 MovementComponent 가져오기
+		void* UserData = Controller->getUserData();
+		if (!UserData)
+		{
+			continue;
+		}
+
+		// ✅ MovementComponent를 통해 Actor 접근
+		UCharacterMovementComponent* MovementComp = static_cast<UCharacterMovementComponent*>(UserData);
+		if (!MovementComp)
+		{
+			continue;
+		}
+
+		AActor* Owner = MovementComp->GetOwner();
+		if (!Owner)
+		{
+			continue;
+		}
+
+		// ✅ Character Controller 위치 가져오기
+		physx::PxExtendedVec3 CCTPos = Controller->getPosition();
+		XMFLOAT3 NewLocation = {
+			static_cast<float>(CCTPos.x),
+			static_cast<float>(CCTPos.y),
+			static_cast<float>(-CCTPos.z)
+		};
+
+		// ✅ Actor 위치 업데이트 (이미 SetActorLocation에서 Capsule 동기화 포함)
+		Owner->SetActorLocation(NewLocation);
+
+		// ✅ 추가: Capsule Component PhysX Actor 강제 동기화
+		if (ACharacter* Character = dynamic_cast<ACharacter*>(Owner))
+		{
+			SyncCharacterCapsules(Character, NewLocation);
+		}
+	}
+}
+
+// ✅ Character의 Capsule들 동기화
+void UPhysicsEngine::SyncCharacterCapsules(ACharacter* Character, const XMFLOAT3& NewLocation) const
+{
+	if (!Character)
+	{
+		return;
+	}
+
+	XMFLOAT4 Rotation = Character->GetActorRotation();
+
+	physx::PxTransform NewTransform(
+		physx::PxVec3(NewLocation.x, NewLocation.y, -NewLocation.z),
+		physx::PxQuat(-Rotation.x, -Rotation.y, Rotation.z, Rotation.w)
+	);
+
+	// ✅ CapsuleComp 동기화
+	if (std::shared_ptr<UCapsuleComponent> Capsule = Character->GetCapsuleComponent())
+	{
+		if (physx::PxRigidActor* RigidActor = Capsule->GetRigidActor())
+		{
+			RigidActor->setGlobalPose(NewTransform);
+		}
+	}
+
+	// ✅ QueryCheckCapsuleComp 동기화
+	if (Character->QueryCheckCapsuleComp)
+	{
+		if (physx::PxRigidActor* RigidActor = Character->QueryCheckCapsuleComp->GetBodyInstance()->GetRigidActor())
+		{
+			RigidActor->setGlobalPose(NewTransform);
+		}
+	}
 }
 
 physx::PxShape* UPhysicsEngine::CreateSphereShape(const float Radius) const
@@ -463,7 +572,7 @@ void UPhysicsEngine::ResetScene()
 
 physx::PxControllerManager* UPhysicsEngine::GetControllerManager()
 {
-	return Manager;
+	return ControllerManager;
 }
 
 bool UPhysicsEngine::LineTraceSingleByChannel(const XMFLOAT3& Start, const XMFLOAT3& End, const std::vector<ECollisionChannel>& TraceChannel,FHitResult& HitResult, float DebugDrawTime, const XMFLOAT3& TraceColor, const XMFLOAT3& TraceHitColor) const

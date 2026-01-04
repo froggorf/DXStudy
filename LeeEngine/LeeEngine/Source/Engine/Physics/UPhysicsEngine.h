@@ -5,6 +5,7 @@
 
 #pragma once
 #include "CoreMinimal.h"
+
 #include "Engine/Mesh/UStaticMesh.h"
 #include "Engine/UObject/UObject.h"
 
@@ -103,7 +104,10 @@ public:
 
 	void InitPhysicsEngine();
 	void TickPhysics(float DeltaSeconds) const;
+	void SyncRigidDynamicActors() const;
 	void CreateScene();
+	void SyncCharacterControllers() const;
+	void SyncCharacterCapsules(class ACharacter* Character, const XMFLOAT3& NewLocation) const;
 	/// Shape
 	// Sphere Shape
 	physx::PxShape* CreateSphereShape(const float Radius) const;
@@ -160,7 +164,7 @@ private:
 	physx::PxFoundation* PxFoundation     = nullptr;
 	physx::PxPhysics* PxPhysics        = nullptr;
 	physx::PxScene* PxScene          = nullptr;
-	physx::PxControllerManager* Manager = nullptr;
+	physx::PxControllerManager* ControllerManager = nullptr;
 	physx::PxMaterial* DefaultMaterial = nullptr;
 
 	float DefaultGravityScale = 7.5f;

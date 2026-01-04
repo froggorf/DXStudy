@@ -278,24 +278,38 @@ void ACharacter::UnPossessed()
 	Controller = nullptr;
 }
 
-void ACharacter::SetActorLocation_Teleport(const XMFLOAT3& NewLocation) const
+void ACharacter::SetActorLocation(const XMFLOAT3& NewLocation) const
 {
-	UCharacterMovementComponent* MovementComp = GetCharacterMovement();
-	if (MovementComp && MovementComp->PxCharacterController)
+	AActor::SetActorLocation(NewLocation);
+
+	SyncCapsulePhysicsActors(NewLocation);
+}
+
+void ACharacter::SyncCapsulePhysicsActors(const XMFLOAT3& NewLocation) const
+{
+	XMFLOAT4 Rotation = GetActorRotation();
+
+	physx::PxTransform NewTransform(
+		physx::PxVec3(NewLocation.x, NewLocation.y, -NewLocation.z),
+		physx::PxQuat(-Rotation.x, -Rotation.y, Rotation.z, Rotation.w)
+	);
+
+	// ✅ CapsuleComp 동기화
+	if (CapsuleComp && CapsuleComp->GetRigidActor())
 	{
-		XMFLOAT3 CurrentLocation = GetActorLocation();
-		XMFLOAT3 Displacement = NewLocation - CurrentLocation;
-
-		// PhysX 좌표계로 변환 (필요한 경우 z축 반전)
-		physx::PxVec3 PxDisplacement(Displacement.x, Displacement.y, -Displacement.z);
-
-		// 충돌 검사 없이 즉시 이동하려면 PxControllerFilters를 적절히 설정
-		physx::PxControllerFilters Filters;
-
-		// 이동 실행 (마지막 파라미터는 deltaTime인데, 즉시 이동이므로 0으로 설정)
-		MovementComp->PxCharacterController->move(PxDisplacement, 0.000001f, 0.0f, Filters);
+		CapsuleComp->GetRigidActor()->setGlobalPose(NewTransform);
 	}
 
+	// ✅ QueryCheckCapsuleComp 동기화
+	if (QueryCheckCapsuleComp && QueryCheckCapsuleComp->GetBodyInstance()&& QueryCheckCapsuleComp->GetBodyInstance()->GetRigidActor())
+	{
+		QueryCheckCapsuleComp->GetBodyInstance()->GetRigidActor()->setGlobalPose(NewTransform);
+	}
+}
+
+void ACharacter::SetActorLocation_Teleport(const XMFLOAT3& NewLocation) const
+{
+	
 	SetActorLocation(NewLocation);
 }
 

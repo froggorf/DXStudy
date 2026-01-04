@@ -90,6 +90,8 @@ public:
 	virtual void PossessedBy(AController* NewController);
 	virtual void UnPossessed();
 
+	void SetActorLocation(const XMFLOAT3& NewLocation) const override;
+	void SyncCapsulePhysicsActors(const XMFLOAT3& NewLocation) const;
 	void SetActorLocation_Teleport(const XMFLOAT3& NewLocation) const override;
 
 	void AddMovementInput(const XMFLOAT3& WorldDirection, float ScaleValue = 1.0f);
@@ -124,12 +126,12 @@ private:
 public:
 	// 현재 이 액터를 소유중인 컨트롤러
 	AController*  Controller = nullptr;
+	std::shared_ptr<UCapsuleComponent> CapsuleComp;
+	std::shared_ptr<UStaticMeshComponent> QueryCheckCapsuleComp;
 protected:
 	// 컨트롤러의 Rotation
 	XMFLOAT4 ControlRotation;
 
-	std::shared_ptr<UCapsuleComponent> CapsuleComp;
-	std::shared_ptr<UStaticMeshComponent> QueryCheckCapsuleComp;
 
 	std::shared_ptr<USkeletalMeshComponent> SkeletalMeshComponent;
 

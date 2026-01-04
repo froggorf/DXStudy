@@ -489,10 +489,5 @@ void AMyGameCharacterBase::Tick(float DeltaSeconds)
 {
 	ACharacter::Tick(DeltaSeconds);
 
-	if (QueryCheckCapsuleComp->GetBodyInstance())
-	{
-		std::cout<<XMFLOAT3_TO_TEXT(QueryCheckCapsuleComp->GetBodyInstance()->GetPhysicsLocation())<<"\n";
-		std::cout<<"    "<<XMFLOAT3_TO_TEXT(CapsuleComp->GetPhysicsLocation())<<"\n";
-	}
 	
 }
