@@ -1,0 +1,14 @@
+{
+    "Class": "UMaterialInstance",
+    "Name": "MI_Coin",
+    "ParentMaterial" : "M_PBR_Default",
+    "OverrideTexture" :
+    [
+	{ "Index" : 0, "Tex": "T_Coin_Color"},
+	{ "Index" : 1, "Tex": ""},
+	{ "Index" : 2, "Tex": "T_Coin_Metallic"},
+	{ "Index" : 3, "Tex": "T_Coin_Roughness"},
+	{ "Index" : 4, "Tex": "T_Coin_AO"},
+	{ "Index" : 5, "Tex": ""}
+    ]
+}

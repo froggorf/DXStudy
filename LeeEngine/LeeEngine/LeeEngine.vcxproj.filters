@@ -501,6 +501,9 @@
     <ClCompile Include="Source\Engine\Class\Framework\AGameMode.cpp">
       <Filter>Source\Engine\Class\Framework</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Core\UGameInstance.cpp">
+      <Filter>Source\Engine\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DirectX\d3dApp.h">
@@ -886,6 +889,9 @@
     </ClInclude>
     <ClInclude Include="Source\Engine\Class\Framework\AGameMode.h">
       <Filter>Source\Engine\Class\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Core\UGameInstance.h">
+      <Filter>Source\Engine\Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

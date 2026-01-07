@@ -701,6 +701,56 @@ void UPhysicsEngine::BoxOverlapComponents(const XMFLOAT3& BoxPos, const XMFLOAT3
 	}
 }
 
+void UPhysicsEngine::BoxOverlapComponentsWithRotation(const XMFLOAT3& BoxPos, const XMFLOAT3& BoxExtent, 
+	const XMFLOAT4& BoxRotation,
+	const std::vector<ECollisionChannel>& ObjectTypes, 
+	const std::vector<AActor*>& ActorsToIgnore, 
+	std::vector<AActor*>& OutActors)
+{
+	physx::PxBoxGeometry BoxGeom(physx::PxVec3{BoxExtent.x, BoxExtent.y, BoxExtent.z});
+
+	// 회전 적용된 Transform 생성
+	physx::PxQuat PxRotation(BoxRotation.x, BoxRotation.y, BoxRotation.z, BoxRotation.w);
+	physx::PxTransform BoxTransform(physx::PxVec3{BoxPos.x, BoxPos.y, -BoxPos.z}, PxRotation);
+
+	physx::PxQueryFilterData FilterData;
+	FilterData.flags = physx::PxQueryFlag::eSTATIC | physx::PxQueryFlag::eDYNAMIC | physx::PxQueryFlag::eNO_BLOCK;
+	for (size_t i = 0; i < ObjectTypes.size(); ++i)
+	{
+		FilterData.data.word0 |= (1 << static_cast<UINT>(ObjectTypes[i]));
+	}
+
+	std::unique_ptr<physx::PxOverlapHit[]> hitOv = std::make_unique<physx::PxOverlapHit[]>(4096);
+	int howMany = physx::PxSceneQueryExt::overlapMultiple(
+		*PxScene, BoxGeom, BoxTransform, hitOv.get(), 4096,
+		FilterData
+	);
+
+	if (howMany > 0)
+	{
+		for (int i = 0; i < howMany; ++i)
+		{
+			const physx::PxOverlapHit& Hit = hitOv[i];
+			UShapeComponent* ShapeComp = static_cast<UShapeComponent*>(Hit.actor->userData);
+			if (!ShapeComp)
+			{
+				continue;
+			}
+
+			AActor* Actor = ShapeComp->GetOwner();
+
+			// IgnoreActor 체크
+			if (std::find(ActorsToIgnore.begin(), ActorsToIgnore.end(), Actor) != ActorsToIgnore.end())
+			{
+				continue;
+			}
+
+			OutActors.emplace_back(Actor);
+		}
+	}
+}
+
+
 
 physx::PxConvexMesh* UPhysicsEngine::CreateConvexMesh(const std::shared_ptr<UStaticMesh>& StaticMesh) const
 {

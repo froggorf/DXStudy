@@ -179,7 +179,7 @@ void AMyGameCharacterBase::BindKeyInputs()
 
 			InputSystem->BindAction(EKeys::F1, Started, this, &AMyGameCharacterBase::Debug_SetUltimateGauge100);
 
-			InputSystem->BindAction(EKeys::T, Started, this, &AMyGameCharacterBase::TryUsePotion);
+			InputSystem->BindAction(EKeys::Tab, Started, this, &AMyGameCharacterBase::ChangeCharacter);
 
 			if (CombatComponent)
 			{
@@ -442,9 +442,32 @@ void AMyGameCharacterBase::WheelDown()
 	}
 }
 
-void AMyGameCharacterBase::TryUsePotion()
+void AMyGameCharacterBase::ChangeCharacter()
 {
-	
+	std::vector<std::shared_ptr<AActor>> Actors;
+	if (GetClass() == "AGideonCharacter")
+	{
+		Actors = GetWorld()->GetPersistentLevel()->GetActorsFromClass("ASanhwaCharacter");
+	}
+	else
+	{
+		Actors = GetWorld()->GetPersistentLevel()->GetActorsFromClass("AGideonCharacter");
+	}
+
+	if (!Actors.empty())
+	{
+		if (APlayerController* PC = GetWorld()->GetPlayerController())
+		{
+			if (const std::shared_ptr<ACharacter>& OtherCharacter = std::dynamic_pointer_cast<ACharacter>(Actors[0]))
+			{
+				XMFLOAT3 OriginPosition = GetActorLocation();
+				SetActorLocation(XMFLOAT3{0,0,0});	
+				OtherCharacter->SetActorLocation(OriginPosition);
+				PC->OnPossess(OtherCharacter.get());
+			}
+			
+		}
+	}
 }
 
 void AMyGameCharacterBase::ApplyPotion()
@@ -488,6 +511,5 @@ void AMyGameCharacterBase::SetEquipmentLevel(const std::array<int, static_cast<i
 void AMyGameCharacterBase::Tick(float DeltaSeconds)
 {
 	ACharacter::Tick(DeltaSeconds);
-
 	
 }

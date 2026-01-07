@@ -17,7 +17,6 @@ class ATownGameMode : public AGameMode
 
 	std::weak_ptr<class ASanhwaCharacter> SanhwaCharacter;
 	std::weak_ptr<class AGideonCharacter> GideonCharacter;
-	static std::array<int, static_cast<int>(EEquipType::Count)> EquipLevel;
 
 };
 

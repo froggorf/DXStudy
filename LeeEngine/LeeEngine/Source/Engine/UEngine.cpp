@@ -425,7 +425,6 @@ static EKeys VKCodeToEKey(WPARAM vk, LPARAM lParam = 0)
 
 std::string UEngine::GetDefaultPlayerControllerClassName()
 {
-	
 	return EngineData[std::string{"DefaultPlayerController"}];
 }
 

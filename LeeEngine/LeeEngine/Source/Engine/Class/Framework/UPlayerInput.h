@@ -47,7 +47,7 @@ enum class EKeys : uint16_t
     NUM_KEYS
 };
 
-
+wchar_t KeyToChar(EKeys Key, bool bShiftPressed, bool bCapsLockOn = false);
 
 enum ETriggerEvent : int
 {

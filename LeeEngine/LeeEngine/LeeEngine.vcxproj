@@ -65,6 +65,7 @@
     <ClCompile Include="Source\Engine\Components\UStaticMeshComponent.cpp" />
     <ClCompile Include="Source\Engine\Components\UWidgetComponent.cpp" />
     <ClCompile Include="Source\Engine\Core\Async\ThreadPool.cpp" />
+    <ClCompile Include="Source\Engine\Core\UGameInstance.cpp" />
     <ClCompile Include="Source\Engine\DirectX\Device.cpp" />
     <ClCompile Include="Source\Engine\DirectX\FDirect2DDevice.cpp" />
     <ClCompile Include="Source\Engine\EditorClient\Panel\EditorClient.cpp" />
@@ -231,6 +232,7 @@
     <ClInclude Include="Source\Engine\Components\UStaticMeshComponent.h" />
     <ClInclude Include="Source\Engine\Components\UWidgetComponent.h" />
     <ClInclude Include="Source\Engine\Core\Async\ThreadPool.h" />
+    <ClInclude Include="Source\Engine\Core\UGameInstance.h" />
     <ClInclude Include="Source\Engine\DirectX\Device.h" />
     <ClInclude Include="Source\Engine\DirectX\FDirect2DDevice.h" />
     <ClInclude Include="Source\Engine\EditorClient\Panel\EditorClient.h" />

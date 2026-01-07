@@ -1,0 +1,6 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_Coin",
+    "ModelData": "/Content/Resource/MyGame/StaticMesh/coin.obj",
+    "Material" : [ "MI_Coin" ]
+}

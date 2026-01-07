@@ -152,6 +152,12 @@
     <Filter Include="Source\MyGame\Widget\Town">
       <UniqueIdentifier>{aa35399d-ba4b-4d64-8ebf-921d2193a44a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\Database">
+      <UniqueIdentifier>{18d2a0b0-4fc3-4e61-bed1-afff85e998ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\MyGame\Widget\Login">
+      <UniqueIdentifier>{40a659a6-9e2c-45c8-973a-946eeec533ae}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -319,6 +325,39 @@
     <ClCompile Include="Source\MyGame\Actor\AEnemySpawner.cpp">
       <Filter>Source\MyGame\Actor</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Actor\ACoin.cpp">
+      <Filter>Source\MyGame\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\Core\UMyGameInstance.cpp">
+      <Filter>Source\MyGame\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\DataBase\SQLiteWrapper.cpp">
+      <Filter>Source\MyGame\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\DataBase\StageTable.cpp">
+      <Filter>Source\MyGame\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\DataBase\UserTable.cpp">
+      <Filter>Source\MyGame\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\DataBase\DataBaseManager.cpp">
+      <Filter>Source\MyGame\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\DataBase\EquipmentTable.cpp">
+      <Filter>Source\MyGame\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\DataBase\GoldTable.cpp">
+      <Filter>Source\MyGame\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\DataBase\shell.c">
+      <Filter>Source\MyGame\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\DataBase\sqlite3.c">
+      <Filter>Source\MyGame\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyGame\Widget\Login\ULoginWidget.cpp">
+      <Filter>Source\MyGame\Widget\Login</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -482,6 +521,39 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Actor\AEnemySpawner.h">
       <Filter>Source\MyGame\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Actor\ACoin.h">
+      <Filter>Source\MyGame\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Core\UMyGameInstance.h">
+      <Filter>Source\MyGame\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\DataBase\SQLiteWrapper.h">
+      <Filter>Source\MyGame\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\DataBase\StageTable.h">
+      <Filter>Source\MyGame\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\DataBase\UserTable.h">
+      <Filter>Source\MyGame\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\DataBase\DataBaseManager.h">
+      <Filter>Source\MyGame\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\DataBase\EquipmentTable.h">
+      <Filter>Source\MyGame\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\DataBase\GoldTable.h">
+      <Filter>Source\MyGame\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\DataBase\sqlite3.h">
+      <Filter>Source\MyGame\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\DataBase\sqlite3ext.h">
+      <Filter>Source\MyGame\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Widget\Login\ULoginWidget.h">
+      <Filter>Source\MyGame\Widget\Login</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

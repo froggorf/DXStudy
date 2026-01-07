@@ -344,6 +344,10 @@ void UShapeComponent::SetCollisionEnabled(ECollisionEnabled NewType)
 			Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
 			Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
 			Shape->setFlag(physx::PxShapeFlag::eSCENE_QUERY_SHAPE, true);
+		case ECollisionEnabled::QueryAndPhysics: 
+			Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
+			Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
+			Shape->setFlag(physx::PxShapeFlag::eSCENE_QUERY_SHAPE, true);
 		break;
 		}
 	}

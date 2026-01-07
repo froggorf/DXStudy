@@ -294,6 +294,15 @@ void ACharacter::SyncCapsulePhysicsActors(const XMFLOAT3& NewLocation) const
 		physx::PxQuat(-Rotation.x, -Rotation.y, Rotation.z, Rotation.w)
 	);
 
+	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
+	{
+		if (Movement->PxCharacterController)
+		{
+			Movement->PxCharacterController->setPosition(physx::PxExtendedVec3{NewTransform.p.x,NewTransform.p.y,NewTransform.p.z});	
+		}
+		
+	}
+
 	// ✅ CapsuleComp 동기화
 	if (CapsuleComp && CapsuleComp->GetRigidActor())
 	{

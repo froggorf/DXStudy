@@ -1,6 +1,83 @@
 #include "CoreMinimal.h"
 #include "UPlayerInput.h"
 
+wchar_t KeyToChar(EKeys Key, bool bShiftPressed, bool bCapsLockOn)
+{
+    // 알파벳 (A-Z)
+    if (Key >= EKeys::A && Key <= EKeys::Z)
+    {
+        int Offset = static_cast<int>(Key) - static_cast<int>(EKeys::A);
+
+        // Shift 또는 CapsLock이 켜져있으면 대문자
+        bool bUpperCase = (bShiftPressed != bCapsLockOn);  // XOR 연산
+
+        if (bUpperCase)
+        {
+            return L'A' + Offset;
+        }
+        else
+        {
+            return L'a' + Offset;
+        }
+    }
+
+    // 숫자 키 (상단 0-9)
+    if (Key >= EKeys::Num0 && Key <= EKeys::Num9)
+    {
+        int Offset = static_cast<int>(Key) - static_cast<int>(EKeys::Num0);
+
+        // Shift 없으면 숫자
+        if (!bShiftPressed)
+        {
+            return L'0' + Offset;
+        }
+        // Shift 있으면 특수문자
+        else
+        {
+            switch (Key)
+            {
+            case EKeys::Num1: return L'!';
+            case EKeys::Num2: return L'@';
+            case EKeys::Num3: return L'#';
+            case EKeys::Num4: return L'$';
+            case EKeys::Num5: return L'%';
+            case EKeys::Num6: return L'^';
+            case EKeys::Num7: return L'&';
+            case EKeys::Num8: return L'*';
+            case EKeys::Num9: return L'(';
+            case EKeys::Num0: return L')';
+            default: return L'\0';
+            }
+        }
+    }
+
+    // 숫자패드 (0-9)
+    if (Key >= EKeys::Numpad0 && Key <= EKeys::Numpad9)
+    {
+        int Offset = static_cast<int>(Key) - static_cast<int>(EKeys::Numpad0);
+        return L'0' + Offset;
+    }
+
+    // 숫자패드 연산자
+    switch (Key)
+    {
+    case EKeys::NumpadAdd:      return L'+';
+    case EKeys::NumpadSubtract: return L'-';
+    case EKeys::NumpadMultiply: return L'*';
+    case EKeys::NumpadDivide:   return L'/';
+    case EKeys::NumpadDecimal:  return L'.';
+    default: break;
+    }
+
+    // 공백 및 기본 키
+    if (Key == EKeys::Space)     return L' ';
+    if (Key == EKeys::Tab)       return L'\t';
+    if (Key == EKeys::Enter)     return L'\n';
+
+
+    return L'\0';  // 변환 불가능한 키
+}
+
 void UPlayerInput::BeginPlay()
 {
 	UObject::BeginPlay();

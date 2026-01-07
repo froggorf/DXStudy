@@ -1,0 +1,5 @@
+{
+    "Class": "UTexture",
+    "Name": "T_Coin_Color",
+    "FilePath" : "/Content/Resource/MyGame/Texture/StaticMesh/Coin/coin_alb.png"
+}

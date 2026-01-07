@@ -73,7 +73,7 @@ public:
 	virtual bool HandleInput(const FInputEvent& InputEvent);
 	bool IsMouseInside(const FInputEvent& InputEvent) const;
 	virtual bool HandleMouseInput(const FInputEvent& InputEvent) = 0;
-	virtual void HandleKeyboardInput(const FInputEvent& InputEvent) {}
+	virtual bool HandleKeyboardInput(const FInputEvent& InputEvent) { return false;}
 
 	float GetZOrder() const {return ZOrder;}
 	void SetZOrder(float NewZOrder) {ZOrder = NewZOrder;}
@@ -314,7 +314,6 @@ public:
 	void SetBackgroundImageBrush(const FImageBrush& NewImageBrush){BackgroundBrush=NewImageBrush;}
 	void SetFillImageBrush(const FImageBrush& NewImageBrush){FillBrush = NewImageBrush;}
 
-	void HandleKeyboardInput(const FInputEvent& InputEvent) override {}
 	void Tick(float DeltaSeconds) override;
 
 	void SetValue(float NewValue)  { Value =  std::clamp(NewValue, 0.0f,1.0f); }
@@ -341,4 +340,95 @@ protected:
 
 	static std::shared_ptr<UMaterialInterface> M_RadialPBMaterial;
 	static std::shared_ptr<UMaterialInterface> M_RadialPBMaterial_9To12;
+};
+
+// 텍스트 입력 위젯
+class FEditableTextWidget : public FChildWidget
+{
+public:
+	FEditableTextWidget();
+	~FEditableTextWidget() override;
+
+	void Tick(float DeltaSeconds) override;
+	bool HandleMouseInput(const FInputEvent& InputEvent) override;
+	bool HandleKeyboardInput(const FInputEvent& InputEvent) override;
+
+	// 텍스트 설정/조회
+	void SetText(const std::wstring& NewText);
+	std::wstring GetText() const { return Text; }
+	void ClearText() { Text.clear(); CursorPosition = 0; }
+
+	// 힌트 텍스트 (플레이스홀더)
+	void SetHintText(const std::wstring& NewHintText) { HintText = NewHintText; }
+
+	// 스타일 설정
+	void SetFontSize(float NewFontSize) { FontSize = NewFontSize; }
+	void SetFontColor(const XMFLOAT4& NewColor) { FontColor = NewColor; }
+	void SetBackgroundBrush(const FImageBrush& NewBrush) { BackgroundBrush = NewBrush; }
+	void SetFocusedBrush(const FImageBrush& NewBrush) { FocusedBrush = NewBrush; }
+
+	// 텍스트 정렬
+	void SetHorizontalAlignment(ETextHorizontalAlignment Alignment);
+	void SetVerticalAlignment(ETextVerticalAlignment Alignment);
+
+	// 입력 제한
+	void SetMaxLength(int32 NewMaxLength) { MaxLength = NewMaxLength; }
+	void SetIsPassword(bool bNewIsPassword) { bIsPassword = bNewIsPassword; }
+	void SetIsReadOnly(bool bNewReadOnly) { bIsReadOnly = bNewReadOnly; }
+
+	// 포커스
+	bool IsFocused() const { return bIsFocused; }
+	void SetFocus(bool bNewFocused);
+
+	// 델리게이트
+	Delegate<const std::wstring&> OnTextChanged;
+	Delegate<const std::wstring&> OnTextCommitted;  // Enter 입력 시
+
+private:
+	void UpdateCursorBlink(float DeltaTime);
+	void InsertCharacter(wchar_t Character);
+	void DeleteCharacter();
+	void DeleteCharacterBackward();
+	void MoveCursor(int32 Delta);
+	std::wstring GetDisplayText() const;
+
+	void RenderBackground();
+	void RenderText();
+	void RenderCursor();
+
+	static void ClearGlobalFocus();
+	static FEditableTextWidget* GetCurrentFocusedWidget() { return CurrentFocusedWidget; }
+private:
+	// 텍스트 데이터
+	std::wstring Text;
+	std::wstring HintText = L"텍스트 입력...";
+
+	// 커서
+	int32 CursorPosition = 0;
+	float CursorBlinkTimer = 0.0f;
+	bool bShowCursor = true;
+	static constexpr float CursorBlinkInterval = 0.5f;
+
+	// 스타일
+	FImageBrush BackgroundBrush;
+	FImageBrush FocusedBrush;
+	std::wstring FontName = L"맑은 고딕";
+	float FontSize = 16.0f;
+	XMFLOAT4 FontColor = {0.0f, 0.0f, 0.0f, 1.0f};
+	XMFLOAT4 HintTextColor = {0.5f, 0.5f, 0.5f, 1.0f};
+
+	DWRITE_TEXT_ALIGNMENT TextHorizontalAlignment = DWRITE_TEXT_ALIGNMENT_LEADING;
+	DWRITE_PARAGRAPH_ALIGNMENT TextVerticalAlignment = DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
+
+	// 상태
+	bool bIsFocused = false;
+	bool bIsPassword = false;
+	bool bIsReadOnly = false;
+	int32 MaxLength = 100;
+
+	// 패딩
+	float TextPaddingLeft = 10.0f;
+	float TextPaddingRight = 10.0f;
+
+	static FEditableTextWidget* CurrentFocusedWidget;
 };

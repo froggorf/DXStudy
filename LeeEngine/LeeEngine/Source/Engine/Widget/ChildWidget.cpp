@@ -50,7 +50,10 @@ bool FChildWidget::HandleInput(const FInputEvent& InputEvent)
 {
 	if (InputEvent.bIsKeyEvent)
 	{
-		InputEvent.Key;
+		if (HandleKeyboardInput(InputEvent))
+		{
+			return true;
+		}
 		
 	}
 	else
@@ -845,4 +848,454 @@ void FProgressBarWidget::SetSlider(const FImageBrush& NewBrush, const XMFLOAT2& 
 	bIsSlider = true;
 	SliderBrush = NewBrush;
 	this->SliderSize = SliderSize;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+FEditableTextWidget* FEditableTextWidget::CurrentFocusedWidget = nullptr;
+FEditableTextWidget::FEditableTextWidget()
+{
+	// 기본 배경 스타일
+	BackgroundBrush.Image = UTexture::GetTextureCache("T_White");
+	BackgroundBrush.Tint = XMFLOAT4{0.95f, 0.95f, 0.95f, 1.0f};
+
+	// 포커스 시 배경 스타일
+	FocusedBrush.Image = UTexture::GetTextureCache("T_White");
+	FocusedBrush.Tint = XMFLOAT4{1.0f, 1.0f, 1.0f, 1.0f};
+}
+
+FEditableTextWidget::~FEditableTextWidget()
+{
+	if (CurrentFocusedWidget == this)
+	{
+		CurrentFocusedWidget = nullptr;
+	}
+}
+
+void FEditableTextWidget::Tick(float DeltaSeconds)
+{
+	FChildWidget::Tick(DeltaSeconds);
+
+	if (!GetVisibility())
+	{
+		return;
+	}
+
+	// 커서 깜빡임 업데이트
+	if (bIsFocused)
+	{
+		UpdateCursorBlink(DeltaSeconds);
+	}
+
+	// 렌더링
+	RenderBackground();
+	RenderText();
+
+	if (bIsFocused)
+	{
+		RenderCursor();
+	}
+}
+
+bool FEditableTextWidget::HandleMouseInput(const FInputEvent& InputEvent)
+{
+	if (!IsMouseInside(InputEvent))
+	{
+		// 외부 클릭 시 포커스 해제
+		if (InputEvent.Key == EKeys::MouseLeft && InputEvent.bKeyDown)
+		{
+			if (bIsFocused)
+			{
+				SetFocus(false);
+				OnTextCommitted.Broadcast(Text);
+			}
+		}
+		return false;
+	}
+
+	// 클릭 시 포커스
+	if (InputEvent.Key == EKeys::MouseLeft && InputEvent.bKeyDown)
+	{
+		SetFocus(true);
+		return true;
+	}
+
+	return false;
+}
+
+bool FEditableTextWidget::HandleKeyboardInput(const FInputEvent& InputEvent)
+{
+	if (!bIsFocused || bIsReadOnly)
+	{
+		return false;
+	}
+
+	// 키 다운 이벤트만 처리
+	if (!InputEvent.bKeyDown)
+	{
+		return false;
+	}
+
+	EKeys Key = InputEvent.Key;
+
+	// Enter - 입력 완료
+	if (Key == EKeys::Enter)
+	{
+		SetFocus(false);
+		OnTextCommitted.Broadcast(Text);
+		return true;
+	}
+
+	// ESC - 취소
+	if (Key == EKeys::Escape)
+	{
+		SetFocus(false);
+		return true;
+	}
+
+	// Backspace - 뒤로 삭제
+	if (Key == EKeys::Backspace)
+	{
+		DeleteCharacterBackward();
+		return true;
+	}
+
+	// Delete - 앞으로 삭제
+	if (Key == EKeys::Delete)
+	{
+		DeleteCharacter();
+		return true;
+	}
+
+	// 좌우 화살표 - 커서 이동
+	if (Key == EKeys::Left)
+	{
+		MoveCursor(-1);
+		return true;
+	}
+	if (Key == EKeys::Right)
+	{
+		MoveCursor(1);
+		return true;
+	}
+
+	// Home - 맨 앞으로
+	if (Key == EKeys::Home)
+	{
+		CursorPosition = 0;
+		return true;
+	}
+
+	// End - 맨 뒤로
+	if (Key == EKeys::End)
+	{
+		CursorPosition = static_cast<int32>(Text.length());
+		return true;
+	}
+
+	// 문자 입력 (영어만)
+	wchar_t Character = KeyToChar(InputEvent.Key, false) ;
+
+	// 영어, 숫자, 특수문자만 허용
+	if ((Character >= L'a' && Character <= L'z') ||
+		(Character >= L'A' && Character <= L'Z') ||
+		(Character >= L'0' && Character <= L'9') ||
+		Character == L' ' || Character == L'.' || Character == L'@' ||
+		Character == L'_' || Character == L'-')
+	{
+		InsertCharacter(Character);
+		return true;
+	}
+
+	return false;
+}
+
+void FEditableTextWidget::SetText(const std::wstring& NewText)
+{
+	Text = NewText;
+
+	// 최대 길이 제한
+	if (MaxLength > 0 && Text.length() > static_cast<size_t>(MaxLength))
+	{
+		Text = Text.substr(0, MaxLength);
+	}
+
+	// 커서 위치 조정
+	CursorPosition = std::min(CursorPosition, static_cast<int32>(Text.length()));
+
+	OnTextChanged.Broadcast(Text);
+}
+
+void FEditableTextWidget::SetFocus(bool bNewFocused)
+{
+	if (bIsFocused == bNewFocused)
+	{
+		return;
+	}
+
+	if (bNewFocused)
+	{
+		// 다른 위젯이 포커스 중이면 먼저 해제
+		if (CurrentFocusedWidget && CurrentFocusedWidget != this)
+		{
+			CurrentFocusedWidget->SetFocus(false);
+		}
+
+		// 현재 위젯에 포커스
+		bIsFocused = true;
+		CurrentFocusedWidget = this;
+
+		CursorBlinkTimer = 0.0f;
+		bShowCursor = true;
+	}
+	else
+	{
+		// 포커스 해제
+		bIsFocused = false;
+
+		// 전역 포커스가 자신이면 해제
+		if (CurrentFocusedWidget == this)
+		{
+			CurrentFocusedWidget = nullptr;
+		}
+	}
+}
+
+void FEditableTextWidget::ClearGlobalFocus()
+{
+	if (CurrentFocusedWidget)
+	{
+		CurrentFocusedWidget->SetFocus(false);
+	}
+}
+void FEditableTextWidget::SetHorizontalAlignment(ETextHorizontalAlignment Alignment)
+{
+	switch (Alignment)
+	{
+	case ETextHorizontalAlignment::Center:
+		TextHorizontalAlignment = DWRITE_TEXT_ALIGNMENT_CENTER;
+		break;
+	case ETextHorizontalAlignment::Left:
+		TextHorizontalAlignment = DWRITE_TEXT_ALIGNMENT_LEADING;
+		break;
+	case ETextHorizontalAlignment::Right:
+		TextHorizontalAlignment = DWRITE_TEXT_ALIGNMENT_TRAILING;
+		break;
+	}
+}
+
+void FEditableTextWidget::SetVerticalAlignment(ETextVerticalAlignment Alignment)
+{
+	switch (Alignment)
+	{
+	case ETextVerticalAlignment::Bottom:
+		TextVerticalAlignment = DWRITE_PARAGRAPH_ALIGNMENT_FAR;
+		break;
+	case ETextVerticalAlignment::Center:
+		TextVerticalAlignment = DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
+		break;
+	case ETextVerticalAlignment::Top:
+		TextVerticalAlignment = DWRITE_PARAGRAPH_ALIGNMENT_NEAR;
+		break;
+	}
+}
+
+void FEditableTextWidget::UpdateCursorBlink(float DeltaTime)
+{
+	CursorBlinkTimer += DeltaTime;
+
+	if (CursorBlinkTimer >= CursorBlinkInterval)
+	{
+		bShowCursor = !bShowCursor;
+		CursorBlinkTimer = 0.0f;
+	}
+}
+
+void FEditableTextWidget::InsertCharacter(wchar_t Character)
+{
+	// 최대 길이 체크
+	if (MaxLength > 0 && Text.length() >= static_cast<size_t>(MaxLength))
+	{
+		return;
+	}
+
+	// 커서 위치에 문자 삽입
+	Text.insert(CursorPosition, 1, Character);
+	CursorPosition++;
+
+	// 커서 깜빡임 리셋
+	CursorBlinkTimer = 0.0f;
+	bShowCursor = true;
+
+	OnTextChanged.Broadcast(Text);
+}
+
+void FEditableTextWidget::DeleteCharacter()
+{
+	if (CursorPosition < static_cast<int32>(Text.length()))
+	{
+		Text.erase(CursorPosition, 1);
+		OnTextChanged.Broadcast(Text);
+	}
+}
+
+void FEditableTextWidget::DeleteCharacterBackward()
+{
+	if (CursorPosition > 0)
+	{
+		Text.erase(CursorPosition - 1, 1);
+		CursorPosition--;
+
+		// 커서 깜빡임 리셋
+		CursorBlinkTimer = 0.0f;
+		bShowCursor = true;
+
+		OnTextChanged.Broadcast(Text);
+	}
+}
+
+void FEditableTextWidget::MoveCursor(int32 Delta)
+{
+	CursorPosition = std::clamp(
+		CursorPosition + Delta, 
+		0, 
+		static_cast<int32>(Text.length())
+	);
+
+	// 커서 깜빡임 리셋
+	CursorBlinkTimer = 0.0f;
+	bShowCursor = true;
+}
+
+std::wstring FEditableTextWidget::GetDisplayText() const
+{
+	if (bIsPassword && !Text.empty())
+	{
+		// 비밀번호 모드: 모든 문자를 * 로 표시
+		return std::wstring(Text.length(), L'*');
+	}
+
+	return Text;
+}
+
+void FEditableTextWidget::RenderBackground()
+{
+	const FImageBrush& CurrentBrush = bIsFocused ? FocusedBrush : BackgroundBrush;
+
+	if (!CurrentBrush.Image)
+	{
+		return;
+	}
+
+	float NDC_Left{}, NDC_Right{}, NDC_Top{}, NDC_Bottom{};
+	GetNDCPos(NDC_Left, NDC_Top, NDC_Right, NDC_Bottom);
+
+	FWidgetRenderData WidgetRenderData;
+	WidgetRenderData.Left = NDC_Left;
+	WidgetRenderData.Top = max(NDC_Top, NDC_Bottom);
+	WidgetRenderData.Width = NDC_Right - NDC_Left;
+	WidgetRenderData.Height = std::abs(NDC_Bottom - NDC_Top);
+	WidgetRenderData.Texture = CurrentBrush.Image;
+	WidgetRenderData.Tint = CurrentBrush.Tint;
+	WidgetRenderData.ZOrder = GetZOrder();
+
+	GEngine->GetCurrentWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
+}
+
+void FEditableTextWidget::RenderText()
+{
+	std::wstring DisplayText = GetDisplayText();
+
+	// 텍스트가 비어있고 포커스도 없으면 힌트 텍스트 표시
+	if (DisplayText.empty() && !bIsFocused && !HintText.empty())
+	{
+		DisplayText = HintText;
+	}
+
+	if (DisplayText.empty())
+	{
+		return;
+	}
+
+	float Left = GetSlot()->GetLeft();
+	float Top = GetSlot()->GetTop();
+	float Right = GetSlot()->GetRight();
+	float Bottom = GetSlot()->GetBottom();
+
+	Left *= ScaleFactor.x;
+	Top *= ScaleFactor.y;
+	Right *= ScaleFactor.x;
+	Bottom *= ScaleFactor.y;
+
+	// 패딩 적용
+	Left += TextPaddingLeft * ScaleFactor.x;
+	Right -= TextPaddingRight * ScaleFactor.x;
+
+	FWidgetRenderData WidgetRenderData;
+	WidgetRenderData.Left = Left;
+	WidgetRenderData.Top = Top;
+	WidgetRenderData.Width = Right - Left;
+	WidgetRenderData.Height = Bottom - Top;
+	WidgetRenderData.TextData = DisplayText;
+	WidgetRenderData.FontName = FontName;
+	WidgetRenderData.FontSize = FontSize;
+
+	// 힌트 텍스트면 다른 색상
+	WidgetRenderData.Tint = (Text.empty() && !bIsFocused) ? HintTextColor : FontColor;
+
+	WidgetRenderData.ZOrder = GetZOrder() - 0.01f;
+	WidgetRenderData.TextHorizontalAlignment = TextHorizontalAlignment;
+	WidgetRenderData.TextVerticalAlignment = TextVerticalAlignment;
+
+	GEngine->GetCurrentWorld()->AddCurrentFrameWidgetRenderData(WidgetRenderData);
+}
+
+void FEditableTextWidget::RenderCursor()
+{
+	if (!bShowCursor)
+	{
+		return;
+	}
+
+	// 커서 위치 계산 (간단한 버전 - 고정 폰트 너비 가정)
+	float CharWidth = FontSize * 0.6f;  // 대략적인 문자 너비
+	float CursorX = TextPaddingLeft + (CursorPosition * CharWidth);
+
+	float Left = GetSlot()->GetLeft();
+	float Top = GetSlot()->GetTop();
+	float Right = GetSlot()->GetRight();
+	float Bottom = GetSlot()->GetBottom();
+
+	Left *= ScaleFactor.x;
+	Top *= ScaleFactor.y;
+	Right *= ScaleFactor.x;
+	Bottom *= ScaleFactor.y;
+
+	// 커서 렌더링 (얇은 세로 선)
+	const XMFLOAT2& ScreenSize = GDirectXDevice->GetCurrentResolution();
+
+	float CursorScreenX = Left + CursorX * ScaleFactor.x;
+	float CursorWidth = 2.0f;  // 2픽셀 너비
+
+	float NDC_CursorLeft = (CursorScreenX / ScreenSize.x) * 2.0f - 1.0f;
+	float NDC_CursorRight = ((CursorScreenX + CursorWidth) / ScreenSize.x) * 2.0f - 1.0f;
+	float NDC_Top = 1.0f - (Top / ScreenSize.y) * 2.0f;
+	float NDC_Bottom = 1.0f - (Bottom / ScreenSize.y) * 2.0f;
+
+	// 커서 패딩 (위아래 약간 여백)
+	float CursorPadding = 4.0f * ScaleFactor.y;
+	NDC_Top -= (CursorPadding / ScreenSize.y) * 2.0f;
+	NDC_Bottom += (CursorPadding / ScreenSize.y) * 2.0f;
+
+	FWidgetRenderData CursorRenderData;
+	CursorRenderData.Left = NDC_CursorLeft;
+	CursorRenderData.Top = max(NDC_Top, NDC_Bottom);
+	CursorRenderData.Width = NDC_CursorRight - NDC_CursorLeft;
+	CursorRenderData.Height = std::abs(NDC_Bottom - NDC_Top);
+	CursorRenderData.Texture = UTexture::GetTextureCache("T_White");
+	CursorRenderData.Tint = FontColor;
+	CursorRenderData.ZOrder = GetZOrder() + 0.02f;
+
+	GEngine->GetCurrentWorld()->AddCurrentFrameWidgetRenderData(CursorRenderData);
 }

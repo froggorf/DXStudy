@@ -112,37 +112,7 @@
 				"Max" : [3, 20, 0.0, 0.0]
 			}
 		}
-	},
-{ 
-		"Property" : 0, 
-		"SpawnRate" : 5,
-		"Life" : [ 1.7,2.0 ],
-		"OverrideTex" : ["T_Snow0"],
-		"Scale" : [ [10,10,1] , [15,15,1] ],
-		"Rot" : [ [-180,0,0] , [180,0,0]],
-		"SpaceType": 1,
-		"SpawnShape" : 0,
-		"SpawnScale" : [0.1,0.1,0.1],
-		"Modules" : 
-		{
-			"Render" : {
-				"RandomStart": 1,
-				"MinStartColor" : [10, 10,10, 1],
-				"MaxStartColor" : [10,10,10, 5],
-			    "EndColor" : [0, 8,16, 1.0],
-			    "FadeOut" : [1, 0.8]
-			},
-			"AddVelocity":{
-			    "MinVel" : [0.0, 200.0, 0.0],
-			    "MaxVel" : [0.0, 300.0, 0.0]
-			},
-			"Orbit" : {
-				"Speed" : [ 3, 6 ],
-				"Radius" : [75, 90]
-			}
-		}
 	}
-
 
     ]
 

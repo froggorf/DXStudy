@@ -90,7 +90,7 @@ void ULevel::BeginPlay()
 	UObject::BeginPlay();
 	
 	PlayerControllerActor = std::dynamic_pointer_cast<APlayerController>(SpawnActor(GEngine->GetDefaultPlayerControllerClassName(), {}));
-	if (PlayerControllerActor)
+	if (!PlayerControllerActor)
 	{
 		PlayerControllerActor = std::dynamic_pointer_cast<APlayerController>(SpawnActor("APlayerController", {}));	
 	}

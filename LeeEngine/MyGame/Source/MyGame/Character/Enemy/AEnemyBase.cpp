@@ -25,7 +25,6 @@ AEnemyBase::AEnemyBase()
 	}
 
 	CapsuleComp->SetHalfHeight(12.5f);
-	CapsuleComp->SetDebugDraw(true);
 	CapsuleComp->SetRadius(50.0f);
 	CapsuleComp->SetObjectType(ECollisionChannel::Enemy);
 	SkeletalMeshComponent->SetRelativeLocation({0,-12.5f*5,0});
@@ -97,6 +96,11 @@ void AEnemyBase::BeginPlay()
 
 float AEnemyBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AActor* DamageCauser)
 {
+	if (HealthComponent->GetHealthPercent() <= 0.0f)
+	{
+		return DamageAmount;
+	}
+
 	if (HealthComponent->ApplyDamage(DamageAmount) <=0.0f)
 	{
 		Death();
@@ -170,6 +174,8 @@ void AEnemyBase::Death()
 	{
 		AIController->SetAIActivate(false);
 	}
+
+	GetWorld()->SpawnActor("ACoin", FTransform{GetActorLocation()});
 }
 
 void AEnemyBase::DestroyAtDeath()
@@ -405,7 +411,6 @@ bool ADragon::StartFlameSkillCharge()
 	}
 	ShowRangeActor->SetForward(GetActorForwardVector())
 				->SetHalfAngleDeg(GetFlameSkillHalfAngle());
-	ShowRangeActor->SetDebugDraw(true);
 
 	return true;
 }
@@ -518,16 +523,41 @@ bool ADragon::StartHPSkillCharge()
 
 void ADragon::StartHPSkill()
 {
-	// 공격 적용하기
-	// NOTE: 어차피 플레이어가 1인인 게임이라 따로 충돌체크 없이
-	// 플레이어와 거리, 각도를 계산해서 적용
-	if (const std::shared_ptr<AActor>& Player = GetWorld()->GetPlayerController()->GetPlayerCharacter())
+	XMFLOAT3 DragonPos = GetActorLocation();
+	XMFLOAT3 Forward = GetActorForwardVector();
+	Forward.y = 0.0f;
+	XMStoreFloat3(&Forward, XMVector3Normalize(XMLoadFloat3(&Forward)));
+
+	XMFLOAT4 Rotation = MyMath::ForwardVectorToRotationQuaternion(Forward);
+
+	XMFLOAT3 AttackBoxPos = DragonPos + Forward * HPSkillRange.z/2;
+	XMFLOAT3 AttackBoxExtent = {HPSkillRange.x, 1000.0f, HPSkillRange.z};
+
+	std::vector<ECollisionChannel> TargetChannels = { ECollisionChannel::Player };
+	std::vector<AActor*> ActorsToIgnore = { this };
+	std::vector<AActor*> HitActors;
+
+	GPhysicsEngine->BoxOverlapComponentsWithRotation(
+		AttackBoxPos, 
+		AttackBoxExtent, 
+		Rotation,  
+		TargetChannels, 
+		ActorsToIgnore, 
+		HitActors
+	);
+
+	// 데미지 적용
+	for (AActor* HitActor : HitActors)
 	{
-		FDamageEvent Event;
-		Event.DamageType = "DragonHPSkill";
-		Player->TakeDamage(EnemyPower * 100, Event, this);
+		if (HitActor)
+		{
+			FDamageEvent Event;
+			Event.DamageType = "DragonHPSkill";
+			HitActor->TakeDamage(EnemyPower * 100, Event, this);
+		}
 	}
 }
+
 
 void ADragon::EndHPSkill()
 {

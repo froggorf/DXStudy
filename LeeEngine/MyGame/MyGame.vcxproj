@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Source\MyGame\Actor\ACoin.cpp" />
     <ClCompile Include="Source\MyGame\Actor\ADungeon.cpp" />
     <ClCompile Include="Source\MyGame\Actor\AEnemySpawner.cpp" />
     <ClCompile Include="Source\MyGame\Actor\ATestActor2.cpp" />
@@ -61,6 +62,15 @@
     <ClCompile Include="Source\MyGame\Core\AMyGamePlayerController.cpp" />
     <ClCompile Include="Source\MyGame\Core\ATestGameMode.cpp" />
     <ClCompile Include="Source\MyGame\Core\ATownGameMode.cpp" />
+    <ClCompile Include="Source\MyGame\Core\UMyGameInstance.cpp" />
+    <ClCompile Include="Source\MyGame\DataBase\DataBaseManager.cpp" />
+    <ClCompile Include="Source\MyGame\DataBase\EquipmentTable.cpp" />
+    <ClCompile Include="Source\MyGame\DataBase\GoldTable.cpp" />
+    <ClCompile Include="Source\MyGame\DataBase\shell.c" />
+    <ClCompile Include="Source\MyGame\DataBase\sqlite3.c" />
+    <ClCompile Include="Source\MyGame\DataBase\SQLiteWrapper.cpp" />
+    <ClCompile Include="Source\MyGame\DataBase\StageTable.cpp" />
+    <ClCompile Include="Source\MyGame\DataBase\UserTable.cpp" />
     <ClCompile Include="Source\MyGame\Interface\Dodge\IDodgeInterface.cpp" />
     <ClCompile Include="Source\MyGame\Notify\MyGameNotify.cpp" />
     <ClCompile Include="Source\MyGame\Widget\Gideon\UGideonGaugeWidget.cpp" />
@@ -68,6 +78,7 @@
     <ClCompile Include="Source\MyGame\Widget\Health\UEnemyHealthWidget.cpp" />
     <ClCompile Include="Source\MyGame\Widget\Health\UHealthWidgetBase.cpp" />
     <ClCompile Include="Source\MyGame\Widget\Health\UPlayerHealthWidget.cpp" />
+    <ClCompile Include="Source\MyGame\Widget\Login\ULoginWidget.cpp" />
     <ClCompile Include="Source\MyGame\Widget\Number\UNumberWidget.cpp" />
     <ClCompile Include="Source\MyGame\Widget\Sanhwa\USanhwaWidget.cpp" />
     <ClCompile Include="Source\MyGame\Widget\Skill\USkillWidgetBase.cpp" />
@@ -76,6 +87,7 @@
     <ClCompile Include="Source\MyGame\Widget\UMyGameWidgetBase.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\MyGame\Actor\ACoin.h" />
     <ClInclude Include="Source\MyGame\Actor\ADungeon.h" />
     <ClInclude Include="Source\MyGame\Actor\AEnemySpawner.h" />
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h" />
@@ -117,6 +129,15 @@
     <ClInclude Include="Source\MyGame\Core\AMyGamePlayerController.h" />
     <ClInclude Include="Source\MyGame\Core\ATestGameMode.h" />
     <ClInclude Include="Source\MyGame\Core\ATownGameMode.h" />
+    <ClInclude Include="Source\MyGame\Core\UMyGameInstance.h" />
+    <ClInclude Include="Source\MyGame\DataBase\DataBaseManager.h" />
+    <ClInclude Include="Source\MyGame\DataBase\EquipmentTable.h" />
+    <ClInclude Include="Source\MyGame\DataBase\GoldTable.h" />
+    <ClInclude Include="Source\MyGame\DataBase\sqlite3.h" />
+    <ClInclude Include="Source\MyGame\DataBase\sqlite3ext.h" />
+    <ClInclude Include="Source\MyGame\DataBase\SQLiteWrapper.h" />
+    <ClInclude Include="Source\MyGame\DataBase\StageTable.h" />
+    <ClInclude Include="Source\MyGame\DataBase\UserTable.h" />
     <ClInclude Include="Source\MyGame\Interface\Dodge\IDodgeInterface.h" />
     <ClInclude Include="Source\MyGame\Notify\MyGameNotify.h" />
     <ClInclude Include="Source\MyGame\Widget\Gideon\UGideonGaugeWidget.h" />
@@ -124,6 +145,7 @@
     <ClInclude Include="Source\MyGame\Widget\Health\UEnemyHealthWidget.h" />
     <ClInclude Include="Source\MyGame\Widget\Health\UHealthWidgetBase.h" />
     <ClInclude Include="Source\MyGame\Widget\Health\UPlayerHealthWidget.h" />
+    <ClInclude Include="Source\MyGame\Widget\Login\ULoginWidget.h" />
     <ClInclude Include="Source\MyGame\Widget\Number\UNumberWidget.h" />
     <ClInclude Include="Source\MyGame\Widget\Sanhwa\USanhwaWidget.h" />
     <ClInclude Include="Source\MyGame\Widget\Skill\USkillWidgetBase.h" />

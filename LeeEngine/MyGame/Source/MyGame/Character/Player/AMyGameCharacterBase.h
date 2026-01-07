@@ -72,7 +72,7 @@ class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
 	void WheelUp();
 	void WheelDown();
 
-	void TryUsePotion();
+	void ChangeCharacter();
 	void ApplyPotion();
 
 	void Debug_SetUltimateGauge100();
