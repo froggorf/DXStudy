@@ -27,4 +27,6 @@ private:
 	// 로그인 버튼
 	std::shared_ptr<FButtonWidget> LoginButton;
 	std::shared_ptr<FTextWidget> LoginButtonText;
+
+	std::shared_ptr<FTextWidget> WarningText;
 };

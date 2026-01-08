@@ -356,6 +356,7 @@ public:
 	// 텍스트 설정/조회
 	void SetText(const std::wstring& NewText);
 	std::wstring GetText() const { return Text; }
+	std::string GetText_String() const;
 	void ClearText() { Text.clear(); CursorPosition = 0; }
 
 	// 힌트 텍스트 (플레이스홀더)
@@ -392,9 +393,10 @@ private:
 	void MoveCursor(int32 Delta);
 	std::wstring GetDisplayText() const;
 
-	void RenderBackground();
-	void RenderText();
-	void RenderCursor();
+	void                                      RenderBackground();
+	void                                      RenderText();
+	void                                      RenderCursor();
+	Microsoft::WRL::ComPtr<IDWriteTextFormat> GetTextFormat();
 
 	static void ClearGlobalFocus();
 	static FEditableTextWidget* GetCurrentFocusedWidget() { return CurrentFocusedWidget; }

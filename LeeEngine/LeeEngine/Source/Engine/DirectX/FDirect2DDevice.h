@@ -16,6 +16,8 @@ public:
 	const Microsoft::WRL::ComPtr<ID2D1DeviceContext>& Get2DDeviceContext() const {return m_d2dContext;}
 
 	void CreateTextFormat(const std::wstring& Font, float FontSize, Microsoft::WRL::ComPtr<IDWriteTextFormat>& TextFormat) const;
+
+	const Microsoft::WRL::ComPtr<IDWriteFactory1>& GetWriteFactory() const {return m_writeFactory;}
 	
 	const Microsoft::WRL::ComPtr<ID2D1RenderTarget>& Test_RenderTarget() const {return m_d2dRenderTarget;}
 private:

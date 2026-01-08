@@ -122,7 +122,11 @@ void SQLiteWrapper::Statement::BindText(int Index, const std::string& Value)
 
 bool SQLiteWrapper::Statement::Step()
 {
-	return sqlite3_step(Stmt) == SQLITE_ROW;
+	int Result = sqlite3_step(Stmt);
+
+	// SQLITE_ROW: SELECT 결과가 있음
+	// SQLITE_DONE: INSERT/UPDATE/DELETE 성공 또는 SELECT 결과 끝
+	return (Result == SQLITE_ROW || Result == SQLITE_DONE);
 }
 
 void SQLiteWrapper::Statement::Reset()

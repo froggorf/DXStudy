@@ -1027,6 +1027,38 @@ void FEditableTextWidget::SetText(const std::wstring& NewText)
 	OnTextChanged.Broadcast(Text);
 }
 
+std::string FEditableTextWidget::GetText_String() const
+{
+	if (Text.empty())
+		return std::string();
+
+	int SizeNeeded = WideCharToMultiByte(
+		CP_UTF8,           // UTF-8 코드 페이지
+		0,
+		Text.c_str(),
+		static_cast<int>(Text.size()),
+		nullptr,
+		0,
+		nullptr,
+		nullptr
+	);
+
+	std::string Result(SizeNeeded, 0);
+
+	WideCharToMultiByte(
+		CP_UTF8,
+		0,
+		Text.c_str(),
+		static_cast<int>(Text.size()),
+		&Result[0],
+		SizeNeeded,
+		nullptr,
+		nullptr
+	);
+
+	return Result;
+}
+
 void FEditableTextWidget::SetFocus(bool bNewFocused)
 {
 	if (bIsFocused == bNewFocused)
@@ -1253,14 +1285,10 @@ void FEditableTextWidget::RenderText()
 
 void FEditableTextWidget::RenderCursor()
 {
-	if (!bShowCursor)
+	if (!bIsFocused || !bShowCursor || bIsReadOnly)
 	{
 		return;
 	}
-
-	// 커서 위치 계산 (간단한 버전 - 고정 폰트 너비 가정)
-	float CharWidth = FontSize * 0.6f;  // 대략적인 문자 너비
-	float CursorX = TextPaddingLeft + (CursorPosition * CharWidth);
 
 	float Left = GetSlot()->GetLeft();
 	float Top = GetSlot()->GetTop();
@@ -1272,22 +1300,78 @@ void FEditableTextWidget::RenderCursor()
 	Right *= ScaleFactor.x;
 	Bottom *= ScaleFactor.y;
 
-	// 커서 렌더링 (얇은 세로 선)
 	const XMFLOAT2& ScreenSize = GDirectXDevice->GetCurrentResolution();
 
-	float CursorScreenX = Left + CursorX * ScaleFactor.x;
-	float CursorWidth = 2.0f;  // 2픽셀 너비
+	std::wstring DisplayText = GetDisplayText();
 
+	// 레이아웃 크기 (패딩 제외)
+	float LayoutWidth = (Right - Left) - TextPaddingLeft - TextPaddingRight;
+	float LayoutHeight = Bottom - Top;
+
+	// TextFormat 생성
+	Microsoft::WRL::ComPtr<IDWriteTextFormat> TextFormat = GetTextFormat();
+	if (!TextFormat)
+	{
+		return;
+	}
+
+	// TextLayout 생성
+	Microsoft::WRL::ComPtr<IDWriteTextLayout> TextLayout;
+	HRESULT hr = GDirectXDevice->Get2DDevice()->GetWriteFactory()->CreateTextLayout(
+		DisplayText.c_str(),
+		static_cast<UINT32>(DisplayText.length()),
+		TextFormat.Get(),
+		LayoutWidth,
+		LayoutHeight,
+		&TextLayout
+	);
+
+	if (FAILED(hr) || !TextLayout)
+	{
+		return;
+	}
+
+	// 커서 위치 계산
+	DWRITE_HIT_TEST_METRICS HitTestMetrics = {};
+	float X = 0.0f;
+	float Y = 0.0f;
+
+	if (!DisplayText.empty())
+	{
+		// 커서 위치가 텍스트 길이를 넘지 않도록
+		UINT32 Position = std::min(
+			static_cast<UINT32>(CursorPosition), 
+			static_cast<UINT32>(DisplayText.length())
+		);
+
+		TextLayout->HitTestTextPosition(
+			Position,
+			FALSE,  // trailing
+			&X,
+			&Y,
+			&HitTestMetrics
+		);
+	}
+
+	// 실제 화면 좌표 계산 (패딩 포함)
+	float CursorScreenX = Left + TextPaddingLeft + X + 5.0f;
+	float CursorScreenY = Top + Y;
+	float CursorWidth = 2.0f;
+
+	// 커서 높이
+	float CursorHeight = FontSize;
+	if (HitTestMetrics.height > 0.0f && HitTestMetrics.height < 1000.0f)
+	{
+		CursorHeight = HitTestMetrics.height;
+	}
+
+	// NDC 좌표로 변환
 	float NDC_CursorLeft = (CursorScreenX / ScreenSize.x) * 2.0f - 1.0f;
 	float NDC_CursorRight = ((CursorScreenX + CursorWidth) / ScreenSize.x) * 2.0f - 1.0f;
-	float NDC_Top = 1.0f - (Top / ScreenSize.y) * 2.0f;
-	float NDC_Bottom = 1.0f - (Bottom / ScreenSize.y) * 2.0f;
+	float NDC_Top = 1.0f - (CursorScreenY / ScreenSize.y) * 2.0f;
+	float NDC_Bottom = 1.0f - ((CursorScreenY + CursorHeight) / ScreenSize.y) * 2.0f;
 
-	// 커서 패딩 (위아래 약간 여백)
-	float CursorPadding = 4.0f * ScaleFactor.y;
-	NDC_Top -= (CursorPadding / ScreenSize.y) * 2.0f;
-	NDC_Bottom += (CursorPadding / ScreenSize.y) * 2.0f;
-
+	// 커서 렌더링
 	FWidgetRenderData CursorRenderData;
 	CursorRenderData.Left = NDC_CursorLeft;
 	CursorRenderData.Top = max(NDC_Top, NDC_Bottom);
@@ -1298,4 +1382,35 @@ void FEditableTextWidget::RenderCursor()
 	CursorRenderData.ZOrder = GetZOrder() + 0.02f;
 
 	GEngine->GetCurrentWorld()->AddCurrentFrameWidgetRenderData(CursorRenderData);
+}
+
+
+Microsoft::WRL::ComPtr<IDWriteTextFormat> FEditableTextWidget::GetTextFormat()
+{
+	Microsoft::WRL::ComPtr<IDWriteTextFormat> TextFormat;
+
+	const Microsoft::WRL::ComPtr<IDWriteFactory1>& DWriteFactory = GDirectXDevice->Get2DDevice()->GetWriteFactory();
+	if (!DWriteFactory)
+	{
+		return nullptr;
+	}
+
+	HRESULT HR = DWriteFactory->CreateTextFormat(
+		FontName.c_str(),
+		nullptr,
+		DWRITE_FONT_WEIGHT_NORMAL,
+		DWRITE_FONT_STYLE_NORMAL,
+		DWRITE_FONT_STRETCH_NORMAL,
+		FontSize,
+		L"ko-kr",
+		&TextFormat
+	);
+
+	if (SUCCEEDED(HR))
+	{
+		TextFormat->SetTextAlignment(TextHorizontalAlignment);
+		TextFormat->SetParagraphAlignment(TextVerticalAlignment);
+	}
+
+	return TextFormat;
 }

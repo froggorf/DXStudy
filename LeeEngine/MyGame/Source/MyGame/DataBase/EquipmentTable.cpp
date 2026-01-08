@@ -32,7 +32,7 @@ bool EquipmentTable::CreateUpgradeTable()
 }
 
 bool EquipmentTable::SetEquipmentLevel(const std::string& UserID,
-	EquipmentType Type,
+	EEquipType Type,
 	int Level)
 {
 	auto Stmt = DB.Prepare(R"(
@@ -48,7 +48,7 @@ bool EquipmentTable::SetEquipmentLevel(const std::string& UserID,
 }
 
 std::optional<int> EquipmentTable::GetEquipmentLevel(const std::string& UserID,
-	EquipmentType Type)
+	EEquipType Type)
 {
 	auto Stmt = DB.Prepare(R"(
         SELECT Level FROM EquipmentLevels
@@ -65,7 +65,7 @@ std::optional<int> EquipmentTable::GetEquipmentLevel(const std::string& UserID,
 	return std::nullopt;
 }
 
-bool EquipmentTable::SetUpgradeCost(EquipmentType Type, int BaseGold, double Multiplier)
+bool EquipmentTable::SetUpgradeCost(EEquipType Type, int BaseGold, double Multiplier)
 {
 	auto Stmt = DB.Prepare(R"(
         INSERT OR REPLACE INTO EquipmentUpgrade (EquipmentType, BaseGold, Multiplier)
@@ -79,7 +79,7 @@ bool EquipmentTable::SetUpgradeCost(EquipmentType Type, int BaseGold, double Mul
 	return Stmt->Step();
 }
 
-std::optional<int> EquipmentTable::GetUpgradeCost(EquipmentType Type, int CurrentLevel)
+std::optional<int> EquipmentTable::GetUpgradeCost(EEquipType Type, int CurrentLevel)
 {
 	auto Stmt = DB.Prepare(R"(
         SELECT BaseGold, Multiplier FROM EquipmentUpgrade
@@ -100,7 +100,7 @@ std::optional<int> EquipmentTable::GetUpgradeCost(EquipmentType Type, int Curren
 	return std::nullopt;
 }
 
-bool EquipmentTable::UpgradeEquipment(const std::string& UserID, EquipmentType Type)
+bool EquipmentTable::UpgradeEquipment(const std::string& UserID, EEquipType Type)
 {
 	auto Stmt = DB.Prepare(R"(
         UPDATE EquipmentLevels
@@ -114,24 +114,24 @@ bool EquipmentTable::UpgradeEquipment(const std::string& UserID, EquipmentType T
 	return Stmt->Step();
 }
 
-std::string EquipmentTable::EquipmentTypeToString(EquipmentType Type)
+std::string EquipmentTable::EquipmentTypeToString(EEquipType Type)
 {
 	switch (Type)
 	{
-	case EquipmentType::Weapon: return "Weapon";
-	case EquipmentType::Armor: return "Armor";
-	case EquipmentType::Helmet: return "Helmet";
-	case EquipmentType::Boots: return "Boots";
+	case EEquipType::Weapon: return "Weapon";
+	case EEquipType::Armor: return "Armor";
+	case EEquipType::Glove: return "Glove";
+	case EEquipType::Head: return "Head";
 	default: return "Unknown";
 	}
 }
 
-EquipmentType EquipmentTable::StringToEquipmentType(const std::string& Str)
+EEquipType EquipmentTable::StringToEquipmentType(const std::string& Str)
 {
-	if (Str == "Weapon") return EquipmentType::Weapon;
-	if (Str == "Armor") return EquipmentType::Armor;
-	if (Str == "Helmet") return EquipmentType::Helmet;
-	if (Str == "Boots") return EquipmentType::Boots;
-	return EquipmentType::Weapon;
+	if (Str == "Weapon") return EEquipType::Weapon;
+	if (Str == "Armor") return EEquipType::Armor;
+	if (Str == "Glove") return EEquipType::Glove;
+	if (Str == "Head") return EEquipType::Head;
+	return EEquipType::Weapon;
 }
 

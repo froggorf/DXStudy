@@ -1,28 +1,29 @@
 #include "CoreMinimal.h"
 #include "ULoginWidget.h"
 #include "Engine/World/UWorld.h"
+#include "MyGame/Core/UMyGameInstance.h"
 
 void ULoginWidget::NativeConstruct()
 {
 	UUserWidget::NativeConstruct();
 
 	// ==================== 배경 이미지 ====================
-	BackgroundImage = std::make_shared<FImageWidget>(FImageBrush{
-		UTexture::GetTextureCache("T_White"),  // 배경 텍스처
-		{1.0f, 1.0f, 1.0f, 1.0f}
-		});
-	BackgroundImage->AttachToWidget(MainCanvasWidget);
-	if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(BackgroundImage->GetSlot()))
-	{
-		CanvasSlot->Anchors = ECanvasAnchor::WrapAll;  // 전체 화면
-		CanvasSlot->Position = {0, 0};
-	}
-
+	//BackgroundImage = std::make_shared<FImageWidget>(FImageBrush{
+	//	UTexture::GetTextureCache("T_White"),  // 배경 텍스처
+	//	{1.0f, 1.0f, 1.0f, 1.0f}
+	//	});
+	//BackgroundImage->AttachToWidget(MainCanvasWidget);
+	//if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(BackgroundImage->GetSlot()))
+	//{
+	//	CanvasSlot->Anchors = ECanvasAnchor::WrapAll;  // 전체 화면
+	//	CanvasSlot->Position = {0, 0};
+	//}
+	//
 	// ==================== Username 입력 필드 ====================
 	UsernameInput = std::make_shared<FEditableTextWidget>();
 	UsernameInput->SetHintText(L"ID");
 	UsernameInput->SetMaxLength(20);
-	UsernameInput->SetFontSize(20.0f);
+	UsernameInput->SetFontSize(30.0f);
 	UsernameInput->SetFontColor({1.0f, 1.0f, 1.0f, 1.0f});  // 흰색 텍스트
 
 	// 배경 스타일 (어두운 반투명)
@@ -49,7 +50,7 @@ void ULoginWidget::NativeConstruct()
 	PasswordInput->SetHintText(L"PW");  // 비밀번호는 힌트 없음
 	PasswordInput->SetIsPassword(true);  // 비밀번호 모드
 	PasswordInput->SetMaxLength(30);
-	PasswordInput->SetFontSize(20.0f);
+	PasswordInput->SetFontSize(30.0f);
 	PasswordInput->SetFontColor({1.0f, 1.0f, 1.0f, 1.0f});
 
 	PasswordInput->SetBackgroundBrush(FImageBrush{
@@ -128,8 +129,8 @@ void ULoginWidget::NativeConstruct()
 
 void ULoginWidget::OnLoginButtonClicked()
 {
-	std::wstring Username = UsernameInput->GetText();
-	std::wstring Password = PasswordInput->GetText();
+	std::string Username = UsernameInput->GetText_String();
+	std::string Password = PasswordInput->GetText_String();
 
 	// 입력 검증
 	if (Username.empty())
@@ -146,7 +147,16 @@ void ULoginWidget::OnLoginButtonClicked()
 	}
 
 	// 로그인 처리
-	//LOG_INFO("Login attempt - Username: {}", WStringToString(Username));
+	if (UMyGameInstance::GetInstance<UMyGameInstance>()->TryLogin(std::string{Username}, std::string{Password.data()}))
+	{
+		// 유저 ID 적용
+		UMyGameInstance::GetInstance<UMyGameInstance>()->UserName = Username;
+		// 모든 데이터 로드
+		UMyGameInstance::GetInstance<UMyGameInstance>()->LoadInitialData();
+		// 레벨 타운으로 옮기기
+		GEngine->ChangeLevelByName("TownLevel");
+	}
+	
 
 	// TODO: 실제 로그인 로직 구현
 	// - 서버에 로그인 요청

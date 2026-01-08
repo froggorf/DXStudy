@@ -19,7 +19,6 @@ class UGameInstance : public UObject
         if (!Instance)
         {
             Instance = std::make_unique<T>();
-            Instance->LoadInitialData();
         }
         return Instance.get();
     }

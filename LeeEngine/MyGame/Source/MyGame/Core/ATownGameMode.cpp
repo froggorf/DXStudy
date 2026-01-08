@@ -107,13 +107,6 @@ void ADungeonGameMode::BeginPlay()
 		GetWorld()->SpawnActor("ASanhwaCharacter", FTransform{XMFLOAT3{ -600,0.0f,-500.0f}, XMFLOAT4{0.0f,0.0f,0.0f,1.0f}, XMFLOAT3{1.0f,1.0f,1.0f}}, "Sanhwa")
 	);
 	Sanhwa->SetEquipmentLevel(UMyGameInstance::GetInstance<UMyGameInstance>()->GetEquipLevel());
-
-	if (APlayerController* PC = GetWorld()->GetPlayerController())
-	{
-		std::shared_ptr<UUserWidget> LoginWidget = std::make_shared<ULoginWidget>();
-		PC->CreateWidget("Login", LoginWidget);
-		PC->AddToViewport("Login", LoginWidget);
-	}
 }
 
 void ADungeonGameMode::StartGame()
@@ -124,4 +117,33 @@ void ADungeonGameMode::StartGame()
 void ADungeonGameMode::EndGame()
 {
 	AGameMode::EndGame();
+}
+
+ALoginGameMode::ALoginGameMode()
+{
+	CameraComp = std::make_shared<UCameraComponent>();
+	CameraComp->SetupAttachment(GetRootComponent());
+	CameraComp->SetRelativeLocation(XMFLOAT3{0,4000,3000});
+	CameraComp->SetRelativeRotation(MyMath::VectorToRotationQuaternion(XMFLOAT3{0,0,1}));
+}
+
+void ALoginGameMode::BeginPlay()
+{
+	AGameMode::BeginPlay();
+
+	if (APlayerCameraManager* CM = GetWorld()->GetCameraManager())
+	{
+		CM->SetTargetCamera(CameraComp);
+	}
+
+	if (APlayerController* PC = GetWorld()->GetPlayerController())
+	{
+		std::shared_ptr<UUserWidget> LoginWidget = std::make_shared<ULoginWidget>();
+		PC->CreateWidget("Login", LoginWidget);
+		PC->AddToViewport("Login", LoginWidget);
+	}
+
+	GEngine->SetInputMode(EInputMode::InputMode_UIOnly);
+	GEngine->SetMouseLock(EMouseLockMode::DoNotLock);
+	GEngine->ShowCursor(true);
 }

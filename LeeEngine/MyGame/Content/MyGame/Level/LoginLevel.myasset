@@ -21,7 +21,7 @@
             ]
         },
 {
-            "Class": "ATestCube2",
+            "Class": "ADungeon",
             "Location": [
                 0.0,
                 0.0,
@@ -43,6 +43,6 @@
     ],
 
     "Class": "ULevel",
-    "Name": "TestLevel",
-    "GameModeClass": "ATownGameMode"
+    "Name": "LoginLevel",
+    "GameModeClass": "ALoginGameMode"
 }

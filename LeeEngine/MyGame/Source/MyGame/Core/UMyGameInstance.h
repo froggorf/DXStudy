@@ -10,15 +10,16 @@ class UMyGameInstance : public UGameInstance
 	~UMyGameInstance() override = default;
 
 	void LoadInitialData() override;
-	void Login();
+	bool TryLogin(const std::string& ID, const std::string& PW);
 
 	const std::array<int, static_cast<int>(EEquipType::Count)>& GetEquipLevel() const {return EquipLevel;}
 	UINT GetGold() const {return Gold;}
 
 	void EnchantEquipLevel(EEquipType Type);
 
-	std::array<int, static_cast<int>(EEquipType::Count)> EquipLevel;
-	UINT Gold;
+	std::array<int, static_cast<int>(EEquipType::Count)> EquipLevel = {0,0,0,0};
+	UINT Gold = 0;
+	UINT StageLevel = 1;
 
 
 	std::string UserName = "";

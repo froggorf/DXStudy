@@ -33,3 +33,15 @@ class ADungeonGameMode : public AGameMode
 
 	float PotionCoolDownTime = 10.0f;
 };
+
+class ALoginGameMode : public AGameMode
+{
+	MY_GENERATE_BODY(ALoginGameMode)
+
+	ALoginGameMode();
+	void BeginPlay() override;
+
+
+protected:
+	std::shared_ptr<UCameraComponent> CameraComp;
+};

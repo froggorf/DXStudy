@@ -7,26 +7,45 @@ void UMyGameInstance::LoadInitialData()
 {
 	if (UserName.empty())
 	{
-		Login();
+		assert(false);
 	}
 
-
-	// 골드 데이터 로드
-	Gold = 1;
-
-	// 장비 데이터 로드
-	EquipLevel = {0,0,0,0};
-}
-
-void UMyGameInstance::Login()
-{
 	auto& DBMgr = DatabaseManager::Get();
-	if (!DBMgr.Initialize("game.db"))
+	if (!DBMgr.Initialize("MyGame.db"))
 	{
 		return;
 	}
 
-	
+	if (auto UserGold = DBMgr.GetGoldTable()->GetGold(UserName))
+	{
+		Gold = *UserGold;
+	}
+
+	for (int i = 0; i < static_cast<int>(EEquipType::Count); ++i)
+	{
+		if (auto UserEquipData = DBMgr.GetEquipmentTable()->GetEquipmentLevel(UserName, static_cast<EEquipType>(i)))
+		{
+			EquipLevel[i] = *UserEquipData;
+		}
+	}
+
+	if (auto StageData = DBMgr.GetStageTable()->GetStageLevel(UserName))
+	{
+		StageLevel = *StageData;
+	}
+}
+
+
+
+bool UMyGameInstance::TryLogin(const std::string& ID, const std::string& PW)
+{
+	auto& DBMgr = DatabaseManager::Get();
+	if (!DBMgr.Initialize("MyGame.db"))
+	{
+		return false;
+	}
+
+	return DBMgr.GetUserTable()->ValidateLogin(ID, PW);
 }
 
 void UMyGameInstance::EnchantEquipLevel(EEquipType Type)
