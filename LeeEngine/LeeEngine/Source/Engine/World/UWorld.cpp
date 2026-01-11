@@ -80,6 +80,7 @@ void UWorld::TickWorld(float DeltaSeconds)
 {
 	if (PendingChangeLevel)
 	{
+		std::shared_ptr<ULevel> DeletedLevel = PersistentLevel;
 		PersistentLevel = nullptr;
 		SetPersistentLevel(PendingChangeLevel);
 		PendingChangeLevel = nullptr;
@@ -153,7 +154,7 @@ void UWorld::SetPersistentLevel(const std::shared_ptr<ULevel>& NewLevel)
 		{
 			Sleep(100);
 		}
-		PersistentLevel = nullptr;
+
 		PersistentLevel = NewLevel;
 		PendingChangeLevel = nullptr;
 		PersistentLevel->Register();

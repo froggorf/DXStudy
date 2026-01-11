@@ -48,6 +48,22 @@ bool UMyGameInstance::TryLogin(const std::string& ID, const std::string& PW)
 	return DBMgr.GetUserTable()->ValidateLogin(ID, PW);
 }
 
+bool UMyGameInstance::TryRegister(const std::string& ID, const std::string& PW)
+{
+	auto& DBMgr = DatabaseManager::Get();
+	if (!DBMgr.Initialize("MyGame.db"))
+	{
+		return false;
+	}
+
+	if (DBMgr.GetUserTable()->UserExists(ID))
+	{
+		return false;
+	}
+
+	return DBMgr.GetUserTable()->RegisterUser(ID, PW);
+}
+
 void UMyGameInstance::EnchantEquipLevel(EEquipType Type)
 {
 	++EquipLevel[static_cast<int>(Type)];

@@ -99,12 +99,48 @@ void ULoginWidget::NativeConstruct()
 
 	// 로그인 버튼 텍스트
 	LoginButtonText = std::make_shared<FTextWidget>();
-	LoginButtonText->SetText(L"시작하기");
+	LoginButtonText->SetText(L"로그인");
 	LoginButtonText->SetFontSize(24.0f);
 	LoginButtonText->SetFontColor({1.0f, 1.0f, 1.0f, 1.0f});  // 흰색
 	LoginButtonText->SetHorizontalAlignment(ETextHorizontalAlignment::Center);
 	LoginButtonText->SetVerticalAlignment(ETextVerticalAlignment::Center);
 	LoginButtonText->AttachToWidget(LoginButton);
+
+
+	// 버튼 스타일 (파란색 계열)
+
+	RegisterButton = std::make_shared<FButtonWidget>();
+	RegisterButton->SetStyle(EButtonType::Normal, FImageBrush{
+		UTexture::GetTextureCache("T_White"),
+		{0.2f, 0.4f, 0.8f, 1.0f}  // 파란색
+		});
+	RegisterButton->SetStyle(EButtonType::Hovered, FImageBrush{
+		UTexture::GetTextureCache("T_White"),
+		{0.3f, 0.5f, 0.9f, 1.0f}  // 밝은 파란색
+		});
+	RegisterButton->SetStyle(EButtonType::Pressed, FImageBrush{
+		UTexture::GetTextureCache("T_White"),
+		{0.1f, 0.3f, 0.7f, 1.0f}  // 어두운 파란색
+		});
+
+	RegisterButton->AttachToWidget(MainCanvasWidget);
+	if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(RegisterButton->GetSlot()))
+	{
+		CanvasSlot->Anchors = ECanvasAnchor::CenterMiddle;
+		CanvasSlot->Alignment = {0.5f, 0.0f};
+		CanvasSlot->Position = {0, 205};  // Password 아래 20px 간격
+		CanvasSlot->Size = {450, 55};     // 버튼 크기 (조금 더 크게)
+	}
+
+	// 로그인 버튼 텍스트
+	RegisterButtonText = std::make_shared<FTextWidget>();
+	RegisterButtonText->SetText(L"등록하기");
+	RegisterButtonText->SetFontSize(24.0f);
+	RegisterButtonText->SetFontColor({1.0f, 1.0f, 1.0f, 1.0f});  // 흰색
+	RegisterButtonText->SetHorizontalAlignment(ETextHorizontalAlignment::Center);
+	RegisterButtonText->SetVerticalAlignment(ETextVerticalAlignment::Center);
+	RegisterButtonText->AttachToWidget(RegisterButton);
+
 
 	// ==================== 이벤트 바인딩 ====================
 
@@ -113,6 +149,11 @@ void ULoginWidget::NativeConstruct()
 		{
 			OnLoginButtonClicked();
 		});
+
+	RegisterButton->OnClicked.Add([this]()
+	{
+		OnRegisterButtonClicked();
+	});
 
 	// Username에서 Enter 입력 시 Password로 포커스 이동
 	UsernameInput->OnTextCommitted.Add([this](const std::wstring& Text)
@@ -135,14 +176,15 @@ void ULoginWidget::OnLoginButtonClicked()
 	// 입력 검증
 	if (Username.empty())
 	{
-		// TODO: 경고 메시지 표시
-		MY_LOG("LOG", EDebugLogLevel::DLL_Warning, "Username is empty!");
+		LoginButtonText->SetText(L"ID를 입력해주세요.");
+		GEngine->GetTimerManager()->SetTimer(LoginButtonTimerHandle, {this, &ULoginWidget::SetLoginButtonText}, 2.0f, false);
 		return;
 	}
 
 	if (Password.empty())
 	{
-		MY_LOG("LOG", EDebugLogLevel::DLL_Warning, "Password is empty!");
+		LoginButtonText->SetText(L"PW를 입력해주세요.");
+		GEngine->GetTimerManager()->SetTimer(LoginButtonTimerHandle, {this, &ULoginWidget::SetLoginButtonText}, 2.0f, false);
 		return;
 	}
 
@@ -155,13 +197,50 @@ void ULoginWidget::OnLoginButtonClicked()
 		UMyGameInstance::GetInstance<UMyGameInstance>()->LoadInitialData();
 		// 레벨 타운으로 옮기기
 		GEngine->ChangeLevelByName("TownLevel");
-	}
-	
 
-	// TODO: 실제 로그인 로직 구현
-	// - 서버에 로그인 요청
-	// - 성공 시 메인 화면으로 전환
-	// - 실패 시 에러 메시지 표시
+		GEngine->SetInputMode(EInputMode::InputMode_GameOnly);
+		GEngine->SetMouseLock(EMouseLockMode::LockAlways);
+		GEngine->ShowCursor(false);
+	}
+	else
+	{
+		LoginButtonText->SetText(L"ID/PW가 틀렸습니다.");
+		GEngine->GetTimerManager()->SetTimer(LoginButtonTimerHandle, {this, &ULoginWidget::SetLoginButtonText}, 2.0f, false);
+	}
+}
+
+void ULoginWidget::OnRegisterButtonClicked()
+{
+	std::string Username = UsernameInput->GetText_String();
+	std::string Password = PasswordInput->GetText_String();
+
+	// 입력 검증
+	if (Username.empty())
+	{
+		RegisterButtonText->SetText(L"ID를 입력해주세요.");
+		GEngine->GetTimerManager()->SetTimer(RegisterButtonTimerHandle, {this, &ULoginWidget::SetRegisterButtonText}, 2.0f, false);
+		return;
+	}
+
+	if (Password.empty())
+	{
+		RegisterButtonText->SetText(L"PW를 입력해주세요.");
+		GEngine->GetTimerManager()->SetTimer(RegisterButtonTimerHandle, {this, &ULoginWidget::SetRegisterButtonText}, 2.0f, false);
+		return;
+	}
+
+	// 로그인 처리
+	
+	if (UMyGameInstance::GetInstance<UMyGameInstance>()->TryRegister(std::string{Username}, std::string{Password.data()}))
+	{
+		RegisterButtonText->SetText(L"등록 완료!");
+		GEngine->GetTimerManager()->SetTimer(RegisterButtonTimerHandle, {this, &ULoginWidget::SetRegisterButtonText}, 2.0f, false);
+	}
+	else
+	{
+		RegisterButtonText->SetText(L"이미 존재하는 ID입니다.");
+		GEngine->GetTimerManager()->SetTimer(RegisterButtonTimerHandle, {this, &ULoginWidget::SetRegisterButtonText}, 2.0f, false);
+	}
 }
 
 void ULoginWidget::OnUsernameCommitted(const std::wstring& Text)
@@ -190,5 +269,22 @@ void ULoginWidget::Tick(float DeltaSeconds)
 	if (ImGui::IsKeyDown(ImGuiKey_Escape))
 	{
 		// TODO: 종료 확인 다이얼로그 표시
+	}
+}
+
+void ULoginWidget::SetLoginButtonText()
+{
+	if (LoginButtonText)
+	{
+		LoginButtonText->SetText(L"로그인");
+	}
+}
+
+
+void ULoginWidget::SetRegisterButtonText()
+{
+	if (RegisterButtonText)
+	{
+		RegisterButtonText->SetText(L"등록하기");
 	}
 }

@@ -11,6 +11,7 @@ class UMyGameInstance : public UGameInstance
 
 	void LoadInitialData() override;
 	bool TryLogin(const std::string& ID, const std::string& PW);
+	bool TryRegister(const std::string& ID, const std::string& PW);
 
 	const std::array<int, static_cast<int>(EEquipType::Count)>& GetEquipLevel() const {return EquipLevel;}
 	UINT GetGold() const {return Gold;}

@@ -37,6 +37,7 @@ class UWorld : public UObject, public std::enable_shared_from_this<UWorld>
 
 	std::shared_ptr<ULevel> GetPersistentLevel() const;
 
+	void SetPendingChangeLevel(const std::shared_ptr<ULevel>& NewChangeLevel) {PendingChangeLevel = NewChangeLevel;}
 	void SetPersistentLevel(const std::shared_ptr<ULevel>& NewLevel);
 
 	void LoadLevelInstanceByName(const std::string& NewLevelName);

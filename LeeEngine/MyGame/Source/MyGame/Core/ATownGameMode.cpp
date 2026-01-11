@@ -23,17 +23,6 @@ void ATownGameMode::Tick(float DeltaSeconds)
 		GetWorld()->GetPlayerController()->OnPossess(std::dynamic_pointer_cast<ACharacter>(Actor).get());
 	}
 
-	static bool Test = false;
-	if (!Test && ImGui::IsKeyPressed(ImGuiKey_7))
-	{
-		Test = true;
-		GEngine->ChangeLevelByName("TestLevel");
-	}
-
-	//if (ImGui::IsKeyPressed(ImGuiKey_C))
-	//{
-	//	GEngine->ChangeLevelByName("");
-	//}
 }
 
 void ATownGameMode::BeginPlay()
@@ -130,6 +119,18 @@ ALoginGameMode::ALoginGameMode()
 void ALoginGameMode::BeginPlay()
 {
 	AGameMode::BeginPlay();
+
+	static std::shared_ptr<USkeletalMesh> SK_Gideon;
+	AssetManager::GetAsyncAssetCache("SK_Gideon",[this](std::shared_ptr<UObject> Object)
+		{
+			SK_Gideon = (std::static_pointer_cast<USkeletalMesh>(Object));
+		});
+
+	static std::shared_ptr<USkeletalMesh> SK_Sanhwa;
+	AssetManager::GetAsyncAssetCache("SK_Sanhwa",[this](std::shared_ptr<UObject> Object)
+		{
+			SK_Sanhwa = (std::static_pointer_cast<USkeletalMesh>(Object));
+		});
 
 	if (APlayerCameraManager* CM = GetWorld()->GetCameraManager())
 	{
