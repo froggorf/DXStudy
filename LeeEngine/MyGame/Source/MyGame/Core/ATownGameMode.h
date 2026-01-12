@@ -2,6 +2,8 @@
 #include "Engine/Class/Framework/AGameMode.h"
 #include "MyGame/Character/Player/AMyGameCharacterBase.h"
 
+class UEquipmentStatusWidget;
+
 class ATownGameMode : public AGameMode
 {
 	MY_GENERATE_BODY(ATownGameMode)
@@ -17,6 +19,8 @@ class ATownGameMode : public AGameMode
 
 	std::weak_ptr<class ASanhwaCharacter> SanhwaCharacter;
 	std::weak_ptr<class AGideonCharacter> GideonCharacter;
+
+	std::shared_ptr<UEquipmentStatusWidget> EquipmentStatusWidget;
 
 };
 

@@ -586,6 +586,17 @@ void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 void UEngine::SetInputMode(EInputMode NewInputMode)
 {
 	InputMode = NewInputMode;
+
+	if (InputMode == EInputMode::InputMode_UIOnly)                                                             
+		{                                                                                                          
+		    if (GetCurrentWorld() && GetCurrentWorld()->GetPlayerController())                                     
+		    {
+		        if (const std::shared_ptr<UPlayerInput>& PlayerInput = GetCurrentWorld()->GetPlayerController()->GetPlayerInput())        
+		        {                                                                                                  
+		            PlayerInput->ClearInputState();                                                                
+		        }                                                                                                  
+		    }                                                                                                      
+		}       
 }
 
 void UEngine::SetMouseLock(EMouseLockMode NewLockMode)

@@ -95,8 +95,9 @@ public:
 
     // Input을 처리하는 함수
     void HandleInput(const FInputEvent& InputEvent);
+	void ClearInputState();
 
-    template<typename T>
+	template<typename T>
     void BindAction(EKeys Key, ETriggerEvent TriggerEvent, T* Object, void (T::*Func)())
     {
         BindEvents[{Key, TriggerEvent}] = [Object, Func]()

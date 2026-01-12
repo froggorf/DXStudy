@@ -358,6 +358,9 @@
     <ClCompile Include="Source\MyGame\Widget\Login\ULoginWidget.cpp">
       <Filter>Source\MyGame\Widget\Login</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Widget\Town\UEquipmentStatusWidget.cpp">
+      <Filter>Source\MyGame\Widget\Town</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -554,6 +557,9 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Widget\Login\ULoginWidget.h">
       <Filter>Source\MyGame\Widget\Login</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Widget\Town\UEquipmentStatusWidget.h">
+      <Filter>Source\MyGame\Widget\Town</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

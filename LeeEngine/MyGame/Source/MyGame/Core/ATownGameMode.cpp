@@ -7,6 +7,7 @@
 #include "MyGame/Character/Player/AGideonCharacter.h"
 #include "MyGame/Character/Player/ASanhwaCharacter.h"
 #include "MyGame/Widget/Login/ULoginWidget.h"
+#include "MyGame/Widget/Town/UEquipmentStatusWidget.h"
 
 void ATownGameMode::Tick(float DeltaSeconds)
 {
@@ -37,6 +38,12 @@ void ATownGameMode::BeginPlay()
 	const std::shared_ptr<ASanhwaCharacter>& Sanhwa = std::dynamic_pointer_cast<ASanhwaCharacter>(
 		GetWorld()->SpawnActor("ASanhwaCharacter", FTransform{XMFLOAT3{ -600,0.0f,-500.0f}, XMFLOAT4{0.0f,0.0f,0.0f,1.0f}, XMFLOAT3{1.0f,1.0f,1.0f}}, "Sanhwa")
 	);
+	if (APlayerController* PC = GetWorld()->GetPlayerController())
+	{
+		EquipmentStatusWidget = std::make_shared<UEquipmentStatusWidget>();
+		PC->CreateWidget("EquipmentStatus", EquipmentStatusWidget);
+		PC->AddToViewport("EquipmentStatus", EquipmentStatusWidget);
+	}
 }
 
 void ATownGameMode::StartGame()

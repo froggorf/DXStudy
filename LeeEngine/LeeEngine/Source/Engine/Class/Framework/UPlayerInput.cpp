@@ -161,3 +161,7 @@ void UPlayerInput::HandleInput(const FInputEvent& InputEvent)
 	}
 	
 }
+void UPlayerInput::ClearInputState()                                                                          
+{                                                                                                             
+    std::fill(Touches.begin(), Touches.end(), false);                                           
+}   
