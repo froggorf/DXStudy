@@ -70,10 +70,13 @@ void UMyGameAnimInstanceBase::NativeUpdateAnimation(float DeltaSeconds)
 {
 	UAnimInstance::NativeUpdateAnimation(DeltaSeconds);
 
+	if (MovementComp)
+	{
+		XMFLOAT3 MoveVel = MovementComp->Velocity;
+		MoveVel.y = 0.0f;
+		MovementVelocity = XMVectorGetX(XMVector3Length(XMLoadFloat3(&MoveVel)));	
+	}
 	
-	XMFLOAT3 MoveVel = MovementComp->Velocity;
-	MoveVel.y = 0.0f;
-	MovementVelocity = XMVectorGetX(XMVector3Length(XMLoadFloat3(&MoveVel)));
 }
 
 XMFLOAT3 UMyGameAnimInstanceBase::GetWarpingPositionToEnemy(const XMFLOAT3& CurActorLocation, XMFLOAT3& EnemyLocation, float MaxMoveDistance)

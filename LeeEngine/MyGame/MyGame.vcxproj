@@ -23,6 +23,7 @@
     <ClCompile Include="Source\MyGame\Actor\ACoin.cpp" />
     <ClCompile Include="Source\MyGame\Actor\ADungeon.cpp" />
     <ClCompile Include="Source\MyGame\Actor\AEnemySpawner.cpp" />
+    <ClCompile Include="Source\MyGame\Actor\APortal.cpp" />
     <ClCompile Include="Source\MyGame\Actor\ATestActor2.cpp" />
     <ClCompile Include="Source\MyGame\Actor\ATestCube.cpp" />
     <ClCompile Include="Source\MyGame\Actor\ATestCube2.cpp" />
@@ -91,6 +92,7 @@
     <ClInclude Include="Source\MyGame\Actor\ACoin.h" />
     <ClInclude Include="Source\MyGame\Actor\ADungeon.h" />
     <ClInclude Include="Source\MyGame\Actor\AEnemySpawner.h" />
+    <ClInclude Include="Source\MyGame\Actor\APortal.h" />
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h" />
     <ClInclude Include="Source\MyGame\Actor\ATestCube.h" />
     <ClInclude Include="Source\MyGame\Actor\ATestCube2.h" />
@@ -244,6 +246,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\Widget.fx">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader\Portal.fx">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

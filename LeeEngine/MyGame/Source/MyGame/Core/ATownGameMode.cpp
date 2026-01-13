@@ -40,6 +40,7 @@ void ATownGameMode::BeginPlay()
 		GetWorld()->SpawnActor("ASanhwaCharacter", FTransform{XMFLOAT3{ -600,0.0f,-500.0f}, XMFLOAT4{0.0f,0.0f,0.0f,1.0f}, XMFLOAT3{1.0f,1.0f,1.0f}}, "Sanhwa")
 	);
 	SanhwaCharacter = Sanhwa;
+	GetWorld()->SpawnActor("APortal", FTransform{XMFLOAT3{0.0f, 0.0f, -1000.0f}, XMFLOAT4{0.0f,0.0f,0.0f,1.0f}, XMFLOAT3{1.0f,1.0f,1.0f}}, "TownPortal");
 	if (APlayerController* PC = GetWorld()->GetPlayerController())
 	{
 		EquipmentStatusWidget = std::make_shared<UEquipmentStatusWidget>();

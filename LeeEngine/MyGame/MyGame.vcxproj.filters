@@ -325,6 +325,9 @@
     <ClCompile Include="Source\MyGame\Actor\AEnemySpawner.cpp">
       <Filter>Source\MyGame\Actor</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Actor\APortal.cpp">
+      <Filter>Source\MyGame\Actor</Filter>
+    </ClCompile>
     <ClCompile Include="Source\MyGame\Actor\ACoin.cpp">
       <Filter>Source\MyGame\Actor</Filter>
     </ClCompile>
@@ -525,6 +528,9 @@
     <ClInclude Include="Source\MyGame\Actor\AEnemySpawner.h">
       <Filter>Source\MyGame\Actor</Filter>
     </ClInclude>
+    <ClInclude Include="Source\MyGame\Actor\APortal.h">
+      <Filter>Source\MyGame\Actor</Filter>
+    </ClInclude>
     <ClInclude Include="Source\MyGame\Actor\ACoin.h">
       <Filter>Source\MyGame\Actor</Filter>
     </ClInclude>
@@ -615,6 +621,9 @@
       <Filter>Shader</Filter>
     </None>
     <None Include="Shader\Widget.fx">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\Portal.fx">
       <Filter>Shader</Filter>
     </None>
     <None Include="Shader\PBR.fx">

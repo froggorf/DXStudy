@@ -1,0 +1,15 @@
+{
+    "Class": "UMaterial",
+    "Name": "M_Portal",
+    "VertexShader" : {
+	"FilePath" : "/Shader/Portal.fx",
+	"Func" : "VS"
+    },
+    "PixelShader" : {
+	"FilePath" : "/Shader/Portal.fx",
+	"Func": "PS"
+    },
+    "Textures" : [ "T_White" ],
+    "BlendMode": "Translucent",
+    "TwoSided" : 1
+}

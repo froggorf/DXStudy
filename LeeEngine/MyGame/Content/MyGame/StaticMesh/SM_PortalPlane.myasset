@@ -1,0 +1,6 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_PortalPlane",
+    "ModelData": "/Content/Resource/Model/SM_Plane.obj",
+    "Material" : [ "M_Portal" ]
+}

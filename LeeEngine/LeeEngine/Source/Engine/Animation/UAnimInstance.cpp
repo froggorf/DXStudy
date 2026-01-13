@@ -177,40 +177,45 @@ void UAnimInstance::Tick(float DeltaSeconds)
 		CalculateFinalBoneMatrices(FinalBoneMatrices);
 
 		/// 루트 모션 처리
-		if (AController* Controller = OwnerCharacter->GetController())
+		
+		if (OwnerCharacter)
 		{
-			// PlayerController에 의해 조종되는 캐릭터일 경우
-			bool bPlayerCharacter =  (Controller->GetCharacter() && Controller->GetCharacter()->GetSkeletalMeshComponent() == GetSkeletalMeshComponent());
-			if (bPlayerCharacter)
+			if (AController* Controller = OwnerCharacter->GetController())
 			{
-				Controller->SetPlayRootMotion(false);
-			}
-			
-			if (bPlayRootMotion)
-			{
-				XMMATRIX RootMatrixWithNoRotation = FinalBoneMatrices[0];
-				RootMatrixWithNoRotation.r[0] = XMVectorSet(1, 0, 0, 0);
-				RootMatrixWithNoRotation.r[1] = XMVectorSet(0, 1, 0, 0);  
-				RootMatrixWithNoRotation.r[2] = XMVectorSet(0, 0, 1, 0);
-				XMMATRIX RootNoRotInv = XMMatrixInverse(nullptr, RootMatrixWithNoRotation);
-				
-				for (size_t i = 1 ; i < MAX_BONES; ++i)
-				{
-					FinalBoneMatrices[i] = XMMatrixMultiply(FinalBoneMatrices[i], RootNoRotInv); 
-				}
-
+				// PlayerController에 의해 조종되는 캐릭터일 경우
+				bool bPlayerCharacter =  (Controller->GetCharacter() && Controller->GetCharacter()->GetSkeletalMeshComponent() == GetSkeletalMeshComponent());
 				if (bPlayerCharacter)
 				{
-					Controller->SetPlayRootMotion(true);
+					Controller->SetPlayRootMotion(false);
 				}
 
-				if (!bBlendOut && !bUseMotionWarping)
+				if (bPlayRootMotion)
 				{
-					OwnerCharacter->HandleRootMotion(FinalBoneMatrices[0]);
-				}
+					XMMATRIX RootMatrixWithNoRotation = FinalBoneMatrices[0];
+					RootMatrixWithNoRotation.r[0] = XMVectorSet(1, 0, 0, 0);
+					RootMatrixWithNoRotation.r[1] = XMVectorSet(0, 1, 0, 0);  
+					RootMatrixWithNoRotation.r[2] = XMVectorSet(0, 0, 1, 0);
+					XMMATRIX RootNoRotInv = XMMatrixInverse(nullptr, RootMatrixWithNoRotation);
 
-				FinalBoneMatrices[0] = XMMatrixIdentity();	
-			}	
+					for (size_t i = 1 ; i < MAX_BONES; ++i)
+					{
+						FinalBoneMatrices[i] = XMMatrixMultiply(FinalBoneMatrices[i], RootNoRotInv); 
+					}
+
+					if (bPlayerCharacter)
+					{
+						Controller->SetPlayRootMotion(true);
+					}
+
+					if (!bBlendOut && !bUseMotionWarping)
+					{
+						OwnerCharacter->HandleRootMotion(FinalBoneMatrices[0]);
+					}
+
+					FinalBoneMatrices[0] = XMMatrixIdentity();
+				}
+			}
+				
 		}
 		
 		// 애니메이션 데이터를 렌더링쓰레드에 전달

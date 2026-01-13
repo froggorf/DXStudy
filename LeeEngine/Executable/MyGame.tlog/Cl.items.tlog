@@ -2,6 +2,7 @@ C:\Project\DXStudy\LeeEngine\MyGame\Source\main.cpp;C:\Project\DXStudy\LeeEngine
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\ACoin.cpp;C:\Project\DXStudy\LeeEngine\Executable\ACoin.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\ADungeon.cpp;C:\Project\DXStudy\LeeEngine\Executable\ADungeon.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\AEnemySpawner.cpp;C:\Project\DXStudy\LeeEngine\Executable\AEnemySpawner.obj
+C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\APortal.cpp;C:\Project\DXStudy\LeeEngine\Executable\APortal.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\ATestActor2.cpp;C:\Project\DXStudy\LeeEngine\Executable\ATestActor2.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\ATestCube.cpp;C:\Project\DXStudy\LeeEngine\Executable\ATestCube.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\ATestCube2.cpp;C:\Project\DXStudy\LeeEngine\Executable\ATestCube2.obj

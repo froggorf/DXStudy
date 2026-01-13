@@ -52,7 +52,7 @@ protected:
 	AMyGameCharacterBase* MyGameCharacter = nullptr;
 
 	float MovementVelocity = 0.0f;
-	UCharacterMovementComponent* MovementComp;
+	UCharacterMovementComponent* MovementComp = nullptr;
 	std::shared_ptr<UBlendSpace> BS_Locomotion;
 
 	std::shared_ptr<UAnimSequence> AS_JumpStart;
