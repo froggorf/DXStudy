@@ -105,8 +105,14 @@ float AEnemyBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent
 	{
 		Death();
 	}
-
-	HealthComponent->ApplyDamage(DamageAmount);
+	else
+	{
+		if (AIController)
+		{
+			float NewHealthPercent = HealthComponent->GetHealthPercent() * 100;
+			AIController->GetBehaviorTree()->GetBlackBoard()->SetValue<FBlackBoardValueType_FLOAT>("HealthPercent", NewHealthPercent);
+		}
+	}
 
 	if (AMyGamePlayerController* PC = dynamic_cast<AMyGamePlayerController*>(GetWorld()->GetPlayerController()))
 	{
@@ -116,12 +122,6 @@ float AEnemyBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent
 			DefaultColor = GetElementColor(MyGameDamageEvent->ElementType);
 		}
 		PC->SpawnFloatingDamage(GetRootComponent()->GetComponentTransform(), DefaultColor, static_cast<UINT>(DamageAmount));
-	}
-
-	if (AIController)
-	{
-		float NewHealthPercent = HealthComponent->GetHealthPercent() * 100;
-		AIController->GetBehaviorTree()->GetBlackBoard()->SetValue<FBlackBoardValueType_FLOAT>("HealthPercent", NewHealthPercent);
 	}
 
 	return DamageAmount;

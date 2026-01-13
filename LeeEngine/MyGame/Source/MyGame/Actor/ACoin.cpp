@@ -2,6 +2,8 @@
 #include "ACoin.h"
 
 #include "Engine/World/UWorld.h"
+#include "MyGame/Core/UMyGameInstance.h"
+#include "MyGame/Widget/Town/UEquipmentStatusWidget.h"
 
 ACoin::ACoin()
 {
@@ -36,7 +38,22 @@ void ACoin::Register()
 
 void ACoin::OverlapToPlayer()
 {
-	//TODO: 여기서 골드 획득 처리하기
+	if (UMyGameInstance* GameInstance = UMyGameInstance::GetInstance<UMyGameInstance>())
+	{
+		if (GameInstance->AddGold(10))
+		{
+			if (APlayerController* PC = GetWorld()->GetPlayerController())
+			{
+				if (const std::shared_ptr<UUserWidget>& Widget = PC->GetWidget("EquipmentStatus"))
+				{
+					if (const std::shared_ptr<UEquipmentStatusWidget>& StatusWidget = std::dynamic_pointer_cast<UEquipmentStatusWidget>(Widget))
+					{
+						StatusWidget->UpdateEquipmentData();
+					}
+				}
+			}
+		}
+	}
 	DestroySelf();
 }
 
@@ -50,7 +67,11 @@ void ACoin::Tick(float DeltaSeconds)
 {
 	AActor::Tick(DeltaSeconds);
 
-	Time = std::min(3.0f, Time + DeltaSeconds);
+	constexpr float MoveStartTime = 1.5f;
+	constexpr float LerpDuration = 0.75f;
+	constexpr float TotalLifeTime = MoveStartTime + LerpDuration;
+
+	Time = std::min(TotalLifeTime, Time + DeltaSeconds);
 
 	if (RootComponent)
 	{
@@ -61,8 +82,8 @@ void ACoin::Tick(float DeltaSeconds)
 	{
 		if (const std::shared_ptr<AActor>& PlayerActor = GetWorld()->GetPlayerController()->GetPlayerCharacter())
 		{
-			SetActorLocation(MyMath::Lerp(OriginPos, PlayerActor->GetActorLocation(), (Time - 1.5f)/1.5f));
-			if (Time >= 3.0f)
+			SetActorLocation(MyMath::Lerp(OriginPos, PlayerActor->GetActorLocation(), (Time - MoveStartTime) / LerpDuration));
+			if (Time >= TotalLifeTime)
 			{
 				OverlapToPlayer();
 			}
@@ -70,7 +91,7 @@ void ACoin::Tick(float DeltaSeconds)
 	}
 	else
 	{
-		if (Time >= 1.5f)
+		if (Time >= MoveStartTime)
 		{
 			bGoToPlayer = true;
 			OriginPos = GetActorLocation();

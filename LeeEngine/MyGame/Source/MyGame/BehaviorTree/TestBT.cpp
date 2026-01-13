@@ -303,13 +303,9 @@ void UTestBT::OnConstruct()
 		HPCheckSelector->Decorators.emplace_back(IsPlayerNear);
 			
 
-		// 체력이 20% 이상이면 시퀀서를 실행하는데
 		{
 			std::shared_ptr<FBTSequencer> AttackPlayerSequencer = std::make_shared<FBTSequencer>();
 			HPCheckSelector->AddChild(AttackPlayerSequencer);
-			std::shared_ptr<FBTDecorator_BlackBoardValueCheck<FBlackBoardValueType_FLOAT>> HPCheck = std::make_shared<FBTDecorator_BlackBoardValueCheck<FBlackBoardValueType_FLOAT>>();
-			HPCheck->Initialize("HealthPercent", 20.0f, EBlackBoardValueCheckType::GreaterOrEqual);
-			AttackPlayerSequencer->Decorators.emplace_back(HPCheck);
 			{
 				// 적 앞으로 다가간다
 				std::shared_ptr<FBTTask_MoveToPlayer> MoveToPlayerTask = std::make_shared<FBTTask_MoveToPlayer>();
@@ -319,15 +315,6 @@ void UTestBT::OnConstruct()
 				std::shared_ptr<FBTTask_EnemyBasicAttack> EnemyBasicAttackTask = std::make_shared<FBTTask_EnemyBasicAttack>();
 				AttackPlayerSequencer->AddChild(EnemyBasicAttackTask);
 			}
-		}
-
-		// 20% 이하면 도망친다.
-		{
-			std::shared_ptr<FBTTask_RunFromPlayer> RunFromPlayerTask = std::make_shared<FBTTask_RunFromPlayer>();
-			std::shared_ptr<FBTDecorator_BlackBoardValueCheck<FBlackBoardValueType_FLOAT>> HPCheck = std::make_shared<FBTDecorator_BlackBoardValueCheck<FBlackBoardValueType_FLOAT>>();
-			HPCheck->Initialize("HealthPercent", 20.0f, EBlackBoardValueCheckType::Less);
-			RunFromPlayerTask->Decorators.emplace_back(HPCheck);
-			HPCheckSelector->AddChild(RunFromPlayerTask);
 		}
 
 

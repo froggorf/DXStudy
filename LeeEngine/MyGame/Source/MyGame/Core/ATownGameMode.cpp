@@ -132,6 +132,13 @@ void ADungeonGameMode::BeginPlay()
 		GetWorld()->SpawnActor("ASanhwaCharacter", FTransform{XMFLOAT3{ -600,0.0f,-500.0f}, XMFLOAT4{0.0f,0.0f,0.0f,1.0f}, XMFLOAT3{1.0f,1.0f,1.0f}}, "Sanhwa")
 	);
 	Sanhwa->SetEquipmentLevel(UMyGameInstance::GetInstance<UMyGameInstance>()->GetEquipLevel());
+
+	if (APlayerController* PC = GetWorld()->GetPlayerController())
+	{
+		std::shared_ptr<UEquipmentStatusWidget> EquipmentStatusWidget = std::make_shared<UEquipmentStatusWidget>();
+		PC->CreateWidget("EquipmentStatus", EquipmentStatusWidget);
+		PC->AddToViewport("EquipmentStatus", EquipmentStatusWidget);
+	}
 }
 
 void ADungeonGameMode::StartGame()
