@@ -21,6 +21,7 @@ class UMyGameAnimInstanceBase : public UAnimInstance
 	virtual std::string GetJumpStartAnimSequenceName() {return "";};
 	virtual std::string GetFallingAnimSequenceName() {return "";};
 	virtual std::string GetLandAnimSequenceName() {return "";};
+	virtual float GetJumpStartTimeMultiply() {return 1.0f;}
 
 	virtual void LoadData_OnRegister();
 	void         Register() override;
@@ -43,7 +44,7 @@ class UMyGameAnimInstanceBase : public UAnimInstance
 
 protected:
 	void CalculateAnimByState(EAnimState State, float AnimTime, std::vector<FBoneLocalTransform>& OutBoneTransform);
-	virtual float GetLandingTimeMultiply() {return 2.0f;}
+	virtual float GetLandingTimeMultiply() {return 1.0f;}
 	void UpdateAnimationState(float dt , std::vector<FBoneLocalTransform>& OutBoneTransform);
 
 protected:

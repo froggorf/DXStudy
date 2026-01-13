@@ -6,6 +6,56 @@ void UEquipmentStatusWidget::NativeConstruct()
 {
 	UUserWidget::NativeConstruct();
 
+	GoldBackground = std::make_shared<FImageWidget>(
+		FImageBrush{ UTexture::GetTextureCache("T_White"), {0.2f, 0.2f, 0.2f, 0.9f} }
+	);
+	GoldBackground->AttachToWidget(MainCanvasWidget);
+	if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(GoldBackground->GetSlot()))
+	{
+		CanvasSlot->Anchors = ECanvasAnchor::LeftBottom;
+		CanvasSlot->Alignment = { 0.0f, 1.0f };
+		CanvasSlot->Position = { 20, -150 };
+		CanvasSlot->Size = { 320, 48 };
+	}
+
+	GoldBox = std::make_shared<FHorizontalBoxWidget>();
+	GoldBox->AttachToWidget(MainCanvasWidget);
+	if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(GoldBox->GetSlot()))
+	{
+		CanvasSlot->Anchors = ECanvasAnchor::LeftBottom;
+		CanvasSlot->Alignment = { 0.0f, 1.0f };
+		CanvasSlot->Position = { 20, -150 };
+		CanvasSlot->Size = { 320, 48 };
+	}
+
+	GoldIcon = std::make_shared<FImageWidget>(
+		FImageBrush{ UTexture::GetTextureCache("T_Coin"), {1,1,1,1} }
+	);
+	GoldIcon->AttachToWidget(GoldBox);
+	if (const std::shared_ptr<FHorizontalBoxSlot>& HorBoxSlot = std::dynamic_pointer_cast<FHorizontalBoxSlot>(GoldIcon->GetSlot()))
+	{
+		HorBoxSlot->FillSize = 0.15f;
+		HorBoxSlot->HorizontalAlignment = EHorizontalAlignment::Wrap;
+		HorBoxSlot->VerticalAlignment = EVerticalAlignment::Wrap;
+		HorBoxSlot->SetHorizontalPadding({0, 0});
+		HorBoxSlot->SetVerticalPadding({0, 0});
+	}
+
+	GoldText = std::make_shared<FTextWidget>();
+	GoldText->SetText(L"0");
+	GoldText->SetFontSize(26.0f);
+	GoldText->SetFontColor({1.0f, 1.0f, 1.0f, 1.0f});
+	GoldText->SetHorizontalAlignment(ETextHorizontalAlignment::Left);
+	GoldText->SetVerticalAlignment(ETextVerticalAlignment::Center);
+	GoldText->AttachToWidget(GoldBox);
+	if (const std::shared_ptr<FHorizontalBoxSlot>& HorBoxSlot = std::dynamic_pointer_cast<FHorizontalBoxSlot>(GoldText->GetSlot()))
+	{
+		HorBoxSlot->FillSize = 0.85f;
+		HorBoxSlot->HorizontalAlignment = EHorizontalAlignment::Wrap;
+		HorBoxSlot->VerticalAlignment = EVerticalAlignment::Wrap;
+		HorBoxSlot->SetHorizontalPadding({6, 0});
+	}
+
 	BackgroundImage = std::make_shared<FImageWidget>(
 		FImageBrush{ UTexture::GetTextureCache("T_White"), {0.2f, 0.2f, 0.2f, 0.9f} }
 	);
@@ -88,6 +138,11 @@ void UEquipmentStatusWidget::UpdateEquipmentData()
 			{
 				EquipLevelText[i]->SetText(L"Lv. " + std::to_wstring(EquipLevels[i]));
 			}
+		}
+
+		if (GoldText)
+		{
+			GoldText->SetText(std::to_wstring(GameInstance->GetGold()));
 		}
 	}
 }

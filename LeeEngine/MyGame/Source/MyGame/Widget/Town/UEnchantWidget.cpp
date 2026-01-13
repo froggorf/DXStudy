@@ -3,10 +3,33 @@
 
 #include "Engine/World/UWorld.h"
 #include "MyGame/Core/ATownGameMode.h"
+#include "MyGame/Core/UMyGameInstance.h"
+
+static std::wstring GetUpgradeResultMessage(EEquipUpgradeResult Result)
+{
+	switch (Result)
+	{
+	case EEquipUpgradeResult::InvalidUser:
+		return L"Invalid user.";
+	case EEquipUpgradeResult::NoData:
+		return L"Upgrade data missing.";
+	case EEquipUpgradeResult::NotEnoughGold:
+		return L"Not enough gold.";
+	case EEquipUpgradeResult::DbError:
+		return L"DB error.";
+	default:
+		return L"";
+	}
+}
 
 void UEnchantWidget::NativeConstruct()
 {
 	UUserWidget::NativeConstruct();
+
+	constexpr float BaseWidth = 1920.0f / 2.0f;
+	constexpr float BaseHeight = 1080.0f / 2.0f;
+	constexpr float ClosePadding = 10.0f;
+	constexpr float CloseSize = 32.0f;
 
 	BaseImageWidget = std::make_shared<FImageWidget>(FImageBrush{UTexture::GetTextureCache("T_White"), {1,1,1,1}});
 	BaseImageWidget->AttachToWidget(MainCanvasWidget);
@@ -15,7 +38,7 @@ void UEnchantWidget::NativeConstruct()
 		CanvasSlot->Anchors = ECanvasAnchor::CenterMiddle;
 		CanvasSlot->Alignment = {0.5f, 0.5f};
 		CanvasSlot->Position = {0,0};
-		CanvasSlot->Size = {1920/2, 1080/2};
+		CanvasSlot->Size = {BaseWidth, BaseHeight};
 	}
 
 	HorBox= std::make_shared<FHorizontalBoxWidget>();
@@ -27,6 +50,27 @@ void UEnchantWidget::NativeConstruct()
 		CanvasSlot->Position = {0,0};
 		CanvasSlot->Size = {1920/2.5, 1080/2.5};
 	}
+
+	CloseButton = std::make_shared<FButtonWidget>();
+	CloseButton->SetStyle(EButtonType::Normal, FImageBrush{UTexture::GetTextureCache("T_White"), {0.85f, 0.1f, 0.1f, 1.0f}});
+	CloseButton->SetStyle(EButtonType::Hovered, FImageBrush{UTexture::GetTextureCache("T_White"), {1.0f, 0.2f, 0.2f, 1.0f}});
+	CloseButton->SetStyle(EButtonType::Pressed, FImageBrush{UTexture::GetTextureCache("T_White"), {0.6f, 0.05f, 0.05f, 1.0f}});
+	CloseButton->AttachToWidget(MainCanvasWidget);
+	if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(CloseButton->GetSlot()))
+	{
+		CanvasSlot->Anchors = ECanvasAnchor::CenterMiddle;
+		CanvasSlot->Alignment = {1.0f, 0.0f};
+		CanvasSlot->Position = {BaseWidth * 0.5f - ClosePadding, -BaseHeight * 0.5f + ClosePadding};
+		CanvasSlot->Size = {CloseSize, CloseSize};
+	}
+
+	CloseButtonText = std::make_shared<FTextWidget>();
+	CloseButtonText->SetText(L"X");
+	CloseButtonText->SetFontSize(22.0f);
+	CloseButtonText->SetFontColor({1.0f, 1.0f, 1.0f, 1.0f});
+	CloseButtonText->SetHorizontalAlignment(ETextHorizontalAlignment::Center);
+	CloseButtonText->SetVerticalAlignment(ETextVerticalAlignment::Center);
+	CloseButtonText->AttachToWidget(CloseButton);
 
 	static std::string TextureName[static_cast<int>(EEquipType::Count)] = {"T_Armor_Head", "T_Armor_Body", "T_Armor_Glove", "T_Weapon"};
 	static std::wstring EquipName[static_cast<int>(EEquipType::Count)] = {L"Head", L"Body", L"Glove", L"Weapon"};
@@ -83,6 +127,22 @@ void UEnchantWidget::NativeConstruct()
 		EquipText[i]->SetVerticalAlignment(ETextVerticalAlignment::Center);
 		EquipText[i]->SetFontSize(30.0f);
 		EquipText[i]->AttachToWidget(EquipUpButton[i]);
+
+		EquipCostText[i] = std::make_shared<FTextWidget>();
+		EquipCostText[i]->SetText(L"Cost: ?");
+		EquipCostText[i]->SetFontSize(24.0f);
+		EquipCostText[i]->SetFontColor({0.0f, 0.0f, 0.0f, 1.0f});
+		EquipCostText[i]->SetHorizontalAlignment(ETextHorizontalAlignment::Center);
+		EquipCostText[i]->SetVerticalAlignment(ETextVerticalAlignment::Center);
+		EquipCostText[i]->AttachToWidget(VerBox[i]);
+		if (const std::shared_ptr<FVerticalBoxSlot>& VerBoxSlot = std::dynamic_pointer_cast<FVerticalBoxSlot>(EquipCostText[i]->GetSlot()))
+		{
+			VerBoxSlot->FillSize = 0.6f;
+			VerBoxSlot->HorizontalAlignment = EHorizontalAlignment::Wrap;
+			VerBoxSlot->VerticalAlignment = EVerticalAlignment::Wrap;
+			VerBoxSlot->SetHorizontalPadding({10,10});
+			VerBoxSlot->SetVerticalPadding({0,10});
+		}
 	}
 	for (int i = 0; i < static_cast<int>(EEquipType::Count); ++i)
 	{
@@ -91,6 +151,30 @@ void UEnchantWidget::NativeConstruct()
 			Enchant(static_cast<EEquipType>(i));
 		});
 	}
+	if (CloseButton)
+	{
+		CloseButton->OnClicked.Add([this]()
+		{
+			Close();
+		});
+	}
+
+	FeedbackText = std::make_shared<FTextWidget>();
+	FeedbackText->SetText(L"");
+	FeedbackText->SetFontSize(28.0f);
+	FeedbackText->SetFontColor({1.0f, 0.2f, 0.2f, 1.0f});
+	FeedbackText->SetHorizontalAlignment(ETextHorizontalAlignment::Center);
+	FeedbackText->SetVerticalAlignment(ETextVerticalAlignment::Center);
+	FeedbackText->AttachToWidget(MainCanvasWidget);
+	if (const std::shared_ptr<FCanvasSlot>& CanvasSlot = std::dynamic_pointer_cast<FCanvasSlot>(FeedbackText->GetSlot()))
+	{
+		CanvasSlot->Anchors = ECanvasAnchor::CenterBottom;
+		CanvasSlot->Alignment = {0.5f, 1.0f};
+		CanvasSlot->Position = {0, -40};
+		CanvasSlot->Size = {600, 50};
+	}
+
+	UpdateUpgradeCostTexts();
 	
 }
 
@@ -98,18 +182,74 @@ void UEnchantWidget::Enchant(EEquipType Type)
 {
 	if (const std::shared_ptr<ATownGameMode>& TownGameMode = std::dynamic_pointer_cast<ATownGameMode>(GetWorld()->GetPersistentLevel()->GetGameMode()))
 	{
-		TownGameMode->AddEquipLevel(Type);
+		const EEquipUpgradeResult Result = TownGameMode->AddEquipLevel(Type);
+		if (Result == EEquipUpgradeResult::Success)
+		{
+			ShowFeedback(L"", {0.0f, 0.0f, 0.0f, 0.0f});
+			UpdateUpgradeCostTexts();
+		}
+		else
+		{
+			ShowFeedback(GetUpgradeResultMessage(Result), {1.0f, 0.2f, 0.2f, 1.0f});
+		}
+	}
+	else
+	{
+		ShowFeedback(L"Upgrade failed.", {1.0f, 0.2f, 0.2f, 1.0f});
 	}
 	
+}
+
+void UEnchantWidget::UpdateUpgradeCostTexts()
+{
+	UMyGameInstance* GameInstance = UMyGameInstance::GetInstance<UMyGameInstance>();
+	if (!GameInstance)
+	{
+		return;
+	}
+
+	for (int i = 0; i < static_cast<int>(EEquipType::Count); ++i)
+	{
+		if (!EquipCostText[i])
+		{
+			continue;
+		}
+
+		int Cost = 0;
+		if (GameInstance->GetEquipUpgradeCost(static_cast<EEquipType>(i), Cost))
+		{
+			EquipCostText[i]->SetText(L"Cost: " + std::to_wstring(Cost));
+		}
+		else
+		{
+			EquipCostText[i]->SetText(L"Cost: ?");
+		}
+	}
+}
+
+void UEnchantWidget::ShowFeedback(const std::wstring& Message, const XMFLOAT4& Color)
+{
+	if (!FeedbackText)
+	{
+		return;
+	}
+
+	FeedbackText->SetText(Message);
+	FeedbackText->SetFontColor(Color);
+	FeedbackRemainTime = Message.empty() ? 0.0f : 2.0f;
 }
 
 void UEnchantWidget::Tick(float DeltaSeconds)
 {
 	UUserWidget::Tick(DeltaSeconds);
 
-	if (ImGui::IsKeyDown(ImGuiKey_Escape))
+	if (FeedbackRemainTime > 0.0f)
 	{
-		Close();
+		FeedbackRemainTime -= DeltaSeconds;
+		if (FeedbackRemainTime <= 0.0f && FeedbackText)
+		{
+			FeedbackText->SetText(L"");
+		}
 	}
 }
 

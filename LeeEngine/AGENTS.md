@@ -33,3 +33,5 @@ Third-party binaries (for example Assimp, FMOD, PhysX DLLs) live alongside `MyGa
 파일 수정, 삭제, 추가 등 변경사항이 있으면 어떤 파일을 어떻게 수정하거나 삭제할건지 코드도 자세히 알려줘
 
 내가 지시한 내용 이외의 일은 하지 말아줘
+
+C:\Project\DXStudy\LeeEngine

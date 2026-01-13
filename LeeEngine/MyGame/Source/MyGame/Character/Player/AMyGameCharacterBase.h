@@ -76,6 +76,7 @@ class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
 	void ApplyPotion();
 
 	void Debug_SetUltimateGauge100();
+	void Debug_AddGold1000();
 
 	float GetCurrentPower() const;
 	float GetWeaponPower() const;

@@ -1,0 +1,5 @@
+{
+    "Class": "UTexture",
+    "Name": "T_Coin",
+    "FilePath" : "/Content/Resource/MyGame/Texture/Coin.png"
+}

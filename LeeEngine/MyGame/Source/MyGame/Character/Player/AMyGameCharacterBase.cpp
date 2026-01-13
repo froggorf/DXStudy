@@ -48,6 +48,7 @@ AMyGameCharacterBase::AMyGameCharacterBase()
 		CharacterMovement->RotationRate = XMFLOAT3{0.0f, 1500.0f, 0.0f};
 		CharacterMovement->MaxWalkSpeed = 600;
 		CharacterMovement->Braking = 4096;
+		CharacterMovement->JumpZVelocity *= 1.5f;
 	}
 
 	SpringArm->SetRelativeLocation(XMFLOAT3{0.0f, 50.0f, 0.0f});
@@ -178,6 +179,7 @@ void AMyGameCharacterBase::BindKeyInputs()
 			InputSystem->BindAction(EKeys::MouseWheelDown, Started, this, &AMyGameCharacterBase::WheelDown);
 
 			InputSystem->BindAction(EKeys::F1, Started, this, &AMyGameCharacterBase::Debug_SetUltimateGauge100);
+			InputSystem->BindAction(EKeys::F5, Started, this, &AMyGameCharacterBase::Debug_AddGold1000);
 
 			InputSystem->BindAction(EKeys::Tab, Started, this, &AMyGameCharacterBase::ChangeCharacter);
 
@@ -479,6 +481,25 @@ void AMyGameCharacterBase::Debug_SetUltimateGauge100()
 	if (UltimateComponent)
 	{
 		UltimateComponent->AddUltimateGauge(100000);
+	}
+}
+
+void AMyGameCharacterBase::Debug_AddGold1000()
+{
+	UMyGameInstance* GameInstance = UMyGameInstance::GetInstance<UMyGameInstance>();
+	if (!GameInstance)
+	{
+		return;
+	}
+
+	if (!GameInstance->AddGold(1000))
+	{
+		return;
+	}
+
+	if (const std::shared_ptr<ATownGameMode>& TownGameMode = std::dynamic_pointer_cast<ATownGameMode>(GetWorld()->GetPersistentLevel()->GetGameMode()))
+	{
+		TownGameMode->RefreshEquipmentStatusWidget();
 	}
 }
 

@@ -29,6 +29,24 @@ bool DatabaseManager::Initialize(const std::string& DBPath)
 	GoldTablePtr->CreateTable();
 	StageTablePtr->CreateTable();
 
+	// 강화 비용 초기화
+	auto EnsureUpgradeCost = [this](EEquipType Type, int BaseGold, double Multiplier)
+	{
+		if (!EquipmentTablePtr)
+		{
+			return;
+		}
+		const std::optional<int> Cost = EquipmentTablePtr->GetUpgradeCost(Type, 1);
+		if (!Cost.has_value() || Cost.value() <= 0)
+		{
+			EquipmentTablePtr->SetUpgradeCost(Type, BaseGold, Multiplier);
+		}
+	};
+	EnsureUpgradeCost(EEquipType::Head, 10, 1.3);
+	EnsureUpgradeCost(EEquipType::Armor, 12, 1.3);
+	EnsureUpgradeCost(EEquipType::Glove, 11, 1.3);
+	EnsureUpgradeCost(EEquipType::Weapon, 15, 1.4);
+
 	// 유저 생성 시 초기화 콜백 등록
 	UserTablePtr->SetOnUserCreatedCallback(
 		[this](const std::string& UserID) -> bool {
@@ -36,6 +54,79 @@ bool DatabaseManager::Initialize(const std::string& DBPath)
 		}
 	);
 
+	return true;
+}
+
+bool DatabaseManager::TryUpgradeEquipment(const std::string& UserID, EEquipType Type, int& OutNewLevel, int64_t& OutNewGold, int& OutCost)
+{
+	OutNewLevel = 0;
+	OutNewGold = 0;
+	OutCost = 0;
+
+	if (!EquipmentTablePtr || !GoldTablePtr)
+	{
+		return false;
+	}
+
+	const std::optional<int> CurrentLevel = EquipmentTablePtr->GetEquipmentLevel(UserID, Type);
+	const std::optional<int64_t> CurrentGold = GoldTablePtr->GetGold(UserID);
+	if (!CurrentLevel.has_value() || !CurrentGold.has_value())
+	{
+		return false;
+	}
+
+	const std::optional<int> UpgradeCost = EquipmentTablePtr->GetUpgradeCost(Type, CurrentLevel.value());
+	if (!UpgradeCost.has_value())
+	{
+		return false;
+	}
+	int Cost = max(0, UpgradeCost.value());
+
+	if (Cost > CurrentGold.value())
+	{
+		return false;
+	}
+
+	if (!DB.BeginTransaction())
+	{
+		return false;
+	}
+
+	bool bSuccess = true;
+	if (Cost > 0)
+	{
+		if (!GoldTablePtr->HasEnoughGold(UserID, Cost))
+		{
+			bSuccess = false;
+		}
+		else if (!GoldTablePtr->AddGold(UserID, -static_cast<int64_t>(Cost)))
+		{
+			bSuccess = false;
+		}
+	}
+
+	if (bSuccess)
+	{
+		bSuccess = EquipmentTablePtr->UpgradeEquipment(UserID, Type);
+	}
+
+	if (bSuccess)
+	{
+		if (!DB.Commit())
+		{
+			bSuccess = false;
+		}
+	}
+
+	if (!bSuccess)
+	{
+		DB.Rollback();
+		return false;
+	}
+
+	OutNewLevel = CurrentLevel.value() + 1;
+	OutNewGold = CurrentGold.value() - Cost;
+	OutCost = Cost;
 	return true;
 }
 

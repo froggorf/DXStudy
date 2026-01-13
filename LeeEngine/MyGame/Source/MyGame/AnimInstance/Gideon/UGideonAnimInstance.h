@@ -31,6 +31,8 @@ class UGideonAnimInstance final : public UMyGameAnimInstanceBase
 	std::string GetJumpStartAnimSequenceName() override { return "AS_Gideon_JumpStart";};
 	std::string GetFallingAnimSequenceName() override { return "AS_Gideon_Falling";};
 	std::string GetLandAnimSequenceName() override { return "AS_Gideon_Land";};
+	float GetJumpStartTimeMultiply() override {return 1.5f;}
+	float GetLandingTimeMultiply() override {return 2.0f;}
 
 private:
 	std::shared_ptr<UBlendSpace> BS_FPSLocomotion;

@@ -166,7 +166,7 @@ void UMyGameAnimInstanceBase::UpdateAnimationState(float dt, std::vector<FBoneLo
 		AS_JumpStart->GetBoneTransform(CurrentJumpStartTime, OutBoneTransform, nullptr);
 
 		// 점프 시간 업데이트 및 상태 전환 체크
-		CurrentJumpStartTime += dt * AnimTimeMultiply;
+		CurrentJumpStartTime += dt * AnimTimeMultiply * GetJumpStartTimeMultiply();
 		if (CurrentJumpStartTime >= JumpStartAnimTime)
 		{
 			CurrentJumpStartTime = JumpStartAnimTime;

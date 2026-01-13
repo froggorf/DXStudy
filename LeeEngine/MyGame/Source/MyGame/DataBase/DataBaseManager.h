@@ -1,5 +1,6 @@
 // DatabaseManager.h
 #pragma once
+#include <cstdint>
 #include <memory>
 #include <string>
 #include "SQLiteWrapper.h"
@@ -21,6 +22,8 @@ public:
 	EquipmentTable* GetEquipmentTable() { return EquipmentTablePtr.get(); }
 	GoldTable* GetGoldTable() { return GoldTablePtr.get(); }
 	StageTable* GetStageTable() { return StageTablePtr.get(); }
+
+	bool TryUpgradeEquipment(const std::string& UserID, EEquipType Type, int& OutNewLevel, int64_t& OutNewGold, int& OutCost);
 
 private:
 	DatabaseManager() = default;

@@ -34,10 +34,12 @@ void ATownGameMode::BeginPlay()
 		GetWorld()->SpawnActor("AGideonCharacter", FTransform{XMFLOAT3{ -500.0f,0,-0.0f}, XMFLOAT4{0.0f,0.0f,0.0f,1.0f}, {1.0f,1.0f,1.0f}}, "Gideon")
 	);
 	GetWorld()->GetPlayerController()->OnPossess(Gideon.get());
+	GideonCharacter = Gideon;
 
 	const std::shared_ptr<ASanhwaCharacter>& Sanhwa = std::dynamic_pointer_cast<ASanhwaCharacter>(
 		GetWorld()->SpawnActor("ASanhwaCharacter", FTransform{XMFLOAT3{ -600,0.0f,-500.0f}, XMFLOAT4{0.0f,0.0f,0.0f,1.0f}, XMFLOAT3{1.0f,1.0f,1.0f}}, "Sanhwa")
 	);
+	SanhwaCharacter = Sanhwa;
 	if (APlayerController* PC = GetWorld()->GetPlayerController())
 	{
 		EquipmentStatusWidget = std::make_shared<UEquipmentStatusWidget>();
@@ -58,11 +60,22 @@ void ATownGameMode::EndGame()
 	AGameMode::EndGame(); 
 }
 
-void ATownGameMode::AddEquipLevel(EEquipType Type)
+EEquipUpgradeResult ATownGameMode::AddEquipLevel(EEquipType Type)
 {
-	UMyGameInstance::GetInstance<UMyGameInstance>()->EnchantEquipLevel(Type);
+	UMyGameInstance* GameInstance = UMyGameInstance::GetInstance<UMyGameInstance>();
+	if (!GameInstance)
+	{
+		return EEquipUpgradeResult::DbError;
+	}
 
-	const std::array<int, static_cast<int>(EEquipType::Count)>& EquipLevel = UMyGameInstance::GetInstance<UMyGameInstance>()->GetEquipLevel();
+	EEquipUpgradeResult Result = GameInstance->EnchantEquipLevel(Type);
+	if (Result != EEquipUpgradeResult::Success)
+	{
+		MY_LOG("LOG", EDebugLogLevel::DLL_Warning, "Equip upgrade failed");
+		return Result;
+	}
+
+	const std::array<int, static_cast<int>(EEquipType::Count)>& EquipLevel = GameInstance->GetEquipLevel();
 
 	// 강화 비용 같은거도 적용하기
 
@@ -75,6 +88,21 @@ void ATownGameMode::AddEquipLevel(EEquipType Type)
 	if (const std::shared_ptr<AGideonCharacter>& Gideon = GideonCharacter.lock())
 	{
 		Gideon->SetEquipmentLevel(EquipLevel);
+	}
+
+	if (EquipmentStatusWidget)
+	{
+		EquipmentStatusWidget->UpdateEquipmentData();
+	}
+
+	return Result;
+}
+
+void ATownGameMode::RefreshEquipmentStatusWidget()
+{
+	if (EquipmentStatusWidget)
+	{
+		EquipmentStatusWidget->UpdateEquipmentData();
 	}
 }
 

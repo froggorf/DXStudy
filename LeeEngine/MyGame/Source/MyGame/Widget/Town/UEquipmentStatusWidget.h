@@ -12,9 +12,13 @@ public:
 	~UEquipmentStatusWidget() override = default;
 
 	void NativeConstruct() override;
+	void UpdateEquipmentData();
 
 private:
-	void UpdateEquipmentData();
+	std::shared_ptr<class FImageWidget> GoldBackground;
+	std::shared_ptr<class FHorizontalBoxWidget> GoldBox;
+	std::shared_ptr<class FImageWidget> GoldIcon;
+	std::shared_ptr<class FTextWidget> GoldText;
 
 	std::shared_ptr<class FImageWidget> BackgroundImage; 
 	std::shared_ptr<class FHorizontalBoxWidget> EquipmentSlotsBox;

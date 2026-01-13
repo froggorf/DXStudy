@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/Class/Framework/AGameMode.h"
 #include "MyGame/Character/Player/AMyGameCharacterBase.h"
+#include "MyGame/Core/UMyGameInstance.h"
 
 class UEquipmentStatusWidget;
 
@@ -14,7 +15,8 @@ class ATownGameMode : public AGameMode
 	void StartGame() override;
 	void EndGame() override;
 
-	void AddEquipLevel(EEquipType Type);
+	EEquipUpgradeResult AddEquipLevel(EEquipType Type);
+	void RefreshEquipmentStatusWidget();
 
 
 	std::weak_ptr<class ASanhwaCharacter> SanhwaCharacter;

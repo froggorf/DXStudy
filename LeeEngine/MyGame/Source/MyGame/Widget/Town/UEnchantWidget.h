@@ -12,11 +12,14 @@ class UEnchantWidget : public UUserWidget
 	void NativeConstruct() override;
 
 	void Enchant(EEquipType Type);
+	void UpdateUpgradeCostTexts();
+	void ShowFeedback(const std::wstring& Message, const XMFLOAT4& Color);
 public:
 	void Tick(float DeltaSeconds) override;
 	void Close();
 protected:
 	std::shared_ptr<FButtonWidget> CloseButton;
+	std::shared_ptr<FTextWidget> CloseButtonText;
 
 	std::shared_ptr<FImageWidget> BaseImageWidget;
 		std::shared_ptr<FHorizontalBoxWidget> HorBox;
@@ -25,4 +28,8 @@ protected:
 				std::shared_ptr<FImageWidget> Dummy[static_cast<int>(EEquipType::Count)];
 				std::shared_ptr<FButtonWidget> EquipUpButton[static_cast<int>(EEquipType::Count)];
 					std::shared_ptr<FTextWidget> EquipText[static_cast<int>(EEquipType::Count)];
+				std::shared_ptr<FTextWidget> EquipCostText[static_cast<int>(EEquipType::Count)];
+
+	std::shared_ptr<FTextWidget> FeedbackText;
+	float FeedbackRemainTime = 0.0f;
 };

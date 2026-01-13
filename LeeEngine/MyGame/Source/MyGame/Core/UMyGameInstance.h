@@ -1,6 +1,16 @@
 #pragma once
+#include <cstdint>
 #include "Engine/Core/UGameInstance.h"
 #include "MyGame/Character/Player/AMyGameCharacterBase.h"
+
+enum class EEquipUpgradeResult
+{
+	Success,
+	InvalidUser,
+	NoData,
+	NotEnoughGold,
+	DbError
+};
 
 class UMyGameInstance : public UGameInstance
 {
@@ -16,7 +26,9 @@ class UMyGameInstance : public UGameInstance
 	const std::array<int, static_cast<int>(EEquipType::Count)>& GetEquipLevel() const {return EquipLevel;}
 	UINT GetGold() const {return Gold;}
 
-	void EnchantEquipLevel(EEquipType Type);
+	bool GetEquipUpgradeCost(EEquipType Type, int& OutCost) const;
+	bool AddGold(int64_t Amount);
+	EEquipUpgradeResult EnchantEquipLevel(EEquipType Type);
 
 	std::array<int, static_cast<int>(EEquipType::Count)> EquipLevel = {0,0,0,0};
 	UINT Gold = 0;
