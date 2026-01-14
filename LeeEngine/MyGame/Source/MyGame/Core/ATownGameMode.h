@@ -36,8 +36,10 @@ class ADungeonGameMode : public AGameMode
 	void StartGame() override;
 	void EndGame() override;
 
+	void HandleDragonDeath();
 
 	float PotionCoolDownTime = 10.0f;
+	bool bReturnPortalSpawned = false;
 };
 
 class ALoginGameMode : public AGameMode

@@ -3,6 +3,7 @@
 
 #include "UMyGameInstance.h"
 #include "Engine/World/UWorld.h"
+#include "MyGame/Actor/APortal.h"
 #include "MyGame/Character/Enemy/AEnemyBase.h"
 #include "MyGame/Character/Player/AGideonCharacter.h"
 #include "MyGame/Character/Player/ASanhwaCharacter.h"
@@ -31,7 +32,7 @@ void ATownGameMode::BeginPlay()
 	AGameMode::BeginPlay();
 
 	const std::shared_ptr<AGideonCharacter>& Gideon = std::dynamic_pointer_cast<AGideonCharacter>(
-		GetWorld()->SpawnActor("AGideonCharacter", FTransform{XMFLOAT3{ -500.0f,0,-0.0f}, XMFLOAT4{0.0f,0.0f,0.0f,1.0f}, {1.0f,1.0f,1.0f}}, "Gideon")
+		GetWorld()->SpawnActor("AGideonCharacter", FTransform{XMFLOAT3{ -500.0f,50.0f,-0.0f}, XMFLOAT4{0.0f,0.0f,0.0f,1.0f}, {1.0f,1.0f,1.0f}}, "Gideon")
 	);
 	GetWorld()->GetPlayerController()->OnPossess(Gideon.get());
 	GideonCharacter = Gideon;
@@ -139,6 +140,15 @@ void ADungeonGameMode::BeginPlay()
 		PC->CreateWidget("EquipmentStatus", EquipmentStatusWidget);
 		PC->AddToViewport("EquipmentStatus", EquipmentStatusWidget);
 	}
+
+	const std::vector<std::shared_ptr<AActor>> Dragons = GetWorld()->GetPersistentLevel()->GetActorsFromClass("ADragon");
+	for (const std::shared_ptr<AActor>& Actor : Dragons)
+	{
+		if (const std::shared_ptr<ADragon>& Dragon = std::dynamic_pointer_cast<ADragon>(Actor))
+		{
+			Dragon->OnDeath.Add(this, &ADungeonGameMode::HandleDragonDeath);
+		}
+	}
 }
 
 void ADungeonGameMode::StartGame()
@@ -149,6 +159,29 @@ void ADungeonGameMode::StartGame()
 void ADungeonGameMode::EndGame()
 {
 	AGameMode::EndGame();
+}
+
+void ADungeonGameMode::HandleDragonDeath()
+{
+	if (bReturnPortalSpawned)
+	{
+		return;
+	}
+
+	bReturnPortalSpawned = true;
+
+	const FTransform SpawnTransform{
+		XMFLOAT3{11776.0f, 4579.0f, 6277.0f},
+		MyMath::ForwardVectorToRotationQuaternion(XMFLOAT3{-1.0f, 0.0f, 0.0f}),
+		XMFLOAT3{1.0f, 1.0f, 1.0f}
+	};
+	const std::shared_ptr<APortal>& Portal = std::dynamic_pointer_cast<APortal>(
+		GetWorld()->SpawnActor("APortal", SpawnTransform, "DungeonReturnPortal")
+	);
+	if (Portal)
+	{
+		Portal->SetTargetLevelName("TownLevel");
+	}
 }
 
 ALoginGameMode::ALoginGameMode()

@@ -64,6 +64,11 @@ void APortal::BeginPlay()
 	}
 }
 
+void APortal::SetTargetLevelName(const std::string& NewTargetLevelName)
+{
+	TargetLevelName = NewTargetLevelName;
+}
+
 void APortal::OnPortalBeginOverlap(UShapeComponent* OverlappedComponent, AActor* OtherActor, UShapeComponent* OtherComp)
 {
 	if (bTriggered || !OtherActor)
@@ -77,7 +82,10 @@ void APortal::OnPortalBeginOverlap(UShapeComponent* OverlappedComponent, AActor*
 		if (Player && Player.get() == OtherActor)
 		{
 			bTriggered = true;
-			GEngine->ChangeLevelByName("DungeonLevel");
+			if (!TargetLevelName.empty())
+			{
+				GEngine->ChangeLevelByName(TargetLevelName);
+			}
 		}
 	}
 }

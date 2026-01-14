@@ -17,10 +17,14 @@ class APortal : public AActor
 	void Register() override;
 	void BeginPlay() override;
 
+public:
+	void SetTargetLevelName(const std::string& NewTargetLevelName);
+
 private:
 	void OnPortalBeginOverlap(UShapeComponent* OverlappedComponent, AActor* OtherActor, UShapeComponent* OtherComp);
 
 	std::shared_ptr<UStaticMeshComponent> PortalMesh;
 	std::shared_ptr<UBoxComponent> TriggerBox;
 	bool bTriggered = false;
+	std::string TargetLevelName = "DungeonLevel";
 };

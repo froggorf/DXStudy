@@ -62,6 +62,7 @@ protected:
 	
 
 	float EnemyMaxHealth = 500;
+	float DetectRange = 700.0f;
 
 	std::shared_ptr<AAIController> AIController;
 

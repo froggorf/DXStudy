@@ -320,10 +320,16 @@ EBTNodeResult FBTTask_PlayAnimation::Tick(float DeltaSeconds, const std::shared_
     }
 
     std::shared_ptr<UAnimMontage> PlayingAnimationShared = PlayingAnimation.lock();
+    if (!PlayingAnimationShared && !AnimationBlackBoardKeyName.empty())
+    {
+        PlayingAnimation = std::dynamic_pointer_cast<UAnimMontage>(
+            BlackBoard->GetValue<FBlackBoardValueType_Object>(AnimationBlackBoardKeyName)
+        );
+        PlayingAnimationShared = PlayingAnimation.lock();
+    }
     if (!PlayingAnimationShared)
     {
-        MY_LOG(GetFunctionName, EDebugLogLevel::DLL_Warning, "Not valid Animation");
-        return EBTNodeResult::Fail;
+        return EBTNodeResult::Running;
     }
 
     if (!bStartAnimation)

@@ -166,6 +166,8 @@ void AEnemyBase::ApplyBasicAttack()
 
 void AEnemyBase::Death()
 {
+	OnDeath.Broadcast();
+
 	if (const std::shared_ptr<UAnimInstance>& AnimInstance = GetAnimInstance())
 	{
 		AnimInstance->Montage_Play(GetDeathAnimMontage(), 0,  {this, &AEnemyBase::DestroyAtDeath});
@@ -192,8 +194,9 @@ void AEnemyBase::Tick(float DeltaSeconds)
 		if (const std::shared_ptr<AActor>& PlayerCharacter = PC->GetPlayerCharacter())
 		{
 			const std::shared_ptr<FBlackBoard>& BlackBoard = AIController->GetBehaviorTree()->GetBlackBoard();
+			BlackBoard->SetValue<FBlackBoardValueType_Object>("Player", PlayerCharacter);
 			float Distance = MyMath::GetDistance(GetActorLocation(), PlayerCharacter->GetActorLocation());
-			bool NewValue = Distance > 700.0f;
+			bool NewValue = Distance > DetectRange;
 			BlackBoard->SetValue<FBlackBoardValueType_Bool>("MoveMode", NewValue);		
 		}
 	}
@@ -263,6 +266,7 @@ ADragon::ADragon()
 	AnimInstanceName = "UDragonAnimInstance";
 	BasicAttackData = FAttackData{XMFLOAT3{100,30,100}, 1.0f, 0.0f, 0.0f, true};
 	EnemyPower = 150.0f;
+	DetectRange = 2500.0f;
 }
 
 void ADragon::Register()
@@ -289,6 +293,7 @@ void ADragon::BindingBehaviorTree()
 		std::shared_ptr<UDragonBT> BT = std::make_shared<UDragonBT>();
 		AIController->SetBehaviorTree(BT);
 		BT->GetBlackBoard()->SetValue<FBlackBoardValueType_Object>("Owner", shared_from_this());
+		BT->GetBlackBoard()->SetValue<FBlackBoardValueType_Object>("Player", GetWorld()->GetPlayerController()->GetPlayerCharacter());
 
 
 		AssetManager::GetAsyncAssetCache("AM_Dragon_Flame",[this](std::shared_ptr<UObject> Object)
