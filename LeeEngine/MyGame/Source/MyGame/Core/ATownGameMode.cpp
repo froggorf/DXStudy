@@ -123,7 +123,7 @@ void ADungeonGameMode::BeginPlay()
 	AGameMode::BeginPlay();
 
 	const std::shared_ptr<AGideonCharacter>& Gideon = std::dynamic_pointer_cast<AGideonCharacter>(
-		GetWorld()->SpawnActor("AGideonCharacter", FTransform{XMFLOAT3{ -0.0f,4000.0f,-0.0f}, XMFLOAT4{0.0f,0.0f,0.0f,1.0f}, {1.0f,1.0f,1.0f}}, "Gideon")
+		GetWorld()->SpawnActor("AGideonCharacter", FTransform{XMFLOAT3{ -0.0f,3500,-0.0f}, XMFLOAT4{0.0f,0.0f,0.0f,1.0f}, {1.0f,1.0f,1.0f}}, "Gideon")
 	);
 	GetWorld()->GetPlayerController()->OnPossess(Gideon.get());
 	Gideon->SetEquipmentLevel(UMyGameInstance::GetInstance<UMyGameInstance>()->GetEquipLevel());

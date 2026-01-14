@@ -520,9 +520,6 @@ void UEngine::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam)
 
 						LastMousePosition = {static_cast<float>(CenterX), 
 							static_cast<float>(CenterY)};
-
-						MY_LOG("Input", EDebugLogLevel::DLL_Verbose, 
-							"Mouse reset to center");
 					}
 				}
 			}
