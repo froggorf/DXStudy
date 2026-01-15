@@ -9,6 +9,7 @@
 #include "MyGame/Character/Player/ASanhwaCharacter.h"
 #include "MyGame/Widget/Login/ULoginWidget.h"
 #include "MyGame/Widget/Town/UEquipmentStatusWidget.h"
+#include "MyGame/Widget/Stage/UStageLevelWidget.h"
 
 void ATownGameMode::Tick(float DeltaSeconds)
 {
@@ -47,6 +48,10 @@ void ATownGameMode::BeginPlay()
 		EquipmentStatusWidget = std::make_shared<UEquipmentStatusWidget>();
 		PC->CreateWidget("EquipmentStatus", EquipmentStatusWidget);
 		PC->AddToViewport("EquipmentStatus", EquipmentStatusWidget);
+
+		StageLevelWidget = std::make_shared<UStageLevelWidget>();
+		PC->CreateWidget("StageLevel", StageLevelWidget);
+		PC->AddToViewport("StageLevel", StageLevelWidget);
 	}
 }
 
@@ -136,9 +141,13 @@ void ADungeonGameMode::BeginPlay()
 
 	if (APlayerController* PC = GetWorld()->GetPlayerController())
 	{
-		std::shared_ptr<UEquipmentStatusWidget> EquipmentStatusWidget = std::make_shared<UEquipmentStatusWidget>();
+		EquipmentStatusWidget = std::make_shared<UEquipmentStatusWidget>();
 		PC->CreateWidget("EquipmentStatus", EquipmentStatusWidget);
 		PC->AddToViewport("EquipmentStatus", EquipmentStatusWidget);
+
+		StageLevelWidget = std::make_shared<UStageLevelWidget>();
+		PC->CreateWidget("StageLevel", StageLevelWidget);
+		PC->AddToViewport("StageLevel", StageLevelWidget);
 	}
 
 	const std::vector<std::shared_ptr<AActor>> Dragons = GetWorld()->GetPersistentLevel()->GetActorsFromClass("ADragon");
@@ -181,6 +190,7 @@ void ADungeonGameMode::HandleDragonDeath()
 	if (Portal)
 	{
 		Portal->SetTargetLevelName("TownLevel");
+		Portal->SetIncreaseStageOnUse(true);
 	}
 }
 

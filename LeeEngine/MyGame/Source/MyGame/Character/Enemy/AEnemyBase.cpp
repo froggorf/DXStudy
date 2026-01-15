@@ -8,9 +8,13 @@
 #include "MyGame/BehaviorTree/TestBT.h"
 #include "MyGame/Character/Player/AMyGameCharacterBase.h"
 #include "MyGame/Component/Health/UHealthComponent.h"
+#include "MyGame/Core/UMyGameInstance.h"
 #include "MyGame/Core/AMyGamePlayerController.h"
 #include "MyGame/Widget/Health/UEnemyHealthWidget.h"
 #include "MyGame/Widget/Health/UHealthWidgetBase.h"
+
+#include <algorithm>
+#include <cmath>
 
 static UINT EnemyCount = 0;
 AEnemyBase::AEnemyBase()
@@ -87,6 +91,16 @@ void AEnemyBase::BeginPlay()
 	QueryCheckCapsuleComp->SetCollisionObjectType(ECollisionChannel::Enemy);
 	QueryCheckCapsuleComp->GetBodyInstance()->SetObjectType(ECollisionChannel::Enemy);
 
+	if (UMyGameInstance* GameInstance = UMyGameInstance::GetInstance<UMyGameInstance>())
+	{
+		const UINT Stage = max(1u, GameInstance->GetStageLevel());
+		if (Stage > 1)
+		{
+			const float StageScale = std::pow(2.0f, static_cast<float>(Stage - 1));
+			EnemyPower *= StageScale;
+			EnemyMaxHealth *= StageScale;
+		}
+	}
 
 	HealthComponent->SetMaxHealth(EnemyMaxHealth, true);
 

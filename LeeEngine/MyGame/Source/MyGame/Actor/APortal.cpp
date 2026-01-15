@@ -6,6 +6,7 @@
 #include "Engine/Components/UStaticMeshComponent.h"
 #include "Engine/Physics/UBoxComponent.h"
 #include "Engine/World/UWorld.h"
+#include "MyGame/Core/UMyGameInstance.h"
 
 APortal::APortal()
 {
@@ -69,6 +70,11 @@ void APortal::SetTargetLevelName(const std::string& NewTargetLevelName)
 	TargetLevelName = NewTargetLevelName;
 }
 
+void APortal::SetIncreaseStageOnUse(bool bEnable)
+{
+	bIncreaseStageOnUse = bEnable;
+}
+
 void APortal::OnPortalBeginOverlap(UShapeComponent* OverlappedComponent, AActor* OtherActor, UShapeComponent* OtherComp)
 {
 	if (bTriggered || !OtherActor)
@@ -82,6 +88,13 @@ void APortal::OnPortalBeginOverlap(UShapeComponent* OverlappedComponent, AActor*
 		if (Player && Player.get() == OtherActor)
 		{
 			bTriggered = true;
+			if (bIncreaseStageOnUse)
+			{
+				if (UMyGameInstance* GameInstance = UMyGameInstance::GetInstance<UMyGameInstance>())
+				{
+					GameInstance->IncreaseStageLevel();
+				}
+			}
 			if (!TargetLevelName.empty())
 			{
 				GEngine->ChangeLevelByName(TargetLevelName);

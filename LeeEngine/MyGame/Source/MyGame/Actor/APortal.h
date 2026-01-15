@@ -19,6 +19,7 @@ class APortal : public AActor
 
 public:
 	void SetTargetLevelName(const std::string& NewTargetLevelName);
+	void SetIncreaseStageOnUse(bool bEnable);
 
 private:
 	void OnPortalBeginOverlap(UShapeComponent* OverlappedComponent, AActor* OtherActor, UShapeComponent* OtherComp);
@@ -26,5 +27,6 @@ private:
 	std::shared_ptr<UStaticMeshComponent> PortalMesh;
 	std::shared_ptr<UBoxComponent> TriggerBox;
 	bool bTriggered = false;
+	bool bIncreaseStageOnUse = false;
 	std::string TargetLevelName = "DungeonLevel";
 };

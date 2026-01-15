@@ -158,6 +158,38 @@ bool UMyGameInstance::AddGold(int64_t Amount)
 	return true;
 }
 
+bool UMyGameInstance::IncreaseStageLevel()
+{
+	if (UserName.empty())
+	{
+		return false;
+	}
+
+	auto& DBMgr = DatabaseManager::Get();
+	if (!DBMgr.Initialize(ResolveDatabasePath()))
+	{
+		return false;
+	}
+
+	StageTable* StageTablePtr = DBMgr.GetStageTable();
+	if (!StageTablePtr)
+	{
+		return false;
+	}
+
+	if (!StageTablePtr->IncreaseStageLevel(UserName))
+	{
+		return false;
+	}
+
+	if (const auto StageData = StageTablePtr->GetStageLevel(UserName))
+	{
+		StageLevel = static_cast<UINT>(*StageData);
+	}
+
+	return true;
+}
+
 EEquipUpgradeResult UMyGameInstance::EnchantEquipLevel(EEquipType Type)
 {
 	if (UserName.empty())

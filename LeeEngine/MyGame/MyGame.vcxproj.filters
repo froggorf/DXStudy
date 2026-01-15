@@ -158,6 +158,9 @@
     <Filter Include="Source\MyGame\Widget\Login">
       <UniqueIdentifier>{40a659a6-9e2c-45c8-973a-946eeec533ae}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\Widget\Stage">
+      <UniqueIdentifier>{c6369dc1-6526-42b9-8ea3-c48ee78868d4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -364,6 +367,9 @@
     <ClCompile Include="Source\MyGame\Widget\Town\UEquipmentStatusWidget.cpp">
       <Filter>Source\MyGame\Widget\Town</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Widget\Stage\UStageLevelWidget.cpp">
+      <Filter>Source\MyGame\Widget\Stage</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -566,6 +572,9 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Widget\Town\UEquipmentStatusWidget.h">
       <Filter>Source\MyGame\Widget\Town</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Widget\Stage\UStageLevelWidget.h">
+      <Filter>Source\MyGame\Widget\Stage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

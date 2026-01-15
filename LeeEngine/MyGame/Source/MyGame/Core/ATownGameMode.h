@@ -4,6 +4,7 @@
 #include "MyGame/Core/UMyGameInstance.h"
 
 class UEquipmentStatusWidget;
+class UStageLevelWidget;
 
 class ATownGameMode : public AGameMode
 {
@@ -23,6 +24,7 @@ class ATownGameMode : public AGameMode
 	std::weak_ptr<class AGideonCharacter> GideonCharacter;
 
 	std::shared_ptr<UEquipmentStatusWidget> EquipmentStatusWidget;
+	std::shared_ptr<UStageLevelWidget> StageLevelWidget;
 
 };
 
@@ -40,6 +42,8 @@ class ADungeonGameMode : public AGameMode
 
 	float PotionCoolDownTime = 10.0f;
 	bool bReturnPortalSpawned = false;
+	std::shared_ptr<UEquipmentStatusWidget> EquipmentStatusWidget;
+	std::shared_ptr<UStageLevelWidget> StageLevelWidget;
 };
 
 class ALoginGameMode : public AGameMode

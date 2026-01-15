@@ -84,6 +84,7 @@
     <ClCompile Include="Source\MyGame\Widget\Sanhwa\USanhwaWidget.cpp" />
     <ClCompile Include="Source\MyGame\Widget\Skill\USkillWidgetBase.cpp" />
     <ClCompile Include="Source\MyGame\Widget\Skill\UUltimateWidget.cpp" />
+    <ClCompile Include="Source\MyGame\Widget\Stage\UStageLevelWidget.cpp" />
     <ClCompile Include="Source\MyGame\Widget\Town\UEnchantWidget.cpp" />
     <ClCompile Include="Source\MyGame\Widget\Town\UEquipmentStatusWidget.cpp" />
     <ClCompile Include="Source\MyGame\Widget\UMyGameWidgetBase.cpp" />
@@ -153,6 +154,7 @@
     <ClInclude Include="Source\MyGame\Widget\Sanhwa\USanhwaWidget.h" />
     <ClInclude Include="Source\MyGame\Widget\Skill\USkillWidgetBase.h" />
     <ClInclude Include="Source\MyGame\Widget\Skill\UUltimateWidget.h" />
+    <ClInclude Include="Source\MyGame\Widget\Stage\UStageLevelWidget.h" />
     <ClInclude Include="Source\MyGame\Widget\Town\UEnchantWidget.h" />
     <ClInclude Include="Source\MyGame\Widget\Town\UEquipmentStatusWidget.h" />
     <ClInclude Include="Source\MyGame\Widget\UMyGameWidgetBase.h" />
