@@ -277,6 +277,7 @@ void AMyGameCharacterBase::ChangeToNormalCamera(float BlendTime)
 
 float AMyGameCharacterBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AActor* DamageCauser)
 {
+	
 	if (bIsDodging)
 	{
 		ChangeToRoll();
@@ -284,7 +285,6 @@ float AMyGameCharacterBase::TakeDamage(float DamageAmount, const FDamageEvent& D
 	}
 
 	DamageAmount = max(0, DamageAmount - GetArmorPower());
-	
 	if (HealthComponent->ApplyDamage(DamageAmount) <= 0.0f)
 	{
 		Death();	

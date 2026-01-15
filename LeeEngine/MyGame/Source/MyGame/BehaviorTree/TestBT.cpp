@@ -199,6 +199,11 @@ EBTNodeResult FBTTask_EnemyBasicAttack::Tick(float DeltaSeconds, const std::shar
 
 	if (!bDoAttack)
 	{
+		XMFLOAT3 OwnerLoc = Owner->GetActorLocation();
+		XMFLOAT3 PlayerLoc = SharedPlayer->GetActorLocation();
+		PlayerLoc.y = OwnerLoc.y;
+		Owner->SetActorRotation(MyMath::GetRotationQuaternionToActor(OwnerLoc, PlayerLoc));
+
 		bDoAttack = true;
 		Owner->PlayAttackMontage(Delegate<>{this, &FBTTask_EnemyBasicAttack::FinishAttack});
 		LastAttackTime = GEngine->GetTimeSeconds();
@@ -251,6 +256,26 @@ EBTNodeResult FBTTask_RunFromPlayer::Tick(float DeltaSeconds, const std::shared_
 		return EBTNodeResult::Running;
 	}
 
+}
+
+void FBTTask_SetBlackBoardBool::OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard)
+{
+	FBTTask::OnEnterNode(BlackBoard);
+
+	if (!BlackBoardKey.empty())
+	{
+		BlackBoard->SetValue<FBlackBoardValueType_Bool>(BlackBoardKey, bValue);
+	}
+}
+
+EBTNodeResult FBTTask_SetBlackBoardBool::Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard)
+{
+	if (FBTTask::Tick(DeltaSeconds , BlackBoard) == EBTNodeResult::Fail)
+	{
+		return EBTNodeResult::Fail;
+	}
+
+	return EBTNodeResult::Success;
 }
 
 
@@ -334,6 +359,7 @@ void FBTTask_DragonFlameSkillCharging::OnEnterNode(const std::shared_ptr<FBlackB
 		return;
 	}
 	OwnerDragon = Dragon;
+	Player = std::dynamic_pointer_cast<AActor>(BlackBoard->GetValue<FBlackBoardValueType_Object>("Player"));
 
 	
 }
@@ -354,11 +380,27 @@ EBTNodeResult FBTTask_DragonFlameSkillCharging::Tick(float DeltaSeconds, const s
 	// 차지 시작에 대한 함수를 실행해주고,
 	if (!bStartCharge)
 	{
-		bStartCharge = true;
+		const float CurrentTime = GEngine->GetTimeSeconds();
+		if (CurrentTime < LastSkillTime + CoolDownTime)
+		{
+			return EBTNodeResult::Fail;
+		}
+
+		if (const std::shared_ptr<AActor>& SharedPlayer = Player.lock())
+		{
+			XMFLOAT3 DragonLoc = Dragon->GetActorLocation();
+			XMFLOAT3 PlayerLoc = SharedPlayer->GetActorLocation();
+			PlayerLoc.y = DragonLoc.y;
+			Dragon->SetActorRotation(MyMath::GetRotationQuaternionToActor(DragonLoc, PlayerLoc));
+		}
+
 		if (!Dragon->StartFlameSkillCharge())
 		{
 			return EBTNodeResult::Fail;
 		}
+
+		bStartCharge = true;
+		LastSkillTime = CurrentTime;
 	}
 
 	// 범위 장판 갱신
@@ -385,7 +427,7 @@ EBTNodeResult FBTTask_DragonMoveToPatternLocation::Tick(float DeltaSeconds, cons
 	{
 		if (const std::shared_ptr<ACharacter>& CharacterShared = Character.lock())
 		{
-			CharacterShared->SetActorLocation_Teleport({12439,4250,6284});
+			CharacterShared->SetActorLocation_Teleport({12439,4750,6284});
 			CharacterShared->SetActorRotation(MyMath::ForwardVectorToRotationQuaternion({-1,0,0}));
 			CharacterShared->GetSkeletalMeshComponent()->SetVisibility(false);
 		}
@@ -467,44 +509,104 @@ void UDragonBT::OnConstruct()
 	UBehaviorTree::OnConstruct();
 
 	BlackBoard->SetValue<FBlackBoardValueType_Object>("Owner", nullptr);
+	BlackBoard->SetValue<FBlackBoardValueType_Object>("Player", nullptr);
+	BlackBoard->SetValue<FBlackBoardValueType_Bool>("MoveMode", true);
+	BlackBoard->SetValue<FBlackBoardValueType_FLOAT>("HealthPercent", 100.0f);
+	BlackBoard->SetValue<FBlackBoardValueType_Bool>("HPSkillTriggered", false);
 	BlackBoard->SetValue<FBlackBoardValueType_Object>("FlameAnim", nullptr);
+	BlackBoard->SetValue<FBlackBoardValueType_Object>("StartFlyAnim", nullptr);
+	BlackBoard->SetValue<FBlackBoardValueType_Object>("LandAnim", nullptr);
+	BlackBoard->SetValue<FBlackBoardValueType_Object>("HPFlame", nullptr);
 
-	std::shared_ptr<FBTSequencer> Sequencer = std::make_shared<FBTSequencer>();
-	BTRoot->AddChild(Sequencer);
-
-	// 쿨마다 쓰는 스킬에 대한 Task들
+	// Idle when player is out of range
 	{
-		std::shared_ptr<FBTTask_DragonFlameSkillCharging> ChargingSkillTask = std::make_shared<FBTTask_DragonFlameSkillCharging>();
-		ChargingSkillTask->SetChargingTime(5.0f);
-	
-		std::shared_ptr<FBTTask_PlayAnimation> UseSkillTask = std::make_shared<FBTTask_PlayAnimation>();
-		UseSkillTask->SetPlayingAnimationBlackBoardKeyName("FlameAnim");
+		std::shared_ptr<FBTSequencer> IdleSequence = std::make_shared<FBTSequencer>();
+		BTRoot->AddChild(IdleSequence);
 
-		Sequencer->AddChild(ChargingSkillTask);
-		Sequencer->AddChild(UseSkillTask);
-	}
-
-	// 하늘로 떠서 사라졌다가 특정위치로 이동하는 Task
-	{
-		std::shared_ptr<FBTTask_DragonMoveToPatternLocation> StartFlyTask = std::make_shared<FBTTask_DragonMoveToPatternLocation>();
-		StartFlyTask->SetPlayingAnimationBlackBoardKeyName("StartFlyAnim");
+		std::shared_ptr<FBTDecorator_BlackBoardValueCheck<FBlackBoardValueType_Bool>> IsPlayerFar = std::make_shared<FBTDecorator_BlackBoardValueCheck<FBlackBoardValueType_Bool>>();
+		IsPlayerFar->Initialize("MoveMode", true, EBlackBoardValueCheckType::Equal);
+		IdleSequence->Decorators.emplace_back(IsPlayerFar);
 
 		std::shared_ptr<FBTTask_Wait> WaitTask = std::make_shared<FBTTask_Wait>();
-		WaitTask->SetWaitTime(2.0f);
+		WaitTask->SetWaitTime(0.5f);
+		IdleSequence->AddChild(WaitTask);
+	}
 
-		std::shared_ptr<FBTTask_Land> LandingTask = std::make_shared<FBTTask_Land>();
-		LandingTask->SetPlayingAnimationBlackBoardKeyName("LandAnim");
+	// Attack pattern when player is in range
+	{
+		std::shared_ptr<FBTSelector> NearSelector = std::make_shared<FBTSelector>();
+		BTRoot->AddChild(NearSelector);
 
-		std::shared_ptr<FBTTask_DragonHPSkillCharging> ChargingSkillTask = std::make_shared<FBTTask_DragonHPSkillCharging>();
-		ChargingSkillTask->SetChargingTime(5.0f);
+		std::shared_ptr<FBTDecorator_BlackBoardValueCheck<FBlackBoardValueType_Bool>> IsPlayerNear = std::make_shared<FBTDecorator_BlackBoardValueCheck<FBlackBoardValueType_Bool>>();
+		IsPlayerNear->Initialize("MoveMode", false, EBlackBoardValueCheckType::IsFalse);
+		NearSelector->Decorators.emplace_back(IsPlayerNear);
 
-		std::shared_ptr<FBTTask_PlayAnimation> UseSkillTask = std::make_shared<FBTTask_PlayAnimation>();
-		UseSkillTask->SetPlayingAnimationBlackBoardKeyName("HPFlame");
+		// One-time HP skill when health drops to 50% or lower
+		{
+			std::shared_ptr<FBTSequencer> HPSkillSequence = std::make_shared<FBTSequencer>();
+			NearSelector->AddChild(HPSkillSequence);
 
-		Sequencer->AddChild(StartFlyTask);
-		Sequencer->AddChild(WaitTask);
-		Sequencer->AddChild(LandingTask);
-		Sequencer->AddChild(ChargingSkillTask);
-		Sequencer->AddChild(UseSkillTask);
+			std::shared_ptr<FBTDecorator_BlackBoardValueCheck<FBlackBoardValueType_FLOAT>> IsLowHP = std::make_shared<FBTDecorator_BlackBoardValueCheck<FBlackBoardValueType_FLOAT>>();
+			IsLowHP->Initialize("HealthPercent", 50.0f, EBlackBoardValueCheckType::LessOrEqual);
+			HPSkillSequence->Decorators.emplace_back(IsLowHP);
+
+			std::shared_ptr<FBTDecorator_BlackBoardValueCheck<FBlackBoardValueType_Bool>> NotTriggered = std::make_shared<FBTDecorator_BlackBoardValueCheck<FBlackBoardValueType_Bool>>();
+			NotTriggered->Initialize("HPSkillTriggered", false, EBlackBoardValueCheckType::IsFalse);
+			HPSkillSequence->Decorators.emplace_back(NotTriggered);
+
+			std::shared_ptr<FBTTask_SetBlackBoardBool> SetTriggeredTask = std::make_shared<FBTTask_SetBlackBoardBool>();
+			SetTriggeredTask->Initialize("HPSkillTriggered", true);
+			HPSkillSequence->AddChild(SetTriggeredTask);
+
+			std::shared_ptr<FBTTask_DragonMoveToPatternLocation> StartFlyTask = std::make_shared<FBTTask_DragonMoveToPatternLocation>();
+			StartFlyTask->SetPlayingAnimationBlackBoardKeyName("StartFlyAnim");
+
+			std::shared_ptr<FBTTask_Wait> WaitTask = std::make_shared<FBTTask_Wait>();
+			WaitTask->SetWaitTime(2.0f);
+
+			std::shared_ptr<FBTTask_Land> LandingTask = std::make_shared<FBTTask_Land>();
+			LandingTask->SetPlayingAnimationBlackBoardKeyName("LandAnim");
+
+			std::shared_ptr<FBTTask_DragonHPSkillCharging> ChargingSkillTask = std::make_shared<FBTTask_DragonHPSkillCharging>();
+			ChargingSkillTask->SetChargingTime(5.0f);
+
+			std::shared_ptr<FBTTask_PlayAnimation> UseSkillTask = std::make_shared<FBTTask_PlayAnimation>();
+			UseSkillTask->SetPlayingAnimationBlackBoardKeyName("HPFlame");
+
+			HPSkillSequence->AddChild(StartFlyTask);
+			HPSkillSequence->AddChild(WaitTask);
+			HPSkillSequence->AddChild(LandingTask);
+			HPSkillSequence->AddChild(ChargingSkillTask);
+			HPSkillSequence->AddChild(UseSkillTask);
+		}
+
+		// Standard attack pattern
+		{
+			std::shared_ptr<FBTSelector> AttackSelector = std::make_shared<FBTSelector>();
+			NearSelector->AddChild(AttackSelector);
+
+			std::shared_ptr<FBTSequencer> FlameSequence = std::make_shared<FBTSequencer>();
+			AttackSelector->AddChild(FlameSequence);
+
+			std::shared_ptr<FBTTask_DragonFlameSkillCharging> ChargingSkillTask = std::make_shared<FBTTask_DragonFlameSkillCharging>();
+			ChargingSkillTask->SetChargingTime(5.0f);
+			ChargingSkillTask->SetCoolDownTime(15.0f);
+
+			std::shared_ptr<FBTTask_PlayAnimation> UseSkillTask = std::make_shared<FBTTask_PlayAnimation>();
+			UseSkillTask->SetPlayingAnimationBlackBoardKeyName("FlameAnim");
+
+			FlameSequence->AddChild(ChargingSkillTask);
+			FlameSequence->AddChild(UseSkillTask);
+
+			std::shared_ptr<FBTSequencer> BasicAttackSequence = std::make_shared<FBTSequencer>();
+			AttackSelector->AddChild(BasicAttackSequence);
+
+			std::shared_ptr<FBTTask_MoveToPlayer> MoveToPlayerTask = std::make_shared<FBTTask_MoveToPlayer>();
+			BasicAttackSequence->AddChild(MoveToPlayerTask);
+
+			std::shared_ptr<FBTTask_EnemyBasicAttack> EnemyBasicAttackTask = std::make_shared<FBTTask_EnemyBasicAttack>();
+			EnemyBasicAttackTask->SetCoolDownTime(3.0f);
+			BasicAttackSequence->AddChild(EnemyBasicAttackTask);
+		}
 	}
 }

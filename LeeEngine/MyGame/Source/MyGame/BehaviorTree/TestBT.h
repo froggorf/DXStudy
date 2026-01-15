@@ -3,6 +3,7 @@
 
 class ARangeDecalActor;
 class ADragon;
+class AActor;
 
 enum class EBlackBoardValueCheckType
 {
@@ -114,6 +115,7 @@ public:
 	void OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard) override;
 	EBTNodeResult Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard) override;
 	void FinishAttack() { bAttackFinish = true;}
+	void SetCoolDownTime(float NewCoolDownTime) { CoolDownTime = NewCoolDownTime; }
 private:
 	std::weak_ptr<class AEnemyBase> OwningActor;
 	std::weak_ptr<class AActor> Player;
@@ -121,7 +123,7 @@ private:
 	bool bDoAttack = false;
 	float LastAttackTime = 0.0f;
 
-	static constexpr float CoolDownTime = 5.0f;
+	float CoolDownTime = 5.0f;
 };
 
 class FBTTask_RunFromPlayer : public FBTTask
@@ -135,6 +137,22 @@ private:
 	std::weak_ptr<class AActor> Player;
 };
 
+class FBTTask_SetBlackBoardBool : public FBTTask
+{
+public:
+	void OnEnterNode(const std::shared_ptr<FBlackBoard>& BlackBoard) override;
+	EBTNodeResult Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard) override;
+
+	void Initialize(const std::string& InBlackBoardKey, bool bInValue)
+	{
+		BlackBoardKey = InBlackBoardKey;
+		bValue = bInValue;
+	}
+
+private:
+	std::string BlackBoardKey;
+	bool bValue = false;
+};
 
 
 // 플레이어가 거리 200m 이내에 있다면,
@@ -168,13 +186,17 @@ public:
 	EBTNodeResult Tick(float DeltaSeconds, const std::shared_ptr<FBlackBoard>& BlackBoard) override;
 
 	void SetChargingTime(float NewChargingTime) {ChargingTime = NewChargingTime;}
+	void SetCoolDownTime(float NewCoolDownTime) {CoolDownTime = NewCoolDownTime;}
 
 private:
 	float CurrentChargingTime = 0.0f;
 	float ChargingTime = 1.0f;
+	float CoolDownTime = 15.0f;
+	float LastSkillTime = -FLT_MAX;
 	bool bStartCharge = false;
 
 	std::weak_ptr<ADragon> OwnerDragon;
+	std::weak_ptr<class AActor> Player;
 };
 
 class FBTTask_DragonMoveToPatternLocation : public FBTTask_PlayAnimation

@@ -29,7 +29,7 @@ void UNumberWidget::NativeConstruct()
 
 void UNumberWidget::SetValue(UINT NewValue)
 {
-	if (NewValue == Value)
+	if (NewValue == Value && Length > 0)
 	{
 		return;
 	}

@@ -264,7 +264,7 @@ ADragon::ADragon()
 
 	SkeletalMeshName = "SK_Dragon";
 	AnimInstanceName = "UDragonAnimInstance";
-	BasicAttackData = FAttackData{XMFLOAT3{100,30,100}, 1.0f, 0.0f, 0.0f, true};
+	BasicAttackData = FAttackData{XMFLOAT3{1000,300,1000}, 1.0f, 0.0f, 0.0f, true};
 	EnemyPower = 150.0f;
 	DetectRange = 2500.0f;
 }
@@ -299,15 +299,11 @@ void ADragon::BindingBehaviorTree()
 		AssetManager::GetAsyncAssetCache("AM_Dragon_Flame",[this](std::shared_ptr<UObject> Object)
 			{
 				AM_Dragon_Flame = std::dynamic_pointer_cast<UAnimMontage>(Object);
-				while (true)
+				if (AIController)
 				{
-					if (AIController)
+					if (const std::shared_ptr<UBehaviorTree>& BT = AIController->GetBehaviorTree())
 					{
-						if (const std::shared_ptr<UBehaviorTree>& BT = AIController->GetBehaviorTree())
-						{
-							BT->GetBlackBoard()->SetValue<FBlackBoardValueType_Object>("FlameAnim",AM_Dragon_Flame);
-							break;
-						}
+						BT->GetBlackBoard()->SetValue<FBlackBoardValueType_Object>("FlameAnim",AM_Dragon_Flame);
 					}
 				}
 			});
@@ -315,15 +311,11 @@ void ADragon::BindingBehaviorTree()
 		AssetManager::GetAsyncAssetCache("AM_Dragon_StartFly",[this](std::shared_ptr<UObject> Object)
 			{
 				AM_Dragon_FlyStart = std::dynamic_pointer_cast<UAnimMontage>(Object);
-				while (true)
+				if (AIController)
 				{
-					if (AIController)
+					if (const std::shared_ptr<UBehaviorTree>& BT = AIController->GetBehaviorTree())
 					{
-						if (const std::shared_ptr<UBehaviorTree>& BT = AIController->GetBehaviorTree())
-						{
-							BT->GetBlackBoard()->SetValue<FBlackBoardValueType_Object>("StartFlyAnim",AM_Dragon_FlyStart);
-							break;
-						}
+						BT->GetBlackBoard()->SetValue<FBlackBoardValueType_Object>("StartFlyAnim",AM_Dragon_FlyStart);
 					}
 				}
 			});
@@ -331,15 +323,11 @@ void ADragon::BindingBehaviorTree()
 		AssetManager::GetAsyncAssetCache("AM_Dragon_Land",[this](std::shared_ptr<UObject> Object)
 			{
 				AM_Dragon_Landing = std::dynamic_pointer_cast<UAnimMontage>(Object);
-				while (true)
+				if (AIController)
 				{
-					if (AIController)
+					if (const std::shared_ptr<UBehaviorTree>& BT = AIController->GetBehaviorTree())
 					{
-						if (const std::shared_ptr<UBehaviorTree>& BT = AIController->GetBehaviorTree())
-						{
-							BT->GetBlackBoard()->SetValue<FBlackBoardValueType_Object>("LandAnim",AM_Dragon_Landing);
-							break;
-						}
+						BT->GetBlackBoard()->SetValue<FBlackBoardValueType_Object>("LandAnim",AM_Dragon_Landing);
 					}
 				}
 			});
@@ -347,15 +335,11 @@ void ADragon::BindingBehaviorTree()
 		AssetManager::GetAsyncAssetCache("AM_Dragon_HPFlame",[this](std::shared_ptr<UObject> Object)
 			{
 				AM_Dragon_HPFlame = std::dynamic_pointer_cast<UAnimMontage>(Object);
-				while (true)
+				if (AIController)
 				{
-					if (AIController)
+					if (const std::shared_ptr<UBehaviorTree>& BT = AIController->GetBehaviorTree())
 					{
-						if (const std::shared_ptr<UBehaviorTree>& BT = AIController->GetBehaviorTree())
-						{
-							BT->GetBlackBoard()->SetValue<FBlackBoardValueType_Object>("HPFlame",AM_Dragon_HPFlame);
-							break;
-						}
+						BT->GetBlackBoard()->SetValue<FBlackBoardValueType_Object>("HPFlame",AM_Dragon_HPFlame);
 					}
 				}
 			});
@@ -514,6 +498,12 @@ bool ADragon::StartHPSkillCharge()
 	if (GPhysicsEngine->LineTraceSingleByChannel(Start, End, CollisionChannels, HitResult))
 	{
 		SpawnTransform.Translation = HitResult.Location;
+	}
+
+	if (ShowRangeActor)
+	{
+		GetWorld()->GetPersistentLevel()->DestroyActor(ShowRangeActor.get());
+		ShowRangeActor = nullptr;
 	}
 
 	if (!ShowRangeActor)
