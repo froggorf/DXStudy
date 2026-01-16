@@ -1,0 +1,7 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_Gideon_Death",
+    "Skeleton": "SK_Gideon",
+    "AnimationDataPath": "/Content/Resource/MyGame/Animation/Gideon/Death.FBX",
+    "RootMotion": 0
+}

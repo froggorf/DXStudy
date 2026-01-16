@@ -57,6 +57,7 @@ class UAnimMontage : public UAnimCompositeBase
 
 	// 섹션 데이터(Composite Section)
 	std::vector<FCompositeSection> CompositeSections;
+	bool bHoldAtEnd = false;
 
 };
 

@@ -1,0 +1,7 @@
+{
+    "Class": "UAnimSequence",
+    "Name": "AS_Sanhwa_Death",
+    "Skeleton": "SK_Sanhwa",
+    "AnimationDataPath": "/Content/Resource/MyGame/Animation/Sanhwa/Death.FBX",
+    "RootMotion": 0
+}

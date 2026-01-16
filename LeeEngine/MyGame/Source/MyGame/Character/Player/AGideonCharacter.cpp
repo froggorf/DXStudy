@@ -32,6 +32,7 @@ AGideonCharacter::AGideonCharacter()
 
 	CharacterMeshName = "SK_Gideon";
 	AnimInstanceName = "UGideonAnimInstance";
+	DeathMontageName = "AM_Gideon_Death";
 
 	//DodgeMontageName[static_cast<int>(EDodgeDirection::Forward)] = "AboxM_UE5MM_Dodge_Fwd";
 	//DodgeMontageName[static_cast<int>(EDodgeDirection::Backward)] = "AM_UE5MM_Dodge_Bwd";

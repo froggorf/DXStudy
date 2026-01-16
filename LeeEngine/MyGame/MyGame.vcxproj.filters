@@ -161,6 +161,9 @@
     <Filter Include="Source\MyGame\Widget\Stage">
       <UniqueIdentifier>{c6369dc1-6526-42b9-8ea3-c48ee78868d4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MyGame\Widget\Dungeon">
+      <UniqueIdentifier>{2af05e3c-6e3b-483c-869d-2794188eee78}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -370,6 +373,9 @@
     <ClCompile Include="Source\MyGame\Widget\Stage\UStageLevelWidget.cpp">
       <Filter>Source\MyGame\Widget\Stage</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Widget\Dungeon\UDungeonDeathWidget.cpp">
+      <Filter>Source\MyGame\Widget\Dungeon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ATestActor2.h">
@@ -575,6 +581,9 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Widget\Stage\UStageLevelWidget.h">
       <Filter>Source\MyGame\Widget\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Widget\Dungeon\UDungeonDeathWidget.h">
+      <Filter>Source\MyGame\Widget\Dungeon</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

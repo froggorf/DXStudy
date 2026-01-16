@@ -11,6 +11,7 @@ class UHealthComponent;
 class UMyGameWidgetBase;
 class USkillBaseComponent;
 class UUltimateBaseComponent;
+class UAnimMontage;
 
 enum class EElementType
 {
@@ -94,6 +95,7 @@ public:
 
 private:
 	bool bAltButtonPressed = false;
+	bool bIsDead = false;
 
 protected:
 	// IDodgeInterface
@@ -115,6 +117,7 @@ protected:
 	std::shared_ptr<UCameraComponent> UltimateSceneCameraComp;
 	std::shared_ptr<USceneComponent> TestComp_CheckCameraPos;
 	std::shared_ptr<UStaticMeshComponent> SM_Arrow;
+	std::shared_ptr<UAnimMontage> AM_Death;
 
 public:
 	void ChangeToUltimateCamera();
@@ -122,6 +125,7 @@ public:
 protected:
 	std::string CharacterMeshName = "SK_Manny_UE4";
 	std::string AnimInstanceName = "UMyGameAnimInstanceBase";
+	std::string DeathMontageName;
 
 	std::shared_ptr<UMyGameWidgetBase> CharacterWidget;
 public:

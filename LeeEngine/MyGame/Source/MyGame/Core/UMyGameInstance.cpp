@@ -190,6 +190,35 @@ bool UMyGameInstance::IncreaseStageLevel()
 	return true;
 }
 
+bool UMyGameInstance::SetStageLevel(int64_t NewStageLevel)
+{
+	if (UserName.empty())
+	{
+		return false;
+	}
+
+	auto& DBMgr = DatabaseManager::Get();
+	if (!DBMgr.Initialize(ResolveDatabasePath()))
+	{
+		return false;
+	}
+
+	StageTable* StageTablePtr = DBMgr.GetStageTable();
+	if (!StageTablePtr)
+	{
+		return false;
+	}
+
+	NewStageLevel = std::max<int64_t>(1, NewStageLevel);
+	if (!StageTablePtr->SetStageLevel(UserName, NewStageLevel))
+	{
+		return false;
+	}
+
+	StageLevel = static_cast<UINT>(NewStageLevel);
+	return true;
+}
+
 EEquipUpgradeResult UMyGameInstance::EnchantEquipLevel(EEquipType Type)
 {
 	if (UserName.empty())

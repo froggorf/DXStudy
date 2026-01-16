@@ -15,6 +15,7 @@ ASanhwaCharacter::ASanhwaCharacter()
 {
 	CharacterMeshName = "SK_Sanhwa";
 	AnimInstanceName = "USanhwaAnimInstance";
+	DeathMontageName = "AM_Sanhwa_Death";
 
 	CombatComponent = std::dynamic_pointer_cast<USanhwaCombatComponent>(CreateDefaultSubobject("SanhwaCombatComp", "USanhwaCombatComponent"));
 	SkillComponent = std::dynamic_pointer_cast<USanhwaSkillComponent>(CreateDefaultSubobject("SanhwaSkillComp", "USanhwaSkillComponent"));

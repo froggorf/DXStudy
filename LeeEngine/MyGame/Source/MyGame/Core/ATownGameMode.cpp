@@ -8,8 +8,35 @@
 #include "MyGame/Character/Player/AGideonCharacter.h"
 #include "MyGame/Character/Player/ASanhwaCharacter.h"
 #include "MyGame/Widget/Login/ULoginWidget.h"
+#include "MyGame/Widget/Dungeon/UDungeonDeathWidget.h"
 #include "MyGame/Widget/Town/UEquipmentStatusWidget.h"
 #include "MyGame/Widget/Stage/UStageLevelWidget.h"
+
+namespace
+{
+	void HandleStageLevelInput(const std::shared_ptr<UStageLevelWidget>& StageLevelWidget)
+	{
+		const bool bF6Pressed = ImGui::IsKeyPressed(ImGuiKey_F6);
+		const bool bF7Pressed = ImGui::IsKeyPressed(ImGuiKey_F7);
+		if (!bF6Pressed && !bF7Pressed)
+		{
+			return;
+		}
+
+		if (UMyGameInstance* GameInstance = UMyGameInstance::GetInstance<UMyGameInstance>())
+		{
+			const int64_t Delta = bF6Pressed ? -100 : 100;
+			const int64_t NewLevel = static_cast<int64_t>(GameInstance->GetStageLevel()) + Delta;
+			if (GameInstance->SetStageLevel(NewLevel))
+			{
+				if (StageLevelWidget)
+				{
+					StageLevelWidget->UpdateStageLevel();
+				}
+			}
+		}
+	}
+}
 
 void ATownGameMode::Tick(float DeltaSeconds)
 {
@@ -26,6 +53,7 @@ void ATownGameMode::Tick(float DeltaSeconds)
 		GetWorld()->GetPlayerController()->OnPossess(std::dynamic_pointer_cast<ACharacter>(Actor).get());
 	}
 
+	HandleStageLevelInput(StageLevelWidget);
 }
 
 void ATownGameMode::BeginPlay()
@@ -116,6 +144,8 @@ void ATownGameMode::RefreshEquipmentStatusWidget()
 void ADungeonGameMode::Tick(float DeltaSeconds)
 {
 	AGameMode::Tick(DeltaSeconds);
+
+	HandleStageLevelInput(StageLevelWidget);
 }
 
 void ADungeonGameMode::Register()
@@ -191,6 +221,31 @@ void ADungeonGameMode::HandleDragonDeath()
 	{
 		Portal->SetTargetLevelName("TownLevel");
 		Portal->SetIncreaseStageOnUse(true);
+	}
+}
+
+void ADungeonGameMode::HandlePlayerDeath()
+{
+	if (bPlayerDeathWidgetRequested)
+	{
+		return;
+	}
+
+	bPlayerDeathWidgetRequested = true;
+	GEngine->GetTimerManager()->SetTimer(PlayerDeathUITimerHandle, {this, &ADungeonGameMode::ShowPlayerDeathWidget}, 3.0f, false);
+}
+
+void ADungeonGameMode::ShowPlayerDeathWidget()
+{
+	if (APlayerController* PC = GetWorld()->GetPlayerController())
+	{
+		if (!DeathWidget)
+		{
+			DeathWidget = std::make_shared<UDungeonDeathWidget>();
+			PC->CreateWidget("DungeonDeath", DeathWidget);
+		}
+
+		PC->AddToViewport("DungeonDeath", DeathWidget);
 	}
 }
 

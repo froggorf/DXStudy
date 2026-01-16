@@ -4,6 +4,8 @@
 #include "ULineComponent.h"
 #include "Engine/Class/Framework/ACharacter.h"
 
+#include <unordered_set>
+
 std::unique_ptr<UPhysicsEngine> GPhysicsEngine = nullptr;
 
 void FPhysicsEventCallback::onAdvance(const physx::PxRigidBody* const* bodyBuffer, const physx::PxTransform* poseBuffer, const physx::PxU32 count)
@@ -679,6 +681,7 @@ void UPhysicsEngine::BoxOverlapComponents(const XMFLOAT3& BoxPos, const XMFLOAT3
 	);
 	if (howMany > 0)
 	{
+		std::unordered_set<AActor*> UniqueActors;
 		for (int i = 0; i < howMany; ++i)
 		{
 			const physx::PxOverlapHit& Hit = hitOv[i];
@@ -689,6 +692,10 @@ void UPhysicsEngine::BoxOverlapComponents(const XMFLOAT3& BoxPos, const XMFLOAT3
 			}
 
 			AActor* Actor = ShapeComp->GetOwner();
+			if (!Actor)
+			{
+				continue;
+			}
 
 			// IgnoreActor 체크
 			if (std::find(ActorsToIgnore.begin(), ActorsToIgnore.end(), Actor) != ActorsToIgnore.end())
@@ -696,7 +703,10 @@ void UPhysicsEngine::BoxOverlapComponents(const XMFLOAT3& BoxPos, const XMFLOAT3
 				continue;
 			}
 
-			OutActors.emplace_back(Actor);
+			if (UniqueActors.insert(Actor).second)
+			{
+				OutActors.emplace_back(Actor);
+			}
 		}
 	}
 }
@@ -728,6 +738,7 @@ void UPhysicsEngine::BoxOverlapComponentsWithRotation(const XMFLOAT3& BoxPos, co
 
 	if (howMany > 0)
 	{
+		std::unordered_set<AActor*> UniqueActors;
 		for (int i = 0; i < howMany; ++i)
 		{
 			const physx::PxOverlapHit& Hit = hitOv[i];
@@ -738,6 +749,10 @@ void UPhysicsEngine::BoxOverlapComponentsWithRotation(const XMFLOAT3& BoxPos, co
 			}
 
 			AActor* Actor = ShapeComp->GetOwner();
+			if (!Actor)
+			{
+				continue;
+			}
 
 			// IgnoreActor 체크
 			if (std::find(ActorsToIgnore.begin(), ActorsToIgnore.end(), Actor) != ActorsToIgnore.end())
@@ -745,7 +760,10 @@ void UPhysicsEngine::BoxOverlapComponentsWithRotation(const XMFLOAT3& BoxPos, co
 				continue;
 			}
 
-			OutActors.emplace_back(Actor);
+			if (UniqueActors.insert(Actor).second)
+			{
+				OutActors.emplace_back(Actor);
+			}
 		}
 	}
 }

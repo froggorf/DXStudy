@@ -15,6 +15,26 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
+
+namespace
+{
+	UINT ToDisplayDamageValue(float DamageAmount)
+	{
+		if (!std::isfinite(DamageAmount))
+		{
+			return UINT_MAX;
+		}
+		if (DamageAmount <= 0.0f)
+		{
+			return 0;
+		}
+
+		const float MaxDisplay = static_cast<float>(UINT_MAX);
+		const float Clamped = std::min(DamageAmount, MaxDisplay);
+		return static_cast<UINT>(max(1.0f, std::round(Clamped)));
+	}
+}
 
 static UINT EnemyCount = 0;
 AEnemyBase::AEnemyBase()
@@ -96,7 +116,14 @@ void AEnemyBase::BeginPlay()
 		const UINT Stage = max(1u, GameInstance->GetStageLevel());
 		if (Stage > 1)
 		{
-			const float StageScale = std::pow(2.0f, static_cast<float>(Stage - 1));
+			float StageScale = std::pow(2.0f, static_cast<float>(Stage - 1));
+			const float MaxPowerScale = FLT_MAX / max(1.0f, EnemyPower);
+			const float MaxHealthScale = FLT_MAX / max(1.0f, EnemyMaxHealth);
+			const float MaxScale = std::min(MaxPowerScale, MaxHealthScale);
+			if (!std::isfinite(StageScale) || StageScale > MaxScale)
+			{
+				StageScale = MaxScale;
+			}
 			EnemyPower *= StageScale;
 			EnemyMaxHealth *= StageScale;
 		}
@@ -135,7 +162,7 @@ float AEnemyBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent
 		{
 			DefaultColor = GetElementColor(MyGameDamageEvent->ElementType);
 		}
-		PC->SpawnFloatingDamage(GetRootComponent()->GetComponentTransform(), DefaultColor, static_cast<UINT>(DamageAmount));
+		PC->SpawnFloatingDamage(GetRootComponent()->GetComponentTransform(), DefaultColor, ToDisplayDamageValue(DamageAmount));
 	}
 
 	return DamageAmount;
@@ -143,7 +170,7 @@ float AEnemyBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent
 
 void AEnemyBase::PlayAttackMontage(Delegate<> AttackFinishDelegate)
 {
-	
+	bBasicAttackApplied = false;
 	if (EnemyAnimInstance)
 	{
 		EnemyAnimInstance->DoAttackAnim(AttackFinishDelegate);
@@ -157,6 +184,12 @@ void AEnemyBase::PlayAttackMontage(Delegate<> AttackFinishDelegate)
 
 void AEnemyBase::ApplyBasicAttack()
 {
+	if (bBasicAttackApplied)
+	{
+		return;
+	}
+	bBasicAttackApplied = true;
+
 	XMFLOAT3 ForwardDir = GetActorForwardVector();
 	XMFLOAT3 ActorLocation = GetActorLocation();
 	float CapsuleRadius = GetCapsuleComponent()->GetRadius();

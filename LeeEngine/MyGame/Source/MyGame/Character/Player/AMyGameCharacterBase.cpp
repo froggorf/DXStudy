@@ -9,6 +9,29 @@
 #include "MyGame/Core/AMyGamePlayerController.h"
 #include "MyGame/Core/ATownGameMode.h"
 
+#include <algorithm>
+#include <cmath>
+#include <limits>
+
+namespace
+{
+	UINT ToDisplayDamageValue(float DamageAmount)
+	{
+		if (!std::isfinite(DamageAmount))
+		{
+			return UINT_MAX;
+		}
+		if (DamageAmount <= 0.0f)
+		{
+			return 0;
+		}
+
+		const float MaxDisplay = static_cast<float>(UINT_MAX);
+		const float Clamped = std::min(DamageAmount, MaxDisplay);
+		return static_cast<UINT>(max(1.0f, std::round(Clamped)));
+	}
+}
+
 
 XMFLOAT4 GetElementColor(EElementType ElementType)
 {
@@ -97,6 +120,13 @@ AMyGameCharacterBase::AMyGameCharacterBase()
 void AMyGameCharacterBase::Register()
 {
 	LoadCharacterData_OnRegister();
+	if (!DeathMontageName.empty())
+	{
+		AssetManager::GetAsyncAssetCache(DeathMontageName, [this](std::shared_ptr<UObject> Object)
+			{
+				AM_Death = std::dynamic_pointer_cast<UAnimMontage>(Object);
+			});
+	}
 
 	ACharacter::Register();
 
@@ -298,7 +328,7 @@ float AMyGameCharacterBase::TakeDamage(float DamageAmount, const FDamageEvent& D
 		{
 			DefaultColor = GetElementColor(MyGameDamageEvent->ElementType);
 		}
-		PC->SpawnFloatingDamage(GetRootComponent()->GetComponentTransform(), DefaultColor, static_cast<UINT>(DamageAmount));
+		PC->SpawnFloatingDamage(GetRootComponent()->GetComponentTransform(), DefaultColor, ToDisplayDamageValue(DamageAmount));
 	}
 
 	return DamageAmount;
@@ -306,8 +336,32 @@ float AMyGameCharacterBase::TakeDamage(float DamageAmount, const FDamageEvent& D
 
 void AMyGameCharacterBase::Death()
 {
-	// TODO : Death 애니메이션 재생
+	if (bIsDead)
+	{
+		return;
+	}
+	bIsDead = true;
+
+	if (const std::shared_ptr<UAnimInstance>& AnimInstance = GetAnimInstance())
+	{
+		if (AM_Death)
+		{
+			AnimInstance->Montage_Play(AM_Death, 0);
+		}
+	}
+
 	MY_LOG("Death", EDebugLogLevel::DLL_Warning, "Character Death");
+
+	if (const std::shared_ptr<AGameMode>& GameMode = GetWorld()->GetPersistentLevel()->GetGameMode())
+	{
+		if (const std::shared_ptr<ADungeonGameMode>& DungeonGameMode = std::dynamic_pointer_cast<ADungeonGameMode>(GameMode))
+		{
+			GEngine->SetInputMode(EInputMode::InputMode_UIOnly);
+			GEngine->SetMouseLock(EMouseLockMode::DoNotLock);
+			GEngine->ShowCursor(true);
+			DungeonGameMode->HandlePlayerDeath();
+		}
+	}
 
 	
 }

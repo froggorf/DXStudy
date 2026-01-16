@@ -80,6 +80,11 @@ void UAnimMontage::LoadDataFromFileData(const nlohmann::json& AssetData)
 		}
 	}
 
+	if (AssetData.contains("HoldAtEnd"))
+	{
+		bHoldAtEnd = AssetData["HoldAtEnd"];
+	}
+
 	// 반드시 있어야 하는 데이터
 	{
 		// BlendIn
@@ -184,8 +189,12 @@ void FAnimMontageInstance::Play()
 	// 현재 섹션 끝났을 때
 	if (std::abs(Position) >= CurPlayingEndPosition)
 	{
+		if (Montage->bHoldAtEnd && NextSectionName.empty())
+		{
+			Position = CurPlayingEndPosition - 0.001f;
+		}
 		// 다음 섹션이 있다면
-		if (!NextSectionName.empty())
+		else if (!NextSectionName.empty())
 		{
 			if (CurrentSectionName == NextSectionName)
 			{

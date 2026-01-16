@@ -31,6 +31,7 @@ class UMyGameInstance : public UGameInstance
 	bool AddGold(int64_t Amount);
 	EEquipUpgradeResult EnchantEquipLevel(EEquipType Type);
 	bool IncreaseStageLevel();
+	bool SetStageLevel(int64_t NewStageLevel);
 
 	std::array<int, static_cast<int>(EEquipType::Count)> EquipLevel = {0,0,0,0};
 	UINT Gold = 0;

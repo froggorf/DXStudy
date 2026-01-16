@@ -3,6 +3,8 @@
 
 #include "Engine/RenderCore/EditorScene.h"
 
+#include <cmath>
+
 UHealthWidgetBase::UHealthWidgetBase()
 {
 	MainCanvasWidget->SetDesignResolution({300.0f,25.0f});
@@ -46,8 +48,16 @@ void UHealthWidgetBase::SetHealthBarPercent(float Value, float MaxValue)
 		return;
 	}
 
-	float Percent = std::clamp(Value/MaxValue, 0.0f, 1.0f);
-	PB_HealthBar->SetValue(Percent);
+	if (!std::isfinite(Value) || !std::isfinite(MaxValue))
+	{
+		float Percent = Value > 0.0f ? 1.0f : 0.0f;
+		PB_HealthBar->SetValue(Percent);
+	}
+	else
+	{
+		float Percent = std::clamp(Value/MaxValue, 0.0f, 1.0f);
+		PB_HealthBar->SetValue(Percent);
+	}
 
 	GEngine->GetTimerManager()->SetTimer(DelayHealthTimerHandle, {this, &UHealthWidgetBase::SetDelayHealthBar}, 0.0f, true, DelayTimerRepeatTime);
 	CurrentDelayTime = 0.0f;

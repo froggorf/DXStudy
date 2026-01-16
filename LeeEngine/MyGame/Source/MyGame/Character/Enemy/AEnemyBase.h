@@ -46,6 +46,7 @@ protected:
 
 	FAttackData BasicAttackData{};
 	float EnemyPower = 50.0f;
+	bool bBasicAttackApplied = false;
 
 	FTimerHandle DeathTimerHandle;
 public:

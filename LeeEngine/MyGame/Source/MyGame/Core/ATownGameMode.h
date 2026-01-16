@@ -5,6 +5,7 @@
 
 class UEquipmentStatusWidget;
 class UStageLevelWidget;
+class UDungeonDeathWidget;
 
 class ATownGameMode : public AGameMode
 {
@@ -39,11 +40,18 @@ class ADungeonGameMode : public AGameMode
 	void EndGame() override;
 
 	void HandleDragonDeath();
+public:
+	void HandlePlayerDeath();
+private:
+	void ShowPlayerDeathWidget();
 
 	float PotionCoolDownTime = 10.0f;
 	bool bReturnPortalSpawned = false;
+	bool bPlayerDeathWidgetRequested = false;
 	std::shared_ptr<UEquipmentStatusWidget> EquipmentStatusWidget;
 	std::shared_ptr<UStageLevelWidget> StageLevelWidget;
+	std::shared_ptr<UDungeonDeathWidget> DeathWidget;
+	FTimerHandle PlayerDeathUITimerHandle;
 };
 
 class ALoginGameMode : public AGameMode
