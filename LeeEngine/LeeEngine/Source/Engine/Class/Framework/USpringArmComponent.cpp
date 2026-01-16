@@ -20,7 +20,11 @@ void USpringArmComponent::TickComponent(float DeltaSeconds)
 {
 	USceneComponent::TickComponent(DeltaSeconds);
 
-	
+	if (bUsePawnControlRotation && OwningCharacter)
+	{
+		XMFLOAT4 Rot = OwningCharacter->GetControlRotation();
+		SetWorldRotation(XMLoadFloat4(&Rot));
+	}
 
 	const FTransform& Transform = GetComponentTransform();
 
@@ -33,43 +37,48 @@ void USpringArmComponent::TickComponent(float DeltaSeconds)
 
 	if (bCheckCollision)
 	{
-		std::vector<ECollisionChannel> Channel(static_cast<UINT>(ECollisionChannel::Count));
+		std::vector<ECollisionChannel> Channels;
+		Channels.reserve(static_cast<UINT>(ECollisionChannel::Count));
 		for (size_t i = 0; i < static_cast<UINT>(ECollisionChannel::Count); ++i)
 		{
-			Channel.emplace_back(static_cast<ECollisionChannel>(i));	
+			Channels.emplace_back(static_cast<ECollisionChannel>(i));
 		}
 
 		FHitResult Result;
-		bool bHitOwner = false;
 		XMFLOAT3 StartLocation = Transform.GetTranslation();
-		int BreakCount = 0;
-		while (true)
-		{
-			if (GPhysicsEngine->LineTraceSingleByChannel(StartLocation, Offset, Channel, Result))
-			{
-				if (Result.HitActor == GetOwner())
-				{
-					if (BreakCount++ > 1'000) break;
-					XMFLOAT3 GapDirection;
-					float Gap = 0.2f;
-					XMStoreFloat3(&GapDirection, XMVectorScale(XMVectorSubtract(XMLoadFloat3(&Offset), XMLoadFloat3(&StartLocation)), Gap));
+		XMFLOAT3 EndLocation = Offset;
 
-					StartLocation.x = Result.Location.x + GapDirection.x;
-					StartLocation.y = Result.Location.y + GapDirection.y;
-					StartLocation.z = Result.Location.z + GapDirection.z;
-				}
-				else
-				{
-					TargetOffset = Result.Location;
-					break;
-				}
-			}
-			else
+		static constexpr float OwnerIgnoreStep = 5.0f;
+		static constexpr int MaxOwnerIgnoreHits = 32;
+
+		for (int Attempt = 0; Attempt < MaxOwnerIgnoreHits; ++Attempt)
+		{
+			XMVECTOR StartVec = XMLoadFloat3(&StartLocation);
+			XMVECTOR EndVec = XMLoadFloat3(&EndLocation);
+			XMVECTOR DirVec = XMVectorSubtract(EndVec, StartVec);
+			float DirLen = XMVectorGetX(XMVector3Length(DirVec));
+			if (DirLen <= FLT_EPSILON)
 			{
-				TargetOffset = Offset;
 				break;
 			}
 
+			if (!GPhysicsEngine->LineTraceSingleByChannel(StartLocation, EndLocation, Channels, Result))
+			{
+				break;
+			}
+
+			if (Result.HitActor == GetOwner())
+			{
+				XMFLOAT3 StepDir;
+				XMStoreFloat3(&StepDir, XMVectorScale(DirVec, 1.0f / DirLen));
+				StartLocation.x = Result.Location.x + StepDir.x * OwnerIgnoreStep;
+				StartLocation.y = Result.Location.y + StepDir.y * OwnerIgnoreStep;
+				StartLocation.z = Result.Location.z + StepDir.z * OwnerIgnoreStep;
+				continue;
+			}
+
+			TargetOffset = Result.Location;
+			break;
 		}
 	}
 	
@@ -82,11 +91,6 @@ void USpringArmComponent::TickComponent(float DeltaSeconds)
 	//	TargetOffset = Offset;
 	//}
 
-	if (bUsePawnControlRotation && OwningCharacter)
-	{
-		XMFLOAT4 Rot = OwningCharacter->GetControlRotation();
-		SetWorldRotation(XMLoadFloat4(&Rot));
-	}
 }
 
 FTransform USpringArmComponent::GetSocketTransform(const std::string& InSocketName)

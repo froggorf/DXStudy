@@ -19,6 +19,7 @@ void UStageLevelWidget::NativeConstruct()
 		CanvasSlot->Size = { 240, 44 };
 	}
 
+
 	BackgroundImage = std::make_shared<FImageWidget>(
 		FImageBrush{ UTexture::GetTextureCache("T_White"), {0.12f, 0.12f, 0.12f, 0.9f} }
 	);
