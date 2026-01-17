@@ -1,0 +1,5 @@
+{
+    "Class": "USoundBase",
+    "Name": "SB_SFX_Land",
+    "SoundFilePath": "/Content/Resource/MyGame/Sound/SFX/SFX_Land.ogg"
+}

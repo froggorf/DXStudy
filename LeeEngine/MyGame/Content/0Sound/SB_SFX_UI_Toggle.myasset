@@ -1,0 +1,5 @@
+{
+    "Class": "USoundBase",
+    "Name": "SB_SFX_UI_Toggle",
+    "SoundFilePath": "/Content/Resource/MyGame/Sound/SFX/SFX_UI_Toggle.ogg"
+}

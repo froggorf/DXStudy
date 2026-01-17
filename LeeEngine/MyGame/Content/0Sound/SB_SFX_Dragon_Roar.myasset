@@ -1,0 +1,5 @@
+{
+    "Class": "USoundBase",
+    "Name": "SB_SFX_Dragon_Roar",
+    "SoundFilePath": "/Content/Resource/MyGame/Sound/SFX/SFX_Dragon_Roar.wav"
+}

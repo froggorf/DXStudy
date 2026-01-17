@@ -2,6 +2,8 @@
 #include "AGideonFireBall.h"
 
 #include "Engine/Components/UNiagaraComponent.h"
+#include "Engine/FAudioDevice.h"
+
 
 AGideonFireBall::AGideonFireBall()
 {
@@ -49,6 +51,7 @@ void AGideonFireBall::Initialize(AGideonCharacter* Spawner, const XMFLOAT3& Targ
 	this->TargetPosition = TargetPosition;
 	ExplosionAttackData = AttackData;
 	StartPosition = GetActorLocation();
+	FireSoundTimer = FireSoundInterval;
 }
 
 void AGideonFireBall::FlyFireBall()
@@ -67,6 +70,13 @@ void AGideonFireBall::FlyFireBall()
 
 	XMFLOAT3 Direction = MyMath::GetDirectionUnitVector(GetActorLocation(), TargetPosition);
 	SetActorLocation(GetActorLocation() + Direction * ThrowUnitPerTimerTick);
+
+	FireSoundTimer -= ThrowTimerTickTime;
+	if (FireSoundTimer <= 0.0f)
+	{
+		PlaySoundAtLocationByName(GetWorld(), GetActorLocation(), "SB_SFX_Fireball");
+		FireSoundTimer = FireSoundInterval;
+	}
 }
 
 void AGideonFireBall::OnHit(UShapeComponent* ShapeComp, AActor* HitActor, UShapeComponent* HitComponent, const FHitResult& Result)
@@ -76,6 +86,7 @@ void AGideonFireBall::OnHit(UShapeComponent* ShapeComp, AActor* HitActor, UShape
 
 void AGideonFireBall::Explosion()
 {
+	PlaySoundAtLocationByName(GetWorld(), GetActorLocation(), "SB_SFX_Magic_Impact");
 	ExplosionAttackData.bIsAttackCenterFixed = true;
 	ExplosionAttackData.AttackCenterPos = GetActorLocation();
 	Spawner->ApplyDamageToEnemy_Range(ExplosionAttackData, "FireBall");

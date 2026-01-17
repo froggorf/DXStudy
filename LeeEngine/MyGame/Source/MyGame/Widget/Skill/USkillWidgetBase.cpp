@@ -1,5 +1,22 @@
 #include "CoreMinimal.h"
 #include "USkillWidgetBase.h"
+#include "Engine/FAudioDevice.h"
+
+namespace
+{
+	void PlaySound2DByName(const char* SoundName)
+	{
+		if (!GAudioDevice || !SoundName || SoundName[0] == '\0')
+		{
+			return;
+		}
+
+		if (const std::shared_ptr<USoundBase>& Sound = USoundBase::GetSoundAsset(SoundName))
+		{
+			GAudioDevice->PlaySound2D(Sound);
+		}
+	}
+}
 
 void USkillWidgetBase::NativeConstruct()
 {
@@ -123,11 +140,17 @@ void USkillWidgetBase::SetSkillCoolDownTime(float NewCoolDownTime, float MaxCool
 {
 	if (NewCoolDownTime <= 0.0f)
 	{
+		if (bWasCoolingDown)
+		{
+			PlaySound2DByName("SB_SFX_UI_Notify");
+		}
+		bWasCoolingDown = false;
 		SkillCoolDownText->SetVisibility(false);
 		PB_SkillCoolDown->SetVisibility(false);
 		return;
 	}
 
+	bWasCoolingDown = true;
 	SkillCoolDownText->SetVisibility(true);
 	PB_SkillCoolDown->SetVisibility(true);
 	PB_SkillCoolDown->SetValue(1 - NewCoolDownTime / MaxCooldownTime);

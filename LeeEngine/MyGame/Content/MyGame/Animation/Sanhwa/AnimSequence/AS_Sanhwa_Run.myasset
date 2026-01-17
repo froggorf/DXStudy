@@ -3,5 +3,13 @@
     "Name": "AS_Sanhwa_Run",
     "Skeleton": "SK_Sanhwa",
     "AnimationDataPath": "/Content/Resource/MyGame/Animation/Sanhwa/Run.FBX",
-    "RootMotion": 0
+    "RootMotion": 0,
+    "Notifies" : [
+        { "NotifyClass" : "UAnimNotify_PlaySound", "TriggerTime" : 7, "SoundName" : "SB_SFX_Footstep_01" },
+        { "NotifyClass" : "UAnimNotify_PlaySound", "TriggerTime" : 17, "SoundName": "SB_SFX_Footstep_02"},
+        { "NotifyClass" : "UAnimNotify_PlaySound", "TriggerTime" : 25, "SoundName" : "SB_SFX_Footstep_01" },
+        { "NotifyClass" : "UAnimNotify_PlaySound", "TriggerTime" : 35, "SoundName": "SB_SFX_Footstep_02"},
+        { "NotifyClass" : "UAnimNotify_PlaySound", "TriggerTime" : 44, "SoundName" : "SB_SFX_Footstep_01" },
+        { "NotifyClass" : "UAnimNotify_PlaySound", "TriggerTime" : 54, "SoundName": "SB_SFX_Footstep_02"}
+    ]
 }

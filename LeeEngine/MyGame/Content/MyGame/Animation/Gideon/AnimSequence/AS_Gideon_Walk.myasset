@@ -3,5 +3,10 @@
     "Name": "AS_Gideon_Walk",
     "Skeleton": "SK_Gideon",
     "AnimationDataPath": "/Content/Resource/MyGame/Animation/Gideon/Walk.FBX",
-    "RootMotion": 0
+    "RootMotion": 0,
+    "Notifies" : [
+        { "NotifyClass" : "UAnimNotify_PlaySound", "TriggerTime" : 20, "SoundName" : "SB_SFX_Footstep_01" },
+        { "NotifyClass" : "UAnimNotify_PlaySound", "TriggerTime" : 53, "SoundName": "SB_SFX_Footstep_02"}
+
+    ]
 }

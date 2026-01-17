@@ -25,4 +25,5 @@ protected:
 				std::shared_ptr<FTextWidget> SkillKeyText;
 private:
 	std::wstring KeyText = L"E";
+	bool bWasCoolingDown = false;
 };

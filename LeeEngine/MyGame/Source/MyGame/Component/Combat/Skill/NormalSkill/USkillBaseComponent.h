@@ -52,6 +52,7 @@ protected:
 	// NOTE: Initialize 안에서 사용하여 하위클래스에서 값을 조정
 	void SetSkillAttackData(const std::vector<std::string>& NewMontageNames, const std::vector<FAttackData>& NewAttackData, const float NewSkillCooldown);
 	void SetSkillDelegates(const std::vector<Delegate<>>& NewStartDelegates, const std::vector<Delegate<>>& NewBlendOutDelegates);
+	void SetUseCastSound(bool bNewUseCastSound);
 protected:
 	AMyGameCharacterBase* MyGameCharacter = nullptr;
 
@@ -61,6 +62,7 @@ protected:
 	float SkillCoolDownTime;
 	float CurrentCoolDownTime;
 	bool bIsCurrentPlayingSkill = false;
+	bool bUseCastSound = true;
 	FTimerHandle CoolDownTimerHandle;
 	// 0.1f 초마다 타이머 재생 & 쿨타임 감소
 	static constexpr float CoolDownTimerRepeatTime = 0.1f;

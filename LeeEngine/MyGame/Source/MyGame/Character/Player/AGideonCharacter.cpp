@@ -10,6 +10,7 @@
 #include "MyGame/Component/Combat/Skill/NormalSkill/Gideon/UGideonSkillComponent.h"
 #include "MyGame/Component/Combat/Skill/Ultimate/UUltimateBaseComponent.h"
 #include "MyGame/Component/Combat/Skill/Ultimate/Gideon/UGideonUltimateComponent.h"
+#include "Engine/FAudioDevice.h"
 #include "MyGame/Widget/Gideon/UGideonWidget.h"
 
 std::string AGideonCharacter::CharacterName  = "Gideon";

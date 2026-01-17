@@ -2,9 +2,26 @@
 #include "USanhwaCombatComponent.h"
 
 #include "Engine/RenderCore/EditorScene.h"
+#include "Engine/FAudioDevice.h"
 #include "MyGame/Character/Player/AMyGameCharacterBase.h"
 #include "MyGame/Component/Combat/Skill/Ultimate/Sanhwa/USanhwaUltimateComponent.h"
 #include "MyGame/Widget/Sanhwa/USanhwaWidget.h"
+
+namespace
+{
+	void PlaySound2DByName(const char* SoundName)
+	{
+		if (!GAudioDevice || !SoundName || SoundName[0] == '\0')
+		{
+			return;
+		}
+
+		if (const std::shared_ptr<USoundBase>& Sound = USoundBase::GetSoundAsset(SoundName))
+		{
+			GAudioDevice->PlaySound2D(Sound);
+		}
+	}
+}
 
 USanhwaCombatComponent::USanhwaCombatComponent()
 {
@@ -81,6 +98,7 @@ bool USanhwaCombatComponent::HeavyAttack()
 	{
 		bIsHeavyAttacking = true;
 		bIsBasicAttacking = false;
+		PlaySound2DByName("SB_SFX_Heavy_Charge_Start");
 		AnimInstance->Montage_Play(AM_HeavyAttack_Press);
 	}
 	
@@ -130,7 +148,8 @@ void USanhwaCombatComponent::HeavyAttackMouseReleased()
 
 	float Gap = 1.0f / GaugeSize;
 	UINT CurrentGaugeIndex = std::min(static_cast<UINT>(CurrentChargeGauge / Gap), GaugeSize-1);
-	if (SanhwaGauge[CurrentGaugeIndex])
+	const bool bChargeSuccess = SanhwaGauge[CurrentGaugeIndex];
+	if (bChargeSuccess)
 	{
 		// 강공격에 성공함
 		AnimInstance->Montage_Play(HeavyAttackData[0].AnimMontage);
@@ -144,6 +163,8 @@ void USanhwaCombatComponent::HeavyAttackMouseReleased()
 	{
 		AnimInstance->Montage_Play(AM_HeavyAttack_Release);
 	}
+	PlaySound2DByName("SB_SFX_Heavy_Charge_Release");
+	PlaySound2DByName(bChargeSuccess ? "SB_SFX_Heavy_Charge_Success" : "SB_SFX_Heavy_Charge_Fail");
 
 	bIsHeavyAttacking = false;
 	bIsBasicAttacking = false;
@@ -183,6 +204,7 @@ void USanhwaCombatComponent::Attack4Success()
 
 	int NewGaugeIndex = MyMath::RandVector(EmptyGauge);
 	SanhwaGauge[NewGaugeIndex] = true;
+	PlaySound2DByName("SB_SFX_UI_Notify");
 
 	if (MyGameCharacter)
 	{

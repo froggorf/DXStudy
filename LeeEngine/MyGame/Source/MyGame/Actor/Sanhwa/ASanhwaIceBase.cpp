@@ -1,5 +1,7 @@
 #include "CoreMinimal.h"
 #include "ASanhwaIceBase.h"
+#include "Engine/FAudioDevice.h"
+
 
 AIceSpikeBase::AIceSpikeBase()
 {
@@ -30,6 +32,7 @@ void AIceSpikeBase::BeginPlay()
 {
 	AActor::BeginPlay();
 
+	PlaySoundAtLocationByName(GetWorld(), GetActorLocation(), "SB_SFX_Magic_Ice");
 
 	XMFLOAT3 StartLocation = GetActorLocation();
 	XMFLOAT3 EndLocation = StartLocation;
@@ -97,6 +100,7 @@ void AIceSpikeBase::DamagedByCharacter()
 
 	if (Spawner && bIsAttacked)
 	{
+		PlaySoundAtLocationByName(GetWorld(), GetActorLocation(), "SB_SFX_Explosion_Small");
 		ExplosionAttackData.AttackCenterPos = GetActorLocation();
 		Spawner->ApplyDamageToEnemy_Range(ExplosionAttackData);
 	}

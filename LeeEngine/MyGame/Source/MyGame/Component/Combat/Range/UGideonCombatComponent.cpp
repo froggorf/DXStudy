@@ -3,10 +3,27 @@
 
 #include "Engine/Class/Camera/UCameraComponent.h"
 #include "Engine/World/UWorld.h"
+#include "Engine/FAudioDevice.h"
 #include "MyGame/Actor/Gideon/AGideonLightning.h"
 #include "MyGame/AnimInstance/Gideon/UGideonAnimInstance.h"
 #include "MyGame/Character/Player/AGideonCharacter.h"
 #include "MyGame/Widget/Gideon/UGideonWidget.h"
+
+namespace
+{
+	void PlaySound2DByName(const char* SoundName)
+	{
+		if (!GAudioDevice || !SoundName || SoundName[0] == '\0')
+		{
+			return;
+		}
+
+		if (const std::shared_ptr<USoundBase>& Sound = USoundBase::GetSoundAsset(SoundName))
+		{
+			GAudioDevice->PlaySound2D(Sound);
+		}
+	}
+}
 
 UGideonCombatComponent::UGideonCombatComponent()
 {
@@ -86,6 +103,7 @@ bool UGideonCombatComponent::HeavyAttack()
 	if (!bIsHeavyAttacking)
 	{
 		bIsHeavyAttacking = true;
+		PlaySound2DByName("SB_SFX_Magic_Charge");
 		if (const std::shared_ptr<UGideonAnimInstance>& GideonAnimInstance = std::dynamic_pointer_cast<UGideonAnimInstance>(MyGameCharacter->GetAnimInstance()))
 		{
 			GideonAnimInstance->Montage_Play(HeavyAttack_ChargeMontage);
@@ -113,6 +131,7 @@ void UGideonCombatComponent::HeavyAttackMouseReleased()
 			RecentChargePower = HeavyAttackChargeTime; 
 		}
 	}
+	PlaySound2DByName("SB_SFX_Heavy_Charge_Release");
 
 	if (const std::shared_ptr<UGideonWidget>& GideonWidget = std::dynamic_pointer_cast<UGideonWidget>(MyGameCharacter->GetCharacterWidget()))
 	{
@@ -199,6 +218,7 @@ void UGideonCombatComponent::ApplyHeavyAttack()
 			constexpr float AddAttackCountPerSecond = 2.0f;		// 1초당 2마리 적군 추가
 			const UINT AttackCount = DefaultAttackCount + static_cast<UINT>(floor(RecentChargePower * AddAttackCountPerSecond));
 			LightningActor->Initialize(GideonCharacter, HeavyAttackDamageData, AttackCount, ChargeLevel);
+			PlaySound2DByName("SB_SFX_Magic_Lightning");
 
 			MY_LOG("LOG", EDebugLogLevel::DLL_Warning, "Lightning Attack Actor Spawn");
 		}

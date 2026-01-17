@@ -2,8 +2,25 @@
 #include "UEnchantWidget.h"
 
 #include "Engine/World/UWorld.h"
+#include "Engine/FAudioDevice.h"
 #include "MyGame/Core/ATownGameMode.h"
 #include "MyGame/Core/UMyGameInstance.h"
+
+namespace
+{
+	void PlaySound2DByName(const char* SoundName)
+	{
+		if (!GAudioDevice || !SoundName || SoundName[0] == '\0')
+		{
+			return;
+		}
+
+		if (const std::shared_ptr<USoundBase>& Sound = USoundBase::GetSoundAsset(SoundName))
+		{
+			GAudioDevice->PlaySound2D(Sound);
+		}
+	}
+}
 
 static std::wstring GetUpgradeResultMessage(EEquipUpgradeResult Result)
 {
@@ -180,21 +197,25 @@ void UEnchantWidget::NativeConstruct()
 
 void UEnchantWidget::Enchant(EEquipType Type)
 {
+	PlaySound2DByName("SB_SFX_UI_Click_01");
 	if (const std::shared_ptr<ATownGameMode>& TownGameMode = std::dynamic_pointer_cast<ATownGameMode>(GetWorld()->GetPersistentLevel()->GetGameMode()))
 	{
 		const EEquipUpgradeResult Result = TownGameMode->AddEquipLevel(Type);
 		if (Result == EEquipUpgradeResult::Success)
 		{
+			PlaySound2DByName("SB_SFX_UI_Confirm");
 			ShowFeedback(L"", {0.0f, 0.0f, 0.0f, 0.0f});
 			UpdateUpgradeCostTexts();
 		}
 		else
 		{
+			PlaySound2DByName("SB_SFX_UI_Error");
 			ShowFeedback(GetUpgradeResultMessage(Result), {1.0f, 0.2f, 0.2f, 1.0f});
 		}
 	}
 	else
 	{
+		PlaySound2DByName("SB_SFX_UI_Error");
 		ShowFeedback(L"Upgrade failed.", {1.0f, 0.2f, 0.2f, 1.0f});
 	}
 	
@@ -256,6 +277,7 @@ void UEnchantWidget::Tick(float DeltaSeconds)
 
 void UEnchantWidget::Close()
 {
+	PlaySound2DByName("SB_SFX_UI_Click_01");
 	if (APlayerController* PC = GetWorld()->GetPlayerController())
 	{
 		PC->RemoveFromParent("EnchantWidget");

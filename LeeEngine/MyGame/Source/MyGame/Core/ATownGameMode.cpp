@@ -7,6 +7,7 @@
 #include "MyGame/Character/Enemy/AEnemyBase.h"
 #include "MyGame/Character/Player/AGideonCharacter.h"
 #include "MyGame/Character/Player/ASanhwaCharacter.h"
+#include "Engine/FAudioDevice.h"
 #include "MyGame/Widget/Login/ULoginWidget.h"
 #include "MyGame/Widget/Dungeon/UDungeonDeathWidget.h"
 #include "MyGame/Widget/Town/UEquipmentStatusWidget.h"
@@ -14,6 +15,53 @@
 
 namespace
 {
+	std::shared_ptr<FActiveSound> GCurrentBgm;
+	std::string GCurrentBgmName;
+
+	void StopBgm()
+	{
+		if (GAudioDevice && GCurrentBgm)
+		{
+			GAudioDevice->StopSound(GCurrentBgm);
+		}
+		GCurrentBgm.reset();
+		GCurrentBgmName.clear();
+	}
+
+	void PlayBgmByName(const char* SoundName)
+	{
+		if (!GAudioDevice || !SoundName || SoundName[0] == '\0')
+		{
+			return;
+		}
+
+		if (GCurrentBgmName == SoundName)
+		{
+			return;
+		}
+
+		StopBgm();
+		if (const std::shared_ptr<USoundBase>& Sound = USoundBase::GetSoundAsset(SoundName))
+		{
+			GCurrentBgm = std::make_shared<FActiveSound>(Sound);
+			GAudioDevice->AddNewActiveSound(GCurrentBgm);
+			GCurrentBgmName = SoundName;
+		}
+	}
+
+	void PlaySound2DByName(const char* SoundName)
+	{
+		if (!GAudioDevice || !SoundName || SoundName[0] == '\0')
+		{
+			return;
+		}
+
+		if (const std::shared_ptr<USoundBase>& Sound = USoundBase::GetSoundAsset(SoundName))
+		{
+			GAudioDevice->PlaySound2D(Sound);
+		}
+	}
+
 	void HandleStageLevelInput(const std::shared_ptr<UStageLevelWidget>& StageLevelWidget)
 	{
 		const bool bF6Pressed = ImGui::IsKeyPressed(ImGuiKey_F6);
@@ -59,6 +107,7 @@ void ATownGameMode::Tick(float DeltaSeconds)
 void ATownGameMode::BeginPlay()
 {
 	AGameMode::BeginPlay();
+	PlayBgmByName("SB_BGM_Town_Loop");
 
 	const std::shared_ptr<AGideonCharacter>& Gideon = std::dynamic_pointer_cast<AGideonCharacter>(
 		GetWorld()->SpawnActor("AGideonCharacter", FTransform{XMFLOAT3{ -500.0f,50.0f,-0.0f}, XMFLOAT4{0.0f,0.0f,0.0f,1.0f}, {1.0f,1.0f,1.0f}}, "Gideon")
@@ -157,6 +206,7 @@ void ADungeonGameMode::Register()
 void ADungeonGameMode::BeginPlay()
 {
 	AGameMode::BeginPlay();
+	PlayBgmByName("SB_BGM_Dungeon_Loop");
 
 	const std::shared_ptr<AGideonCharacter>& Gideon = std::dynamic_pointer_cast<AGideonCharacter>(
 		GetWorld()->SpawnActor("AGideonCharacter", FTransform{XMFLOAT3{ -0.0f,3500,-0.0f}, XMFLOAT4{0.0f,0.0f,0.0f,1.0f}, {1.0f,1.0f,1.0f}}, "Gideon")
@@ -239,6 +289,7 @@ void ADungeonGameMode::ShowPlayerDeathWidget()
 {
 	if (APlayerController* PC = GetWorld()->GetPlayerController())
 	{
+		PlaySound2DByName("SB_SFX_UI_Error");
 		if (!DeathWidget)
 		{
 			DeathWidget = std::make_shared<UDungeonDeathWidget>();
@@ -260,6 +311,7 @@ ALoginGameMode::ALoginGameMode()
 void ALoginGameMode::BeginPlay()
 {
 	AGameMode::BeginPlay();
+	PlayBgmByName("SB_BGM_Town_Loop");
 
 	static std::shared_ptr<USkeletalMesh> SK_Gideon;
 	AssetManager::GetAsyncAssetCache("SK_Gideon",[this](std::shared_ptr<UObject> Object)

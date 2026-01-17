@@ -1,7 +1,24 @@
 #include "CoreMinimal.h"
 #include "USanhwaSkillComponent.h"
 
+#include "Engine/FAudioDevice.h"
 #include "MyGame/Character/Player/ASanhwaCharacter.h"
+
+namespace
+{
+	void PlaySound2DByName(const char* SoundName)
+	{
+		if (!GAudioDevice || !SoundName || SoundName[0] == '\0')
+		{
+			return;
+		}
+
+		if (const std::shared_ptr<USoundBase>& Sound = USoundBase::GetSoundAsset(SoundName))
+		{
+			GAudioDevice->PlaySound2D(Sound);
+		}
+	}
+}
 
 USanhwaSkillComponent::USanhwaSkillComponent()
 {
@@ -23,6 +40,7 @@ void USanhwaSkillComponent::ApplySkillAttack()
 
 	if (ASanhwaCharacter* Sanhwa = dynamic_cast<ASanhwaCharacter*>(MyGameCharacter))
 	{
+		PlaySound2DByName("SB_SFX_Magic_Ice");
 		Sanhwa->CreateIceSpikes(false);
 	}
 }

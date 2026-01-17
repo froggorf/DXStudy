@@ -1,0 +1,5 @@
+{
+    "Class": "USoundBase",
+    "Name": "SB_SFX_Skill_Cast",
+    "SoundFilePath": "/Content/Resource/MyGame/Sound/SFX/SFX_Skill_Cast.wav"
+}

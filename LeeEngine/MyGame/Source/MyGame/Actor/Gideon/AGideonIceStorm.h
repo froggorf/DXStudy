@@ -36,5 +36,7 @@ private:
 	static constexpr float FindEnemyAndApplyDamageTickTime = 0.8f;
 	static constexpr float MoveSpeedPerSec = 500.0f;
 	static constexpr float ApplyDamageDistance = 300.0f;
+	float StormSoundTimer = 0.0f;
+	static constexpr float StormSoundInterval = 0.25f;
 
 };

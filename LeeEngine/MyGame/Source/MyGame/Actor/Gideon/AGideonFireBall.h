@@ -36,5 +36,7 @@ private:
 	// 1000 unit per sec
 	static constexpr float SpeedPerSecond = 2000.0f;
 	static constexpr float ThrowTimerTickTime = 0.016f;
+	float FireSoundTimer = 0.0f;
+	static constexpr float FireSoundInterval = 0.1f;
 	void Explosion();
 };

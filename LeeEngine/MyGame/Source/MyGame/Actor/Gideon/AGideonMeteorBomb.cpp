@@ -1,8 +1,9 @@
 #include "CoreMinimal.h"
 #include "AGideonMeteorBomb.h"
 
-#include "Engine/Class/Light/ULightComponent.h"
 #include "Engine/Components/UNiagaraComponent.h"
+#include "Engine/FAudioDevice.h"
+
 
 AGideonMeteorBomb::AGideonMeteorBomb()
 {
@@ -29,6 +30,7 @@ void AGideonMeteorBomb::BeginPlay()
 {
 	AActor::BeginPlay();
 
+	PlaySoundAtLocationByName(GetWorld(), GetActorLocation(), "SB_SFX_Explosion_01");
 	GEngine->GetTimerManager()->SetTimer(SelfKillTimerHandle, {this, &AGideonMeteorBomb::DestroySelf}, SelfKillTime);
 }
 

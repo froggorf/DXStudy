@@ -1,8 +1,25 @@
 #include "CoreMinimal.h"
 #include "UUltimateBaseComponent.h"
 #include "Engine/Class/Framework/UPlayerInput.h"
+#include "Engine/FAudioDevice.h"
 #include "MyGame/Character/Player/AMyGameCharacterBase.h"
 #include "MyGame/Widget/UMyGameWidgetBase.h"
+
+namespace
+{
+	void PlaySound2DByName(const char* SoundName)
+	{
+		if (!GAudioDevice || !SoundName || SoundName[0] == '\0')
+		{
+			return;
+		}
+
+		if (const std::shared_ptr<USoundBase>& Sound = USoundBase::GetSoundAsset(SoundName))
+		{
+			GAudioDevice->PlaySound2D(Sound);
+		}
+	}
+}
 
 UUltimateBaseComponent::UUltimateBaseComponent()
 {
@@ -19,6 +36,8 @@ bool UUltimateBaseComponent::TrySkill()
 	{
 		return false;
 	}
+
+	PlaySound2DByName("SB_SFX_Magic_Ultimate");
 
 	// 스킬 사용으로 인한 게이지 감소
 	CurrentUltimateGauge = 0.0f;
@@ -75,7 +94,12 @@ void UUltimateBaseComponent::AddUltimateGauge(const float NewAddGauge)
 {
 	assert(MaxUltimateGauge != 0 && "MaxUltimateGauge == 0");
 
+	const float PrevGauge = CurrentUltimateGauge;
 	CurrentUltimateGauge = std::min(CurrentUltimateGauge + NewAddGauge, MaxUltimateGauge);
+	if (PrevGauge < MaxUltimateGauge && CurrentUltimateGauge >= MaxUltimateGauge)
+	{
+		PlaySound2DByName("SB_SFX_UI_Notify");
+	}
 
 	if (MyGameCharacter)
 	{

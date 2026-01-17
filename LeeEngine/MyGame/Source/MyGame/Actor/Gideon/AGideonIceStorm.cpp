@@ -3,6 +3,7 @@
 
 #include "Engine/Components/UNiagaraComponent.h"
 #include "Engine/World/UWorld.h"
+#include "Engine/FAudioDevice.h"
 
 AGideonIceStorm::AGideonIceStorm()
 {
@@ -49,6 +50,13 @@ void AGideonIceStorm::Tick(float DeltaSeconds)
 	ForwardXZ.y = 0.0f;
 	ForwardXZ = ForwardXZ * MoveSpeedPerSec * DeltaSeconds;
 	SetActorLocation(GetActorLocation() + ForwardXZ);
+
+	StormSoundTimer -= DeltaSeconds;
+	if (StormSoundTimer <= 0.0f)
+	{
+		PlaySoundAtLocationByName(GetWorld(), GetActorLocation(), "SB_SFX_Strom");
+		StormSoundTimer = StormSoundInterval;
+	}
 }
 
 void AGideonIceStorm::Initialize(AGideonCharacter* DamageCauser, const FAttackData& Damage)

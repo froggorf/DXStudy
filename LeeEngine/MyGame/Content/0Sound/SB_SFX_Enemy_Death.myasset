@@ -1,0 +1,5 @@
+{
+    "Class": "USoundBase",
+    "Name": "SB_SFX_Enemy_Death",
+    "SoundFilePath": "/Content/Resource/MyGame/Sound/SFX/SFX_Enemy_Death.wav"
+}

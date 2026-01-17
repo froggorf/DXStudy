@@ -8,6 +8,7 @@
 #include "MyGame/Component/Combat/Skill/Ultimate/UUltimateBaseComponent.h"
 #include "MyGame/Core/AMyGamePlayerController.h"
 #include "MyGame/Core/ATownGameMode.h"
+#include "Engine/FAudioDevice.h"
 
 #include <algorithm>
 #include <cmath>
@@ -29,6 +30,32 @@ namespace
 		const float MaxDisplay = static_cast<float>(UINT_MAX);
 		const float Clamped = std::min(DamageAmount, MaxDisplay);
 		return static_cast<UINT>(max(1.0f, std::round(Clamped)));
+	}
+
+	void PlaySound2DByName(const char* SoundName)
+	{
+		if (!GAudioDevice || !SoundName || SoundName[0] == '\0')
+		{
+			return;
+		}
+
+		if (const std::shared_ptr<USoundBase>& Sound = USoundBase::GetSoundAsset(SoundName))
+		{
+			GAudioDevice->PlaySound2D(Sound);
+		}
+	}
+
+	void PlaySound2DRandom(std::initializer_list<const char*> SoundNames)
+	{
+		if (SoundNames.size() == 0)
+		{
+			return;
+		}
+
+		const int Index = MyMath::RandRange(0, static_cast<int>(SoundNames.size() - 1));
+		auto Iter = SoundNames.begin();
+		std::advance(Iter, Index);
+		PlaySound2DByName(*Iter);
 	}
 }
 
@@ -174,6 +201,18 @@ void AMyGameCharacterBase::BeginPlay()
 	
 }
 
+void AMyGameCharacterBase::Jump()
+{
+	ACharacter::Jump();
+	PlaySound2DByName("SB_SFX_Jump");
+}
+
+void AMyGameCharacterBase::Landing()
+{
+	ACharacter::Landing();
+	PlaySound2DByName("SB_SFX_Land");
+}
+
 void AMyGameCharacterBase::Tick_Editor(float DeltaSeconds)
 {
 	ACharacter::Tick_Editor(DeltaSeconds);
@@ -269,6 +308,23 @@ bool AMyGameCharacterBase::ApplyDamageToEnemy_Range(const FAttackData& AttackDat
 		{
 			UltimateComponent->AddUltimateGauge(AttackData.GainUltimateGauge * static_cast<float>(DamagedActors.size()));
 		}
+
+		if (DamageType == "SH_BasicAttack")
+		{
+			PlaySound2DRandom({"SB_SFX_Attack_Hit_01", "SB_SFX_Attack_Hit_02"});
+		}
+		else if (DamageType == "SH_SkillAttack")
+		{
+			PlaySound2DByName("SB_SFX_Magic_Ice");
+		}
+		else if (DamageType == "SH_UltAttack")
+		{
+			PlaySound2DByName("SB_SFX_Magic_Ultimate");
+		}
+		else if (DamageType == "BreakIce")
+		{
+			PlaySound2DByName("SB_SFX_Explosion_Small");
+		}
 	}
 
 	return !DamagedActors.empty();
@@ -297,11 +353,13 @@ void AMyGameCharacterBase::AttackedWhileDodge()
 void AMyGameCharacterBase::ChangeToUltimateCamera()
 {
 	GEngine->GetWorld()->GetCameraManager()->SetTargetCamera(UltimateSceneCameraComp);
+	PlaySound2DByName("SB_SFX_UI_Toggle");
 }
 
 void AMyGameCharacterBase::ChangeToNormalCamera(float BlendTime)
 {
 	GEngine->GetWorld()->GetCameraManager()->SetViewTargetWithBlend(CameraComp, BlendTime, EViewTargetBlendFunction::Cubic);
+	PlaySound2DByName("SB_SFX_UI_Toggle");
 }
 
 
@@ -315,9 +373,14 @@ float AMyGameCharacterBase::TakeDamage(float DamageAmount, const FDamageEvent& D
 	}
 
 	DamageAmount = max(0, DamageAmount - GetArmorPower());
-	if (HealthComponent->ApplyDamage(DamageAmount) <= 0.0f)
+	const float RemainingHealth = HealthComponent->ApplyDamage(DamageAmount);
+	if (RemainingHealth <= 0.0f)
 	{
 		Death();	
+	}
+	else if (DamageAmount > 0.0f)
+	{
+		PlaySound2DByName("SB_SFX_Player_Hit");
 	}
 
 	// 대미지 폰트 띄우기
@@ -341,6 +404,7 @@ void AMyGameCharacterBase::Death()
 		return;
 	}
 	bIsDead = true;
+	PlaySound2DByName("SB_SFX_Player_Death");
 
 	if (const std::shared_ptr<UAnimInstance>& AnimInstance = GetAnimInstance())
 	{
@@ -420,6 +484,7 @@ void AMyGameCharacterBase::Dodge()
 	}
 
 	bIsDodging = true;
+	PlaySound2DByName("SB_SFX_Dodge");
 	Delegate<> OnDodgeEnd;
 	OnDodgeEnd.Add(this, &AMyGameCharacterBase::DodgeEnd);
 
@@ -451,6 +516,7 @@ void AMyGameCharacterBase::ChangeToRoll()
 	}
 	
 	bIsDodging = false;
+	PlaySound2DByName("SB_SFX_Roll");
 	GEngine->GetTimerManager()->SetTimer(AttackedWhileDodgingHandle, {this, &AMyGameCharacterBase::AttackedWhileDodge} , AttackedWhileDodgeTriggerTime, false);
 
 	const std::shared_ptr<UAnimMontage>& PlayedMontage = bIsBackDodge? AM_Roll[static_cast<int>(EDodgeDirection::Backward)] : AM_Roll[static_cast<int>(EDodgeDirection::Forward)];
@@ -520,6 +586,7 @@ void AMyGameCharacterBase::ChangeCharacter()
 				SetActorLocation(XMFLOAT3{0,0,0});	
 				OtherCharacter->SetActorLocation(OriginPosition);
 				PC->OnPossess(OtherCharacter.get());
+				PlaySound2DByName("SB_SFX_Character_Switch");
 			}
 			
 		}
@@ -586,5 +653,6 @@ void AMyGameCharacterBase::SetEquipmentLevel(const std::array<int, static_cast<i
 void AMyGameCharacterBase::Tick(float DeltaSeconds)
 {
 	ACharacter::Tick(DeltaSeconds);
-	
+
+
 }

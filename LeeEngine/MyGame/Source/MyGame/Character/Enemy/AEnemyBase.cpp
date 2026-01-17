@@ -8,6 +8,7 @@
 #include "MyGame/BehaviorTree/TestBT.h"
 #include "MyGame/Character/Player/AMyGameCharacterBase.h"
 #include "MyGame/Component/Health/UHealthComponent.h"
+#include "Engine/FAudioDevice.h"
 #include "MyGame/Core/UMyGameInstance.h"
 #include "MyGame/Core/AMyGamePlayerController.h"
 #include "MyGame/Widget/Health/UEnemyHealthWidget.h"
@@ -34,6 +35,7 @@ namespace
 		const float Clamped = std::min(DamageAmount, MaxDisplay);
 		return static_cast<UINT>(max(1.0f, std::round(Clamped)));
 	}
+
 }
 
 static UINT EnemyCount = 0;
@@ -153,6 +155,10 @@ float AEnemyBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent
 			float NewHealthPercent = HealthComponent->GetHealthPercent() * 100;
 			AIController->GetBehaviorTree()->GetBlackBoard()->SetValue<FBlackBoardValueType_FLOAT>("HealthPercent", NewHealthPercent);
 		}
+		if (DamageAmount > 0.0f)
+		{
+			PlaySoundAtLocationByName(GetWorld(), GetActorLocation(), "SB_SFX_Attack_Hit_02");
+		}
 	}
 
 	if (AMyGamePlayerController* PC = dynamic_cast<AMyGamePlayerController*>(GetWorld()->GetPlayerController()))
@@ -173,6 +179,7 @@ void AEnemyBase::PlayAttackMontage(Delegate<> AttackFinishDelegate)
 	bBasicAttackApplied = false;
 	if (EnemyAnimInstance)
 	{
+		PlaySoundAtLocationByName(GetWorld(), GetActorLocation(), "SB_SFX_Enemy_Attack");
 		EnemyAnimInstance->DoAttackAnim(AttackFinishDelegate);
 	}
 	else
@@ -213,6 +220,7 @@ void AEnemyBase::ApplyBasicAttack()
 
 void AEnemyBase::Death()
 {
+	PlaySoundAtLocationByName(GetWorld(), GetActorLocation(), "SB_SFX_Enemy_Death");
 	OnDeath.Broadcast();
 
 	if (const std::shared_ptr<UAnimInstance>& AnimInstance = GetAnimInstance())
@@ -404,6 +412,7 @@ bool ADragon::StartFlameSkillCharge()
 	//MY_LOG("LOG", EDebugLogLevel::DLL_Warning, "Dragon charges skill")
 
 	// TODO: 스킬 차지용 애니메이션이나 이펙트 구현 할 시 이곳에서 사용
+	PlaySoundAtLocationByName(GetWorld(), GetActorLocation(), "SB_SFX_Dragon_Roar");
 	if (const std::shared_ptr<UAnimInstance>& AnimInstance = GetAnimInstance())
 	{
 		AnimInstance->Montage_Play(AM_Dragon_Scream, 0);
@@ -472,6 +481,7 @@ void ADragon::SkillCharging(float Progress)
 void ADragon::StartFlame()
 {
 	// 이펙트 시작
+	PlaySoundAtLocationByName(GetWorld(), GetActorLocation(), "SB_Fire");
 
 	// 공격 적용하기
 	// NOTE: 어차피 플레이어가 1인인 게임이라 따로 충돌체크 없이
@@ -514,6 +524,7 @@ bool ADragon::StartHPSkillCharge()
 		return false;
 	}
 
+	PlaySoundAtLocationByName(GetWorld(), GetActorLocation(), "SB_SFX_Dragon_Roar");
 
 	FTransform SpawnTransform;
 	XMFLOAT3 Forward = GetActorForwardVector();
@@ -565,6 +576,7 @@ bool ADragon::StartHPSkillCharge()
 
 void ADragon::StartHPSkill()
 {
+	PlaySoundAtLocationByName(GetWorld(), GetActorLocation(), "SB_SFX_Explosion_02");
 	XMFLOAT3 DragonPos = GetActorLocation();
 	XMFLOAT3 Forward = GetActorForwardVector();
 	Forward.y = 0.0f;

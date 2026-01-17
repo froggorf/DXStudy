@@ -1,0 +1,5 @@
+{
+    "Class": "USoundBase",
+    "Name": "SB_SFX_Magic_Impact",
+    "SoundFilePath": "/Content/Resource/MyGame/Sound/SFX/SFX_Magic_Impact.ogg"
+}

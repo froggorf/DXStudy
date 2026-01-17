@@ -2,6 +2,8 @@
 #include "FAudioDevice.h"
 #include "UEngine.h"
 #include "AssetManager/AssetManager.h"
+#include "World/UWorld.h"
+#include "Class/Camera/APlayerCameraManager.h"
 
 std::shared_ptr<FAudioDevice> GAudioDevice = nullptr;
 
@@ -18,7 +20,13 @@ void USoundBase::LoadDataFromFileData(const nlohmann::json& AssetData)
 	UObject::LoadDataFromFileData(AssetData);
 
 	std::string FilePath = AssetData["SoundFilePath"];
-	GAudioDevice->GetFMODSystem()->createSound((GEngine->GetDirectoryPath() + FilePath).c_str(),FMOD_DEFAULT, nullptr, &Sound);
+	const bool bLoop = AssetData.contains("bLoop") ? AssetData["bLoop"].get<bool>() : false;
+	FMOD_MODE Mode = FMOD_DEFAULT | (bLoop ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF);
+	GAudioDevice->GetFMODSystem()->createSound((GEngine->GetDirectoryPath() + FilePath).c_str(), Mode, nullptr, &Sound);
+	if (bLoop && Sound)
+	{
+		Sound->setLoopCount(-1);
+	}
 	SoundName = GetName();
 }
 
@@ -42,7 +50,10 @@ void FActiveSound::Play()
 
 void FActiveSound::Stop()
 {
-	CurrentChannel->stop();
+	if (CurrentChannel)
+	{
+		CurrentChannel->stop();
+	}
 }
 
 // ===============================================
@@ -108,10 +119,90 @@ void FAudioDevice::AudioThread_Update()
 	PendingStopActiveSounds.clear();
 }
 
+void FAudioDevice::PlaySoundAtLocation(USoundBase* SoundBase, UWorld* World, XMFLOAT3 Location)
+{
+	if (!SoundBase || !GAudioDevice)
+	{
+		return;
+	}
+
+	const std::shared_ptr<USoundBase> SharedSound = USoundBase::GetSoundAsset(SoundBase->GetName());
+	if (!SharedSound || !SharedSound->Sound)
+	{
+		return;
+	}
+
+	XMFLOAT3 ListenerPosition = {0.0f, 0.0f, 0.0f};
+	XMFLOAT3 ListenerForward = {0.0f, 0.0f, 1.0f};
+	XMFLOAT3 ListenerUp = {0.0f, 1.0f, 0.0f};
+	if (World)
+	{
+		if (APlayerCameraManager* CameraManager = World->GetCameraManager())
+		{
+			const FViewMatrices ViewMatrices = CameraManager->GetViewMatrices();
+			ListenerPosition = ViewMatrices.GetViewOrigin();
+
+			const XMVECTOR CameraRotation = ViewMatrices.GetCameraRotQuat();
+			XMVECTOR ForwardVec = XMVector3Rotate(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), CameraRotation);
+			XMVECTOR UpVec = XMVector3Rotate(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), CameraRotation);
+			XMStoreFloat3(&ListenerForward, XMVector3Normalize(ForwardVec));
+			XMStoreFloat3(&ListenerUp, XMVector3Normalize(UpVec));
+		}
+	}
+
+	const std::shared_ptr<FActiveSound> NewActiveSound = std::make_shared<FActiveSound>(SharedSound);
+
+	FAudioThread::ExecuteQueue.push([NewActiveSound, Location, ListenerPosition, ListenerForward, ListenerUp]()
+	{
+		if (!GAudioDevice || !NewActiveSound || !NewActiveSound->SoundBase || !NewActiveSound->SoundBase->Sound)
+		{
+			return;
+		}
+
+		FMOD::Channel* Channel = nullptr;
+		GAudioDevice->GetFMODSystem()->playSound(NewActiveSound->SoundBase->Sound, nullptr, true, &Channel);
+		if (!Channel)
+		{
+			return;
+		}
+
+		Channel->setMode(FMOD_3D);
+
+		const FMOD_VECTOR SoundPosition = {Location.x, Location.y, Location.z};
+		const FMOD_VECTOR SoundVelocity = {0.0f, 0.0f, 0.0f};
+		const FMOD_VECTOR ListenerPos = {ListenerPosition.x, ListenerPosition.y, ListenerPosition.z};
+		const FMOD_VECTOR ListenerVel = {0.0f, 0.0f, 0.0f};
+		const FMOD_VECTOR ListenerForwardVec = {ListenerForward.x, ListenerForward.y, ListenerForward.z};
+		const FMOD_VECTOR ListenerUpVec = {ListenerUp.x, ListenerUp.y, ListenerUp.z};
+
+		GAudioDevice->GetFMODSystem()->set3DListenerAttributes(0, &ListenerPos, &ListenerVel, &ListenerForwardVec, &ListenerUpVec);
+		Channel->set3DAttributes(&SoundPosition, &SoundVelocity);
+		Channel->set3DMinMaxDistance(200.0f, 5000.0f);
+		Channel->setPaused(false);
+
+		NewActiveSound->CurrentChannel = Channel;
+		GAudioDevice->ActiveSounds.emplace_back(NewActiveSound);
+	});
+}
+
 void FAudioDevice::PlaySound2D(const std::shared_ptr<USoundBase>& SoundBase) 
 {
 	const std::shared_ptr<FActiveSound>& NewActiveSound = std::make_shared<FActiveSound>(SoundBase);
 	AddNewActiveSound(NewActiveSound);
+}
+
+void FAudioDevice::StopSound(const std::shared_ptr<FActiveSound>& ActiveSound)
+{
+	if (!ActiveSound)
+	{
+		return;
+	}
+
+	FAudioThread::ExecuteQueue.push([ActiveSound]()
+	{
+		ActiveSound->Stop();
+		GAudioDevice->PendingStopActiveSounds.emplace_back(ActiveSound);
+	});
 }
 
 void FAudioDevice::GameKill()

@@ -1,0 +1,5 @@
+{
+    "Class": "USoundBase",
+    "Name": "SB_SFX_Heavy_Charge_Fail",
+    "SoundFilePath": "/Content/Resource/MyGame/Sound/SFX/SFX_Heavy_Charge_Fail.ogg"
+}

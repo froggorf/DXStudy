@@ -1,0 +1,6 @@
+{
+    "Class": "USoundBase",
+    "Name": "SB_BGM_Battle_Loop",
+    "SoundFilePath": "/Content/Resource/MyGame/Sound/BGM/BGM_Battle_Loop.wav"
+    ,"bLoop": true
+}

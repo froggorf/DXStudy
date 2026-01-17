@@ -1,7 +1,24 @@
 #include "CoreMinimal.h"
 #include "ULoginWidget.h"
 #include "Engine/World/UWorld.h"
+#include "Engine/FAudioDevice.h"
 #include "MyGame/Core/UMyGameInstance.h"
+
+namespace
+{
+	void PlaySound2DByName(const char* SoundName)
+	{
+		if (!GAudioDevice || !SoundName || SoundName[0] == '\0')
+		{
+			return;
+		}
+
+		if (const std::shared_ptr<USoundBase>& Sound = USoundBase::GetSoundAsset(SoundName))
+		{
+			GAudioDevice->PlaySound2D(Sound);
+		}
+	}
+}
 
 void ULoginWidget::NativeConstruct()
 {
@@ -170,6 +187,7 @@ void ULoginWidget::NativeConstruct()
 
 void ULoginWidget::OnLoginButtonClicked()
 {
+	PlaySound2DByName("SB_SFX_UI_Click_01");
 	std::string Username = UsernameInput->GetText_String();
 	std::string Password = PasswordInput->GetText_String();
 
@@ -177,6 +195,7 @@ void ULoginWidget::OnLoginButtonClicked()
 	if (Username.empty())
 	{
 		LoginButtonText->SetText(L"ID를 입력해주세요.");
+		PlaySound2DByName("SB_SFX_UI_Error");
 		GEngine->GetTimerManager()->SetTimer(LoginButtonTimerHandle, {this, &ULoginWidget::SetLoginButtonText}, 2.0f, false);
 		return;
 	}
@@ -184,6 +203,7 @@ void ULoginWidget::OnLoginButtonClicked()
 	if (Password.empty())
 	{
 		LoginButtonText->SetText(L"PW를 입력해주세요.");
+		PlaySound2DByName("SB_SFX_UI_Error");
 		GEngine->GetTimerManager()->SetTimer(LoginButtonTimerHandle, {this, &ULoginWidget::SetLoginButtonText}, 2.0f, false);
 		return;
 	}
@@ -191,6 +211,7 @@ void ULoginWidget::OnLoginButtonClicked()
 	// 로그인 처리
 	if (UMyGameInstance::GetInstance<UMyGameInstance>()->TryLogin(std::string{Username}, std::string{Password.data()}))
 	{
+		PlaySound2DByName("SB_SFX_UI_Confirm");
 		// 유저 ID 적용
 		UMyGameInstance::GetInstance<UMyGameInstance>()->UserName = Username;
 		// 모든 데이터 로드
@@ -205,12 +226,14 @@ void ULoginWidget::OnLoginButtonClicked()
 	else
 	{
 		LoginButtonText->SetText(L"ID/PW가 틀렸습니다.");
+		PlaySound2DByName("SB_SFX_UI_Error");
 		GEngine->GetTimerManager()->SetTimer(LoginButtonTimerHandle, {this, &ULoginWidget::SetLoginButtonText}, 2.0f, false);
 	}
 }
 
 void ULoginWidget::OnRegisterButtonClicked()
 {
+	PlaySound2DByName("SB_SFX_UI_Click_01");
 	std::string Username = UsernameInput->GetText_String();
 	std::string Password = PasswordInput->GetText_String();
 
@@ -218,6 +241,7 @@ void ULoginWidget::OnRegisterButtonClicked()
 	if (Username.empty())
 	{
 		RegisterButtonText->SetText(L"ID를 입력해주세요.");
+		PlaySound2DByName("SB_SFX_UI_Error");
 		GEngine->GetTimerManager()->SetTimer(RegisterButtonTimerHandle, {this, &ULoginWidget::SetRegisterButtonText}, 2.0f, false);
 		return;
 	}
@@ -225,6 +249,7 @@ void ULoginWidget::OnRegisterButtonClicked()
 	if (Password.empty())
 	{
 		RegisterButtonText->SetText(L"PW를 입력해주세요.");
+		PlaySound2DByName("SB_SFX_UI_Error");
 		GEngine->GetTimerManager()->SetTimer(RegisterButtonTimerHandle, {this, &ULoginWidget::SetRegisterButtonText}, 2.0f, false);
 		return;
 	}
@@ -234,11 +259,13 @@ void ULoginWidget::OnRegisterButtonClicked()
 	if (UMyGameInstance::GetInstance<UMyGameInstance>()->TryRegister(std::string{Username}, std::string{Password.data()}))
 	{
 		RegisterButtonText->SetText(L"등록 완료!");
+		PlaySound2DByName("SB_SFX_UI_Confirm");
 		GEngine->GetTimerManager()->SetTimer(RegisterButtonTimerHandle, {this, &ULoginWidget::SetRegisterButtonText}, 2.0f, false);
 	}
 	else
 	{
 		RegisterButtonText->SetText(L"이미 존재하는 ID입니다.");
+		PlaySound2DByName("SB_SFX_UI_Error");
 		GEngine->GetTimerManager()->SetTimer(RegisterButtonTimerHandle, {this, &ULoginWidget::SetRegisterButtonText}, 2.0f, false);
 	}
 }

@@ -4,8 +4,25 @@
 #include "Engine/Animation/UAnimInstance.h"
 #include "Engine/Class/Framework/UPlayerInput.h"
 #include "Engine/RenderCore/EditorScene.h"
+#include "Engine/FAudioDevice.h"
 #include "MyGame/Character/Player/AMyGameCharacterBase.h"
 #include "MyGame/Widget/UMyGameWidgetBase.h"
+
+namespace
+{
+	void PlaySound2DByName(const char* SoundName)
+	{
+		if (!GAudioDevice || !SoundName || SoundName[0] == '\0')
+		{
+			return;
+		}
+
+		if (const std::shared_ptr<USoundBase>& Sound = USoundBase::GetSoundAsset(SoundName))
+		{
+			GAudioDevice->PlaySound2D(Sound);
+		}
+	}
+}
 
 USkillBaseComponent::USkillBaseComponent()
 {
@@ -75,6 +92,10 @@ void USkillBaseComponent::DoSkill(UINT SkillIndex)
 	}
 
 	bIsCurrentPlayingSkill = true;
+	if (bUseCastSound)
+	{
+		PlaySound2DByName("SB_SFX_Skill_Cast");
+	}
 
 	// SkillIndex 번째 스킬 재생 및 델리게이트 진행
 	AnimInstance->Montage_Play(SkillAttackData[SkillIndex].AnimMontage, 0, {}, {}, {this, &USkillBaseComponent::OnSkillBlendOut});
@@ -149,6 +170,11 @@ const FAttackData& USkillBaseComponent::GetSkillAttackData(size_t Index)
 	}
 
 	return SkillAttackData[Index];
+}
+
+void USkillBaseComponent::SetUseCastSound(bool bNewUseCastSound)
+{
+	bUseCastSound = bNewUseCastSound;
 }
 
 void USkillBaseComponent::SetSkillAttackData(const std::vector<std::string>& AttackMontageNames, const std::vector<FAttackData>& NewAttackData, const float NewSkillCooldown)

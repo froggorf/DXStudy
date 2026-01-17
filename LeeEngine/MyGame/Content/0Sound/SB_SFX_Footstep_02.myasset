@@ -1,0 +1,5 @@
+{
+    "Class": "USoundBase",
+    "Name": "SB_SFX_Footstep_02",
+    "SoundFilePath": "/Content/Resource/MyGame/Sound/SFX/SFX_Footstep_02.ogg"
+}

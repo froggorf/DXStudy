@@ -6,6 +6,7 @@
 #include "Engine/Components/UStaticMeshComponent.h"
 #include "Engine/Physics/UBoxComponent.h"
 #include "Engine/World/UWorld.h"
+#include "Engine/FAudioDevice.h"
 #include "MyGame/Core/UMyGameInstance.h"
 
 APortal::APortal()
@@ -63,6 +64,7 @@ void APortal::BeginPlay()
 	{
 		TriggerBox->OnComponentBeginOverlap.Add(this, &APortal::OnPortalBeginOverlap);
 	}
+	PlaySoundAtLocationByName(GetWorld(), GetActorLocation(), "SB_SFX_Portal_Open");
 }
 
 void APortal::SetTargetLevelName(const std::string& NewTargetLevelName)
@@ -88,6 +90,7 @@ void APortal::OnPortalBeginOverlap(UShapeComponent* OverlappedComponent, AActor*
 		if (Player && Player.get() == OtherActor)
 		{
 			bTriggered = true;
+			PlaySoundAtLocationByName(GetWorld(), GetActorLocation(), "SB_SFX_Portal_Activate");
 			if (bIncreaseStageOnUse)
 			{
 				if (UMyGameInstance* GameInstance = UMyGameInstance::GetInstance<UMyGameInstance>())

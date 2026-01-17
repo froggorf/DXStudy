@@ -12,6 +12,7 @@ void UGideonSkillComponent::Initialize(AMyGameCharacterBase* MyCharacter)
 	SetSkillAttackData({"AM_Gideon_Skill"}, 
 	{FAttackData{XMFLOAT3{}, 1.0f, 0.0f, 10.0f}},
 	15.0f);
+	SetUseCastSound(false);
 }
 
 void UGideonSkillComponent::ApplySkillAttack()

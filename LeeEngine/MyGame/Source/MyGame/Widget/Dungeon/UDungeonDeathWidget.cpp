@@ -2,6 +2,23 @@
 #include "UDungeonDeathWidget.h"
 
 #include "Engine/World/UWorld.h"
+#include "Engine/FAudioDevice.h"
+
+namespace
+{
+	void PlaySound2DByName(const char* SoundName)
+	{
+		if (!GAudioDevice || !SoundName || SoundName[0] == '\0')
+		{
+			return;
+		}
+
+		if (const std::shared_ptr<USoundBase>& Sound = USoundBase::GetSoundAsset(SoundName))
+		{
+			GAudioDevice->PlaySound2D(Sound);
+		}
+	}
+}
 
 void UDungeonDeathWidget::NativeConstruct()
 {
@@ -110,6 +127,7 @@ void UDungeonDeathWidget::NativeConstruct()
 
 void UDungeonDeathWidget::ChangeLevel(const std::string& LevelName)
 {
+	PlaySound2DByName("SB_SFX_UI_Click_01");
 	if (APlayerController* PC = GetWorld()->GetPlayerController())
 	{
 		PC->RemoveFromParent("DungeonDeath");

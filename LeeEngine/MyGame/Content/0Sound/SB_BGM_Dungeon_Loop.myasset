@@ -1,0 +1,6 @@
+{
+    "Class": "USoundBase",
+    "Name": "SB_BGM_Dungeon_Loop",
+    "SoundFilePath": "/Content/Resource/MyGame/Sound/BGM/BGM_Dungeon_Loop.ogg"
+    ,"bLoop": true
+}

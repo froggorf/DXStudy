@@ -57,6 +57,7 @@ public:
 	void AudioThread_Update();
 	void PlaySoundAtLocation(USoundBase* SoundBase, UWorld* World, XMFLOAT3 Location);
 	void PlaySound2D(const std::shared_ptr<USoundBase>& SoundBase);
+	void StopSound(const std::shared_ptr<FActiveSound>& ActiveSound);
 	void GameKill();
 
 protected:
@@ -78,3 +79,45 @@ public:
 };
 
 extern std::shared_ptr<FAudioDevice> GAudioDevice;
+
+inline void PlaySoundAtLocationByName(const std::shared_ptr<UWorld>& World, const XMFLOAT3& Location, const char* SoundName)
+{
+	if (!GAudioDevice || !World || !SoundName || SoundName[0] == '\0')
+	{
+		return;
+	}
+
+	if (const std::shared_ptr<USoundBase>& Sound = USoundBase::GetSoundAsset(SoundName))
+	{
+		GAudioDevice->PlaySoundAtLocation(Sound.get(), World.get(), Location);
+	}
+}
+
+inline void PlaySound2DByName(const std::shared_ptr<UWorld>& World, const char* SoundName)
+{
+	if (!GAudioDevice || !World || !SoundName || SoundName[0] == '\0')
+	{
+		return;
+	}
+
+	if (const std::shared_ptr<USoundBase>& Sound = USoundBase::GetSoundAsset(SoundName))
+	{
+		GAudioDevice->PlaySound2D(Sound);
+	}
+}
+
+inline void PlaySoundAtLocationRandom(const std::shared_ptr<UWorld>& World, const XMFLOAT3& Location, std::initializer_list<const char*> SoundNames)
+{
+	if (!GAudioDevice || !World || SoundNames.size() == 0)
+	{
+		return;
+	}
+
+	const int Index = MyMath::RandRange(0, static_cast<int>(SoundNames.size() - 1));
+	auto Iter = SoundNames.begin();
+	std::advance(Iter, Index);
+	if (const std::shared_ptr<USoundBase>& Sound = USoundBase::GetSoundAsset(*Iter))
+	{
+		GAudioDevice->PlaySoundAtLocation(Sound.get(), World.get(), Location);
+	}
+}

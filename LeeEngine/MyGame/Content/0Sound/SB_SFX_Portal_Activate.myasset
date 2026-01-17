@@ -1,0 +1,5 @@
+{
+    "Class": "USoundBase",
+    "Name": "SB_SFX_Portal_Activate",
+    "SoundFilePath": "/Content/Resource/MyGame/Sound/SFX/SFX_Portal_Activate.ogg"
+}

@@ -2,6 +2,7 @@
 #include "ACoin.h"
 
 #include "Engine/World/UWorld.h"
+#include "Engine/FAudioDevice.h"
 #include "MyGame/Core/UMyGameInstance.h"
 #include "MyGame/Widget/Town/UEquipmentStatusWidget.h"
 
@@ -42,6 +43,7 @@ void ACoin::OverlapToPlayer()
 	{
 		if (GameInstance->AddGold(10))
 		{
+			PlaySoundAtLocationRandom(GetWorld(), GetActorLocation(), {"SB_SFX_Coin_Pickup_01", "SB_SFX_Coin_Pickup_02"});
 			if (APlayerController* PC = GetWorld()->GetPlayerController())
 			{
 				if (const std::shared_ptr<UUserWidget>& Widget = PC->GetWidget("EquipmentStatus"))
