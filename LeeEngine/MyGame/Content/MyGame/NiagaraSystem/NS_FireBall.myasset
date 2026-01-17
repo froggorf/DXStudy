@@ -5,27 +5,27 @@
 	{ 
 		"Property" : 1, 
 		"OverrideMat": "M_FireBall",
-		"SpawnRate" : 30,
-		"Life" : [ 1.0, 1.5 ],
-		"Scale" : [ [30,30,1] , [50,30,1] ],
+		"SpawnRate" : 45,
+		"Life" : [ 0.6, 1.0 ],
+		"Scale" : [ [28,28,1] , [55,35,1] ],
 		"Rot" : [ [0,0,-180] , [0,0,180]],
 		"SpaceType": 0,
 		"SpawnShape" : 1,
-		"SpawnScale" : [15,15,15],
+		"SpawnScale" : [12,12,12],
 		"Modules" : 
 		{
 			"Render" : {
-  			    "StartColor" : [25, 5.3624, 0.0, 0.5],
-			    "EndColor" : [7.5, 0.1116, 0.0, 1.0],
-			    "FadeOut" : [1, 0.8]
+  			    "StartColor" : [18, 7, 1.2, 0.6],
+			    "EndColor" : [2, 0.2, 0.0, 0.05],
+			    "FadeOut" : [1, 0.6]
 			},
 			"Scale" :{
 			    "StartScale" : 1.0,
-			    "EndScale" : 0.3
+			    "EndScale" : 0.2
 			},
 			"AddVelocity":{
-			    "MinVel" : [0.0, 0.0, 0.0],
-			    "MaxVel" : [0.0, 50.0, 0.0]
+			    "MinVel" : [-20.0, 10.0, -20.0],
+			    "MaxVel" : [20.0, 40.0, 20.0]
 			},
 			"TickVel" : [0,0,0],
 			"AddRot" : [0,0,0]
@@ -34,33 +34,33 @@
 	{ 
 		"Property" : 1, 
 		"OverrideMat": "M_FireFlash",
-		"SpawnRate" : 20,
-		"Life" : [ 0.3, 0.8 ],
-		"Scale" : [ [1,1,1] , [2,2,1] ],
+		"SpawnRate" : 25,
+		"Life" : [ 0.2, 0.5 ],
+		"Scale" : [ [1,1,1] , [2.5,2.5,1] ],
 		"Rot" : [ [0,0,0] , [0,0,0]],
 		"SpaceType": 1,
 		"SpawnShape" : 0,
-		"SpawnScale" : [30,1,30],
+		"SpawnScale" : [20,1,20],
 		"Modules" : 
 		{
 			"Render" : {
 				"RandomStart": 1,
-				"MinStartColor" : [15, 0.143,0, 1],
-				"MaxStartColor" : [8, 0.91, 0, 5],
-			    "EndColor" : [7.5, 0.1116, 0.0, 1.0],
-			    "FadeOut" : [1, 0.8]
+				"MinStartColor" : [12, 4, 1, 0.25],
+				"MaxStartColor" : [18, 7, 2, 0.8],
+			    "EndColor" : [2, 0.2, 0.0, 0.05],
+			    "FadeOut" : [1, 0.7]
 			},
 			"AddVelocity":{
-			    "MinVel" : [0.0, 100.0, 0.0],
-			    "MaxVel" : [0.0, 300.0, 0.0]
+			    "MinVel" : [0.0, 60.0, 0.0],
+			    "MaxVel" : [0.0, 180.0, 0.0]
 			},
 			"Orbit" : {
-				"Speed" : [ 10, 60 ],
-				"Radius" : [-50, 50]
+				"Speed" : [ 12, 70 ],
+				"Radius" : [-40, 40]
 			},
 			"DynamicParam" : {
-				"Min" : [0.2, 2.5, 0.0, 0.0],
-				"Max" : [3, 5, 0.0, 0.0]
+				"Min" : [0.3, 2.0, 0.0, 0.0],
+				"Max" : [3.5, 4.5, 0.0, 0.0]
 			}
 		}
 	}
