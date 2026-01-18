@@ -2,6 +2,7 @@
 #include "ACharacter.h"
 
 #include "Engine/Class/Camera/UCameraComponent.h"
+#include "Engine/Physics/UShapeComponent.h"
 #include "Engine/World/UWorld.h"
 
 
@@ -13,6 +14,41 @@ physx::PxQueryHitType::Enum MyQueryFilterCallback::preFilter(const physx::PxFilt
 		{
 			return physx::PxQueryHitType::eNONE; // 충돌 무시
 		}	
+	}
+
+	return physx::PxQueryHitType::eBLOCK;
+}
+
+physx::PxQueryHitType::Enum MyQueryFilterCallback::postFilter(
+	const physx::PxFilterData&,
+	const physx::PxQueryHit& hit,
+	const physx::PxShape*,
+	const physx::PxRigidActor* actor)
+{
+	if (!actor || !actor->userData)
+	{
+		return physx::PxQueryHitType::eBLOCK;
+	}
+
+	UShapeComponent* ShapeComp = static_cast<UShapeComponent*>(actor->userData);
+	AActor* OtherOwner = ShapeComp ? ShapeComp->GetOwner() : nullptr;
+	if (!OtherOwner)
+	{
+		return physx::PxQueryHitType::eBLOCK;
+	}
+
+	if (OtherOwner == IgnoreActor)
+	{
+		return physx::PxQueryHitType::eNONE;
+	}
+
+	if (dynamic_cast<ACharacter*>(OtherOwner))
+	{
+		const physx::PxLocationHit& LocationHit = static_cast<const physx::PxLocationHit&>(hit);
+		if ((LocationHit.flags & physx::PxHitFlag::eNORMAL) && LocationHit.normal.y > 0.5f)
+		{
+			return physx::PxQueryHitType::eNONE;
+		}
 	}
 
 	return physx::PxQueryHitType::eBLOCK;
@@ -56,6 +92,10 @@ void UCharacterMovementComponent::BeginPlay()
 
 	CCTQueryCallBack.IgnoreActor = GetOwner();
 	Filters.mFilterCallback = &CCTQueryCallBack;
+	Filters.mFilterFlags = physx::PxQueryFlag::eSTATIC
+		| physx::PxQueryFlag::eDYNAMIC
+		| physx::PxQueryFlag::ePREFILTER
+		| physx::PxQueryFlag::ePOSTFILTER;
 
 	bIsFalling = false;
 }
@@ -117,6 +157,27 @@ void UCharacterMovementComponent::TickComponent(float DeltaSeconds)
 	physx::PxExtendedVec3 NewPos = PxCharacterController->getPosition();
 
 	XMFLOAT3 NewP = {static_cast<float>(NewPos.x),static_cast<float>(NewPos.y),static_cast<float>(-NewPos.z)};
+	XMFLOAT3 OldP = GetOwner()->GetActorLocation();
+
+	physx::PxControllerState ControllerState;
+	PxCharacterController->getState(ControllerState);
+
+	bool bStandingOnCharacter = ControllerState.standOnAnotherCCT;
+	if (!bStandingOnCharacter && ControllerState.touchedActor && ControllerState.touchedActor->userData)
+	{
+		UShapeComponent* ShapeComp = static_cast<UShapeComponent*>(ControllerState.touchedActor->userData);
+		AActor* OtherOwner = ShapeComp ? ShapeComp->GetOwner() : nullptr;
+		if (dynamic_cast<ACharacter*>(OtherOwner))
+		{
+			bStandingOnCharacter = true;
+		}
+	}
+
+	if (bStandingOnCharacter && CurVelocityY <= 0.0f && NewP.y > OldP.y)
+	{
+		NewP.y = OldP.y;
+	}
+
 	GetOwner()->SetActorLocation(NewP);
 
 	ControlInputVector = {0,0,0};

@@ -26,10 +26,11 @@ public:
 		const physx::PxRigidActor* actor,
 		physx::PxHitFlags& /*queryFlags*/) override;
 
-	physx::PxQueryHitType::Enum postFilter(const physx::PxFilterData& filterData, const physx::PxQueryHit& hit, const physx::PxShape* shape, const physx::PxRigidActor* actor) override
-	{
-		return physx::PxQueryHitType::eBLOCK;
-	}
+	physx::PxQueryHitType::Enum postFilter(
+		const physx::PxFilterData& filterData,
+		const physx::PxQueryHit& hit,
+		const physx::PxShape* shape,
+		const physx::PxRigidActor* actor) override;
 };
 
 enum class EMovementMode
