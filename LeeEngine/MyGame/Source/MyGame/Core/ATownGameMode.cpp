@@ -130,6 +130,10 @@ void ATownGameMode::BeginPlay()
 		PC->CreateWidget("StageLevel", StageLevelWidget);
 		PC->AddToViewport("StageLevel", StageLevelWidget);
 	}
+
+
+	GetWorld()->SpawnActor("ADragon", FTransform{XMFLOAT3{ -1500,50.0f,-0.0f}, XMFLOAT4{0.0f,0.0f,0.0f,1.0f}, {1.0f,1.0f,1.0f}}, "asd");
+
 }
 
 void ATownGameMode::StartGame()

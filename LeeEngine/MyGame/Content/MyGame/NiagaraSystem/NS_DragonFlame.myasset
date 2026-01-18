@@ -1,0 +1,67 @@
+{
+    "Class": "UNiagaraSystem",
+    "Name": "NS_DragonFlame",
+    "Emitters" : [
+	{
+		"Property" : 1,
+		"OverrideMat": "M_FireBall",
+		"SpawnRate" : 200,
+		"Life" : [ 0.55, 1.15 ],
+		"Scale" : [ [150,150,1] , [200,200,1] ],
+		"Rot" : [ [0,0,-15] , [0,0,15]],
+		"SpaceType": 0,
+		"SpawnShape" : 0,
+		"SpawnScale" : [60,30,240],
+		"Modules" :
+		{
+			"Render" : {
+  			    "StartColor" : [18, 7, 1.2, 0.7],
+			    "EndColor" : [1, 0.1, 0.0, 0.05],
+			    "FadeOut" : [1, 0.4]
+			},
+			"Scale" :{
+			    "StartScale" : 1.0,
+			    "EndScale" : 0.4
+			},
+			"AddVelocity":{
+			    "MinVel" : [-140.0, 60.0, 2200.0],
+			    "MaxVel" : [140.0, 260.0, 3800.0]
+			},
+			"AlignToVel" : 1
+		}
+	},
+	{
+		"Property" : 1,
+		"OverrideMat": "M_FireFlash",
+		"SpawnRate" : 120,
+		"Life" : [ 0.2, 0.6 ],
+		"Scale" : [ [2.16,2.16,1] , [3.84,3.84,1] ],
+		"Rot" : [ [0,0,0] , [0,0,0]],
+		"SpaceType": 0,
+		"SpawnShape" : 0,
+		"SpawnScale" : [70,35,260],
+		"Modules" :
+		{
+			"Render" : {
+				"RandomStart": 1,
+				"MinStartColor" : [10, 4, 1, 0.2],
+				"MaxStartColor" : [16, 6, 2, 0.8],
+			    "EndColor" : [1, 0.1, 0.0, 0.05],
+			    "FadeOut" : [1, 0.6]
+			},
+			"AddVelocity":{
+			    "MinVel" : [-180.0, 80.0, 2400.0],
+			    "MaxVel" : [180.0, 280.0, 4200.0]
+			},
+			"Orbit" : {
+				"Speed" : [ 12, 30 ],
+				"Radius" : [20, 60]
+			},
+			"DynamicParam" : {
+				"Min" : [0.3, 2.0, 0.0, 0.0],
+				"Max" : [4.0, 5.0, 0.0, 0.0]
+			}
+		}
+	}
+    ]
+}

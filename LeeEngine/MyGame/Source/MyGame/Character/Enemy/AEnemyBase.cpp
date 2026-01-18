@@ -322,11 +322,31 @@ ADragon::ADragon()
 	BasicAttackData = FAttackData{XMFLOAT3{1000,300,1000}, 1.0f, 0.0f, 0.0f, true};
 	EnemyPower = 150.0f;
 	DetectRange = 2500.0f;
+
+	FlameVFX = std::make_shared<UNiagaraComponent>();
+	FlameVFX->SetupAttachment(SkeletalMeshComponent, FlameSocketName);
+	FlameVFX->SetRelativeRotation(FlameVFXRotation);
+	FlameVFX->Deactivate();
 }
 
 void ADragon::Register()
 {
 	AEnemyBase::Register();
+
+	AssetManager::GetAsyncAssetCache("NS_DragonFlame",[this](std::shared_ptr<UObject> Object)
+		{
+			FlameVFXNormalSystem = std::dynamic_pointer_cast<UNiagaraSystem>(Object);
+			SetFlameVFXSystem(FlameVFXNormalSystem);
+			if (bFlameVFXPendingActivate)
+			{
+				ActivateFlameVFX();
+			}
+		});
+
+	AssetManager::GetAsyncAssetCache("NS_DragonFlame_Long",[this](std::shared_ptr<UObject> Object)
+		{
+			FlameVFXHPSkillSystem = std::dynamic_pointer_cast<UNiagaraSystem>(Object);
+		});
 
 
 	AssetManager::GetAsyncAssetCache("AM_Dragon_Scream",[this](std::shared_ptr<UObject> Object)
@@ -478,9 +498,54 @@ void ADragon::SkillCharging(float Progress)
 	
 }
 
+void ADragon::SetFlameVFXSystem(const std::shared_ptr<UNiagaraSystem>& System)
+{
+	if (!FlameVFX || !System)
+	{
+		return;
+	}
+	if (ActiveFlameVFXSystem == System && bIsFlameVFXReady)
+	{
+		return;
+	}
+
+	FlameVFX->SetNiagaraAsset(System);
+	FlameVFX->RegisterSceneProxies();
+	ActiveFlameVFXSystem = System;
+	bIsFlameVFXReady = true;
+}
+
+void ADragon::ActivateFlameVFX()
+{
+	if (!FlameVFX || !bIsFlameVFXReady)
+	{
+		bFlameVFXPendingActivate = true;
+		return;
+	}
+
+	if (!bIsFlameVFXActive)
+	{
+		FlameVFX->Activate();
+		bIsFlameVFXActive = true;
+	}
+	bFlameVFXPendingActivate = false;
+}
+
+void ADragon::DeactivateFlameVFX()
+{
+	bFlameVFXPendingActivate = false;
+	if (FlameVFX && bIsFlameVFXActive)
+	{
+		FlameVFX->Deactivate();
+		bIsFlameVFXActive = false;
+	}
+}
+
 void ADragon::StartFlame()
 {
 	// 이펙트 시작
+	SetFlameVFXSystem(FlameVFXNormalSystem);
+	ActivateFlameVFX();
 	PlaySoundAtLocationByName(GetWorld(), GetActorLocation(), "SB_Fire");
 
 	// 공격 적용하기
@@ -515,6 +580,7 @@ void ADragon::StartFlame()
 void ADragon::EndFlame()
 {
 	// 불 뿜는 이펙트 종료
+	DeactivateFlameVFX();
 }
 
 bool ADragon::StartHPSkillCharge()
@@ -576,6 +642,15 @@ bool ADragon::StartHPSkillCharge()
 
 void ADragon::StartHPSkill()
 {
+	if (FlameVFXHPSkillSystem)
+	{
+		SetFlameVFXSystem(FlameVFXHPSkillSystem);
+	}
+	else
+	{
+		SetFlameVFXSystem(FlameVFXNormalSystem);
+	}
+	ActivateFlameVFX();
 	PlaySoundAtLocationByName(GetWorld(), GetActorLocation(), "SB_SFX_Explosion_02");
 	XMFLOAT3 DragonPos = GetActorLocation();
 	XMFLOAT3 Forward = GetActorForwardVector();
@@ -615,5 +690,5 @@ void ADragon::StartHPSkill()
 
 void ADragon::EndHPSkill()
 {
-	
+	DeactivateFlameVFX();
 }

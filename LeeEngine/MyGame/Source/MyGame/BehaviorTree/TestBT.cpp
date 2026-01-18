@@ -554,10 +554,6 @@ void UDragonBT::OnConstruct()
 			NotTriggered->Initialize("HPSkillTriggered", false, EBlackBoardValueCheckType::IsFalse);
 			HPSkillSequence->Decorators.emplace_back(NotTriggered);
 
-			std::shared_ptr<FBTTask_SetBlackBoardBool> SetTriggeredTask = std::make_shared<FBTTask_SetBlackBoardBool>();
-			SetTriggeredTask->Initialize("HPSkillTriggered", true);
-			HPSkillSequence->AddChild(SetTriggeredTask);
-
 			std::shared_ptr<FBTTask_DragonMoveToPatternLocation> StartFlyTask = std::make_shared<FBTTask_DragonMoveToPatternLocation>();
 			StartFlyTask->SetPlayingAnimationBlackBoardKeyName("StartFlyAnim");
 
@@ -578,6 +574,10 @@ void UDragonBT::OnConstruct()
 			HPSkillSequence->AddChild(LandingTask);
 			HPSkillSequence->AddChild(ChargingSkillTask);
 			HPSkillSequence->AddChild(UseSkillTask);
+
+			std::shared_ptr<FBTTask_SetBlackBoardBool> SetTriggeredTask = std::make_shared<FBTTask_SetBlackBoardBool>();
+			SetTriggeredTask->Initialize("HPSkillTriggered", true);
+			HPSkillSequence->AddChild(SetTriggeredTask);
 		}
 
 		// Standard attack pattern

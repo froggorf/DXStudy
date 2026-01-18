@@ -12,6 +12,7 @@ class UEnemyAnimInstanceBase;
 class UWolfAnimInstance;
 class AAIController;
 class UNiagaraComponent;
+class UNiagaraSystem;
 class UWidgetComponent;
 class UHealthComponent;
 class UMotionWarpingComponent;
@@ -24,6 +25,7 @@ class AEnemyBase : public ACharacter
 	~AEnemyBase() override = default;
 
 	void Register() override;
+	void Tick(float DeltaSeconds) override;
 	void BeginPlay() override;
 
 	float TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AActor* DamageCauser) override;
@@ -35,7 +37,6 @@ class AEnemyBase : public ACharacter
 	void Death() override;
 	void DestroyAtDeath();
 
-	void Tick(float DeltaSeconds) override;
 
 	virtual void BindingBehaviorTree();
 	virtual std::shared_ptr<UAnimMontage> GetDeathAnimMontage() const {assert(nullptr); return nullptr;}
@@ -146,7 +147,20 @@ protected:
 
 	XMFLOAT3 HPSkillRange = XMFLOAT3{2000.0f, 10.0f, 3000.0f};
 
+	std::shared_ptr<UNiagaraComponent> FlameVFX;
+	std::string FlameSocketName = "Tongue03";
+	XMFLOAT3 FlameVFXRotation = XMFLOAT3{90.0f, -0.0f, 0.0f};
+	std::shared_ptr<UNiagaraSystem> FlameVFXNormalSystem;
+	std::shared_ptr<UNiagaraSystem> FlameVFXHPSkillSystem;
+	std::shared_ptr<UNiagaraSystem> ActiveFlameVFXSystem;
+	bool bIsFlameVFXReady = false;
+	bool bFlameVFXPendingActivate = false;
+	bool bIsFlameVFXActive = false;
+
 	// 범위기 표시 장판 액터
 	std::shared_ptr<ARangeDecalActor> ShowRangeActor;
 private:
+	void SetFlameVFXSystem(const std::shared_ptr<UNiagaraSystem>& System);
+	void ActivateFlameVFX();
+	void DeactivateFlameVFX();
 };

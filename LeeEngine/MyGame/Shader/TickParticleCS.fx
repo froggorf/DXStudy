@@ -23,6 +23,7 @@ float3 GetRandom(float seed)
 void ParticleInit(inout FParticleData Particle, in FParticleModule Module, float NormalizedThreadID)
 {
 	Particle = (FParticleData)0.f;
+	float3x3 objectRot = QuaternionToMatrix(Module.ObjectWorldRotation);
 
 	// 파티클 활성화
 	Particle.Active = 1;
@@ -130,7 +131,15 @@ void ParticleInit(inout FParticleData Particle, in FParticleModule Module, float
 	}
 
 	// Particle 의 World 좌표 계산
-	Particle.WorldPos.xyz = Particle.LocalPos.xyz + Module.ObjectWorldPos;
+	if (0 == Module.SpaceType)
+	{
+		float3 rotatedLocal = mul(objectRot, Particle.LocalPos.xyz);
+		Particle.WorldPos.xyz = rotatedLocal + Module.ObjectWorldPos;
+	}
+	else
+	{
+		Particle.WorldPos.xyz = Particle.LocalPos.xyz + Module.ObjectWorldPos;
+	}
 	Particle.WorldInitPos = Particle.WorldPos;
 
 	// Dynamic Param 모듈
@@ -207,6 +216,7 @@ StructuredBuffer<FParticleModule> gModule : register(ParticleDataRegister);
 	// 파티클 업데이트
 	else
 	{
+		float3x3 objectRot = QuaternionToMatrix(gModule[0].ObjectWorldRotation);
 		// NormalizedAge (0~1)
 		gBuffer[ThreadID.x].NormalizedAge = gBuffer[ThreadID.x].Age / gBuffer[ThreadID.x].Life;
 
@@ -222,7 +232,8 @@ StructuredBuffer<FParticleModule> gModule : register(ParticleDataRegister);
 		if (0 == gModule[0].SpaceType)
 		{
 			gBuffer[ThreadID.x].LocalPos += gBuffer[ThreadID.x].Velocity * gDeltaTime;
-			gBuffer[ThreadID.x].WorldPos = gBuffer[ThreadID.x].LocalPos + gModule[0].ObjectWorldPos;
+			float3 rotatedLocal = mul(objectRot, gBuffer[ThreadID.x].LocalPos);
+			gBuffer[ThreadID.x].WorldPos = rotatedLocal + gModule[0].ObjectWorldPos;
 		}
 		else
 		{
@@ -287,7 +298,8 @@ StructuredBuffer<FParticleModule> gModule : register(ParticleDataRegister);
 			// 1 : World Space
 			if (0 == gModule[0].SpaceType)
 			{
-				gBuffer[ThreadID.x].WorldPos = gBuffer[ThreadID.x].LocalPos + gModule[0].ObjectWorldPos;
+				float3 rotatedLocal = mul(objectRot, gBuffer[ThreadID.x].LocalPos);
+				gBuffer[ThreadID.x].WorldPos = rotatedLocal + gModule[0].ObjectWorldPos;
 			}
 			else
 			{
@@ -300,6 +312,10 @@ StructuredBuffer<FParticleModule> gModule : register(ParticleDataRegister);
 		if (gModule[0].Module[10])
 		{
 			float3 velocity = gBuffer[ThreadID.x].Velocity;
+			if (0 == gModule[0].SpaceType)
+			{
+				velocity = mul(objectRot, velocity);
+			}
 			float3 forward = normalize(velocity);
 
 			float3 worldUp = float3(0, 1, 0);

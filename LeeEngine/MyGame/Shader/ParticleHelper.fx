@@ -103,6 +103,7 @@ struct FParticleModule
 	// 추가 데이터
 	float3 ObjectWorldPos;
 	float3 ObjectWorldScale;
+	float4 ObjectWorldRotation;
 
 	// Dynamic Param 모듈
 	float4 DynamicParamMin;
