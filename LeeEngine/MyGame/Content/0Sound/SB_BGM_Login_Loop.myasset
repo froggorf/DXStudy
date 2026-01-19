@@ -1,0 +1,6 @@
+{
+    "Class": "USoundBase",
+    "Name": "SB_BGM_Login_Loop",
+    "SoundFilePath": "/Content/Resource/MyGame/Sound/BGM/BGM_Login_Loop.wav"
+    ,"bLoop": true
+}

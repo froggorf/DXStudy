@@ -14,52 +14,6 @@
 #include <cmath>
 #include <limits>
 
-namespace
-{
-	UINT ToDisplayDamageValue(float DamageAmount)
-	{
-		if (!std::isfinite(DamageAmount))
-		{
-			return UINT_MAX;
-		}
-		if (DamageAmount <= 0.0f)
-		{
-			return 0;
-		}
-
-		const float MaxDisplay = static_cast<float>(UINT_MAX);
-		const float Clamped = std::min(DamageAmount, MaxDisplay);
-		return static_cast<UINT>(max(1.0f, std::round(Clamped)));
-	}
-
-	void PlaySound2DByName(const char* SoundName)
-	{
-		if (!GAudioDevice || !SoundName || SoundName[0] == '\0')
-		{
-			return;
-		}
-
-		if (const std::shared_ptr<USoundBase>& Sound = USoundBase::GetSoundAsset(SoundName))
-		{
-			GAudioDevice->PlaySound2D(Sound);
-		}
-	}
-
-	void PlaySound2DRandom(std::initializer_list<const char*> SoundNames)
-	{
-		if (SoundNames.size() == 0)
-		{
-			return;
-		}
-
-		const int Index = MyMath::RandRange(0, static_cast<int>(SoundNames.size() - 1));
-		auto Iter = SoundNames.begin();
-		std::advance(Iter, Index);
-		PlaySound2DByName(*Iter);
-	}
-}
-
-
 XMFLOAT4 GetElementColor(EElementType ElementType)
 {
 	XMFLOAT3 Color255 = {0,0,0};
@@ -391,7 +345,7 @@ float AMyGameCharacterBase::TakeDamage(float DamageAmount, const FDamageEvent& D
 		{
 			DefaultColor = GetElementColor(MyGameDamageEvent->ElementType);
 		}
-		PC->SpawnFloatingDamage(GetRootComponent()->GetComponentTransform(), DefaultColor, ToDisplayDamageValue(DamageAmount));
+		PC->SpawnFloatingDamage(GetRootComponent()->GetComponentTransform(), DefaultColor, DamageAmount);
 	}
 
 	return DamageAmount;

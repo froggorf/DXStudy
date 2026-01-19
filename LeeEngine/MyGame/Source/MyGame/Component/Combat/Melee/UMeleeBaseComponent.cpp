@@ -11,11 +11,6 @@ void UMeleeBaseComponent::Initialize(AMyGameCharacterBase* MyCharacter)
 	UCombatBaseComponent::Initialize(MyCharacter);
 }
 
-void UMeleeBaseComponent::BasicAttack()
-{
-	UCombatBaseComponent::BasicAttack();
-}
-
 bool UMeleeBaseComponent::HeavyAttack()
 {
 	return UCombatBaseComponent::HeavyAttack();

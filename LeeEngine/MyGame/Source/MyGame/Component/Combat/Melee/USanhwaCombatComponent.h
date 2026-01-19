@@ -12,7 +12,7 @@ class USanhwaCombatComponent final : public UMeleeBaseComponent
 public:
 	void Initialize(AMyGameCharacterBase* MyCharacter) override;
 
-	void BasicAttack() override;
+	bool BasicAttack() override;
 	bool HeavyAttack() override;
 	void HeavyAttackMouseReleased() override;
 	void JumpAttack() override {};
@@ -25,7 +25,7 @@ public:
 private:
 	// ================ 기본공격 변수 ================
 	// 기본공격 4의 떠오르는 높이
-	float Attack4_FloatingDistance = 100.0f;
+	float Attack4_FloatingDistance = 300.0f;
 	// 기본공격 4의 떠오르는 중의 움직일 수 있는 거리
 	float Attack4_FloatMoveDistance = 50.0f;
 

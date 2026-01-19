@@ -308,6 +308,33 @@ void APig::Register()
 		});
 }
 
+AScarecrow::AScarecrow()
+{
+	SkeletalMeshName = "SK_Wolf";
+	AnimInstanceName = "UWolfAnimInstance";
+	BasicAttackData = FAttackData{XMFLOAT3{100, 30, 100}, 1.0f, 0.0f, 0.0f, true};
+	EnemyPower = 0.0f;
+}
+
+void AScarecrow::Register()
+{
+	AEnemyBase::Register();
+
+	AssetManager::GetAsyncAssetCache("AM_Wolf_Death",[this](std::shared_ptr<UObject> Object)
+		{
+			DeathMontage = std::dynamic_pointer_cast<UAnimMontage>(Object);
+		});
+}
+
+void AScarecrow::Tick(float DeltaSeconds)
+{
+	AActor::Tick(DeltaSeconds);
+}
+
+void AScarecrow::BindingBehaviorTree()
+{
+}
+
 ADragon::ADragon()
 {
 	CapsuleComp->SetHalfHeight(62.5f);

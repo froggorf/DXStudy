@@ -6,21 +6,6 @@
 #include "MyGame/Core/ATownGameMode.h"
 #include "MyGame/Core/UMyGameInstance.h"
 
-namespace
-{
-	void PlaySound2DByName(const char* SoundName)
-	{
-		if (!GAudioDevice || !SoundName || SoundName[0] == '\0')
-		{
-			return;
-		}
-
-		if (const std::shared_ptr<USoundBase>& Sound = USoundBase::GetSoundAsset(SoundName))
-		{
-			GAudioDevice->PlaySound2D(Sound);
-		}
-	}
-}
 
 static std::wstring GetUpgradeResultMessage(EEquipUpgradeResult Result)
 {

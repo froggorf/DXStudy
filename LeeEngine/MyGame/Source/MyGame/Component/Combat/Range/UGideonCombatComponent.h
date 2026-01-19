@@ -12,7 +12,7 @@ class UGideonCombatComponent final : public URangeBaseComponent
 public:
 	void Initialize(AMyGameCharacterBase* MyCharacter) override;
 	
-	void BasicAttack() override;
+	bool BasicAttack() override;
 	bool HeavyAttack() override;
 	void HeavyAttackMouseReleased() override;
 	void JumpAttack() override {};

@@ -2,21 +2,6 @@
 #include "USkillWidgetBase.h"
 #include "Engine/FAudioDevice.h"
 
-namespace
-{
-	void PlaySound2DByName(const char* SoundName)
-	{
-		if (!GAudioDevice || !SoundName || SoundName[0] == '\0')
-		{
-			return;
-		}
-
-		if (const std::shared_ptr<USoundBase>& Sound = USoundBase::GetSoundAsset(SoundName))
-		{
-			GAudioDevice->PlaySound2D(Sound);
-		}
-	}
-}
 
 void USkillWidgetBase::NativeConstruct()
 {

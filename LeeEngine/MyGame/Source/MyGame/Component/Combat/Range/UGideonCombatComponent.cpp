@@ -9,22 +9,6 @@
 #include "MyGame/Character/Player/AGideonCharacter.h"
 #include "MyGame/Widget/Gideon/UGideonWidget.h"
 
-namespace
-{
-	void PlaySound2DByName(const char* SoundName)
-	{
-		if (!GAudioDevice || !SoundName || SoundName[0] == '\0')
-		{
-			return;
-		}
-
-		if (const std::shared_ptr<USoundBase>& Sound = USoundBase::GetSoundAsset(SoundName))
-		{
-			GAudioDevice->PlaySound2D(Sound);
-		}
-	}
-}
-
 UGideonCombatComponent::UGideonCombatComponent()
 {
 }
@@ -73,11 +57,11 @@ void UGideonCombatComponent::Initialize(AMyGameCharacterBase* MyCharacter)
 		}); 
 }
 
-void UGideonCombatComponent::BasicAttack()
+bool UGideonCombatComponent::BasicAttack()
 {
 	if (!static_cast<AGideonCharacter*>(MyGameCharacter)->IsAimMode())
 	{
-		return;
+		return false;
 	}
 
 	URangeBaseComponent::BasicAttack();

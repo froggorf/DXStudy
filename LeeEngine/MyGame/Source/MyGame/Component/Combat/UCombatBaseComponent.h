@@ -44,7 +44,7 @@ public:
 	// 초기 세팅
 	virtual void Initialize(AMyGameCharacterBase* MyCharacter);
 
-	virtual void BasicAttack();
+	virtual bool BasicAttack();
 	virtual void BasicAttackEnded();
 	virtual bool HeavyAttack();
 	virtual void HeavyAttackMouseReleased();

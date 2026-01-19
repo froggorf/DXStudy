@@ -5,7 +5,10 @@
 
 #pragma once
 #include "CoreMinimal.h"
+
 #include "UObject/UObject.h"
+
+class UMyGameInstance;
 
 class USoundBase : public UObject
 {
@@ -57,7 +60,10 @@ public:
 	void AudioThread_Update();
 	void PlaySoundAtLocation(USoundBase* SoundBase, UWorld* World, XMFLOAT3 Location);
 	void PlaySound2D(const std::shared_ptr<USoundBase>& SoundBase);
+	void PlayBgmByName(const char* SoundName);
+	void PlayBgm(const std::shared_ptr<USoundBase>& SoundBase);
 	void StopSound(const std::shared_ptr<FActiveSound>& ActiveSound);
+	void StopBgm();
 	void GameKill();
 
 protected:
@@ -66,6 +72,8 @@ protected:
 	std::vector<std::shared_ptr<FActiveSound>> ActiveSounds;
 	std::vector<std::shared_ptr<FActiveSound>> PendingAddedActiveSounds;
 	std::vector<std::shared_ptr<FActiveSound>> PendingStopActiveSounds;
+	std::shared_ptr<FActiveSound> CurrentBgm;
+	std::string CurrentBgmName;
 };
 
 class FAudioThread
@@ -93,9 +101,10 @@ inline void PlaySoundAtLocationByName(const std::shared_ptr<UWorld>& World, cons
 	}
 }
 
-inline void PlaySound2DByName(const std::shared_ptr<UWorld>& World, const char* SoundName)
+
+inline void PlaySound2DByName(const char* SoundName)
 {
-	if (!GAudioDevice || !World || !SoundName || SoundName[0] == '\0')
+	if (!GAudioDevice || !SoundName || SoundName[0] == '\0')
 	{
 		return;
 	}
@@ -104,6 +113,26 @@ inline void PlaySound2DByName(const std::shared_ptr<UWorld>& World, const char* 
 	{
 		GAudioDevice->PlaySound2D(Sound);
 	}
+}
+
+inline void PlayBgmByName(const char* SoundName)
+{
+	if (!GAudioDevice || !SoundName || SoundName[0] == '\0')
+	{
+		return;
+	}
+
+	GAudioDevice->PlayBgmByName(SoundName);
+}
+
+inline void StopBgm()
+{
+	if (!GAudioDevice)
+	{
+		return;
+	}
+
+	GAudioDevice->StopBgm();
 }
 
 inline void PlaySoundAtLocationRandom(const std::shared_ptr<UWorld>& World, const XMFLOAT3& Location, std::initializer_list<const char*> SoundNames)
@@ -120,4 +149,18 @@ inline void PlaySoundAtLocationRandom(const std::shared_ptr<UWorld>& World, cons
 	{
 		GAudioDevice->PlaySoundAtLocation(Sound.get(), World.get(), Location);
 	}
+}
+
+inline void PlaySound2DRandom(std::initializer_list<const char*> SoundNames)
+{
+	if (SoundNames.size() == 0)
+	{
+		return;
+	}
+
+	const int Index = MyMath::RandRange(0, static_cast<int>(SoundNames.size() - 1));
+	auto Iter = SoundNames.begin();
+	std::advance(Iter, Index);
+
+	PlaySound2DByName(*Iter);
 }

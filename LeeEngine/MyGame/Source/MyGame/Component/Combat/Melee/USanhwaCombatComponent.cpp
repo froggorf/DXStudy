@@ -7,21 +7,6 @@
 #include "MyGame/Component/Combat/Skill/Ultimate/Sanhwa/USanhwaUltimateComponent.h"
 #include "MyGame/Widget/Sanhwa/USanhwaWidget.h"
 
-namespace
-{
-	void PlaySound2DByName(const char* SoundName)
-	{
-		if (!GAudioDevice || !SoundName || SoundName[0] == '\0')
-		{
-			return;
-		}
-
-		if (const std::shared_ptr<USoundBase>& Sound = USoundBase::GetSoundAsset(SoundName))
-		{
-			GAudioDevice->PlaySound2D(Sound);
-		}
-	}
-}
 
 USanhwaCombatComponent::USanhwaCombatComponent()
 {
@@ -81,9 +66,20 @@ void USanhwaCombatComponent::Initialize(AMyGameCharacterBase* MyCharacter)
 
 }
 
-void USanhwaCombatComponent::BasicAttack()
+bool USanhwaCombatComponent::BasicAttack()
 {
-	UMeleeBaseComponent::BasicAttack();
+	if (UMeleeBaseComponent::BasicAttack())
+	{
+		PlaySound2DRandom({
+			"SB_SFX_Attack_Swing_01",
+			"SB_SFX_Attack_Swing_02",
+			"SB_SFX_Attack_Swing_03"
+			});
+
+		return true;
+	}
+
+	return false;
 }
 
 bool USanhwaCombatComponent::HeavyAttack()

@@ -13,7 +13,6 @@ class UMeleeBaseComponent : public UCombatBaseComponent
 public:
 	void Initialize(AMyGameCharacterBase* MyCharacter) override;
 
-	void BasicAttack() override;
 	bool HeavyAttack() override;
 	void JumpAttack() override {};
 

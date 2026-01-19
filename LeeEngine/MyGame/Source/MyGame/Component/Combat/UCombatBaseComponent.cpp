@@ -7,24 +7,6 @@
 #include "MyGame/Character/Player/AMyGameCharacterBase.h"
 #include "MyGame/Component/Combat/Melee/UMeleeBaseComponent.h"
 
-namespace
-{
-	void PlaySound2DRandom(std::initializer_list<const char*> SoundNames)
-	{
-		if (!GAudioDevice || SoundNames.size() == 0)
-		{
-			return;
-		}
-
-		const int Index = MyMath::RandRange(0, static_cast<int>(SoundNames.size() - 1));
-		auto Iter = SoundNames.begin();
-		std::advance(Iter, Index);
-		if (const std::shared_ptr<USoundBase>& Sound = USoundBase::GetSoundAsset(*Iter))
-		{
-			GAudioDevice->PlaySound2D(Sound);
-		}
-	}
-}
 
 UCombatBaseComponent::UCombatBaseComponent()
 {
@@ -43,7 +25,7 @@ void UCombatBaseComponent::Initialize(AMyGameCharacterBase* MyCharacter)
 	MyGameCharacter = MyCharacter;
 }
 
-void UCombatBaseComponent::BasicAttack()
+bool UCombatBaseComponent::BasicAttack()
 {
 	// 로드가 안됐 을 경우 기본공격 막기
 	for (size_t i = 0; i < BasicAttackData.size(); ++i)
@@ -51,7 +33,7 @@ void UCombatBaseComponent::BasicAttack()
 		if (!BasicAttackData[i].AnimMontage)
 		{
 			MY_LOG("No Resource" , EDebugLogLevel::DLL_Warning, GetFunctionName + "-> No Montage Yet" + std::to_string(i));
-			return;
+			return false;
 		}
 	}
 
@@ -61,7 +43,7 @@ void UCombatBaseComponent::BasicAttack()
 	if (bIsBasicAttacking)
 	{
 		LastBasicAttackClickedTime = GEngine->GetTimeSeconds();
-		return;
+		return false;
 	}
 
 	// 진행중이 아니면 1타 공격부터 시작하고
@@ -70,15 +52,9 @@ void UCombatBaseComponent::BasicAttack()
 	{
 		AnimInstance->Montage_Play(BasicAttackData[0].AnimMontage, 0, Delegate<>(), Delegate<>(), {this, &UCombatBaseComponent::BasicAttackEnded});
 	}
-	if (dynamic_cast<UMeleeBaseComponent*>(this))
-	{
-		PlaySound2DRandom({
-			"SB_SFX_Attack_Swing_01",
-			"SB_SFX_Attack_Swing_02",
-			"SB_SFX_Attack_Swing_03"
-		});
-	}
+	
 	bIsBasicAttacking = true;
+	return true;
 }
 
 void UCombatBaseComponent::BasicAttackEnded()

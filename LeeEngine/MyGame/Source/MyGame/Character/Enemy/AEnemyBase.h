@@ -99,6 +99,21 @@ class APig final : public AEnemyBase
 	std::shared_ptr<UAnimMontage> DeathMontage;
 };
 
+class AScarecrow final : public AEnemyBase
+{
+	MY_GENERATE_BODY(AScarecrow)
+
+	AScarecrow();
+	~AScarecrow() override = default;
+
+	void Register() override;
+	void Tick(float DeltaSeconds) override;
+	void BindingBehaviorTree() override;
+
+	std::shared_ptr<UAnimMontage> GetDeathAnimMontage() const override {return DeathMontage;}
+	std::shared_ptr<UAnimMontage> DeathMontage;
+};
+
 class ADragon final : public AEnemyBase
 {
 	MY_GENERATE_BODY(ADragon)

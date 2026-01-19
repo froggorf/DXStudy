@@ -100,7 +100,14 @@ void FAudioDevice::AudioThread_Update()
 	for (const auto& ActiveSound : ActiveSounds)
 	{
 		bool bIsPlaying;
-		ActiveSound->CurrentChannel->isPlaying(&bIsPlaying);
+		if (!ActiveSound->CurrentChannel)
+		{
+			bIsPlaying = false;
+		}
+		else
+		{
+			ActiveSound->CurrentChannel->isPlaying(&bIsPlaying);
+		}
 		if (!bIsPlaying)
 		{
 			PendingStopActiveSounds.emplace_back(ActiveSound);
@@ -114,6 +121,11 @@ void FAudioDevice::AudioThread_Update()
 		{
 			(*TargetIter)->Stop();
 			ActiveSounds.erase(TargetIter);
+		}
+		if (PendingStopActiveSound == CurrentBgm)
+		{
+			CurrentBgm.reset();
+			CurrentBgmName.clear();
 		}
 	}
 	PendingStopActiveSounds.clear();
@@ -191,6 +203,59 @@ void FAudioDevice::PlaySound2D(const std::shared_ptr<USoundBase>& SoundBase)
 	AddNewActiveSound(NewActiveSound);
 }
 
+void FAudioDevice::PlayBgmByName(const char* SoundName)
+{
+	if (!SoundName || SoundName[0] == '\0')
+	{
+		return;
+	}
+
+	if (const std::shared_ptr<USoundBase>& Sound = USoundBase::GetSoundAsset(SoundName))
+	{
+		PlayBgm(Sound);
+	}
+}
+
+void FAudioDevice::PlayBgm(const std::shared_ptr<USoundBase>& SoundBase)
+{
+	if (!SoundBase)
+	{
+		return;
+	}
+
+	const std::string SoundName = SoundBase->GetName();
+	FAudioThread::ExecuteQueue.push([SoundBase, SoundName]()
+	{
+		if (!GAudioDevice || !SoundBase || !SoundBase->Sound)
+		{
+			return;
+		}
+
+		if (GAudioDevice->CurrentBgm && GAudioDevice->CurrentBgmName == SoundName)
+		{
+			return;
+		}
+
+		if (GAudioDevice->CurrentBgm)
+		{
+			GAudioDevice->CurrentBgm->Stop();
+			auto Iter = std::ranges::find(GAudioDevice->ActiveSounds, GAudioDevice->CurrentBgm);
+			if (Iter != GAudioDevice->ActiveSounds.end())
+			{
+				GAudioDevice->ActiveSounds.erase(Iter);
+			}
+			GAudioDevice->CurrentBgm.reset();
+			GAudioDevice->CurrentBgmName.clear();
+		}
+
+		const std::shared_ptr<FActiveSound> NewBgm = std::make_shared<FActiveSound>(SoundBase);
+		NewBgm->Play();
+		GAudioDevice->ActiveSounds.emplace_back(NewBgm);
+		GAudioDevice->CurrentBgm = NewBgm;
+		GAudioDevice->CurrentBgmName = SoundName;
+	});
+}
+
 void FAudioDevice::StopSound(const std::shared_ptr<FActiveSound>& ActiveSound)
 {
 	if (!ActiveSound)
@@ -202,6 +267,26 @@ void FAudioDevice::StopSound(const std::shared_ptr<FActiveSound>& ActiveSound)
 	{
 		ActiveSound->Stop();
 		GAudioDevice->PendingStopActiveSounds.emplace_back(ActiveSound);
+	});
+}
+
+void FAudioDevice::StopBgm()
+{
+	FAudioThread::ExecuteQueue.push([]()
+	{
+		if (!GAudioDevice || !GAudioDevice->CurrentBgm)
+		{
+			return;
+		}
+
+		GAudioDevice->CurrentBgm->Stop();
+		auto Iter = std::ranges::find(GAudioDevice->ActiveSounds, GAudioDevice->CurrentBgm);
+		if (Iter != GAudioDevice->ActiveSounds.end())
+		{
+			GAudioDevice->ActiveSounds.erase(Iter);
+		}
+		GAudioDevice->CurrentBgm.reset();
+		GAudioDevice->CurrentBgmName.clear();
 	});
 }
 

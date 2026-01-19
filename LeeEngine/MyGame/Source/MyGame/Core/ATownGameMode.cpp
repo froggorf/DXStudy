@@ -13,78 +13,6 @@
 #include "MyGame/Widget/Town/UEquipmentStatusWidget.h"
 #include "MyGame/Widget/Stage/UStageLevelWidget.h"
 
-namespace
-{
-	std::shared_ptr<FActiveSound> GCurrentBgm;
-	std::string GCurrentBgmName;
-
-	void StopBgm()
-	{
-		if (GAudioDevice && GCurrentBgm)
-		{
-			GAudioDevice->StopSound(GCurrentBgm);
-		}
-		GCurrentBgm.reset();
-		GCurrentBgmName.clear();
-	}
-
-	void PlayBgmByName(const char* SoundName)
-	{
-		if (!GAudioDevice || !SoundName || SoundName[0] == '\0')
-		{
-			return;
-		}
-
-		if (GCurrentBgmName == SoundName)
-		{
-			return;
-		}
-
-		StopBgm();
-		if (const std::shared_ptr<USoundBase>& Sound = USoundBase::GetSoundAsset(SoundName))
-		{
-			GCurrentBgm = std::make_shared<FActiveSound>(Sound);
-			GAudioDevice->AddNewActiveSound(GCurrentBgm);
-			GCurrentBgmName = SoundName;
-		}
-	}
-
-	void PlaySound2DByName(const char* SoundName)
-	{
-		if (!GAudioDevice || !SoundName || SoundName[0] == '\0')
-		{
-			return;
-		}
-
-		if (const std::shared_ptr<USoundBase>& Sound = USoundBase::GetSoundAsset(SoundName))
-		{
-			GAudioDevice->PlaySound2D(Sound);
-		}
-	}
-
-	void HandleStageLevelInput(const std::shared_ptr<UStageLevelWidget>& StageLevelWidget)
-	{
-		const bool bF6Pressed = ImGui::IsKeyPressed(ImGuiKey_F6);
-		const bool bF7Pressed = ImGui::IsKeyPressed(ImGuiKey_F7);
-		if (!bF6Pressed && !bF7Pressed)
-		{
-			return;
-		}
-
-		if (UMyGameInstance* GameInstance = UMyGameInstance::GetInstance<UMyGameInstance>())
-		{
-			const int64_t Delta = bF6Pressed ? -100 : 100;
-			const int64_t NewLevel = static_cast<int64_t>(GameInstance->GetStageLevel()) + Delta;
-			if (GameInstance->SetStageLevel(NewLevel))
-			{
-				if (StageLevelWidget)
-				{
-					StageLevelWidget->UpdateStageLevel();
-				}
-			}
-		}
-	}
-}
 
 void ATownGameMode::Tick(float DeltaSeconds)
 {
@@ -100,8 +28,34 @@ void ATownGameMode::Tick(float DeltaSeconds)
 		const std::shared_ptr<AActor>& Actor = GetWorld()->GetPersistentLevel()->FindActorByName("Sanhwa");
 		GetWorld()->GetPlayerController()->OnPossess(std::dynamic_pointer_cast<ACharacter>(Actor).get());
 	}
-
-	HandleStageLevelInput(StageLevelWidget);
+	const bool bF5Pressed = ImGui::IsKeyPressed(ImGuiKey_F5);
+	const bool bF6Pressed = ImGui::IsKeyPressed(ImGuiKey_F6);
+	if (bF5Pressed || bF6Pressed)
+	{
+		if (UMyGameInstance* GameInstance = UMyGameInstance::GetInstance<UMyGameInstance>())
+		{
+			int64_t NewStageLevel = static_cast<int64_t>(GameInstance->GetStageLevel());
+			if (bF5Pressed)
+			{
+				++NewStageLevel;
+			}
+			if (bF6Pressed)
+			{
+				--NewStageLevel;
+			}
+			if (NewStageLevel < 1)
+			{
+				NewStageLevel = 1;
+			}
+			if (GameInstance->SetStageLevel(NewStageLevel))
+			{
+				if (StageLevelWidget)
+				{
+					StageLevelWidget->UpdateStageLevel();
+				}
+			}
+		}
+	}
 }
 
 void ATownGameMode::BeginPlay()
@@ -133,6 +87,18 @@ void ATownGameMode::BeginPlay()
 
 
 	GetWorld()->SpawnActor("ADragon", FTransform{XMFLOAT3{ -1500,50.0f,-0.0f}, XMFLOAT4{0.0f,0.0f,0.0f,1.0f}, {1.0f,1.0f,1.0f}}, "asd");
+	const XMFLOAT3 ScarecrowStart = XMFLOAT3{-1500.0f, 50.0f, -300.0f};
+	constexpr int ScarecrowCount = 4;
+	constexpr float ScarecrowSpacing = 75.0f;
+	for (int i = 0; i < ScarecrowCount; ++i)
+	{
+		const XMFLOAT3 ScarecrowLocation = XMFLOAT3{
+			ScarecrowStart.x,
+			ScarecrowStart.y,
+			ScarecrowStart.z + (ScarecrowSpacing * i)
+		};
+		GetWorld()->SpawnActor("AScarecrow", FTransform{ScarecrowLocation});
+	}
 
 }
 
@@ -198,7 +164,34 @@ void ADungeonGameMode::Tick(float DeltaSeconds)
 {
 	AGameMode::Tick(DeltaSeconds);
 
-	HandleStageLevelInput(StageLevelWidget);
+	const bool bF5Pressed = ImGui::IsKeyPressed(ImGuiKey_F5);
+	const bool bF6Pressed = ImGui::IsKeyPressed(ImGuiKey_F6);
+	if (bF5Pressed || bF6Pressed)
+	{
+		if (UMyGameInstance* GameInstance = UMyGameInstance::GetInstance<UMyGameInstance>())
+		{
+			int64_t NewStageLevel = static_cast<int64_t>(GameInstance->GetStageLevel());
+			if (bF5Pressed)
+			{
+				++NewStageLevel;
+			}
+			if (bF6Pressed)
+			{
+				--NewStageLevel;
+			}
+			if (NewStageLevel < 1)
+			{
+				NewStageLevel = 1;
+			}
+			if (GameInstance->SetStageLevel(NewStageLevel))
+			{
+				if (StageLevelWidget)
+				{
+					StageLevelWidget->UpdateStageLevel();
+				}
+			}
+		}
+	}
 }
 
 void ADungeonGameMode::Register()
@@ -315,7 +308,7 @@ ALoginGameMode::ALoginGameMode()
 void ALoginGameMode::BeginPlay()
 {
 	AGameMode::BeginPlay();
-	PlayBgmByName("SB_BGM_Town_Loop");
+	PlayBgmByName("SB_BGM_Login_Loop");
 
 	static std::shared_ptr<USkeletalMesh> SK_Gideon;
 	AssetManager::GetAsyncAssetCache("SK_Gideon",[this](std::shared_ptr<UObject> Object)
