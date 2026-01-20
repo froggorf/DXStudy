@@ -150,7 +150,7 @@ float AEnemyBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent
 	}
 	else
 	{
-		if (AIController)
+		if (AIController && AIController->GetBehaviorTree())
 		{
 			float NewHealthPercent = HealthComponent->GetHealthPercent() * 100;
 			AIController->GetBehaviorTree()->GetBlackBoard()->SetValue<FBlackBoardValueType_FLOAT>("HealthPercent", NewHealthPercent);

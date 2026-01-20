@@ -1,0 +1,6 @@
+{
+    "Class": "UStaticMesh",
+    "Name": "SM_Campfire",
+    "ModelData": "/Content/Resource/MyGame/StaticMesh/town/Campfire.fbx",
+    "Material" : [ "MI_Campfire" ]
+}

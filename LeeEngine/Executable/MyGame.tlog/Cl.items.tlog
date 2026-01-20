@@ -1,5 +1,6 @@
 C:\Project\DXStudy\LeeEngine\MyGame\Source\main.cpp;C:\Project\DXStudy\LeeEngine\Executable\main.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\ACoin.cpp;C:\Project\DXStudy\LeeEngine\Executable\ACoin.obj
+C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\ACampfire.cpp;C:\Project\DXStudy\LeeEngine\Executable\ACampfire.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\ADungeon.cpp;C:\Project\DXStudy\LeeEngine\Executable\ADungeon.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\AEnemySpawner.cpp;C:\Project\DXStudy\LeeEngine\Executable\AEnemySpawner.obj
 C:\Project\DXStudy\LeeEngine\MyGame\Source\MyGame\Actor\APortal.cpp;C:\Project\DXStudy\LeeEngine\Executable\APortal.obj

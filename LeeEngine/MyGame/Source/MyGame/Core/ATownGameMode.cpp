@@ -86,7 +86,6 @@ void ATownGameMode::BeginPlay()
 	}
 
 
-	GetWorld()->SpawnActor("ADragon", FTransform{XMFLOAT3{ -1500,50.0f,-0.0f}, XMFLOAT4{0.0f,0.0f,0.0f,1.0f}, {1.0f,1.0f,1.0f}}, "asd");
 	const XMFLOAT3 ScarecrowStart = XMFLOAT3{-1500.0f, 50.0f, -300.0f};
 	constexpr int ScarecrowCount = 4;
 	constexpr float ScarecrowSpacing = 75.0f;
@@ -97,7 +96,8 @@ void ATownGameMode::BeginPlay()
 			ScarecrowStart.y,
 			ScarecrowStart.z + (ScarecrowSpacing * i)
 		};
-		GetWorld()->SpawnActor("AScarecrow", FTransform{ScarecrowLocation});
+		const XMFLOAT4 ScarecrowRotation = MyMath::VectorToRotationQuaternion(XMFLOAT3{1.0f, 0.0f , 0.0f});
+		GetWorld()->SpawnActor("AScarecrow", FTransform{ScarecrowLocation, ScarecrowRotation});
 	}
 
 }

@@ -1,0 +1,36 @@
+{
+    "Class": "UNiagaraSystem",
+    "Name": "NS_Campfire",
+    "Emitters" : [
+        {
+            "Property" : 1,
+            "OverrideMat": "M_FireBall",
+            "SpawnRate" : 35,
+            "FirstBurst" : 25,
+            "Life" : [ 0.5, 1.0 ],
+            "Scale" : [ [100,100,1] , [240,180,1] ],
+            "Rot" : [ [0,0,-180] , [0,0,180] ],
+            "SpaceType": 0,
+            "SpawnShape" : 1,
+            "SpawnScale" : [6,6,6],
+            "Modules" :
+            {
+                "Render" : {
+                    "StartColor" : [16, 6, 1.5, 0.7],
+                    "EndColor" : [2, 0.2, 0.0, 0.05],
+                    "FadeOut" : [1, 0.6]
+                },
+                "Scale" : {
+                    "StartScale" : 1.0,
+                    "EndScale" : 0.3
+                },
+                "AddVelocity": {
+                    "MinVel" : [-10.0, 20.0, -10.0],
+                    "MaxVel" : [10.0, 60.0, 10.0]
+                },
+                "TickVel" : [0,0,0],
+                "AddRot" : [0,0,0]
+            }
+        }
+    ]
+}

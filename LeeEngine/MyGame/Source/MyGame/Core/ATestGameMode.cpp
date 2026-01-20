@@ -36,7 +36,7 @@ void ATestGameMode::StartGame()
 
 	/*
 	FTransform SpawnTransform{XMFLOAT3{500,150,500}, MyMath::ForwardVectorToRotationQuaternion({-1,0,-1}), XMFLOAT3{1,1,1}};
-	BossActor = std::dynamic_pointer_cast<ADragon>(GetWorld()->SpawnActor("ADragon", SpawnTransform));
+	BossActor = std::dynamic_pointer_cast>>(GetWorld()->SpawnActor("ADragon", SpawnTransform));
 	*/
 }
 

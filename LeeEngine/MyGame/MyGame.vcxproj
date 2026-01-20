@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\MyGame\Actor\ACoin.cpp" />
+    <ClCompile Include="Source\MyGame\Actor\ACampfire.cpp" />
     <ClCompile Include="Source\MyGame\Actor\ADungeon.cpp" />
     <ClCompile Include="Source\MyGame\Actor\AEnemySpawner.cpp" />
     <ClCompile Include="Source\MyGame\Actor\APortal.cpp" />
@@ -92,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MyGame\Actor\ACoin.h" />
+    <ClInclude Include="Source\MyGame\Actor\ACampfire.h" />
     <ClInclude Include="Source\MyGame\Actor\ADungeon.h" />
     <ClInclude Include="Source\MyGame\Actor\AEnemySpawner.h" />
     <ClInclude Include="Source\MyGame\Actor\APortal.h" />

@@ -178,6 +178,9 @@
     <ClCompile Include="Source\MyGame\Actor\ATestCube2.cpp">
       <Filter>Source\MyGame\Actor</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MyGame\Actor\ACampfire.cpp">
+      <Filter>Source\MyGame\Actor</Filter>
+    </ClCompile>
     <ClCompile Include="Source\MyGame\Component\PBRTestComponent.cpp">
       <Filter>Source\MyGame\Component</Filter>
     </ClCompile>
@@ -385,6 +388,9 @@
       <Filter>Source\MyGame\Actor</Filter>
     </ClInclude>
     <ClInclude Include="Source\MyGame\Actor\ATestCube2.h">
+      <Filter>Source\MyGame\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyGame\Actor\ACampfire.h">
       <Filter>Source\MyGame\Actor</Filter>
     </ClInclude>
     <ClInclude Include="Source\MyGame\Component\PBRTestComponent.h">
