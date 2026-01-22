@@ -14,10 +14,9 @@ class UGideonWidget : public UMyGameWidgetBase
 	void NativeConstruct() override;
 	void SetLightningAttackChargeGauge(float ChargeTime, float MaxChargeTime);
 
-	// TODO: 수정하기
-	std::string GetSkillTextureName() override  { return "T_Icon_Sanhwa_Skill";}
+	std::string GetSkillTextureName() override  { return "T_Icon_Gideon_Skill";}
 	std::string GetBasicAttackTextureName() override { return "T_Icon_Sanhwa_BasicAttack";}
-	std::string GetUltimateTextureName() override { return "T_Icon_Sanhwa_Ultimate";}
+	std::string GetUltimateTextureName() override { return "T_Icon_Gideon_Ultimate";}
 
 	void SetAimModeWidgetVisibility(bool NewVisible) const;
 	void SetGideonGaugeWidgetVisibility(bool NewVisible) const;
