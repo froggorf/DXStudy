@@ -186,3 +186,16 @@ void ASkyBox::Tick(float DeltaSeconds)
 	}
 }
 
+void ASkyBox::SetSkyBoxTextureName(const std::string& TextureName)
+{
+	FScene::SetSkyBoxTexture_GameThread(TextureName);
+}
+
+void ASkyBox::SetDirectionalLightColor(const XMFLOAT3& Color)
+{
+	if (DirectionalLight)
+	{
+		DirectionalLight->SetLightColor(Color);
+	}
+}
+

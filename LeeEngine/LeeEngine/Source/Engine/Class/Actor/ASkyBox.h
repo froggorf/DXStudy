@@ -15,6 +15,8 @@ public:
 	ASkyBox();
 	void Register() override;
 	void Tick(float DeltaSeconds) override;
+	void SetSkyBoxTextureName(const std::string& TextureName);
+	void SetDirectionalLightColor(const XMFLOAT3& Color);
 private:
 
 	std::shared_ptr<ULightComponent> DirectionalLight;

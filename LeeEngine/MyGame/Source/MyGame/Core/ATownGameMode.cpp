@@ -3,6 +3,7 @@
 
 #include "UMyGameInstance.h"
 #include "Engine/World/UWorld.h"
+#include "Engine/Class/Actor/ASkyBox.h"
 #include "MyGame/Actor/APortal.h"
 #include "MyGame/Character/Enemy/AEnemyBase.h"
 #include "MyGame/Character/Player/AGideonCharacter.h"
@@ -62,6 +63,15 @@ void ATownGameMode::BeginPlay()
 {
 	AGameMode::BeginPlay();
 	PlayBgmByName("SB_BGM_Town_Loop");
+	const std::vector<std::shared_ptr<AActor>> SkyBoxes = GetWorld()->GetPersistentLevel()->GetActorsFromClass("ASkyBox");
+	if (!SkyBoxes.empty())
+	{
+		if (const std::shared_ptr<ASkyBox>& SkyBox = std::dynamic_pointer_cast<ASkyBox>(SkyBoxes[0]))
+		{
+			SkyBox->SetSkyBoxTextureName("T_SkyDawn");
+			SkyBox->SetDirectionalLightColor({0.4f, 0.36f, 0.32f});
+		}
+	}
 
 	const std::shared_ptr<AGideonCharacter>& Gideon = std::dynamic_pointer_cast<AGideonCharacter>(
 		GetWorld()->SpawnActor("AGideonCharacter", FTransform{XMFLOAT3{ -500.0f,50.0f,-0.0f}, XMFLOAT4{0.0f,0.0f,0.0f,1.0f}, {1.0f,1.0f,1.0f}}, "Gideon")
@@ -204,6 +214,15 @@ void ADungeonGameMode::BeginPlay()
 {
 	AGameMode::BeginPlay();
 	PlayBgmByName("SB_BGM_Dungeon_Loop");
+	const std::vector<std::shared_ptr<AActor>> SkyBoxes = GetWorld()->GetPersistentLevel()->GetActorsFromClass("ASkyBox");
+	if (!SkyBoxes.empty())
+	{
+		if (const std::shared_ptr<ASkyBox>& SkyBox = std::dynamic_pointer_cast<ASkyBox>(SkyBoxes[0]))
+		{
+			SkyBox->SetSkyBoxTextureName("T_SkyBox");
+			SkyBox->SetDirectionalLightColor({2.5f, 2.5f, 2.5f});
+		}
+	}
 
 	const std::shared_ptr<AGideonCharacter>& Gideon = std::dynamic_pointer_cast<AGideonCharacter>(
 		GetWorld()->SpawnActor("AGideonCharacter", FTransform{XMFLOAT3{ -0.0f,3500,-0.0f}, XMFLOAT4{0.0f,0.0f,0.0f,1.0f}, {1.0f,1.0f,1.0f}}, "Gideon")
@@ -309,6 +328,15 @@ void ALoginGameMode::BeginPlay()
 {
 	AGameMode::BeginPlay();
 	PlayBgmByName("SB_BGM_Login_Loop");
+	const std::vector<std::shared_ptr<AActor>> SkyBoxes = GetWorld()->GetPersistentLevel()->GetActorsFromClass("ASkyBox");
+	if (!SkyBoxes.empty())
+	{
+		if (const std::shared_ptr<ASkyBox>& SkyBox = std::dynamic_pointer_cast<ASkyBox>(SkyBoxes[0]))
+		{
+			SkyBox->SetSkyBoxTextureName("T_SkyBox");
+			SkyBox->SetDirectionalLightColor({2.5f,2.5f,2.5f});
+		}
+	}
 
 	static std::shared_ptr<USkeletalMesh> SK_Gideon;
 	AssetManager::GetAsyncAssetCache("SK_Gideon",[this](std::shared_ptr<UObject> Object)
