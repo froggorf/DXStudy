@@ -11,6 +11,7 @@
 #include "MyGame/Component/Combat/Skill/Ultimate/UUltimateBaseComponent.h"
 #include "MyGame/Component/Combat/Skill/Ultimate/Gideon/UGideonUltimateComponent.h"
 #include "Engine/FAudioDevice.h"
+#include "MyGame/Component/Health/UHealthComponent.h"
 #include "MyGame/Widget/Gideon/UGideonWidget.h"
 
 std::string AGideonCharacter::CharacterName  = "Gideon";
@@ -148,6 +149,11 @@ void AGideonCharacter::PossessedBy(AController* NewController)
 	if (APlayerController* PC = dynamic_cast<APlayerController*>(NewController))
 	{
 		PC->AddToViewport(CharacterName, CharacterWidget);	
+	}
+
+	if (HealthComponent)
+	{
+		HealthComponent->RefreshHealthWidget();
 	}
 }
 

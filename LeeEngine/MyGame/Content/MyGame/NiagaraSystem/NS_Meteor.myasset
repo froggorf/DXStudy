@@ -2,13 +2,70 @@
     "Class": "UNiagaraSystem",
     "Name": "NS_Meteor",
     "Emitters" : [
-	{ 
-		"Property" : 3, 
+	{
+		"Property" : 3,
 		"FaceCamera": 1,
-		"Life" : [ 0.3,0.3 ],
-		"RibbonWidth" : 15.0,
-		"RibbonColor": [1.0, 0.0 , 0 , 1.0],
-		"EndColor": [1,0.3, 0, 0.7]
+		"OverrideMat" : "M_NiagaraRibbonMaskTrail",
+		"OverrideTex" : [ "T_RibbonTrail", "T_RibbonTrailMask" ],
+		"Life" : [ 0.15, 0.25 ],
+		"RibbonWidth" : 12.0,
+		"RibbonColor": [8.0, 3.2, 1.2, 1.0],
+		"EndColor": [2.0, 0.6, 0.2, 0.0]
+	},
+	{
+		"Property" : 3,
+		"FaceCamera": 1,
+		"OverrideMat" : "M_NiagaraRibbonMaskTrail",
+		"OverrideTex" : [ "T_FireNoise", "T_RibbonTrailMask" ],
+		"Life" : [ 0.45, 0.6 ],
+		"RibbonWidth" : 32.0,
+		"RibbonColor": [3.5, 1.5, 0.4, 0.9],
+		"EndColor": [0.3, 0.12, 0.05, 0.0]
+	},
+	{
+		"Property" : 3,
+		"FaceCamera": 1,
+		"OverrideMat" : "M_NiagaraRibbonMaskTrail",
+		"OverrideTex" : [ "T_Smoke", "T_RibbonTrailMask" ],
+		"Life" : [ 0.8, 1.2 ],
+		"RibbonWidth" : 60.0,
+		"RibbonColor": [0.2, 0.2, 0.2, 0.35],
+		"EndColor": [0.05, 0.05, 0.05, 0.0]
+	},
+	{
+		"Property" : 0,
+		"OverrideMat": "M_NiagaraBillboardSprite_UV",
+		"OverrideTex": ["T_Flame"],
+		"SpawnRate" : 120,
+		"Life" : [ 0.25, 0.7 ],
+		"Scale" : [ [12,12,1] , [22,22,1] ],
+		"Rot" : [ [0,0,-180] , [0,0,180] ],
+		"SpaceType": 0,
+		"SpawnShape" : 1,
+		"SpawnScale" : [6,6,6],
+		"Modules" :
+		{
+			"Render" : {
+				"RandomStart": 1,
+				"MinStartColor" : [10, 4, 1.0, 0.9],
+				"MaxStartColor" : [22, 9, 2.2, 1.0],
+				"EndColor" : [1, 0.2, 0.05, 0.0],
+				"FadeOut" : [1, 0.5]
+			},
+			"Scale" :{
+				"StartScale" : 1.0,
+				"EndScale" : 0.3
+			},
+			"UVAnim" : {
+				"UCount": 2,
+				"VCount": 2
+			},
+			"AddVelocity":{
+				"MinVel" : [-30.0, -30.0, -200.0],
+				"MaxVel" : [30.0, 30.0, -380.0]
+			},
+			"AlignToVel" : 1
+		}
 	}
     ]
 

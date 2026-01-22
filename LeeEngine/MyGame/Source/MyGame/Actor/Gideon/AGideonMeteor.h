@@ -1,5 +1,4 @@
 #pragma once
-#include "Engine/Components/UStaticMeshComponent.h"
 #include "Engine/GameFramework/AActor.h"
 #include "MyGame/Character/Player/AGideonCharacter.h"
 
@@ -30,11 +29,13 @@ private:
 	AGideonCharacter* Spawner;
 
 	std::shared_ptr<UNiagaraComponent> MeteorVFX;
-	// 기존에는 나이아가라를 사용했으나 회전값을 적절히 사용할 방법이 존재하지 않아 다음과같이 변경
-	std::shared_ptr<UStaticMeshComponent> MeteorBallComp;
 
 	FTimerHandle SelfKillTimerHandle;
 	FTimerHandle MoveTimerHandle;
+
+	float CurrentSpeed = 900.0f;
+	float AccelPerSecond = 2200.0f;
+	float MaxSpeed = 2600.0f;
 
 	static constexpr float SelfKillTime = 10.0f;
 	static constexpr float MoveTickTime = 0.030f; //약 30번 (1초)

@@ -33,6 +33,12 @@ public:
 		const physx::PxRigidActor* actor) override;
 };
 
+class MyControllerFilterCallback : public physx::PxControllerFilterCallback
+{
+public:
+	bool filter(const physx::PxController& a, const physx::PxController& b) override;
+};
+
 enum class EMovementMode
 {
 	Walking, Flying, Swimming
@@ -52,6 +58,7 @@ public:
 	physx::PxCapsuleControllerDesc desc{};
 	physx::PxControllerFilters Filters;
 	MyQueryFilterCallback CCTQueryCallBack{};
+	MyControllerFilterCallback CCTControllerFilterCallback{};
 	std::unique_ptr<FCharacterControllerObserver> ControllerObserver;
 
 	float GravityScale = 12.5f;

@@ -537,7 +537,7 @@ void AMyGameCharacterBase::ChangeCharacter()
 			if (const std::shared_ptr<ACharacter>& OtherCharacter = std::dynamic_pointer_cast<ACharacter>(Actors[0]))
 			{
 				XMFLOAT3 OriginPosition = GetActorLocation();
-				SetActorLocation(XMFLOAT3{0,0,0});	
+				SetActorLocation(XMFLOAT3{-5000,1000000,-5000});	
 				OtherCharacter->SetActorLocation(OriginPosition);
 				PC->OnPossess(OtherCharacter.get());
 				PlaySound2DByName("SB_SFX_Character_Switch");

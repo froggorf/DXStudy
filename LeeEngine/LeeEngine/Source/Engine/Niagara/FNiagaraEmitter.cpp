@@ -570,23 +570,31 @@ void FNiagaraRibbonEmitter::Tick(float DeltaSeconds, const FTransform& SceneTran
 	XMFLOAT3 CurLoc         = SceneTransform.GetTranslation();
 	XMVECTOR CurLocationVec = XMLoadFloat3(&CurLoc);
 
-	// 시간 줄이기 + 시간이 다 된 점 삭제
-	// 이 때, 항상 현재의 시작 타겟 인덱스부터 시간이 적은 순으로 배치되어 있으므로
-	// 일단 현재 활성화된 점들에 대해서 dt만큼 줄여준다음에
-	// 시간이 0 이하일경우 해당 자리는 그대로 냅두고(데이터를 지울 필요가 굳이 없음 (현재 활성화중인 개수를 따로 관리하니까)
-	// 시작위치를 1칸 뒤로 보내주고 활성화된 점 개수도 1개 줄여줌
+	// 시간 줄이기
 	for (int Count = 0; Count < CurPointCount; ++Count)
 	{
 		int CurIndex = (Count + CurRibbonPointDataStartIndex) % MaxRibbonPointCount;
 		RibbonPointData[CurIndex].RemainTime -= TickTime;
-		// 시간이 다 된 포인트면 활성화 개수 1개 줄이기
-		if (RibbonPointData[CurIndex].RemainTime <= 0.0f)
-		{
-			CurPointCount -= 1;
-			CurRibbonPointDataStartIndex = (CurRibbonPointDataStartIndex + 1) % MaxRibbonPointCount;
+	}
 
-			bMustRemapVertexBuffer = true;
+	// 만료된 포인트 정리 (오래된 포인트부터 제거)
+	bool bRemoved = false;
+	while (CurPointCount > 0)
+	{
+		int CurIndex = CurRibbonPointDataStartIndex % MaxRibbonPointCount;
+		if (RibbonPointData[CurIndex].RemainTime > 0.0f)
+		{
+			break;
 		}
+
+		CurPointCount -= 1;
+		CurRibbonPointDataStartIndex = (CurRibbonPointDataStartIndex + 1) % MaxRibbonPointCount;
+		bRemoved = true;
+	}
+
+	if (bRemoved)
+	{
+		bMustRemapVertexBuffer = true;
 	}
 
 	// 위치 정보가 변경되었다면 새로운 점 추가
@@ -710,7 +718,8 @@ void FNiagaraRibbonEmitter::MapPointDataToVertexBuffer()
 		vD.TexCoords = {static_cast<float>(1) / CurPointCount * (i + 1), 1};
 
 		// 파티클 컬러 정보를 float4인 BONEWEIGHT 시맨틱에 담음
-		float t = 1.0f - static_cast<float>(i) / static_cast<float>(CurPointCount - 2);
+		float denom = static_cast<float>(max(CurPointCount - 2, 1));
+		float t = 1.0f - static_cast<float>(i) / denom;
 		XMFLOAT4 Color = MyMath::Lerp(RibbonStartColor, RibbonEndColor, t);
 		float ParticleColor[4] = {Color.x, Color.y, Color.z, Color.w};
 		for (int j = 0; j < 4; ++j)

@@ -17,6 +17,11 @@ void UHealthComponent::SetMaxHealth(float NewMaxHealth, bool bSetHealthMax)
 	MarkHealthToWidget();
 }
 
+void UHealthComponent::RefreshHealthWidget()
+{
+	MarkHealthToWidget();
+}
+
 float UHealthComponent::ApplyDamage(float AppliedDamage)
 {
 	CurrentHealth = max(CurrentHealth - AppliedDamage, 0.0f);

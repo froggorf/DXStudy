@@ -6,6 +6,7 @@
 #include "MyGame/Component/Combat/Melee/USanhwaCombatComponent.h"
 #include "MyGame/Component/Combat/Skill/NormalSkill/SanHwa/USanhwaSkillComponent.h"
 #include "MyGame/Component/Combat/Skill/Ultimate/Sanhwa/USanhwaUltimateComponent.h"
+#include "MyGame/Component/Health/UHealthComponent.h"
 #include "MyGame/Core/AMyGamePlayerController.h"
 #include "MyGame/Widget/Sanhwa/USanhwaWidget.h"
 
@@ -48,6 +49,11 @@ void ASanhwaCharacter::PossessedBy(AController* NewController)
 	if (APlayerController* PC = dynamic_cast<APlayerController*>(NewController))
 	{
 		PC->AddToViewport(CharacterName, CharacterWidget);	
+	}
+
+	if (HealthComponent)
+	{
+		HealthComponent->RefreshHealthWidget();
 	}
 }
 

@@ -10,10 +10,17 @@ physx::PxQueryHitType::Enum MyQueryFilterCallback::preFilter(const physx::PxFilt
 {
 	if (actor->userData)
 	{
-		if (IgnoreActor == static_cast<UShapeComponent*>(actor->userData)->GetOwner())
+		UShapeComponent* ShapeComp = static_cast<UShapeComponent*>(actor->userData);
+		AActor* OtherOwner = ShapeComp ? ShapeComp->GetOwner() : nullptr;
+		if (OtherOwner == IgnoreActor)
 		{
 			return physx::PxQueryHitType::eNONE; // 충돌 무시
-		}	
+		}
+
+		if (dynamic_cast<ACharacter*>(OtherOwner))
+		{
+			return physx::PxQueryHitType::eNONE; // CCT vs CCT로 처리
+		}
 	}
 
 	return physx::PxQueryHitType::eBLOCK;
@@ -52,6 +59,11 @@ physx::PxQueryHitType::Enum MyQueryFilterCallback::postFilter(
 	}
 
 	return physx::PxQueryHitType::eBLOCK;
+}
+
+bool MyControllerFilterCallback::filter(const physx::PxController&, const physx::PxController&)
+{
+	return true;
 }
 
 UCharacterMovementComponent::UCharacterMovementComponent()
@@ -96,6 +108,7 @@ void UCharacterMovementComponent::BeginPlay()
 		| physx::PxQueryFlag::eDYNAMIC
 		| physx::PxQueryFlag::ePREFILTER
 		| physx::PxQueryFlag::ePOSTFILTER;
+	Filters.mCCTFilterCallback = &CCTControllerFilterCallback;
 
 	bIsFalling = false;
 }

@@ -222,14 +222,17 @@ Deferred_PS_OUT PBR_PS_Brick_Ground(PBR_PS_INPUT input) : SV_TARGET
 
 Deferred_PS_OUT PS_MeteorBall(PBR_PS_INPUT input) : SV_TARGET
 {
-	
 	Deferred_PS_OUT output = (Deferred_PS_OUT) 0.f;
-	
-	output.Color = float4(0, 0, 0, 1);
-	output.PBRData = float4(0,0,0,0);
+
+	float3 rockColor = float3(0.08f, 0.07f, 0.06f);
+	float3 emberColor = float3(1.6f, 0.6f, 0.15f);
+	float emberPulse = 0.7f + 0.3f * sin(gTime * 8.0f);
+
+	output.Color = float4(rockColor, 1.0f);
+	output.PBRData = float4(0.05f, 0.2f, 0.9f, 1.0f);
 	output.Normal = float4(input.ViewNormal, 1.f);
 	output.Position = float4(input.ViewPosition, 1.f);
-	output.Emissive = float4(15.f, 0.f, 0.f, 1.f);
+	output.Emissive = float4(emberColor * emberPulse, 1.f);
 
 	return output;
 }
