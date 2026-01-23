@@ -70,12 +70,6 @@ bool USanhwaCombatComponent::BasicAttack()
 {
 	if (UMeleeBaseComponent::BasicAttack())
 	{
-		PlaySound2DRandom({
-			"SB_SFX_Attack_Swing_01",
-			"SB_SFX_Attack_Swing_02",
-			"SB_SFX_Attack_Swing_03"
-			});
-
 		return true;
 	}
 
@@ -209,5 +203,14 @@ void USanhwaCombatComponent::Attack4Success()
 			SanhwaWidget->SetGaugeUI(SanhwaGauge);
 		}
 	}
+}
+
+void USanhwaCombatComponent::OnBasicAttackHit()
+{
+	PlaySound2DRandom({
+		"SB_SFX_Attack_Swing_01",
+		"SB_SFX_Attack_Swing_02",
+		"SB_SFX_Attack_Swing_03"
+	});
 }
 

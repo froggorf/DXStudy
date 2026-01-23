@@ -617,7 +617,14 @@ void UEngine::SetMouseLock(EMouseLockMode NewLockMode)
 
 void UEngine::ShowCursor(bool NewVisible)
 {
+	if (bCursorStateInitialized && bCursorVisible == NewVisible)
+	{
+		return;
+	}
+
 	::ShowCursor(NewVisible);
+	bCursorVisible = NewVisible;
+	bCursorStateInitialized = true;
 }
 
 void UEngine::CreateRenderThread()

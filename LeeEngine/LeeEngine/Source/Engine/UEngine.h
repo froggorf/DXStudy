@@ -159,4 +159,7 @@ private:
 
 	EInputMode InputMode = EInputMode::InputMode_GameOnly;
 	EMouseLockMode LockMouseMode = EMouseLockMode::DoNotLock;
+
+	bool bCursorStateInitialized = false;
+	bool bCursorVisible = false;
 };

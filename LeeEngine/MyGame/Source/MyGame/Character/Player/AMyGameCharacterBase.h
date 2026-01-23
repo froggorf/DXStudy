@@ -136,7 +136,7 @@ public:
 protected:
 	std::shared_ptr<UMotionWarpingComponent> MotionWarpingComponent;
 
-	float CharacterMaxHealth = 10000.0f;
+	float CharacterMaxHealth = 1000.0f;
 
 	EElementType ElementType = EElementType::Aero;
 

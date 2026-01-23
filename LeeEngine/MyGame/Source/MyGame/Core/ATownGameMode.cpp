@@ -80,7 +80,7 @@ void ATownGameMode::BeginPlay()
 	GideonCharacter = Gideon;
 
 	const std::shared_ptr<ASanhwaCharacter>& Sanhwa = std::dynamic_pointer_cast<ASanhwaCharacter>(
-		GetWorld()->SpawnActor("ASanhwaCharacter", FTransform{XMFLOAT3{ -600,0.0f,-500.0f}, XMFLOAT4{0.0f,0.0f,0.0f,1.0f}, XMFLOAT3{1.0f,1.0f,1.0f}}, "Sanhwa")
+		GetWorld()->SpawnActor("ASanhwaCharacter", FTransform{XMFLOAT3{-1000.0f,-1000.0f,1000000.0f}, XMFLOAT4{0.0f,0.0f,0.0f,1.0f}, XMFLOAT3{1.0f,1.0f,1.0f}}, "Sanhwa")
 	);
 	SanhwaCharacter = Sanhwa;
 	GetWorld()->SpawnActor("APortal", FTransform{XMFLOAT3{0.0f, 0.0f, -1000.0f}, XMFLOAT4{0.0f,0.0f,0.0f,1.0f}, XMFLOAT3{1.0f,1.0f,1.0f}}, "TownPortal");

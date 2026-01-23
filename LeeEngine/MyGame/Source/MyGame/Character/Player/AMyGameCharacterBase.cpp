@@ -145,7 +145,12 @@ void AMyGameCharacterBase::BeginPlay()
 	ACharacter::BeginPlay();
 
 
-	HealthComponent->SetMaxHealth(CharacterMaxHealth, true);
+	const float NewMaxHealth = CharacterMaxHealth + 500.0f * (
+		EquipLevel[static_cast<int>(EEquipType::Head)] +
+		EquipLevel[static_cast<int>(EEquipType::Armor)] +
+		EquipLevel[static_cast<int>(EEquipType::Glove)]
+	);
+	HealthComponent->SetMaxHealth(NewMaxHealth, true);
 
 
 	CapsuleComp->SetCollisionObjectType(ECollisionChannel::Player);
@@ -601,7 +606,16 @@ void AMyGameCharacterBase::SetEquipmentLevel(const std::array<int, static_cast<i
 	{
 		EquipLevel[i] = NewEquipArr[i];	
 	}
-	
+
+	if (HealthComponent)
+	{
+		const float NewMaxHealth = CharacterMaxHealth + 500.0f * (
+			EquipLevel[static_cast<int>(EEquipType::Head)] +
+			EquipLevel[static_cast<int>(EEquipType::Armor)] +
+			EquipLevel[static_cast<int>(EEquipType::Glove)]
+		);
+		HealthComponent->SetMaxHealth(NewMaxHealth, true);
+	}
 }
 
 void AMyGameCharacterBase::Tick(float DeltaSeconds)

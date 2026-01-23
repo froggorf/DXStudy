@@ -67,14 +67,6 @@ void UCombatBaseComponent::BasicAttackEnded()
 		{
 			AnimInstance->Montage_Play(BasicAttackData[CurrentBasicAttackCombo].AnimMontage, 0, Delegate<>{},Delegate<>{},{this, &UCombatBaseComponent::BasicAttackEnded});
 		}
-		if (dynamic_cast<UMeleeBaseComponent*>(this))
-		{
-			PlaySound2DRandom({
-				"SB_SFX_Attack_Swing_01",
-				"SB_SFX_Attack_Swing_02",
-				"SB_SFX_Attack_Swing_03"
-			});
-		}
 	}
 	else
 	{

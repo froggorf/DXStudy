@@ -92,5 +92,5 @@ void AGideonMeteor::MeteorBomb()
 
 	// 후발 이펙트 소환
 	const FTransform& CurTransform = RootComponent->GetComponentTransform();
-	GetWorld()->SpawnActor("AGideonMeteorBomb", CurTransform);
+	//GetWorld()->SpawnActor("AGideonMeteorBomb", CurTransform);
 }

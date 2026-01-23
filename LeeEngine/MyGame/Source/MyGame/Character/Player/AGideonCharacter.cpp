@@ -45,7 +45,7 @@ AGideonCharacter::AGideonCharacter()
 	SkillComponent = std::dynamic_pointer_cast<UGideonSkillComponent>(CreateDefaultSubobject("GideonSkillComp", "UGideonSkillComponent"));
 	UltimateComponent = std::dynamic_pointer_cast<UGideonUltimateComponent>(CreateDefaultSubobject("GideonUltComp", "UGideonUltimateComponent"));
 
-	CharacterMaxHealth = 20000.0f;
+	CharacterMaxHealth = 1000.0f;
 
 	ElementType = EElementType::Fusion;
 

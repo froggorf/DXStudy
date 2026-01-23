@@ -172,7 +172,7 @@ void UEnchantWidget::NativeConstruct()
 	{
 		CanvasSlot->Anchors = ECanvasAnchor::CenterBottom;
 		CanvasSlot->Alignment = {0.5f, 1.0f};
-		CanvasSlot->Position = {0, -40};
+		CanvasSlot->Position = {0, -160};
 		CanvasSlot->Size = {600, 50};
 	}
 

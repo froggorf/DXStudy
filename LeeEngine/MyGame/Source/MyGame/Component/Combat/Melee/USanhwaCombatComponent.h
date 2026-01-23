@@ -21,6 +21,7 @@ public:
 	float GetAttack4_FloatMoveDistance() const {return Attack4_FloatMoveDistance; }
 
 	void Attack4Success();
+	void OnBasicAttackHit();
 	float GetHeavyAttackMoveDistance() const {return HeavyAttackMoveDistance;}
 private:
 	// ================ 기본공격 변수 ================

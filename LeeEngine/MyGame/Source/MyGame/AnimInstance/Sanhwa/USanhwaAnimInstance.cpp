@@ -297,7 +297,13 @@ void USanhwaAnimInstance::BasicAttack0()
 		return;
 	}
 	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
-	MyGameCharacter->ApplyDamageToEnemy_Range(CombatComp->GetBasicAttackData(0), "SH_BasicAttack");
+	if (MyGameCharacter->ApplyDamageToEnemy_Range(CombatComp->GetBasicAttackData(0), "SH_BasicAttack"))
+	{
+		if (const std::shared_ptr<USanhwaCombatComponent>& SanhwaCombat = std::dynamic_pointer_cast<USanhwaCombatComponent>(CombatComp))
+		{
+			SanhwaCombat->OnBasicAttackHit();
+		}
+	}
 }
 
 void USanhwaAnimInstance::BasicAttack1()
@@ -307,7 +313,13 @@ void USanhwaAnimInstance::BasicAttack1()
 		return;
 	}
 	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
-	MyGameCharacter->ApplyDamageToEnemy_Range(CombatComp->GetBasicAttackData(1), "SH_BasicAttack");
+	if (MyGameCharacter->ApplyDamageToEnemy_Range(CombatComp->GetBasicAttackData(1), "SH_BasicAttack"))
+	{
+		if (const std::shared_ptr<USanhwaCombatComponent>& SanhwaCombat = std::dynamic_pointer_cast<USanhwaCombatComponent>(CombatComp))
+		{
+			SanhwaCombat->OnBasicAttackHit();
+		}
+	}
 }
 
 void USanhwaAnimInstance::BasicAttack2()
@@ -317,7 +329,13 @@ void USanhwaAnimInstance::BasicAttack2()
 		return;
 	}
 	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
-	MyGameCharacter->ApplyDamageToEnemy_Range(CombatComp->GetBasicAttackData(2), "SH_BasicAttack");
+	if (MyGameCharacter->ApplyDamageToEnemy_Range(CombatComp->GetBasicAttackData(2), "SH_BasicAttack"))
+	{
+		if (const std::shared_ptr<USanhwaCombatComponent>& SanhwaCombat = std::dynamic_pointer_cast<USanhwaCombatComponent>(CombatComp))
+		{
+			SanhwaCombat->OnBasicAttackHit();
+		}
+	}
 }
 
 void USanhwaAnimInstance::BasicAttack3()
@@ -327,7 +345,13 @@ void USanhwaAnimInstance::BasicAttack3()
 		return;
 	}
 	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
-	MyGameCharacter->ApplyDamageToEnemy_Range(CombatComp->GetBasicAttackData(3), "SH_BasicAttack");
+	if (MyGameCharacter->ApplyDamageToEnemy_Range(CombatComp->GetBasicAttackData(3), "SH_BasicAttack"))
+	{
+		if (const std::shared_ptr<USanhwaCombatComponent>& SanhwaCombat = std::dynamic_pointer_cast<USanhwaCombatComponent>(CombatComp))
+		{
+			SanhwaCombat->OnBasicAttackHit();
+		}
+	}
 }
 
 void USanhwaAnimInstance::BasicAttack4()
@@ -337,7 +361,13 @@ void USanhwaAnimInstance::BasicAttack4()
 		return;
 	}
 	const std::shared_ptr<UCombatBaseComponent>& CombatComp = MyGameCharacter->GetCombatComponent();
-	MyGameCharacter->ApplyDamageToEnemy_Range(CombatComp->GetBasicAttackData(4), "SH_BasicAttack");
+	if (MyGameCharacter->ApplyDamageToEnemy_Range(CombatComp->GetBasicAttackData(4), "SH_BasicAttack"))
+	{
+		if (const std::shared_ptr<USanhwaCombatComponent>& SanhwaCombat = std::dynamic_pointer_cast<USanhwaCombatComponent>(CombatComp))
+		{
+			SanhwaCombat->OnBasicAttackHit();
+		}
+	}
 	{
 		std::static_pointer_cast<USanhwaCombatComponent>(CombatComp)->Attack4Success();
 	}

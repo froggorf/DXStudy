@@ -22,7 +22,7 @@ ASanhwaCharacter::ASanhwaCharacter()
 	SkillComponent = std::dynamic_pointer_cast<USanhwaSkillComponent>(CreateDefaultSubobject("SanhwaSkillComp", "USanhwaSkillComponent"));
 	UltimateComponent = std::dynamic_pointer_cast<USanhwaUltimateComponent>(CreateDefaultSubobject("SanhwaUltComp", "USanhwaUltimateComponent"));
 
-	CharacterMaxHealth = 20000.0f;
+	CharacterMaxHealth = 1000.0f;
 
 	ElementType = EElementType::Glacio;
 }

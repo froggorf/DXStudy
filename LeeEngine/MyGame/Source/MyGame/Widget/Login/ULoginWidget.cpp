@@ -162,7 +162,7 @@ void ULoginWidget::NativeConstruct()
 			OnUsernameCommitted(Text);
 		});
 
-	// Password에서 Enter 입력 시 로그인 시도
+	// Password에서 Enter 입력 시 커밋 처리
 	PasswordInput->OnTextCommitted.Add([this](const std::wstring& Text)
 		{
 			OnPasswordCommitted(Text);
@@ -265,11 +265,7 @@ void ULoginWidget::OnUsernameCommitted(const std::wstring& Text)
 
 void ULoginWidget::OnPasswordCommitted(const std::wstring& Text)
 {
-	// Password에서 Enter 입력 시 로그인 시도
-	if (!Text.empty())
-	{
-		OnLoginButtonClicked();
-	}
+	// Password 커밋 시 자동 로그인하지 않음
 }
 
 void ULoginWidget::Tick(float DeltaSeconds)
