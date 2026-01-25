@@ -80,6 +80,8 @@ struct FAnimMontageInstance
 	void                          JumpToSectionName(const std::string& SectionName);
 	std::vector<FBoneLocalTransform>         MontageBones;
 	std::vector<FAnimNotifyEvent> Notifies;
+	float NotifyLastUpdateTime = 0.0f;
+	float NotifyLastUpdateTimeSeconds = 0.0f;
 
 	std::shared_ptr<UAnimMontage> Montage;
 

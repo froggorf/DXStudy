@@ -5,7 +5,6 @@
 #include "Engine/Class/Framework/ACharacter.h"
 #include "MyGame/Component/Combat/UCombatBaseComponent.h"
 #include "MyGame/Component/MotionWarping/UMotionWarpingComponent.h"
-#include "MyGame/Interface/Dodge/IDodgeInterface.h"
 
 class UHealthComponent;
 class UMyGameWidgetBase;
@@ -39,7 +38,7 @@ struct FMyGameDamageEvent : public FDamageEvent
 	EElementType ElementType;
 };
 
-class AMyGameCharacterBase : public ACharacter, public IDodgeInterface
+class AMyGameCharacterBase : public ACharacter
 {
 	MY_GENERATE_BODY(AMyGameCharacterBase)
 
@@ -98,19 +97,10 @@ public:
 	const std::shared_ptr<UUltimateBaseComponent>& GetUltimateComponent() const {return UltimateComponent;}
 	std::shared_ptr<UMyGameWidgetBase> GetCharacterWidget() const {return CharacterWidget; }
 
-private:
+protected:
 	bool bAltButtonPressed = false;
 	bool bIsDead = false;
 
-protected:
-	// IDodgeInterface
-	void Dodge() override;
-	void DodgeEnd() override;
-	void ChangeToRoll() override;
-	void RollEnd() override;
-	void AttackedWhileDodge() override;
-
-protected:
 	// ================= 전투 관련 컴퍼넌트 =================
 	std::shared_ptr<UCombatBaseComponent> CombatComponent;
 	std::shared_ptr<USkillBaseComponent> SkillComponent;

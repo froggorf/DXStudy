@@ -15,6 +15,7 @@ class UAnimSequenceBase : public UAnimationAsset
 
 	// LastUpdateTime 과 CurrentTime 사이의 Notify를 반환
 	void GetAnimNotifies(const float& CurrentTime, std::vector<FAnimNotifyEvent>& OutActiveNotifies);
+	void GetAnimNotifies(const float& CurrentTime, float& InOutLastUpdateTime, float& InOutLastUpdateTimeSeconds, std::vector<FAnimNotifyEvent>& OutActiveNotifies);
 
 	void LoadDataFromFileData(const nlohmann::json& AssetData) override;
 

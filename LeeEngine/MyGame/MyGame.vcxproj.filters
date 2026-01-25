@@ -199,9 +199,6 @@
     <ClCompile Include="Source\MyGame\Component\Combat\Melee\USanhwaCombatComponent.cpp">
       <Filter>Source\MyGame\Component\Combat\Melee</Filter>
     </ClCompile>
-    <ClCompile Include="Source\MyGame\Interface\Dodge\IDodgeInterface.cpp">
-      <Filter>Source\MyGame\Interface\Dodge</Filter>
-    </ClCompile>
     <ClCompile Include="Source\MyGame\AnimInstance\Sanhwa\USanhwaAnimInstance.cpp">
       <Filter>Source\MyGame\AnimInstance\Sanhwa</Filter>
     </ClCompile>
@@ -410,9 +407,6 @@
     </ClInclude>
     <ClInclude Include="Source\MyGame\Component\Combat\Melee\USanhwaCombatComponent.h">
       <Filter>Source\MyGame\Component\Combat\Melee</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\MyGame\Interface\Dodge\IDodgeInterface.h">
-      <Filter>Source\MyGame\Interface\Dodge</Filter>
     </ClInclude>
     <ClInclude Include="Source\MyGame\AnimInstance\Sanhwa\USanhwaAnimInstance.h">
       <Filter>Source\MyGame\AnimInstance\Sanhwa</Filter>

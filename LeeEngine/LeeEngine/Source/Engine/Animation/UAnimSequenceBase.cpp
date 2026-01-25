@@ -10,6 +10,11 @@ void UAnimSequenceBase::SortNotifies()
 
 void UAnimSequenceBase::GetAnimNotifies(const float& CurrentTime, std::vector<FAnimNotifyEvent>& OutActiveNotifies)
 {
+	GetAnimNotifies(CurrentTime, LastUpdateTime, LastUpdateTimeSeconds, OutActiveNotifies);
+}
+
+void UAnimSequenceBase::GetAnimNotifies(const float& CurrentTime, float& InOutLastUpdateTime, float& InOutLastUpdateTimeSeconds, std::vector<FAnimNotifyEvent>& OutActiveNotifies)
+{
 	// early out
 	if (Notifies.size() == 0)
 	{
@@ -19,9 +24,9 @@ void UAnimSequenceBase::GetAnimNotifies(const float& CurrentTime, std::vector<FA
 	
 
 	// 급격한 애니메이션 변화로 인한 AnimNotify 중복 호출 방어
-	if (LastUpdateTimeSeconds + 0.1f > GEngine->GetTimeSeconds() || (CurrentTime -1 < FLT_EPSILON))
+	if (InOutLastUpdateTimeSeconds + 0.1f > GEngine->GetTimeSeconds() || (CurrentTime -1 < FLT_EPSILON))
 	{
-		float PreviousPosition = LastUpdateTime;
+		float PreviousPosition = InOutLastUpdateTime;
 		// 애니메이션 0프레임에 노티파이를 놓으면 인식하지 못하는 현상을 해결하기 위해 다음과 같이 조정
 		if (CurrentTime -1 < FLT_EPSILON)
 		{
@@ -37,9 +42,9 @@ void UAnimSequenceBase::GetAnimNotifies(const float& CurrentTime, std::vector<FA
 				OutActiveNotifies.emplace_back(NotifyEvent);
 			}
 		}
-		LastUpdateTime = CurrentPosition;
+		InOutLastUpdateTime = CurrentPosition;
 	}
-	LastUpdateTimeSeconds = GEngine->GetTimeSeconds();
+	InOutLastUpdateTimeSeconds = GEngine->GetTimeSeconds();
 }
 
 void UAnimSequenceBase::LoadDataFromFileData(const nlohmann::json& AssetData)

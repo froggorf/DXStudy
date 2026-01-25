@@ -73,7 +73,6 @@
     <ClCompile Include="Source\MyGame\DataBase\SQLiteWrapper.cpp" />
     <ClCompile Include="Source\MyGame\DataBase\StageTable.cpp" />
     <ClCompile Include="Source\MyGame\DataBase\UserTable.cpp" />
-    <ClCompile Include="Source\MyGame\Interface\Dodge\IDodgeInterface.cpp" />
     <ClCompile Include="Source\MyGame\Notify\MyGameNotify.cpp" />
     <ClCompile Include="Source\MyGame\Widget\Gideon\UGideonGaugeWidget.cpp" />
     <ClCompile Include="Source\MyGame\Widget\Gideon\UGideonWidget.cpp" />
@@ -145,7 +144,6 @@
     <ClInclude Include="Source\MyGame\DataBase\SQLiteWrapper.h" />
     <ClInclude Include="Source\MyGame\DataBase\StageTable.h" />
     <ClInclude Include="Source\MyGame\DataBase\UserTable.h" />
-    <ClInclude Include="Source\MyGame\Interface\Dodge\IDodgeInterface.h" />
     <ClInclude Include="Source\MyGame\Notify\MyGameNotify.h" />
     <ClInclude Include="Source\MyGame\Widget\Gideon\UGideonGaugeWidget.h" />
     <ClInclude Include="Source\MyGame\Widget\Gideon\UGideonWidget.h" />

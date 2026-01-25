@@ -227,7 +227,7 @@ void FAnimMontageInstance::Play()
 	
 	CurrentPlayTime = Position < 0.0f? -Position/30 : Position/30;
 	Notifies.clear();
-	Montage->GetAnimNotifies(Position, Notifies);
+	Montage->GetAnimNotifies(Position, NotifyLastUpdateTime, NotifyLastUpdateTimeSeconds, Notifies);
 }
 
 void FAnimMontageInstance::SetPosition(float InPosition)

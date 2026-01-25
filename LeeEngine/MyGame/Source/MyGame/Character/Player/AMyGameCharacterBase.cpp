@@ -111,8 +111,6 @@ void AMyGameCharacterBase::Register()
 
 	ACharacter::Register();
 
-	IDodgeInterface::LoadAnimMontages();
-
 	if (CombatComponent)
 	{
 		CombatComponent->Initialize(this);
@@ -195,8 +193,6 @@ void AMyGameCharacterBase::BindKeyInputs()
 			InputSystem->BindAxis2D(EKeys::S, ETriggerEvent::Trigger, -1, 0,this, &AMyGameCharacterBase::Move);
 			InputSystem->BindAxis2D(EKeys::D, ETriggerEvent::Trigger, 0, 1,this, &AMyGameCharacterBase::Move);
 			InputSystem->BindAxis2D(EKeys::A, ETriggerEvent::Trigger, 0, -1,this, &AMyGameCharacterBase::Move);
-			// Dodge
-			InputSystem->BindAction(EKeys::LShift, ETriggerEvent::Started, this, &AMyGameCharacterBase::Dodge);
 			// Jump
 			InputSystem->BindAction<AMyGameCharacterBase>(EKeys::Space, ETriggerEvent::Started, this, &AMyGameCharacterBase::Jump);
 			// LookRotate
@@ -304,13 +300,6 @@ void AMyGameCharacterBase::ApplyDamageToEnemy(AActor* DamagedEnemy, const FAttac
 	}
 }
 
-void AMyGameCharacterBase::AttackedWhileDodge()
-{
-	SetTickRate(0.1f);
-	GEngine->GetTimerManager()->SetTimer(RollingEndHandle, {this, &AMyGameCharacterBase::RollEnd} , 1.0f, false);
-	AddMonochromePostprocess();
-}
-
 void AMyGameCharacterBase::ChangeToUltimateCamera()
 {
 	GEngine->GetWorld()->GetCameraManager()->SetTargetCamera(UltimateSceneCameraComp);
@@ -326,12 +315,6 @@ void AMyGameCharacterBase::ChangeToNormalCamera(float BlendTime)
 
 float AMyGameCharacterBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AActor* DamageCauser)
 {
-	if (bIsDodging)
-	{
-		ChangeToRoll();
-		return DamageAmount;
-	}
-
 	DamageAmount = max(0, DamageAmount - GetArmorPower());
 	const float RemainingHealth = HealthComponent->ApplyDamage(DamageAmount);
 	if (RemainingHealth <= 0.0f)
@@ -443,63 +426,6 @@ void AMyGameCharacterBase::AltButtonReleased()
 	GEngine->ShowCursor(false);
 }
 
-
-void AMyGameCharacterBase::Dodge()
-{
-	std::shared_ptr<UAnimInstance> AnimInstance = GetAnimInstance();
-	UCharacterMovementComponent* MovementComp = GetCharacterMovement();
-	if (!AnimInstance || !MovementComp)
-	{
-		return;
-	}
-
-	bIsDodging = true;
-	PlaySound2DByName("SB_SFX_Dodge");
-	Delegate<> OnDodgeEnd;
-	OnDodgeEnd.Add(this, &AMyGameCharacterBase::DodgeEnd);
-
-	// TODO: 수정하기
-	if (ImGui::IsKeyDown(ImGuiKey::ImGuiKey_W) || ImGui::IsKeyDown(ImGuiKey_A) || ImGui::IsKeyDown(ImGuiKey_D))
-	{
-		bIsBackDodge = false;
-
-		AnimInstance->Montage_Play(AM_Dodge[static_cast<int>(EDodgeDirection::Forward)], 0, OnDodgeEnd);
-	}
-	else
-	{
-		bIsBackDodge = true;
-		AnimInstance->Montage_Play(AM_Dodge[static_cast<int>(EDodgeDirection::Backward)],0, OnDodgeEnd);
-	}
-}
-
-void AMyGameCharacterBase::DodgeEnd()
-{
-	IDodgeInterface::DodgeEnd();
-}
-
-void AMyGameCharacterBase::ChangeToRoll()
-{
-	std::shared_ptr<UAnimInstance> AnimInstance = GetAnimInstance();
-	if (!AnimInstance)
-	{
-		return;
-	}
-	
-	bIsDodging = false;
-	PlaySound2DByName("SB_SFX_Roll");
-	GEngine->GetTimerManager()->SetTimer(AttackedWhileDodgingHandle, {this, &AMyGameCharacterBase::AttackedWhileDodge} , AttackedWhileDodgeTriggerTime, false);
-
-	const std::shared_ptr<UAnimMontage>& PlayedMontage = bIsBackDodge? AM_Roll[static_cast<int>(EDodgeDirection::Backward)] : AM_Roll[static_cast<int>(EDodgeDirection::Forward)];
-	GetAnimInstance()->Montage_Play(PlayedMontage);
-	
-}
-
-void AMyGameCharacterBase::RollEnd()
-{
-	IDodgeInterface::RollEnd();
-
-	SetTickRate(1.0f);
-}
 
 void AMyGameCharacterBase::SetWalk()
 {
