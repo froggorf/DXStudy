@@ -83,6 +83,18 @@ void ATownGameMode::BeginPlay()
 		GetWorld()->SpawnActor("ASanhwaCharacter", FTransform{XMFLOAT3{-1000.0f,-1000.0f,1000000.0f}, XMFLOAT4{0.0f,0.0f,0.0f,1.0f}, XMFLOAT3{1.0f,1.0f,1.0f}}, "Sanhwa")
 	);
 	SanhwaCharacter = Sanhwa;
+	if (UMyGameInstance* GameInstance = UMyGameInstance::GetInstance<UMyGameInstance>())
+	{
+		const auto& EquipLevels = GameInstance->GetEquipLevel();
+		if (Gideon)
+		{
+			Gideon->SetEquipmentLevel(EquipLevels);
+		}
+		if (Sanhwa)
+		{
+			Sanhwa->SetEquipmentLevel(EquipLevels);
+		}
+	}
 	GetWorld()->SpawnActor("APortal", FTransform{XMFLOAT3{0.0f, 0.0f, -1000.0f}, XMFLOAT4{0.0f,0.0f,0.0f,1.0f}, XMFLOAT3{1.0f,1.0f,1.0f}}, "TownPortal");
 	if (APlayerController* PC = GetWorld()->GetPlayerController())
 	{

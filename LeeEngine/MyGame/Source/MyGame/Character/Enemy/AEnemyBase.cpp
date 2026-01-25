@@ -112,6 +112,8 @@ void AEnemyBase::BeginPlay()
 	CapsuleComp->SetObjectType(ECollisionChannel::Enemy);
 	QueryCheckCapsuleComp->SetCollisionObjectType(ECollisionChannel::Enemy);
 	QueryCheckCapsuleComp->GetBodyInstance()->SetObjectType(ECollisionChannel::Enemy);
+	CapsuleComp->SetCollisionResponseToChannel(ECollisionChannel::Player, ECollisionResponse::Block);
+	CapsuleComp->SetCollisionResponseToChannel(ECollisionChannel::Enemy, ECollisionResponse::Block);
 
 	if (UMyGameInstance* GameInstance = UMyGameInstance::GetInstance<UMyGameInstance>())
 	{
@@ -177,6 +179,10 @@ float AEnemyBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent
 void AEnemyBase::PlayAttackMontage(Delegate<> AttackFinishDelegate)
 {
 	bBasicAttackApplied = false;
+	if (!EnemyAnimInstance)
+	{
+		EnemyAnimInstance = std::dynamic_pointer_cast<UEnemyAnimInstanceBase>(GetAnimInstance());
+	}
 	if (EnemyAnimInstance)
 	{
 		PlaySoundAtLocationByName(GetWorld(), GetActorLocation(), "SB_SFX_Enemy_Attack");
@@ -197,21 +203,17 @@ void AEnemyBase::ApplyBasicAttack()
 	}
 	bBasicAttackApplied = true;
 
-	XMFLOAT3 ForwardDir = GetActorForwardVector();
-	XMFLOAT3 ActorLocation = GetActorLocation();
-	float CapsuleRadius = GetCapsuleComponent()->GetRadius();
-	XMFLOAT3 AttackBoxCenter = ActorLocation + ForwardDir * (CapsuleRadius + BasicAttackData.AttackRange.z);
-
 	FMyGameDamageEvent DamageEvent;
 	DamageEvent.ElementType = EElementType::Spectra;
 
-	std::vector<AActor*> OverlapResults;
-	GPhysicsEngine->BoxOverlapComponents(AttackBoxCenter, BasicAttackData.AttackRange, {ECollisionChannel::Player}, {}, OverlapResults);
-	for (AActor* OverlapActor : OverlapResults)
+	if (APlayerController* PC = GetWorld()->GetPlayerController())
 	{
-		if (AMyGameCharacterBase* Player =  dynamic_cast<AMyGameCharacterBase*>(OverlapActor))
+		if (const std::shared_ptr<AActor>& PlayerActor = PC->GetPlayerCharacter())
 		{
-			Player->TakeDamage(EnemyPower * BasicAttackData.DamagePercent, DamageEvent, this);	
+			if (AMyGameCharacterBase* Player = dynamic_cast<AMyGameCharacterBase*>(PlayerActor.get()))
+			{
+				Player->TakeDamage(EnemyPower * BasicAttackData.DamagePercent, DamageEvent, this);
+			}
 		}
 	}
 
@@ -250,6 +252,12 @@ void AEnemyBase::Tick(float DeltaSeconds)
 		{
 			const std::shared_ptr<FBlackBoard>& BlackBoard = AIController->GetBehaviorTree()->GetBlackBoard();
 			BlackBoard->SetValue<FBlackBoardValueType_Object>("Player", PlayerCharacter);
+			bool bPlayerAlive = true;
+			if (const std::shared_ptr<AMyGameCharacterBase>& PlayerBase = std::dynamic_pointer_cast<AMyGameCharacterBase>(PlayerCharacter))
+			{
+				bPlayerAlive = !PlayerBase->IsDead();
+			}
+			BlackBoard->SetValue<FBlackBoardValueType_Bool>("PlayerAlive", bPlayerAlive);
 			float Distance = MyMath::GetDistance(GetActorLocation(), PlayerCharacter->GetActorLocation());
 			bool NewValue = Distance > DetectRange;
 			BlackBoard->SetValue<FBlackBoardValueType_Bool>("MoveMode", NewValue);		
@@ -277,7 +285,7 @@ AWolf::AWolf()
 {
 	SkeletalMeshName = "SK_Wolf";
 	AnimInstanceName = "UWolfAnimInstance";
-	BasicAttackData = FAttackData{XMFLOAT3{100, 30, 100}, 1.0f, 0.0f, 0.0f, true};
+	BasicAttackData = FAttackData{XMFLOAT3{1000,1000,1000}, 1.0f, 0.0f, 0.0f, true};
 	EnemyPower = 75.0f;
 }
 
@@ -295,7 +303,7 @@ APig::APig()
 {
 	SkeletalMeshName = "SK_Pig";
 	AnimInstanceName = "UPigAnimInstance";
-	BasicAttackData = FAttackData{XMFLOAT3{100,30,100}, 1.0f, 0.0f, 0.0f, true};
+	BasicAttackData = FAttackData{XMFLOAT3{1000,1000,1000}, 1.0f, 0.0f, 0.0f, true};
 }
 
 void APig::Register()
@@ -347,7 +355,7 @@ ADragon::ADragon()
 	SkeletalMeshName = "SK_Dragon";
 	AnimInstanceName = "UDragonAnimInstance";
 	BasicAttackData = FAttackData{XMFLOAT3{1000,300,1000}, 1.0f, 0.0f, 0.0f, true};
-	EnemyPower = 150.0f;
+	EnemyPower = 800.0f;
 	DetectRange = 2500.0f;
 
 	FlameVFX = std::make_shared<UNiagaraComponent>();

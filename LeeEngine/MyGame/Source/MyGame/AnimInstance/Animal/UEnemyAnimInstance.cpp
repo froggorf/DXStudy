@@ -29,6 +29,21 @@ void UEnemyAnimInstanceBase::DoAttackAnim(const Delegate<>& OnFinishAttack)
 
 void UEnemyAnimInstanceBase::ApplyBasicAttack()
 {
+	if (!OwnerEnemy)
+	{
+		if (OwnerCharacter)
+		{
+			OwnerEnemy = dynamic_cast<AEnemyBase*>(OwnerCharacter);
+		}
+		if (!OwnerEnemy)
+		{
+			if (AActor* PawnOwner = TryGetPawnOwner())
+			{
+				OwnerEnemy = dynamic_cast<AEnemyBase*>(PawnOwner);
+			}
+		}
+	}
+
 	if (OwnerEnemy)
 	{
 		OwnerEnemy->ApplyBasicAttack();

@@ -46,7 +46,7 @@ protected:
 	std::string SkeletalMeshName = "";
 
 	FAttackData BasicAttackData{};
-	float EnemyPower = 50.0f;
+	float EnemyPower = 400.0f;
 	bool bBasicAttackApplied = false;
 
 	FTimerHandle DeathTimerHandle;

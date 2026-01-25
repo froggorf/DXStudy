@@ -157,6 +157,8 @@ void AMyGameCharacterBase::BeginPlay()
 	CapsuleComp->SetObjectType(ECollisionChannel::Player);
 	QueryCheckCapsuleComp->SetCollisionObjectType(ECollisionChannel::Player);
 	QueryCheckCapsuleComp->GetBodyInstance()->SetObjectType(ECollisionChannel::Player);
+	CapsuleComp->SetCollisionResponseToChannel(ECollisionChannel::Enemy, ECollisionResponse::Block);
+	CapsuleComp->SetCollisionResponseToChannel(ECollisionChannel::Player, ECollisionResponse::Block);
 	
 }
 
@@ -324,7 +326,6 @@ void AMyGameCharacterBase::ChangeToNormalCamera(float BlendTime)
 
 float AMyGameCharacterBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AActor* DamageCauser)
 {
-	
 	if (bIsDodging)
 	{
 		ChangeToRoll();
@@ -387,6 +388,16 @@ void AMyGameCharacterBase::Death()
 	}
 
 	
+}
+
+bool AMyGameCharacterBase::IsDead() const
+{
+	if (bIsDead)
+	{
+		return true;
+	}
+
+	return HealthComponent ? HealthComponent->GetHealthPercent() <= 0.0f : true;
 }
 
 void AMyGameCharacterBase::Move(float X, float Y)

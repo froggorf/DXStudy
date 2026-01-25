@@ -295,6 +295,11 @@ void UTestBT::OnConstruct()
 	BlackBoard->SetValue<FBlackBoardValueType_Object>("Owner", Actor);
 	BlackBoard->SetValue<FBlackBoardValueType_Object>("Player", Actor);
 	BlackBoard->SetValue<FBlackBoardValueType_FLOAT>("HealthPercent", 100.0f);
+	BlackBoard->SetValue<FBlackBoardValueType_Bool>("PlayerAlive", true);
+
+	std::shared_ptr<FBTDecorator_BlackBoardValueCheck<FBlackBoardValueType_Bool>> IsPlayerAlive = std::make_shared<FBTDecorator_BlackBoardValueCheck<FBlackBoardValueType_Bool>>();
+	IsPlayerAlive->Initialize("PlayerAlive", true, EBlackBoardValueCheckType::Equal);
+	BTRoot->Decorators.emplace_back(IsPlayerAlive);
 
 	// 플레이어가 거리 300m 이내에 없다면,
 		// 주변을 배회한다
@@ -512,11 +517,16 @@ void UDragonBT::OnConstruct()
 	BlackBoard->SetValue<FBlackBoardValueType_Object>("Player", nullptr);
 	BlackBoard->SetValue<FBlackBoardValueType_Bool>("MoveMode", true);
 	BlackBoard->SetValue<FBlackBoardValueType_FLOAT>("HealthPercent", 100.0f);
+	BlackBoard->SetValue<FBlackBoardValueType_Bool>("PlayerAlive", true);
 	BlackBoard->SetValue<FBlackBoardValueType_Bool>("HPSkillTriggered", false);
 	BlackBoard->SetValue<FBlackBoardValueType_Object>("FlameAnim", nullptr);
 	BlackBoard->SetValue<FBlackBoardValueType_Object>("StartFlyAnim", nullptr);
 	BlackBoard->SetValue<FBlackBoardValueType_Object>("LandAnim", nullptr);
 	BlackBoard->SetValue<FBlackBoardValueType_Object>("HPFlame", nullptr);
+
+	std::shared_ptr<FBTDecorator_BlackBoardValueCheck<FBlackBoardValueType_Bool>> IsPlayerAlive = std::make_shared<FBTDecorator_BlackBoardValueCheck<FBlackBoardValueType_Bool>>();
+	IsPlayerAlive->Initialize("PlayerAlive", true, EBlackBoardValueCheckType::Equal);
+	BTRoot->Decorators.emplace_back(IsPlayerAlive);
 
 	// Idle when player is out of range
 	{

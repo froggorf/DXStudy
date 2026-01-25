@@ -2,18 +2,72 @@
     "Class": "UNiagaraSystem",
     "Name": "NS_IceStorm",
     "Emitters" : [
-	{ 
+
+{ 
 		"Property" : 2, 
-		"OverrideMat": "M_Storm",
+		"OverrideMat": "M_Storm_Sub",
 		"SpawnRate" : 0,
 		"StaticMesh" : "SM_Storm",
 		"Life" : [ 999999,999999 ],
 		"Loop" : 1,
-		"Scale" : [ [10,10,10] , [10,10,10] ],
+		"Scale" : [ [20,10,20] , [20,10,20] ],
 		"Rot" : [ [0,0,0] , [0,0,0]],
 		"SpaceType": 0,
 		"SpawnShape" : 2,
-		"SpawnScale" : [0.1,0.1,0.1],
+		"SpawnScale" : [0.1,0.1, 0.1],
+		"Modules" : 
+		{
+			"Render" : {
+  			    "StartColor" : [1,1,1,1.0],
+			    "EndColor" : [1,1,1,0.0],
+			    "FadeOut" : [1, 0.8]
+			},
+			"Scale" :{
+			    "StartScale" : 1.0,
+			    "EndScale" : 1.0
+			},
+			"AddRot" : [0, 120, 0]
+		}
+	},
+
+{ 
+		"Property" : 2, 
+		"OverrideMat": "M_Storm_Sub",
+		"SpawnRate" : 0,
+		"StaticMesh" : "SM_Storm",
+		"Life" : [ 999999,999999 ],
+		"Loop" : 1,
+		"Scale" : [ [13,10,13] , [13,10,13] ],
+		"Rot" : [ [0,72,0] , [0,72,0]],
+		"SpaceType": 0,
+		"SpawnShape" : 2,
+		"SpawnScale" : [0.1,0.1, 0.1],
+		"Modules" : 
+		{
+			"Render" : {
+  			    "StartColor" : [1,1,1,1.0],
+			    "EndColor" : [1,1,1,0.0],
+			    "FadeOut" : [1, 0.8]
+			},
+			"Scale" :{
+			    "StartScale" : 1.0,
+			    "EndScale" : 1.0
+			},
+			"AddRot" : [0, 150, 0]
+		}
+	},
+{ 
+		"Property" : 2, 
+		"OverrideMat": "M_Storm_Sub",
+		"SpawnRate" : 0,
+		"StaticMesh" : "SM_Storm",
+		"Life" : [ 999999,999999 ],
+		"Loop" : 1,
+		"Scale" : [ [13,10,13] , [13,10,13] ],
+		"Rot" : [ [0,144,0] , [0,144,0]],
+		"SpaceType": 0,
+		"SpawnShape" : 2,
+		"SpawnScale" : [0.1,0.1, 0.1],
 		"Modules" : 
 		{
 			"Render" : {
@@ -36,7 +90,7 @@
 		"Life" : [ 999999,999999 ],
 		"Loop" : 1,
 		"Scale" : [ [13,10,13] , [13,10,13] ],
-		"Rot" : [ [0,0,0] , [0,0,0]],
+		"Rot" : [ [0,216,0] , [0,216,0]],
 		"SpaceType": 0,
 		"SpawnShape" : 2,
 		"SpawnScale" : [0.1,0.1, 0.1],
@@ -51,18 +105,18 @@
 			    "StartScale" : 1.0,
 			    "EndScale" : 1.0
 			},
-			"AddRot" : [0, 180, 0]
+			"AddRot" : [0, 210, 0]
 		}
 	},
 { 
 		"Property" : 2, 
-		"OverrideMat": "M_Storm",
+		"OverrideMat": "M_Storm_Sub",
 		"SpawnRate" : 0,
-		"StaticMesh" : "SM_Storm_Ground",
+		"StaticMesh" : "SM_Storm",
 		"Life" : [ 999999,999999 ],
 		"Loop" : 1,
-		"Scale" : [ [10,1,10] , [10,1,10] ],
-		"Rot" : [ [0,0,0] , [0,0,0]],
+		"Scale" : [ [13,10,13] , [13,10,13] ],
+		"Rot" : [ [0,288,0] , [0,288,0]],
 		"SpaceType": 0,
 		"SpawnShape" : 2,
 		"SpawnScale" : [0.1,0.1, 0.1],
@@ -77,7 +131,7 @@
 			    "StartScale" : 1.0,
 			    "EndScale" : 1.0
 			},
-			"AddRot" : [0, 180, 0]
+			"AddRot" : [0, 240, 0]
 		}
 	},
 { 

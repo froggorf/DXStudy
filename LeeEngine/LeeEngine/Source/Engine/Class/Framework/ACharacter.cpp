@@ -19,7 +19,7 @@ physx::PxQueryHitType::Enum MyQueryFilterCallback::preFilter(const physx::PxFilt
 
 		if (dynamic_cast<ACharacter*>(OtherOwner))
 		{
-			return physx::PxQueryHitType::eNONE; // CCT vs CCT로 처리
+			return physx::PxQueryHitType::eBLOCK; // CCT 간에도 막히도록 처리
 		}
 	}
 
